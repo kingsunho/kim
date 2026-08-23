@@ -1475,7 +1475,7 @@ function simGame(home,away,opts){
     const bbLim = hk==='quick'?4:(hk==='long'?9:7);
     const rLim  = hk==='quick'?5:(hk==='long'?12:9);
     if((l.outs>=lim||l.bb+l.hbp>=bbLim||l.r>=rLim)&&s.pIdx<s.rot.length-1){
-      s.pIdx++;
+      s.pIdx++;   // simGame 은 타순 교체가 없어서 '빠진 투수' 자체가 안 생긴다
       log.push({t:'sub',inning:inn,text:`투수 교체 · ${s.team.name}: ${p.name} → ${cur(s).name}`});
     }
   }
@@ -2192,6 +2192,14 @@ function speakers(ST, exclude, n, rng){
   const recent=ST._recentSpeakers||[];
   let cands=us.players.filter(p=>p.id!==exclude&&isAvailable(p.id)&&!isMerc(p.id));
   if(!cands.length)return [];
+  /* [제보] "우진혁 카톡 말이 너무 많다. 실제로는 말 없고 경기도 잘 안 나오신다"
+     과묵 성격은 대사마다 확률로 걸러도, '누가 말할까' 단계에서 똑같은 확률로
+     뽑히면 결국 자주 등장한다. 뽑는 단계에서부터 뒤로 민다.            */
+  const r=(typeof rng==='function')?rng:Math.random;
+  const isQuiet=p=>{ const m=META[p.id]; return !!(m&&m.traits&&m.traits.indexOf('과묵')>=0); };
+  const loud=cands.filter(p=>!isQuiet(p));
+  const mute=cands.filter(isQuiet).filter(()=>r()<0.14);   // 가끔만 낀다
+  if(loud.length) cands=loud.concat(mute);
   const fresh=shuffled_(cands.filter(p=>recent.indexOf(p.id)<0), rng);
   const used =shuffled_(cands.filter(p=>recent.indexOf(p.id)>=0), rng);
   const out=fresh.concat(used).slice(0,n);
@@ -5571,8 +5579,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.9.5';
-const APP_VERSION_NOTE = '홈팀이 이겨 있으면 말 공격을 안 한다 (콜드 포함)';
+const APP_VERSION = '2.9.6';
+const APP_VERSION_NOTE = '교체 아웃된 선수가 투수로 복귀하던 버그 · 주전 보호';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -5593,6 +5601,13 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.9.6', t:'교체로 빠진 선수가 투수로 다시 들어오던 것', items:[
+    '교체 아웃된 선수가 나중에 투수로 마운드에 오르던 걸 막았다 (김인규 6회 교체 → 7회 등판)',
+    '오늘 등판이 남은 투수는 자동 교체로 안 뺀다 — 던질 사람이 없어지면 안 되니까',
+    '시즌 성적 상위 타자는 그날 무안타여도 자동 교체 대상에서 뺀다. 대체 불가 자원이다',
+    '박스스코어에서 컨디션 교체와 투수 교체를 구분해서 표기한다',
+    '과묵한 선수는 단톡방에 훨씬 덜 나온다 — 우진혁이 너무 자주 말했다',
+  ]},
   {v:'2.9.5', t:'이미 이긴 홈팀이 말 공격을 계속하던 것', items:[
     '홈팀이 말 공격 중에 콜드 점수차에 닿으면 그 자리에서 경기가 끝난다',
     '예전에는 이닝을 끝까지 치러서, 4회초 9:13 이던 게 말에 9점을 더 뽑고 끝났다',
@@ -6972,22 +6987,42 @@ LiveGame.prototype.checkPitcherChange = function(s){
   const lim=Math.round((6+(p.sta-28)*0.40)*mul);
   const bbLim = hk==='quick'?4:(hk==='long'?9:7);
   const rLim  = hk==='quick'?5:(hk==='long'?12:9);
-  if((l.outs>=lim||l.bb+l.hbp>=bbLim||l.r>=rLim) && s.pIdx<s.rot.length-1){
+  if((l.outs>=lim||l.bb+l.hbp>=bbLim||l.r>=rLim) && this.hasNextPitcher(s)){
     if(s.isUser){
       // 유저 팀이면 교체 여부를 물어본다
       this.pending={kind:'pitcherChange', side:s, from:p.name, to:this.curPitcherNext(s)};
       return true;
     }
     const outId=p.id;
-    s.pIdx++;
+    this.advancePitcher(s);
     this.applyPitcherSubs(s,outId,this.curPitcher(s).id);
     this.log.push({t:'sub',text:`투수 교체 · ${s.team.name}: ${p.name} → ${this.curPitcher(s).name}`});
   }
   return false;
 };
+/* 다음에 올릴 투수 — 이미 경기에서 빠진 사람은 건너뛴다.
+   [제보] "김인규가 교체 아웃 당했었는데 교체로 또 들어왔잖아. 투수긴 하지만"
+   로테이션은 고정 배열인데 pIdx++ 만 하고 있어서, 6회에 포수로 교체 아웃된
+   사람이 7회에 투수로 다시 걸어 들어왔다. 한 번 나간 사람은 마운드에도 못 선다. */
+LiveGame.prototype.peekNextPitcher = function(s){
+  for(let i=s.pIdx+1;i<s.rot.length;i++){
+    const id=s.rot[i];
+    if(this.gone && this.gone[id]) continue;
+    if(s.isUser && typeof isAvailable==='function' && !isAvailable(id)) continue;
+    return id;
+  }
+  return null;
+};
+LiveGame.prototype.hasNextPitcher = function(s){ return !!this.peekNextPitcher(s); };
+LiveGame.prototype.advancePitcher = function(s){
+  const nid=this.peekNextPitcher(s);
+  if(!nid) return false;
+  s.pIdx=s.rot.indexOf(nid);
+  return true;
+};
 LiveGame.prototype.curPitcherNext = function(s){
-  const pid=s.rot[Math.min(s.pIdx+1,s.rot.length-1)];
-  const p=s.team.pitchers.find(x=>x.id===pid);
+  const pid=this.peekNextPitcher(s);
+  const p=pid?s.team.pitchers.find(x=>x.id===pid):null;
   return p?p.name:'—';
 };
 
@@ -7449,10 +7484,26 @@ LiveGame.prototype.benchRotation = function(){
   const cand=(this.benchPool||[]).filter(id=>this.canEnter(us,id));
   if(!cand.length) return;
 
+  /* 못 빼는 사람
+     [제보] "투수 나오려는 애들은 애초에 교체 아웃이 되면 안 되는 거지"
+            "그동안 성적 좋았던 애들은 대체 불가 자원이라 교체 잘 안 당한다"
+     오늘 마운드에 올라갈 사람과 시즌 성적 상위 타자는 그날 무안타라도 안 뺀다.
+     빼버리면 정작 던질 사람이 없어지고, 주전이 벤치에 앉는다.            */
+  const willPitch=new Set((us.rot||[]).slice(us.pIdx));   // 지금 던지는 사람 + 남은 등판 예정자
+  const keyBats=(()=>{
+    const rank=us.slots.map(sl=>{
+      const sb=(typeof ST!=='undefined'&&ST&&ST.bat)?ST.bat[sl.id]:null;
+      return {id:sl.id, v:(sb&&sb.pa>=8)?ops(sb):-1};
+    }).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
+    return new Set(rank.slice(0,3).map(x=>x.id));         // 시즌 OPS 팀 상위 3명
+  })();
+
   // 그날 무안타인 야수 중에서 타수가 제일 많은 사람을 뺀다
   let outIdx=-1, outAb=0;
   us.slots.forEach((sl,i)=>{
     if(sl.pos==='P') return;                              // 투수는 안 뺀다
+    if(willPitch.has(sl.id)) return;                      // 오늘 던질 사람은 안 뺀다
+    if(keyBats.has(sl.id)) return;                        // 시즌 성적 좋은 주전은 안 뺀다
     const b=this.box[sl.id]; if(!b) return;
     if(b.h>0) return;                                     // 안타 친 사람은 그대로 둔다
     if(b.ab>=1 && b.ab>outAb){ outAb=b.ab; outIdx=i; }
@@ -7559,7 +7610,7 @@ LiveGame.prototype.finish = function(){
 /* 전술 적용 */
 LiveGame.prototype.pitcherOptions = function(){
   const s=this.userSide();
-  return s.rot.slice(this.userSide().pIdx+1);
+  return s.rot.slice(s.pIdx+1).filter(id=>!(this.gone&&this.gone[id]));
 };
 LiveGame.prototype.applyDecision = function(choice){
   const s=this.userSide();
@@ -7569,7 +7620,10 @@ LiveGame.prototype.applyDecision = function(choice){
   if(p && p.kind==='pitcherChange'){
     if(choice==='change'){
       const outId=this.curPitcher(p.side).id, old=this.curPitcher(p.side).name;
-      p.side.pIdx++;
+      if(!this.advancePitcher(p.side)){
+        this.log.push({t:'sub',text:'바꿀 투수가 없다'});
+        return;
+      }
       this.applyPitcherSubs(p.side,outId,this.curPitcher(p.side).id);
       this.log.push({t:'sub',text:`투수 교체 · ${old} → ${this.curPitcher(p.side).name}`});
     } else {
@@ -7688,7 +7742,7 @@ LiveGame.prototype._pitcherSubs = function(s, outId, inId){
   if(pSlot>=0 && pSlot!==inIdx){
     // 지명타자 미사용 — 내려간 투수 자리를 벤치가 물려받아 빈 수비를 맡는다
     const rep=bestFor(vacated,bench());
-    if(rep) enter(pSlot,rep,vacated,'교체');
+    if(rep) enter(pSlot,rep,vacated,'투수 교체');
     else {
       // 벤치가 없다 — 내려간 투수가 야수로 남는다 (실제로도 이렇게 한다)
       s.slots[pSlot]={id:outId,pos:vacated};
@@ -7713,7 +7767,7 @@ LiveGame.prototype._pitcherSubs = function(s, outId, inId){
   }
   const rep=bestFor(vacated,bench());
   if(rep){
-    enter(dhIdx,rep,vacated,'교체');
+    enter(dhIdx,rep,vacated,'투수 교체');
     this.dhLost=true;
     this.log.push({t:'sub',
       text:`지명타자 소멸 · ${this.nameOf(rep)}이(가) ${POSNAMES[vacated]||vacated}(으)로 들어간다`});
@@ -7728,9 +7782,9 @@ LiveGame.prototype._pitcherSubs = function(s, outId, inId){
 /* 유저가 직접 투수를 바꾼다 */
 LiveGame.prototype.userPitcherChange = function(){
   const s=this.userSide();
-  if(s.pIdx>=s.rot.length-1) return false;
+  if(!this.hasNextPitcher(s)) return false;
   const outId=this.curPitcher(s).id, old=this.curPitcher(s).name;
-  s.pIdx++;
+  this.advancePitcher(s);
   const inId=this.curPitcher(s).id, now=this.curPitcher(s).name;
   this.applyPitcherSubs(s,outId,inId);
   this.log.push({t:'sub',text: this.off().isUser
@@ -11749,7 +11803,7 @@ function paintLiveCtl(){
      감독 액션처럼 밖으로 뺀다. 작전·판단 횟수를 쓰지 않는다.        */
   const sd=LIVE.userSide();
   const pc=el('button','btn');
-  if(sd.pIdx>=sd.rot.length-1){
+  if(!LIVE.hasNextPitcher(sd)){
     pc.textContent='🔄 남은 투수 없음';
     pc.disabled=true;
   } else {
@@ -11924,7 +11978,7 @@ function pitState(pid){
 
 function pchangeBtn(box){
   const s=LIVE.userSide();
-  if(s.pIdx>=s.rot.length-1) return null;
+  if(!LIVE.hasNextPitcher(s)) return null;
   const cur=LIVE.curPitcher(s);
   const nxt=LIVE.curPitcherNext(s);
   const l=LIVE.pbox[cur.id]||{};
@@ -12014,7 +12068,7 @@ function showDecision(d){
   if(d.kind==='pitcherChange'){
     const sd=d.side||LIVE.userSide();
     const curP=LIVE.curPitcher(sd);
-    const nxtId=(sd.rot||[])[Math.min(sd.pIdx+1,(sd.rot||[]).length-1)];
+    const nxtId=LIVE.peekNextPitcher(sd);
     const nxtP=(sd.team.pitchers||[]).find(x=>x.id===nxtId);
     const st=pitState(curP.id);
     const restOf=id=>{
