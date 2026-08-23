@@ -123,10 +123,14 @@ setTimeout(()=>{
     return (/좌완/.test(a) && b==='') ? '이승민 좌완 · 송승민 표시 없음' : `!${a}/${b}`;
   });
   T('마운드 그림이 좌완이면 좌우로 뒤집힌다', ()=>{
-    const r=ev("figSVG('pit',false)"), l=ev("figSVG('pit',true)");
-    return (/matrix\(-1 0 0 1 34 0\)/.test(l) && !/matrix/.test(r)) ? '좌완만 반전' : '!반전이 안 된다';
+    /* [2.21.0] 도형이 SVG 에서 캔버스 도트로 바뀌었다. 픽셀은 못 보니
+       '어느 손으로 그리라고 넘겼는지' 를 본다. 시점이 포수 뒤라
+       마주 보는 우완의 던지는 팔은 화면 왼쪽 — 그래서 우완이 뒤집힌다. */
+    const m=ev(`(function(){var m=moundView({pitLeft:true}); return m._mv.pitLeft;})()`);
+    const r=ev(`(function(){var m=moundView({pitLeft:false}); return m._mv.pitLeft;})()`);
+    return (m===true&&r===false) ? '좌완/우완 구분' : `!${m}/${r}`;
   });
-  /* 구장 그림은 캔버스라 테스트 환경에서 픽셀을 못 본다.
+    /* 구장 그림은 캔버스라 테스트 환경에서 픽셀을 못 본다.
      대신 '어느 손으로 그리라고 넘겼는지' 상태값을 확인한다. */
   T('투수를 바꾸면 던지는 손도 따라 바뀐다', ()=>{
     ev(`(function(){

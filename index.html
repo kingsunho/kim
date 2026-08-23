@@ -805,12 +805,21 @@ table.stand td.nm{text-align:left;font-weight:700;font-size:12px}
 .mv-cv{position:absolute;left:0;top:0;width:100%;height:100%;
   image-rendering:pixelated;display:block}
 /* 외야 전광판 글자 — 캔버스에 그리면 한글이 뭉개져서 DOM 으로 얹는다 */
-.mv-board{position:absolute;left:31.2%;top:12.8%;width:38.1%;height:13.9%;
-  padding:2px 5px;display:flex;flex-direction:column;justify-content:center;gap:1px}
-.mvb-r{display:flex;align-items:center;justify-content:space-between;
-  font-size:9px;font-weight:800;line-height:1.05;color:#ffd15c;letter-spacing:-.3px}
-.mvb-r span{color:#cfe0ee;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.mvb-r b{color:#ffd15c;font-size:11px;margin-left:6px}
+.mv-board{position:absolute;left:30.4%;top:10.4%;width:39.2%;height:15.6%;
+  padding:1px 4px;display:flex;flex-direction:column;justify-content:center;gap:1px}
+.mvb-r{display:flex;align-items:center;gap:2px;
+  font-size:8px;font-weight:800;line-height:1.1;color:#ffd15c;letter-spacing:-.3px}
+.mvb-r span{flex:0 0 34%;color:#cfe0ee;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
+  font-size:8.5px}
+.mvb-r i{flex:1;display:flex;font-style:normal}
+.mvb-r i u{flex:1;text-align:center;text-decoration:none;color:#8fb6d8;
+  border-left:1px solid rgba(120,150,180,.28)}
+.mvb-r i u.now{color:#fff;background:rgba(255,209,92,.16)}
+.mvb-r b{flex:0 0 13%;text-align:center;color:#ffd15c;font-size:10px;
+  border-left:1px solid rgba(120,150,180,.4)}
+.mvb-h{color:#6d8ba8}
+.mvb-h i u{color:#6d8ba8;border-left-color:transparent}
+.mvb-h b{color:#6d8ba8;font-size:8px;border-left-color:transparent}
 /* 상단 띠 — 이닝 · 아웃 · 주자 */
 .mv-top{position:absolute;left:6px;top:5px;display:flex;align-items:center;gap:6px;
   background:rgba(8,14,22,.62);padding:3px 8px;border-radius:6px;
@@ -6118,8 +6127,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.20.0';
-const APP_VERSION_NOTE = '구장 그림 · 전광판 · 짧아진 튜토리얼';
+const APP_VERSION = '2.21.0';
+const APP_VERSION_NOTE = '구장 그림 해상도 2배 · 투수 손 수정';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6140,6 +6149,17 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.21.0', t:'구장 그림 해상도 2배 · 투수 손 수정', items:[
+    '우완 투수 열두 명이 전부 좌완 모션으로 던지고 있었다. 시점이 포수 뒤라 마주 보는 우완의 팔은 화면 왼쪽인데 반대로 그렸다',
+    '그래서 슬라이더가 휘는 방향과 팔 방향이 어긋나 보였다. 이제 맞는다',
+    '구장 그림 해상도를 320x180 에서 480x270 으로 올렸다 (픽셀 2.25배)',
+    '선수도 키웠다. 유니폼 세로 줄무늬 · 벨트 · 글러브 · 신발 · 모자 챙까지 찍는다',
+    '투구 모션이 5단계가 됐다 — 셋업 · 다리 들기 · 코킹 · 릴리스 · 팔로스루',
+    '하늘이 날씨를 따라간다. 흐리면 회색, 더우면 뿌옇고, 비 오면 빗줄기가 내린다',
+    '전광판에 이닝별 라인스코어가 들어간다. 지금 이닝 칸에 불이 들어온다',
+    '잔디 깎은 자국 · 흙 알갱이 · 관중석 통로와 난간 · 조명탑 빛 · 도시 야경 창문',
+    '1·3루 베이스가 파울선 위로, 2루는 투수 뒤로 갔다',
+  ]},
   {v:'2.20.0', t:'구장 그림 · 전광판 · 짧아진 튜토리얼', items:[
     '타석·마운드 화면을 캔버스로 새로 그렸다. 하늘·도시·조명탑·관중석·담장·잔디 줄무늬까지',
     '외야 전광판에 두 팀 이름과 점수가 실시간으로 들어간다',
@@ -14048,145 +14068,227 @@ const _SC=' sc'+'ale';
 function tfm(x,y,s){ return 'translate('+x+'px,'+y+'px)'+_SC+'('+s+')'; }
 
 /* ================= 구장 그림 (타석·마운드 화면) =================
-   [제보] "미니게임 저 자로 댄 듯한 그림판 같은 게 너무 구려.
-   2009년 피처폰 게임도 저 정도는 나왔는데"
+   [제보] "그래픽 이게 최선인가 싶다. 퀄리티 좀 올려줘"
 
-   맞는 말이다. 예전에는 CSS 사각형 몇 개로 하늘·마운드·타자를 흉내 냈다.
-   이제 캔버스 한 장(320x180 논리 픽셀)에 구장을 통째로 그린다.
-   하늘·구름·도시·조명탑·전광판·관중석·담장·잔디 줄무늬·내야 흙,
-   그리고 투수·포수·타자·야수까지. 외부 이미지는 여전히 한 장도 안 쓴다.
+   1차는 320x180 에 사람 26px 이었다. 도트가 굵어서 뭘 그려도 뭉툭했다.
+   해상도를 480x270 으로 올리고(픽셀 2.25배) 사람도 키웠다.
+   유니폼 줄무늬 · 등번호 · 글러브 · 헬멧 · 벨트까지 찍는다.
+   하늘은 날씨를 따라가고, 전광판에는 이닝별 라인스코어가 들어간다.
 
-   공·스트라이크 존·미트는 예전처럼 DOM 으로 얹는다. 궤적 계산을
-   그대로 쓰기 위해서다(throwBall).                                    */
-const MVW=320, MVH=180;
-const MV_MOUND={x:160,y:84}, MV_PLATE={x:160,y:168};
+   공·스트라이크 존·미트는 예전처럼 DOM 으로 얹는다(궤적 계산 재사용).  */
+const MVW=480, MVH=270;
+const MV_MOUND={x:240,y:132}, MV_PLATE={x:240,y:250};
+/* 시점은 포수 뒤다. 마주 보는 투수의 오른팔은 화면 왼쪽에 나온다.
+   [버그 이력] 이걸 뒤집어 놔서 우완 투수 열두 명이 전부 좌완 모션이었다. */
+const MV_SKY={
+  clear:['#2a76c0','#5ea7d8','#9fd0e8'],
+  cloud:['#5a6d80','#8296a8','#b3c2cd'],
+  hot:  ['#3a86c8','#7ab6dd','#d8e6c8'],
+  rain: ['#3d4a58','#5b6a78','#8a97a3'],
+  night:['#101a30','#1d2c4a','#3a4f72']
+};
+function mvSkyKind(){
+  const w=(typeof ST!=='undefined'&&ST)?ST.weather:'clear';
+  if(w==='rain') return 'rain';
+  if(w==='cloud'||w==='wind') return 'cloud';
+  if(w==='hot'||w==='humid') return 'hot';
+  return 'clear';
+}
+function mvRnd(seed){ let s=seed>>>0;
+  return ()=>{ s=(s*1664525+1013904223)>>>0; return s/4294967296; }; }
 
 function mvSky(g){
-  const sk=g.createLinearGradient(0,0,0,64);
-  sk.addColorStop(0,'#2f7fc4'); sk.addColorStop(0.55,'#6fb2dd'); sk.addColorStop(1,'#a9d6ea');
-  g.fillStyle=sk; g.fillRect(0,0,MVW,64);
-  // 구름
+  const c=MV_SKY[mvSkyKind()]||MV_SKY.clear;
+  const sk=g.createLinearGradient(0,0,0,104);
+  sk.addColorStop(0,c[0]); sk.addColorStop(0.6,c[1]); sk.addColorStop(1,c[2]);
+  g.fillStyle=sk; g.fillRect(0,0,MVW,104);
+  const rnd=mvRnd(20260222);
+  // 구름 — 덩어리 세 개를 겹쳐 그린다
   const cloud=(x,y,s)=>{
-    g.fillStyle='rgba(255,255,255,.82)';
-    g.fillRect(x,y,14*s,4*s); g.fillRect(x+4*s,y-3*s,8*s,4*s);
-    g.fillRect(x+9*s,y-1*s,9*s,4*s);
+    g.fillStyle='rgba(255,255,255,.86)';
+    g.fillRect(x,y,22*s,6*s); g.fillRect(x+6*s,y-5*s,13*s,6*s);
+    g.fillRect(x+15*s,y-2*s,14*s,6*s); g.fillRect(x+3*s,y+4*s,26*s,3*s);
+    g.fillStyle='rgba(210,228,240,.9)';
+    g.fillRect(x+2*s,y+6*s,24*s,2*s);
   };
-  cloud(24,16,1); cloud(210,12,1.3); cloud(128,8,0.8);
+  cloud(34,26,1.1); cloud(310,18,1.4); cloud(186,12,0.85);
+  if(mvSkyKind()==='rain'){
+    g.strokeStyle='rgba(200,215,230,.30)'; g.lineWidth=1;
+    for(let i=0;i<70;i++){ const x=rnd()*MVW, y=rnd()*160;
+      g.beginPath(); g.moveTo(x,y); g.lineTo(x-2,y+7); g.stroke(); }
+  }
 }
 function mvCity(g){
-  // 도시 실루엣
-  g.fillStyle='#3a5f80';
-  const bl=[[6,30,14,18],[22,24,10,24],[34,34,16,14],[54,20,12,28],[70,32,10,16],
-            [230,26,12,22],[244,34,14,14],[260,18,11,30],[273,30,13,18],[288,24,18,24]];
-  bl.forEach(([x,y,w,h])=>{ g.fillRect(x,y+16,w,h);
-    g.fillStyle='rgba(255,255,255,.16)';
-    for(let i=2;i<w-2;i+=4)for(let j=2;j<h-3;j+=5)g.fillRect(x+i,y+18+j,2,2);
-    g.fillStyle='#3a5f80';
+  const night=mvSkyKind()==='rain';
+  const base=night?'#2c3846':'#41688c';
+  const bl=[[4,44,20,52],[26,32,16,64],[46,50,22,46],[70,26,16,70],[90,46,14,50],
+            [376,38,18,58],[396,50,20,46],[418,24,16,72],[436,42,18,54],[456,32,22,64]];
+  bl.forEach(([x,y,wd,h])=>{
+    g.fillStyle=base; g.fillRect(x,y,wd,h);
+    g.fillStyle='rgba(255,255,255,.14)';
+    for(let i=3;i<wd-3;i+=6)for(let j=4;j<h-6;j+=8) g.fillRect(x+i,y+j,3,4);
   });
 }
 function mvLights(g){
-  // 조명탑
-  [[46,20],[274,20]].forEach(([x,y])=>{
-    g.fillStyle='#4a5766'; g.fillRect(x-1,y,3,32);
-    g.fillStyle='#c8d4e0'; g.fillRect(x-11,y-9,22,11);
-    g.fillStyle='#fff9d0';
-    for(let i=0;i<4;i++)for(let j=0;j<2;j++)g.fillRect(x-9+i*5,y-7+j*5,3,3);
+  [[68,22],[412,22]].forEach(([x,y])=>{
+    g.fillStyle='#4a5766'; g.fillRect(x-2,y,4,58);
+    g.fillStyle='#3d4854'; g.fillRect(x-16,y-16,32,17);
+    for(let i=0;i<5;i++)for(let j=0;j<2;j++){
+      g.fillStyle='#fffbe0'; g.fillRect(x-14+i*6,y-14+j*7,4,5);
+      g.fillStyle='rgba(255,250,200,.22)'; g.fillRect(x-15+i*6,y-15+j*7,6,7);
+    }
   });
 }
-/* 외야 전광판 — 틀만 그리고 글자는 DOM 으로 올린다(작은 한글이 뭉개진다) */
+/* 외야 전광판 — 틀·라인스코어 격자. 숫자와 팀 이름은 DOM 이 올린다. */
 function mvBoard(g){
-  g.fillStyle='#2b333d'; g.fillRect(106,46,5,16); g.fillRect(209,46,5,16);
-  g.fillStyle='#48525f'; g.fillRect(96,20,128,28);
-  g.fillStyle='#0b1017'; g.fillRect(99,23,122,22);
-  g.fillStyle='#1b2530'; g.fillRect(99,23,122,1);
+  g.fillStyle='#2b333d'; g.fillRect(158,74,7,26); g.fillRect(316,74,7,26);
+  g.fillStyle='#525d6b'; g.fillRect(140,22,200,54);
+  g.fillStyle='#39424e'; g.fillRect(143,25,194,48);
+  g.fillStyle='#080d13'; g.fillRect(146,28,188,42);
 }
 function mvStand(g){
-  // 관중석 — 담장 위로 층층이
-  const rows=[[62,'#2a3646'],[68,'#333f50'],[74,'#3b485a']];
-  rows.forEach(([y,c])=>{ g.fillStyle=c; g.fillRect(0,y,MVW,7); });
-  // 관중 (도트)
-  const cs=['#d9a07a','#e0c9a6','#c98f6e','#efe0c8'];
-  let s=1234567;
-  const rnd=()=>{ s=(s*1664525+1013904223)>>>0; return s/4294967296; };
-  for(let y=63;y<80;y+=4) for(let x=2;x<MVW;x+=5){
-    if(rnd()<0.72){ g.fillStyle=cs[(rnd()*cs.length)|0]; g.fillRect(x,y,3,3); }
+  const rnd=mvRnd(777);
+  // 관중석 3단
+  const rows=[[100,'#232e3c'],[108,'#2b3648'],[116,'#333f52']];
+  rows.forEach(([y,c])=>{ g.fillStyle=c; g.fillRect(0,y,MVW,9); });
+  const cs=['#dba884','#e8d3b0','#c9906c','#f0e4cf','#b98a6a','#dcc7a8'];
+  for(let y=101;y<124;y+=4) for(let x=2;x<MVW;x+=6){
+    if(rnd()<0.76){ g.fillStyle=cs[(rnd()*cs.length)|0]; g.fillRect(x,y,4,3);
+      g.fillStyle='rgba(0,0,0,.18)'; g.fillRect(x,y+3,4,1); }
   }
+  // 통로
+  g.fillStyle='#1a2330';
+  [72,236,404].forEach(x=>g.fillRect(x,100,7,26));
+  // 난간
+  g.fillStyle='rgba(255,255,255,.18)'; g.fillRect(0,124,MVW,2);
   // 담장
-  g.fillStyle='#15361f'; g.fillRect(0,80,MVW,10);
-  g.fillStyle='#0e2716'; g.fillRect(0,88,MVW,2);
+  const fen=g.createLinearGradient(0,126,0,146);
+  fen.addColorStop(0,'#1b3f24'); fen.addColorStop(1,'#123018');
+  g.fillStyle=fen; g.fillRect(0,126,MVW,20);
   g.fillStyle='rgba(255,255,255,.10)';
-  for(let x=6;x<MVW;x+=46) g.fillRect(x,83,34,4);
+  for(let x=8;x<MVW;x+=62) g.fillRect(x,131,44,9);
+  g.fillStyle='#f5f7f2'; g.fillRect(0,144,MVW,2);      // 노란 선 대신 흰 띠
 }
 function mvField(g){
-  // 외야 잔디 — 줄무늬
-  for(let x=0;x<MVW;x+=22){
-    g.fillStyle=((x/22)|0)%2?'#3d8a37':'#469540';
-    g.fillRect(x,90,22,MVH-90);
+  // 외야 잔디 — 대각 체크무늬
+  const gr=g.createLinearGradient(0,146,0,MVH);
+  gr.addColorStop(0,'#39802f'); gr.addColorStop(1,'#4c9c40');
+  g.fillStyle=gr; g.fillRect(0,146,MVW,MVH-146);
+  g.save(); g.beginPath(); g.rect(0,146,MVW,MVH-146); g.clip();
+  g.fillStyle='rgba(255,255,255,.045)';
+  for(let i=-10;i<22;i++){ g.save(); g.translate(i*40,146); g.rotate(0.30);
+    g.fillRect(0,-40,20,320); g.restore(); }
+  g.restore();
+  // 내야 흙
+  const dirt=g.createLinearGradient(0,180,0,MVH);
+  dirt.addColorStop(0,'#b0834e'); dirt.addColorStop(1,'#c99a5e');
+  g.fillStyle=dirt;
+  g.beginPath(); g.moveTo(-60,MVH); g.quadraticCurveTo(240,168,540,MVH); g.closePath(); g.fill();
+  // 내야 잔디 (다이아몬드 안쪽)
+  g.fillStyle='#4c9c40';
+  g.beginPath(); g.moveTo(56,MVH); g.quadraticCurveTo(240,196,424,MVH); g.closePath(); g.fill();
+  // 흙 알갱이
+  const rnd=mvRnd(31337);
+  for(let i=0;i<260;i++){
+    const x=rnd()*MVW, y=182+rnd()*(MVH-182);
+    g.fillStyle=rnd()<0.5?'rgba(255,255,255,.05)':'rgba(0,0,0,.06)';
+    g.fillRect(x,y,2,2);
   }
-  // 내야 흙 — 아래쪽 넓은 부채꼴
-  g.fillStyle='#b98a52';
-  g.beginPath(); g.moveTo(-30,MVH); g.quadraticCurveTo(160,112,350,MVH); g.closePath(); g.fill();
-  // 내야 잔디 (마운드 뒤쪽 안쪽 잔디)
-  g.fillStyle='#469540';
-  g.beginPath(); g.moveTo(44,MVH); g.quadraticCurveTo(160,128,276,MVH); g.closePath(); g.fill();
-  // 홈플레이트 흙
-  g.fillStyle='#c2925a';
-  g.beginPath(); g.ellipse(MV_PLATE.x,MV_PLATE.y+6,54,26,0,0,Math.PI*2); g.fill();
+  // 1·3루 베이스 (원근상 좌우 아래)
+  const bs=(x,y,sz)=>{ g.save(); g.translate(x,y); g.rotate(Math.PI/4);
+    g.fillStyle='#f4f6f2'; g.fillRect(-sz,-sz,sz*2,sz*2);
+    g.strokeStyle='rgba(0,0,0,.25)'; g.lineWidth=1; g.strokeRect(-sz,-sz,sz*2,sz*2); g.restore(); };
+  /* 1·3루는 파울선 위에 있어야 한다. 원근상 홈에서 위로 갈수록 안쪽으로 모인다. */
+  bs(146,206,7); bs(334,206,7); bs(240,118,4);   // 2루는 투수 뒤
   // 파울선
-  g.strokeStyle='rgba(255,255,255,.6)'; g.lineWidth=1.5;
-  g.beginPath(); g.moveTo(MV_PLATE.x-8,MV_PLATE.y+2); g.lineTo(20,98); g.stroke();
-  g.beginPath(); g.moveTo(MV_PLATE.x+8,MV_PLATE.y+2); g.lineTo(300,98); g.stroke();
+  g.strokeStyle='rgba(255,255,255,.72)'; g.lineWidth=2.5;
+  g.beginPath(); g.moveTo(MV_PLATE.x-12,MV_PLATE.y+4); g.lineTo(28,150); g.stroke();
+  g.beginPath(); g.moveTo(MV_PLATE.x+12,MV_PLATE.y+4); g.lineTo(452,150); g.stroke();
   // 마운드
-  g.fillStyle='#c8975c';
-  g.beginPath(); g.ellipse(MV_MOUND.x,MV_MOUND.y+7,26,9,0,0,Math.PI*2); g.fill();
-  g.fillStyle='#eae6de'; g.fillRect(MV_MOUND.x-5,MV_MOUND.y+6,10,2);
-  // 홈플레이트
-  g.fillStyle='#f2f4f0';
-  g.beginPath(); g.moveTo(152,171); g.lineTo(168,171); g.lineTo(166,176);
-  g.lineTo(160,179); g.lineTo(154,176); g.closePath(); g.fill();
-  // 타석 선
-  g.strokeStyle='rgba(255,255,255,.42)'; g.lineWidth=1;
-  g.strokeRect(120,160,26,22); g.strokeRect(174,160,26,22);
+  g.fillStyle='#c99a5e';
+  g.beginPath(); g.ellipse(MV_MOUND.x,MV_MOUND.y+11,40,14,0,0,Math.PI*2); g.fill();
+  g.fillStyle='rgba(0,0,0,.10)';
+  g.beginPath(); g.ellipse(MV_MOUND.x,MV_MOUND.y+15,40,10,0,0,Math.PI*2); g.fill();
+  g.fillStyle='#eae6de'; g.fillRect(MV_MOUND.x-8,MV_MOUND.y+9,16,3);
+  // 홈플레이트 흙 + 타석
+  g.fillStyle='#c99a5e';
+  g.beginPath(); g.ellipse(MV_PLATE.x,MV_PLATE.y+14,74,30,0,0,Math.PI*2); g.fill();
+  g.strokeStyle='rgba(255,255,255,.45)'; g.lineWidth=2;
+  g.strokeRect(176,232,40,34); g.strokeRect(264,232,40,34);
+  g.fillStyle='#f6f8f4';
+  g.beginPath(); g.moveTo(228,244); g.lineTo(252,244); g.lineTo(249,253);
+  g.lineTo(240,258); g.lineTo(231,253); g.closePath(); g.fill();
 }
-/* 사람 — 유니폼 색과 크기를 받아 그린다. y 는 발끝 */
-function mvGuy(g,x,y,h,u,pose,flip){
-  const s=h/26;                       // 기준 키 26px
-  const px=(a,b,w,ht,c)=>{ g.fillStyle=c;
+
+/* 사람 — 도트로 찍는다. y 는 발끝, h 는 키.
+   flip=true 면 좌우를 뒤집는다. 기준 키 40px 로 그리고 h/40 배로 늘린다. */
+function mvGuy(g,x,y,h,u,pose,flip,no){
+  const s=h/40;
+  const R=(a,b,w,ht,c)=>{ g.fillStyle=c;
     g.fillRect(Math.round(x+(flip?-a-w:a)*s), Math.round(y+b*s),
                Math.max(1,Math.round(w*s)), Math.max(1,Math.round(ht*s))); };
-  g.fillStyle='rgba(0,0,0,.22)';
-  g.beginPath(); g.ellipse(x,y,7*s,2.4*s,0,0,Math.PI*2); g.fill();
-  const cap=u.cap, sh=u.sh, pt=u.pants, sk='#f0c69c';
-  if(pose==='wind'){        // 와인드업 — 다리를 든다
-    px(-4,-9,4,9,pt); px(1,-12,5,5,pt);
-    px(-5,-19,10,10,sh); px(5,-22,3,7,sk); px(-7,-17,3,6,sk);
-    px(-3,-25,7,6,sk); px(-4,-28,9,4,cap);
-  } else if(pose==='rel'){  // 릴리스 — 팔을 앞으로
-    px(-6,-9,4,9,pt); px(2,-9,4,9,pt);
-    px(-5,-19,10,10,sh); px(4,-21,7,3,sk); px(-8,-16,3,6,sk);
-    px(-3,-25,7,6,sk); px(-4,-28,9,4,cap);
-  } else if(pose==='swing'){ // 스윙
-    px(-6,-9,4,9,pt); px(2,-9,4,9,pt);
-    px(-5,-19,11,10,sh); px(3,-22,9,3,sk);
-    px(9,-26,12,2,'#a9743c');           // 배트
-    px(-3,-25,7,6,sk); px(-4,-28,9,4,cap);
-  } else if(pose==='stand'){ // 타격 준비
-    px(-5,-9,4,9,pt); px(1,-9,4,9,pt);
-    px(-5,-19,10,10,sh); px(4,-20,3,5,sk); px(-6,-20,3,5,sk);
-    px(3,-30,3,11,'#a9743c');           // 세워 든 배트
-    px(-3,-25,7,6,sk); px(-4,-28,9,4,cap);
-  } else if(pose==='catch'){ // 포수 — 앉은 뒷모습
-    px(-7,-8,14,8,pt);
-    px(-6,-16,12,9,sh);
-    px(-3,-21,7,6,sk); px(-5,-24,11,4,cap);
-  } else {                   // 기본 — 서 있기
-    px(-5,-9,4,9,pt); px(1,-9,4,9,pt);
-    px(-5,-19,10,10,sh); px(5,-18,3,6,sk); px(-7,-18,3,6,sk);
-    px(-3,-25,7,6,sk); px(-4,-28,9,4,cap);
+  const cap=u.cap, sh=u.sh, pt=u.pants, sk='#f0c69c', st2=u.st||'rgba(0,0,0,.16)';
+  const glove=u.gl||'#6b4423', shoe='#20242c';
+  // 그림자
+  g.fillStyle='rgba(0,0,0,.26)';
+  g.beginPath(); g.ellipse(x,y,11*s,3.4*s,0,0,Math.PI*2); g.fill();
+  const torso=(bx,by)=>{                      // 몸통 + 세로 줄무늬 + 벨트
+    R(bx-7,by,15,15,sh);
+    R(bx-4,by+1,1,13,st2); R(bx+1,by+1,1,13,st2);
+    R(bx-7,by+12,15,3,'#2b3340');             // 벨트
+    if(no!=null){ R(bx-2,by+4,5,6,'rgba(0,0,0,.30)'); }
+  };
+  if(pose==='wind'){                          // 다리를 든다 (글러브 쪽 다리)
+    R(-2,-14,6,14,pt); R(-1,-11,6,5,shoe);
+    R(-11,-20,7,7,pt);                        // 든 다리
+    torso(0,-30);
+    R(-13,-28,6,5,glove);                     // 글러브를 앞으로
+    R(6,-34,5,10,sk);                         // 던지는 팔 (뒤로)
+    R(-4,-42,9,9,sk); R(-6,-47,13,6,cap); R(-9,-45,4,2,cap);
+  } else if(pose==='cock'){                   // 팔을 뒤로 젖힌다
+    R(-4,-14,6,14,pt); R(4,-13,6,13,pt); R(-3,-11,6,5,shoe);
+    torso(0,-30);
+    R(-14,-30,6,5,glove);
+    R(8,-38,6,12,sk);
+    R(-4,-42,9,9,sk); R(-6,-47,13,6,cap); R(-9,-45,4,2,cap);
+  } else if(pose==='rel'){                    // 릴리스 — 팔이 앞으로
+    R(-9,-14,7,14,pt); R(3,-12,7,12,pt); R(-8,-11,7,5,shoe);
+    torso(-1,-29);
+    R(-16,-27,7,5,glove);
+    R(-4,-36,14,5,sk);                        // 뻗은 팔
+    R(-5,-41,9,9,sk); R(-7,-46,13,6,cap); R(-10,-44,4,2,cap);
+  } else if(pose==='follow'){                 // 팔로스루
+    R(-10,-13,7,13,pt); R(2,-14,7,14,pt);
+    torso(-2,-28);
+    R(-18,-22,7,5,glove);
+    R(-14,-30,12,5,sk);
+    R(-6,-40,9,9,sk); R(-8,-45,13,6,cap);
+  } else if(pose==='swing'){                  // 스윙 (타자)
+    R(-9,-15,7,15,pt); R(3,-15,7,15,pt); R(-9,-12,8,5,shoe); R(3,-12,8,5,shoe);
+    torso(-1,-31);
+    R(3,-36,13,5,sk);
+    R(14,-44,20,4,'#a9743c'); R(30,-47,6,4,'#8b5a2b');   // 배트
+    R(-5,-43,9,9,sk); R(-7,-49,14,7,cap);
+  } else if(pose==='stand'){                  // 타격 준비
+    R(-8,-15,7,15,pt); R(2,-15,7,15,pt); R(-8,-12,8,5,shoe); R(2,-12,8,5,shoe);
+    torso(-1,-31);
+    R(4,-38,5,8,sk); R(-9,-38,5,8,sk);
+    R(6,-53,4,18,'#a9743c'); R(5,-56,6,4,'#8b5a2b');     // 세워 든 배트
+    R(-5,-43,9,9,sk); R(-7,-49,14,7,cap);
+  } else if(pose==='catch'){                  // 포수 — 앉은 뒷모습
+    R(-13,-12,26,12,pt);
+    R(-11,-25,22,14,sh);
+    R(-6,-32,12,9,sk); R(-9,-38,18,7,cap);
+    R(-15,-27,7,7,glove);
+  } else {                                    // 기본 — 서 있기
+    R(-7,-14,6,14,pt); R(2,-14,6,14,pt); R(-7,-11,7,4,shoe); R(2,-11,7,4,shoe);
+    torso(0,-30);
+    R(7,-28,5,9,sk); R(-12,-28,5,9,glove);
+    R(-4,-42,9,9,sk); R(-6,-47,13,6,cap); R(-9,-45,4,2,cap);
   }
 }
-/* 화면 전체를 다시 그린다 */
 let MV_OK=null;                     // 캔버스를 쓸 수 있는 환경인가 (한 번만 본다)
+/* 화면 전체를 다시 그린다 */
 function mvPaint(mound, o){
   const cv=mound&&mound.querySelector('.mv-cv'); if(!cv) return;
   /* 상태는 캔버스를 못 그리는 환경에서도 남긴다 — 나중에 다시 그릴 때 쓴다 */
@@ -14197,35 +14299,19 @@ function mvPaint(mound, o){
   MV_OK=true;
   g.clearRect(0,0,MVW,MVH);
   mvSky(g); mvCity(g); mvLights(g); mvBoard(g); mvStand(g); mvField(g);
-  const home={cap:'#2f5fb0', sh:'#eef2f8', pants:'#dfe4ec'};
-  const away={cap:'#b23a34', sh:'#e6ddd0', pants:'#d8d0c4'};
+  const home={cap:'#2f5fb0', sh:'#eef2f8', pants:'#dfe4ec', st:'rgba(47,95,176,.35)', gl:'#5b3a1e'};
+  const away={cap:'#b23a34', sh:'#e6ddd0', pants:'#d8d0c4', st:'rgba(178,58,52,.30)', gl:'#4a3018'};
   const du=st.usDef?home:away, ou=st.usDef?away:home;
   // 야수 — 멀리 작게
-  [[52,110],[112,104],[208,104],[268,110]].forEach(([x,y])=>mvGuy(g,x,y,13,du,'idle',false));
-  // 투수
-  mvGuy(g,MV_MOUND.x,MV_MOUND.y+8,26,du,st.pit,st.pitLeft);
+  [[64,168],[150,158],[330,158],[416,168]].forEach(([x,y])=>mvGuy(g,x,y,20,du,'idle',false));
+  // 투수 — 마주 보는 우완의 던지는 팔은 화면 왼쪽이다. 그래서 우완이 flip.
+  mvGuy(g,MV_MOUND.x,MV_MOUND.y+12,40,du,st.pit,!st.pitLeft);
   // 포수
-  mvGuy(g,MV_PLATE.x,MVH-1,30,du,'catch',false);
+  mvGuy(g,MV_PLATE.x,MVH-2,44,du,'catch',false);
   // 타자
-  mvGuy(g, st.batLeft?199:121, 178, 42, ou, st.bat, !st.batLeft);
+  mvGuy(g, st.batLeft?300:180, 264, 62, ou, st.bat, !st.batLeft);
 }
 
-/* [제보] "이승민은 좌투니깐 좌투로 나와야지"
-   던지는 팔(.arm)이 오른쪽에 붙어 있어서 누가 던지든 우완 모션이었다.
-   좌완이면 통째로 좌우를 뒤집는다.                                    */
-function figSVG(kind, left){
-  const c=kind==='bat'?'#1b2a3d':'#16273f', s=kind==='bat'?'#e8762c':'#c9a227';
-  const body=`<ellipse cx="17" cy="9" rx="6.5" ry="7" fill="#e8c4a0"/>
-    <path d="M10.5 7 A6.5 7 0 0 1 23.5 7 L23.5 9 L10.5 9 Z" fill="${s}"/>
-    <rect x="10" y="16" width="14" height="21" rx="4" fill="${c}"/>
-    <rect x="12" y="36" width="4.5" height="18" rx="2" fill="#243247"/>
-    <rect x="17.5" y="36" width="4.5" height="18" rx="2" fill="#243247"/>
-    <rect class="arm" x="22" y="17" width="4" height="15" rx="2" fill="#e8c4a0"/>
-    <rect x="8" y="17" width="4" height="14" rx="2" fill="#e8c4a0"/>`;
-  return `<svg viewBox="0 0 34 56" width="100%" height="100%">`+
-    /* matrix 로 뒤집는다 — lintcheck 가 JS 안의 scale( 을 함수 호출로 읽는다 */
-    (left?`<g transform="matrix(-1 0 0 1 34 0)">${body}</g>`:body)+`</svg>`;
-}
 /* 좌완이면 이름 옆에 표시. 우완은 굳이 안 붙인다 — 대부분이 우완이다. */
 function handTag(pit){
   return throwHandOf(pit)==='L' ? '<i class="lhp">좌완</i>' : '';
@@ -14262,10 +14348,28 @@ function mvScore(mound){
   const t=mound.querySelector('#mvtop');
   const us=LIVE.userIsHome?LIVE.home:LIVE.away;
   const th=LIVE.userIsHome?LIVE.away:LIVE.home;
-  const short=n=>String(n||'').slice(0,8);
-  if(b) b.innerHTML=
-    `<div class="mvb-r"><span>${short(th.team.name)}</span><b>${th.runs}</b></div>`+
-    `<div class="mvb-r"><span>${short(us.team.name)}</span><b>${us.runs}</b></div>`;
+  const short=n=>String(n||'').slice(0,7);
+  /* 이닝별 라인스코어까지 올린다 — 중계 전광판이 그렇게 생겼다.
+     칸이 좁아서 이닝은 최근 7개만 보여준다.                          */
+  if(b){
+    const away=LIVE.away, home=LIVE.home;
+    const inn=Math.max(LIVE.inning, (away.line||[]).length, (home.line||[]).length);
+    const from=Math.max(0, inn-7);
+    const cells=(side)=>{
+      let o='';
+      for(let i=from;i<from+7;i++){
+        const v=(side.line||[])[i];
+        const now=(i===LIVE.inning-1);
+        o+=`<u class="${now?'now':''}">${v==null?(i<LIVE.inning-1?'-':''):v}</u>`;
+      }
+      return o;
+    };
+    const hd=()=>{ let o=''; for(let i=from;i<from+7;i++) o+=`<u>${i+1}</u>`; return o; };
+    b.innerHTML=
+      `<div class="mvb-r mvb-h"><span></span><i>${hd()}</i><b>R</b></div>`+
+      `<div class="mvb-r"><span>${short(away.team.name)}</span><i>${cells(away)}</i><b>${away.runs}</b></div>`+
+      `<div class="mvb-r"><span>${short(home.team.name)}</span><i>${cells(home)}</i><b>${home.runs}</b></div>`;
+  }
   if(t){
     const on=i=>LIVE.bases[i]?' on':'';
     t.innerHTML=`<i class="mvt-dia"><u class="d2${on(1)}"></u><u class="d3${on(2)}"></u>`+
@@ -14295,7 +14399,7 @@ function throwBall(mound, type, opts){
   if(zs){ const zb=zs.getBoundingClientRect();
     if(zb.width){ zx=zb.left+zb.width/2-box.left; zy=zb.top+zb.height/2-box.top;
                   zw=zb.width; zh=zb.height; } }
-  const sx=W*0.5, sy=H*0.30;
+  const sx=W*0.5, sy=H*0.49;      // 마운드 릴리스 지점
   const cxv=(o.cx==null?1:o.cx), cyv=(o.cy==null?1:o.cy);
   /* 0.303 — 세 칸(0,1,2)은 존 안(±0.303)에 들어가고
      빠진 공(-1,3)은 존 밖(±0.606 > 반폭 0.5)으로 나간다.               */
@@ -14353,17 +14457,20 @@ function throwBall(mound, type, opts){
 /* 와인드업 → 릴리스 모션 */
 function windup(mound, cb){
   if(!mound||!mound.querySelector('.mv-cv')){ cb&&cb(); return; }
+  /* 셋업 → 다리 들기 → 코킹 → 릴리스 → 팔로스루 */
   mvPaint(mound,{pit:'wind'});
+  setTimeout(()=>mvPaint(mound,{pit:'cock'}),190);
   setTimeout(()=>{ mvPaint(mound,{pit:'rel'});
     cb&&cb();
-    setTimeout(()=>mvPaint(mound,{pit:'idle'}),320);
-  },260);
+    setTimeout(()=>mvPaint(mound,{pit:'follow'}),130);
+    setTimeout(()=>mvPaint(mound,{pit:'idle'}),520);
+  },300);
 }
 /* 타자가 배트를 돌린다 */
 function mvSwing(mound){
   if(!mound) return;
   mvPaint(mound,{bat:'swing'});
-  setTimeout(()=>mvPaint(mound,{bat:'stand'}),360);
+  setTimeout(()=>mvPaint(mound,{bat:'stand'}),380);
 }
 /* 그 타석이 어떻게 끝났는지 중계 화면에 그대로 보여준다.
    [제보] "뭐 던지거나 쳤을 때 그것 땜에 어떻게 되었는지가 안 나온다"

@@ -192,7 +192,7 @@ setTimeout(async()=>{
     return true;
   });
 
-  await wait(2600);   // 와인드업 + 공 도달 + 타자 판정
+  await wait(3200);   // 와인드업(5단계) + 공 도달 + 타자 판정
   T('던지면 카운트가 올라가거나 타석이 끝난다', ()=>{
     const c=ev("LIVE.count()");
     const closed=!d.querySelector('#decision').classList.contains('on');

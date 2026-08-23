@@ -143,6 +143,46 @@ const txt=()=>d.querySelector('#view').textContent;
     return (a<195 && b>195) ? `인정 ${a} / 담장밖 ${b} (담장 195)` : `!${a} / ${b}`;
   });
 
+  console.log('\n[투수 손 그림]');
+  T('마주 보는 우완의 던지는 팔은 화면 왼쪽이다', ()=>{
+    /* 시점이 포수 뒤다. 그래서 우완일 때 도형을 뒤집어 그린다.
+       [버그 이력] 이걸 반대로 해서 우완 열두 명이 좌완 모션이었다. */
+    const src=ev("String(mvPaint)");
+    return /!st\.pitLeft/.test(src) ? '우완이 flip' : '!아직 반대다';
+  });
+  T('우리 팀 좌완은 둘뿐이다', ()=>{
+    const L=ev("TBYID['wwzw'].pitchers.filter(p=>throwHandOf(p)==='L').map(p=>p.name).join(',')");
+    return L==='김상훈,이승민' ? L : `!${L}`;
+  });
+  T('상대 팀 투수는 손 정보가 없으면 우완으로 본다', ()=>{
+    const bad=ev(`(function(){var n=0;TEAMS.forEach(t=>{ if(t.id==='wwzw')return;
+      (t.pitchers||[]).forEach(p=>{ if(throwHandOf(p)!=='R')n++; })}); return n;})()`);
+    return bad===0 ? '전원 우완' : `!${bad}명이 좌완으로 잡힌다`;
+  });
+  T('구장 해상도가 올라갔다', ()=>{
+    const w=ev("MVW"), h=ev("MVH");
+    return (w===480&&h===270) ? `${w}x${h}` : `!${w}x${h}`;
+  });
+  T('투구 모션이 다섯 단계다', ()=>{
+    const src=ev("String(windup)");
+    const has=['wind','cock','rel','follow','idle'].filter(k=>src.indexOf("'"+k+"'")>=0);
+    return has.length===5 ? has.join('→') : `!${has.join(',')}`;
+  });
+  T('하늘이 날씨를 따라간다', ()=>{
+    const a=ev("(function(){ST.weather='clear';return mvSkyKind()})()");
+    const b=ev("(function(){ST.weather='rain';return mvSkyKind()})()");
+    const c=ev("(function(){ST.weather='hot';return mvSkyKind()})()");
+    ev("ST.weather='clear'");
+    return (a==='clear'&&b==='rain'&&c==='hot') ? `${a}/${b}/${c}` : `!${a}/${b}/${c}`;
+  });
+  T('전광판에 이닝별 점수가 들어간다', ()=>{
+    ev(`(function(){ LIVE.away.line=[1,0,2]; LIVE.home.line=[0,3]; LIVE.inning=3;
+      window.__m2=moundView({}); })()`);
+    const cells=ev("__m2.querySelectorAll('#mvboard .mvb-r i u').length");
+    const now=ev("__m2.querySelectorAll('#mvboard .mvb-r i u.now').length");
+    return cells>=21 && now>=1 ? `${cells}칸 · 현재 이닝 표시 ${now}개` : `!${cells}/${now}`;
+  });
+
   console.log(errs.length?`\n❌ ${errs.length}건`:'\n✅ 이상 없음');
   process.exit(errs.length?1:0);
 })();
