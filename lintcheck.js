@@ -35,7 +35,7 @@ const BUILTIN=new Set(['if','for','while','switch','catch','function','return','
  'Math','JSON','Object','Array','String','Number','Date','Map','Set','Promise','parseInt','parseFloat',
  'isNaN','setTimeout','setInterval','clearInterval','clearTimeout','console','document','window',
  'localStorage','navigator','location','fetch','btoa','atob','encodeURIComponent','decodeURIComponent',
- 'requestAnimationFrame','alert','confirm','Boolean','Symbol','RegExp','Error','TextEncoder','TextDecoder',
+ 'requestAnimationFrame','cancelAnimationFrame','performance','alert','confirm','Boolean','Symbol','RegExp','Error','TextEncoder','TextDecoder',
  'Uint8Array','Float32Array','AudioContext','webkitAudioContext','caches','performance','structuredClone',
  'Blob','FileReader','URL','undefined','Intl','WeakMap','Proxy','Reflect','BigInt',
  /* 정규식 패턴 안에만 등장하는 것들 */

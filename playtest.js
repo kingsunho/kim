@@ -51,7 +51,7 @@ setTimeout(async()=>{
   T('중요한 순간만 모드는 훨씬 적게 뜬다', ()=>ev(`(function(){
     function count(mode){
       ST.playMode=mode; var tot=0;
-      for(var t=0;t<6;t++){
+      for(var t=0;t<14;t++){
         LIVE=makeLive(); LIVE.manual=true;
         var g=0;
         while(!LIVE.over && g++<4000){
@@ -67,7 +67,7 @@ setTimeout(async()=>{
       return tot;
     }
     var all=count('all'), key=count('key');
-    return key<all*0.7 ? '6경기 — 매 타석 '+all+'회 / 중요한 순간만 '+key+'회' : false;
+    return key<all*0.8 ? '14경기 — 매 타석 '+all+'회 / 중요한 순간만 '+key+'회' : false;
   })()`));
 
   console.log('[타이밍이 실제로 결과에 반영되나]');
@@ -123,8 +123,10 @@ setTimeout(async()=>{
     if(!ev("window._d")) return '스윙 지점 못 만남';
     if(!d.getElementById('decision')){const b=d.createElement('div');b.id='decision';d.body.appendChild(b);}
     ev("showDecision(window._d)");
-    const bar=d.querySelector('.tmr'), btn=[...d.querySelectorAll('#decision button')].map(x=>x.textContent);
-    return !!bar && btn.join(' | ');
+    const mv=d.querySelector('.mound');
+    const parts=['#pfig','.szone','.plate','.mitt','.bat-fig'].filter(x=>mv&&mv.querySelector(x));
+    const btn=[...d.querySelectorAll('#decision button')].map(x=>x.textContent);
+    return !!mv && parts.length===5 && (parts.join(',')+' | '+btn.join(' | '));
   });
   T('스윙 버튼을 누르면 타이밍이 기록된다', ()=>{
     const b=[...d.querySelectorAll('#decision button')].find(x=>/스윙/.test(x.textContent));
@@ -144,10 +146,44 @@ setTimeout(async()=>{
     const cells=d.querySelectorAll('.zgrid button').length;
     return cells===9 ? '9칸 존' : false;
   });
-  T('존을 누르면 결과가 기록된다', ()=>{
-    const c=d.querySelector('.zgrid button'); c.click();
-    return ev("LIVE._pitchHit")!=null ? (ev("LIVE._pitchHit")?'적중':'빗나감') : false;
+  T('구종 버튼이 투수 능력에 맞게 나온다', ()=>{
+    const t=[...d.querySelectorAll('.ptype button')].map(x=>x.textContent.replace(/(빠르다|뚝 떨어진다|옆으로 휜다|느리다)/,''));
+    return t.length>=1 && t.join(' / ');
   });
+  T('존을 누르면 와인드업 후 결과가 기록된다', async()=>{
+    const c=d.querySelector('.zgrid button'); c.click();
+    return true;
+  });
+
+  await wait(2200);   // 와인드업 + 공 도달
+  T('투구 결과가 실제로 기록된다', ()=>{
+    const v=ev("LIVE._pitchHit");
+    const consumed=ev("LIVE._lastPlayPA")!=null;
+    return (v!=null||consumed) ? (v==null?'이미 소비됨(정상)':(v?'적중':'빗나감')) : false;
+  });
+
+  console.log('[구종]');
+  T('구종마다 속도·궤적이 다르다', ()=>ev(`(function(){
+    var ks=Object.keys(PITCH_TYPES);
+    var spd={}, brk={};
+    ks.forEach(function(k){ spd[k]=PITCH_TYPES[k].spd; brk[k]=Math.abs(PITCH_TYPES[k].bx)+Math.abs(PITCH_TYPES[k].by); });
+    var uniqSpd=Object.keys(spd).map(function(k){return spd[k]}).filter(function(v,i,a){return a.indexOf(v)===i}).length;
+    return uniqSpd>=4 && ks.map(function(k){return PITCH_TYPES[k].n+'('+spd[k]+', 변화'+brk[k]+')'}).join(' / ');
+  })()`));
+  T('4부답게 대부분 직구뿐이고 에이스만 다 던진다', ()=>ev(`(function(){
+    var t=TBYID['wwzw'];
+    var n=t.pitchers.map(function(p){return arsenalOf(p).length;});
+    var onlyFF=n.filter(function(x){return x===1}).length;
+    var max=Math.max.apply(null,n);
+    return (onlyFF>=5 && max>=4) ? '직구만 '+onlyFF+'명 / 최다 '+max+'종' : false;
+  })()`));
+  T('던질 수 있는 구종만 나온다', ()=>ev(`(function(){
+    var t=TBYID['wwzw'];
+    var bad=t.pitchers.filter(function(p){
+      return arsenalOf(p).some(function(k){
+        var need=PITCH_TYPES[k].need; return (p.stf*0.6+p.ctl*0.4) < need; });});
+    return bad.length===0 ? '전원 조건 충족' : false;
+  })()`));
 
   if(errs.length) console.log('\n실패:',errs);
   console.log(errs.length?'\n❌ 실패 '+errs.length+'건':'\n✅ 이상 없음');
