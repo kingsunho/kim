@@ -2215,6 +2215,47 @@ const TAIL_TRAIT = {
   '농구':   ['',' 몸은 풀려 있다'],
 };
 
+/* 사람별 말버릇
+   ---------------------------------------------------------
+   실제 단톡방 로그(00년생 방 13,761건 · 전체 방 1,353건)에서
+   말투 지표만 뽑아 옮겼다. 내용·개인정보는 안 가져왔고, 누가 어떤
+   추임새를 얼마나 쓰는지만 봤다. 성격 꼬리(TAIL_TRAIT)보다 우선한다.
+
+   로그에서 실제로 갈렸던 것:
+     · 같은 사람이 또래 방에선 반말로 쏟아내고 전체 방에선 존댓말로 조용해진다
+       (김선호 — 또래 방 5,752건 최다 발화 / 전체 방 존댓말 52%)
+     · 김한규는 웃음이 거의 없고 질문이 제일 많다 (ㅋ 2% · 물음표 9~16%)
+     · 김선우는 문장 넷 중 하나가 ㅋㅋㅋ 로 끝난다 (24%)
+     · 김상훈은 평균 7.2자로 제일 짧게 끊어 친다
+     · 이건은 인사·마무리 담당 (옙 / 수고요~ / 즐추~)                */
+const LEAD_PID = {
+  ksh:{ban:['','근데 ','아 ','오 ','ㅇㅋ '],            jon:['','넵 ','아 ','오 ']},
+  kig:{ban:['','아 ','와 ','아니 ','자 '],               jon:['','넵넵 ','아 ','오 ']},
+  khg:{ban:['','근데 ','오키 ','ㅇㅇ '],                 jon:['','근데 ','오키 ']},
+  kjh:{ban:['','ㄷㄷ ','ㅇㅈ ','ㄴㄴ '],                 jon:['','ㄷㄷ ','아 ']},
+  lsm:{ban:['','와 ','이야 ','개 '],                     jon:['','와 ','이야 ']},
+  ksn:{ban:['','ㅇㅎ ','후 '],                          jon:['','ㅇㅎ ']},
+  ksw:{ban:['','오 ','ㅋㅋㅋ '],                         jon:['','오 ']},
+  lg :{ban:['','옙 ','ㅇㅋ '],                           jon:['','옙 ','넵 ']},
+  swm:{ban:['','그러게 ','예 '],                         jon:['','네 ','예 ','그러게 ']},
+  yjh:{ban:['','ㄱㄱ ','ㅇㅋㅇㅋ '],                      jon:['','넹~ ','ㄱㄱ ']},
+};
+const TAIL_PID = {
+  ksh:{ban:['',''," ㅇㅋ",' ㄹㅇ','??',' 근데'],          jon:['','',' 넵',' 감사합니다!','!!']},
+  kig:{ban:['','',' ㅇㅇ',' 와',' 아니'],                jon:['','',' 넵넵',' 좋습니다']},
+  khg:{ban:['','','',' ㅇㅇ','?',' 오키'],               jon:['','','?',' 오키',' ㅈㅅ']},
+  kjh:{ban:['','',' ㄷㄷ',' ㅇㅈ',' ㅋㅋ'],              jon:['','',' ㄷㄷ',' ㅇㅈ']},
+  lsm:{ban:['','',' 개꿀',' ㅋㅋㅋ',' 오셈'],            jon:['','',' 화이팅',' ㅋㅋ']},
+  ksn:{ban:['','','',' ㅇㅇ',' 후'],                    jon:['','','',' ㅇㅎ']},
+  ksw:{ban:[' ㅋㅋㅋㅋ',' ㅋㅋㅋ',' ㄹㅇㅋㅋ','',' ㅋㅋ'],jon:[' ㅋㅋㅋ',' ㅋㅋ','']},
+  lg :{ban:['',' ㅋㅋㅋ',' 수고~',' 즐추~'],             jon:['',' 수고요~',' ㅋㅋㅋ',' 옙']},
+  swm:{ban:['',' 그러게',' 넴'],                         jon:['',' 넴',' ^^굳',' 그러게요']},
+  yjh:{ban:['',' 갓잇',' ㅇㅋㅇㅋ',' ㅋㅋ'],             jon:['',' 넹~굳',' ㅋㅋ']},
+};
+/* 사람마다 추임새를 얼마나 자주 붙이냐도 다르다 (로그의 마커 비율) */
+const TIC_RATE = { ksw:0.72, lsm:0.58, kjh:0.55, ksh:0.5, lg:0.5, kig:0.45,
+                   yjh:0.5, swm:0.4, ksn:0.35, khg:0.3, ujh:0.15 };
+
 /* 한 줄을 조합해서 만든다.
    pid=화자, to=청자(말투 판정), pool=[반말배열, 존댓말배열]            */
 function line(pid, to, banPool, jonPool, rng){
@@ -2226,11 +2267,17 @@ function line(pid, to, banPool, jonPool, rng){
   if(body.charAt(0)==='(') return body;
   const m=META[pid];
   let tailPool = jon?TAIL_JON:TAIL_BAN;
-  if(m&&m.traits){
+  let leadPool = jon?LEAD_JON:LEAD_BAN;
+  /* 사람별 말버릇이 먼저다. 없으면 성격 꼬리, 그것도 없으면 공용 */
+  const lp=LEAD_PID[pid], tp=TAIL_PID[pid];
+  const rate=(TIC_RATE[pid]!=null?TIC_RATE[pid]:0.45);
+  if(tp && r()<rate) tailPool = jon?tp.jon:tp.ban;
+  else if(m&&m.traits){
     const t=m.traits.find(x=>TAIL_TRAIT[x]);
     if(t && r()<0.45) tailPool = TAIL_TRAIT[t];
   }
-  const lead = r()<0.55 ? pickOne(jon?LEAD_JON:LEAD_BAN, r) : '';
+  if(lp && r()<rate) leadPool = jon?lp.jon:lp.ban;
+  const lead = r()<0.55 ? pickOne(leadPool, r) : '';
   const tail = r()<0.55 ? pickOne(tailPool, r) : '';
   return (lead+body+tail).trim();
 }
@@ -2954,7 +3001,63 @@ function applyFriendship(ST){
    정작 마음에 안 드는 일이 또 생기는 날 한꺼번에 터진다.
    그래서 축구 이벤트는 불씨만 남기고, 터지는 판정은 경기가 끝난 뒤에 한다.       */
 const SPARK_LABEL={축구:'축구',벤치:'벤치',하위타순:'하위 타순',대패:'대패',회비:'회비',
-  이탈:'동료 이탈',분위기:'팀 분위기'};
+  이탈:'동료 이탈',분위기:'팀 분위기',등판:'등판 기회'};
+/* 등판 = 성장 + 만족, 못 던지면 서운함
+   ---------------------------------------------------------
+   [제보] "투수 꿈꾸는 애들이 많잖아. 기회 안 주면 언해피 작전으로 가는 게
+           나을 듯. 뭐 일단 던지기만 하면 행복한 거지"
+   그래서 체력 페널티 대신 이렇게 간다.
+     · 던진 아웃카운트만큼 구위·제구가 조금씩 는다 (많이 던질수록 더)
+     · 던진 사람은 사기가 오르고 쌓인 불씨가 하나 꺼진다
+     · 로테이션에 넣어놨는데 계속 안 쓰면 '등판 기회' 불씨가 쌓인다      */
+function applyPitchReward(res, gRot){
+  const us=TBYID['wwzw'];
+  if(!ST.pitchWait) ST.pitchWait={};
+  const threw={};
+  (gRot||[]).forEach(pid=>{
+    const l=res.pbox&&res.pbox[pid];
+    if(!l||!l.outs) return;
+    threw[pid]=l.outs;
+  });
+
+  Object.keys(threw).forEach(pid=>{
+    const p=us.players.find(x=>x.id===pid);
+    const pp=us.pitchers.find(x=>x.id===pid);
+    if(!p||!p.pitch||!pp) return;
+    // 던진 이닝만큼 는다. 잘 던졌으면 조금 더.
+    const ip=threw[pid]/3;
+    const l=res.pbox[pid];
+    const good=(l.er*7)/(Math.max(1,threw[pid])/3) < 7;
+    let g=Math.min(1.2, ip*0.18)*(good?1.25:1);
+    const room=Math.max(0, effPA(pid)-effCA(pid));
+    if(room<=0) g*=0.25;                       // 잠재치에 닿았으면 거의 안 는다
+    p.pitch.ctl=Math.min(80,p.pitch.ctl+g);
+    p.pitch.stf=Math.min(80,p.pitch.stf+g*0.6);
+    pp.ctl=Math.round(p.pitch.ctl); pp.stf=Math.round(p.pitch.stf);
+    ST.ca[pid]=calcCA(p);
+    // 던지기만 하면 행복하다
+    ST.morale[pid]=Math.min(100,(ST.morale[pid]||70)+ (ip>=3?6:4));
+    const sp=ST.spark&&ST.spark[pid];
+    if(sp&&sp.n>0){ sp.n=Math.max(0,sp.n-1);
+      sp.why=(sp.why||[]).filter(w=>w!=='등판'); }
+    ST.pitchWait[pid]=0;
+  });
+
+  /* 로테이션에 있는데 못 던진 사람 — 몇 경기째인지 센다 */
+  (ST.rotation||[]).forEach(pid=>{
+    if(threw[pid]) return;
+    if(!isAvailable(pid)) return;              // 안 나온 날은 안 센다
+    const p=us.players.find(x=>x.id===pid);
+    if(!p||!p.pitch) return;
+    ST.pitchWait[pid]=(ST.pitchWait[pid]||0)+1;
+    // 3경기 연속 대기하면 슬슬 서운해진다
+    if(ST.pitchWait[pid]>=3 && ST.pitchWait[pid]%3===0){
+      addSpark(ST,pid,'등판',1);
+      ST.morale[pid]=Math.max(10,(ST.morale[pid]||70)-4);
+    }
+  });
+}
+
 function addSpark(ST,pid,why,amt){
   if(!ST.spark)ST.spark={};
   const sp=ST.spark[pid]||(ST.spark[pid]={n:0,why:[]});
@@ -5629,8 +5732,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.10.0';
-const APP_VERSION_NOTE = '야구장 그림 라인업 · 포지션별 뎁스차트';
+const APP_VERSION = '2.11.0';
+const APP_VERSION_NOTE = '던지면 늘고, 기회 없으면 서운하다 · 사람별 말버릇';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -5651,6 +5754,13 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.11.0', t:'투수는 던져야 늘고, 단톡방은 사람마다 말투가 다르다', items:[
+    '주 1회 하는 리그라 한 주 쉬면 체력이 거의 회복된다. 5이닝 넘게 던진 날만 다음 주에 티가 난다',
+    '던진 이닝만큼 구위·제구가 는다. 잘 던졌으면 조금 더',
+    '던지기만 하면 사기가 오르고 쌓인 불만 불씨도 하나 꺼진다',
+    '로테이션에 넣어놓고 계속 안 쓰면 「등판 기회」로 불씨가 쌓인다 — 던지고 싶은 애들이다',
+    '단톡방 말버릇을 사람마다 다르게 넣었다. 김선우는 ㅋㅋㅋ, 김한규는 질문, 이건은 인사, 김상훈은 짧게',
+  ]},
   {v:'2.10.0', t:'야구장 그림으로 라인업 짜고, 뎁스차트로 뒷사람까지 본다', items:[
     '라인업 화면에 명단 · 야구장 · 뎁스 세 탭이 생겼다',
     '야구장 그림에서 각 수비 위치를 누르면 그 자리 선수를 바로 바꿀 수 있다',
@@ -12778,11 +12888,17 @@ function commitGame(res,usSide,thSide,uSlots){
     }
   });
 
-  TBYID['wwzw'].pitchers.forEach(p=>{ST.rest[p.id]=Math.min(4,(ST.rest[p.id]||3)+1);});
+  /* 사회인야구는 주 1회다. 한 주 쉬면 웬만하면 다 회복된다.
+     [제보] "투수 체력이 그렇게 깎이진 않음. 체력 구조보단 자주 던지게 하면
+             실력 늘고, 투수 꿈꾸는 애들 기회 안 주면 언해피로 가는 게 낫다.
+             뭐 일단 던지기만 하면 행복한 거지"                            */
+  TBYID['wwzw'].pitchers.forEach(p=>{ST.rest[p.id]=Math.min(4,(ST.rest[p.id]||3)+2);});
   gRot.forEach(pid=>{
     const l=res.pbox[pid];
-    if(l&&l.outs>=6)ST.rest[pid]=0; else if(l&&l.outs>0)ST.rest[pid]=1;
+    if(l&&l.outs>=15) ST.rest[pid]=1;        // 5이닝 넘게 던진 날만 다음 주에 티가 난다
+    else if(l&&l.outs>=9) ST.rest[pid]=2;
   });
+  applyPitchReward(res, gRot);
 
   const u=ST.stand['wwzw'], t=ST.stand[sch.opp];
   u.g++;t.g++;u.rf+=usSide.runs;u.ra+=thSide.runs;t.rf+=thSide.runs;t.ra+=usSide.runs;
@@ -14765,6 +14881,7 @@ function normalizeState(){
   if(!ST.tactics)ST.tactics={bat:'normal',run:'normal',hook:'normal'};
   if(ST.budget==null)ST.budget=120;
   if(ST.useDH==null)ST.useDH=true;
+  if(!ST.pitchWait)ST.pitchWait={};
   if(!ST.luView)ST.luView='list';
   if(!ST.depMode)ST.depMode='now';
   if(!ST.park)ST.park='benamul';
