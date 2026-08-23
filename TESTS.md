@@ -71,12 +71,15 @@ node soaktest.js
 | `begtest` | 인원 부족 대응 — 사정하기 확률·순서 · 라인업 보존 |
 | `itptest` | 그라운드 홈런 — 주력 조건 · 리그 비율 |
 | `postest` | 라인업 수비 자리 무결성 — 투수 두 명 · 빈 자리 · 마운드 교환 |
+| `hoftest` | 전시장 통산 타격·투구 · 명예의 전당(단일시즌 최고·헌액자·연표) |
 
 ## 가끔 실패하는 것
 
 확률 기반 단정문이 들어 있어 간헐적으로 실패한다. **3회 재실행해서 판단한다.**
 
-`advtest` `traintest2` `wltest` `recruittest` `fintest` `awardtest` `mgrtest`
+`advtest` `traintest2` `wltest` `recruittest` `fintest` `awardtest` `mgrtest` `dectest2`
+
+`dectest2` 의 '수비 판단창이 여러 번' 은 판단 발생이 확률이라 절반쯤 걸린다.
 
 ## 구버전 테스트
 

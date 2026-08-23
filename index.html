@@ -1076,6 +1076,26 @@ table.hl-tbl td.hl-o{color:#c98a80}
 .fr-v{font-size:13px;margin-top:2px}
 .fr-d{font-size:10px;color:var(--dim);margin-top:2px}
 .fr-n{font-size:10.5px;color:#a9b4c2;margin-top:3px;line-height:1.45}
+.subtabs.sub6{gap:4px}
+.sub6 .subtab{padding:9px 3px;font-size:11px;letter-spacing:-.3px}
+.slash{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px;padding:8px 10px 10px}
+.slash b{font-size:19px;color:var(--gold);font-variant-numeric:tabular-nums}
+.slash i{color:var(--dm);font-style:normal;font-size:15px}
+.slash span{flex:1 0 100%;font-size:10.5px;color:var(--dm);margin-top:2px}
+.slash span b{font-size:11.5px;color:var(--tx)}
+.hof-row{display:flex;gap:10px;align-items:center;padding:9px 4px;border-top:1px solid var(--line)}
+.hof-row.me{background:rgba(232,118,44,.07);border-radius:9px}
+.hof-a{width:44px;height:44px;border-radius:50%;overflow:hidden;flex:0 0 44px;background:var(--panel2)}
+.hof-a img,.hof-a svg{width:100%;height:100%;object-fit:cover;display:block}
+.hof-b{flex:1;min-width:0}
+.hof-n{font-weight:800;font-size:13.5px;color:var(--tx)}
+.hof-n i{font-style:normal;font-size:10.5px;color:var(--dm);margin-left:4px}
+.hof-t{font-size:11px;color:var(--gold);margin-top:2px}
+.hof-s{font-size:10.5px;color:var(--dm);margin-top:2px}
+.hof-sub{font-size:10.5px;font-weight:800;color:var(--dm);margin:10px 0 3px;
+  letter-spacing:.4px;text-transform:none}
+.hof-live{font-style:normal;font-size:10px;color:var(--gold);margin-left:5px}
+td.dimc{color:var(--dm);text-align:left}
 .tc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
 .tc{background:var(--panel2);border-radius:9px;padding:10px 4px;text-align:center}
 .tc b{display:block;font-size:17px;font-weight:800}
@@ -5993,8 +6013,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.17.1';
-const APP_VERSION_NOTE = '라인업에 투수가 두 명이던 버그';
+const APP_VERSION = '2.18.0';
+const APP_VERSION_NOTE = '명예의 전당 · 전시장 투수기록';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6015,6 +6035,16 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.18.0', t:'명예의 전당 · 전시장 투수기록', items:[
+    '명예의 전당을 만들었다. 기록실 맨 오른쪽 탭이다',
+    '구단 단일 시즌 최고 기록 12부문 — 누가 어느 해에 세웠는지 한 표에 모았다',
+    '헌액자 — 통산 100경기·100안타·20홈런·20승·150탈삼진 같은 선을 넘으면 들어간다',
+    '시즌 연표 — 그 해 팀 1위, 시즌 시상, 그 해 진기록을 해마다 묶어서 본다',
+    '전시장에 투수 기록이 아예 없었다. 통산 투구(ERA·WHIP·승패·탈삼진)를 넣었다',
+    '전시장 타격도 여섯 칸뿐이던 걸 슬래시라인 + 2루타·3루타·볼넷·삼진·득점까지 넓혔다',
+    '전시장에 시즌별 한 줄 기록을 넣었다. 어느 해에 뭘 했는지가 보인다',
+    '팀을 나간 사람이 기록에서 이름 대신 id 로 찍히던 것도 고쳤다',
+  ]},
   {v:'2.17.1', t:'라인업에 투수가 두 명이던 버그', items:[
     '야구장 그림에서 마운드와 야수 자리를 맞바꾸면 타순에 투수가 두 명 생기고 한 자리가 비었다. 그대로 라인업 발표까지 나갔다',
     '이제 마운드가 걸린 교환은 \'오늘 선발을 저 사람으로\' 로 읽는다. 로테이션 1번도 같이 옮긴다',
@@ -6514,6 +6544,8 @@ function applyFormBuff(ST){
    경기당 1이닝을 규정이닝으로 쓰고 있었는데 시상만 3이닝으로 남아 있었다.
    기준을 하나로 맞춘다. 채운 사람이 없으면 그 상은 안 준다.          */
 function qualOuts(games){ return Math.max(9, Math.round((games||0)*3)); }
+/* 규정타석 — 경기당 2타석. 리그 타이틀·명예의 전당이 같은 기준을 쓴다. */
+function qualPA(games){ return Math.max(6, Math.round((games||0)*2)); }
 
 const MINI_LABELS={mvp:'구간 MVP',bat:'타자상',avg:'타율상',pit:'투수상',
   mgr:'감독상',team:'팀 공헌상',sb:'주루상'};
@@ -8831,7 +8863,16 @@ function isAvailable(pid){
   if(ST.absent && ST.absent[pid]) return false;
   return true;
 }
-function nameOf(pid){const p=TBYID['wwzw'].players.find(x=>x.id===pid);return p?p.name:pid;}
+/* [버그 이력] 팀을 나간 사람은 지금 로스터에 없어서 이름 대신 id('kjh')가
+   화면에 그대로 찍혔다. 기록은 남는데 이름이 사라지면 안 된다.
+   원년 멤버는 WWZW 상수에, 나중에 들어온 사람은 ST.names 에 남아 있다.  */
+function nameOf(pid){
+  const p=TBYID['wwzw'].players.find(x=>x.id===pid);
+  if(p) return p.name;
+  const w=WWZW.find(x=>x.id===pid);
+  if(w) return w.name;
+  return (typeof ST!=='undefined'&&ST&&ST.names&&ST.names[pid])||pid;
+}
 /* 몸값 변동 화살표 — 지난 경기 대비 */
 function valDelta(pid, now){
   const prev=(ST.valuePrev&&ST.valuePrev[pid]);
@@ -10499,6 +10540,28 @@ function trainAdvice(p){
 
 const DRINK_LABEL=['안 마신다','가끔 마신다','자주 마신다','끝까지 남는다'];
 
+/* 시즌 목록 — 지난 시즌(seasonLog)에 진행 중인 올해를 얹어서 한 줄로 만든다.
+   전시장 '시즌별' 과 명예의 전당이 같은 걸 본다.                        */
+function hofSeasons(){
+  const out=(ST.seasonLog||[]).map(x=>({season:x.season, year:x.year, rec:x.rec||{},
+    rank:x.rank||null, place:x.place||null, awards:x.awards||[],
+    bat:x.bat||{}, pit:x.pit||{}, live:false}));
+  const cs=ST.seasonNo||1;
+  if(!out.some(x=>x.season===cs)){
+    const cur={season:cs, year:ST.year||2026, live:true,
+      rec:(ST.stand&&ST.stand['wwzw'])||{w:0,l:0,t:0,g:0,rf:0,ra:0},
+      rank:(typeof leagueRank==='function')?leagueRank('wwzw'):null,
+      place:(ST.playoff&&ST.playoff.place)||null,
+      awards:(ST.hall||[]).filter(h=>h.season===cs), bat:{}, pit:{}};
+    TBYID['wwzw'].players.forEach(p=>{
+      const b=ST.bat&&ST.bat[p.id]; if(b&&(b.pa||b.g))cur.bat[p.id]={...b,name:p.name};});
+    TBYID['wwzw'].pitchers.forEach(p=>{
+      const q=ST.pit&&ST.pit[p.id]; if(q&&(q.outs||q.g))cur.pit[p.id]={...q,name:p.name};});
+    out.push(cur);
+  }
+  return out.sort((a,b)=>b.season-a.season);
+}
+
 /* ================= 전시장 =================
    내가 고른 선수가 받은 상을 트로피로 늘어놓는다. 스크린샷 찍으라고 만든 화면이다. */
 const TROPHY_ICON={king:'👑',mvp:'🏆',bat:'🏏',avg:'🎯',pit:'⚾',mgr:'📋',team:'🤝',sb:'💨',
@@ -10591,12 +10654,46 @@ function renderHall(){
     add(otSec('팀 진기록', ti));
   }
 
-  /* 통산 */
-  const cr=ST.career&&ST.career[who];
-  if(cr){
-    add(otSec('통산 기록',
-      `<div class="ot-tbl"><table><thead><tr><th>G</th><th>PA</th><th>H</th><th>HR</th><th>RBI</th><th>SB</th></tr></thead>
-       <tbody><tr><td>${cr.g||0}</td><td>${cr.pa||0}</td><td>${cr.h||0}</td><td>${cr.hr||0}</td><td>${cr.rbi||0}</td><td>${cr.sb||0}</td></tr></tbody></table></div>`));
+  /* 통산 — [제보] "전시장은 투수기록이 안 나오네 타자기록도 디테일하지 않고"
+     예전엔 G/PA/H/HR/RBI/SB 여섯 칸이 전부였고 투구는 아예 없었다.       */
+  const cr=(ST.career&&ST.career[who])||null;
+  if(cr&&cr.g){
+    const tb=cr.h+cr.d2+cr.d3*2+cr.hr*3;
+    const a1=cr.ab?cr.h/cr.ab:0, o1=cr.pa?(cr.h+cr.bb+(cr.hbp||0))/cr.pa:0, s1=cr.ab?tb/cr.ab:0;
+    add(otSec('통산 타격',
+      `<div class="slash"><b>${fmt3(a1)}</b><i>/</i><b>${fmt3(o1)}</b><i>/</i><b>${fmt3(s1)}</b>
+        <span>타율 · 출루 · 장타 &nbsp;·&nbsp; OPS <b>${fmt3(o1+s1)}</b></span></div>
+      <div class="ot-tbl"><table>
+        <thead><tr><th>G</th><th>타석</th><th>타수</th><th>안타</th><th>2B</th><th>3B</th><th>HR</th><th>루타</th><th>타점</th><th>득점</th><th>볼넷</th><th>삼진</th><th>도루</th></tr></thead>
+        <tbody><tr><td>${cr.g}</td><td>${cr.pa}</td><td>${cr.ab}</td><td>${cr.h}</td><td>${cr.d2}</td><td>${cr.d3}</td><td>${cr.hr}</td><td>${tb}</td><td>${cr.rbi}</td><td>${cr.r}</td><td>${cr.bb}</td><td>${cr.k}</td><td>${cr.sb}</td></tr></tbody>
+      </table></div>`, `${cr.g}경기`));
+  }
+  if(cr&&cr.pg){
+    const ipv=(cr.pouts||0)/3;
+    const e1=ipv?((cr.per*7)/ipv):0, wh=ipv?((cr.ph+cr.pbb)/ipv):0, k7=ipv?(cr.pk*7/ipv):0;
+    add(otSec('통산 투구',
+      `<div class="slash"><b>${e1.toFixed(2)}</b><i>·</i><b>${wh.toFixed(2)}</b><i>·</i><b>${cr.pw}승 ${cr.pl}패</b>
+        <span>ERA · WHIP · 승패 &nbsp;·&nbsp; 7이닝당 탈삼진 <b>${k7.toFixed(1)}</b></span></div>
+      <div class="ot-tbl"><table>
+        <thead><tr><th>등판</th><th>승</th><th>패</th><th>이닝</th><th>피안타</th><th>자책</th><th>볼넷</th><th>탈삼진</th></tr></thead>
+        <tbody><tr><td>${cr.pg}</td><td>${cr.pw}</td><td>${cr.pl}</td><td>${ipStr({outs:cr.pouts||0})}</td><td>${cr.ph}</td><td>${cr.per}</td><td>${cr.pbb}</td><td>${cr.pk}</td></tr></tbody>
+      </table></div>`, `${cr.pg}등판`));
+  }
+  if(!cr||(!cr.g&&!cr.pg))
+    add(otSec('통산 기록','<p class="ot-note">아직 경기 기록이 없다. 한 경기라도 뛰면 여기 쌓인다.</p>'));
+
+  /* 시즌별 — 어느 해에 뭘 했는지 한 줄씩. 통산만 쌓으면 이게 사라진다. */
+  const ys=hofSeasons().filter(y=>y.bat[who]||y.pit[who]);
+  if(ys.length){
+    let yi='<div class="ot-tbl"><table><thead><tr><th>연도</th><th>G</th><th>타율</th><th>안타</th><th>HR</th><th>타점</th><th>도루</th><th>이닝</th><th>ERA</th></tr></thead><tbody>';
+    ys.forEach(y=>{
+      const b=y.bat[who], sp=y.pit[who];
+      yi+=`<tr><td>${y.year}${y.live?' *':''}</td><td>${b?b.g:'—'}</td><td>${b&&b.ab?fmt3(avg(b)):'—'}</td>`+
+        `<td>${b?b.h:'—'}</td><td>${b?b.hr:'—'}</td><td>${b?b.rbi:'—'}</td><td>${b?b.sb:'—'}</td>`+
+        `<td>${sp&&sp.outs?ipStr(sp):'—'}</td><td>${sp&&sp.outs?era(sp).toFixed(2):'—'}</td></tr>`;
+    });
+    yi+='</tbody></table></div><p class="ot-note">* 는 진행 중인 시즌</p>';
+    add(otSec('시즌별', yi, `${ys.length}시즌`));
   }
   grid.addEventListener('click', ev=>{
     const t=ev.target.closest('.tro[data-hi]'); if(!t) return;
@@ -15185,12 +15282,196 @@ let carYear=null;        // 연도별에서 보고 있는 시즌
 function renderRecords(){
   const c=$('#view'); c.innerHTML='';
   const tabs=el('div','subtabs');
-  [['real','실제 기록'],['feat','진기록'],['mine','내 기록'],['career','통산'],['team','구단']].forEach(([k,n])=>{
+  tabs.classList.add('sub6');
+  [['real','실제'],['feat','진기록'],['mine','내 기록'],['career','통산'],['team','구단'],
+   ['hof','명예의전당']].forEach(([k,n])=>{
     const b=el('button','subtab'+(recTab===k?' on':''),n);
     b.onclick=()=>{recTab=k;renderRecords();}; tabs.appendChild(b);
   });
   c.appendChild(tabs);
   const us=TBYID['wwzw'];
+
+  /* ── 명예의 전당 ──
+     [요청] "어떤 시즌에 어떤 기록들과 어떤 선수들이 기록을 세웠는지"
+     통산 합계로는 안 보이는 것 — 한 해에 몰아친 기록과 그 해의 주인공. */
+  if(recTab==='hof'){
+    const seasons=hofSeasons();
+    const done=seasons.filter(y=>!y.live).length;
+
+    const head=el('div','card');
+    head.innerHTML=`<div class="card-h">🏛 명예의 전당</div>
+      <p class="muted">구단 역사에 남은 한 시즌들이다. 통산 합계로는 안 보이는,
+      <b>그 해에 몰아친 기록</b>과 그걸 세운 사람을 모아둔다.<br>
+      끝난 시즌 <b>${done}</b>개 · 진행 중 1개</p>`;
+    c.appendChild(head);
+
+    /* ---- 단일 시즌 최고 기록 ---- */
+    const bestOf=(pick,better)=>{
+      let top=null;
+      seasons.forEach(y=>{
+        Object.keys(y.bat).concat(Object.keys(y.pit)).forEach(id=>{
+          const v=pick(y,id); if(v==null)return;
+          if(!top||better(v,top.v))top={v,id,year:y.year,season:y.season,live:y.live};
+        });
+      });
+      return top;
+    };
+    const hi=(f)=>bestOf(f,(a,b)=>a>b), lo=(f)=>bestOf(f,(a,b)=>a<b);
+    const B=(y,id)=>y.bat[id], P=(y,id)=>y.pit[id];
+    const gOf=y=>(y.rec&&y.rec.g)||0;
+    const SEASON_MARKS=[
+      {n:'한 시즌 최다 안타', t:hi((y,i)=>B(y,i)?B(y,i).h:null), u:'안타'},
+      {n:'한 시즌 최다 홈런', t:hi((y,i)=>B(y,i)?B(y,i).hr:null), u:'홈런'},
+      {n:'한 시즌 최다 타점', t:hi((y,i)=>B(y,i)?B(y,i).rbi:null), u:'타점'},
+      {n:'한 시즌 최다 득점', t:hi((y,i)=>B(y,i)?B(y,i).r:null), u:'득점'},
+      {n:'한 시즌 최다 도루', t:hi((y,i)=>B(y,i)?B(y,i).sb:null), u:'도루'},
+      {n:'한 시즌 최다 2루타',t:hi((y,i)=>B(y,i)?B(y,i).d2:null), u:'2루타'},
+      {n:'한 시즌 최고 타율', t:hi((y,i)=>{const b=B(y,i);
+        return b&&b.pa>=qualPA(gOf(y))&&b.ab?avg(b):null;}), f:v=>fmt3(v), note:'규정타석'},
+      {n:'한 시즌 최고 OPS',  t:hi((y,i)=>{const b=B(y,i);
+        return b&&b.pa>=qualPA(gOf(y))?ops(b):null;}), f:v=>fmt3(v), note:'규정타석'},
+      {n:'한 시즌 최다 승',   t:hi((y,i)=>P(y,i)?(P(y,i).w||0):null), u:'승'},
+      {n:'한 시즌 최다 탈삼진',t:hi((y,i)=>P(y,i)?P(y,i).k:null), u:'탈삼진'},
+      {n:'한 시즌 최다 이닝', t:hi((y,i)=>P(y,i)?P(y,i).outs:null),
+        f:v=>`${Math.floor(v/3)}${v%3?'.'+(v%3):''}이닝`},
+      {n:'한 시즌 최저 ERA',  t:lo((y,i)=>{const q=P(y,i);
+        return q&&q.outs>=qualOuts(gOf(y))?era(q):null;}), f:v=>v.toFixed(2), note:'규정이닝'},
+    ];
+    const mc=el('div','card');
+    mc.appendChild(el('div','card-h','구단 단일 시즌 최고 기록'));
+    const mt=el('table','box');
+    mt.innerHTML='<tr><th>부문</th><th>선수</th><th>기록</th><th>연도</th></tr>';
+    let anyMark=false;
+    SEASON_MARKS.forEach(m=>{
+      const tr=el('tr','');
+      if(!m.t||!m.t.v){
+        tr.innerHTML=`<td class="nm">${m.n}</td><td colspan="3" class="dimc">아직 없다${m.note?` (${m.note} 미달)`:''}</td>`;
+      } else {
+        anyMark=true;
+        if(isMe(m.t.id))tr.className='me';
+        tr.innerHTML=`<td class="nm">${m.n}</td><td class="nm">${nmLink(m.t.id,nameOf(m.t.id))}</td>`+
+          `<td><b>${m.f?m.f(m.t.v):m.t.v}</b>${m.u?` ${m.u}`:''}</td>`+
+          `<td>${m.t.year}${m.t.live?'*':''}</td>`;
+      }
+      mt.appendChild(tr);
+    });
+    mc.appendChild(mt);
+    mc.appendChild(el('p','muted',anyMark
+      ?'* 는 진행 중인 시즌. 시즌이 끝나기 전에도 갱신되면 바로 올라온다.'
+      :'아직 한 경기도 안 했다.'));
+    c.appendChild(mc);
+
+    /* ---- 헌액자 ---- */
+    const HOF_REQ=[
+      {n:'통산 100경기', f:c2=>c2.g,     need:100, u:'경기'},
+      {n:'통산 100안타', f:c2=>c2.h,     need:100, u:'안타'},
+      {n:'통산 20홈런',  f:c2=>c2.hr,    need:20,  u:'홈런'},
+      {n:'통산 100타점', f:c2=>c2.rbi,   need:100, u:'타점'},
+      {n:'통산 50도루',  f:c2=>c2.sb,    need:50,  u:'도루'},
+      {n:'통산 20승',    f:c2=>c2.pw,    need:20,  u:'승'},
+      {n:'통산 150탈삼진',f:c2=>c2.pk,   need:150, u:'탈삼진'},
+      {n:'통산 100이닝', f:c2=>Math.floor((c2.pouts||0)/3), need:100, u:'이닝'},
+    ];
+    const titleCnt=id=>(ST.hall||[]).filter(h=>h.pid===id&&h.scope!=='구간').length;
+    const hc2=el('div','card');
+    hc2.appendChild(el('div','card-h','헌액자'));
+    hc2.appendChild(el('p','muted',
+      '아래 중 하나만 넘기면 헌액이다 — '+HOF_REQ.map(x=>x.n).join(' · ')+' · 시즌 개인 타이틀 3회.'));
+    const inducted=[];
+    us.players.forEach(p=>{
+      const c2=(ST.career&&ST.career[p.id])||blankCareer();
+      const got=HOF_REQ.filter(r=>r.f(c2)>=r.need).map(r=>`${r.n}`);
+      const tt=titleCnt(p.id);
+      if(tt>=3)got.push(`개인 타이틀 ${tt}회`);
+      if(got.length)inducted.push({p,got,c2});
+    });
+    if(inducted.length){
+      inducted.forEach(({p,got,c2})=>{
+        const r=el('div','hof-row'+(isMe(p.id)?' me':''));
+        r.innerHTML=`<div class="hof-a">${avatarHTML(p.id)}</div>
+          <div class="hof-b"><div class="hof-n">${nmLink(p.id,p.name)}
+            ${jerseyNo(p.id)!=null?`<i>#${jerseyNo(p.id)}</i>`:''}</div>
+            <div class="hof-t">${got.join(' · ')}</div>
+            <div class="hof-s">${c2.g}경기 ${c2.h}안타 ${c2.hr}홈런${c2.pg?` · ${c2.pw}승 ${c2.pk}탈삼진`:''}</div></div>`;
+        hc2.appendChild(r);
+      });
+    } else {
+      /* 아무도 못 들어갔으면 제일 가까운 사람이 누구인지라도 보여준다.
+         "언제쯤 들어가나"를 알 수 있어야 목표가 된다. */
+      let near=null;
+      us.players.forEach(p=>{
+        const c2=(ST.career&&ST.career[p.id])||blankCareer();
+        HOF_REQ.forEach(r=>{
+          const pct=r.f(c2)/r.need;
+          if(pct>0&&(!near||pct>near.pct))near={p,r,pct,have:r.f(c2)};
+        });
+      });
+      hc2.appendChild(el('p','muted',near
+        ? `아직 아무도 없다. 제일 가까운 건 ${nameOf(near.p.id)} — ${near.r.n} 중 ${near.have}${near.r.u} (${Math.round(near.pct*100)}%).`
+        : '아직 아무도 없다. 시즌을 몇 번 넘겨야 나온다.'));
+    }
+    c.appendChild(hc2);
+
+    /* ---- 시즌 연표 ---- */
+    seasons.forEach(y=>{
+      const card=el('div','card');
+      const played=(y.rec&&y.rec.g)||0;
+      const rk=(played&&y.rank)?`리그 ${y.rank}위`:'';    // 한 경기도 안 했으면 순위는 의미가 없다
+      card.innerHTML=`<div class="card-h">${y.year} · ${y.season}년차${y.live?' <i class="hof-live">진행 중</i>':''}</div>
+        <p class="muted">${played
+          ? `${(y.rec.w||0)}승 ${(y.rec.l||0)}패${y.rec.t?` ${y.rec.t}무`:''}${rk?` · ${rk}`:''}${y.place?` · 플레이오프 ${y.place}`:''}`
+          : '아직 개막 전'}</p>`;
+      // 그 해 팀 리더
+      const bIds=Object.keys(y.bat), pIds=Object.keys(y.pit);
+      const lead=(ids,get,fmt,label,low)=>{
+        let t=null;
+        ids.forEach(id=>{const v=get(id); if(v==null)return;
+          if(!t||(low?v<t.v:v>t.v))t={v,id};});
+        return t?`<div class="ot-r"><span>${label}</span><b>${nmLink(t.id,nameOf(t.id))} ${fmt(t.v)}</b></div>`:'';
+      };
+      const g=gOf(y);
+      let L='';
+      L+=lead(bIds,id=>{const b=y.bat[id];return b.pa>=qualPA(g)&&b.ab?avg(b):null;},v=>fmt3(v),'타율');
+      L+=lead(bIds,id=>y.bat[id].h,v=>`${v}안타`,'최다 안타');
+      L+=lead(bIds,id=>y.bat[id].hr||null,v=>`${v}홈런`,'홈런');
+      L+=lead(bIds,id=>y.bat[id].rbi||null,v=>`${v}타점`,'타점');
+      L+=lead(bIds,id=>y.bat[id].sb||null,v=>`${v}도루`,'도루');
+      L+=lead(pIds,id=>{const q=y.pit[id];return q.outs>=qualOuts(g)?era(q):null;},v=>`ERA ${v.toFixed(2)}`,'평균자책',true);
+      L+=lead(pIds,id=>y.pit[id].w||null,v=>`${v}승`,'다승');
+      L+=lead(pIds,id=>y.pit[id].k||null,v=>`${v}탈삼진`,'탈삼진');
+      if(L){
+        card.appendChild(el('div','hof-sub','그 해 팀 1위'));
+        const box=el('div','');box.innerHTML=L;card.appendChild(box);
+      }
+      /* 그 해 수상 — 시즌 시상만 늘어놓는다.
+         5경기마다 주는 구간 시상까지 다 붙이면 스무 줄이 넘어가서 안 읽힌다. */
+      const aw=(y.awards||[]).filter(a=>a.scope!=='구간');
+      const seg=(y.awards||[]).length-aw.length;
+      if(aw.length||seg){
+        card.appendChild(el('div','hof-sub','시즌 시상'));
+        const ab=el('div','');
+        ab.innerHTML=aw.map(a=>
+          `<div class="ot-r"><span>${a.label}</span><b>${a.name||''}${a.value?` · ${a.value}`:''}</b></div>`).join('')
+          +(seg?`<div class="ot-r"><span>구간 시상</span><b>${seg}회</b></div>`:'');
+        card.appendChild(ab);
+      }
+      // 그 해 진기록 — 최근 것부터. 한 시즌에 스무 개씩 나오는 해도 있다
+      const fs=(ST.feats||[]).filter(f=>(f.season||1)===y.season).slice().reverse();
+      if(fs.length){
+        card.appendChild(el('div','hof-sub',`그 해 진기록`));
+        const fb=el('div','');
+        fb.innerHTML=fs.slice(0,12).map(f=>
+          `<div class="ot-r"><span>${f.icon||'⭐'} ${f.kind}</span><b>${f.pid?nmLink(f.pid,nameOf(f.pid)):'팀'}${f.detail?` · ${f.detail}`:''}</b></div>`).join('')
+          +(fs.length>12?`<div class="ot-r"><span>그 밖에</span><b>${fs.length-12}건 더</b></div>`:'');
+        card.appendChild(fb);
+      }
+      if(played&&!L&&!(y.awards||[]).length&&!fs.length)
+        card.appendChild(el('p','muted','아직 남길 기록이 없다.'));
+      c.appendChild(card);
+    });
+    wireNames(c);
+    return;
+  }
 
   /* ── 진기록 ── */
   if(recTab==='feat'){
@@ -15992,6 +16273,10 @@ function normalizeState(){
   });
   finalizeTeam(us);
   buildPitcherPool();
+  /* 이름 장부 — 나중에 팀을 나가도 기록에 이름이 남게 한다.
+     원년 멤버는 WWZW 상수로 찾지만, 영입해 온 사람은 여기 없으면 id 가 찍힌다. */
+  if(!ST.names)ST.names={};
+  us.players.forEach(p=>{ ST.names[p.id]=p.name; });
   if(!ST.lgPit)ST.lgPit={};
   TEAMS.forEach(t=>{ if(!ST.stand[t.id])ST.stand[t.id]={w:0,l:0,t:0,rf:0,ra:0,g:0};
     t.players.forEach(p=>{if(!ST.lgBat[p.id])ST.lgBat[p.id]=blankBat();});
