@@ -113,6 +113,41 @@ setTimeout(()=>{
     return /:(L|R)/.test(r) ? r : '!못 읽는다';
   });
 
+  console.log('\n[좌완 표시]');
+  T('이승민은 좌투로 등록돼 있다', ()=>{
+    const h=ev("META['lsm'].throws");
+    return h==='L' ? `이승민 ${h}` : `!${h} 로 되어 있다`;
+  });
+  T('좌완이면 이름 옆에 좌완 표시가 붙는다', ()=>{
+    const a=ev("handTag({id:'lsm'})"), b=ev("handTag({id:'swm'})");
+    return (/좌완/.test(a) && b==='') ? '이승민 좌완 · 송승민 표시 없음' : `!${a}/${b}`;
+  });
+  T('마운드 그림이 좌완이면 좌우로 뒤집힌다', ()=>{
+    const r=ev("figSVG('pit',false)"), l=ev("figSVG('pit',true)");
+    return (/matrix\(-1 0 0 1 34 0\)/.test(l) && !/matrix/.test(r)) ? '좌완만 반전' : '!반전이 안 된다';
+  });
+  T('투수를 바꾸면 던지는 손도 따라 바뀐다', ()=>{
+    ev(`(function(){
+      window.__mv=moundView({});
+      document.body.appendChild(window.__mv);
+      setPitFig(window.__mv, {id:'lsm'});
+    })()`);
+    const a=ev("__mv.querySelector('#pfig').className");
+    ev("setPitFig(window.__mv,{id:'swm'})");
+    const b=ev("__mv.querySelector('#pfig').className");
+    ev("window.__mv.remove()");
+    return (/lefty/.test(a)&&!/lefty/.test(b)) ? '좌완→우완 반영' : `!${a} / ${b}`;
+  });
+  T('좌타자면 타자 그림도 뒤집힌다', ()=>{
+    const L=ev("moundView({batLeft:true}).querySelector('.bat-fig').innerHTML");
+    const R=ev("moundView({batLeft:false}).querySelector('.bat-fig').innerHTML");
+    return (/matrix/.test(L) && !/matrix/.test(R)) ? '좌타만 반전' : '!안 뒤집힌다';
+  });
+  T('좌완이 우타를 만나면 반대 손 맞대결이다', ()=>{
+    const lsm=ev("pitchHand({id:'lsm'},{bats:'R'})"), swm=ev("pitchHand({id:'swm'},{bats:'R'})");
+    return (lsm===-1&&swm===1) ? '이승민 -1 / 송승민 +1' : `!${lsm}/${swm}`;
+  });
+
   console.log('\n[화면]');
   T('구종 설명이 휘는 방향을 알려준다', ()=>{
     const dsc=ev(`(function(){

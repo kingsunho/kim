@@ -79,10 +79,11 @@ node soaktest.js
 
 확률 기반 단정문이 들어 있어 간헐적으로 실패한다. **3회 재실행해서 판단한다.**
 
-`advtest` `traintest2` `wltest` `recruittest` `fintest` `awardtest` `mgrtest` `dectest2` `hltest`
+`advtest` `traintest2` `wltest` `recruittest` `fintest` `awardtest` `mgrtest` `dectest2` `hltest` `subtest`
 
 `dectest2` 의 '수비 판단창이 여러 번' 은 판단 발생이 확률이라 절반쯤 걸린다.
 `hltest` 의 '박스스코어 대조' 도 교체가 끼면 어긋나서 자주 걸린다.
+`subtest` 의 '지명타자 상태' 는 자동 교체가 확률이라 12회 중 3회쯤 걸린다.
 
 ## 구버전 테스트
 
