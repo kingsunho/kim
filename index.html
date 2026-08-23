@@ -800,56 +800,61 @@ table.stand td.nm{text-align:left;font-weight:700;font-size:12px}
 .pl-skip{width:100%;margin-top:7px;background:transparent;border:1px solid #2a323d;
   color:#8b95a3;font-size:12px;padding:9px 0;border-radius:9px}
 /* ===== 포수 뒤 시점 중계 화면 (스피리츠 풍) ===== */
-.mound{position:relative;width:100%;padding-top:56%;border-radius:12px;overflow:hidden;
-  border:1px solid #2a323d;
-  background:linear-gradient(#0d1a12 0%,#16341f 34%,#1e4527 55%,#2a5230 100%)}
-.mound .sky{position:absolute;left:0;right:0;top:0;height:26%;
-  background:linear-gradient(#0b1420,#12232f)}
-.mound .far{position:absolute;left:50%;top:27%;transform:translate(-50%,-50%);
-  width:20%;padding-top:7%;background:#8a5a37;border-radius:50%;opacity:.9}
-.pit-fig{position:absolute;left:50%;top:24%;transform:translate(-50%,-70%);
-  width:26px;height:40px;transition:transform .12s}
-.pit-fig.wind{transform:translate(-50%,-70%) scaleY(1.08) rotate(-6deg)}
-.pit-fig.rel {transform:translate(-50%,-70%) scaleY(.94) rotate(9deg)}
-/* 좌완은 몸이 반대로 돈다 */
-.pit-fig.lefty.wind{transform:translate(-50%,-70%) scaleY(1.08) rotate(6deg)}
-.pit-fig.lefty.rel {transform:translate(-50%,-70%) scaleY(.94) rotate(-9deg)}
-.szone{position:absolute;left:50%;top:60%;transform:translate(-50%,-50%);
-  width:27%;padding-top:30%;border:2px dashed rgba(255,255,255,.42);border-radius:3px}
+.mound{position:relative;width:100%;padding-top:56.25%;border-radius:12px;overflow:hidden;
+  border:1px solid #2a323d;background:#12232f}
+.mv-cv{position:absolute;left:0;top:0;width:100%;height:100%;
+  image-rendering:pixelated;display:block}
+/* 외야 전광판 글자 — 캔버스에 그리면 한글이 뭉개져서 DOM 으로 얹는다 */
+.mv-board{position:absolute;left:31.2%;top:12.8%;width:38.1%;height:13.9%;
+  padding:2px 5px;display:flex;flex-direction:column;justify-content:center;gap:1px}
+.mvb-r{display:flex;align-items:center;justify-content:space-between;
+  font-size:9px;font-weight:800;line-height:1.05;color:#ffd15c;letter-spacing:-.3px}
+.mvb-r span{color:#cfe0ee;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.mvb-r b{color:#ffd15c;font-size:11px;margin-left:6px}
+/* 상단 띠 — 이닝 · 아웃 · 주자 */
+.mv-top{position:absolute;left:6px;top:5px;display:flex;align-items:center;gap:6px;
+  background:rgba(8,14,22,.62);padding:3px 8px;border-radius:6px;
+  font-size:10.5px;color:#cfe0ee;font-weight:700}
+.mv-top b{color:#fff;font-weight:800}
+.mvt-dia{position:relative;display:inline-block;width:15px;height:13px;font-style:normal}
+.mvt-dia u{position:absolute;width:5px;height:5px;background:rgba(255,255,255,.22);
+  transform:rotate(45deg);text-decoration:none}
+.mvt-dia u.on{background:#ffd15c}
+.mvt-dia u.d1{right:0;top:4px}
+.mvt-dia u.d2{left:5px;top:0}
+.mvt-dia u.d3{left:0;top:4px}
+.mvt-o{color:#e08a70;letter-spacing:1px;font-size:9px}
+.szone{position:absolute;left:50%;top:71%;transform:translate(-50%,-50%);
+  width:20%;padding-top:20%;border:2px dashed rgba(255,255,255,.5);border-radius:3px}
 .szone i{position:absolute;background:rgba(255,255,255,.16)}
 .szone i.v1{left:33.3%;top:0;bottom:0;width:1px}
 .szone i.v2{left:66.6%;top:0;bottom:0;width:1px}
 .szone i.h1{top:33.3%;left:0;right:0;height:1px}
 .szone i.h2{top:66.6%;left:0;right:0;height:1px}
 .szone.hotcell{box-shadow:0 0 0 2px rgba(232,118,44,.55)}
-.plate{position:absolute;left:50%;bottom:7%;transform:translate(-50%,0);
-  width:18%;height:8px;background:#e6e6e6;
-  clip-path:polygon(0 0,100% 0,88% 60%,50% 100%,12% 60%)}
-.mitt{position:absolute;left:50%;bottom:13%;transform:translate(-50%,0);
-  width:26px;height:22px;background:#7a4a28;border:2px solid #a06a3c;
-  border-radius:13px 13px 9px 9px;box-shadow:inset -3px -4px 0 rgba(0,0,0,.22)}
+.mitt{position:absolute;left:50%;bottom:12%;transform:translate(-50%,0);
+  width:22px;height:19px;background:#7a4a28;border:2px solid #a06a3c;
+  border-radius:11px 11px 8px 8px;box-shadow:inset -3px -4px 0 rgba(0,0,0,.22)}
 .mitt::before{content:'';position:absolute;left:-5px;top:1px;width:8px;height:13px;
   background:#7a4a28;border:2px solid #a06a3c;border-radius:5px 0 0 6px}
-/* 왼쪽 아래는 선수 프로필 카드 자리라 타자는 오른쪽에 세운다.
-   좌타면 그림만 좌우로 뒤집는다.                                       */
-.bat-fig{position:absolute;right:11%;bottom:10%;width:24px;height:50px;opacity:.95}
 .ball{position:absolute;width:13px;height:13px;border-radius:50%;background:#fff;
   box-shadow:0 0 7px rgba(255,255,255,.75), inset -2px -2px 0 rgba(0,0,0,.15);
   left:0;top:0;will-change:transform;pointer-events:none}
 .ball.seam{background:radial-gradient(circle at 38% 34%,#fff 60%,#e8e8e8 100%)}
 .trail{position:absolute;width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.30);
   pointer-events:none}
-.mound .lbl{position:absolute;left:8px;top:8px;font-size:10.5px;color:#9fb0c4;
-  background:rgba(8,14,22,.62);padding:3px 7px;border-radius:6px}
+.mound .lbl{position:absolute;left:6px;top:27px;font-size:10.5px;color:#9fb0c4;
+  background:rgba(8,14,22,.62);padding:3px 7px;border-radius:6px;
+  max-width:38%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mound .lbl b{color:#e2eaf5}
 /* 볼카운트 — 어디에 던질지 정하려면 이게 있어야 한다 */
-.mound .cnt{position:absolute;right:8px;top:8px;font-size:13px;font-weight:800;
+.mound .cnt{position:absolute;right:6px;top:5px;font-size:13px;font-weight:800;
   color:#9fb0c4;background:rgba(8,14,22,.7);padding:3px 9px;border-radius:6px;
   letter-spacing:1px}
 .mound .cnt b{color:#ffd15c}
 .mound .cnt b+b{color:#e08a70}
 /* 지금 타석·마운드에 선 사람 얼굴 */
-.mound .who{position:absolute;left:8px;bottom:8px;display:flex;align-items:center;gap:6px;
+.mound .who{position:absolute;right:8px;bottom:8px;display:flex;align-items:center;gap:6px;
   background:rgba(8,14,22,.72);padding:4px 8px 4px 4px;border-radius:8px}
 .mound .who-av{width:30px;height:40px;border-radius:5px;overflow:hidden;flex:0 0 auto;
   border:1px solid rgba(255,255,255,.18);background:#101a29}
@@ -1152,6 +1157,8 @@ table.hl-tbl td.hl-o{color:#c98a80}
 .ps-x{position:absolute;right:7px;top:41px;width:26px;height:26px;border-radius:50%;
   background:rgba(0,0,0,.5);color:#e6edf6;font-size:13px;line-height:1;border:none}
 .hl-replay{width:100%;margin:8px 0 4px}
+.ps-sc{display:inline-block;margin-top:3px;font-style:normal;font-size:11px;
+  font-weight:800;color:#ffd15c;background:rgba(0,0,0,.5);padding:2px 8px;border-radius:5px}
 .ps-skip{position:absolute;right:8px;bottom:7px;font-size:10px;color:rgba(255,255,255,.5)}
 .subtabs.sub6{gap:4px}
 .sub6 .subtab{padding:9px 3px;font-size:11px;letter-spacing:-.3px}
@@ -13058,7 +13065,11 @@ function psScene(d){
   const rng=()=>{ s=(s*1664525+1013904223)>>>0; return s/4294967296; };
   const ang=psAngle(d,rng);
   const K=d.kind;
-  const dist = K==='HR'?242 : K==='3B'?176 : K==='2B'?162 :
+  /* [제보] "그라운드 홈런 되면 갑자기 외야로 사라져"
+     인정 홈런(itp)은 담장을 못 넘긴 타구다. 그런데 홈런이라고 다 담장
+     밖으로 날려버려서 공이 화면에서 사라졌다. 인정 홈런은 외야 구석에
+     떨어뜨리고, 타자가 발로 네 베이스를 도는 걸 보여준다.              */
+  const dist = (K==='HR'&&d.itp)?182 : K==='HR'?242 : K==='3B'?176 : K==='2B'?162 :
                K==='1B'?126 : K==='FB'?(120+rng()*40) : K==='SF'?150 :
                K==='E'?70 : (46+rng()*40);        // 땅볼·병살은 내야
   const land=psSpot(ang, dist);
@@ -13110,7 +13121,7 @@ function psPlay(d, done, opt){
   else if(K==='BB'||K==='HBP'){ T.walk=[t,t+700]; t+=760; }
   else if(inPlay){
     const fly=(K==='HR'||K==='FB'||K==='SF'||K==='2B'||K==='3B');
-    T.fly=[t, t+(K==='HR'?1000:(fly?760:520))];
+    T.fly=[t, t+(K==='HR'?(d.itp?880:1000):(fly?760:520))];
     T.chase=[t, T.fly[1]+120];
     t=T.fly[1]+120;
     if(K==='GB'||K==='DP'||K==='FB'||K==='SF'||K==='AS'){ T.throw=[t,t+320]; t+=340; }
@@ -13195,10 +13206,11 @@ function psPlay(d, done, opt){
       const kf=seg(T.fly,now);
       if(kf!=null&&kf>0){
         const p={x:lerp(160,sc.land.x,kf), y:lerp(232,sc.land.y,kf)};
-        const hMax=(K==='HR')?58:(K==='GB'||K==='DP'||K==='E')?3:26;
-        // 홈런은 담장을 넘어가는 동안 계속 떠 있다 — 내려오지 않는다
-        bz=(K==='HR')?Math.sin(Math.PI*Math.min(1,kf)*0.72)*hMax
-                     :Math.sin(Math.PI*Math.min(1,kf))*hMax;
+        const over=(K==='HR'&&!d.itp);            // 담장을 넘기는 진짜 홈런
+        const hMax=over?58:(K==='HR')?30:(K==='GB'||K==='DP'||K==='E')?3:26;
+        // 담장을 넘는 홈런은 내려오지 않는다. 인정 홈런은 외야에 떨어진다.
+        bz=over?Math.sin(Math.PI*Math.min(1,kf)*0.72)*hMax
+               :Math.sin(Math.PI*Math.min(1,kf))*hMax;
         bp=p;
       }
     }
@@ -13225,7 +13237,13 @@ function psPlay(d, done, opt){
     if(now>=T.hold[0]-260 && !ban.textContent){
       const st=psBanner(d);
       ban.textContent=st.big; ban.style.color=st.color; ban.classList.add('on');
-      sub.textContent=d.text||''; sub.classList.add('on');
+      /* 홈런은 비거리와 그때 점수까지 — 중계 화면처럼 */
+      if(K==='HR'){
+        const m=Math.round(sc.dist*0.62)+(d.itp?0:14);
+        sub.innerHTML=`<b>${d.bat.name}</b> · ${m}m · ${d.runs}점<br>`+
+          `<i class="ps-sc">${thN} ${tR} : ${uR} ${usN}</i>`;
+      } else sub.textContent=d.text||'';
+      sub.classList.add('on');
       const sh=box.querySelector('.ps-shade'); if(sh) sh.classList.add('on');
     }
   }
@@ -13900,6 +13918,169 @@ function pchangeToast(side, outName, hadDH, outId){
 const _SC=' sc'+'ale';
 function tfm(x,y,s){ return 'translate('+x+'px,'+y+'px)'+_SC+'('+s+')'; }
 
+/* ================= 구장 그림 (타석·마운드 화면) =================
+   [제보] "미니게임 저 자로 댄 듯한 그림판 같은 게 너무 구려.
+   2009년 피처폰 게임도 저 정도는 나왔는데"
+
+   맞는 말이다. 예전에는 CSS 사각형 몇 개로 하늘·마운드·타자를 흉내 냈다.
+   이제 캔버스 한 장(320x180 논리 픽셀)에 구장을 통째로 그린다.
+   하늘·구름·도시·조명탑·전광판·관중석·담장·잔디 줄무늬·내야 흙,
+   그리고 투수·포수·타자·야수까지. 외부 이미지는 여전히 한 장도 안 쓴다.
+
+   공·스트라이크 존·미트는 예전처럼 DOM 으로 얹는다. 궤적 계산을
+   그대로 쓰기 위해서다(throwBall).                                    */
+const MVW=320, MVH=180;
+const MV_MOUND={x:160,y:84}, MV_PLATE={x:160,y:168};
+
+function mvSky(g){
+  const sk=g.createLinearGradient(0,0,0,64);
+  sk.addColorStop(0,'#2f7fc4'); sk.addColorStop(0.55,'#6fb2dd'); sk.addColorStop(1,'#a9d6ea');
+  g.fillStyle=sk; g.fillRect(0,0,MVW,64);
+  // 구름
+  const cloud=(x,y,s)=>{
+    g.fillStyle='rgba(255,255,255,.82)';
+    g.fillRect(x,y,14*s,4*s); g.fillRect(x+4*s,y-3*s,8*s,4*s);
+    g.fillRect(x+9*s,y-1*s,9*s,4*s);
+  };
+  cloud(24,16,1); cloud(210,12,1.3); cloud(128,8,0.8);
+}
+function mvCity(g){
+  // 도시 실루엣
+  g.fillStyle='#3a5f80';
+  const bl=[[6,30,14,18],[22,24,10,24],[34,34,16,14],[54,20,12,28],[70,32,10,16],
+            [230,26,12,22],[244,34,14,14],[260,18,11,30],[273,30,13,18],[288,24,18,24]];
+  bl.forEach(([x,y,w,h])=>{ g.fillRect(x,y+16,w,h);
+    g.fillStyle='rgba(255,255,255,.16)';
+    for(let i=2;i<w-2;i+=4)for(let j=2;j<h-3;j+=5)g.fillRect(x+i,y+18+j,2,2);
+    g.fillStyle='#3a5f80';
+  });
+}
+function mvLights(g){
+  // 조명탑
+  [[46,20],[274,20]].forEach(([x,y])=>{
+    g.fillStyle='#4a5766'; g.fillRect(x-1,y,3,32);
+    g.fillStyle='#c8d4e0'; g.fillRect(x-11,y-9,22,11);
+    g.fillStyle='#fff9d0';
+    for(let i=0;i<4;i++)for(let j=0;j<2;j++)g.fillRect(x-9+i*5,y-7+j*5,3,3);
+  });
+}
+/* 외야 전광판 — 틀만 그리고 글자는 DOM 으로 올린다(작은 한글이 뭉개진다) */
+function mvBoard(g){
+  g.fillStyle='#2b333d'; g.fillRect(106,46,5,16); g.fillRect(209,46,5,16);
+  g.fillStyle='#48525f'; g.fillRect(96,20,128,28);
+  g.fillStyle='#0b1017'; g.fillRect(99,23,122,22);
+  g.fillStyle='#1b2530'; g.fillRect(99,23,122,1);
+}
+function mvStand(g){
+  // 관중석 — 담장 위로 층층이
+  const rows=[[62,'#2a3646'],[68,'#333f50'],[74,'#3b485a']];
+  rows.forEach(([y,c])=>{ g.fillStyle=c; g.fillRect(0,y,MVW,7); });
+  // 관중 (도트)
+  const cs=['#d9a07a','#e0c9a6','#c98f6e','#efe0c8'];
+  let s=1234567;
+  const rnd=()=>{ s=(s*1664525+1013904223)>>>0; return s/4294967296; };
+  for(let y=63;y<80;y+=4) for(let x=2;x<MVW;x+=5){
+    if(rnd()<0.72){ g.fillStyle=cs[(rnd()*cs.length)|0]; g.fillRect(x,y,3,3); }
+  }
+  // 담장
+  g.fillStyle='#15361f'; g.fillRect(0,80,MVW,10);
+  g.fillStyle='#0e2716'; g.fillRect(0,88,MVW,2);
+  g.fillStyle='rgba(255,255,255,.10)';
+  for(let x=6;x<MVW;x+=46) g.fillRect(x,83,34,4);
+}
+function mvField(g){
+  // 외야 잔디 — 줄무늬
+  for(let x=0;x<MVW;x+=22){
+    g.fillStyle=((x/22)|0)%2?'#3d8a37':'#469540';
+    g.fillRect(x,90,22,MVH-90);
+  }
+  // 내야 흙 — 아래쪽 넓은 부채꼴
+  g.fillStyle='#b98a52';
+  g.beginPath(); g.moveTo(-30,MVH); g.quadraticCurveTo(160,112,350,MVH); g.closePath(); g.fill();
+  // 내야 잔디 (마운드 뒤쪽 안쪽 잔디)
+  g.fillStyle='#469540';
+  g.beginPath(); g.moveTo(44,MVH); g.quadraticCurveTo(160,128,276,MVH); g.closePath(); g.fill();
+  // 홈플레이트 흙
+  g.fillStyle='#c2925a';
+  g.beginPath(); g.ellipse(MV_PLATE.x,MV_PLATE.y+6,54,26,0,0,Math.PI*2); g.fill();
+  // 파울선
+  g.strokeStyle='rgba(255,255,255,.6)'; g.lineWidth=1.5;
+  g.beginPath(); g.moveTo(MV_PLATE.x-8,MV_PLATE.y+2); g.lineTo(20,98); g.stroke();
+  g.beginPath(); g.moveTo(MV_PLATE.x+8,MV_PLATE.y+2); g.lineTo(300,98); g.stroke();
+  // 마운드
+  g.fillStyle='#c8975c';
+  g.beginPath(); g.ellipse(MV_MOUND.x,MV_MOUND.y+7,26,9,0,0,Math.PI*2); g.fill();
+  g.fillStyle='#eae6de'; g.fillRect(MV_MOUND.x-5,MV_MOUND.y+6,10,2);
+  // 홈플레이트
+  g.fillStyle='#f2f4f0';
+  g.beginPath(); g.moveTo(152,171); g.lineTo(168,171); g.lineTo(166,176);
+  g.lineTo(160,179); g.lineTo(154,176); g.closePath(); g.fill();
+  // 타석 선
+  g.strokeStyle='rgba(255,255,255,.42)'; g.lineWidth=1;
+  g.strokeRect(120,160,26,22); g.strokeRect(174,160,26,22);
+}
+/* 사람 — 유니폼 색과 크기를 받아 그린다. y 는 발끝 */
+function mvGuy(g,x,y,h,u,pose,flip){
+  const s=h/26;                       // 기준 키 26px
+  const px=(a,b,w,ht,c)=>{ g.fillStyle=c;
+    g.fillRect(Math.round(x+(flip?-a-w:a)*s), Math.round(y+b*s),
+               Math.max(1,Math.round(w*s)), Math.max(1,Math.round(ht*s))); };
+  g.fillStyle='rgba(0,0,0,.22)';
+  g.beginPath(); g.ellipse(x,y,7*s,2.4*s,0,0,Math.PI*2); g.fill();
+  const cap=u.cap, sh=u.sh, pt=u.pants, sk='#f0c69c';
+  if(pose==='wind'){        // 와인드업 — 다리를 든다
+    px(-4,-9,4,9,pt); px(1,-12,5,5,pt);
+    px(-5,-19,10,10,sh); px(5,-22,3,7,sk); px(-7,-17,3,6,sk);
+    px(-3,-25,7,6,sk); px(-4,-28,9,4,cap);
+  } else if(pose==='rel'){  // 릴리스 — 팔을 앞으로
+    px(-6,-9,4,9,pt); px(2,-9,4,9,pt);
+    px(-5,-19,10,10,sh); px(4,-21,7,3,sk); px(-8,-16,3,6,sk);
+    px(-3,-25,7,6,sk); px(-4,-28,9,4,cap);
+  } else if(pose==='swing'){ // 스윙
+    px(-6,-9,4,9,pt); px(2,-9,4,9,pt);
+    px(-5,-19,11,10,sh); px(3,-22,9,3,sk);
+    px(9,-26,12,2,'#a9743c');           // 배트
+    px(-3,-25,7,6,sk); px(-4,-28,9,4,cap);
+  } else if(pose==='stand'){ // 타격 준비
+    px(-5,-9,4,9,pt); px(1,-9,4,9,pt);
+    px(-5,-19,10,10,sh); px(4,-20,3,5,sk); px(-6,-20,3,5,sk);
+    px(3,-30,3,11,'#a9743c');           // 세워 든 배트
+    px(-3,-25,7,6,sk); px(-4,-28,9,4,cap);
+  } else if(pose==='catch'){ // 포수 — 앉은 뒷모습
+    px(-7,-8,14,8,pt);
+    px(-6,-16,12,9,sh);
+    px(-3,-21,7,6,sk); px(-5,-24,11,4,cap);
+  } else {                   // 기본 — 서 있기
+    px(-5,-9,4,9,pt); px(1,-9,4,9,pt);
+    px(-5,-19,10,10,sh); px(5,-18,3,6,sk); px(-7,-18,3,6,sk);
+    px(-3,-25,7,6,sk); px(-4,-28,9,4,cap);
+  }
+}
+/* 화면 전체를 다시 그린다 */
+let MV_OK=null;                     // 캔버스를 쓸 수 있는 환경인가 (한 번만 본다)
+function mvPaint(mound, o){
+  const cv=mound&&mound.querySelector('.mv-cv'); if(!cv) return;
+  /* 상태는 캔버스를 못 그리는 환경에서도 남긴다 — 나중에 다시 그릴 때 쓴다 */
+  const st=mound._mv=Object.assign(mound._mv||{pit:'idle',bat:'stand',pitLeft:false,batLeft:false},o||{});
+  if(MV_OK===false) return;
+  let g=null; try{ g=cv.getContext&&cv.getContext('2d'); }catch(e){ g=null; }
+  if(!g){ MV_OK=false; return; }
+  MV_OK=true;
+  g.clearRect(0,0,MVW,MVH);
+  mvSky(g); mvCity(g); mvLights(g); mvBoard(g); mvStand(g); mvField(g);
+  const home={cap:'#2f5fb0', sh:'#eef2f8', pants:'#dfe4ec'};
+  const away={cap:'#b23a34', sh:'#e6ddd0', pants:'#d8d0c4'};
+  const du=st.usDef?home:away, ou=st.usDef?away:home;
+  // 야수 — 멀리 작게
+  [[52,110],[112,104],[208,104],[268,110]].forEach(([x,y])=>mvGuy(g,x,y,13,du,'idle',false));
+  // 투수
+  mvGuy(g,MV_MOUND.x,MV_MOUND.y+8,26,du,st.pit,st.pitLeft);
+  // 포수
+  mvGuy(g,MV_PLATE.x,MVH-1,30,du,'catch',false);
+  // 타자
+  mvGuy(g, st.batLeft?199:121, 178, 42, ou, st.bat, !st.batLeft);
+}
+
 /* [제보] "이승민은 좌투니깐 좌투로 나와야지"
    던지는 팔(.arm)이 오른쪽에 붙어 있어서 누가 던지든 우완 모션이었다.
    좌완이면 통째로 좌우를 뒤집는다.                                    */
@@ -13922,26 +14103,47 @@ function handTag(pit){
 }
 /* 마운드 그림을 이 투수에 맞춰 다시 그린다 (교체하면 손도 바뀐다) */
 function setPitFig(mound, pit){
-  const f=mound&&mound.querySelector('#pfig'); if(!f) return;
-  const L=throwHandOf(pit)==='L';
-  f.innerHTML=figSVG('pit', L);
-  f.classList.toggle('lefty', L);
+  if(!mound) return;
+  mvPaint(mound,{pitLeft:throwHandOf(pit)==='L'});
+  mvScore(mound);
 }
 /* 중계 화면 뼈대를 만든다. mode: 'bat'(타격) | 'pit'(투구) */
 function moundView(opts){
   const o=opts||{};
   const m=el('div','mound');
-  m.innerHTML=`<div class="sky"></div><div class="far"></div>
-    <div class="pit-fig${o.pitLeft?' lefty':''}" id="pfig">${figSVG('pit',o.pitLeft)}</div>
+  m.innerHTML=`<canvas class="mv-cv" width="${MVW}" height="${MVH}"></canvas>
+    <div class="mv-board" id="mvboard"></div>
+    <div class="mv-top" id="mvtop"></div>
     <div class="szone" id="szone"><i class="v1"></i><i class="v2"></i><i class="h1"></i><i class="h2"></i></div>
-    <div class="plate"></div>
     <div class="mitt" id="mitt"></div><div class="mitt-tag">포수</div>
-    <div class="bat-fig${o.batLeft?' lefty':''}">${figSVG('bat',o.batLeft)}</div>
     <div class="lbl">${o.label||''}</div>
     <div class="cnt" id="cnt"><b>0</b>-<b>0</b></div>
     <div class="who" id="mwho"></div>
     <div class="res" id="mres"></div>`;
+  mvPaint(m,{pitLeft:!!o.pitLeft, batLeft:!!o.batLeft, usDef:!!o.usDef,
+             pit:'idle', bat:'stand'});
+  mvScore(m);
   return m;
+}
+/* 외야 전광판 · 상단 띠에 지금 점수를 넣는다.
+   [요청] "야구장 전광판 제대로 그리고 거기에 실시간 점수 이름 들어가게"   */
+function mvScore(mound){
+  if(!LIVE) return;
+  const b=mound.querySelector('#mvboard');
+  const t=mound.querySelector('#mvtop');
+  const us=LIVE.userIsHome?LIVE.home:LIVE.away;
+  const th=LIVE.userIsHome?LIVE.away:LIVE.home;
+  const short=n=>String(n||'').slice(0,8);
+  if(b) b.innerHTML=
+    `<div class="mvb-r"><span>${short(th.team.name)}</span><b>${th.runs}</b></div>`+
+    `<div class="mvb-r"><span>${short(us.team.name)}</span><b>${us.runs}</b></div>`;
+  if(t){
+    const on=i=>LIVE.bases[i]?' on':'';
+    t.innerHTML=`<i class="mvt-dia"><u class="d2${on(1)}"></u><u class="d3${on(2)}"></u>`+
+      `<u class="d1${on(0)}"></u></i>`+
+      `<b>${LIVE.inning}회 ${LIVE.half===0?'초':'말'}</b>`+
+      `<span class="mvt-o">${'●'.repeat(LIVE.outs)}${'○'.repeat(Math.max(0,2-LIVE.outs))}</span>`;
+  }
 }
 /* 공을 날린다. 구종에 따라 늦게 휜다.
    cb(t) 로 매 프레임 진행도(0~1)를 알려주고, 끝나면 done() 을 부른다.  */
@@ -14021,12 +14223,18 @@ function throwBall(mound, type, opts){
 }
 /* 와인드업 → 릴리스 모션 */
 function windup(mound, cb){
-  const f=mound.querySelector('#pfig'); if(!f){cb&&cb();return;}
-  f.classList.add('wind');
-  setTimeout(()=>{ f.classList.remove('wind'); f.classList.add('rel');
+  if(!mound||!mound.querySelector('.mv-cv')){ cb&&cb(); return; }
+  mvPaint(mound,{pit:'wind'});
+  setTimeout(()=>{ mvPaint(mound,{pit:'rel'});
     cb&&cb();
-    setTimeout(()=>f.classList.remove('rel'),260);
+    setTimeout(()=>mvPaint(mound,{pit:'idle'}),320);
   },260);
+}
+/* 타자가 배트를 돌린다 */
+function mvSwing(mound){
+  if(!mound) return;
+  mvPaint(mound,{bat:'swing'});
+  setTimeout(()=>mvPaint(mound,{bat:'stand'}),360);
 }
 /* 그 타석이 어떻게 끝났는지 중계 화면에 그대로 보여준다.
    [제보] "뭐 던지거나 쳤을 때 그것 땜에 어떻게 되었는지가 안 나온다"
@@ -14117,7 +14325,7 @@ function renderSwing(box, d){
       · 상대 ${myP.name} (구위 ${myP.stf})<br>
       존 안으로 들어오면 치고, <b>빠지면 참아라</b>. 4볼이면 볼넷, 3스트라이크면 삼진.</div>`;
   const mv=moundView({label:`<b>${myP.name}</b>${handTag(myP)}`,
-    pitLeft:throwHandOf(myP)==='L', batLeft:!!(bat&&bat.bats==='L')});
+    pitLeft:throwHandOf(myP)==='L', batLeft:!!(bat&&bat.bats==='L'), usDef:false});
   w.appendChild(mv);
   if(bat) moundWho(mv,bat.id,'타석');
   const hit=el('button','pl-hit','준비...');
@@ -14134,6 +14342,7 @@ function renderSwing(box, d){
     const c=LIVE.count();
     const cb=mv.querySelector('#cnt');
     if(cb) cb.innerHTML=`<b>${c.b}</b>-<b>${c.s}</b>`;
+    mvScore(mv);
   };
   const endPA=(endKind,label,color,big)=>{
     if(resolved)return; resolved=true; done=true;
@@ -14196,6 +14405,7 @@ function renderSwing(box, d){
 
   hit.onclick=()=>{
     if(phase!=='pitch'||done||resolved) return;
+    mvSwing(mv);                                   // 배트를 돌린다
     if(!anim){ judge(0.05); return; }
     const t=anim.progress();
     judge(Math.max(0,1-Math.abs(t-0.90)*5.2));
@@ -14224,7 +14434,10 @@ function renderPitch(box, d){
   const def=LIVE.def(), off=LIVE.off();
   const w=el('div','pl-wrap');
   const head=el('div'); w.appendChild(head);
-  const mv=moundView({pitLeft:throwHandOf(LIVE.curPitcher(def))==='L'});
+  const mv=moundView({pitLeft:throwHandOf(LIVE.curPitcher(def))==='L',
+    batLeft:(function(){const s0=off.slots[off.order%9];
+      const b0=off.team.players.find(x=>x.id===s0.id); return !!(b0&&b0.bats==='L');})(),
+    usDef:true});
   w.appendChild(mv);
   const tRow=el('div','ptype'); w.appendChild(tRow);
   const wrap=el('div','zwrap');
@@ -14268,6 +14481,7 @@ function renderPitch(box, d){
     const cb=mv.querySelector('#cnt'); if(cb) cb.innerHTML=`<b>${c.b}</b>-<b>${c.s}</b>`;
     const lb=mv.querySelector('.lbl');
     if(lb) lb.innerHTML=`<b>${p.name}</b>${handTag(p)}`;
+    mvPaint(mv,{batLeft:!!(bat&&bat.bats==='L')});
     setPitFig(mv,p);                       // 교체하면 던지는 손도 바뀐다
     moundWho(mv,p.id,'마운드');
     const ars=arsenalOf(p);

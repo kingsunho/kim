@@ -126,22 +126,31 @@ setTimeout(()=>{
     const r=ev("figSVG('pit',false)"), l=ev("figSVG('pit',true)");
     return (/matrix\(-1 0 0 1 34 0\)/.test(l) && !/matrix/.test(r)) ? '좌완만 반전' : '!반전이 안 된다';
   });
+  /* 구장 그림은 캔버스라 테스트 환경에서 픽셀을 못 본다.
+     대신 '어느 손으로 그리라고 넘겼는지' 상태값을 확인한다. */
   T('투수를 바꾸면 던지는 손도 따라 바뀐다', ()=>{
     ev(`(function(){
       window.__mv=moundView({});
       document.body.appendChild(window.__mv);
       setPitFig(window.__mv, {id:'lsm'});
     })()`);
-    const a=ev("__mv.querySelector('#pfig').className");
+    const a=ev("__mv._mv.pitLeft");
     ev("setPitFig(window.__mv,{id:'swm'})");
-    const b=ev("__mv.querySelector('#pfig').className");
+    const b=ev("__mv._mv.pitLeft");
     ev("window.__mv.remove()");
-    return (/lefty/.test(a)&&!/lefty/.test(b)) ? '좌완→우완 반영' : `!${a} / ${b}`;
+    return (a===true&&b===false) ? '좌완→우완 반영' : `!${a} / ${b}`;
   });
-  T('좌타자면 타자 그림도 뒤집힌다', ()=>{
-    const L=ev("moundView({batLeft:true}).querySelector('.bat-fig').innerHTML");
-    const R=ev("moundView({batLeft:false}).querySelector('.bat-fig').innerHTML");
-    return (/matrix/.test(L) && !/matrix/.test(R)) ? '좌타만 반전' : '!안 뒤집힌다';
+  T('좌타자면 타석 반대편에 선다', ()=>{
+    const L=ev("moundView({batLeft:true})._mv.batLeft");
+    const R=ev("moundView({batLeft:false})._mv.batLeft");
+    return (L===true&&R===false) ? '좌타/우타 구분' : '!안 바뀐다';
+  });
+  T('구장 그림과 전광판이 붙어 있다', ()=>{
+    const m=ev(`(function(){var m=moundView({});
+      return [!!m.querySelector('.mv-cv'), !!m.querySelector('#mvboard'),
+              !!m.querySelector('#mvtop'), !!m.querySelector('#szone'),
+              !!m.querySelector('#mitt')].join(',');})()`);
+    return m==='true,true,true,true,true' ? '캔버스·전광판·상단띠·존·미트' : `!${m}`;
   });
   T('좌완이 우타를 만나면 반대 손 맞대결이다', ()=>{
     const lsm=ev("pitchHand({id:'lsm'},{bats:'R'})"), swm=ev("pitchHand({id:'swm'},{bats:'R'})");

@@ -2,7 +2,7 @@
 const {JSDOM,VirtualConsole}=require('jsdom');
 const html=require('fs').readFileSync('index.html','utf8');
 const errs=[];const vc=new VirtualConsole();
-vc.on('jsdomError',e=>{if(!/scrollTo/.test(e.message))errs.push(e.message)});
+vc.on('jsdomError',e=>{if(!/scrollTo|not implemented/i.test(e.message))errs.push(e.message)});
 const dom=new JSDOM(html,{runScripts:'dangerously',pretendToBeVisual:true,url:'https://x.test/',virtualConsole:vc});
 dom.window.scrollTo=()=>{};dom.window.confirm=()=>true;
 const w=dom.window,d=w.document,ev=s=>w.eval(s);
@@ -152,7 +152,7 @@ setTimeout(async()=>{
     if(!d.getElementById('decision')){const b=d.createElement('div');b.id='decision';d.body.appendChild(b);}
     ev("showDecision(window._d)");
     const mv=d.querySelector('.mound');
-    const parts=['#pfig','.szone','.plate','.mitt','.bat-fig'].filter(x=>mv&&mv.querySelector(x));
+    const parts=['.mv-cv','.szone','.mitt','#mvboard','#mvtop'].filter(x=>mv&&mv.querySelector(x));
     const btn=[...d.querySelectorAll('#decision button')].map(x=>x.textContent);
     return !!mv && parts.length===5 && (parts.join(',')+' | '+btn.join(' | '));
   });
