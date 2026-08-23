@@ -95,11 +95,39 @@ setTimeout(async()=>{
     var good=trial(1.0), bad=trial(0.0);
     return good>bad ? '완벽 타이밍 '+good.toFixed(3)+' vs 헛스윙 '+bad.toFixed(3) : false;
   })()`));
-  T('보정 폭이 과하지 않다 (확률만 민다)', ()=>ev(`(function(){
+  T('인플레이 보정은 과하지 않다', ()=>ev(`(function(){
+    var g=swingMods(1.0), b=swingMods(0.0), m=swingMods(0.5);
+    return (g.babip<1.20 && b.babip>0.85 && Math.abs(m.babip-1)<0.01 && Math.abs(m.k-1)<0.01) ?
+      '완벽 x'+g.babip.toFixed(2)+' / 평범 x'+m.babip.toFixed(2)+' / 헛스윙 x'+b.babip.toFixed(2) : false;
+  })()`));
+  T('타이밍이 삼진 여부를 크게 가른다', ()=>ev(`(function(){
     var g=swingMods(1.0), b=swingMods(0.0);
-    return (g.babip<1.20 && b.babip>0.85 && g.k>0.6) ?
-      '완벽 babip x'+g.babip.toFixed(2)+' · 삼진 x'+g.k.toFixed(2)+
-      ' / 헛스윙 babip x'+b.babip.toFixed(2)+' · 삼진 x'+b.k.toFixed(2) : false;
+    return (g.k<0.6 && b.k>1.5) ? '정타 삼진 x'+g.k.toFixed(2)+' / 헛스윙 x'+b.k.toFixed(2) : false;
+  })()`));
+  T('휘두르면 볼넷·사구가 사라진다', ()=>ev(`(function(){
+    var a=swingMods(1.0), b=swingMods(0.0);
+    return (a.bb<0.1 && a.hbp<0.1 && b.bb<0.1) ? '볼넷 x'+a.bb+' · 사구 x'+a.hbp : false;
+  })()`));
+  T('정타 치고 볼넷·삼진 나는 일이 거의 없다 (실측)', ()=>ev(`(function(){
+    ST.playMode='all';
+    var bb=0,k=0,pa=0;
+    for(var t=0;t<40;t++){
+      LIVE=makeLive(); LIVE.manual=true;
+      var g=0;
+      while(!LIVE.over && g++<4000){
+        var dd=LIVE.pending||LIVE.detectDecision();
+        if(dd){
+          if(dd.kind==='swing'){LIVE.applyDecision('swing:1.0');continue;}
+          if(dd.kind==='pitch'){LIVE.applyDecision('playskip');continue;}
+          LIVE.applyDecision(dd.kind==='pitcherChange'?'stay':(dd.kind==='defense'?'defnone':'none'));continue;
+        }
+        LIVE.step();
+      }
+      var us=LIVE.userIsHome?LIVE.home:LIVE.away;
+      us.slots.forEach(function(sl){var x=LIVE.box[sl.id]; if(x){bb+=x.bb+x.hbp;k+=x.k;pa+=x.pa;}});
+    }
+    var bbp=pa?bb*100/pa:0, kp=pa?k*100/pa:0;
+    return (bbp<6 && kp<14) ? '볼넷 '+bbp.toFixed(1)+'% · 삼진 '+kp.toFixed(1)+'% (기본 15%/20%)' : false;
   })()`));
   T('코스를 잡으면 삼진이 늘고 안타가 준다', ()=>ev(`(function(){
     var hit=pitchMods(true,45), miss=pitchMods(false,45);
@@ -128,11 +156,20 @@ setTimeout(async()=>{
     const btn=[...d.querySelectorAll('#decision button')].map(x=>x.textContent);
     return !!mv && parts.length===5 && (parts.join(',')+' | '+btn.join(' | '));
   });
-  T('스윙 버튼을 누르면 타이밍이 기록된다', ()=>{
+  T('준비 시간을 준다 (카운트다운 동안 버튼이 잠긴다)', ()=>{
+    const b=[...d.querySelectorAll('#decision button')].find(x=>/준비|스윙/.test(x.textContent));
+    return (b && b.disabled && /준비/.test(b.textContent)) ? b.textContent.trim() : false;
+  });
+  await wait(2600);
+  T('카운트다운이 끝나면 스윙할 수 있다', ()=>{
+    const b=[...d.querySelectorAll('#decision button')].find(x=>/스윙/.test(x.textContent));
+    return (b && !b.disabled) ? b.textContent.trim() : false;
+  });
+  T('스윙하면 타이밍이 기록된다', ()=>{
     const b=[...d.querySelectorAll('#decision button')].find(x=>/스윙/.test(x.textContent));
     b.click();
     const q=ev("LIVE._swingQ");
-    return (q!=null && q>=0 && q<=1) ? '품질 '+q.toFixed(2) : false;
+    return (q!=null && q>=0 && q<=1) ? '품질 '+q.toFixed(2) : (ev("LIVE._lastPlayPA")!=null?'이미 반영됨':false);
   });
   T('코스 화면이 그려진다', ()=>{
     ev("ST.playMode='all'; LIVE=makeLive(); LIVE.manual=true;");
