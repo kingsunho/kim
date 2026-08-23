@@ -45,13 +45,14 @@ setTimeout(async()=>{
     const cell=[...d.querySelectorAll('.field .fp')].find(x=>/투수/.test(x.querySelector('.fp-p').textContent));
     return cell.querySelector('.fp-n').textContent.indexOf(sp)>=0 && sp;
   });
-  T('자리를 누르면 교체 시트가 열린다', ()=>{
+  T('자리를 누르면 교체할 자리로 선택된다', ()=>{
+    ev("swapIdx=null; ST.luView='field'; go('lineup')");
     const cell=[...d.querySelectorAll('.field .fp')].find(x=>/중견|좌익|우익/.test(x.querySelector('.fp-p').textContent));
     cell.click();
-    const open=d.querySelector('#sheet').classList.contains('open');
-    const title=d.querySelector('#sheet-title').textContent;
-    ev("closeSheet()");
-    return open && title;
+    const picked=d.querySelectorAll('.fp.picked').length;
+    const sel=ev("swapIdx");
+    ev("swapIdx=null");
+    return picked===1 && sel!=null && '선택 표시 1개';
   });
   T('마운드를 누르면 선발 지정 시트가 열린다', ()=>{
     ev("ST.luView='field'; go('lineup')");

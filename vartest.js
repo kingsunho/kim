@@ -17,13 +17,22 @@ setTimeout(async()=>{
   const N=26000;
   for(let i=0;i<N;i++){ const sp=ev("ST._recentSpeakers=[];speakers(ST,'ksh',1,Math.random)");
     sp.forEach(p=>cnt[p.id]=(cnt[p.id]||0)+1); }
-  const vals=Object.values(cnt), n=Object.keys(cnt).length;
-  const exp=N/n;
-  const chi=vals.reduce((a,v)=>a+(v-exp)*(v-exp)/exp,0);   // 자유도 12, 5% 임계 21.03
-  const dev=Math.max(...vals.map(v=>Math.abs(v-exp)/exp));
-  console.log('   ', Object.keys(cnt).map(k=>`${ev(`nameOf('${k}')`)} ${cnt[k]}`).join(' '));
-  T(`전원 등장 (${n}명)`, ()=>n>=13);
-  T(`균등 분포 (카이제곱 ${chi.toFixed(1)} < 26.2, 최대편차 ${(dev*100).toFixed(1)}%)`, ()=>chi<26.2);
+  /* [2.11.0] 과묵한 사람은 일부러 덜 나오게 했다 (제보: 우진혁이 너무 자주 말한다).
+     그래서 '전원 균등'이 아니라 '과묵 빼고 균등 + 과묵은 드물게'가 맞는 기준이다.
+     원래 이 테스트가 잡으려던 건 '한 사람이 마이크를 독점하는 것'이라 그건 그대로 본다. */
+  const quiet=k=>ev(`(function(){var m=META['${k}'];return !!(m&&m.traits&&m.traits.indexOf('과묵')>=0)})()`);
+  const keys=Object.keys(cnt);
+  const loudK=keys.filter(k=>!quiet(k)), muteK=keys.filter(k=>quiet(k));
+  const lv=loudK.map(k=>cnt[k]);
+  const lTot=lv.reduce((a,b)=>a+b,0), lExp=lTot/lv.length;
+  const chi=lv.reduce((a,v)=>a+(v-lExp)*(v-lExp)/lExp,0);
+  const dev=Math.max(...lv.map(v=>Math.abs(v-lExp)/lExp));
+  console.log('   ', keys.map(k=>`${ev(`nameOf('${k}')`)} ${cnt[k]}${quiet(k)?'(과묵)':''}`).join(' '));
+  T(`전원 등장 (${keys.length}명)`, ()=>keys.length>=13);
+  T(`과묵 빼고 균등 (카이제곱 ${chi.toFixed(1)} < 26.2, 최대편차 ${(dev*100).toFixed(1)}%)`, ()=>chi<26.2);
+  const mutePct=muteK.length? muteK.reduce((a,k)=>a+cnt[k],0)*100/N : 0;
+  T(`과묵한 사람은 드물게 (${mutePct.toFixed(1)}% · ${muteK.length}명)`,
+    ()=>muteK.length===0 || (mutePct>0 && mutePct<4));
 
   console.log('\n[고생했다 — 응답자·문장 다양성]');
   const who={}, texts=new Set();

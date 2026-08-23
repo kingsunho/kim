@@ -17,7 +17,7 @@ for f in lintcheck verify vernotetest mgrtest kakaotest careertest nametest \
          awardtest kingtest savediet loadtest sorttest phototest bgmtest \
          iostest galaxytest compattest boxtest pcardtest feattest \
          unhappytest hometest namecheck smoketest fixtest recruittest \
-         traintest2 vartest wltest advtest dectest2 subtest resumetest ruletest pitchbug deptest pitchtest playtest; do
+         traintest2 vartest wltest advtest dectest2 subtest resumetest ruletest pitchbug deptest pitchtest playtest swaptest vartest2; do
   printf "%-13s " $f
   if [ "$f" = "verify" ]; then node verify.js index.html >/dev/null 2>&1 && echo OK || echo FAIL
   else node $f.js >/dev/null 2>&1 && echo OK || echo FAIL; fi
@@ -41,6 +41,8 @@ node soaktest.js
 | `dectest2` | 직접 지휘 — 지시없음이 판단 횟수를 안 먹는지 · 투수 교체 상시 버튼 |
 | `subtest` | 투수 교체 시 타순·수비 정리 · 지명타자 소멸 (지타 유무 모두) |
 | `resumetest` | 경기 중 다른 탭 갔다 와도 이어서 진행 · 재굴림 차단 |
+| `swaptest` | 두 번 눌러 타순·포지션 교체 (명단/야구장) |
+| `vartest2` | 불참 사유·또래 잡담 확장 · 한 시즌 대사 중복도 |
 | `playtest` | 직접 플레이 — 타이밍 스윙 · 코스 선택 · 모드별 노출 빈도 · 보정 폭 |
 | `pitchtest` | 등판 성장·사기·불씨 해소 · 미등판 불만 누적 · 사람별 말버릇 |
 | `deptest` | 야구장 그림 라인업 · 포지션별 뎁스차트 · 주포지션 1순위 중복 방지 |
