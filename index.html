@@ -833,24 +833,27 @@ table.stand td.nm{text-align:left;font-weight:700;font-size:12px}
 .mvt-dia u.d2{left:5px;top:0}
 .mvt-dia u.d3{left:0;top:4px}
 .mvt-o{color:#e08a70;letter-spacing:1px;font-size:9px}
-.szone{position:absolute;left:50%;top:71%;transform:translate(-50%,-50%);
-  width:20%;padding-top:20%;border:2px dashed rgba(255,255,255,.5);border-radius:3px}
+/* 존 크기는 실제 치수에서 나온다 — 폭 43cm : 높이 56cm (1 : 1.3).
+   화면 폭의 10% (=48px) 로 잡으면 타자 어깨너비의 1.4배쯤 된다.
+   [버그 이력] 예전엔 존이 96px 이라 타자(62px)보다 컸다. 말이 안 됐다. */
+.szone{position:absolute;left:50%;top:80%;transform:translate(-50%,-50%);
+  width:10%;padding-top:12.9%;border:2px solid rgba(255,255,255,.5);border-radius:2px}
 .szone i{position:absolute;background:rgba(255,255,255,.16)}
 .szone i.v1{left:33.3%;top:0;bottom:0;width:1px}
 .szone i.v2{left:66.6%;top:0;bottom:0;width:1px}
 .szone i.h1{top:33.3%;left:0;right:0;height:1px}
 .szone i.h2{top:66.6%;left:0;right:0;height:1px}
 .szone.hotcell{box-shadow:0 0 0 2px rgba(232,118,44,.55)}
-.mitt{position:absolute;left:50%;bottom:12%;transform:translate(-50%,0);
-  width:22px;height:19px;background:#7a4a28;border:2px solid #a06a3c;
-  border-radius:11px 11px 8px 8px;box-shadow:inset -3px -4px 0 rgba(0,0,0,.22)}
+.mitt{position:absolute;left:50%;bottom:6.5%;transform:translate(-50%,0);
+  width:18px;height:16px;background:#7a4a28;border:2px solid #a06a3c;
+  border-radius:9px 9px 7px 7px;box-shadow:inset -3px -4px 0 rgba(0,0,0,.22)}
 .mitt::before{content:'';position:absolute;left:-5px;top:1px;width:8px;height:13px;
-  background:#7a4a28;border:2px solid #a06a3c;border-radius:5px 0 0 6px}
-.ball{position:absolute;width:13px;height:13px;border-radius:50%;background:#fff;
+  background:#7a4a28;border:2px solid #a06a3c;border-radius:4px 0 0 5px}
+.ball{position:absolute;width:9px;height:9px;border-radius:50%;background:#fff;
   box-shadow:0 0 7px rgba(255,255,255,.75), inset -2px -2px 0 rgba(0,0,0,.15);
   left:0;top:0;will-change:transform;pointer-events:none}
 .ball.seam{background:radial-gradient(circle at 38% 34%,#fff 60%,#e8e8e8 100%)}
-.trail{position:absolute;width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.30);
+.trail{position:absolute;width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.30);
   pointer-events:none}
 .mound .lbl{position:absolute;left:6px;top:27px;font-size:10.5px;color:#9fb0c4;
   background:rgba(8,14,22,.62);padding:3px 7px;border-radius:6px;
@@ -6127,8 +6130,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.21.0';
-const APP_VERSION_NOTE = '구장 그림 해상도 2배 · 투수 손 수정';
+const APP_VERSION = '2.21.1';
+const APP_VERSION_NOTE = '타자·존 크기 실제 비율로';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6149,6 +6152,15 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.21.1', t:'타자·존 크기 실제 비율로', items:[
+    '스트라이크 존이 타자보다 컸다. 말이 안 됐다. 실제 치수(폭 43cm : 높이 56cm)로 다시 잡았다',
+    '존을 화면 폭의 10% 로 줄이고 홈플레이트 바로 위에 놓았다. 타자 어깨너비의 1.4배쯤 된다',
+    '타자를 키웠다. 화면 앞이라 제일 크고, 마운드 투수는 그 45% 다 — 실제 중계 화면 비율이다',
+    '공도 존 대비 17% 로 줄였다. 실제 야구공 7.3cm / 존 43cm 비율',
+    '포수 머리가 존 한가운데를 가리던 것도 내렸다',
+    '투구 화면에 상대 타자가 좌타인지 우타인지 표시한다',
+    '그 아래에 이번 맞대결에서 변화구가 어느 쪽으로 휘는지 한 줄로 알려준다. 같은 투수라도 좌타를 만나면 반대로 휜다',
+  ]},
   {v:'2.21.0', t:'구장 그림 해상도 2배 · 투수 손 수정', items:[
     '우완 투수 열두 명이 전부 좌완 모션으로 던지고 있었다. 시점이 포수 뒤라 마주 보는 우완의 팔은 화면 왼쪽인데 반대로 그렸다',
     '그래서 슬라이더가 휘는 방향과 팔 방향이 어긋나 보였다. 이제 맞는다',
@@ -14302,14 +14314,16 @@ function mvPaint(mound, o){
   const home={cap:'#2f5fb0', sh:'#eef2f8', pants:'#dfe4ec', st:'rgba(47,95,176,.35)', gl:'#5b3a1e'};
   const away={cap:'#b23a34', sh:'#e6ddd0', pants:'#d8d0c4', st:'rgba(178,58,52,.30)', gl:'#4a3018'};
   const du=st.usDef?home:away, ou=st.usDef?away:home;
-  // 야수 — 멀리 작게
+  /* 크기는 실제 중계 화면 비율을 따른다.
+     타자(1m 앞) 88px 을 기준으로 투수(18m 뒤)는 45%, 야수는 그 절반.
+     [제보] "타자 크기랑 존 크기가 너무 이상적이지가 않잖아"          */
   [[64,168],[150,158],[330,158],[416,168]].forEach(([x,y])=>mvGuy(g,x,y,20,du,'idle',false));
   // 투수 — 마주 보는 우완의 던지는 팔은 화면 왼쪽이다. 그래서 우완이 flip.
   mvGuy(g,MV_MOUND.x,MV_MOUND.y+12,40,du,st.pit,!st.pitLeft);
-  // 포수
-  mvGuy(g,MV_PLATE.x,MVH-2,44,du,'catch',false);
-  // 타자
-  mvGuy(g, st.batLeft?300:180, 264, 62, ou, st.bat, !st.batLeft);
+  // 포수 — 존 뒤에 앉는다
+  mvGuy(g,MV_PLATE.x,MVH+18,44,du,'catch',false);   // 머리가 존을 가리지 않게
+  // 타자 — 화면 앞이라 제일 크다
+  mvGuy(g, st.batLeft?308:172, 260, 80, ou, st.bat, !st.batLeft);
 }
 
 /* 좌완이면 이름 옆에 표시. 우완은 굳이 안 붙인다 — 대부분이 우완이다. */
@@ -14438,11 +14452,13 @@ function throwBall(mound, type, opts){
     const bk = t<T.late ? 0 : Math.pow((t-T.late)/(1-T.late),2);
     const x = sx+(ax-sx)*e + bkx*bk;      // bk 가 1 이 되면 정확히 tx
     const y = sy+(ay-sy)*e + bky*bk;
-    const sc = 0.42+e*1.5;
-    ball.style.transform=tfm(x-6.5,y-6.5,sc);
+    /* 원근 — 멀리서 작게 오다가 커진다. 도착했을 때 공 지름이 존 폭의
+       17% 가 되게 잡았다 (실제 야구공 7.3cm / 스트라이크존 43cm). */
+    const sc = 0.34+e*0.66;
+    ball.style.transform=tfm(x-4.5,y-4.5,sc);
     if(t>0.15 && trails.length<14 && Math.random()<0.5){
       const tr=el('div','trail');
-      tr.style.transform=tfm(x-3.5,y-3.5,sc*0.8);
+      tr.style.transform=tfm(x-2.5,y-2.5,sc*0.8);
       mound.appendChild(tr); trails.push(tr);
       setTimeout(()=>{ if(tr.parentNode)tr.parentNode.removeChild(tr); },260);
     }
@@ -14710,7 +14726,7 @@ function renderPitch(box, d){
     head.innerHTML=`<div class="pl-t">투구 · ${c.b}볼 ${c.s}스트라이크</div>
       <div class="pl-sub">${LIVE.inning}회 ${LIVE.outs}아웃 ·
         마운드 <b style="color:#e2eaf5">${p.name}</b> (구위 ${p.stf} 제구 ${p.ctl})
-        · 상대 타석 ${bat?bat.name:'—'}<br>
+        · 상대 타석 ${bat?bat.name:'—'}${bat&&bat.bats==='L'?' <b style="color:#7fc4d8">좌타</b>':(bat?' <span style="color:#8b97a6">우타</span>':'')}<br>
         ${c.b===3?'<b style="color:#e08a70">3볼이다. 하나만 더 빠지면 볼넷</b>'
          :(c.s===2?'<b style="color:#7fc48f">2스트라이크. 유인구를 던져볼 만하다</b>'
          :'구종과 코스를 고르면 던진다.')} 제구 성공률 약 ${sharp}%.</div>`;
@@ -14730,7 +14746,10 @@ function renderPitch(box, d){
       b2.onclick=()=>{ if(busy)return; type=k; draw(); };
       tRow.appendChild(b2);
     });
-    info.innerHTML=`<b style="color:#e08a70">한가운데</b>는 넣기 쉽지만 맞기도 쉽다.<br>
+    info.innerHTML=(bat?`<b style="color:#7fc48f">${p.name}(${throwHandOf(p)==='L'?'좌':'우'}투)</b> vs `+
+        `<b>${bat.name}(${bat.bats==='L'?'좌':'우'}타)</b> — `+
+        (pitchHand(p,bat)>0?'변화구가 <b>바깥으로</b> 흘러 나간다':'변화구가 <b>몸쪽으로</b> 파고든다')+'<br>':'')+
+      `<b style="color:#e08a70">한가운데</b>는 넣기 쉽지만 맞기도 쉽다.<br>
       <b style="color:#7fc48f">구석·낮은 코스</b>는 어렵지만 타자가 잘 못 친다.<br>
       빠지면 <b>볼</b>이다. 변화구는 위력적이지만 더 자주 빠진다.<br>
       제구 ${p.ctl} — ${p.ctl>=45?'웬만하면 들어간다':(p.ctl>=30?'가끔 몰린다':'자주 빠진다')}`;

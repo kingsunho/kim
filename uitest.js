@@ -183,6 +183,51 @@ const txt=()=>d.querySelector('#view').textContent;
     return cells>=21 && now>=1 ? `${cells}칸 · 현재 이닝 표시 ${now}개` : `!${cells}/${now}`;
   });
 
+  console.log('\n[타자·존 비율]');
+  T('존이 타자보다 작다', ()=>{
+    /* 화면(480x270) 기준 — 존 폭 10%(48px) · 높이 12.9%of폭(62px),
+       타자 키 80px. 예전엔 존 96px > 타자 62px 이라 뒤집혀 있었다. */
+    const css=ev("document.querySelector('style')?'':''"); // (스타일은 아래 문자열로 검사)
+    const html=ev("document.documentElement.innerHTML");
+    const m=html.match(/\.szone\{[^}]*width:([\d.]+)%;padding-top:([\d.]+)%/);
+    if(!m) return '!존 크기를 못 읽는다';
+    const zw=480*Number(m[1])/100, zh=480*Number(m[2])/100;
+    const bat=80;
+    return (zh<bat && zw<bat) ? `존 ${zw.toFixed(0)}x${zh.toFixed(0)} < 타자 ${bat}` : `!존 ${zw}x${zh}`;
+  });
+  T('존 가로:세로가 실제 비율(1:1.3)에 가깝다', ()=>{
+    const html=ev("document.documentElement.innerHTML");
+    const m=html.match(/\.szone\{[^}]*width:([\d.]+)%;padding-top:([\d.]+)%/);
+    const r=Number(m[2])/Number(m[1]);
+    return (r>1.15&&r<1.45) ? `1 : ${r.toFixed(2)}` : `!1 : ${r.toFixed(2)}`;
+  });
+  T('투수는 타자의 절반쯤이다', ()=>{
+    const src=ev("String(mvPaint)");
+    const pit=Number((src.match(/MV_MOUND\.y\+12,(\d+)/)||[])[1]);
+    const bat=Number((src.match(/st\.batLeft\?\d+:\d+, ?\d+, ?(\d+)/)||[])[1]);
+    const r=pit/bat;
+    return (r>0.4&&r<0.6) ? `투수 ${pit} / 타자 ${bat} = ${(r*100).toFixed(0)}%` : `!${pit}/${bat}`;
+  });
+  T('공이 존보다 훨씬 작다', ()=>{
+    const html=ev("document.documentElement.innerHTML");
+    const m=html.match(/\.ball\{[^}]*width:(\d+)px/);
+    return Number(m[1])<=10 ? `${m[1]}px` : `!${m[1]}px`;
+  });
+
+  console.log('\n[좌우 맞대결 안내]');
+  T('투구 화면에 타자의 좌우가 표시된다', ()=>{
+    ev(`(function(){ LIVE=makeLive(); LIVE.manual=true; LIVE.round=ST.round;
+      if(!document.getElementById('decision')){var b=document.createElement('div');b.id='decision';document.body.appendChild(b);}
+      var g=0; while(!LIVE.def().isUser && g++<200){ if(LIVE.pending)LIVE.applyDecision('change'); LIVE.step(); }
+      showDecision({kind:'pitch',label:'투구'}); })()`);
+    const t=d.querySelector('#decision').textContent;
+    return /(좌타|우타)/.test(t) ? (t.match(/상대 타석 [^\n]{0,12}/)||[''])[0].trim() : '!표시 없다';
+  });
+  T('변화구가 어느 쪽으로 휘는지 알려준다', ()=>{
+    const t=d.querySelector('.zinfo').textContent;
+    return /(바깥으로|몸쪽으로) (흘러|파고)/.test(t) ? t.split('한가운데')[0].trim().slice(0,52) : `!${t.slice(0,40)}`;
+  });
+
   console.log(errs.length?`\n❌ ${errs.length}건`:'\n✅ 이상 없음');
   process.exit(errs.length?1:0);
 })();
