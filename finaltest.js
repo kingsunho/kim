@@ -5,6 +5,10 @@ vc.on('jsdomError',e=>{if(!/scrollTo/.test(e.message))errs.push(e.message)});
 const dom=new JSDOM(html,{runScripts:'dangerously',pretendToBeVisual:true,url:'https://x.test/',virtualConsole:vc});
 dom.window.scrollTo=()=>{};dom.window.confirm=()=>true;
 const w=dom.window,d=w.document,ev=s=>w.eval(s);
+/* [2.19.0] 경기 시작을 누르면 리그 랭킹 화면이 먼저 뜬다. 넘겨준다. */
+const passRank=()=>{ const ov=d.querySelector('.rk-ov'); if(!ov) return false;
+  const b=[...ov.querySelectorAll('button')].find(x=>x.textContent==='경기 시작');
+  if(b)b.click(); else ov.remove(); return true; };
 const T=(n,f)=>{try{const r=f();console.log((r?'  ✅ ':'  ❌ ')+n);if(!r)errs.push(n);}catch(e){console.log('  ❌ '+n+' :: '+e.message);errs.push(n)}};
 /* v1.5.1 부터 라인업을 단톡방에 발표해야 경기로 넘어간다.
    그리고 startLive() 는 #stage 가 있어야 한다 — 경기 화면을 먼저 그린다. */
@@ -14,7 +18,7 @@ async function enterGame(w,d,ev,manual){
   const b=[...d.querySelectorAll('#view .btn')]
     .find(x=>new RegExp(manual?'직접 지휘':'자동 진행').test(x.textContent));
   if(!b) return false;
-  b.click(); await new Promise(r=>setTimeout(r,manual?150:60));
+  b.click(); passRank(); await new Promise(r=>setTimeout(r,manual?150:60));
   return true;
 }
 setTimeout(async()=>{

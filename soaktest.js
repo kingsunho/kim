@@ -19,6 +19,10 @@ const dom=new JSDOM(html,{runScripts:'dangerously',pretendToBeVisual:true,url:'h
   virtualConsole:vc, beforeParse(w){ w.AudioContext=FakeAC; w.scrollTo=()=>{};
     w.TextEncoder=TextEncoder; w.TextDecoder=TextDecoder; }});   // jsdom 에 없어서 채워준다
 const w=dom.window,d=w.document,ev=s=>w.eval(s);
+/* [2.19.0] 경기 시작을 누르면 리그 랭킹 화면이 먼저 뜬다. 넘겨준다. */
+const passRank=()=>{ const ov=d.querySelector('.rk-ov'); if(!ov) return false;
+  const b=[...ov.querySelectorAll('button')].find(x=>x.textContent==='경기 시작');
+  if(b)b.click(); else ov.remove(); return true; };
 w.confirm=()=>true;
 process.on('unhandledRejection',e=>bad.push('REJECT: '+String(e).slice(0,120)));
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
@@ -106,7 +110,7 @@ function sweep(tag){
       if(rb){ rb.click(); await wait(120); }
       else { warn.push(`${g+1}차전: 시작 버튼 없음 — ${d.getElementById('view').textContent.slice(0,70)}`); break; }
     } else {
-      btn.click();
+      btn.click(); passRank();
       for(let i=0;i<500 && !ev("LIVE&&LIVE.over");i++) await wait(15);
       await wait(150);
     }

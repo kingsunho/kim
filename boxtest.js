@@ -6,6 +6,10 @@ vc.on('jsdomError',e=>{if(!/scrollTo/.test(e.message))errs.push(e.message)});
 const dom=new JSDOM(html,{runScripts:'dangerously',pretendToBeVisual:true,url:'https://x.test/',virtualConsole:vc});
 dom.window.scrollTo=()=>{};dom.window.confirm=()=>true;
 const w=dom.window,d=w.document,ev=s=>w.eval(s);
+/* [2.19.0] 경기 시작을 누르면 리그 랭킹 화면이 먼저 뜬다. 넘겨준다. */
+const passRank=()=>{ const ov=d.querySelector('.rk-ov'); if(!ov) return false;
+  const b=[...ov.querySelectorAll('button')].find(x=>x.textContent==='경기 시작');
+  if(b)b.click(); else ov.remove(); return true; };
 const T=(n,f)=>{try{const r=f();console.log((r?'  ✅ ':'  ❌ ')+n+(typeof r==='string'?' :: '+r:''));if(!r)errs.push(n);}catch(e){console.log('  ❌ '+n+' :: '+e.message);errs.push(n)}};
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 
@@ -21,7 +25,7 @@ setTimeout(async()=>{
   console.log('    게임화면 버튼:', [...d.querySelectorAll('#view .btn')].map(b=>b.textContent).join(' | '));
   const gb=[...d.querySelectorAll('#view .btn')].find(x=>/직접 지휘/.test(x.textContent));
   if(!gb){ console.log('    view:', d.getElementById('view').textContent.slice(0,400)); process.exit(1); }
-  gb.click(); await wait(120);
+  gb.click(); passRank(); await wait(120);
   ev("if(playTimer){clearInterval(playTimer);playTimer=null;}");
   const info=ev(`(function(){
     var us=LIVE.userSide();

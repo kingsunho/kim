@@ -7,6 +7,10 @@ vc.on('jsdomError',e=>{if(!/scrollTo|Could not load|stylesheet|Not implemented/.
 const dom=new JSDOM(html,{runScripts:'dangerously',pretendToBeVisual:true,url:'https://x.test/',
   virtualConsole:vc,beforeParse(w){w.scrollTo=()=>{};w.TextEncoder=TextEncoder;w.TextDecoder=TextDecoder;}});
 const w=dom.window,d=w.document,ev=s=>w.eval(s); w.confirm=()=>true;
+/* [2.19.0] 경기 시작을 누르면 리그 랭킹 화면이 먼저 뜬다. 넘겨준다. */
+const passRank=()=>{ const ov=d.querySelector('.rk-ov'); if(!ov) return false;
+  const b=[...ov.querySelectorAll('button')].find(x=>x.textContent==='경기 시작');
+  if(b)b.click(); else ov.remove(); return true; };
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const T=(n,f)=>{try{const r=f();const ok=r===true||(typeof r==='string'&&!/^!/.test(r));
   console.log((ok?'  ✅ ':'  ❌ ')+n+(typeof r==='string'?' :: '+r.replace(/^!/,''):''));if(!ok)bad.push(n);}
@@ -61,7 +65,7 @@ const T=(n,f)=>{try{const r=f();const ok=r===true||(typeof r==='string'&&!/^!/.t
   ev("ST.weekDone=true; ST.announced=true; ST.lineupDirty=false;");
   w.go('game'); await wait(120);
   const mb=[...d.querySelectorAll('#view .btn')].find(x=>/직접 지휘/.test(x.textContent));
-  if(mb){ mb.click(); await wait(200); }
+  if(mb){ mb.click(); passRank(); await wait(200); }
   T('상시 버튼이 있다', ()=>{
     const b=[...d.querySelectorAll('#livectl .btn')].find(x=>/감독 액션/.test(x.textContent));
     return b ? b.textContent : '!없다';
