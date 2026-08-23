@@ -22,8 +22,16 @@ const fixToday=(md)=>ev(`(function(){ window.__md='${md}';
   await wait(300); ev("ST.tutDone=true");
 
   console.log('[생일 데이터]');
-  T('김상훈 생일이 등록돼 있다', ()=>ev("BIRTHDAY['ksn']")==='08-23' ? '08-23' : '!없다');
+  T('김상훈 생일이 등록돼 있다', ()=>ev("BIRTHDAY['ksn']")==='08-24' ? '08-24' : '!날짜가 다르다');
   T('오늘 날짜를 MM-DD 로 읽는다', ()=>/^\d{2}-\d{2}$/.test(ev("todayMD()")) ? ev("todayMD()") : '!형식이 다르다');
+  T('폰 시간대가 아니라 한국 시간으로 본다', ()=>{
+    /* UTC 로 도는 서버에서 밤늦게 열면 한국은 이미 다음 날이다.
+       [버그 이력] 이걸 놓쳐서 생일을 하루 어긋나게 넣었다. */
+    const kst=ev(`(function(){ var t=kstNow(); return t.getUTCFullYear()+'-'+
+      String(t.getUTCMonth()+1).padStart(2,'0')+'-'+String(t.getUTCDate()).padStart(2,'0'); })()`);
+    const real=new Date(Date.now()+9*3600000).toISOString().slice(0,10);
+    return kst===real ? kst : `!게임 ${kst} vs 실제 한국 ${real}`;
+  });
   T('남은 날짜를 센다', ()=>{
     const n=ev("daysToBirthday('ksn')");
     return (n>=0&&n<=366) ? `D-${n}` : `!${n}`;
@@ -31,7 +39,7 @@ const fixToday=(md)=>ev(`(function(){ window.__md='${md}';
   T('생일 없는 사람은 null 이다', ()=>ev("daysToBirthday('swm')")===null);
 
   console.log('\n[생일 당일]');
-  fixToday('08-23');
+  fixToday('08-24');
   T('오늘 생일인 사람을 찾아낸다', ()=>{
     const ids=ev("JSON.stringify(birthdayToday())");
     return ids==='["ksn"]' ? '김상훈' : `!${ids}`;
@@ -92,11 +100,11 @@ const fixToday=(md)=>ev(`(function(){ window.__md='${md}';
       ST.absent={}; ST.events=[];
       ST.cond['ksn']=58; ST.morale['ksn']=58;   // 상한(100)에 안 걸리게 낮춰둔다
       })()`);
-    const on=ev(`(function(){ window.__md='08-23'; var L=makeLive();
+    const on=ev(`(function(){ window.__md='08-24'; var L=makeLive();
       return (L.home.cond['ksn']!=null?L.home.cond:L.away.cond)['ksn']; })()`);
     const off=ev(`(function(){ window.__md='01-01'; var L=makeLive();
       return (L.home.cond['ksn']!=null?L.home.cond:L.away.cond)['ksn']; })()`);
-    ev("window.__md='08-23'");
+    ev("window.__md='08-24'");
     return (on-off>=7) ? `생일 ${on.toFixed(0)} vs 평소 ${off.toFixed(0)}` : `!${on}/${off}`;
   });
   T('라인업 발표 카톡에도 축하가 붙는다', ()=>{

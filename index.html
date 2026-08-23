@@ -2582,10 +2582,18 @@ function sayTo(from, to, ban, jon){ return speechTo(from,to)==='ban'?ban:jon; }
 
    다른 사람 생일을 알게 되면 여기 한 줄씩 추가하면 된다. 'MM-DD' 형식.  */
 const BIRTHDAY={
-  ksn:'08-23',        // 김상훈 — 감독이 알려준 실제 생일
+  ksn:'08-24',        // 김상훈 — 감독이 알려준 실제 생일
 };
-function todayMD(d){
-  const t=d||new Date();
+/* [버그 이력] 처음엔 폰 시간대를 그대로 썼다. 그런데 개발 서버가 UTC 라
+   한국이 이미 8월 24일인데 8월 23일로 넣었다. 하루가 어긋났다.
+   이제 어디서 열든 한국 시간으로 본다 — 팀이 전부 안산에 있으니
+   폰 시간대가 뭐든 같은 날을 봐야 맞다.                              */
+function kstNow(){
+  const t=new Date();
+  return new Date(t.getTime()+t.getTimezoneOffset()*60000+9*3600000);
+}
+function todayMD(){
+  const t=kstNow();
   return String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
 }
 /* 오늘 생일인 사람들 (로스터에 있는 사람만) */
@@ -2598,16 +2606,16 @@ function isBirthday(pid){ return !!BIRTHDAY[pid] && BIRTHDAY[pid]===todayMD(); }
 /* 생일까지 며칠 남았나 — 선수 카드에 쓴다 */
 function daysToBirthday(pid){
   const md=BIRTHDAY[pid]; if(!md) return null;
-  const now=new Date();
+  const now=kstNow();
   const [m,dd]=md.split('-').map(Number);
+  const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   let t=new Date(now.getFullYear(), m-1, dd);
-  if(t< new Date(now.getFullYear(),now.getMonth(),now.getDate()))
-    t=new Date(now.getFullYear()+1, m-1, dd);
-  return Math.round((t-new Date(now.getFullYear(),now.getMonth(),now.getDate()))/86400000);
+  if(t<today) t=new Date(now.getFullYear()+1, m-1, dd);
+  return Math.round((t-today)/86400000);
 }
 function bdayAge(pid){
   const m=META[pid]; if(!m||!m.born) return null;
-  return new Date().getFullYear()-m.born;
+  return kstNow().getFullYear()-m.born;
 }
 
 /* 단톡방 축하 — 말투는 화자 기준으로 갈린다 */
@@ -6293,8 +6301,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.22.0';
-const APP_VERSION_NOTE = '생일 이벤트';
+const APP_VERSION = '2.22.1';
+const APP_VERSION_NOTE = '생일 날짜 · 한국 시간 기준';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6315,6 +6323,10 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.22.1', t:'생일 날짜 · 한국 시간 기준', items:[
+    '김상훈 생일을 8월 23일로 넣었는데 하루 어긋나 있었다. 8월 24일로 바로잡았다',
+    '날짜를 폰 시간대가 아니라 한국 시간으로 본다. 팀이 전부 안산에 있으니 어디서 열든 같은 날이어야 맞다',
+  ]},
   {v:'2.22.0', t:'생일 이벤트', items:[
     '생일 이벤트를 넣었다. 게임 안 날짜가 아니라 진짜 달력을 본다 — 그날 접속하면 하루 종일 뜬다',
     '홈 화면 맨 위에 생일 카드. 나이·등번호가 같이 나오고 [축하한다] 를 누르면 사기 +14 · 컨디션 +6, 나머지 팀원도 사기 +3',
@@ -6324,7 +6336,7 @@ const CHANGELOG=[
     '생일에 안타·홈런을 치면 중계에 한 줄 더 붙고, 홈런은 진기록으로 박제된다',
     '하이라이트 다시 보기 배너도 「🎂 생일 홈런!!」 으로 바뀐다',
     '선수단 목록·선수 카드·전시장에 케이크 표시가 뜨고, 카드에는 생일까지 며칠 남았는지도 나온다',
-    '첫 주인공은 8월 23일 김상훈. 다른 사람 생일도 알려주면 넣는다',
+    '첫 주인공은 8월 24일 김상훈. 다른 사람 생일도 알려주면 넣는다',
   ]},
   {v:'2.21.1', t:'타자·존 크기 실제 비율로', items:[
     '스트라이크 존이 타자보다 컸다. 말이 안 됐다. 실제 치수(폭 43cm : 높이 56cm)로 다시 잡았다',
