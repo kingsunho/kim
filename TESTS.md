@@ -75,6 +75,7 @@ node soaktest.js
 | `scenetest` | 2D 그라운드 장면(장면 기술서·좌표·발동 조건) · 경기 전 리그 랭킹 |
 | `slidetest` | 구종 궤적 — 도착점이 미트·판정과 일치하는지 · 좌우 맞대결별 휘는 방향 |
 | `uitest` | 짧아진 튜토리얼 · 화면 첫 진입 안내 · ? 도움말 · 구장 그림·전광판 |
+| `bdaytest` | 생일 이벤트 — 진짜 달력 기준 · 홈 카드 · 축하 릴레이 · 당일 버프 |
 
 ## 가끔 실패하는 것
 
@@ -104,3 +105,9 @@ v2.20.0 부터 구장 그림(`.mv-cv`)과 2D 장면이 캔버스다. jsdom 은 `
 가 없어서 **`Not implemented: HTMLCanvasElement.prototype.getContext`** 경고를
 낸다. 게임은 이 경우 그림만 건너뛰고 정상 동작한다.
 테스트의 `jsdomError` 필터에 `not implemented` 를 넣어야 오탐이 안 잡힌다.
+
+## 생일 테스트
+
+`bdaytest` 는 실제 실행일과 무관하게 돌아야 해서 `todayMD()` 를 덮어써서
+날짜를 고정한다. 새 생일을 `BIRTHDAY` 에 추가할 때는 `'MM-DD'` 형식만
+지키면 되고 테스트는 손댈 필요 없다.

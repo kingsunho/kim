@@ -889,6 +889,23 @@ table.stand td.nm{text-align:left;font-weight:700;font-size:12px}
   70%{transform:translate(-2px,-1px)}}
 .mound.impact .szone{border-color:rgba(255,220,120,.9)}
 /* 포수 미트가 그냥 갈색 동그라미로 보여서 뭔지 몰랐다 — 글러브 모양 + 이름 */
+.bday-card{background:linear-gradient(135deg,rgba(255,209,92,.20),rgba(232,118,44,.10),var(--panel2));
+  border:1px solid rgba(255,209,92,.5);border-radius:14px;padding:12px;margin-bottom:12px;
+  position:relative;overflow:hidden}
+.bday-card::after{content:'🎉';position:absolute;right:-6px;top:-10px;font-size:54px;opacity:.12}
+.bd-h{font-size:12px;font-weight:900;color:#ffd15c;letter-spacing:.4px;margin-bottom:8px}
+.bd-row{display:flex;align-items:center;gap:10px;padding:4px 0}
+.bd-av{width:46px;height:46px;border-radius:50%;overflow:hidden;flex:0 0 46px;
+  background:var(--panel);border:2px solid rgba(255,209,92,.55)}
+.bd-av img,.bd-av svg{width:100%;height:100%;object-fit:cover;display:block}
+.bd-b{flex:1;min-width:0}
+.bd-b b{display:block;font-size:15px;font-weight:900;color:var(--tx)}
+.bd-b span{display:block;font-size:11px;color:#ffd15c;margin-top:2px}
+.bd-cake{font-size:26px}
+.bd-note{font-size:11px;color:var(--dm);margin:8px 2px 0}
+.bd-go{width:100%;margin-top:9px}
+.bdtag{font-style:normal;font-size:10px;font-weight:800;color:#1a1206;
+  background:#ffd15c;border-radius:4px;padding:1px 5px;margin-left:5px}
 #helpbtn{font-weight:900;font-size:14px;color:#9fb0c4}
 .help-h{font-size:10.5px;font-weight:800;color:var(--dm);margin:10px 2px 5px;letter-spacing:.3px}
 .help-list{display:flex;flex-direction:column;gap:4px}
@@ -2556,6 +2573,138 @@ function say(pid, ban, jon){ return speechOf(pid)==='ban'?ban:jon; }
 /* 특정 상대를 향한 말투 */
 function sayTo(from, to, ban, jon){ return speechTo(from,to)==='ban'?ban:jon; }
 
+/* ================= 생일 =================
+   [요청] "오늘 실제 김상훈의 생일인데, 게임에서도 하루 종일 상훈이를
+   축하할 수 있으면 좋겠어"
+
+   게임 안 시즌 날짜가 아니라 **진짜 달력**을 본다. 그래야 그날 접속한
+   사람 전부에게 하루 종일 뜬다. 시즌을 몇 번 넘겼든 상관없다.
+
+   다른 사람 생일을 알게 되면 여기 한 줄씩 추가하면 된다. 'MM-DD' 형식.  */
+const BIRTHDAY={
+  ksn:'08-23',        // 김상훈 — 감독이 알려준 실제 생일
+};
+function todayMD(d){
+  const t=d||new Date();
+  return String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
+}
+/* 오늘 생일인 사람들 (로스터에 있는 사람만) */
+function birthdayToday(){
+  const md=todayMD();
+  return Object.keys(BIRTHDAY).filter(id=>BIRTHDAY[id]===md
+    && TBYID['wwzw'].players.some(p=>p.id===id));
+}
+function isBirthday(pid){ return !!BIRTHDAY[pid] && BIRTHDAY[pid]===todayMD(); }
+/* 생일까지 며칠 남았나 — 선수 카드에 쓴다 */
+function daysToBirthday(pid){
+  const md=BIRTHDAY[pid]; if(!md) return null;
+  const now=new Date();
+  const [m,dd]=md.split('-').map(Number);
+  let t=new Date(now.getFullYear(), m-1, dd);
+  if(t< new Date(now.getFullYear(),now.getMonth(),now.getDate()))
+    t=new Date(now.getFullYear()+1, m-1, dd);
+  return Math.round((t-new Date(now.getFullYear(),now.getMonth(),now.getDate()))/86400000);
+}
+function bdayAge(pid){
+  const m=META[pid]; if(!m||!m.born) return null;
+  return new Date().getFullYear()-m.born;
+}
+
+/* 단톡방 축하 — 말투는 화자 기준으로 갈린다 */
+const BDAY_LINES=[
+  ['{n} 생일 축하한다!!','{n}님 생일 축하합니다!!'],
+  ['{n} 생일이라매 축하한다 ㅋㅋ','{n}님 생일이시라면서요 축하드립니다'],
+  ['오늘 {n} 생일이다 다들 축하해줘라','오늘 {n}님 생일입니다 다들 축하해주세요'],
+  ['{n} 생축 ㅊㅋㅊㅋ','{n}님 생축하세요 ㅊㅋㅊㅋ'],
+  ['생일인데 오늘 한 방 쳐야지 {n}','{n}님 생일인데 오늘 한 방 치셔야죠'],
+  ['{n} 생일 기념으로 오늘 밥 사라','{n}님 생일 기념으로 오늘 한턱 쏘시죠'],
+  ['{n} 형 생일 축하해요','{n}님 생일 축하드려요'],
+  ['{n} 나이 한 살 더 먹었네 ㅋㅋ 축하한다','{n}님 한 살 더 드셨네요 ㅋㅋ 축하합니다'],
+  ['{n} 생일축하 오늘은 삼진 안 당하는 걸로','{n}님 생일 축하드립니다 오늘은 삼진 없기로'],
+  ['{n} 생일이면 오늘 수비도 봐줘야 되는 거 아니냐','{n}님 생일이면 오늘 수비도 봐드려야죠'],
+];
+const BDAY_REPLY=[
+  ['다들 고맙다 ㅋㅋ','다들 감사합니다 ㅋㅋ'],
+  ['고맙다 오늘 잘해볼게','감사합니다 오늘 잘해보겠습니다'],
+  ['ㅋㅋㅋ 고마워 밥은 안 산다','ㅋㅋㅋ 감사합니다 밥은 안 삽니다'],
+  ['축하 고맙다 진짜','축하 감사합니다 진짜로'],
+];
+/* 홈에서 축하 버튼을 눌렀을 때 — 감독의 한마디 */
+const BDAY_MGR=[
+  '오늘 주인공이다. 편하게 쳐라',
+  '생일인데 몸 사리지 말고 해라',
+  '한 살 더 먹었으니 이제 좀 잘하자',
+  '오늘은 네 날이다',
+];
+
+/* 이름 옆에 붙는 생일 표시 */
+function bdayTag(pid){ return isBirthday(pid)?' <i class="bdtag">🎂 오늘 생일</i>':''; }
+/* 생일자에게 그날 하루 붙는 보정. 컨디션·사기를 올린다.
+   [의도] 생일에 게임 켰는데 아무 일도 없으면 섭섭하다.            */
+function bdayBoost(pid){ return isBirthday(pid)?1:0; }
+
+/* 홈 화면 생일 카드. 축하는 하루 한 번만 눌린다. */
+function bdayCard(){
+  const ids=birthdayToday();
+  if(!ids.length) return null;
+  const md=todayMD();
+  if(!ST.bday) ST.bday={};
+  const card=el('div','bday-card');
+  const rows=ids.map(id=>{
+    const age=bdayAge(id);
+    return `<div class="bd-row"><div class="bd-av">${avatarHTML(id)}</div>
+      <div class="bd-b"><b>${nmLink(id,nameOf(id))}</b>
+        <span>오늘 생일이다${age?` · ${age}세`:''}${jerseyNo(id)!=null?` · #${jerseyNo(id)}`:''}</span></div>
+      <div class="bd-cake">🎂</div></div>`;
+  }).join('');
+  card.innerHTML=`<div class="bd-h">🎉 생일</div>${rows}`;
+  const done=ST.bday[md];
+  if(done){
+    card.appendChild(el('p','bd-note',
+      `오늘 축하했다. ${ids.map(nameOf).join(', ')} 사기가 올라 있다.`));
+  } else {
+    const b=el('button','btn primary bd-go','축하한다 🎂');
+    b.onclick=()=>{
+      ST.bday[md]=1;
+      const log=[];
+      ids.forEach(id=>{
+        ST.morale[id]=Math.min(100,(ST.morale[id]||70)+14);
+        ST.cond[id]=Math.min(100,(ST.cond[id]||70)+6);
+        bondAdd(id,8);
+        log.push({who:ST.playerId||MYID, text:pickOne(BDAY_MGR), mood:'happy'});
+        log.push({who:id, text:say(id,...pickFresh(BDAY_REPLY,'BDAY_REPLY')), mood:'happy'});
+      });
+      // 나머지 팀원도 기분이 좋아진다
+      let n=0;
+      TBYID['wwzw'].players.forEach(p=>{
+        if(ids.indexOf(p.id)>=0) return;
+        ST.morale[p.id]=Math.min(100,(ST.morale[p.id]||70)+3); n++;
+      });
+      ST.kakao=ST.kakao||[];
+      ST.kakao.push({who:'lg',type:'notice',
+        text:`🎂 오늘 ${ids.map(nameOf).join(', ')} 생일\n사기 +14 · 컨디션 +6 · 나머지 ${n}명 사기 +3`});
+      bdayChat(ST.kakao, ids);
+      log.forEach(m=>ST.kakao.push(m));
+      saveGame(true); renderHome();
+      toast(`${ids.map(nameOf).join(', ')} 생일 축하 — 팀 사기가 올랐다`);
+    };
+    card.appendChild(b);
+  }
+  return card;
+}
+/* 단톡방 축하 릴레이 — 서너 명이 각자 말투로 한 줄씩 */
+function bdayChat(list, ids){
+  ids.forEach(id=>{
+    const nm=nameOf(id);
+    const others=shuffled_(TBYID['wwzw'].players.filter(p=>p.id!==id && isAvailable(p.id)));
+    const n=3+((Math.random()*2)|0);
+    others.slice(0,n).forEach(p=>{
+      const pair=pickFresh(BDAY_LINES,'BDAY_LINES');
+      list.push({who:p.id, text:say(p.id,pair[0],pair[1]).replace(/\{n\}/g,nm), mood:'happy'});
+    });
+  });
+}
+
 /* ---------- 부상 ---------- */
 const INJURIES=[
   {name:'햄스트링 근육통',min:1,max:2,sev:1},
@@ -3853,6 +4002,20 @@ function buildKakaoPre(ST){
         '일이 생겨서 못 갑니다 죄송합니다','이번엔 못 갈 것 같습니다','다음 주엔 꼭 가겠습니다',
         '일정이 겹쳤습니다 죄송합니다'],rng)),mood:'sad'});
   });
+
+  /* 생일이면 라인업 발표 뒤에 축하가 먼저 올라온다 */
+  const bdIds=birthdayToday();
+  if(bdIds.length){
+    bdIds.forEach(id=>{
+      const age=bdayAge(id);
+      msgs.push({who:'lg',type:'notice',text:`🎂 오늘 ${nameOf(id)} 생일${age?` (${age}세)`:''}`});
+    });
+    bdayChat(msgs, bdIds);
+    bdIds.forEach(id=>{
+      if(!isAvailable(id)) return;
+      msgs.push({who:id, text:say(id,...pickFresh(BDAY_REPLY,'BDAY_REPLY')), mood:'happy'});
+    });
+  }
 
   /* 김선호·김한규의 출사표 — 라인업에 들었으면 높은 확률로 한마디 한다 */
   BANTER_IDS.forEach(bid=>{
@@ -6130,8 +6293,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.21.1';
-const APP_VERSION_NOTE = '타자·존 크기 실제 비율로';
+const APP_VERSION = '2.22.0';
+const APP_VERSION_NOTE = '생일 이벤트';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6152,6 +6315,17 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.22.0', t:'생일 이벤트', items:[
+    '생일 이벤트를 넣었다. 게임 안 날짜가 아니라 진짜 달력을 본다 — 그날 접속하면 하루 종일 뜬다',
+    '홈 화면 맨 위에 생일 카드. 나이·등번호가 같이 나오고 [축하한다] 를 누르면 사기 +14 · 컨디션 +6, 나머지 팀원도 사기 +3',
+    '누르면 단톡방에 축하 릴레이가 올라온다. 각자 자기 말투로 한 줄씩 — 대사 열 종류를 새로 썼다',
+    '라인업 발표 카톡에도 생일 공지가 먼저 붙는다',
+    '생일자는 그날 경기 컨디션이 +8 이다. 몸이 가볍다',
+    '생일에 안타·홈런을 치면 중계에 한 줄 더 붙고, 홈런은 진기록으로 박제된다',
+    '하이라이트 다시 보기 배너도 「🎂 생일 홈런!!」 으로 바뀐다',
+    '선수단 목록·선수 카드·전시장에 케이크 표시가 뜨고, 카드에는 생일까지 며칠 남았는지도 나온다',
+    '첫 주인공은 8월 23일 김상훈. 다른 사람 생일도 알려주면 넣는다',
+  ]},
   {v:'2.21.1', t:'타자·존 크기 실제 비율로', items:[
     '스트라이크 존이 타자보다 컸다. 말이 안 됐다. 실제 치수(폭 43cm : 높이 56cm)로 다시 잡았다',
     '존을 화면 폭의 10% 로 줄이고 홈플레이트 바로 위에 놓았다. 타자 어깨너비의 1.4배쯤 된다',
@@ -8329,6 +8503,7 @@ LiveGame.prototype.stepPA = function(){
       runs:off.runs-psRunsB, outs:self.outs, inning:self.inning, half:self.half,
       /* 그때의 점수 — 다시 보기 때 최종 점수가 찍히면 안 된다 */
       sa:self.away.runs, sh:self.home.runs,
+      bday:(typeof isBirthday==='function')&&isBirthday(bat.id),
       text:txt};
   })(this);
   /* 나중에 '하이라이트 다시 보기'로 틀 만한 장면은 모아둔다.
@@ -8341,9 +8516,18 @@ LiveGame.prototype.stepPA = function(){
       if(this.scenes.length<60) this.scenes.push({...this.lastPlay, iv});
     }
   }
+  /* 생일자가 치면 중계에 한 줄 더 붙는다 */
+  const isBd = (typeof isBirthday==='function') && isBirthday(bat.id);
+  if(isBd){
+    const big=events.some(e=>e.cls==='hr');
+    if(big) this.feats.push({kind:'생일 홈런',pid:bat.id,us:!!off.isUser,
+      detail:`${this.inning}회 ${this.half===0?'초':'말'} · 생일에 담장을 넘겼다`});
+  }
   events.forEach(e=>{
     const mine = !!(meName && (e.text.indexOf(meName)===0 || e.text.indexOf('— '+meName)>=0));
     this.log.push({t:'play', me:mine, ...e});
+    if(isBd && (e.cls==='hr'||e.cls==='hit'))
+      this.log.push({t:'me',text:`🎂 생일에 ${e.cls==='hr'?'홈런이다':'안타다'} — ${bat.name}`});
     if(mine && (e.cls==='hr'||e.text.indexOf('3루타')>=0))
       this.log.push({t:'me',text:pickOne(['벤치가 뒤집어졌다','더그아웃에서 다 뛰어나왔다','오늘 주인공이다'])});
   });
@@ -9671,6 +9855,9 @@ function renderHome(){
     <div class="hero-me">플레이 중: <b>${nmLink(ST.playerId||MYID, nameOf(ST.playerId||MYID))}</b></div>`;
   c.appendChild(hero);
 
+  /* 생일이면 그날 하루 종일 맨 위에 뜬다 */
+  const bd=bdayCard(); if(bd){ c.appendChild(bd); wireNames(bd); }
+
   const avgM=us.players.reduce((s,p)=>s+(ST.morale[p.id]||70),0)/us.players.length;
   const avgC=us.players.reduce((s,p)=>s+(ST.cond[p.id]||70),0)/us.players.length;
   const mood=el('div','card');
@@ -10818,7 +11005,7 @@ function renderHall(){
   const top=el('div','ot-top');
   top.innerHTML=`<div class="ot-pic">${avatarHTML(who)}</div>
     <div class="ot-nm">
-      <div class="ot-n1">${nameOf(who)}${jerseyNo(who)!=null?`<i class="ot-no">#${jerseyNo(who)}</i>`:''}<b>전시장</b></div>
+      <div class="ot-n1">${nameOf(who)}${jerseyNo(who)!=null?`<i class="ot-no">#${jerseyNo(who)}</i>`:''}${bdayTag(who)}<b>전시장</b></div>
       <div class="ot-n2">${ST.year||2026}년 · ${ST.seasonNo||1}년차${who===meId?' · 내 선수':''}</div>
       <div class="ot-ov">
         <div class="ot-ovi"><span>수상</span><b>${hall.length}</b></div>
@@ -11262,7 +11449,7 @@ function renderPlayer(){
   top.innerHTML=`<div class="ot-pic">${avatarHTML(p.id)}</div>
     <div class="ot-nm">
       <div class="ot-n1">${p.name}${p.no!=null?`<i class="ot-no">#${p.no}</i>`:''}${formTag(p.id)?`<span class="ftag">${formTag(p.id)}</span>`:''}<b>${main?POSNAMES[main]:'DH'}</b></div>
-      <div class="ot-n2">${nickOf(p.id)?`'${nickOf(p.id)}' · `:''}${2026-m.born}세 · 타/투 ${p.bats==='L'?'좌':'우'}/${m.throws==='L'?'좌':'우'}</div>
+      <div class="ot-n2">${nickOf(p.id)?`'${nickOf(p.id)}' · `:''}${2026-m.born}세 · 타/투 ${p.bats==='L'?'좌':'우'}/${m.throws==='L'?'좌':'우'}${bdayTag(p.id)}</div>
       <div class="ot-ov">
         <div class="ot-ovi"><span>전체</span><b>${ca.toFixed(0)}</b></div>
         <div class="ot-ovi"><span>포텐셜</span><b class="dim">${pa.toFixed(0)}</b></div>
@@ -11283,6 +11470,12 @@ function renderPlayer(){
   detail+=otRow('나이',`${2026-m.born}세`);
   detail+=otRow('포지션', main?`${POSNAMES[main]} (${Math.round(posFit(p.id,main))})`:'지명타자');
   detail+=otRow('타 / 투', `${p.bats==='L'?'좌':'우'} / ${m.throws==='L'?'좌':'우'}`);
+  if(BIRTHDAY[p.id]){
+    const dleft=daysToBirthday(p.id);
+    detail+=otRow('생일',
+      `${BIRTHDAY[p.id].replace('-','월 ')}일${(isBirthday(p.id)||dleft===0)
+        ? ' — <b style="color:#ffd15c">오늘이다 🎂</b>' : ` · D-${dleft}`}`);
+  }
   detail+=otRow('출신교', m.school||'-');
   detail+=otRow('출석', `${Math.round((m.attend!=null?m.attend:.85)*100)}%`
     +(m.attend<0.6?' · 자주 빠진다':m.attend>=0.85?' · 웬만하면 나온다':''));
@@ -11890,7 +12083,7 @@ function renderLineup(){
     const bad=!isAvailable(p.id);
     const row=el('div','lp-row'+(bad?' bad':''));
     row.innerHTML=`<div class="lp-n">${i+1}</div>
-      <div class="lp-main"><div class="lp-name">${p.no!=null?`<span class="pc-no">#${p.no}</span> `:''}${p.name}${formTag(p.id)?`<span class="ftag">${formTag(p.id)}</span>`:''}${p.bats==='L'?'<span class="lh">좌</span>':''}${bad?'<span class="tagx">출전 불가</span>':''}</div>
+      <div class="lp-main"><div class="lp-name">${p.no!=null?`<span class="pc-no">#${p.no}</span> `:''}${p.name}${formTag(p.id)?`<span class="ftag">${formTag(p.id)}</span>`:''}${p.bats==='L'?'<span class="lh">좌</span>':''}${bdayTag(p.id)}${bad?'<span class="tagx">출전 불가</span>':''}</div>
       <div class="lp-stat">${condLabel(ST.cond[p.id]||70)} · ${b.pa?`${fmt3(avg(b))} OPS ${ops(b).toFixed(3)}`:'기록 없음'}</div></div>
       <button class="pos-badge">${POSNAMES[s.pos]}</button>
       <button class="lp-sub">교체</button>`;
@@ -13430,6 +13623,8 @@ function psPlay(d, done, opt){
 /* 결과 배너 문구 */
 function psBanner(d){
   const K=d.kind;
+  if(d.bday && (K==='HR'||K==='3B'||K==='2B'||K==='1B'))
+    return {big:K==='HR'?'🎂 생일 홈런!!':'🎂 생일 안타!', color:'#ffd15c'};
   if(K==='HR')  return {big:d.itp?'그라운드 홈런!!':'홈런!!', color:'#ffd15c'};
   if(K==='3B')  return {big:'3루타!', color:'#8fd39a'};
   if(K==='2B')  return {big:'2루타!', color:'#8fd39a'};
@@ -13694,6 +13889,7 @@ function makeLive(){
   const cond={};
   raw.players.forEach(p=>{
     let cv=(ST.cond[p.id]||70)+((ST.morale[p.id]||70)-70)*0.18;
+    if(isBirthday(p.id)) cv+=8;                 // 생일은 몸이 가볍다
     if(ST.mittMissing&&p.id==='yjh')cv-=6;
     const mm=META[p.id];
     const sl=uLine.find(x=>x.id===p.id);
