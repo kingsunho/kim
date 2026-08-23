@@ -33,9 +33,18 @@ setTimeout(async()=>{
   const out1=ev("LIVE.curPitcher(LIVE.userSide()).id");
   ev("LIVE.applyDecision('pchange')");
   console.log('   교체 후 : '+order());
-  T('내려간 투수가 타순에서 빠졌다', ()=>{
-    const still=ev(`LIVE.userSide().slots.some(s=>s.id==='${out1}')`);
-    return !still && `${ev(`nameOf('${out1}')`)} 아웃`;
+  T('내려간 투수가 마운드에서 빠졌다 (맞교대면 수비 자리로)', ()=>{
+    const slot=ev(`(LIVE.userSide().slots.find(s=>s.id==='${out1}')||{}).pos||''`);
+    const onMound=ev(`LIVE.curPitcher(LIVE.userSide()).id==='${out1}'`);
+    if(onMound) return false;
+    const nm=ev(`nameOf('${out1}')`);
+    return slot ? `${nm} → ${ev(`POSNAMES['${slot}']||'${slot}'`)} 로 맞교대` : `${nm} 경기 아웃`;
+  });
+  T('맞교대면 아무도 경기에서 안 빠진다', ()=>{
+    const n=ev("LIVE.userSide().slots.length");
+    const dup=ev(`(function(){var p=LIVE.userSide().slots.map(function(x){return x.pos});
+      return p.filter(function(x,i){return p.indexOf(x)!==i}).join(',')})()`);
+    return n===9 && !dup && '타순 9명 · 포지션 중복 없음';
   });
   T('새 투수가 타순의 P 자리에 있다', ()=>{
     const pid=ev("(LIVE.userSide().slots.find(s=>s.pos==='P')||{}).id");
@@ -130,22 +139,25 @@ setTimeout(async()=>{
 
   console.log('[교체 안내 문구]');
   setup(false);
-  T('지명타자 미사용 — 빠진다고 알려준다', ()=>{
+  T('지명타자 미사용 — 어디로 갔는지 알려준다', ()=>{
     const outN=ev("LIVE.curPitcher(LIVE.userSide()).name");
+    const outId=ev("LIVE.curPitcher(LIVE.userSide()).id");
     const hadDH=ev("LIVE.userSide().slots.some(x=>x.pos==='DH')");
     ev("LIVE.applyDecision('pchange')");
-    return ev(`pchangeToast(LIVE.userSide(),'${outN}',${hadDH})`);
+    return ev("pchangeToast(LIVE.userSide(),'"+outN+"',"+hadDH+",'"+outId+"')");
   });
   setup(true);
   T('지명타자 사용 — 소멸하면 알려준다', ()=>{
+    var _dummy=0;
     ev(`(function(){var s=LIVE.userSide();
       var f=s.slots.find(function(x){return x.pos!=='P'&&s.team.pitchers.some(function(p){return p.id===x.id})});
       if(f){ s.rot=[s.rot[s.pIdx],f.id].concat(s.rot.filter(function(id){return id!==f.id&&id!==s.rot[s.pIdx]})); s.pIdx=0; }
     })()`);
     const outN=ev("LIVE.curPitcher(LIVE.userSide()).name");
+    const outId=ev("LIVE.curPitcher(LIVE.userSide()).id");
     const hadDH=ev("LIVE.userSide().slots.some(x=>x.pos==='DH')");
     ev("LIVE.applyDecision('pchange')");
-    const t=ev(`pchangeToast(LIVE.userSide(),'${outN}',${hadDH})`);
+    const t=ev("pchangeToast(LIVE.userSide(),'"+outN+"',"+hadDH+",'"+outId+"')");
     return (!ev("!!LIVE.dhLost") || /지명타자 소멸/.test(t)) && t;
   });
 

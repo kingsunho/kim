@@ -716,6 +716,56 @@ table.stand td.nm{text-align:left;font-weight:700;font-size:12px}
 .ot-note{font-size:10.5px;color:var(--dm);line-height:1.55;padding:4px 9px 6px;margin:0}
 .ot-adv{padding:6px 9px;border-left:2px solid var(--or);margin:6px 9px 8px;background:rgba(232,118,44,.05)}
 .ot-cut{font-style:normal;font-size:11px;color:#8e9bb0;margin-left:4px}
+/* ===== 야구장 그림 라인업 · 뎁스차트 (v2.10.0) =====
+   팀 색(네이비 + 주황)을 여기서 따로 잡는다. --or 는 .ot 안에만 있어서
+   여기서 쓰면 상속이 안 된다.                                        */
+.fieldwrap{--fo:#e8762c;--fn2:#15243a;--fnl:#23374f}
+.lu-tabs{display:flex;gap:6px;margin:10px 0 4px}
+.lu-tabs button{flex:1;background:var(--panel);border:1px solid var(--line);color:var(--dim);
+  border-radius:9px;padding:9px 0;font-size:12px;font-weight:700}
+.lu-tabs button.on{background:var(--fn2);border-color:var(--fo);color:#fff}
+.field{position:relative;width:100%;padding-top:96%;background:
+  radial-gradient(circle at 50% 84%, #2f5d34 0 34%, #2a5230 34% 100%);
+  border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:8px}
+.field .dirt{position:absolute;left:50%;top:66%;width:52%;padding-top:52%;transform:translate(-50%,-50%) rotate(45deg);
+  background:#8a5a37;border-radius:6px;opacity:.85}
+.field .mound{position:absolute;left:50%;top:60%;width:11%;padding-top:11%;
+  transform:translate(-50%,-50%);background:#9a6740;border-radius:50%}
+.field .fl{position:absolute;bottom:11%;left:50%;width:2px;height:74%;background:rgba(255,255,255,.22);
+  transform-origin:bottom center}
+.fp{position:absolute;transform:translate(-50%,-50%);min-width:60px;max-width:74px;
+  background:rgba(16,22,32,.86);border:1px solid rgba(255,255,255,.18);border-radius:8px;
+  padding:4px 3px;text-align:center;cursor:pointer}
+.fp.on{border-color:var(--fo);box-shadow:0 0 0 2px rgba(232,118,44,.28)}
+.fp.bad{border-color:var(--red)}
+.fp .fp-p{font-size:9px;color:var(--gold);font-weight:800;letter-spacing:.3px}
+.fp .fp-n{font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fp .fp-s{font-size:8.5px;color:#9fb0c4;letter-spacing:-.5px}
+.fp .fp-no{font-size:8.5px;color:var(--fo);font-weight:800;margin-right:2px}
+.field-note{font-size:11px;color:var(--dim);margin:7px 2px 0;line-height:1.5}
+.dep-pos{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin-top:9px;overflow:hidden}
+.dep-h{display:flex;align-items:center;gap:7px;padding:8px 10px;background:var(--fn2);
+  border-bottom:1px solid var(--line)}
+.dep-h b{font-size:12.5px;color:var(--gold)}
+.dep-h i{font-style:normal;font-size:10.5px;color:var(--dim);margin-left:auto}
+.dep-top{display:flex;align-items:center;gap:9px;padding:9px 10px;border-bottom:1px solid var(--line)}
+.dep-av{width:42px;height:56px;flex:0 0 auto;border-radius:6px;overflow:hidden;
+  border:1px solid var(--line);background:#101a29}
+.dep-av>*{display:block;width:100%;height:100%;object-fit:cover}
+.dep-top .dt-r{flex:1;min-width:0}
+.dep-tn{font-size:13px;font-weight:800;color:#fff}
+.dep-tsub{font-size:10.5px;color:var(--dim);margin-top:2px}
+.dep-row{display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.05);
+  font-size:11.5px}
+.dep-row:last-child{border-bottom:0}
+.dep-row .dr-i{width:15px;color:var(--dim);font-size:10px}
+.dep-row .dr-n{flex:1;color:#cfd8e3;font-weight:600}
+.dep-row .dr-n u{text-decoration:none;border-bottom:1px dotted rgba(255,255,255,.28)}
+.dep-row .dr-v{font-size:10.5px;color:#8e9bb0;letter-spacing:-.4px}
+.dep-row.main .dr-n{color:var(--gold)}
+.dep-row.sub{opacity:.72}
+.dep-row.out .dr-n{color:#6d7885;text-decoration:line-through}
+.dep-legend{font-size:10.5px;color:var(--dim);margin:8px 2px 0;line-height:1.55}
 .ot-adv b{display:block;font-size:12px;color:var(--or2)}
 .ot-adv span{display:block;font-size:11px;color:var(--dm);line-height:1.5;margin-top:2px}
 .ot-tr{display:flex;gap:8px;align-items:baseline;padding:4px 9px;font-size:11px}
@@ -5579,8 +5629,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.9.6';
-const APP_VERSION_NOTE = '교체 아웃된 선수가 투수로 복귀하던 버그 · 주전 보호';
+const APP_VERSION = '2.10.0';
+const APP_VERSION_NOTE = '야구장 그림 라인업 · 포지션별 뎁스차트';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -5601,6 +5651,15 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.10.0', t:'야구장 그림으로 라인업 짜고, 뎁스차트로 뒷사람까지 본다', items:[
+    '라인업 화면에 명단 · 야구장 · 뎁스 세 탭이 생겼다',
+    '야구장 그림에서 각 수비 위치를 누르면 그 자리 선수를 바로 바꿀 수 있다',
+    '마운드를 누르면 오늘 선발 투수를 고른다',
+    '뎁스차트는 포지션마다 별 평균과 순위가 나온다. 1순위는 사진과 함께 크게',
+    '여러 포지션이 되는 사람은 제일 잘 보는 자리에서만 1순위다 — 나머지 자리는 밑으로',
+    '현재 실력 / 포텐셜 두 기준으로 볼 수 있고, 이름을 누르면 선수 카드가 열린다',
+    '투수를 바꾸면 내려간 투수가 그 자리 수비로 간다 — 사회인야구는 서로 땜빵하지 벤치로 안 빠진다',
+  ]},
   {v:'2.9.6', t:'교체로 빠진 선수가 투수로 다시 들어오던 것', items:[
     '교체 아웃된 선수가 나중에 투수로 마운드에 오르던 걸 막았다 (김인규 6회 교체 → 7회 등판)',
     '오늘 등판이 남은 투수는 자동 교체로 안 뺀다 — 던질 사람이 없어지면 안 되니까',
@@ -7740,14 +7799,24 @@ LiveGame.prototype._pitcherSubs = function(s, outId, inId){
   s.slots[inIdx].pos='P';
 
   if(pSlot>=0 && pSlot!==inIdx){
-    // 지명타자 미사용 — 내려간 투수 자리를 벤치가 물려받아 빈 수비를 맡는다
+    /* 사회인야구는 9~11명으로 굴린다. 더그아웃에 투수가 대기하는 게 아니라
+       수비하던 사람이 마운드로 올라가고, 내려온 투수가 그 자리를 메운다.
+       [제보] "수비하고 있는 애랑 투수랑 그 안에서 최적의 포지션으로 교체함.
+               서로 땜빵하는 거지" — 그래서 맞교대를 기본으로 둔다.
+       내려온 투수가 그 자리를 못 보면 그때만 벤치에서 부른다.           */
+    if(fit(outId,vacated)>0){
+      s.slots[pSlot]={id:outId,pos:vacated};      // 맞교대 — 아무도 경기에서 안 빠진다
+      this.log.push({t:'sub',
+        text:`수비 위치 교대 · ${this.nameOf(outId)} → ${POSNAMES[vacated]||vacated}`});
+      return;
+    }
     const rep=bestFor(vacated,bench());
     if(rep) enter(pSlot,rep,vacated,'투수 교체');
     else {
-      // 벤치가 없다 — 내려간 투수가 야수로 남는다 (실제로도 이렇게 한다)
+      // 벤치도 없다 — 못 보는 자리라도 내려온 투수가 선다
       s.slots[pSlot]={id:outId,pos:vacated};
       this.log.push({t:'sub',
-        text:`${this.nameOf(outId)}은(는) 마운드에서 내려와 ${POSNAMES[vacated]||vacated}로 간다 (벤치 없음)`});
+        text:`${this.nameOf(outId)}이(가) ${POSNAMES[vacated]||vacated}(으)로 간다 (안 서던 자리다)`});
     }
     return;
   }
@@ -7758,6 +7827,15 @@ LiveGame.prototype._pitcherSubs = function(s, outId, inId){
   const dhIdx=s.slots.findIndex(x=>x.pos==='DH');
   if(dhIdx<0) return;
   const dhId=s.slots[dhIdx].id;
+  /* 내려온 투수가 그 수비를 볼 수 있으면 그가 나가고 지명타자 자리를 물려받는다.
+     지명타자는 없어지지만 사람은 안 빠진다 — 인원이 빠듯한 팀에 이게 맞다. */
+  if(fit(outId,vacated)>0 && this.canEnter(s,outId)!==false){
+    enter(dhIdx,outId,vacated,'수비 교대');
+    this.dhLost=true;
+    this.log.push({t:'sub',
+      text:`지명타자 소멸 · ${this.nameOf(outId)}이(가) 마운드에서 내려와 ${POSNAMES[vacated]||vacated}(으)로 간다`});
+    return;
+  }
   if(fit(dhId,vacated)>0){
     s.slots[dhIdx].pos=vacated;
     this.dhLost=true;
@@ -10454,6 +10532,194 @@ function renderSquad(){
 }
 
 /* ---------- 라인업 ---------- */
+/* =========================================================
+   야구장 그림 라인업 · 뎁스차트
+   [요청] "라인업 명단 말고 야구장 모양으로 각 위치에서 교체 가능했으면"
+          "뎁스 확인 칸도 만들어서 별 평균 나오고 별 젤 높은 애가 앞에"
+          "멀티 포지션 되는 애는 제일 잘하는 포지션 하나만 맨 앞으로"
+   ========================================================= */
+const FIELD_XY={   // 야구장 안에서의 위치 (%)
+  P :{x:50,y:60}, C :{x:50,y:87},
+  '1B':{x:70,y:60},'2B':{x:61,y:46},'3B':{x:30,y:60},SS:{x:39,y:46},
+  LF:{x:20,y:26}, CF:{x:50,y:16}, RF:{x:80,y:26}, DH:{x:88,y:86},
+};
+/* 그 포지션에서의 실력 = 포지션 적합도와 기본 능력치를 같이 본다.
+   적합도만 보면 '수비만 되는 사람'이 위로 오고, 능력치만 보면
+   못 서는 자리에도 올라온다. 둘 다 반영해야 뎁스가 말이 된다.      */
+function depScore(pid,pos){
+  const f=posFit(pid,pos);
+  if(pos!=='DH' && f<=0) return 0;
+  const ca=effCA(pid);
+  const fitPart = pos==='DH' ? 55 : f;
+  return ca*0.62 + fitPart*0.38;
+}
+function depPotScore(pid,pos){
+  const f=posTrainCap(pid,pos);
+  if(pos!=='DH' && f<=0) return 0;
+  const pa=effPA(pid);
+  const fitPart = pos==='DH' ? 60 : f;
+  return pa*0.62 + fitPart*0.38;
+}
+/* 이 선수가 제일 잘 보는 포지션 하나 */
+function bestPosOf(pid, potMode){
+  const f=potMode?depPotScore:depScore;
+  let best=null,bv=-1;
+  ALLPOS.concat(['P']).forEach(pos=>{
+    if(pos==='DH')return;
+    if(pos==='P' && !TBYID['wwzw'].pitchers.some(x=>x.id===pid)) return;
+    const v=f(pid,pos); if(v>bv){bv=v;best=pos;}
+  });
+  return best;
+}
+function starAvgHTML(v){ return starHTML(v,false); }
+
+/* ---- 야구장 그림 ---- */
+function fieldHTML(){
+  const t=TBYID['wwzw'];
+  const wrap=el('div','fieldwrap');
+  const f=el('div','field');
+  f.innerHTML='<div class="dirt"></div><div class="mound"></div>';
+  const spId=(gameRotation()||[])[0];
+  const placed={};
+  (ST.lineup||[]).forEach((sl,i)=>{ placed[sl.pos]={id:sl.id, ord:i+1}; });
+  // 지명타자를 쓰면 투수는 타순 밖이라 따로 그려준다
+  const cells=Object.keys(FIELD_XY).filter(pos=>{
+    if(pos==='DH') return !!placed['DH'];
+    if(pos==='P')  return true;
+    return true;
+  });
+  cells.forEach(pos=>{
+    const xy=FIELD_XY[pos];
+    const inSlot=placed[pos];
+    const pid = inSlot ? inSlot.id : (pos==='P' ? spId : null);
+    const box=el('div','fp'+(pid&&!isAvailable(pid)?' bad':'')+(pos==='P'?' on':''));
+    box.style.left=xy.x+'%'; box.style.top=xy.y+'%';
+    const p=pid?t.players.find(x=>x.id===pid):null;
+    const fitV=pid?posFit(pid,pos):0;
+    box.innerHTML=`<div class="fp-p">${POSNAMES[pos]}${inSlot?` <span style="color:#8e9bb0">${inSlot.ord}번</span>`:''}</div>
+      <div class="fp-n">${p?`${p.no!=null?`<span class="fp-no">${p.no}</span>`:''}${p.name}`:'—'}</div>
+      <div class="fp-s">${p?(pos==='P'?`구위 ${(t.pitchers.find(x=>x.id===pid)||{}).stf||'-'}`
+                                       :`적합 ${fitV>0?Math.round(fitV):'불가'}`):''}</div>`;
+    box.onclick=()=>{
+      if(pos==='P'){ openStarterSheet(); return; }        // 마운드는 선발 지정
+      const i=ST.lineup.findIndex(x=>x.pos===pos);
+      if(i>=0) openPicker(i);
+    };
+    f.appendChild(box);
+  });
+  wrap.appendChild(f);
+  wrap.appendChild(el('div','field-note',
+    '자리를 누르면 그 포지션에 누구를 세울지 고를 수 있다. '+
+    (ST.useDH?'지명타자를 쓰는 중이라 투수는 타순 밖에 있다.':'지명타자 미사용 — 투수도 타순에 든다.')));
+  return wrap;
+}
+
+/* 야구장 그림에서 마운드를 누르면 — 오늘 선발을 바꾼다 */
+function openStarterSheet(){
+  const t=TBYID['wwzw'];
+  const body=$('#sheet-body'); body.innerHTML='';
+  $('#sheet-title').textContent='오늘 선발 투수';
+  body.appendChild(el('div','sheet-note',
+    '로테이션 1번이 그날 선발이다. 여기서 고르면 로테이션 맨 앞으로 올라간다.'));
+  (ST.rotation||[]).forEach((id,i)=>{
+    const p=t.pitchers.find(x=>x.id===id); if(!p)return;
+    const cur=(gameRotation()||[])[0]===id;
+    const out=!isAvailable(id);
+    const r=el('button','pick-row'+(cur?' cur':'')+(out?' bad':''));
+    const rr=(ST.rest&&ST.rest[id]!=null)?ST.rest[id]:3;
+    r.innerHTML=`<div class="pk-l"><div class="pk-name">${p.name}${cur?' <b style="color:#e8762c">오늘 선발</b>':''}</div>
+      <div class="pk-note">로테이션 ${i+1}번 · ${out?'오늘 못 나온다':(rr>=2?'정상':(rr===1?'피로':'과부하'))}
+        ${(ST.pit&&ST.pit[id]&&ST.pit[id].outs)?` · 시즌 ERA ${era(ST.pit[id]).toFixed(2)}`:''}</div></div>
+      <div class="pk-r"><div class="pk-stat">구위 ${p.stf} 제구 ${p.ctl}</div></div>`;
+    r.onclick=()=>{ if(out){toast(`${p.name}은(는) 오늘 못 나온다`);return;}
+      setStarter(id); closeSheet(); saveGame(true); renderLineup(); toast(`${p.name} 선발 지정`); };
+    body.appendChild(r);
+  });
+  $('#sheet').classList.add('open');
+}
+
+/* ---- 뎁스차트 ---- */
+function depthHTML(potMode){
+  const t=TBYID['wwzw'];
+  const wrap=el('div','fieldwrap');
+  const scoreF=potMode?depPotScore:depScore;
+  const order=['P','C','1B','2B','3B','SS','LF','CF','RF'];
+  // 각자 제일 잘 보는 자리를 미리 구해 둔다 (멀티 포지션 처리)
+  const best={};
+  t.players.forEach(p=>{ best[p.id]=bestPosOf(p.id,potMode); });
+  /* 1순위를 먼저 확정한다 — 자리마다 주인이 갈리게.
+     송승민처럼 전 포지션이 되는 사람이 네 자리에서 동시에 1순위로 뜨면
+     뎁스차트를 보는 의미가 없다. 이건도 중견이 주포지션인데 3루가 먼저
+     처리되는 바람에 두 자리 1순위로 잡혔다. 그래서 두 번에 나눠 정한다.
+       1) 그 자리가 주포지션인 사람 중 제일 잘하는 사람
+       2) 남은 자리는 아직 1순위가 안 된 사람 중에서                  */
+  const cand=(pos)=>t.players
+    .filter(p=>pos!=='P' || t.pitchers.some(x=>x.id===p.id))
+    .map(p=>({p, v:scoreF(p.id,pos), main:best[p.id]===pos}))
+    .filter(x=>x.v>0);
+  const topOf={}, takenTop={};
+  order.forEach(pos=>{                    // 1패스 — 주포지션 주인
+    const own=cand(pos).filter(x=>x.main && !takenTop[x.p.id]).sort((a,b)=>b.v-a.v)[0];
+    if(own){ topOf[pos]=own.p.id; takenTop[own.p.id]=true; }
+  });
+  order.forEach(pos=>{                    // 2패스 — 주인 없는 자리
+    if(topOf[pos]) return;
+    const alt=cand(pos).filter(x=>!takenTop[x.p.id]).sort((a,b)=>b.v-a.v)[0]
+           || cand(pos).sort((a,b)=>b.v-a.v)[0];
+    if(alt){ topOf[pos]=alt.p.id; takenTop[alt.p.id]=true; }
+  });
+
+  order.forEach(pos=>{
+    /* 여러 포지션이 되는 사람은 '제일 잘 보는 자리'에서만 맨 앞에 선다.
+       [요청] "이건이 중견수 젤 베스트에 있고 나머지 좌익·우익은 별 높긴 하니깐
+               바로 밑으로 가는 거지" — 주포지션인 사람을 먼저 세우고, 다른 자리가
+       주포지션인 사람은 점수가 높아도 그 밑으로 내린다. 그래야 한 사람이
+       여러 자리에서 1순위로 중복되지 않는다.                          */
+    const pool=t.players
+      .filter(p=>pos!=='P' || t.pitchers.some(x=>x.id===p.id))
+      .map(p=>({p, v:scoreF(p.id,pos), main:best[p.id]===pos}))
+      .filter(x=>x.v>0)
+      .sort((a,b)=>(a.p.id===topOf[pos]?-1:0)-(b.p.id===topOf[pos]?-1:0)
+                || (b.main?1:0)-(a.main?1:0)
+                || b.v-a.v);
+    if(!pool.length) return;
+    const sec=el('div','dep-pos');
+    const avgV=pool.reduce((n,x)=>n+x.v,0)/pool.length;
+    const h=el('div','dep-h');
+    h.innerHTML=`<b>${POSNAMES[pos]}</b>${starAvgHTML(avgV)}<i>${pool.length}명 · 평균 ${avgV.toFixed(0)}</i>`;
+    sec.appendChild(h);
+    // 1순위는 사진/찰흙과 함께 크게
+    const top=pool[0];
+    const tp=el('div','dep-top');
+    tp.innerHTML=`<div class="dep-av">${avatarHTML(top.p.id)}</div>
+      <div class="dt-r">
+        <div class="dep-tn">${top.p.no!=null?`<span class="pc-no">#${top.p.no}</span> `:''}${top.p.name}</div>
+        <div class="dep-tsub">${starHTML(top.v)} ${top.v.toFixed(0)}
+          ${best[top.p.id]===pos?' · <b style="color:#e8762c">주포지션</b>':` · 주포지션은 ${POSNAMES[best[top.p.id]]||'-'}`}</div>
+        <div class="dep-tsub">${condLabel(ST.cond[top.p.id]||70)} · ${(function(){
+          const b=ST.bat[top.p.id]; return (b&&b.pa)?`${fmt3(avg(b))} OPS ${ops(b).toFixed(3)}`:'시즌 기록 없음';})()}</div>
+      </div>`;
+    tp.onclick=()=>openPlayer(top.p.id);
+    sec.appendChild(tp);
+    pool.slice(1).forEach((x,i)=>{
+      const isMain=best[x.p.id]===pos;
+      const r=el('div','dep-row'+(isMain?' main':' sub')+(isAvailable(x.p.id)?'':' out'));
+      r.innerHTML=`<span class="dr-i">${i+2}</span>
+        <span class="dr-n"><u>${x.p.name}</u>${isMain?' <b style="color:#e8762c;font-size:9px">주</b>':''}</span>
+        <span class="dr-v">${starHTML(x.v)} ${x.v.toFixed(0)}</span>`;
+      r.onclick=()=>openPlayer(x.p.id);
+      sec.appendChild(r);
+    });
+    wrap.appendChild(sec);
+  });
+  wrap.appendChild(el('div','dep-legend',
+    (potMode?'포텐셜 기준이다. 훈련으로 갈 수 있는 최대치로 줄을 세웠다.'
+           :'지금 실력 기준이다. 능력치와 그 자리 적합도를 같이 본다.')+
+    '<br>여러 포지션이 되는 사람은 제일 잘 보는 자리에 <b style="color:#e8762c">주</b>가 붙는다. '+
+    '나머지 자리에도 이름은 나오지만 순위만 매겨진다.<br>이름을 누르면 선수 카드가 열린다.'));
+  return wrap;
+}
+
 function renderLineup(){
   const c=$('#view'); c.innerHTML='';
   const t=TBYID['wwzw'];
@@ -10554,7 +10820,30 @@ function renderLineup(){
     fixb.onclick=()=>{ autoFixLineup(); applyDHRule(); saveGame(true); renderLineup(); toast('자동으로 채웠다. 확인하고 확정해라'); };
     c.appendChild(fixb);
   }
+  /* 보기 전환 — 명단 / 야구장 / 뎁스차트 */
+  if(!ST.luView) ST.luView='list';
+  const tabs=el('div','lu-tabs');
+  [['list','명단'],['field','야구장'],['depth','뎁스']].forEach(([k,n])=>{
+    const b=el('button',ST.luView===k?'on':'',n);
+    b.onclick=()=>{ ST.luView=k; saveGame(true); renderLineup(); };
+    tabs.appendChild(b);
+  });
+  c.appendChild(tabs);
+
+  if(ST.luView==='field'){ c.appendChild(fieldHTML()); }
+  else if(ST.luView==='depth'){
+    const sw=el('div','lu-tabs');
+    [['now','현재 실력'],['pot','포텐셜']].forEach(([k,n])=>{
+      const b=el('button',(ST.depMode||'now')===k?'on':'',n);
+      b.onclick=()=>{ ST.depMode=k; saveGame(true); renderLineup(); };
+      sw.appendChild(b);
+    });
+    c.appendChild(sw);
+    c.appendChild(depthHTML((ST.depMode||'now')==='pot'));
+  }
+
   const list=el('div','lineup');
+  if(ST.luView!=='list') list.style.display='none';
   ST.lineup.forEach((s,i)=>{
     const p=t.players.find(x=>x.id===s.id);
     if(!p) return;
@@ -11809,11 +12098,11 @@ function paintLiveCtl(){
   } else {
     pc.textContent=`🔄 투수 교체 → ${LIVE.curPitcherNext(sd)}`;
     pc.onclick=()=>{
-      const outN=LIVE.curPitcher(sd).name;
+      const outN=LIVE.curPitcher(sd).name, outI=LIVE.curPitcher(sd).id;
       const hadDH=sd.slots.some(x=>x.pos==='DH');
       LIVE.applyDecision('pchange');
       flushLog(); updateLiveUI(); paintLiveCtl();
-      toast(pchangeToast(sd,outN,hadDH));
+      toast(pchangeToast(sd,outN,hadDH,outI));
     };
   }
   lc.appendChild(pc);
@@ -11988,9 +12277,9 @@ function pchangeBtn(box){
     `<span>${cur.name} · ${todayPit(cur.id)}`+
     `${st.t?` <i class="pst ${st.cls}">${st.t}</i>`:''}<br>작전 횟수 안 씀</span>`;
   b.onclick=()=>{
-    const outN=cur.name, hadDH=s.slots.some(x=>x.pos==='DH');
+    const outN=cur.name, outI=cur.id, hadDH=s.slots.some(x=>x.pos==='DH');
     LIVE.applyDecision('pchange');
-    toast(pchangeToast(s,outN,hadDH));
+    toast(pchangeToast(s,outN,hadDH,outI));
     decDone(box);
   };
   return b;
@@ -12000,15 +12289,16 @@ function pchangeBtn(box){
    [제보] "지명타자 없이 하면 내려간 투수는 빠져야 하는 거 아닌가",
           "인게임 중 지명타자 소멸되는 걸 알아야 될 듯" — 둘 다 맞는 말이다.
    규칙대로 처리는 하되, 처리했다는 걸 유저가 알 수 있게 띄운다.        */
-function pchangeToast(side, outName, hadDH){
+function pchangeToast(side, outName, hadDH, outId){
   const now=LIVE.curPitcher(side).name;
-  const gone=!side.slots.some(x=>x.id===LIVE.userSide().rot[LIVE.userSide().pIdx-1]);
   const head=LIVE.off().isUser ? `다음 수비부터 ${outName} → ${now}` : `${outName} → ${now}`;
   const tail=[];
-  if(hadDH && !side.slots.some(x=>x.pos==='DH'))
-    tail.push('지명타자 소멸 — 야수가 등판해서 지타가 수비로 나갔다');
-  else if(side.slots.some(x=>x.pos==='P') && gone)
-    tail.push(`${outName}은(는) 타순에서도 빠진다`);
+  /* 내려간 투수가 어디로 갔는지 실제 라인업을 읽어서 말한다.
+     사회인야구는 맞교대가 기본이라 대부분 수비 자리를 옮길 뿐 안 빠진다. */
+  const slot=outId ? side.slots.find(x=>x.id===outId) : null;
+  if(slot) tail.push(`${outName}은(는) ${POSNAMES[slot.pos]||slot.pos}(으)로 간다`);
+  else if(outId) tail.push(`${outName}은(는) 타순에서도 빠진다`);
+  if(hadDH && !side.slots.some(x=>x.pos==='DH')) tail.push('지명타자 소멸');
   return head + (tail.length?` · ${tail.join(' · ')}`:'');
 }
 
@@ -14475,6 +14765,8 @@ function normalizeState(){
   if(!ST.tactics)ST.tactics={bat:'normal',run:'normal',hook:'normal'};
   if(ST.budget==null)ST.budget=120;
   if(ST.useDH==null)ST.useDH=true;
+  if(!ST.luView)ST.luView='list';
+  if(!ST.depMode)ST.depMode='now';
   if(!ST.park)ST.park='benamul';
   if(ST.gearLevel==null)ST.gearLevel=0;
   if(ST.weekSeq==null)ST.weekSeq=0;
