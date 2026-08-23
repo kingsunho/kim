@@ -843,6 +843,15 @@ table.stand td.nm{text-align:left;font-weight:700;font-size:12px}
   letter-spacing:1px}
 .mound .cnt b{color:#ffd15c}
 .mound .cnt b+b{color:#e08a70}
+/* 지금 타석·마운드에 선 사람 얼굴 */
+.mound .who{position:absolute;left:8px;bottom:8px;display:flex;align-items:center;gap:6px;
+  background:rgba(8,14,22,.72);padding:4px 8px 4px 4px;border-radius:8px}
+.mound .who-av{width:30px;height:40px;border-radius:5px;overflow:hidden;flex:0 0 auto;
+  border:1px solid rgba(255,255,255,.18);background:#101a29}
+.mound .who-av>*{display:block;width:100%;height:100%;object-fit:cover}
+.mound .who-n{font-size:11px;font-weight:800;color:#e2eaf5;line-height:1.25}
+.mound .who-n i{font-style:normal;color:#e8762c;font-size:10px;margin-right:3px}
+.mound .who-n span{display:block;font-weight:600;font-size:9.5px;color:#9fb0c4}
 .mound .res{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);
   font-size:19px;font-weight:900;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.75);
   opacity:0;transition:opacity .16s}
@@ -5984,8 +5993,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.16.0';
-const APP_VERSION_NOTE = '볼카운트 · 볼 구분 · 맞으면 인플레이 확정';
+const APP_VERSION = '2.17.0';
+const APP_VERSION_NOTE = '타석·마운드 얼굴 · 투수상 규정이닝';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6006,6 +6015,14 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.17.0', t:'누가 서 있는지 보이고, 상은 규정이닝을 채워야 준다', items:[
+    '투수 맞교대로 타순에 들어온 사람의 기록칸이 없어 경기가 죽던 버그를 고쳤다',
+    '타석·마운드 화면에 그 선수 얼굴이 나온다. 사진 있는 사람은 사진, 없으면 찰흙 인형',
+    '등번호와 「타석」·「마운드」 표시도 같이 붙는다',
+    '투수상 규정이닝을 넣었다 — 경기당 1이닝. 3이닝 던지고 ERA 0이면 1등 되던 걸 막았다',
+    '구간 투수상 5이닝, 22경기 시즌이면 22이닝. 채운 사람이 없으면 그 상은 안 준다',
+    '평균자책왕·WHIP왕·팀 투수상도 같은 기준으로 통일했다 (순위표는 원래 이 규칙이었다)',
+  ]},
   {v:'2.16.0', t:'한 타석을 공 하나씩 던진다', items:[
     '볼카운트가 생겼다. 4볼이면 볼넷, 3스트라이크면 삼진 — 화면에 계속 보인다',
     '제구가 나쁘면 존 밖으로 빠진다. 그게 볼이다 — 참을지 칠지 골라야 한다',
@@ -6484,6 +6501,14 @@ function applyFormBuff(ST){
 /* ================= 5경기 시상 =================
    5경기마다 구간 시상을 한다. 상을 받으면 사기가 오르고 몸값이 조금 붙는다.
    받은 상은 전시장(트로피)에 그대로 쌓인다.                            */
+/* 규정이닝 — 경기당 1이닝.
+   [제보] "리그 투수상 ERA 낮은 우리팀 선수가 걸리긴 했는데
+           규정이닝 채우지도 못했는데 받은 게 좀.."
+   맞는 말이다. 3이닝만 던지고 ERA 0 이면 무조건 1등이 됐다. 순위표는 이미
+   경기당 1이닝을 규정이닝으로 쓰고 있었는데 시상만 3이닝으로 남아 있었다.
+   기준을 하나로 맞춘다. 채운 사람이 없으면 그 상은 안 준다.          */
+function qualOuts(games){ return Math.max(9, Math.round((games||0)*3)); }
+
 const MINI_LABELS={mvp:'구간 MVP',bat:'타자상',avg:'타율상',pit:'투수상',
   mgr:'감독상',team:'팀 공헌상',sb:'주루상'};
 const AWARD_CHEER=[
@@ -6573,9 +6598,11 @@ function leagueAwards(snap){
   if(mvp)out.push({kind:'lgmvp',label:'리그 구간 MVP',pid:mvp,value:`OPS ${opsOf(B[mvp]).toFixed(3)}`});
   const avgId=pick(B,b=>b.ab>=8,b=>b.h/b.ab);
   if(avgId&&avgId!==mvp)out.push({kind:'lgavg',label:'리그 타율상',pid:avgId,value:`타율 ${fmt3(B[avgId].h/B[avgId].ab)}`});
-  const pitId=pick(P,l=>l.outs>=9,l=>-((l.er*7)/(l.outs/3)));
+  /* 구간(5경기) 규정이닝 = 5이닝. 못 채우면 이 상은 안 준다. */
+  const qOuts=qualOuts(5);   // 5경기 구간 → 5이닝
+  const pitId=pick(P,l=>l.outs>=qOuts,l=>-((l.er*7)/(l.outs/3)));
   if(pitId)out.push({kind:'lgpit',label:'리그 투수상',pid:pitId,
-    value:`ERA ${(P[pitId].outs?((P[pitId].er*7)/(P[pitId].outs/3)):0).toFixed(2)}`});
+    value:`ERA ${(P[pitId].outs?((P[pitId].er*7)/(P[pitId].outs/3)):0).toFixed(2)} · ${ipStr(P[pitId])}이닝`});
   return out;
 }
 /* 다른 팀이 우리 선수를 극찬한다 */
@@ -6677,7 +6704,8 @@ function runMiniAwards(ST){
   const wbA=(typeof leagueWoba==='function')?leagueWoba():null;   // 이 함수 뒤쪽에 lgw 가 이미 있다
   const erA=(typeof leagueEra==='function')?leagueEra():8.5;
   const runsOf=b=>(!b||!b.pa||!wbA||!wbA.woba)?0:((woba(b)-wbA.woba)/WOBA_SCALE)*b.pa;
-  const minPA=6, minAB=8, minOuts=9;
+  const gPlayed=(ST.stand&&ST.stand['wwzw'])?ST.stand['wwzw'].g:0;
+  const minPA=6, minAB=8, minOuts=qualOuts(gPlayed);   // 경기당 1이닝
   give('mvp', rank(B,b=>b.pa>=minPA,runsOf,
        b=>`공격 기여 ${runsOf(b)>=0?'+':''}${runsOf(b).toFixed(1)}점 · OPS ${opsOf(b).toFixed(3)}`),
        `리그 전체 ${minPA}타석 이상 중 공격 기여(득점 환산) 1위`);
@@ -6690,7 +6718,8 @@ function runMiniAwards(ST){
        '리그 전체 도루 1위 · 2개 이상');
   give('pit', rank(P,l=>l.outs>=minOuts,l=>warPit(l,erA),
        l=>`WAR ${warPit(l,erA).toFixed(2)} · ERA ${eraOf(l).toFixed(2)} · ${ipStr(l)}이닝`),
-       `리그 전체 ${minOuts/3}이닝 이상 중 투수 WAR 1위 (ERA 만 보면 짧게 던진 사람이 유리해서 이닝을 같이 본다)`);
+       `규정이닝(${(minOuts/3).toFixed(0)}이닝 = 경기당 1이닝) 이상 중 투수 WAR 1위 `+
+       `(ERA 만 보면 짧게 던진 사람이 유리해서 이닝을 같이 본다)`);
   give('team', rank(noMgr,b=>b.pa>=4,b=>(b.rbi||0)+(b.r||0),b=>`${b.rbi}타점 ${b.r}득점`),
        '우리 팀 안에서 타점 + 득점 합계 1위 · 4타석 이상 (팀 내부 상)');
 
@@ -6798,7 +6827,9 @@ function buildAwards(ST){
   pick(qual,p=>wrcPlus(ST.bat[p.id],lw),'타격상',
        p=>`wRC+ ${wrcPlus(ST.bat[p.id],lw)} · 타율 ${fmt3(avg(ST.bat[p.id]))}`);
   pick(us.players,p=>(ST.bat[p.id]||{}).g||0,'개근상',p=>`${ST.bat[p.id].g}경기`);
-  const pit=us.pitchers.filter(p=>(ST.pit[p.id]||{}).outs>=21);
+  /* 팀 투수상도 규정이닝(경기당 1이닝)을 채워야 준다 */
+  const teamQ=qualOuts((ST.stand&&ST.stand['wwzw'])?ST.stand['wwzw'].g:0);
+  const pit=us.pitchers.filter(p=>(ST.pit[p.id]||{}).outs>=teamQ);
   if(pit.length){
     const b=pit.slice().sort((x,y)=>warPit(ST.pit[y.id],le)-warPit(ST.pit[x.id],le))[0];
     A.push({label:'투수상',name:b.name,
@@ -6822,10 +6853,10 @@ function buildAwards(ST){
   ];
   const PKINGS=[
     {label:'삼진왕',   min:l=>l.k>=1,     v:l=>l.k,        f:l=>`${l.k}탈삼진`},
-    {label:'평균자책왕',min:l=>l.outs>=21, v:l=>-era(l),    f:l=>`ERA ${era(l).toFixed(2)}`},
+    {label:'평균자책왕',min:l=>l.outs>=teamQ, v:l=>-era(l),    f:l=>`ERA ${era(l).toFixed(2)}`},
     {label:'다승왕',   min:l=>l.w>=1,     v:l=>l.w,        f:l=>`${l.w}승`},
     {label:'이닝왕',   min:l=>l.outs>=9,  v:l=>l.outs,     f:l=>`${ipStr(l)}이닝`},
-    {label:'WHIP왕',   min:l=>l.outs>=21, v:l=>-whip(l),   f:l=>`WHIP ${whip(l).toFixed(2)}`},
+    {label:'WHIP왕',   min:l=>l.outs>=teamQ, v:l=>-whip(l),   f:l=>`WHIP ${whip(l).toFixed(2)}`},
   ];
   /* 종합왕은 리그 23팀 전체와 겨룬다.
      우리 팀 안에서 누가 제일 잘했는지는 기록실 → 구단(통산 1위)에 따로 있다.
@@ -7748,7 +7779,11 @@ LiveGame.prototype.stepPA = function(){
   const pit=this.curPitcher(def), pl=this.pbox[pit.id];
   const slot=off.slots[off.order%9];
   const bat=off.team.players.find(p=>p.id===slot.id);
-  const bl=this.box[bat.id];
+  if(!bat){ this.endHalf(); return {events:[], half:true}; }
+  /* [버그 이력] 타순에 들어왔는데 박스스코어 칸이 없으면 bl.pa++ 에서 죽는다.
+     투수 맞교대로 타순에 들어온 사람이 지명타자 경기라 타자 기록이 없던 게
+     원인이었다. 넣는 쪽을 다 고쳤지만 여기서도 한 번 더 막는다.        */
+  const bl=this.box[bat.id]||(this.box[bat.id]=newBoxL());
   const rng=this.rng;
   const events=[];
 
@@ -8393,6 +8428,7 @@ LiveGame.prototype._pitcherSubs = function(s, outId, inId){
        내려온 투수가 그 자리를 못 보면 그때만 벤치에서 부른다.           */
     if(fit(outId,vacated)>0){
       s.slots[pSlot]={id:outId,pos:vacated};      // 맞교대 — 아무도 경기에서 안 빠진다
+      if(!this.box[outId]) this.box[outId]=newBoxL();
       this.log.push({t:'sub',
         text:`수비 위치 교대 · ${this.nameOf(outId)} → ${POSNAMES[vacated]||vacated}`});
       return;
@@ -8402,6 +8438,7 @@ LiveGame.prototype._pitcherSubs = function(s, outId, inId){
     else {
       // 벤치도 없다 — 못 보는 자리라도 내려온 투수가 선다
       s.slots[pSlot]={id:outId,pos:vacated};
+      if(!this.box[outId]) this.box[outId]=newBoxL();
       this.log.push({t:'sub',
         text:`${this.nameOf(outId)}이(가) ${POSNAMES[vacated]||vacated}(으)로 간다 (안 서던 자리다)`});
     }
@@ -8417,6 +8454,7 @@ LiveGame.prototype._pitcherSubs = function(s, outId, inId){
   /* 내려온 투수가 그 수비를 볼 수 있으면 그가 나가고 지명타자 자리를 물려받는다.
      지명타자는 없어지지만 사람은 안 빠진다 — 인원이 빠듯한 팀에 이게 맞다. */
   if(fit(outId,vacated)>0 && this.canEnter(s,outId)!==false){
+    if(!this.box[outId]) this.box[outId]=newBoxL();
     enter(dhIdx,outId,vacated,'수비 교대');
     this.dhLost=true;
     this.log.push({t:'sub',
@@ -8438,6 +8476,7 @@ LiveGame.prototype._pitcherSubs = function(s, outId, inId){
       text:`지명타자 소멸 · ${this.nameOf(rep)}이(가) ${POSNAMES[vacated]||vacated}(으)로 들어간다`});
   } else {
     s.slots[dhIdx].pos=vacated;                      // 마지막 수단 — 지타가 어떻게든 선다
+    if(!this.box[dhId]) this.box[dhId]=newBoxL();
     this.dhLost=true;
     this.log.push({t:'sub',
       text:`지명타자 소멸 · 사람이 없어 ${this.nameOf(dhId)}이(가) ${POSNAMES[vacated]||vacated}(으)로 나간다`});
@@ -12984,6 +13023,7 @@ function moundView(opts){
     <div class="bat-fig">${figSVG('bat')}</div>
     <div class="lbl">${o.label||''}</div>
     <div class="cnt" id="cnt"><b>0</b>-<b>0</b></div>
+    <div class="who" id="mwho"></div>
     <div class="res" id="mres"></div>`;
   return m;
 }
@@ -13100,6 +13140,19 @@ function playThenClose(box, mv, choice, preText, preColor){
   setTimeout(go, preText?520:0);
 }
 
+/* 타석·마운드에 선 사람 얼굴을 띄운다.
+   [요청] "타석이나 투수이면 그 프로필 사진 나오게 하자.
+           나랑 한규랑 인규밖에 없긴 하지만 나머지는 찰흙 캐릭터"
+   사진이 있으면 사진, 없으면 avatarHTML 이 찰흙 인형을 준다.        */
+function moundWho(mound,pid,role){
+  const box=mound.querySelector('#mwho'); if(!box||!pid)return;
+  const p=TBYID['wwzw'].players.find(x=>x.id===pid);
+  const nm=p?p.name:nameOf(pid);
+  const no=(p&&p.no!=null)?`<i>${p.no}</i>`:'';
+  box.innerHTML=`<div class="who-av">${avatarHTML(pid)}</div>
+    <div class="who-n">${no}${nm}<span>${role||''}</span></div>`;
+}
+
 function moundResult(mound,text,color,big){
   const r=mound.querySelector('#mres'); if(!r)return;
   r.textContent=text; if(color)r.style.color=color;
@@ -13125,6 +13178,7 @@ function renderSwing(box, d){
       존 안으로 들어오면 치고, <b>빠지면 참아라</b>. 4볼이면 볼넷, 3스트라이크면 삼진.</div>`;
   const mv=moundView({label:`<b>${myP.name}</b>`});
   w.appendChild(mv);
+  if(bat) moundWho(mv,bat.id,'타석');
   const hit=el('button','pl-hit','준비...');
   hit.disabled=true;
   const take=el('button','pl-skip','지켜본다');
@@ -13263,6 +13317,7 @@ function renderPitch(box, d){
          :'구종과 코스를 고르면 던진다.')} 제구 성공률 약 ${sharp}%.</div>`;
     const cb=mv.querySelector('#cnt'); if(cb) cb.innerHTML=`<b>${c.b}</b>-<b>${c.s}</b>`;
     const lb=mv.querySelector('.lbl'); if(lb) lb.innerHTML=`<b>${p.name}</b>`;
+    moundWho(mv,p.id,'마운드');
     const ars=arsenalOf(p);
     if(!type||ars.indexOf(type)<0) type=ars[0];
     tRow.innerHTML='';
