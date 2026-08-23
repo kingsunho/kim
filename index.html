@@ -1126,6 +1126,10 @@ table.hl-tbl td.hl-o{color:#c98a80}
 .ps-head i{font-style:normal;font-size:11px;color:var(--dm)}
 .ps-cv{display:block;width:100%;height:auto;border:1px solid var(--line);
   border-radius:0 0 10px 10px;image-rendering:pixelated;background:#22351f}
+.ps-shade{position:absolute;left:0;right:0;top:26%;height:30%;opacity:0;
+  transition:opacity .18s;pointer-events:none;
+  background:linear-gradient(180deg,transparent,rgba(4,8,12,.62) 34%,rgba(4,8,12,.62) 70%,transparent)}
+.ps-shade.on{opacity:1}
 .ps-ban{position:absolute;left:0;right:0;top:33%;text-align:center;
   font-size:34px;font-weight:900;letter-spacing:-1px;opacity:0;
   text-shadow:0 3px 0 rgba(0,0,0,.55),0 0 18px rgba(0,0,0,.5);
@@ -1135,6 +1139,11 @@ table.hl-tbl td.hl-o{color:#c98a80}
   font-size:13px;font-weight:700;color:#e6edf6;opacity:0;transition:opacity .2s;
   text-shadow:0 2px 6px rgba(0,0,0,.8);padding:0 14px}
 .ps-sub.on{opacity:1}
+.ps-idx{position:absolute;left:9px;top:44px;font-size:10.5px;font-weight:800;
+  color:#ffd15c;background:rgba(0,0,0,.45);padding:3px 7px;border-radius:6px}
+.ps-x{position:absolute;right:7px;top:41px;width:26px;height:26px;border-radius:50%;
+  background:rgba(0,0,0,.5);color:#e6edf6;font-size:13px;line-height:1;border:none}
+.hl-replay{width:100%;margin:8px 0 4px}
 .ps-skip{position:absolute;right:8px;bottom:7px;font-size:10px;color:rgba(255,255,255,.5)}
 .subtabs.sub6{gap:4px}
 .sub6 .subtab{padding:9px 3px;font-size:11px;letter-spacing:-.3px}
@@ -6073,8 +6082,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.19.0';
-const APP_VERSION_NOTE = '2D 그라운드 장면 · 경기 전 리그 랭킹';
+const APP_VERSION = '2.19.1';
+const APP_VERSION_NOTE = '하이라이트 다시 보기';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6095,6 +6104,14 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.19.1', t:'하이라이트 다시 보기', items:[
+    '경기가 끝나면 결과 화면에서 ▶ 하이라이트 다시 보기를 누를 수 있다',
+    '그날 제일 볼 만한 다섯 장면을 골라서 2D 그라운드로 이어서 튼다',
+    '자동 진행으로 돌린 경기도 된다. 경기 중에 장면을 모아뒀다가 몰아서 보여준다',
+    '홈런·득점·병살·보살·끝내기 순으로 무게를 매기고, 한 이닝에 몰리지 않게 골랐다',
+    '점수판은 그때 그 시점 점수로 나온다. 탭하면 다음 장면, ✕ 를 누르면 그만',
+    '장면 배너 뒤에 그늘을 깔아서 야수랑 겹쳐도 글자가 읽힌다',
+  ]},
   {v:'2.19.0', t:'2D 그라운드 장면 · 경기 전 리그 랭킹', items:[
     '경기 장면이 그림판 같다는 말을 들었다. 도트 야구장을 새로 그렸다',
     '직접 지휘 중 홈런·득점·병살·실책 같은 장면이 뜨면 2D 그라운드로 보여준다',
@@ -8193,8 +8210,20 @@ LiveGame.prototype.stepPA = function(){
       pit:{id:pit.id,name:pit.name},
       us:!!off.isUser, before:psBefore, after:self.bases.slice(),
       runs:off.runs-psRunsB, outs:self.outs, inning:self.inning, half:self.half,
+      /* 그때의 점수 — 다시 보기 때 최종 점수가 찍히면 안 된다 */
+      sa:self.away.runs, sh:self.home.runs,
       text:txt};
   })(this);
+  /* 나중에 '하이라이트 다시 보기'로 틀 만한 장면은 모아둔다.
+     자동 진행은 경기를 통째로 즉시 계산해서 중간에 끼어들 자리가 없다.
+     그래서 여기서 쌓아두고 결과 화면에서 몰아서 보여준다.            */
+  {
+    const iv=playImportance(this.lastPlay);
+    if(iv>=3){
+      if(!this.scenes) this.scenes=[];
+      if(this.scenes.length<60) this.scenes.push({...this.lastPlay, iv});
+    }
+  }
   events.forEach(e=>{
     const mine = !!(meName && (e.text.indexOf(meName)===0 || e.text.indexOf('— '+meName)>=0));
     this.log.push({t:'play', me:mine, ...e});
@@ -8220,6 +8249,9 @@ LiveGame.prototype.stepPA = function(){
       this.off().line.push(this.curIR||0);
       this.curIR=0;
       if(cold && !walkoff) this.mercy=true;
+      /* 경기를 끝낸 그 타석은 무조건 하이라이트 1번이다 */
+      const sc0=this.scenes||[]; const last=sc0[sc0.length-1];
+      if(last && last.seq===this.paSeq){ last.iv+=10; last.wo=!!walkoff; }
       this.finish(); return {events, done:true};
     }
   }
@@ -12678,6 +12710,61 @@ function renderKakao(){
 }
 
 /* ---------- 경기 ---------- */
+/* 그 타석이 얼마나 볼 만한가 — 하이라이트를 고를 때 쓴다.
+   결과 화면의 '다시 보기' 는 이 점수 순으로 다섯 장면을 뽑는다.       */
+function playImportance(d){
+  if(!d) return 0;
+  const K=d.kind;
+  let v = K==='HR'?10 : K==='AS'?6 : K==='3B'?5 : K==='DP'?4 :
+          K==='2B'?3 : K==='E'?2.5 : K==='SF'?2 : K==='1B'?1 :
+          K==='K'?0.5 : 0.2;
+  if(d.runs>0) v+=2+Math.min(4,d.runs);
+  v += Math.max(0,(d.inning||1)-4)*0.6;        // 뒤로 갈수록 무겁다
+  // 그 플레이의 주인공이 우리 편인가 (수비 플레이는 반대쪽이 주인공이다)
+  const offHero = ['1B','2B','3B','HR','SF','E'].indexOf(K)>=0;
+  if(offHero ? d.us : !d.us) v+=2;
+  return v;
+}
+
+/* ---------- 하이라이트 다시 보기 ----------
+   자동 진행은 경기를 통째로 즉시 계산해서 중간에 장면을 끼울 자리가 없다.
+   그래서 경기 중에 모아둔 장면을 결과 화면에서 몰아서 튼다.           */
+function pickHighlights(scenes, n){
+  const want=n||5;
+  const all=(scenes||[]).slice();
+  all.sort((a,b)=>(b.iv||0)-(a.iv||0));
+  /* 한 이닝에 몰리면 '그 경기'가 안 보인다. 같은 이닝은 두 장면까지만
+     먼저 담고, 그래도 모자라면 나머지에서 채운다.                     */
+  const top=[], cnt={};
+  all.forEach(x=>{
+    if(top.length>=want) return;
+    const k=`${x.inning}-${x.half}`;
+    if((cnt[k]||0)>=2) return;
+    cnt[k]=(cnt[k]||0)+1; top.push(x);
+  });
+  if(top.length<want) all.forEach(x=>{
+    if(top.length>=want||top.indexOf(x)>=0) return;
+    top.push(x);
+  });
+  top.sort((a,b)=>(a.seq||0)-(b.seq||0));       // 다시 시간 순으로
+  return top;
+}
+let hlReel=null;
+function playHighlights(list, done){
+  const L=(list||[]).slice();
+  if(!L.length){ toast('다시 볼 만한 장면이 없었다'); done&&done(); return; }
+  let i=0, quit=false;
+  hlReel={ stop:()=>{ quit=true; if(psRun){try{psRun.kill();}catch(e){}} hlReel=null; } };
+  const next=()=>{
+    if(quit){ done&&done(); return; }
+    if(i>=L.length){ hlReel=null; toast('하이라이트 끝'); done&&done(); return; }
+    const d=L[i], idx=i+1; i++;
+    psPlay(d, next, {idx, total:L.length, onQuit:()=>{ quit=true; hlReel=null;
+      toast('다시 보기 종료'); done&&done(); }});
+  };
+  next();
+}
+
 /* ================= 경기 전 리그 랭킹 =================
    [요청] "경기 시작할 때 잠깐 투수 순위·타자 순위 나오게. 저 랭킹은 리그 전체로"
    중계 시작 전에 나오는 그 그래픽이다.
@@ -12935,7 +13022,8 @@ function psScene(d){
 
 /* ---------- 재생 ---------- */
 let psRun=null;
-function psPlay(d, done){
+function psPlay(d, done, opt){
+  const o=opt||{};
   if(psRun){ try{psRun.kill();}catch(e){} psRun=null; }
   const host=$('#stage')||$('#view');
   if(!host||!d){ done&&done(); return; }
@@ -12944,13 +13032,17 @@ function psPlay(d, done){
   const inn=`${d.inning}회 ${d.half===0?'초':'말'}`;
   const usN='우완좌완', thN=(LIVE&&LIVE.userIsHome?LIVE.away:LIVE.home)?
     (LIVE.userIsHome?LIVE.away:LIVE.home).team.name:'상대';
-  const uR=LIVE?(LIVE.userIsHome?LIVE.home.runs:LIVE.away.runs):0;
-  const tR=LIVE?(LIVE.userIsHome?LIVE.away.runs:LIVE.home.runs):0;
+  /* 다시 보기 때 최종 점수가 찍히면 안 된다. 그 타석 직후 점수를 쓴다. */
+  const hasS=(d.sa!=null&&d.sh!=null);
+  const uR=hasS?(LIVE&&LIVE.userIsHome?d.sh:d.sa):(LIVE?(LIVE.userIsHome?LIVE.home.runs:LIVE.away.runs):0);
+  const tR=hasS?(LIVE&&LIVE.userIsHome?d.sa:d.sh):(LIVE?(LIVE.userIsHome?LIVE.away.runs:LIVE.home.runs):0);
   box.innerHTML=`<div class="ps-head"><span>${thN} <b>${tR}</b></span>`+
     `<i>${inn} · ${d.outs}아웃</i><span><b>${uR}</b> ${usN}</span></div>`+
     `<canvas class="ps-cv" width="${PSW}" height="${PSH}"></canvas>`+
-    `<div class="ps-ban"></div><div class="ps-sub"></div>`+
-    `<div class="ps-skip">탭하면 넘어간다</div>`;
+    `<div class="ps-shade"></div><div class="ps-ban"></div><div class="ps-sub"></div>`+
+    (o.total?`<div class="ps-idx">하이라이트 ${o.idx}/${o.total}</div>`+
+             `<button class="ps-x" aria-label="닫기">✕</button>`:'')+
+    `<div class="ps-skip">탭하면 ${o.total?'다음 장면':'넘어간다'}</div>`;
   ov.appendChild(box); host.appendChild(ov);
   const cv=box.querySelector('.ps-cv');
   /* 캔버스를 못 쓰는 환경(옛 브라우저·테스트 환경)에서는 장면을 건너뛴다.
@@ -13087,6 +13179,7 @@ function psPlay(d, done){
       const st=psBanner(d);
       ban.textContent=st.big; ban.style.color=st.color; ban.classList.add('on');
       sub.textContent=d.text||''; sub.classList.add('on');
+      const sh=box.querySelector('.ps-shade'); if(sh) sh.classList.add('on');
     }
   }
   function finish(){
@@ -13097,6 +13190,11 @@ function psPlay(d, done){
     done&&done();
   }
   ov.onclick=()=>finish();
+  const xb=box.querySelector('.ps-x');
+  if(xb) xb.onclick=(e)=>{ e.stopPropagation();
+    if(dead)return; dead=true; if(raf)cancelAnimationFrame(raf);
+    if(ov.parentNode)ov.parentNode.removeChild(ov); psRun=null;
+    o.onQuit&&o.onQuit(); };
   psRun={kill:()=>{ dead=true; if(raf)cancelAnimationFrame(raf);
     if(ov.parentNode)ov.parentNode.removeChild(ov); }};
   raf=requestAnimationFrame(frame);
@@ -14483,6 +14581,15 @@ function showResult(){
       `<span class="hl-lbl">패전투수</span><span class="hl-val">${lpn||'—'}</span>`;
   hc.appendChild(decRow);
 
+  /* [요청] "하이라이트 다시 보기 해줘"
+     자동 진행으로 돌린 경기도 여기서 장면을 몰아 볼 수 있다.         */
+  const reel=pickHighlights(LIVE.scenes,5);
+  if(reel.length){
+    const rb2=el('button','btn hl-replay',`▶ 하이라이트 다시 보기 (${reel.length}장면)`);
+    rb2.onclick=()=>{ rb2.disabled=true;
+      playHighlights(reel, ()=>{ rb2.disabled=false; }); };
+    hc.appendChild(rb2);
+  }
   if(hls.length){
     const tb=el('table','box hl-tbl');
     tb.innerHTML='<tr><th>이닝</th><th>기록</th><th>선수</th><th>팀</th></tr>';

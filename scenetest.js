@@ -161,6 +161,68 @@ const txt=()=>d.querySelector('#view').textContent;
     return !/undefined|NaN/.test(h);
   });
 
+  console.log('\n[하이라이트 다시 보기]');
+  // 자동 진행으로 한 경기를 끝까지 돌린다
+  ev(`(function(){
+    if(ST.round>=ST.schedule.length||ST.seasonOver)return;
+    runWeek(); ST.weekDone=true; ST.announced=true; ST.lineupDirty=false; ST.absent={}; ST.events=[];
+    LIVE=makeLive(); LIVE.manual=false; LIVE.round=ST.round;
+    var k=0; while(!LIVE.over&&k++<3000){ if(LIVE.pending)LIVE.applyDecision('change'); LIVE.step(); }
+  })()`);
+  T('자동 진행에서도 장면이 쌓인다', ()=>{
+    const n=ev("(LIVE.scenes||[]).length");
+    return n>0 ? `${n}장면` : '!한 장면도 안 쌓였다';
+  });
+  T('홈런이 평범한 안타보다 높게 매겨진다', ()=>{
+    const hr=ev("playImportance({kind:'HR',runs:1,inning:3,us:true})");
+    const h1=ev("playImportance({kind:'1B',runs:0,inning:3,us:true})");
+    return hr>h1 ? `HR ${hr.toFixed(1)} > 1B ${h1.toFixed(1)}` : '!순서가 뒤집혔다';
+  });
+  T('점수가 나면 더 높게 매겨진다', ()=>
+    ev("playImportance({kind:'1B',runs:2,inning:3,us:true})")>ev("playImportance({kind:'1B',runs:0,inning:3,us:true})"));
+  T('후반 장면이 더 무겁다', ()=>
+    ev("playImportance({kind:'2B',runs:0,inning:7,us:true})")>ev("playImportance({kind:'2B',runs:0,inning:1,us:true})"));
+  T('수비 플레이는 수비 쪽이 우리일 때 가산된다', ()=>
+    ev("playImportance({kind:'DP',runs:0,inning:3,us:false})")>ev("playImportance({kind:'DP',runs:0,inning:3,us:true})"));
+  T('다섯 장면을 시간 순으로 뽑는다', ()=>{
+    const r=JSON.parse(ev("JSON.stringify(pickHighlights(LIVE.scenes,5).map(x=>[x.seq,x.inning,x.kind]))"));
+    const asc=r.every((v,i)=>i===0||r[i-1][0]<=v[0]);
+    return r.length===5&&asc ? r.map(x=>`${x[1]}회 ${x[2]}`).join(' / ') : `!${r.length}개 · 시간순 ${asc}`;
+  });
+  T('한 이닝에 세 장면이 몰리지 않는다', ()=>{
+    const r=JSON.parse(ev("JSON.stringify(pickHighlights(LIVE.scenes,5).map(x=>x.inning+'-'+x.half))"));
+    const c={}; r.forEach(k=>c[k]=(c[k]||0)+1);
+    const over=Object.keys(c).filter(k=>c[k]>2);
+    // 장면이 5개도 안 되는 경기면 예외 없이 다 담는다
+    return (over.length===0||ev("(LIVE.scenes||[]).length")<6) ? Object.keys(c).join(',') : `!${over.join(',')} 에 몰림`;
+  });
+  T('장면마다 그때의 점수가 박혀 있다', ()=>{
+    const sc=JSON.parse(ev("JSON.stringify((LIVE.scenes||[]).map(x=>[x.sa,x.sh]))"));
+    const fin=JSON.parse(ev("JSON.stringify([LIVE.away.runs,LIVE.home.runs])"));
+    const ok=sc.every(x=>x[0]!=null&&x[1]!=null);
+    const early=sc.length&&(sc[0][0]+sc[0][1])<(fin[0]+fin[1]);
+    return ok&&early ? `첫 장면 ${sc[0].join(':')} → 최종 ${fin.join(':')}` : '!점수가 안 박혔다';
+  });
+  T('결과 화면에 다시 보기 버튼이 있다', ()=>{
+    // 실제 경로 그대로 — 경기 화면에서 '결과 보기' 를 누른다
+    w.go('game');
+    const rb=[...d.querySelectorAll('#view .btn')].find(x=>/결과 보기/.test(x.textContent));
+    if(!rb) return '!결과 보기 버튼이 없다';
+    rb.click();
+    const b=[...d.querySelectorAll('#view .btn')].find(x=>/하이라이트 다시 보기/.test(x.textContent));
+    return b ? b.textContent : '!버튼이 없다';
+  });
+  T('눌러도 경기 결과 화면이 안 깨진다 (캔버스 없는 환경)', ()=>{
+    const b=[...d.querySelectorAll('#view .btn')].find(x=>/하이라이트 다시 보기/.test(x.textContent));
+    b.click();
+    return !d.querySelector('.ps-ov') && /경기 하이라이트/.test(txt());
+  });
+  T('빈 목록이면 조용히 넘어간다', ()=>{
+    let done=false;
+    ev("window.__hl=false; playHighlights([], function(){window.__hl=true})");
+    return ev("window.__hl")===true;
+  });
+
   console.log('\n[설정]');
   T('설정에서 경기 장면을 끄고 켤 수 있다', ()=>{
     w.go('more');
