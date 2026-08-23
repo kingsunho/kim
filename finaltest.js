@@ -27,8 +27,8 @@ setTimeout(async()=>{
   [...d.querySelectorAll('#view .btn')].find(b=>b.textContent==='이 선수로 시작').click();
   await new Promise(r=>setTimeout(r,250));
   T('새 게임이면 튜토리얼부터', ()=>/이게 무슨 게임이냐/.test(d.getElementById('view').textContent));
-  const NSTEP=ev("TUTORIAL.length");
-  T('단계가 충분하다', ()=>NSTEP>=15 ? `${NSTEP}단계` : `!${NSTEP}단계`);
+  const NSTEP=ev("tutList().length");   // [2.20.0] 화면엔 핵심 몇 장만
+  T('핵심 몇 장만 보여준다', ()=>NSTEP>=3&&NSTEP<=6 ? `${NSTEP}장 (원본 ${ev('TUTORIAL.length')}장은 ? 도움말)` : `!${NSTEP}장`);
   T('진행 표시가 단계 수와 맞는다', ()=>d.querySelectorAll('#view .tut-dots i').length===NSTEP);
   const titles=[];
   for(let i=0;i<NSTEP;i++){
@@ -37,6 +37,7 @@ setTimeout(async()=>{
     if(/undefined|NaN/.test(t))errs.push('튜토리얼 '+i+' undefined');
     if(t.length<120)errs.push('튜토리얼 '+i+' 내용 부실');
     const nx=[...d.querySelectorAll('#view .btn')].find(b=>/다음 →|시작한다/.test(b.textContent));
+    if(!nx){ errs.push('튜토리얼 '+i+' 버튼 없음'); break; }
     nx.click(); await new Promise(r=>setTimeout(r,40));
   }
   console.log('   ', titles.join(' / '));

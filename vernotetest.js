@@ -19,10 +19,14 @@ const T=(n,f)=>{try{const r=f();const ok=r===true||(typeof r==='string'&&!/^!/.t
   d.querySelectorAll('.pickcard')[0].click(); await wait(60);
   [...d.querySelectorAll('#view .btn')].find(b=>b.textContent==='이 선수로 시작').click();
   await wait(320);
-  const N=ev("TUTORIAL.length");
+  /* [2.20.0] 튜토리얼은 핵심 다섯 장만 보여준다. 나머지 설명은 버린 게
+     아니라 ? 도움말로 옮겼다 — 그래서 원본 개수와 화면 장수를 따로 본다. */
+  const ALL=ev("TUTORIAL.length");
+  const N=ev("tutList().length");
   T('새 게임이면 튜토리얼부터', ()=>/이게 무슨 게임이냐/.test(d.getElementById('view').textContent));
-  T('단계가 늘었다', ()=>N>=20 ? `${N}단계` : `!${N}단계`);
-  T('진행 표시가 단계 수와 맞는다', ()=>d.querySelectorAll('#view .tut-dots i').length===N);
+  T('설명 원본은 그대로 남아 있다', ()=>ALL>=20 ? `${ALL}장 (도움말)` : `!${ALL}장`);
+  T('처음 보여주는 건 핵심 몇 장뿐이다', ()=>N>=3&&N<=6 ? `${N}장` : `!${N}장`);
+  T('진행 표시가 장수와 맞는다', ()=>d.querySelectorAll('#view .tut-dots i').length===N);
   const titles=[];
   let dirty=[];
   for(let i=0;i<N;i++){
@@ -35,11 +39,17 @@ const T=(n,f)=>{try{const r=f();const ok=r===true||(typeof r==='string'&&!/^!/.t
     nx.click(); await wait(35);
   }
   T('전 단계 클린', ()=>dirty.length?('!'+dirty.join(',')):true);
-  T('새 기능이 다 들어갔다', ()=>{
-    const all=titles.join(' ');
+  T('빠진 설명은 도움말에서 볼 수 있다', ()=>{
+    const all=ev("TUTORIAL.map(t=>t.t).join(' ')");
     const need=['화면 보는 법','진기록','리그 전체','감독 액션','소리'];
     const miss=need.filter(x=>!all.includes(x));
     return miss.length?('!빠짐: '+miss.join(',')):`${need.length}개 확인`;
+  });
+  T('도움말 목차가 전부 열린다', ()=>{
+    ev("openHelp('home')");
+    const rows=d.querySelectorAll('#sheet-body .help-row').length;
+    ev("$('#sheet').classList.remove('open')");
+    return rows===ALL ? `${rows}개` : `!${rows}/${ALL}`;
   });
   T('중복 설명이 없다', ()=>{
     const body=ev("TUTORIAL.map(t=>t.b).join('')");

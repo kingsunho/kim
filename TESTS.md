@@ -74,6 +74,7 @@ node soaktest.js
 | `hoftest` | 전시장 통산 타격·투구 · 명예의 전당(단일시즌 최고·헌액자·연표) |
 | `scenetest` | 2D 그라운드 장면(장면 기술서·좌표·발동 조건) · 경기 전 리그 랭킹 |
 | `slidetest` | 구종 궤적 — 도착점이 미트·판정과 일치하는지 · 좌우 맞대결별 휘는 방향 |
+| `uitest` | 짧아진 튜토리얼 · 화면 첫 진입 안내 · ? 도움말 · 구장 그림·전광판 |
 
 ## 가끔 실패하는 것
 
@@ -96,3 +97,10 @@ node soaktest.js
 v2.19.0 부터 **경기 시작 전에 리그 랭킹 화면이 먼저 뜬다.**
 `직접 지휘` / `자동 진행` 을 누른 뒤에는 `passRank()` 를 불러서 넘겨야
 경기가 시작된다. 해당 테스트에는 헬퍼가 이미 들어 있다.
+
+## 캔버스를 쓰는 화면
+
+v2.20.0 부터 구장 그림(`.mv-cv`)과 2D 장면이 캔버스다. jsdom 은 `getContext`
+가 없어서 **`Not implemented: HTMLCanvasElement.prototype.getContext`** 경고를
+낸다. 게임은 이 경우 그림만 건너뛰고 정상 동작한다.
+테스트의 `jsdomError` 필터에 `not implemented` 를 넣어야 오탐이 안 잡힌다.

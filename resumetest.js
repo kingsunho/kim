@@ -2,7 +2,7 @@
 const {JSDOM,VirtualConsole}=require('jsdom');
 const html=require('fs').readFileSync('index.html','utf8');
 const errs=[];const vc=new VirtualConsole();
-vc.on('jsdomError',e=>{if(!/scrollTo/.test(e.message))errs.push(e.message)});
+vc.on('jsdomError',e=>{if(!/scrollTo|not implemented/i.test(e.message))errs.push(e.message)});
 const dom=new JSDOM(html,{runScripts:'dangerously',pretendToBeVisual:true,url:'https://x.test/',virtualConsole:vc});
 dom.window.scrollTo=()=>{};dom.window.confirm=()=>true;
 const w=dom.window,d=w.document,ev=s=>w.eval(s);
