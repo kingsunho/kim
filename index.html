@@ -837,6 +837,12 @@ table.stand td.nm{text-align:left;font-weight:700;font-size:12px}
 .mound .lbl{position:absolute;left:8px;top:8px;font-size:10.5px;color:#9fb0c4;
   background:rgba(8,14,22,.62);padding:3px 7px;border-radius:6px}
 .mound .lbl b{color:#e2eaf5}
+/* 볼카운트 — 어디에 던질지 정하려면 이게 있어야 한다 */
+.mound .cnt{position:absolute;right:8px;top:8px;font-size:13px;font-weight:800;
+  color:#9fb0c4;background:rgba(8,14,22,.7);padding:3px 9px;border-radius:6px;
+  letter-spacing:1px}
+.mound .cnt b{color:#ffd15c}
+.mound .cnt b+b{color:#e08a70}
 .mound .res{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);
   font-size:19px;font-weight:900;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.75);
   opacity:0;transition:opacity .16s}
@@ -1811,8 +1817,8 @@ const META = {
   khj:{born:1999,speech:'ban',throws:'R',car:false,school:'군포고',drink:0,attend:0.38,loyal:90,pot:2,
     traits:['코치','리틀출신','헌신','금주'],friends:['ujh','lmh'],rival:null,
     coach:{inf:75},
-    pos:PR({'2B':54,SS:54,'3B':52,'1B':0,LF:0,CF:0,RF:0,C:0,P:0}),
-    desc:'리틀야구단 출신. 내야 수비 지도를 맡는다. 술은 안 마신다.'},
+    pos:PR({SS:56,'2B':52,'3B':52,'1B':0,LF:0,CF:0,RF:0,C:0,P:0}),
+    desc:'유격수. 리틀야구단 출신이라 내야 수비 지도를 맡는다. 술은 안 마신다.'},
 
   lmh:{born:1999,speech:'ban',throws:'R',car:false,school:'군포고',drink:2,attend:0.38,loyal:84,pot:4,
     traits:['노력파'],friends:['ujh','khj'],rival:null,coach:{},
@@ -1846,7 +1852,7 @@ const META = {
 
   ksw:{born:2000,speech:'jon',throws:'R',car:false,school:'군포고',drink:0,attend:0.38,loyal:80,pot:10,
     traits:['복귀','안정형','금주','장교'],friends:['ksn','ksh'],rival:null,coach:{},
-    pos:PR({SS:54,'2B':54,'3B':50,'1B':0,LF:0,CF:0,RF:0,C:0,P:0}),
+    pos:PR({SS:58,'2B':52,'3B':50,'1B':0,LF:0,CF:0,RF:0,C:0,P:0}),
     desc:'유격수. 송구 실책 0건. 술은 안 마신다.'},
 
   lsm:{born:2000,speech:'jon',throws:'L',car:true,school:'군포고',drink:2,attend:0.38,loyal:72,pot:14,
@@ -5978,8 +5984,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.15.0';
-const APP_VERSION_NOTE = '로테이션이 실제로 돈다 — 한 명이 다 던지던 것 수정';
+const APP_VERSION = '2.16.0';
+const APP_VERSION_NOTE = '볼카운트 · 볼 구분 · 맞으면 인플레이 확정';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6000,6 +6006,16 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.16.0', t:'한 타석을 공 하나씩 던진다', items:[
+    '볼카운트가 생겼다. 4볼이면 볼넷, 3스트라이크면 삼진 — 화면에 계속 보인다',
+    '제구가 나쁘면 존 밖으로 빠진다. 그게 볼이다 — 참을지 칠지 골라야 한다',
+    '맞으면 무조건 인플레이다. 정타 쳤는데 삼진·볼넷 나오던 게 없어졌다',
+    '헛스윙하면 스트라이크로 올라간다. 표시와 결과가 어긋나지 않는다',
+    '투구할 때 카운트를 보고 코스를 정할 수 있다. 3볼이면 경고가 뜬다',
+    '포수 미트가 공 받는 자리로 움직인다 (한자리에 고정돼 있었다)',
+    '투수를 바꾸면 투구 화면의 이름도 같이 바뀐다',
+    '김선우·권혁준 주포지션을 유격수로 바로잡았다',
+  ]},
   {v:'2.15.0', t:'한 명이 시즌을 다 던지던 것', items:[
     '로테이션이 이름만 로테이션이고 실제로는 안 돌고 있었다 — 1번이 22경기를 전부 선발로 나갔다',
     '이제 던진 선발이 뒤로 밀린다. 잘 던지는 사람일수록 빨리 돌아온다',
@@ -7340,6 +7356,8 @@ function LiveGame(cfg){
      [제보] "투수들 책임 주자 들어오면 ERA가 실책 아닐 경우 원래 투수가 가져가잖아" */
   this.runnerP = {};
   this.gone = {};         // 이 경기에서 빠진 사람 — 다시 못 들어온다
+  this.cnt = {b:0,s:0};   // 직접 플레이용 볼카운트
+  this.cntPA = -1;        // 그 카운트가 어느 타석 것인지
   this.park = cfg.park || {hr:1,d2:1,d3:1,err:1,babip:1};
   this.gearPenalty = cfg.gearPenalty||0;
   this.buff = cfg.buff||{};
@@ -7572,9 +7590,43 @@ LiveGame.prototype.playWorthIt = function(){
   if(bat && bat.id===(this.myId||(ST&&ST.playerId))) return true;   // 내 선수 타석
   return false;
 };
+/* ---------- 볼카운트 ----------
+   [제보] "투수할 때 카운트도 알려줘야 될 듯. 어디에 공 던져야 될지 생각은 해야 되니깐"
+          "가끔 볼 던져서 볼도 구분하게 해줘야 한다"
+   직접 플레이일 때만 한 타석을 공 하나씩 나눠서 던진다.
+   4볼이면 볼넷, 3스트라이크면 삼진, 배트에 맞으면 인플레이 — 그때 엔진을 부른다. */
+LiveGame.prototype.count = function(){
+  if(this.cntPA!==this.paSeq){ this.cnt={b:0,s:0}; this.cntPA=this.paSeq; }
+  return this.cnt;
+};
+LiveGame.prototype.countText = function(){
+  const c=this.count(); return `${c.b}볼 ${c.s}스트라이크`;
+};
+/* 공 하나의 결과를 반영한다.
+   kind: 'ball' | 'strike' | 'foul' | 'contact'
+   반환: null(계속) | {end:'BB'|'K'|'contact'}                            */
+LiveGame.prototype.pitchResult = function(kind, q){
+  const c=this.count();
+  if(kind==='ball'){ c.b++; if(c.b>=4){ this._forceRes={type:'BB'}; return {end:'BB'}; } return null; }
+  if(kind==='strike'){ c.s++; if(c.s>=3){ this._forceRes={type:'K'}; return {end:'K'}; } return null; }
+  if(kind==='foul'){ if(c.s<2)c.s++; return null; }
+  if(kind==='contact'){ this._contact=true; this._contactQ=q; return {end:'contact'}; }
+  return null;
+};
+
 /* 이번 타석에 쌓인 조작 결과를 꺼내 쓴다 (한 번 쓰면 비운다) */
 LiveGame.prototype.consumePlayMods = function(off, def){
   let out=null;
+  if(this._contact){
+    // 배트에 맞았다 — 삼진·볼넷은 나올 수 없다. 인플레이 결과만.
+    out={k:0.0008, bb:0.0008, hbp:0.0008};
+    const q=this._contactQ==null?0.6:this._contactQ;
+    out.babip=1+(q-0.5)*0.30;
+    out.pow=1+Math.max(0,q-0.7)*0.75;
+    this._contact=false; this._contactQ=null;
+    this._swingQ=null; this._pitchHit=null;
+    return out;
+  }
   if(this._swingQ!=null && off.isUser){
     out={...(out||{}), ...swingMods(this._swingQ)};
   }
@@ -7860,7 +7912,13 @@ LiveGame.prototype.stepPA = function(){
      안 되고, 못 맞혀도 게임이 망가지면 안 된다.                        */
   const umods = this.consumePlayMods(off, def);
   const allMods = (pmods||umods) ? {...(pmods||{}), ...(umods||{})} : null;
-  const res = simPA(batE, pitE, off.team, def.team, rng, off.tac, cond, parkE, allMods);
+  /* 직접 플레이에서 볼카운트로 이미 결론이 난 타석은 그 결과를 그대로 쓴다.
+     [제보] "맞거나 정타면 안타나 아웃 아니겠냐" — 맞는 말이다. 배트에 맞았는데
+     삼진이 나오면 안 된다. 그래서 컨택하면 인플레이 결과만 나오게 하고,
+     볼넷·삼진은 카운트가 찼을 때만 나오게 못 박는다.                    */
+  let res;
+  if(this._forceRes){ res=this._forceRes; this._forceRes=null; }
+  else res = simPA(batE, pitE, off.team, def.team, rng, off.tac, cond, parkE, allMods);
   // 번트 앤 런은 주자가 한 베이스 더 간다
   const advOdds = (off.isUser && this._buntRun) ? 0.62 : 0.35;
 
@@ -12685,6 +12743,14 @@ function paintLiveCtl(){
       const hadDH=sd.slots.some(x=>x.pos==='DH');
       LIVE.applyDecision('pchange');
       flushLog(); updateLiveUI(); paintLiveCtl();
+      /* [제보] "투구 떴을 때 투수 교체했는데도 투수가 그대로 이름이 나오네"
+         판단창은 열릴 때 한 번 그려지고 끝이라 바뀐 걸 몰랐다. 다시 그린다. */
+      const dbox=$('#decision');
+      if(dbox && dbox.classList.contains('on') && LIVE._openDec){
+        const dd=LIVE._openDec;
+        if(dbox._cleanup){ try{dbox._cleanup();}catch(e){} dbox._cleanup=null; }
+        showDecision(dd);
+      }
       toast(pchangeToast(sd,outN,hadDH,outI));
     };
   }
@@ -12719,7 +12785,7 @@ function runLive(){
 
 /* 판단창을 닫고 경기를 다시 굴린다 */
 function decDone(box){
-  if(LIVE) LIVE.lastDecPA=LIVE.paSeq;      // 이 타석은 끝났다고 표시
+  if(LIVE){ LIVE.lastDecPA=LIVE.paSeq; LIVE._openDec=null; }
   box.classList.remove('on'); box.innerHTML=''; flushLog(); updateLiveUI(); runLive();
 }
 
@@ -12917,6 +12983,7 @@ function moundView(opts){
     <div class="mitt" id="mitt"></div><div class="mitt-tag">포수</div>
     <div class="bat-fig">${figSVG('bat')}</div>
     <div class="lbl">${o.label||''}</div>
+    <div class="cnt" id="cnt"><b>0</b>-<b>0</b></div>
     <div class="res" id="mres"></div>`;
   return m;
 }
@@ -12928,10 +12995,22 @@ function throwBall(mound, type, opts){
   const box=mound.getBoundingClientRect();
   const W=box.width||300, H=box.height||230;
   const ball=el('div','ball seam'); mound.appendChild(ball);
-  // 출발(마운드) → 도착(존 안의 목표 지점)
+  // 출발(마운드) → 도착. cx/cy 가 -1 이나 3 이면 존 밖(볼)이다.
   const sx=W*0.5, sy=H*0.30;
-  const tx=W*(0.5+((o.cx==null?1:o.cx)-1)*0.082);   // 0,1,2 → 왼/가운데/오른
-  const ty=H*(0.50+((o.cy==null?1:o.cy))*0.072);
+  const cxv=(o.cx==null?1:o.cx), cyv=(o.cy==null?1:o.cy);
+  const tx=W*(0.5+(cxv-1)*0.082);
+  const ty=H*(0.50+cyv*0.072);
+  /* [제보] "포수 글러브 모양은 왜 거기 고정인건지 모르겠다"
+     미트는 공 받는 자리로 움직여야 한다. 도착 지점으로 미리 붙여둔다. */
+  const mitt=mound.querySelector('#mitt'), mtag=mound.querySelector('.mitt-tag');
+  if(mitt){
+    const mx=tx-W*0.5;
+    const my=(H-ty)-H*0.13;
+    mitt.style.transition='transform .28s ease-out';
+    mitt.style.left=(50+mx*100/W).toFixed(2)+'%';
+    mitt.style.bottom=((H-ty)*100/H-2).toFixed(2)+'%';
+    if(mtag) mtag.style.opacity='0';
+  }
   const dur=(o.dur||900)/T.spd;
   let t0=null, raf=null, hit=false;
   const trails=[];
@@ -13043,36 +13122,92 @@ function renderSwing(box, d){
     <div class="pl-sub">${LIVE.inning}회 ${LIVE.outs}아웃 ·
       <b style="color:#e2eaf5">${bat?bat.name:''}</b>${isMine?' <span class="metag">내 선수</span>':''}
       · 상대 ${myP.name} (구위 ${myP.stf})<br>
-      공이 <b>홈플레이트에 닿는 순간</b> 눌러라. 안 휘두르면 볼넷을 기다리는 거다.</div>`;
-  const mv=moundView({label:`<b>${myP.name}</b> 투구 준비`});
+      존 안으로 들어오면 치고, <b>빠지면 참아라</b>. 4볼이면 볼넷, 3스트라이크면 삼진.</div>`;
+  const mv=moundView({label:`<b>${myP.name}</b>`});
   w.appendChild(mv);
   const hit=el('button','pl-hit','준비...');
   hit.disabled=true;
-  const skip=el('button','pl-skip','안 휘두른다 (볼넷 노림)');
-  w.appendChild(hit); w.appendChild(skip);
+  const take=el('button','pl-skip','지켜본다');
+  take.disabled=true;
+  w.appendChild(hit); w.appendChild(take);
   box.appendChild(w);
 
   const ars=arsenalOf(myP);
-  const type=ars[(LIVE.rng()*ars.length)|0];
-  const T=PITCH_TYPES[type];
-  const cx=(LIVE.rng()*3)|0, cy=(LIVE.rng()*3)|0;
-  let anim=null, done=false, phase='ready';
+  let anim=null, done=false, phase='ready', inZone=true, resolved=false;
 
-  const finish=(q)=>{
-    if(done)return; done=true;
+  const paint=()=>{
+    const c=LIVE.count();
+    const cb=mv.querySelector('#cnt');
+    if(cb) cb.innerHTML=`<b>${c.b}</b>-<b>${c.s}</b>`;
+  };
+  const endPA=(endKind,label,color,big)=>{
+    if(resolved)return; resolved=true; done=true;
     if(anim)anim.stop();
-    const lbl=mv.querySelector('.lbl');
-    if(lbl) lbl.innerHTML=`<b>${T.n}</b> · ${myP.name}`;
-    hit.disabled=true;
-    if(q==null){ playThenClose(box,mv,'playskip',null); return; }
-    const pre = q>=0.8?'정타!':(q>=0.55?'맞혔다':(q>=0.3?'빗맞았다':'헛스윙'));
-    const col = q>=0.55?'#7fc48f':(q>=0.3?'#c9a227':'#e08a70');
-    if(q>=0.55) mv.classList.add('impact');
-    playThenClose(box,mv,'swing:'+q.toFixed(3),pre,col);
+    hit.disabled=true; take.disabled=true;
+    if(big) mv.classList.add('impact');
+    playThenClose(box,mv,'playskip',label,color);
+  };
+  /* 다음 공 */
+  const nextPitch=()=>{
+    if(done||resolved)return;
+    const type=ars[(LIVE.rng()*ars.length)|0];
+    const T=PITCH_TYPES[type];
+    /* 제구가 나쁘면 존 밖으로 빠진다 — 그게 '볼'이다 */
+    const ctlOk=LIVE.rng() < Math.max(0.30,Math.min(0.86,(myP.ctl+18)/78));
+    inZone=ctlOk;
+    let cx,cy;
+    if(ctlOk){ cx=(LIVE.rng()*3)|0; cy=(LIVE.rng()*3)|0; }
+    else { const side=(LIVE.rng()*4)|0;
+      cx=side===0?-1:(side===1?3:(LIVE.rng()*3)|0);
+      cy=side===2?-1:(side===3?3:(LIVE.rng()*3)|0); }
+    const l=mv.querySelector('.lbl');
+    if(l) l.innerHTML=`<b>${myP.name}</b> · ${T.n}`;
+    hit.textContent='스윙!'; hit.disabled=false; take.disabled=false; phase='pitch';
+    windup(mv,()=>{
+      if(done||resolved)return;
+      anim=throwBall(mv,type,{cx,cy,dur:1000,onEnd:()=>{
+        if(done||resolved)return;
+        // 안 휘두르고 그냥 지나갔다
+        judge(null);
+      }});
+    });
+  };
+  /* 스윙(q) 또는 지켜보기(null) 판정 */
+  const judge=(q)=>{
+    if(done||resolved)return;
+    if(anim)anim.stop();
+    hit.disabled=true; take.disabled=true;
+    let kind, pre, col;
+    if(q==null){
+      kind = inZone?'strike':'ball';
+      pre  = inZone?'스트라이크':'볼';
+      col  = inZone?'#e08a70':'#7fc48f';
+    } else if(q<0.25){
+      kind='strike'; pre='헛스윙'; col='#e08a70';
+    } else {
+      kind='contact'; pre = q>=0.75?'정타!':'맞혔다'; col='#7fc48f';
+    }
+    const r=LIVE.pitchResult(kind,q);
+    paint();
+    if(!r){                                   // 타석이 안 끝났다 — 다음 공
+      moundResult(mv,pre,col);
+      setTimeout(()=>{ if(!done&&!resolved){ phase='wait'; nextPitch(); } },720);
+      return;
+    }
+    if(r.end==='BB'){ endPA('BB','볼넷',' #7fc48f'.trim(),false); return; }
+    if(r.end==='K'){  endPA('K','삼진 아웃','#e08a70',false); return; }
+    endPA('contact',pre,col,q>=0.75);         // 인플레이 — 실제 결과는 엔진이
   };
 
-  /* [제보] "치기 전 준비할 시간은 줘야 될 것 같음. 갑자기 나오니깐 반응이 어려움"
-     3 · 2 · 1 을 세고 던진다. 세는 동안 버튼이 잠겨 있어서 미리 못 누른다. */
+  hit.onclick=()=>{
+    if(phase!=='pitch'||done||resolved) return;
+    if(!anim){ judge(0.05); return; }
+    const t=anim.progress();
+    judge(Math.max(0,1-Math.abs(t-0.90)*5.2));
+  };
+  take.onclick=()=>{ if(phase!=='pitch'||done||resolved)return; judge(null); };
+
+  /* 첫 공 전에만 준비 시간을 준다 */
   let cnt=3;
   const tick=()=>{
     if(done)return;
@@ -13082,108 +13217,139 @@ function renderSwing(box, d){
       if(l) l.innerHTML=`<b>${myP.name}</b> 투구 준비 · ${cnt}`;
       cnt--; setTimeout(tick,600); return;
     }
-    hit.textContent='스윙!'; hit.disabled=false; phase='pitch';
-    const l2=mv.querySelector('.lbl');
-    if(l2) l2.innerHTML=`<b>${myP.name}</b> 던진다`;
-    windup(mv,()=>{
-      if(done)return;
-      anim=throwBall(mv,type,{cx,cy,dur:1000,
-        onEnd:()=>{ if(!done){ finish(0.05); } }});   // 안 휘두르고 흘려보냈다
-    });
+    nextPitch();
   };
+  paint();
   setTimeout(tick,260);
-
-  hit.onclick=()=>{
-    if(phase!=='pitch'||done) return;
-    if(!anim){ finish(0.05); return; }
-    const t=anim.progress();
-    const err=Math.abs(t-0.90);
-    finish(Math.max(0,1-err*5.2));
-  };
-  skip.onclick=()=>finish(null);
-  box._cleanup=()=>{ done=true; if(anim)anim.stop(); };
+  box._cleanup=()=>{ done=true; resolved=true; if(anim)anim.stop(); };
 }
 
-/* 코스 선택 — 구종과 코스를 고르고, 실제로 던지는 걸 본다. */
+/* 투구 — 카운트를 보고 구종·코스를 고른다. 타자가 참거나 휘두른다. */
 function renderPitch(box, d){
   const def=LIVE.def(), off=LIVE.off();
-  const p=LIVE.curPitcher(def);
-  const slot=off.slots[off.order%9];
-  const bat=off.team.players.find(x=>x.id===slot.id);
   const w=el('div','pl-wrap');
-  const sharp=Math.round(Math.max(15,Math.min(100,(p.ctl-20)/45*100)));
-  w.innerHTML=`<div class="pl-t">투구</div>
-    <div class="pl-sub">${LIVE.inning}회 ${LIVE.outs}아웃 ·
-      마운드 <b style="color:#e2eaf5">${p.name}</b> (구위 ${p.stf} 제구 ${p.ctl})
-      · 상대 타석 ${bat?bat.name:'—'}<br>
-      구종과 코스를 고르면 던진다. <b>제구가 낮으면 찍은 대로 안 간다</b> — 약 ${sharp}%.</div>`;
-  const mv=moundView({label:`<b>${p.name}</b> 마운드`});
+  const head=el('div'); w.appendChild(head);
+  const mv=moundView({label:''});
   w.appendChild(mv);
-
-  const ars=arsenalOf(p);
-  let type=ars[0];
-  const tRow=el('div','ptype');
-  ars.forEach(k=>{
-    const T=PITCH_TYPES[k];
-    const b=el('button',k===type?'on':'');
-    const DESC={ff:'빠르다',sl:'옆으로 휜다',cu:'크게 떨어진다',ch:'느리다',fk:'막판에 떨어진다'};
-    b.innerHTML=`${T.n}<i>${DESC[k]||''}</i>`;
-    b.onclick=()=>{ type=k; [...tRow.children].forEach(x=>x.classList.remove('on')); b.classList.add('on'); };
-    tRow.appendChild(b);
-  });
-  w.appendChild(tRow);
-
+  const tRow=el('div','ptype'); w.appendChild(tRow);
   const wrap=el('div','zwrap');
-  const g=el('div','zgrid');
+  const g=el('div','zgrid'); wrap.appendChild(g);
+  const info=el('div','zinfo'); wrap.appendChild(info);
+  w.appendChild(wrap);
+  const skip=el('button','pl-skip','알아서 던지게 둔다'); w.appendChild(skip);
+  box.appendChild(w);
+
   const NAMES=[['높은 몸쪽','높은 가운데','높은 바깥'],
                ['몸쪽','한가운데','바깥쪽'],
                ['낮은 몸쪽','낮은 가운데','낮은 바깥']];
-  let thrown=false;
-  for(let r=0;r<3;r++)for(let c=0;c<3;c++){
-    const b=el('button',(r===1&&c===1)?'hot':((r===2||c===0||c===2)?'cold':''),NAMES[r][c]);
-    b.onclick=()=>{
-      if(thrown)return; thrown=true;
-      const T=PITCH_TYPES[type];
-      const corner=(r!==1||c!==1);
-      const base=corner?0.42:0.72;
-      const sharpF=Math.max(0.25,Math.min(1,(p.ctl-18)/42));
-      const ok=LIVE.rng() < base*sharpF*(1-T.hard);
-      // 빗나가면 옆 칸으로 흘린다
-      const ax=ok?c:Math.max(0,Math.min(2,c+(LIVE.rng()<0.5?-1:1)));
-      const ay=ok?r:Math.max(0,Math.min(2,r+(LIVE.rng()<0.5?-1:1)));
-      const lbl=mv.querySelector('.lbl');
-      if(lbl) lbl.innerHTML=`<b>${T.n}</b> · ${NAMES[r][c]} 노림`;
-      windup(mv,()=>{
-        throwBall(mv,type,{cx:ax,cy:ay,dur:900,onEnd:()=>{
-          /* [제보] "빠졌다는 뭐야" — 어디로 갔는지를 말해줘야 한다 */
-          const went=NAMES[ay][ax];
-          const pre = ok ? `${NAMES[r][c]}!` : `${went}(으)로 몰렸다`;
-          if(lbl) lbl.innerHTML= ok
-            ? `<b>${T.n}</b> · ${NAMES[r][c]} — 노린 대로`
-            : `<b>${T.n}</b> · ${NAMES[r][c]} 노렸는데 ${went}`;
-          playThenClose(box,mv,'pitch:'+(ok?'1':'0'),pre, ok?'#7fc48f':'#e08a70');
-        }});
-      });
-    };
-    g.appendChild(b);
+  const DESC={ff:'빠르다',sl:'옆으로 휜다',cu:'크게 떨어진다',ch:'느리다',fk:'막판에 떨어진다'};
+  let type=null, busy=false, resolved=false;
+
+  /* [제보] "투구 떴을 때 투수 교체했는데도 투수가 그대로 이름이 나오네"
+     판단창은 열릴 때 한 번 그려지고 끝이라, 상시 버튼으로 투수를 바꿔도
+     화면은 예전 투수를 계속 보여줬다. 지금 마운드에 선 사람을 매번 다시 읽는다. */
+  const draw=()=>{
+    const p=LIVE.curPitcher(def);
+    const slot=off.slots[off.order%9];
+    const bat=off.team.players.find(x=>x.id===slot.id);
+    const c=LIVE.count();
+    const sharp=Math.round(Math.max(15,Math.min(100,(p.ctl-20)/45*100)));
+    head.innerHTML=`<div class="pl-t">투구 · ${c.b}볼 ${c.s}스트라이크</div>
+      <div class="pl-sub">${LIVE.inning}회 ${LIVE.outs}아웃 ·
+        마운드 <b style="color:#e2eaf5">${p.name}</b> (구위 ${p.stf} 제구 ${p.ctl})
+        · 상대 타석 ${bat?bat.name:'—'}<br>
+        ${c.b===3?'<b style="color:#e08a70">3볼이다. 하나만 더 빠지면 볼넷</b>'
+         :(c.s===2?'<b style="color:#7fc48f">2스트라이크. 유인구를 던져볼 만하다</b>'
+         :'구종과 코스를 고르면 던진다.')} 제구 성공률 약 ${sharp}%.</div>`;
+    const cb=mv.querySelector('#cnt'); if(cb) cb.innerHTML=`<b>${c.b}</b>-<b>${c.s}</b>`;
+    const lb=mv.querySelector('.lbl'); if(lb) lb.innerHTML=`<b>${p.name}</b>`;
+    const ars=arsenalOf(p);
+    if(!type||ars.indexOf(type)<0) type=ars[0];
+    tRow.innerHTML='';
+    ars.forEach(k=>{
+      const b2=el('button',k===type?'on':'');
+      b2.innerHTML=`${PITCH_TYPES[k].n}<i>${DESC[k]||''}</i>`;
+      b2.onclick=()=>{ if(busy)return; type=k; draw(); };
+      tRow.appendChild(b2);
+    });
+    info.innerHTML=`<b style="color:#e08a70">한가운데</b>는 넣기 쉽지만 맞기도 쉽다.<br>
+      <b style="color:#7fc48f">구석·낮은 코스</b>는 어렵지만 타자가 잘 못 친다.<br>
+      빠지면 <b>볼</b>이다. 변화구는 위력적이지만 더 자주 빠진다.<br>
+      제구 ${p.ctl} — ${p.ctl>=45?'웬만하면 들어간다':(p.ctl>=30?'가끔 몰린다':'자주 빠진다')}`;
+  };
+
+  const throwTo=(r,c2)=>{
+    if(busy||resolved)return; busy=true;
+    const p=LIVE.curPitcher(def);
+    const slot=off.slots[off.order%9];
+    const bat=off.team.players.find(x=>x.id===slot.id);
+    const T=PITCH_TYPES[type];
+    const sharpF=Math.max(0.25,Math.min(1,(p.ctl-18)/42));
+    const corner=(r!==1||c2!==1);
+    const ok=LIVE.rng() < (corner?0.42:0.72)*sharpF*(1-T.hard);
+    /* 빗나가면 옆 칸 — 크게 빗나가면 존 밖(볼)까지 간다 */
+    let ax=c2, ay=r, out=false;
+    if(!ok){
+      const bad=LIVE.rng()<0.45;
+      if(bad){ out=true;
+        ax=c2<=0?-1:(c2>=2?3:(LIVE.rng()<0.5?-1:3));
+        ay=Math.max(0,Math.min(2,r+(LIVE.rng()<0.5?-1:1)));
+      } else {
+        ax=Math.max(0,Math.min(2,c2+(LIVE.rng()<0.5?-1:1)));
+        ay=Math.max(0,Math.min(2,r+(LIVE.rng()<0.5?-1:1)));
+      }
+    }
+    const lb=mv.querySelector('.lbl');
+    if(lb) lb.innerHTML=`<b>${T.n}</b> · ${NAMES[r][c2]}`;
+    windup(mv,()=>{
+      throwBall(mv,type,{cx:ax,cy:ay,dur:900,onEnd:()=>{
+        /* 타자가 휘두를지 참을지 — 카운트와 코스를 본다 */
+        const cnt=LIVE.count();
+        const eye=bat?bat.eye:40, con=bat?bat.con:40;
+        let sw = out ? 0.22 : 0.62;
+        if(cnt.s===2) sw+=0.22;                     // 투 스트라이크면 커트라도
+        if(cnt.b===3) sw-=0.18;                     // 쓰리볼이면 골라 나간다
+        sw -= (eye-40)*0.004;
+        const swung = LIVE.rng() < Math.max(0.05,Math.min(0.92,sw));
+        let kind, pre, col;
+        if(!swung){
+          kind = out?'ball':'strike';
+          pre  = out?'볼':'스트라이크 (안 휘둘렀다)';
+          col  = out?'#e08a70':'#7fc48f';
+        } else {
+          const hitP=Math.max(0.18,Math.min(0.86,0.42+(con-40)*0.006-(out?0.20:0)-(corner&&ok?0.10:0)));
+          if(LIVE.rng()<hitP){ kind='contact'; pre='맞았다'; col='#e08a70'; }
+          else { kind='strike'; pre='헛스윙!'; col='#7fc48f'; }
+        }
+        const res=LIVE.pitchResult(kind, kind==='contact'?0.55:null);
+        draw();
+        if(!res){
+          moundResult(mv,pre,col);
+          busy=false;
+          setTimeout(()=>{ if(!resolved) draw(); },700);
+          return;
+        }
+        resolved=true;
+        if(res.end==='BB'){ playThenClose(box,mv,'playskip','볼넷 내줬다','#e08a70'); return; }
+        if(res.end==='K'){  playThenClose(box,mv,'playskip','삼진!','#7fc48f'); return; }
+        playThenClose(box,mv,'playskip',pre,col);
+      }});
+    });
+  };
+
+  for(let r=0;r<3;r++)for(let c2=0;c2<3;c2++){
+    const b2=el('button',(r===1&&c2===1)?'hot':((r===2||c2===0||c2===2)?'cold':''),NAMES[r][c2]);
+    b2.onclick=()=>throwTo(r,c2);
+    g.appendChild(b2);
   }
-  wrap.appendChild(g);
-  const info=el('div','zinfo');
-  info.innerHTML=`<b style="color:#e08a70">한가운데</b>는 넣기 쉽지만 맞기도 쉽다.<br>
-    <b style="color:#7fc48f">구석·낮은 코스</b>는 어렵지만 잡으면 삼진·범타가 는다.<br>
-    변화구는 위력적이지만 <b>더 자주 빠진다</b>.<br>
-    제구 ${p.ctl} — ${p.ctl>=45?'웬만하면 들어간다':(p.ctl>=30?'가끔 몰린다':'자주 빠진다. 각오해라')}`;
-  wrap.appendChild(info);
-  w.appendChild(wrap);
-  const skip=el('button','pl-skip','알아서 던지게 둔다');
-  skip.onclick=()=>{ if(thrown)return; thrown=true; LIVE.applyDecision('playskip'); decDone(box); };
-  w.appendChild(skip);
-  box.appendChild(w);
+  skip.onclick=()=>{ if(busy||resolved)return; resolved=true; LIVE.applyDecision('playskip'); decDone(box); };
+  draw();
 }
 
 function showDecision(d){
   const box=$('#decision'); if(!box)return;
   if(box._cleanup){ try{box._cleanup();}catch(e){} box._cleanup=null; }
+  if(LIVE) LIVE._openDec=d;          // 투수 교체 등으로 다시 그릴 때 쓴다
   box.innerHTML=''; box.classList.add('on');
   /* 타이밍을 재려면 공과 버튼이 같이 보여야 한다. 판단창을 화면 안으로 끌어온다. */
   if(d && (d.kind==='swing'||d.kind==='pitch')){

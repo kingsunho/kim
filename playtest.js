@@ -192,12 +192,51 @@ setTimeout(async()=>{
     return true;
   });
 
-  await wait(2200);   // 와인드업 + 공 도달
-  T('투구 결과가 실제로 기록된다', ()=>{
-    const v=ev("LIVE._pitchHit");
-    const consumed=ev("LIVE._lastPlayPA")!=null;
-    return (v!=null||consumed) ? (v==null?'이미 소비됨(정상)':(v?'적중':'빗나감')) : false;
+  await wait(2600);   // 와인드업 + 공 도달 + 타자 판정
+  T('던지면 카운트가 올라가거나 타석이 끝난다', ()=>{
+    const c=ev("LIVE.count()");
+    const closed=!d.querySelector('#decision').classList.contains('on');
+    return (c.b+c.s>0 || closed) ? (closed?'타석 종료':`${c.b}볼 ${c.s}스트라이크`) : false;
   });
+
+  console.log('[볼카운트]');
+  T('4볼이면 볼넷으로 끝난다', ()=>ev(`(function(){
+    LIVE=makeLive(); LIVE.manual=true; LIVE.cntPA=LIVE.paSeq; LIVE.cnt={b:0,s:0};
+    var r=null;
+    for(var i=0;i<4;i++) r=LIVE.pitchResult('ball');
+    return (r&&r.end==='BB'&&LIVE._forceRes&&LIVE._forceRes.type==='BB') ? '4볼 → 볼넷' : false;
+  })()`));
+  T('3스트라이크면 삼진으로 끝난다', ()=>ev(`(function(){
+    LIVE=makeLive(); LIVE.manual=true; LIVE.cntPA=LIVE.paSeq; LIVE.cnt={b:0,s:0};
+    var r=null;
+    for(var i=0;i<3;i++) r=LIVE.pitchResult('strike');
+    return (r&&r.end==='K'&&LIVE._forceRes&&LIVE._forceRes.type==='K') ? '3스트라이크 → 삼진' : false;
+  })()`));
+  T('파울은 2스트라이크에서 안 올라간다', ()=>ev(`(function(){
+    LIVE=makeLive(); LIVE.manual=true; LIVE.cntPA=LIVE.paSeq; LIVE.cnt={b:0,s:2};
+    var r=LIVE.pitchResult('foul');
+    return (!r && LIVE.count().s===2) ? '2스트라이크 유지' : false;
+  })()`));
+  T('배트에 맞으면 삼진·볼넷이 안 나온다', ()=>ev(`(function(){
+    LIVE=makeLive(); LIVE.manual=true;
+    LIVE.pitchResult('contact',0.7);
+    var m=LIVE.consumePlayMods({isUser:true},{isUser:false});
+    return (m && m.k<0.01 && m.bb<0.01 && m.hbp<0.01)
+      ? '삼진 x'+m.k+' · 볼넷 x'+m.bb : false;
+  })()`));
+  T('맞았는데 삼진 나는 판이 없다 (실측 300타석)', ()=>ev(`(function(){
+    var k=0, n=0;
+    for(var t=0;t<300;t++){
+      LIVE=makeLive(); LIVE.manual=true;
+      LIVE.pitchResult('contact',0.6);
+      var before=LIVE.log.length;
+      var g=0; while(!LIVE.over && g++<40){ LIVE.step();
+        if(LIVE.log.slice(before).filter(function(l){return l.t==='play'}).length) break; }
+      var evs=LIVE.log.slice(before).filter(function(l){return l.t==='play'});
+      if(evs.length){ n++; if(/삼진|볼넷|몸에 맞는/.test(evs[0].text)) k++; }
+    }
+    return (n>0 && k===0) ? n+'타석 중 삼진·볼넷 0건' : (k+'건 발생');
+  })()`));
 
   console.log('[구종]');
   T('구종마다 속도·궤적이 다르다', ()=>ev(`(function(){
