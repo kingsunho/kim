@@ -1487,7 +1487,12 @@ function simGame(home,away,opts){
     inn++;
     for(let half=0;half<2;half++){
       const off=S[half],def=S[1-half];
-      if(half===1 && inn>=INN && S[1].runs>S[0].runs){ off.line.push(null); over=true; break; }
+      /* 홈팀이 이미 이겨 있으면 말 공격을 안 한다 — 마지막 이닝도, 콜드게임 조건도 */
+      if(half===1){
+        const lead=S[1].runs-S[0].runs;
+        if(inn>=INN && lead>0){ off.line.push(null); over=true; break; }
+        if((inn>=4&&lead>=10)||(inn>=6&&lead>=7)){ off.line.push(null); mercy=true; over=true; break; }
+      }
       if(inn>INN && half===0 && S[0].runs!==S[1].runs){ over=true; break; }
 
       let outs=0,bases=[null,null,null],ir=0;
@@ -5561,8 +5566,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.9.3';
-const APP_VERSION_NOTE = '경기 중 다른 탭 갔다 와도 이어서 진행된다';
+const APP_VERSION = '2.9.4';
+const APP_VERSION_NOTE = '교체·자책점·콜드게임 야구 규칙 4건 수정';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -5583,6 +5588,13 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.9.4', t:'야구 규칙대로 안 굴러가던 것 네 가지', items:[
+    '한 번 교체돼서 빠진 사람이 대타로 다시 들어오던 걸 막았다 — 야구는 한 번 나가면 끝이다',
+    '오늘 못 온다고 한 사람은 어떤 교체로도 출전하지 않는다',
+    '승계주자가 홈을 밟으면 그 주자를 내보낸 투수의 실점·자책으로 간다 — 바뀐 투수가 뒤집어쓰던 걸 고쳤다',
+    '홈팀이 이미 이기고 있으면 마지막 이닝 말을 안 한다. 콜드게임 조건이면 그 자리에서 끝난다',
+    '팀을 나간 선수가 새로고침하거나 새 시즌을 시작하면 되살아나던 걸 고쳤다',
+  ]},
   {v:'2.9.3', t:'경기 중에 딴 데 눌러도 안 날아간다', items:[
     '경기 도중 홈·선수단·라인업을 눌렀다가 돌아오면 이어서 진행된다',
     '예전에는 경기가 통째로 리셋돼서 그때까지 친 게 전부 날아갔다',
@@ -6836,6 +6848,12 @@ function LiveGame(cfg){
   this.outs = 0; this.bases = [null,null,null];
   this.pending = null;
   this.usedPH = {};       // 대타 사용 기록
+  /* 주자 id → 그 주자를 내보낸 투수 id.
+     야구 규칙상 승계주자(inherited runner)가 홈을 밟으면 그 주자를 내보낸
+     투수의 실점·자책으로 달린다. 바뀐 투수가 뒤집어쓰면 안 된다.
+     [제보] "투수들 책임 주자 들어오면 ERA가 실책 아닐 경우 원래 투수가 가져가잖아" */
+  this.runnerP = {};
+  this.gone = {};         // 이 경기에서 빠진 사람 — 다시 못 들어온다
   this.park = cfg.park || {hr:1,d2:1,d3:1,err:1,babip:1};
   this.gearPenalty = cfg.gearPenalty||0;
   this.buff = cfg.buff||{};
@@ -7102,7 +7120,11 @@ LiveGame.prototype.stepPA = function(){
   if((this.bases[0]||this.bases[1]||this.bases[2]) && rng() < clamp(0.009+(42-pit.ctl)*0.0009, 0.002, 0.038)){
     for(let b=2;b>=0;b--){
       if(!this.bases[b])continue;
-      if(b===2){ this.box[this.bases[2]].r++; off.runs++; this.curIR=(this.curIR||0)+1; pl.r++; pl.er++; this.bases[2]=null; }
+      if(b===2){ const rid=this.bases[2];
+        this.box[rid].r++; off.runs++; this.curIR=(this.curIR||0)+1;
+        const own=this.runnerP[rid], opl=(own&&this.pbox[own])?this.pbox[own]:pl;
+        opl.r++; opl.er++; delete this.runnerP[rid];
+        this.bases[2]=null; }
       else { this.bases[b+1]=this.bases[b]; this.bases[b]=null; }
     }
     this.wp=(this.wp||0)+1;
@@ -7223,9 +7245,14 @@ LiveGame.prototype.stepPA = function(){
   // 번트 앤 런은 주자가 한 베이스 더 간다
   const advOdds = (off.isUser && this._buntRun) ? 0.62 : 0.35;
 
-  const score=(rid,e)=>{ if(!rid)return; this.box[rid].r++; off.runs++; this.curIR=(this.curIR||0)+1; pl.r++; if(e)pl.er++;
+  const score=(rid,e)=>{ if(!rid)return; this.box[rid].r++; off.runs++; this.curIR=(this.curIR||0)+1;
+    // 그 주자를 내보낸 투수에게 단다 (승계주자 규칙). 기록이 없으면 지금 던지는 투수.
+    const own=this.runnerP[rid], opl=(own&&this.pbox[own])?this.pbox[own]:pl;
+    opl.r++; if(e)opl.er++;
+    delete this.runnerP[rid];
     this.scoreLog.push({d:pit.id, f:this.curPitcher(off).id,
       a:this.away.runs, h:this.home.runs}); };
+  const onBase=(rid)=>{ if(rid) this.runnerP[rid]=pit.id; };
   const adv=(n,e)=>{ for(let b=2;b>=0;b--){ if(this.bases[b]){ const nb=b+n;
     if(nb>=3){score(this.bases[b],e);bl.rbi++;} else this.bases[nb]=this.bases[b]; this.bases[b]=null; } } };
 
@@ -7246,10 +7273,10 @@ LiveGame.prototype.stepPA = function(){
     if(this.bases[0]&&this.bases[1]&&this.bases[2]){score(this.bases[2],true);bl.rbi++;this.bases[2]=this.bases[1];this.bases[1]=this.bases[0];}
     else if(this.bases[0]&&this.bases[1]){this.bases[2]=this.bases[1];this.bases[1]=this.bases[0];}
     else if(this.bases[0]){this.bases[1]=this.bases[0];}
-    this.bases[0]=bat.id;
+    this.bases[0]=bat.id; onBase(bat.id);
     events.push({text:`${bat.name} ${isBB?'볼넷':'몸에 맞는 공'}`,cls:'bb'});
   }
-  else if(res.type==='E'){ bl.ab++;def.errs++;adv(1,false);this.bases[0]=bat.id;
+  else if(res.type==='E'){ bl.ab++;def.errs++;adv(1,false);this.bases[0]=bat.id; onBase(bat.id);
     events.push({text:`${bat.name} 상대 실책 출루`,cls:'err'});
     // 안산 야수가 실책하면 고진선이 폭발한다 (경기당 1회)
     if(this.gojin && !this.gojin.threw && !def.isUser && rng()<0.65){
@@ -7299,16 +7326,16 @@ LiveGame.prototype.stepPA = function(){
         pl.outs++; this.outs++;
         this.assists=(this.assists||0)+1; this.assistBy=of.id;
         events.push({text:`${bat.name} 안타 — ${of.name} 홈 보살! 3루 주자 아웃`,cls:'sb'});
-        if(this.outs<3){ adv(rng()<advOdds?2:1,true); this.bases[0]=bat.id; }
+        if(this.outs<3){ adv(rng()<advOdds?2:1,true); this.bases[0]=bat.id; onBase(bat.id); }
       } else {
-        adv(rng()<advOdds?2:1,true);this.bases[0]=bat.id;
+        adv(rng()<advOdds?2:1,true);this.bases[0]=bat.id; onBase(bat.id);
         events.push({text:`${bat.name} 안타`,cls:'hit'});
       }
     }
-    else if(res.type==='2B'){bl.d2++;adv(2,true);this.bases[1]=bat.id;
+    else if(res.type==='2B'){bl.d2++;adv(2,true);this.bases[1]=bat.id; onBase(bat.id);
       events.push({text:`${bat.name} 2루타`,cls:'hit'});
       this.hl('d2',off,bat.name,'');}
-    else if(res.type==='3B'){bl.d3++;adv(3,true);this.bases[2]=bat.id;
+    else if(res.type==='3B'){bl.d3++;adv(3,true);this.bases[2]=bat.id; onBase(bat.id);
       events.push({text:`${bat.name} 3루타`,cls:'hit'});
       this.hl('d3',off,bat.name,'');}
     else{bl.hr++;let c=1;for(let b=0;b<3;b++)if(this.bases[b]){score(this.bases[b],true);c++;this.bases[b]=null;}
@@ -7354,12 +7381,19 @@ LiveGame.prototype.endHalf = function(){
   const off=this.off();
   off.line.push(this.curIR||0);
   this.curIR=0;
-  this.outs=0; this.bases=[null,null,null];
+  this.outs=0; this.bases=[null,null,null]; this.runnerP={};
 
   if(this.half===0){
     this.half=1;
-    // 홈팀 리드 중 마지막 이닝 말 스킵
-    if(this.inning>=this.INN && this.home.runs>this.away.runs){ this.home.line.push(null); this.finish(); return; }
+    /* 초 공격이 끝난 시점에 홈팀이 이미 이겨 있으면 말 공격은 안 한다.
+       [제보] "우리가 초공격일 때 지고 있는데 말 공격 수비는 왜 하냐 — 마지막 이닝"
+       마지막 이닝뿐 아니라 콜드게임 조건도 마찬가지다. 4회초 끝나고 1:13 인데
+       4회말을 마저 치르고 있었다 (400경기 중 111건). 홈팀은 더 칠 이유가 없다. */
+    const lead=this.home.runs-this.away.runs;
+    if(this.inning>=this.INN && lead>0){ this.home.line.push(null); this.finish(); return; }
+    if((this.inning>=4&&lead>=10)||(this.inning>=6&&lead>=7)){
+      this.home.line.push(null); this.mercy=true; this.finish(); return;
+    }
     this.log.push({t:'inning',inning:this.inning,half:1,
       text:`${this.inning}회 말${this.inning>this.INN?' (연장)':''} · ${this.home.team.name} 공격`});
     this.checkPitcherChange(this.away);
@@ -7388,8 +7422,7 @@ LiveGame.prototype.benchRotation = function(){
   if(this._benchDone==null) this._benchDone=0;
   if(this._benchDone>=3) return;                          // 한 경기 세 명까지
   const team=us.team;
-  const inGame=new Set(us.slots.map(x=>x.id));
-  const cand=(this.benchPool||[]).filter(id=>!inGame.has(id));
+  const cand=(this.benchPool||[]).filter(id=>this.canEnter(us,id));
   if(!cand.length) return;
 
   // 그날 무안타인 야수 중에서 타수가 제일 많은 사람을 뺀다
@@ -7425,6 +7458,33 @@ LiveGame.prototype.benchRotation = function(){
 LiveGame.prototype.noteSub = function(side, idx, inId, outId, pos, how){
   side.used = side.used || [];
   side.used.push({id:inId,pos,ord:idx,starter:false,inning:this.inning,how:how||'교체',forId:outId});
+  if(outId) this.markGone(outId);      // 빠진 사람은 이 경기에 다시 못 들어온다
+};
+
+/* 한 번 경기에서 빠진 사람은 끝이다.
+   [제보] "교체한 타자들, 왜 나갔던 선수가 다시 교체되어 들어오냐"
+   예전에는 '지금 라인업에 없으면 벤치'로만 판단해서, 대타로 빠진 사람도
+   무안타 교체로 빠진 사람도 타순에서 밀려난 투수도 전부 다시 후보로 떴다.
+   야구에서 한 번 교체된 선수는 그 경기에 다시 못 나온다.               */
+LiveGame.prototype.markGone = function(id){
+  if(!id) return;
+  this.gone = this.gone || {};
+  this.gone[id] = this.inning || 1;
+};
+
+/* 이 사람이 지금 경기에 들어올 수 있나 — 벤치 고를 때는 전부 이걸 통한다.
+   · 이미 뛰고 있으면 안 된다
+   · 한 번 빠진 사람은 안 된다
+   · 이 경기에서 다친 사람은 안 된다
+   · 오늘 못 온다고 한 사람은 안 된다 (결장·부상)                       */
+LiveGame.prototype.canEnter = function(side, id){
+  if(!id) return false;
+  if(side && side.slots && side.slots.some(x=>x.id===id)) return false;
+  if(this.gone && this.gone[id]) return false;
+  if(this.usedPH && this.usedPH[id]) return false;
+  if((this.injuries||[]).some(iv=>iv && iv.id===id)) return false;
+  if(side && side.isUser && typeof isAvailable==='function' && !isAvailable(id)) return false;
+  return true;
 };
 
 LiveGame.prototype.nameOf = function(id){
@@ -7560,6 +7620,12 @@ LiveGame.prototype.applyDecision = function(choice){
           · 지명타자 사용: 벤치가 없으면 지명타자가 그 자리로 나간다 — 지명타자 소멸.
             이때부터는 투수도 타순에 있으므로 타자 9명이 그대로 유지된다.        */
 LiveGame.prototype.applyPitcherSubs = function(s, outId, inId){
+  this._pitcherSubs(s, outId, inId);
+  /* 마운드에서 내려간 뒤 타순에도 안 남아 있으면 그 경기는 끝이다.
+     (벤치가 없어서 야수로 남는 경우는 slots 에 남아 있으므로 해당 없음) */
+  if(outId && !(s.slots||[]).some(x=>x.id===outId)) this.markGone(outId);
+};
+LiveGame.prototype._pitcherSubs = function(s, outId, inId){
   if(!s.slots || outId===inId) return;
   const roster=s.team.players||[];
   const has=id=>roster.some(q=>q.id===id);
@@ -7568,10 +7634,7 @@ LiveGame.prototype.applyPitcherSubs = function(s, outId, inId){
      명단에 있는 사람만 타순을 건드린다.                              */
   if(!has(inId)) return;
 
-  const bench=()=>roster
-    .filter(q=>!s.slots.some(x=>x.id===q.id) && q.id!==outId
-                && !(this.injuries||[]).some(iv=>iv.id===q.id))
-    .map(q=>q.id);
+  const bench=()=>roster.filter(q=>this.canEnter(s,q.id)).map(q=>q.id);
   const fit=(id,pos)=>(typeof posFit==='function')?posFit(id,pos):1;
   const bestFor=(pos,ids)=>{
     const okd=ids.filter(id=>fit(id,pos)>0);
@@ -7664,14 +7727,16 @@ LiveGame.prototype.intentionalWalk = function(){
   const bl=this.box[bat.id]=this.box[bat.id]||newBoxL();
   pl.bf++; bl.pa++; bl.bb++; pl.bb++; off.bbs++;
   if(this.bases[0]&&this.bases[1]&&this.bases[2]){       // 만루면 밀어내기 실점
-    this.box[this.bases[2]].r++; off.runs++; this.curIR=(this.curIR||0)+1;
-    pl.r++; pl.er++; bl.rbi++;
+    const rid3=this.bases[2];
+    this.box[rid3].r++; off.runs++; this.curIR=(this.curIR||0)+1;
+    const own3=this.runnerP[rid3], opl3=(own3&&this.pbox[own3])?this.pbox[own3]:pl;
+    opl3.r++; opl3.er++; bl.rbi++; delete this.runnerP[rid3];
     this.bases[2]=this.bases[1]; this.bases[1]=this.bases[0];
     this.log.push({t:'play',cls:'score',text:`고의4구 밀어내기 · 1점`});
   }
   else if(this.bases[0]&&this.bases[1]){this.bases[2]=this.bases[1];this.bases[1]=this.bases[0];}
   else if(this.bases[0]){this.bases[1]=this.bases[0];}
-  this.bases[0]=bat.id;
+  this.bases[0]=bat.id; this.runnerP[bat.id]=pit.id;
   off.order++;
   this.log.push({t:'sub',text:`고의4구 · ${bat.name}을(를) 거른다`});
   this.pending=null;
@@ -7711,7 +7776,7 @@ LiveGame.prototype.mgrAction = function(kind){
       const s0=this.userSide();
       const inLineup=s0.slots.some(x=>x.id===kicker);
       if(inLineup){
-        const bench=(this.benchPool||[]).filter(id=>!s0.slots.some(x=>x.id===id));
+        const bench=(this.benchPool||[]).filter(id=>this.canEnter(s0,id));
         const i=s0.slots.findIndex(x=>x.id===kicker);
         if(bench.length&&i>=0){
           const pos=s0.slots[i].pos;
@@ -7999,6 +8064,15 @@ function isMe(pid){ return pid===(ST?ST.playerId:MYID); }
 
 /* ---------- 시즌 ---------- */
 function newSeason(){
+  /* 이탈 명단은 시즌이 바뀌어도 그대로 간다. 나간 사람은 안 돌아온다. */
+  const carriedLeft=(typeof ST!=='undefined'&&ST&&Array.isArray(ST.leftPlayers))
+    ? ST.leftPlayers.slice() : [];
+  carriedLeft.forEach(rec=>{
+    const pid=rec&&rec.pid; if(!pid)return;
+    const u=TBYID['wwzw'];
+    const i=u.players.findIndex(p=>p.id===pid);
+    if(i>=0){ u.players.splice(i,1); finalizeTeam(u); buildPitcherPool(); }
+  });
   const seed=(Date.now()^(Math.random()*1e9))>>>0;
   const rng=makeRng(seed);
   const opps=TEAMS.filter(t=>t.id!=='wwzw').map(t=>t.id);
@@ -8023,7 +8097,7 @@ function newSeason(){
     useDH:true, park:'benamul', gearLevel:0, feud:null, pendingAbsent:{},
     unhappy:{}, spark:{}, career:{}, teamCareer:null, milestones:[], firsts:{}, weather:'clear',
     playoff:null, form:{}, hall:[], awardBonus:{}, awardSnap:null, awardReply:null,
-    ultimatum:{}, broken:{}, leftPlayers:[], noCar:{},
+    ultimatum:{}, broken:{}, leftPlayers:carriedLeft, noCar:{},
     appVer:APP_VERSION,
     dev:{pts:0,games:0,trains:0,minTick:0},
     playSec:(typeof ST!=='undefined'&&ST&&ST.playSec)?ST.playSec:0,
@@ -12022,8 +12096,7 @@ function showDecision(d){
   };
   g.appendChild(dz);
 
-  const bench=TBYID['wwzw'].players.filter(p=>
-    !us.slots.some(s=>s.id===p.id)&&isAvailable(p.id)&&!LIVE.usedPH[p.id]);
+  const bench=TBYID['wwzw'].players.filter(p=>LIVE.canEnter(us,p.id));
   if(bench.length&&LIVE.inning>=4){
     const ph=el('button','decb wide');
     ph.innerHTML=`<b>대타 기용</b><span>${bat.name} 대신 · ${todayBat(bat.id)}</span>`;
@@ -14267,8 +14340,31 @@ function go(v){
   (VIEWS[v]||renderHome)();
 }
 
+/* 팀을 나간 사람을 로스터에서 다시 지운다.
+   [제보] "언해피 뜨고 팀 나간 애가 새 시즌 하면 다시 들어와 있다"
+   TBYID 는 index.html 안의 원본 데이터로 매번 새로 만들어진다. 그래서
+   leaveTeam() 이 메모리에서 splice 해도 새로고침 한 번이면 되살아났고,
+   newSeason() 은 leftPlayers 를 [] 로 밀어버려서 기록조차 남지 않았다.
+   이탈 명단은 세이브에 남기고, 불러올 때·새 시즌마다 다시 적용한다.     */
+function applyLeftPlayers(){
+  const list=(ST&&Array.isArray(ST.leftPlayers))?ST.leftPlayers:[];
+  if(!list.length) return 0;
+  const us=TBYID['wwzw'];
+  let n=0;
+  list.forEach(rec=>{
+    const pid=rec&&rec.pid; if(!pid) return;
+    const i=us.players.findIndex(p=>p.id===pid);
+    if(i>=0){ us.players.splice(i,1); n++; }
+    if(ST.lineup)  ST.lineup=ST.lineup.filter(x=>x.id!==pid);
+    if(ST.rotation)ST.rotation=ST.rotation.filter(x=>x!==pid);
+  });
+  if(n){ finalizeTeam(us); buildPitcherPool(); }
+  return n;
+}
+
 function normalizeState(){
   const us=TBYID['wwzw'];
+  applyLeftPlayers();        // 나간 사람은 계속 나가 있어야 한다
   Object.keys(ST.bat||{}).forEach(id=>{
     if(id.startsWith('new_')&&!us.players.some(p=>p.id===id)){
       const srcId=id.slice(4);
