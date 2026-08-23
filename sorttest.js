@@ -67,7 +67,22 @@ const isAsc =a=>a.every((v,i)=>i===0||a[i-1]<=v);
 
   console.log('\n[우리 투수 정렬]');
   ev("statTab='pitch'"); w.go('stats'); await wait(120);
-  T('ERA 는 낮은 순이 위', ()=>{
+  /* [2.15.0] 투수 기본 정렬이 이미 ERA 오름차순이라 헤더를 누르면 토글된다.
+     예전에는 한 시즌 투수가 한두 명뿐이라 어느 쪽이든 통과해서 이걸 못 봤다.
+     로테이션이 실제로 돌게 되면서 6명이 기록을 남기자 드러났다.
+     기본 상태가 낮은 순인지, 누르면 뒤집히는지를 각각 본다.            */
+  T('ERA 는 기본이 낮은 순', ()=>{
+    const tb=tblIn(/투수 기록/); if(!tb) return '!표 없음';
+    const v=nums(tb,9);
+    return isAsc(v) ? v.slice(0,5).join('<') : '!'+v.slice(0,6).join(',');
+  });
+  T('ERA 헤더를 누르면 높은 순으로 뒤집힌다', ()=>{
+    const tb=tblIn(/투수 기록/); if(!tb) return '!표 없음';
+    clickHead(tb,'ERA');
+    const v=nums(tblIn(/투수 기록/),9);
+    return isDesc(v) ? v.slice(0,5).join('>') : '!'+v.slice(0,6).join(',');
+  });
+  T('한 번 더 누르면 다시 낮은 순', ()=>{
     const tb=tblIn(/투수 기록/); if(!tb) return '!표 없음';
     clickHead(tb,'ERA');
     const v=nums(tblIn(/투수 기록/),9);
@@ -97,11 +112,18 @@ const isAsc =a=>a.every((v,i)=>i===0||a[i-1]<=v);
     const v=nums(tblIn(/개인 통산 · 타격/),7);
     return isDesc(v) ? v.slice(0,6).join('>') : '!'+v.join(',');
   });
-  T('통산 투구 헤더 정렬', ()=>{
+  /* 통산 투구는 기본 정렬 키가 이미 '삼진'(carPitSort='pk') 이라 헤더를 누르면
+     토글된다. 예전에는 등판 기록이 한둘뿐이라 어느 쪽이든 통과했다. */
+  T('통산 투구 기본이 삼진 많은 순', ()=>{
+    const tb=tblIn(/개인 통산 · 투구/); if(!tb) return '!표 없음(등판 기록 없음)';
+    const v=nums(tb,8);
+    return isDesc(v) ? v.slice(0,5).join('>') : '!'+v.join(',');
+  });
+  T('통산 투구 헤더를 누르면 뒤집힌다', ()=>{
     const tb=tblIn(/개인 통산 · 투구/); if(!tb) return '!표 없음(등판 기록 없음)';
     if(!clickHead(tb,'삼진')) return '!헤더 없음';
     const v=nums(tblIn(/개인 통산 · 투구/),8);
-    return isDesc(v) ? v.slice(0,5).join('>') : '!'+v.join(',');
+    return isAsc(v) ? v.slice(0,5).join('<') : '!'+v.join(',');
   });
 
   console.log('\n[구단 통산 1위 · 진기록]');
