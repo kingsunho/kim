@@ -1571,7 +1571,12 @@ function simGame(home,away,opts){
             log.push({t:'play',inning:inn,half,
               text:res.itp?`${bat.name} 그라운드 홈런! ${c}점`:`${bat.name} 홈런! ${c}점`,cls:'hr'});}}
 
-        if(half===1&&inn>=INN&&S[1].runs>S[0].runs){over=true;break;}
+        /* 홈팀 말 공격 중 승부가 끝나면 그 자리에서 — 끝내기도, 콜드도 */
+        if(half===1){
+          const lead=S[1].runs-S[0].runs;
+          if(inn>=INN && lead>0){ over=true; break; }
+          if((inn>=4&&lead>=10)||(inn>=6&&lead>=7)){ over=true; mercy=true; break; }
+        }
       }
       off.line.push(ir);
       if(over)break;
@@ -5566,8 +5571,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.9.4';
-const APP_VERSION_NOTE = '교체·자책점·콜드게임 야구 규칙 4건 수정';
+const APP_VERSION = '2.9.5';
+const APP_VERSION_NOTE = '홈팀이 이겨 있으면 말 공격을 안 한다 (콜드 포함)';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -5588,6 +5593,13 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.9.5', t:'이미 이긴 홈팀이 말 공격을 계속하던 것', items:[
+    '홈팀이 말 공격 중에 콜드 점수차에 닿으면 그 자리에서 경기가 끝난다',
+    '예전에는 이닝을 끝까지 치러서, 4회초 9:13 이던 게 말에 9점을 더 뽑고 끝났다',
+    '끝내기와 같은 처리다 — 홈팀은 이미 이겼으면 더 칠 이유가 없다',
+    '리그 다른 팀 경기에도 똑같이 적용된다',
+    '원정팀이 앞설 때는 홈팀의 마지막 공격 기회를 그대로 준다',
+  ]},
   {v:'2.9.4', t:'야구 규칙대로 안 굴러가던 것 네 가지', items:[
     '한 번 교체돼서 빠진 사람이 대타로 다시 들어오던 걸 막았다 — 야구는 한 번 나가면 끝이다',
     '오늘 못 온다고 한 사람은 어떤 교체로도 출전하지 않는다',
@@ -7364,14 +7376,26 @@ LiveGame.prototype.stepPA = function(){
       this.log.push({t:'me',text:pickOne(['벤치가 뒤집어졌다','더그아웃에서 다 뛰어나왔다','오늘 주인공이다'])});
   });
 
-  // 끝내기
-  if(this.half===1 && this.inning>=this.INN && this.home.runs>this.away.runs){
-    /* [버그 이력] 여기서 바로 finish() 로 빠져서 endHalf 를 안 거쳤다.
-       그래서 끝내기로 낸 점수가 라인스코어에 통째로 안 찍혔다.
-       R 은 12점인데 이닝을 더하면 8점이던 게 이것 때문이다.        */
-    this.off().line.push(this.curIR||0);
-    this.curIR=0;
-    this.finish(); return {events, done:true};
+  /* 홈팀 말 공격 중에 승부가 끝나면 그 자리에서 경기를 끝낸다.
+     [제보] "홈팀이 이기고 있으면 말 공격이 없는데 그래도 말 공격을 한다"
+     끝내기는 막혀 있었는데 콜드가 빠져 있었다. 4회초 9:13 에서 말에 9점을
+     더 뽑고 22:9 로 콜드가 되는 식이라, 이미 이긴 홈팀이 계속 치고 있었다.
+     홈팀은 더 칠 이유가 없으니 점수차가 기준에 닿는 순간 끝낸다.
+     (원정팀이 앞설 때는 홈팀의 마지막 공격 기회를 줘야 하므로 이닝을 마친다)
+
+     [버그 이력] 예전에 여기서 바로 finish() 로 빠져 endHalf 를 안 거쳤다.
+     그래서 끝내기로 낸 점수가 라인스코어에 통째로 안 찍혔다.
+     R 은 12점인데 이닝을 더하면 8점이던 게 이것 때문이다. line 부터 밀고 끝낸다. */
+  if(this.half===1 && !this.over){
+    const lead=this.home.runs-this.away.runs;
+    const walkoff = this.inning>=this.INN && lead>0;
+    const cold    = (this.inning>=4&&lead>=10)||(this.inning>=6&&lead>=7);
+    if(walkoff || cold){
+      this.off().line.push(this.curIR||0);
+      this.curIR=0;
+      if(cold && !walkoff) this.mercy=true;
+      this.finish(); return {events, done:true};
+    }
   }
   if(this.outs>=3){ this.endHalf(); return {events, half:true}; }
   return {events};

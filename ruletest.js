@@ -144,6 +144,50 @@ setTimeout(async()=>{
       ? tot+'경기 · 마지막이닝 위반 0 · 콜드 위반 0 (콜드게임 '+mercyN+'건)'
       : '마지막이닝 '+badLast+' · 콜드 '+badCold;
   })()`));
+  T('홈팀이 말 도중 승부를 끝내면 그 자리에서 끝난다', ()=>ev(`(function(){
+    var C=0,tot=0,s=[];
+    for(var t=0;t<300;t++){
+      ST.round=t%2;
+      ST.lineup=recommendLineup(); ST.rotation=recommendRotation();
+      LIVE=makeLive(); LIVE.manual=false;
+      var g=0;
+      while(!LIVE.over && g++<5000){
+        var dd=LIVE.pending||LIVE.detectDecision();
+        if(dd){ LIVE.applyDecision(dd.kind==='pitcherChange'?'change':'none'); continue; }
+        var halfB=LIVE.half, innB=LIVE.inning, hB=LIVE.home.runs, aB=LIVE.away.runs;
+        LIVE.step();
+        if(halfB===1 && !LIVE.over){
+          var lB=hB-aB;
+          if((innB>=LIVE.INN&&lB>0)||((innB>=4&&lB>=10)||(innB>=6&&lB>=7))){
+            C++; if(s.length<2) s.push(innB+'회말 '+aB+':'+hB);
+          }
+        }
+      }
+      tot++;
+    }
+    return C===0 ? tot+'경기 · 이미 끝났는데 계속 친 경우 0' : C+'건 ('+s.join(', ')+')';
+  })()`));
+  T('리그 다른 팀 경기도 같은 규칙이다', ()=>ev(`(function(){
+    var A=0,B=0,tot=0,skip=0;
+    var ids=TEAMS.filter(function(t){return t.id!=='wwzw'}).map(function(t){return t.id});
+    for(var t=0;t<300;t++){
+      var h=TBYID[ids[t%ids.length]], a=TBYID[ids[(t*7+3)%ids.length]];
+      if(h.id===a.id) continue;
+      var r=simGame(h,a,{rng:makeRng(t*977+13),innings:7,awayLineup:aiLineup(a),
+        awayRotation:aiRotation(a),homeLineup:aiLineup(h),homeRotation:aiRotation(h)});
+      if(!r||!r.away||!r.home) continue;
+      tot++;
+      var aL=r.away.line,hL=r.home.line,last=aL.length-1; if(last<0)continue;
+      var hs=0,as=0;
+      for(var j=0;j<last;j++){hs+=(hL[j]||0);as+=(aL[j]||0);}
+      as+=(aL[last]||0);
+      var lead=hs-as, played=(hL[last]!=null);
+      if(last+1>=7 && lead>0){ if(played)A++; else skip++; }
+      else if((last+1>=4&&lead>=10)||(last+1>=6&&lead>=7)){ if(played)B++; else skip++; }
+    }
+    return (A===0&&B===0) ? tot+'경기 · 위반 0 (정상 스킵 '+skip+'건)' : 'A'+A+' B'+B;
+  })()`));
+
   T('라인스코어 이닝 수가 안 어긋난다', ()=>ev(`(function(){
     var bad=0;
     for(var t=0;t<120;t++){
