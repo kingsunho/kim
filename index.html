@@ -790,9 +790,19 @@ table.stand td.nm{text-align:left;font-weight:700;font-size:12px}
 .tmr .cur{position:absolute;top:-2px;bottom:-2px;width:4px;background:#fff;border-radius:2px;
   box-shadow:0 0 8px rgba(255,255,255,.85)}
 .tmr .mark{position:absolute;top:0;bottom:0;width:3px;background:#e8762c}
-.pl-hit{width:100%;margin-top:9px;background:#e8762c;border:0;color:#fff;font-size:16px;
-  font-weight:800;padding:16px 0;border-radius:10px}
+/* [제보] "주황색 '지켜보기' 버튼이 스윙 버튼인 줄 알았다"
+   제일 크고 제일 밝으니 그럴 만했다. 스윙은 따로, 더 크게, 다른 색으로. */
+.pl-act{display:flex;gap:8px;margin-top:9px;align-items:stretch}
+.pl-hit{flex:0 0 38%;background:transparent;border:1px solid #7a4a2a;color:#e8a06c;
+  font-size:13.5px;font-weight:800;padding:14px 0;border-radius:10px}
 .pl-hit:disabled{opacity:.45}
+.pl-swing{flex:1;background:linear-gradient(180deg,#2f8f4e,#1f6f3a);border:0;color:#fff;
+  font-size:21px;font-weight:900;letter-spacing:1px;padding:16px 0;border-radius:10px;
+  box-shadow:0 2px 0 #16512a, 0 0 0 1px rgba(255,255,255,.10) inset}
+.pl-swing:disabled{opacity:.42;box-shadow:none}
+.pl-swing:active{transform:translateY(2px);box-shadow:0 0 0 #16512a}
+.pl-swing i{display:block;font-style:normal;font-size:10.5px;font-weight:700;
+  opacity:.82;letter-spacing:0;margin-top:2px}
 .zgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:4px}
 .zgrid button{aspect-ratio:1;background:#161b22;border:1px solid #2a323d;border-radius:8px;
   color:#8b95a3;font-size:10.5px;font-weight:700;line-height:1.3}
@@ -6463,8 +6473,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.36.0';
-const APP_VERSION_NOTE = '스윙이 눈에 보인다 · 등번호가 진짜 번호로 · 유인구에 이유가 생겼다';
+const APP_VERSION = '2.37.0';
+const APP_VERSION_NOTE = '[스윙] 버튼이 따로 생겼다 — 지켜보기와 헷갈리지 않게';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6485,6 +6495,16 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.37.0', t:'[스윙] 버튼이 따로 생겼다 — 지켜보기와 헷갈리지 않게', items:[
+    '[제보] "주황색 지켜보기 버튼이 스윙 버튼인 줄 알았다"',
+    '제일 크고 밝은 버튼이 지켜보기였으니 그럴 만했다. 스윙을 따로 뺐다',
+    '이제 [지켜본다](작은 주황 테두리) 와 [스윙](큰 초록) 두 개다. 색도 크기도 다르다',
+    '스윙 버튼은 존 한가운데로 평범하게 돈다 — 한가운데 공이면 정타, 구석이면 빗맞는다',
+    '존 밖으로 빠진 공은 몸이 못 따라간다. 그래서 참는 게 이득인 상황이 생긴다',
+    '판정은 원래 쓰던 걸 그대로 쓴다. 타이밍과 자리를 둘 다 본다',
+    '야구장을 직접 누르는 건 그대로 남겼다 — 자리까지 노리고 싶을 때 쓰는 정밀 입력이다',
+    '안내 문구도 "공이 올 때 [스윙] 을 눌러라" 로 바꿨다',
+  ]},
   {v:'2.36.0', t:'스윙이 눈에 보인다 · 등번호가 진짜 번호로 · 유인구에 이유가 생겼다', items:[
     '[제보] 스윙 버튼을 눌러도 배트가 휘둘러지는 게 안 보였다',
     '판정은 원래부터 제대로 돌고 있었다 — 타이밍과 자리를 둘 다 본다. 눈에만 안 보였다',
@@ -16800,11 +16820,16 @@ function renderSwing(box, d){
   gauge.innerHTML='<i class="swg-fill"></i><u class="swg-good"></u><b class="swg-mark"></b>';
   w.appendChild(gauge);
   const note=el('div','swnote'); w.appendChild(note);
-  const take=el('button','pl-hit','지켜본다 — 참는다');
-  take.disabled=true;                              // 준비 시간 동안은 잠근다
-  take.disabled=true;                              // 준비 시간 동안은 잠근다
+  /* 두 가지 행동을 확실히 갈라놓는다 — 참느냐, 휘두르느냐 */
+  const acts=el('div','pl-act');
+  const take=el('button','pl-hit','지켜본다');
+  const swingB=el('button','pl-swing');
+  swingB.innerHTML='스윙<i>공이 올 때 눌러라</i>';
+  take.disabled=true; swingB.disabled=true;        // 준비 시간 동안은 잠근다
+  acts.appendChild(take); acts.appendChild(swingB);
+  w.appendChild(acts);
   const auto=el('button','pl-skip','알아서 치게 둔다');
-  w.appendChild(take); w.appendChild(auto);
+  w.appendChild(auto);
   box.appendChild(w);
 
   let anim=null, done=false, resolved=false, phase='ready';
@@ -16862,8 +16887,9 @@ function renderSwing(box, d){
         <div class="bi-t">오늘 ${today}</div></div>`:''}
       <div class="bwin">노림수 맞히면 <b>${sec(W.tw)}</b>${aimSel==='none'?'':`
         · 틀리면 <b style="color:#e08a70">${sec(Wm.tw)}</b>`}</div>
-      <div class="pl-sub"><b>공이 오는 자리를 화면에서 그대로 쳐라.</b>
-        존 밖이면 참는 게 낫다. 4볼이면 볼넷, 3스트라이크면 삼진.</div>`;
+      <div class="pl-sub"><b>공이 올 때 [스윙] 을 눌러라.</b>
+        존 밖 공은 참는 게 낫다 — [지켜본다]. 4볼이면 볼넷, 3스트라이크면 삼진.<br>
+        <span style="color:#6f7c8c">자리까지 노리고 싶으면 야구장에서 공이 올 자리를 직접 눌러도 된다.</span></div>`;
   };
 
   const paint=()=>{
@@ -16899,7 +16925,7 @@ function renderSwing(box, d){
   const endPA=(label,color,big)=>{
     if(resolved)return; resolved=true; done=true; phase='over';
     if(anim)anim.stop();
-    take.disabled=true; auto.disabled=true; drawAim();
+    take.disabled=true; swingB.disabled=true; auto.disabled=true; drawAim();
     if(big) mv.classList.add('impact');
     playThenClose(box,mv,'playskip',label,color);
   };
@@ -16924,7 +16950,7 @@ function renderSwing(box, d){
     curDur=Math.round(Math.max(620,Math.min(1700,1050*(110/Math.max(60,curKmh)))));
     const l=mv.querySelector('.lbl');
     if(l) l.innerHTML=`<b>${myP.name}</b>${handTag(myP)}`;
-    phase='pitch'; take.disabled=false; drawAim(); drawHead();
+    phase='pitch'; take.disabled=false; swingB.disabled=false; drawAim(); drawHead();
     windup(mv,()=>{
       if(done||resolved)return;
       const fill=gauge.querySelector('.swg-fill'), mark=gauge.querySelector('.swg-mark');
@@ -16940,7 +16966,7 @@ function renderSwing(box, d){
   const judge=(tap)=>{
     if(done||resolved)return;
     if(anim)anim.stop();
-    phase='judge'; take.disabled=true; drawAim();
+    phase='judge'; take.disabled=true; swingB.disabled=true; drawAim();
     let kind, pre, col, q=null, msg='';
 
     if(!tap){
@@ -16999,18 +17025,33 @@ function renderSwing(box, d){
     endPA(pre,col,q>=0.75);                     // 인플레이 — 결과는 엔진이 낸다
   };
 
-  /* ---- 입력 ---- */
+  /* ---- 입력 ----
+     [제보] "스윙은 반드시 별도의 명확한 버튼으로 만들어라"
+     판정(judge)은 그대로 쓴다. 새로 만든 건 입력뿐이다.
+
+     · 스윙 버튼 — 존 한가운데로 평범하게 돈다. 존 안 공은 몸이 따라가지만
+       (중앙 + 0.55×치우침), 존 밖으로 빠진 공은 손이 안 닿는다.
+       그래서 한가운데 = 정타, 구석 = 빗맞음, 존 밖 = 헛스윙이 자연스럽게 나온다.
+     · 야구장 탭 — 자리까지 노리는 정밀 입력. 남겨두되 보조다.        */
+  const swingAt=(tap)=>{
+    if(phase!=='pitch'||done||resolved) return;
+    mvSwing(mv);                                   // 배트를 돌린다
+    if(!anim){ judge(tap||{t:0.4,x:1,y:1}); return; }
+    const t=anim.progress();
+    const mk=gauge.querySelector('.swg-mark');
+    if(mk){ mk.style.left=(t*100).toFixed(1)+'%'; mk.classList.add('on'); }
+    if(tap) { judge({t, x:tap.x, y:tap.y}); return; }
+    /* 버튼 스윙 — 존 안쪽으로만 몸이 따라간다 */
+    const inx=Math.max(0,Math.min(2,bx)), iny=Math.max(0,Math.min(2,by));
+    judge({t, x:1+(inx-1)*0.55, y:1+(iny-1)*0.55});
+  };
+  swingB.onclick=(ev)=>{ if(ev&&ev.preventDefault)ev.preventDefault(); swingAt(null); };
   mv.addEventListener('pointerdown',(ev)=>{
     if(phase!=='pitch'||done||resolved) return;
     ev.preventDefault();
     markTap(ev);
-    mvSwing(mv);                                   // 배트를 돌린다
-    if(!anim){ judge({t:0.4,x:1,y:1}); return; }
-    const t=anim.progress();
-    const mk=gauge.querySelector('.swg-mark');
-    if(mk){ mk.style.left=(t*100).toFixed(1)+'%'; mk.classList.add('on'); }
     const c=cellOf(ev);
-    judge({t, x:c.x, y:c.y});
+    swingAt({x:c.x, y:c.y});
   });
   take.onclick=()=>{ if(phase!=='pitch'||done||resolved)return; judge(null); };
   auto.onclick=()=>{ if(done||resolved)return;
@@ -17024,7 +17065,7 @@ function renderSwing(box, d){
   let cntT=null;
   const ready=(n)=>{
     if(done||resolved)return;
-    phase='ready'; take.disabled=true;
+    phase='ready'; take.disabled=true; swingB.disabled=true;
     let cnt=n;
     drawAim(); drawHead();
     const tick=()=>{
@@ -17041,7 +17082,7 @@ function renderSwing(box, d){
   };
   skipReady=()=>{ if(phase!=='ready'||done||resolved)return;
     if(cntT){clearTimeout(cntT);cntT=null;} phase='wait'; nextPitch(); };
-  note.textContent='화면에서 공이 오는 자리를 직접 쳐라';
+  note.textContent='공이 올 때 [스윙] — 존 밖이면 [지켜본다]';
   drawAim(); paint();
   ready(3);                     // 바로 '투구 준비 · 3' 이 뜨게. 빈 화면을 안 보여준다
   box._cleanup=()=>{ done=true; resolved=true; if(anim)anim.stop(); };
