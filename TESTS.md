@@ -287,3 +287,23 @@ const chance=clamp(LG.ITP_BASE*(0.5+fast)*sloppy*Math.sqrt(park.d3||1), 0, 0.34)
 `mvPaint()` 가 `MV_BOXC` 로 타자를 세운다. **좌표를 두 군데 박지 마라** —
 그래서 타자가 박스 밖에 서 있는 걸 오래 못 잡았다.
 `axistest` 가 이 축과 박스를 전부 좌표로 검사한다.
+
+## 완성 포즈 그림 (v2.35.0~)
+
+타자·투수는 **조립하지 않는다.** 그림 한 장이 곧 한 자세다.
+
+```js
+const MV_FIGS={ pit:[...], bat:[...], pitw:[...] };   // 상자
+const MV_FIG_OF={ idle:'pitw', wind:'pitw', cock:'pitw',
+                  rel:'pit', follow:'pit', stand:'bat', swing:'bat' };
+const MV_FIG_H={ pit:52, pitw:50, bat:92 };           // 화면에서의 키
+mvFig(g, pose, x, y, u, flip)                          // (x,y) 가 디딘 발
+```
+
+`mvFig` 안에는 `drawImage` 가 한 번뿐이다. 머리를 얹거나 팔을 돌리거나
+다리를 눌러 좁히던 코드는 전부 걷어냈다 — **자세를 코드로 만들어내려 하면
+아무리 맞춰도 사람으로 안 보인다.** 자세가 더 필요하면 그림을 한 장 더 그린다.
+
+`axistest` 의 `[완성된 그림을 그대로 쓴다]` 가 조립 코드가 되살아나면 잡고,
+`[누가 누구를 보고 있나]` 가 살색 픽셀로 방향을 잰다 —
+투수는 얼굴이 크게(정면), 타자는 작게(뒤통수) 보여야 한다.

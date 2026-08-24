@@ -57,21 +57,69 @@ const T=(n,r)=>{const ok=!!r&&!(typeof r==='string'&&r[0]==='!');
   T('타자를 박스 한가운데에 세운다', /MV_BOXC\[1\]:MV_BOXC\[0\]/.test(g.paint)
     ? 'ok' : '!다른 좌표를 쓴다');
 
-  console.log('\n[투구 동작]');
-  const ph=await p.evaluate(()=>{
-    const P=MV_FIG_POSE;
-    return {arm:['idle','wind','cock','rel','follow'].map(k=>P[k][6]),
-            leg:['idle','wind','cock','rel','follow'].map(k=>P[k][5]),
-            push:['idle','wind','cock','rel','follow'].map(k=>P[k][2]),
-            head:!!(typeof MV_FIG_HEAD!=='undefined'&&MV_FIG_HEAD.pit)};
+  console.log('\n[완성된 그림을 그대로 쓴다 — 조립하지 않는다]');
+  const fg=await p.evaluate(()=>({
+    figs:Object.keys(MV_FIGS), of:MV_FIG_OF, h:MV_FIG_H,
+    anch:MV_FIG_ANCH, src:String(mvFig),
+    dead:['MV_FIG_POSE','MV_FIG_ARM','MV_FIG_BALL','MV_FIG_HEAD','MV_FIG_HIP','MV_GRIP']
+      .filter(k=>typeof window[k]!=='undefined'||(()=>{try{eval(k);return true;}catch(e){return false;}})())
+  }));
+  T('그림 세 장이 다 있다 (투구 · 와인드업 · 타자)',
+    fg.figs.includes('pit')&&fg.figs.includes('pitw')&&fg.figs.includes('bat')
+      ? fg.figs.join(', ') : '!'+fg.figs.join(','));
+  T('와인드업 → 투구로 그림이 바뀐다',
+    fg.of.idle==='pitw' && fg.of.wind==='pitw' && fg.of.rel==='pit' && fg.of.follow==='pit'
+      ? '세트/와인드업=pitw · 릴리스/피니시=pit' : '!'+JSON.stringify(fg.of));
+  T('타자는 타자 그림만 쓴다', fg.of.stand==='bat'&&fg.of.swing==='bat' ? 'ok' : '!'+fg.of.stand);
+  T('그림을 조립하지 않는다 (머리·팔·다리를 따로 안 건드린다)', (()=>{
+      const bad=/mvBone|mvAnchor|head_cap|legSx|MV_FIG_ARM|MV_FIG_HEAD|MV_GRIP/.test(fg.src);
+      return bad ? '!mvFig 안에서 아직 조립한다' : 'drawImage 한 번뿐';
+    })());
+  T('조립용 상수가 남아 있지 않다', fg.dead.length===0 ? '전부 지웠다' : '!'+fg.dead.join(','));
+  T('그림마다 화면 키를 따로 잡는다',
+    fg.h.bat>fg.h.pit && fg.h.pit>0 ? `타자 ${fg.h.bat} · 투수 ${fg.h.pit}/${fg.h.pitw}` : '!'+JSON.stringify(fg.h));
+  T('투수가 타자의 절반쯤이다', (()=>{
+      const r=fg.h.pit/fg.h.bat;
+      return (r>0.42&&r<0.68) ? `${(r*100).toFixed(0)}%` : `!${(r*100).toFixed(0)}%`;
+    })());
+  T('발바닥이 그림 맨 아래다 (땅에 선다)',
+    ['pit','bat','pitw'].every(k=>fg.anch[k][2]===1&&fg.anch[k][1]===0)
+      ? 'ok' : '!'+JSON.stringify(fg.anch));
+
+  console.log('\n[누가 누구를 보고 있나 — 그림 픽셀로]');
+  const face=await p.evaluate(()=>{
+    const c=document.createElement('canvas');
+    c.width=MV_FIG.naturalWidth; c.height=MV_FIG.naturalHeight;
+    const q=c.getContext('2d'); q.drawImage(MV_FIG,0,0);
+    const W=c.width, d=q.getImageData(0,0,c.width,c.height).data;
+    const skin=(x,y)=>{const i=(y*W+x)*4, r=d[i],g=d[i+1],b=d[i+2];
+      return d[i+3]>200 && r>195 && g>140 && g<225 && b>105 && b<195;};
+    const out={};
+    ['pit','bat','pitw'].forEach(k=>{
+      const F=MV_FIGS[k];
+      let top=0, all=0, sx=0, sy=0, n=0;
+      for(let y=0;y<F[3];y++)for(let x=0;x<F[2];x++){
+        if(skin(F[0]+x,F[1]+y)){ all++; sx+=x; sy+=y; n++;
+          if(y<F[3]*0.30) top++; }
+      }
+      out[k]={top,all,cx:n?sx/n/F[2]:-1, cy:n?sy/n/F[3]:-1};
+    });
+    return out;
   });
-  T('팔이 뒤 → 머리 위 → 앞으로 넘어온다',
-    ph.arm[1]<ph.arm[2] && ph.arm[2]<ph.arm[3] ? ph.arm.map(v=>v.toFixed(2)).join(' → ') : '!'+ph.arm.join(','));
-  T('다리가 모았다가 벌어진다 (세트 → 스트라이드)',
-    ph.leg[1]<ph.leg[3] ? ph.leg.join(' → ') : '!'+ph.leg.join(','));
-  T('몸이 뒤로 모았다가 앞(타자쪽)으로 나간다',
-    ph.push[1]<0 && ph.push[4]>1 ? ph.push.join(' → ') : '!'+ph.push.join(','));
-  T('투수 얼굴을 정면(타자쪽)으로 갈아 끼운다', ph.head ? 'MV_FIG_HEAD.pit' : '!옆얼굴 그대로');
+  ['pit','bat','pitw'].forEach(k=>{
+    T(`${k} — 머리가 그림 위쪽에 붙어 있다 (목이 안 파묻힌다)`,
+      face[k].top>200 ? `위 30%에 살색 ${face[k].top}px` : `!${face[k].top}px`);
+  });
+  T('투수는 얼굴이 이쪽(타자)을 향한다 — 얼굴이 크게 보인다',
+    face.pit.all>2500 && face.pitw.all>2500
+      ? `피니시 ${face.pit.all}px · 와인드업 ${face.pitw.all}px` : `!${face.pit.all}/${face.pitw.all}`);
+  T('타자는 뒤에서 본다 — 얼굴이 옆으로 조금만 보인다',
+    face.bat.all < face.pit.all*0.75
+      ? `타자 ${face.bat.all}px < 투수 ${face.pit.all}px` : `!타자 ${face.bat.all}px`);
+  /* 살색 무게중심에는 팔뚝·손목도 같이 잡힌다. 그래서 기준을 넉넉히 잡되,
+     '몸 아래쪽이 아니라 위쪽에 얼굴이 있다' 는 건 확실히 본다. */
+  T('타자 얼굴이 그림 위쪽으로 돌아가 있다 (마운드를 올려다본다)',
+    face.bat.cy < 0.36 ? `살색 무게중심 높이 ${(face.bat.cy*100).toFixed(0)}%` : `!${(face.bat.cy*100).toFixed(0)}%`);
 
   console.log('\n[실제로 그려본다]');
   const draw=await p.evaluate(()=>{

@@ -145,7 +145,11 @@ const MVW_=a=>'있음';
      [제보] "미안한데 투수 타자는 이렇게 연결 되어야지.."
      화면에서 제일 큰 두 사람은 관절 조립을 그만두고 그림 한 장으로 그린다.
      그림이 끊겨 있으면(알파 구멍) 또 몸이 갈라져 보이니 여기서도 검사한다. */
-  console.log('\n[통짜 그림]');
+  /* ---- 완성 포즈 그림 세 장 ----
+     v2.35.0 부터 타자·투수는 조립을 안 한다. 그림 한 장이 곧 한 자세다.
+     그림에 구멍이 나 있으면 몸에 잔디가 비치니 여기서도 검사한다.
+     자세·방향 검사는 axistest 에 있다.                                 */
+  console.log('\n[완성 포즈 그림]');
   const fig=await p.evaluate(()=>{
     const c=document.createElement('canvas');
     c.width=MV_FIG.naturalWidth; c.height=MV_FIG.naturalHeight;
@@ -161,97 +165,45 @@ const MVW_=a=>'있음';
       if(y>0)push(x,y-1); if(y<H-1)push(x,y+1); }
     let holes=0;
     for(let y=0;y<H;y++)for(let x=0;x<W;x++) if(A(x,y)<100&&!seen[y*W+x]) holes++;
-    /* 그림에서 배트를 지웠는지 — 손잡이와 배트 끝 중간이 비어 있어야 한다 */
-    const Fb=MV_FIGS.bat;
-    const mid=A(Math.round(Fb[0]+60), Math.round(Fb[1]+88));
-    /* 발바닥이 상자 맨 아래에 붙어 있는지 */
-    const anch={bat:MV_FIG_ANCH.bat, pit:MV_FIG_ANCH.pit};
-    return {W,H,holes,batMid:mid,anch,
-      poses:Object.keys(MV_FIG_POSE),
-      hasBat:MV_FIG_POSE.stand[4]!=null&&MV_FIG_POSE.swing[4]!=null,
-      batTurn:(MV_FIG_POSE.stand[4]!=null&&MV_FIG_POSE.swing[4]!=null)
-        ? Math.abs(MV_FIG_POSE.stand[4]-MV_FIG_POSE.swing[4]) : 0};
+    /* 그림마다 바닥줄(발)이 상자 맨 아래에 닿아 있나 */
+    const foot={};
+    Object.keys(MV_FIGS).forEach(k=>{
+      const F=MV_FIGS[k];
+      let n=0;
+      for(let x=0;x<F[2];x++) if(A(F[0]+x,F[1]+F[3]-1)>150) n++;
+      foot[k]=n;
+    });
+    return {W,H,holes,foot,figs:Object.keys(MV_FIGS)};
   });
-  T(`통짜 그림이 붙어 있다 (${fig.W}x${fig.H})`, fig.W>0&&fig.H>0);
+  T(`그림 시트가 붙어 있다 (${fig.W}x${fig.H})`, fig.W>0&&fig.H>0);
   T('그림 안쪽에 뚫린 구멍이 없다', fig.holes===0?'0개':'!'+fig.holes+'개');
-  T('타자 그림에서 배트를 지웠다', fig.batMid<60?`a=${fig.batMid}`:`!아직 배트가 있다 a=${fig.batMid}`);
-  T('배트를 따로 돌린다 (자세마다 각도)', fig.hasBat && fig.batTurn>1.5
-      ? `${(fig.batTurn*180/Math.PI).toFixed(0)}도 돈다` : '!배트가 안 돈다');
-  T('발바닥이 상자 맨 아래다', fig.anch.bat[2]>0.99&&fig.anch.pit[2]>0.99
-      ? `타자 ${fig.anch.bat[2]} · 투수 ${fig.anch.pit[2]}` : '!'+JSON.stringify(fig.anch));
+  fig.figs.forEach(k=>{
+    T(`${k} — 발이 그림 맨 아래에 닿아 있다`,
+      fig.foot[k]>0 ? `바닥줄 ${fig.foot[k]}px` : '!발이 떠 있다');
+  });
 
   const place=await p.evaluate(()=>{
-    /* 발바닥이 정확히 (x,y) 에 오는지 — 캔버스에 그려서 실제로 재본다 */
     const c=document.createElement('canvas'); c.width=400; c.height=400;
     const g=c.getContext('2d');
     const u={cap:'#2f5fb0',sh:'#eef2f8',pants:'#dfe4ec',st:'rgba(47,95,176,.35)',gl:'#5b3a1e'};
     const out={};
-    [['bat','stand'],['pit','rel'],['pit','idle']].forEach(([k,pose])=>{
+    ['stand','rel','idle'].forEach(pose=>{
       g.clearRect(0,0,400,400);
-      mvFig(g,k,200,300,200,u,pose,false);
+      mvFig(g,pose,200,300,u,false);
       const d=g.getImageData(0,0,400,400).data;
       let top=-1,bot=-1,minx=999,maxx=-1;
       for(let y=0;y<400;y++)for(let x=0;x<400;x++){
         if(d[(y*400+x)*4+3]>40){ if(top<0)top=y; bot=y;
           if(x<minx)minx=x; if(x>maxx)maxx=x; } }
-      out[k+':'+pose]={top,bot,minx,maxx};
+      out[pose]={top,bot,minx,maxx};
     });
     return out;
   });
   Object.keys(place).forEach(k=>{
     const o=place[k];
-    /* 발바닥 밑에 그림자 타원(반지름 h*0.075=15px)을 깔아서 그만큼 더 나온다 */
-    T(`${k} — 발이 바닥선에 선다`, Math.abs(o.bot-300)<=17 ? `아래끝 ${o.bot}` : `!아래끝 ${o.bot}`);
+    /* 발바닥 밑에 그림자 타원을 깔아서 그만큼 더 나온다 */
+    T(`${k} — 발이 바닥선에 선다`, Math.abs(o.bot-300)<=12 ? `아래끝 ${o.bot}` : `!아래끝 ${o.bot}`);
   });
-  /* [제보] "투구 동작은 화면 아래쪽을 향해 공을 던지는 방향이어야 합니다"
-     그림 한 장이라 팔이 안 움직이면 매 프레임 팔 벌리고 서 있는 꼴이 된다.
-     던지는 팔을 어깨에서 잘라 따로 돌린다 — 진짜로 도는지 픽셀로 본다.   */
-  const arm=await p.evaluate(()=>{
-    const c=document.createElement('canvas'); c.width=500; c.height=500;
-    const g=c.getContext('2d');
-    const u={cap:'#2f5fb0',sh:'#eef2f8',pants:'#dfe4ec',st:'rgba(47,95,176,.35)',gl:'#5b3a1e'};
-    const box=pose=>{
-      g.clearRect(0,0,500,500);
-      mvFig(g,'pit',250,400,240,u,pose,false);
-      const d=g.getImageData(0,0,500,500).data;
-      let top=-1,minx=999,maxx=-1,armTop=-1;
-      for(let y=0;y<500;y++)for(let x=0;x<500;x++){
-        if(d[(y*500+x)*4+3]>40){
-          if(top<0)top=y; if(x<minx)minx=x; if(x>maxx)maxx=x;
-          /* 던지는 팔은 화면 왼쪽이다. 머리(가운데)를 빼고 왼쪽만 본다 */
-          if(x<215 && armTop<0) armTop=y;
-        } }
-      return {top,minx,maxx,armTop};
-    };
-    return {
-      hasPiece: !!MV_FIGS.parm && MV_FIGS.parm[2]>20,
-      angles: ['idle','wind','cock','rel','follow'].map(k=>MV_FIG_POSE[k][6]),
-      ball:   ['idle','wind','cock','rel','follow'].map(k=>MV_FIG_POSE[k][7]),
-      idle: box('idle'), cock: box('cock'), rel: box('rel'), follow: box('follow')
-    };
-  });
-  T('던지는 팔이 따로 있다', arm.hasPiece ? `조각 ${MVW_(arm)}` : '!팔 조각이 없다');
-  T('자세마다 팔 각이 다르다', (()=>{
-      const a=arm.angles.filter(x=>typeof x==='number');
-      const uniq=[...new Set(a.map(x=>x.toFixed(2)))];
-      return (a.length===5 && uniq.length===5)
-        ? a.map(x=>(x*180/Math.PI).toFixed(0)+'도').join(' → ') : '!'+uniq.length+'가지뿐';
-    })());
-  T('팔이 실제로 머리 위까지 올라간다',
-    arm.cock.armTop < arm.idle.armTop-60
-      ? `세트 ${arm.idle.armTop} → 코킹 ${arm.cock.armTop} (${arm.idle.armTop-arm.cock.armTop}px 올라감)`
-      : `!${arm.idle.armTop}→${arm.cock.armTop}`);
-  T('공을 놓은 뒤에는 손에 공이 없다',
-    arm.ball[4]===0 && arm.ball[0]===1 ? '팔로스루만 공 없음' : '!'+JSON.stringify(arm.ball));
-  T('팔로스루에서는 팔이 다시 내려온다',
-    arm.follow.armTop > arm.cock.armTop+50
-      ? `코킹 ${arm.cock.armTop} → 팔로스루 ${arm.follow.armTop}` : '!안 내려온다');
-
-  T('세트 자세는 스트라이드보다 다리가 좁다',
-    (place['pit:idle'].maxx-place['pit:idle'].minx) <
-    (place['pit:rel'].maxx-place['pit:rel'].minx)-10
-      ? `${place['pit:idle'].maxx-place['pit:idle'].minx}px < ${place['pit:rel'].maxx-place['pit:rel'].minx}px`
-      : '!다리 폭이 그대로다');
 
   await p.close();
 

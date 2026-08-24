@@ -202,13 +202,11 @@ const txt=()=>d.querySelector('#view').textContent;
     return (r>1.15&&r<1.45) ? `1 : ${r.toFixed(2)}` : `!1 : ${r.toFixed(2)}`;
   });
   T('투수는 타자의 절반쯤이다', ()=>{
-    /* 통짜 그림(mvFig)으로 바뀐 뒤로는 키를 여기서 읽는다.
-       mvFig(g,'pit',x,y,h,...) / mvFig(g,'bat',x,y,h,...) */
-    const src=ev("String(mvPaint)");
-    const pit=Number((src.match(/mvFig\(g,\s*'pit'[^)]*?,\s*(\d+)\s*,/)||[])[1]);
-    const bat=Number((src.match(/mvFig\(g,\s*'bat'[^)]*?,\s*(\d+)\s*,/)||[])[1]);
+    /* v2.35.0 부터 완성 포즈 그림이라 키가 MV_FIG_H 에 있다 */
+    const pit=Number(ev("MV_FIG_H.pit"));
+    const bat=Number(ev("MV_FIG_H.bat"));
     const r=pit/bat;
-    return (r>0.4&&r<0.65) ? `투수 ${pit} / 타자 ${bat} = ${(r*100).toFixed(0)}%` : `!${pit}/${bat}`;
+    return (r>0.4&&r<0.68) ? `투수 ${pit} / 타자 ${bat} = ${(r*100).toFixed(0)}%` : `!${pit}/${bat}`;
   });
   T('공이 존보다 훨씬 작다', ()=>{
     const html=ev("document.documentElement.innerHTML");
