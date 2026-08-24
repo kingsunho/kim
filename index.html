@@ -928,6 +928,65 @@ table.stand td.nm{text-align:left;font-weight:700;font-size:12px}
 .swg-mark{position:absolute;top:-2px;bottom:-2px;width:3px;background:#ffd15c;
   border-radius:2px;opacity:0;transform:translateX(-50%);box-shadow:0 0 6px rgba(255,209,92,.8)}
 .swg-mark.on{opacity:1}
+/* 만약에 — 붙어보면 어떻게 될까 */
+.wi-row{display:flex;align-items:center;gap:8px;margin:7px 0}
+.wi-l{flex:0 0 62px;font-size:11.5px;color:var(--dm);font-weight:700}
+.wi-sel{flex:1;min-width:0;background:#161b22;border:1px solid #2a323d;border-radius:8px;
+  color:#e2eaf5;font-size:12.5px;padding:8px 7px}
+.wi-note{font-size:11px;color:var(--dm);margin:6px 0 2px;line-height:1.45}
+.wi-lu{background:#131a22;border:1px solid var(--line);border-radius:9px;
+  padding:8px 9px;margin:8px 0 4px;font-size:11px;color:#9fb0c4;line-height:1.6}
+.wi-lu b{color:#e2eaf5}
+.wi-lu i{font-style:normal;color:#6f7c8c;font-size:10px}
+.wi-sc{display:flex;align-items:center;justify-content:center;gap:7px;
+  padding:9px 0 3px;font-size:13px;color:#9fb0c4}
+.wi-sc b{font-size:30px;font-weight:800;color:#e2eaf5;line-height:1}
+.wi-sc i{font-style:normal;color:#6f7c8c}
+.wi-sc.w b:first-of-type{color:#7fc48f}
+.wi-sc.l b:first-of-type{color:#e08a70}
+.wi-vd{text-align:center;font-size:12px;font-weight:800;color:#c9a227;margin-bottom:8px}
+.wi-line{overflow-x:auto}
+.wl-r{display:flex;align-items:center;gap:2px;font-size:10px;font-weight:800;
+  color:#cfe0ee;line-height:1.9;white-space:nowrap}
+.wl-r span{flex:0 0 66px;overflow:hidden;text-overflow:ellipsis}
+.wl-r i{display:flex;gap:2px;font-style:normal}
+.wl-r i u,.wl-r>b{flex:0 0 19px;text-align:center;text-decoration:none;
+  background:#131a22;border-radius:3px}
+.wl-r>b{color:#ffd15c;margin-left:2px}
+.wl-h{color:#6f7c8c}
+.wl-h i u,.wl-h>b{background:transparent}
+.wi-t{width:100%;border-collapse:collapse;font-size:11px;margin-top:2px}
+.wi-t th{color:#6f7c8c;font-weight:700;font-size:9.5px;padding:4px 2px;
+  border-bottom:1px solid var(--line);text-align:right}
+.wi-t th:nth-child(-n+2){text-align:left}
+.wi-t td{padding:5px 2px;text-align:right;color:#cfd7e2;
+  border-bottom:1px solid rgba(255,255,255,.045)}
+.wi-t td.wi-n{text-align:left;color:#e2eaf5;font-weight:700}
+.wi-t td.wi-n em{font-style:normal;font-size:9px;color:#c9a227;margin-left:4px}
+.wi-t td.wi-n em.lp{color:#e08a70}
+.wi-t tr.wi-hot td{background:rgba(232,118,44,.07)}
+.wi-hl{font-size:11px;color:#9fb0c4;padding:4px 0;border-top:1px solid rgba(255,255,255,.045);
+  line-height:1.5}
+/* 노림수 — 타석의 첫 번째 층 */
+.aim{margin:8px 0 2px}
+.aim-l{font-size:10.5px;color:var(--dm);margin-bottom:4px}
+.aim-row{display:flex;gap:5px}
+.aim-row button{flex:1;background:#161b22;border:1px solid #2a323d;border-radius:8px;
+  color:#cfd7e2;font-size:12px;font-weight:700;padding:8px 4px}
+.aim-row button.on{border-color:#e8762c;color:#fff;background:#241a12}
+.aim-row button:disabled{opacity:.4}
+/* 빗맞은 이유 한 줄 — 이게 있어야 는다 */
+.swnote{min-height:15px;font-size:11px;color:#c9a227;text-align:center;
+  margin:3px 0 5px;font-weight:700;line-height:1.35}
+/* 지금 내 판정 창이 얼마나 넓은지 */
+.bwin{margin-top:5px;font-size:10.5px;color:var(--dm)}
+.bwin b{color:#7fc48f}
+/* 중계 화면을 직접 친다 */
+.mound.tapon{cursor:crosshair;touch-action:manipulation}
+.swtap{position:absolute;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;
+  border:2px solid #ffd15c;opacity:0;pointer-events:none}
+.swtap.on{animation:swtapA .45s ease-out}
+@keyframes swtapA{0%{opacity:1;transform:scale(.45)}100%{opacity:0;transform:scale(1.7)}}
 .mv-spd{position:absolute;right:8px;top:30px;background:rgba(8,14,22,.72);
   border-radius:7px;padding:3px 8px;color:#cfe0ee;font-size:9px;font-weight:700;
   opacity:0;transform:translateY(-4px);transition:opacity .18s,transform .18s;
@@ -6350,8 +6409,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.25.0';
-const APP_VERSION_NOTE = '심판 오심·항의 · 유인구 · 구종별 타격';
+const APP_VERSION = '2.26.0';
+const APP_VERSION_NOTE = '타석을 완전히 새로 만들었다 · 만약에 모드';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6372,6 +6431,22 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.26.0', t:'타석이 완전히 달라졌다 · 붙어보면 어떻게 될까', items:[
+    '타석에서 이제 버튼을 안 누른다. 화면에서 공이 오는 자리를 손가락으로 직접 친다',
+    '탭 한 번에 위치와 타이밍이 같이 들어간다. 존 밖으로 빠진 공은 휘둘러도 잘 안 맞는다',
+    '노림수가 생겼다 — 빠른공이냐 변화구냐를 미리 찍는다. 맞히면 훨씬 잘 맞고 틀리면 못 맞힌다',
+    '드디어 능력치가 손끝에 닿는다. 컨택 87 송승민은 타이밍 창이 ±0.17초, 컨택 40 은 ±0.13초다',
+    '선구안이 좋을수록 노림수를 맞혔을 때 이득이 커진다',
+    '상대 구위가 높으면 판정 창이 좁아진다. 에이스 상대는 진짜로 어렵다',
+    '구속이 장식이 아니게 됐다. 130km/h 는 888ms, 85km/h 아리랑볼은 1359ms 로 진짜 느리게 온다',
+    '빗맞으면 왜 빗맞았는지 알려준다 — "0.09초 빨랐다", "공은 더 몸쪽 코스였다"',
+    '노림수가 틀리면 그것부터 말해준다 — "빠른공 노렸는데 커브가 왔다"',
+    '파울이 생겼다. 타석이 길어지고 카운트 싸움이 된다',
+    '만약에 모드가 생겼다. 상대·구장·날씨를 골라서 지금 라인업으로 한 판 돌려본다',
+    '만약에는 기록에 안 남는다. 실전 전에 "이 타순 어떨까" 확인해보는 용도다',
+    '만약에 결과에 우리 타자 9명 타수·안타·타점·타율, 투수 이닝·실점·방어율, 상대 타자까지 다 나온다',
+    '구장 물리도 그대로 먹힌다 — 배나물은 3루타, 신길은 실책, 성곡은 홈런이 는다',
+  ]},
   {v:'2.25.0', t:'심판 오심·항의 · 유인구 · 구종별 타격', items:[
     '심판이 오락가락한다. 애매한 코스는 11%, 한가운데도 3% 확률로 뒤집힌다',
     '우리가 손해 본 오심에는 항의할 수 있다. 감독 액션을 하나 쓴다',
@@ -11102,6 +11177,249 @@ const TROPHY_ICON={king:'👑',mvp:'🏆',bat:'🏏',avg:'🎯',pit:'⚾',mgr:'�
   lgmvp:'👑',lgavg:'🥇',lgpit:'🎖️',
   season:'🏅',champ:'👑',runner:'🥈',third:'🥉'};
 let hallWho=null;
+/* ================= 만약에 — 붙어보면 어떻게 될까 =================
+   [요청] "상대팀 지정하고 얘네랑 경기 붙으면 어떻게 될까? 이 라인업을 했을 때.
+           이래야 실전 경기 하기 전에 한번 이거 돌리고 해볼까?
+           결과 대충 이렇다는데? 하면서 분석이 되니깐"
+
+   실전 전에 돌려보는 분석 도구다. 세이브를 건드리지 않는다 —
+   simGame() 을 그대로 쓰되 기록·순위·컨디션 어디에도 반영하지 않는다.
+   상대·구장·홈원정만 바꿔 끼우고, 라인업은 지금 짜둔 그대로 쓴다.
+   그래서 "이 타순이면 저 팀 상대로 어떻게 나오나" 가 바로 보인다.      */
+let WHATIF=null;
+function whatIfInit(){
+  const next=(ST.schedule&&ST.schedule[ST.round])||null;
+  WHATIF={
+    opp: (next&&next.opp) || (TEAMS.find(t=>t.id!=='wwzw')||{}).id,
+    park: (next&&next.park) || ST.park || 'benamul',
+    weather: ST.weather||'clear',
+    home: next?!!next.homeGame:true,
+    res: null, runs: 0,
+  };
+}
+
+/* 한 판 돌린다. 결과만 돌려주고 아무 데도 안 쓴다. */
+function whatIfRun(seed){
+  const raw=TBYID['wwzw'];
+  const opp=TBYID[WHATIF.opp];
+  if(!opp) return null;
+  const park=PARKS.find(p=>p.id===WHATIF.park)||PARKS[0];
+  const hot=(WHATIF.weather==='hot'||WHATIF.weather==='humid');
+
+  /* 라인업 — 지금 짜둔 것. 비어 있으면 추천 라인업으로 채운다. */
+  const uLine=(ST.lineup&&ST.lineup.length===9)
+    ? ST.lineup.map(s=>({id:s.id,pos:s.pos}))
+    : recommendLineup().map(s=>({id:s.id,pos:s.pos}));
+  let uRot=(ST.rotation&&ST.rotation.length)?ST.rotation.slice():recommendRotation().slice();
+  uRot=uRot.filter(id=>raw.pitchers.some(p=>p.id===id));
+  if(!uRot.length) uRot=raw.pitchers.slice(0,1).map(p=>p.id);
+
+  /* 투수 컨디션 — 휴식일과 더위는 실전과 똑같이 먹인다. 그래야 예측이 맞다. */
+  const us={...raw, pitchers: raw.pitchers.map(p=>{
+    const r=ST.rest[p.id]!==undefined?ST.rest[p.id]:3;
+    const f=r>=2?1:(r===1?0.86:0.70);
+    let np=(f===1)?{...p}:{...p,stf:Math.round(p.stf*f),ctl:Math.round(p.ctl*f),sta:Math.round(p.sta*f)};
+    const mm=META[p.id];
+    if(hot&&mm&&mm.traits.includes('더위약함')){ np.sta=Math.min(np.sta,26); np.heatFade=true; }
+    return np;
+  })};
+  const gearPenalty=ST.gearLevel===2?30:(ST.gearLevel===1?10:0);
+  recalcTeamDefense(us, uLine, gearPenalty);
+  us._errMod=(raw._errMod||1);
+
+  const cond={};
+  raw.players.forEach(p=>{
+    let cv=(ST.cond[p.id]||70)+((ST.morale[p.id]||70)-70)*0.18;
+    cond[p.id]=Math.max(20,Math.min(100,cv));
+  });
+
+  const rng=makeRng(((seed||1)*7919+ST.round*131+77)>>>0);
+  const H=WHATIF.home;
+  return simGame(H?us:opp, H?opp:us, {
+    rng, innings:7, park, gearPenalty,
+    homeLineup: H?uLine:aiLineup(opp),
+    awayLineup: H?aiLineup(opp):uLine,
+    homeRotation: H?uRot:aiRotation(opp),
+    awayRotation: H?aiRotation(opp):uRot,
+    homeTactics: H?{...ST.tactics}:{bat:'normal',run:'normal',hook:'normal'},
+    awayTactics: H?{bat:'normal',run:'normal',hook:'normal'}:{...ST.tactics},
+    homeCond: H?cond:{}, awayCond: H?{}:cond,
+  });
+}
+
+/* 우리 쪽 · 상대 쪽을 구분해서 꺼낸다 */
+function whatIfSides(r){
+  const H=WHATIF.home;
+  return { us: H?r.home:r.away, them: H?r.away:r.home };
+}
+
+function renderWhatIf(){
+  const c=$('#view'); c.innerHTML='';
+  if(!WHATIF) whatIfInit();
+
+  const head=el('div','card');
+  head.innerHTML=`<div class="card-h">만약에</div>
+    <p class="muted">지금 라인업으로 붙으면 어떻게 나오는지 한 판 돌려본다.
+    <b>기록에는 안 남는다.</b> 실전 전에 확인해보는 용도다.</p>`;
+  c.appendChild(head);
+
+  /* ---- 조건 ---- */
+  const setup=el('div','card');
+  setup.innerHTML='<div class="card-h">조건</div>';
+
+  const row=(label, opts, cur, on)=>{
+    const r=el('div','wi-row');
+    r.appendChild(el('div','wi-l',label));
+    const sel=el('select','wi-sel');
+    opts.forEach(([v,n])=>{
+      const o=document.createElement('option');
+      o.value=v; o.textContent=n; if(v===cur)o.selected=true;
+      sel.appendChild(o);
+    });
+    sel.onchange=()=>{ on(sel.value); };
+    r.appendChild(sel);
+    return r;
+  };
+
+  const oppList=TEAMS.filter(t=>t.id!=='wwzw')
+    .map(t=>[t.id, t.name+' (리그 '+(leagueRank(t.id)||'-')+'위)']);
+  setup.appendChild(row('상대', oppList, WHATIF.opp,
+    v=>{ WHATIF.opp=v; WHATIF.res=null; renderWhatIf(); }));
+  setup.appendChild(row('구장', PARKS.map(p=>[p.id,p.name]), WHATIF.park,
+    v=>{ WHATIF.park=v; WHATIF.res=null; renderWhatIf(); }));
+  setup.appendChild(row('날씨', WEATHERS.map(w=>[w.id,w.name]), WHATIF.weather,
+    v=>{ WHATIF.weather=v; WHATIF.res=null; renderWhatIf(); }));
+  setup.appendChild(row('홈/원정', [['1','홈 (우리가 말 공격)'],['0','원정 (우리가 초 공격)']],
+    WHATIF.home?'1':'0', v=>{ WHATIF.home=(v==='1'); WHATIF.res=null; renderWhatIf(); }));
+
+  const pk=PARKS.find(p=>p.id===WHATIF.park)||PARKS[0];
+  setup.appendChild(el('p','wi-note', pk.desc+' — '+pk.note));
+
+  /* 지금 라인업을 요약해서 보여준다. 뭘로 돌리는지 눈에 보여야 한다. */
+  const lu=(ST.lineup&&ST.lineup.length===9)?ST.lineup:recommendLineup();
+  const luBox=el('div','wi-lu');
+  luBox.innerHTML='<b>이 라인업으로 돌린다</b><br>'+
+    lu.map((s,i)=>`${i+1}. ${nameOf(s.id)} <i>${s.pos}</i>`).join(' · ')+
+    `<br>선발 <b>${nameOf((ST.rotation&&ST.rotation[0])||(recommendRotation()[0]))}</b>`;
+  setup.appendChild(luBox);
+  const goLu=el('button','btn','라인업 바꾸러 가기');
+  goLu.onclick=()=>go('lineup');
+  setup.appendChild(goLu);
+
+  const runB=el('button','btn primary', WHATIF.res?'다시 돌려보기':'돌려보기');
+  runB.onclick=()=>{
+    WHATIF.runs++;
+    WHATIF.res=whatIfRun(WHATIF.runs);
+    renderWhatIf();
+    try{ SFX&&SFX.play&&SFX.play('hit'); }catch(e){}
+  };
+  setup.appendChild(runB);
+  c.appendChild(setup);
+
+  if(!WHATIF.res) return;
+
+  /* ---- 결과 ---- */
+  const r=WHATIF.res;
+  const S=whatIfSides(r);
+  const won=S.us.runs>S.them.runs, tie=S.us.runs===S.them.runs;
+
+  const sc=el('div','card');
+  const inn=Math.max(S.us.line.length, S.them.line.length);
+  const cells=(side)=>{ let o=''; for(let i=0;i<inn;i++){
+    const v=side.line[i]; o+=`<u>${v==null?'-':v}</u>`; } return o; };
+  const hd=()=>{ let o=''; for(let i=0;i<inn;i++) o+=`<u>${i+1}</u>`; return o; };
+  sc.innerHTML=`<div class="card-h">${WHATIF.runs}번째 시뮬레이션</div>
+    <div class="wi-sc ${won?'w':(tie?'t':'l')}">
+      <span>우완좌완</span><b>${S.us.runs}</b><i>:</i><b>${S.them.runs}</b><span>${S.them.team.name}</span>
+    </div>
+    <div class="wi-vd">${tie?'무승부':(won?'이긴다':'진다')}${r.mercy?' · 콜드게임':''}</div>
+    <div class="wi-line"><div class="wl-r wl-h"><span></span><i>${hd()}</i><b>R</b><b>H</b><b>E</b></div>
+      <div class="wl-r"><span>${WHATIF.home?S.them.team.name:'우완좌완'}</span><i>${cells(r.away)}</i>
+        <b>${r.away.runs}</b><b>${r.away.hits}</b><b>${r.away.errs}</b></div>
+      <div class="wl-r"><span>${WHATIF.home?'우완좌완':S.them.team.name}</span><i>${cells(r.home)}</i>
+        <b>${r.home.runs}</b><b>${r.home.hits}</b><b>${r.home.errs}</b></div></div>`;
+  c.appendChild(sc);
+
+  /* ---- 우리 타자 개인 성적 ---- */
+  const uLine=(ST.lineup&&ST.lineup.length===9)?ST.lineup:recommendLineup();
+  const bat=el('div','card');
+  bat.innerHTML='<div class="card-h">우리 타자</div>';
+  const bt=el('table','wi-t');
+  bt.innerHTML='<thead><tr><th>타순</th><th>이름</th><th>타수</th><th>안타</th>'+
+    '<th>타점</th><th>득점</th><th>볼넷</th><th>삼진</th><th>타율</th></tr></thead>';
+  const bb=el('tbody');
+  uLine.forEach((s,i)=>{
+    const b=r.box[s.id]; if(!b) return;
+    const av=b.ab?(b.h/b.ab):0;
+    const hot=(b.h>=2||b.hr>0);
+    const tr=el('tr', hot?'wi-hot':'');
+    tr.innerHTML=`<td>${i+1}</td><td class="wi-n">${nameOf(s.id)}`+
+      `${b.hr?`<em>홈런 ${b.hr}</em>`:(b.d3?`<em>3루타</em>`:(b.d2?`<em>2루타 ${b.d2}</em>`:''))}</td>`+
+      `<td>${b.ab}</td><td>${b.h}</td><td>${b.rbi}</td><td>${b.r}</td>`+
+      `<td>${b.bb+b.hbp}</td><td>${b.k}</td><td>${b.ab?av.toFixed(3).replace(/^0/,''):'-'}</td>`;
+    bb.appendChild(tr);
+  });
+  bt.appendChild(bb); bat.appendChild(bt); c.appendChild(bat);
+
+  /* ---- 우리 투수 개인 성적 ---- */
+  const pit=el('div','card');
+  pit.innerHTML='<div class="card-h">우리 투수</div>';
+  const pt=el('table','wi-t');
+  pt.innerHTML='<thead><tr><th>이름</th><th>이닝</th><th>피안타</th><th>실점</th>'+
+    '<th>자책</th><th>볼넷</th><th>탈삼진</th><th>방어율</th></tr></thead>';
+  const pb=el('tbody');
+  Object.keys(r.pbox).forEach(pid=>{
+    if(!TBYID['wwzw'].pitchers.some(p=>p.id===pid)) return;
+    const p=r.pbox[pid]; if(!p.outs&&!p.bf) return;
+    const ip=Math.floor(p.outs/3)+'.'+(p.outs%3);
+    const era=p.outs?(p.er*21/p.outs):0;      // 7이닝 기준
+    const tr=el('tr', (pid===r.wp?'wi-hot':''));
+    tr.innerHTML=`<td class="wi-n">${nameOf(pid)}`+
+      `${pid===r.wp?'<em>승</em>':(pid===r.lp?'<em class="lp">패</em>':'')}</td>`+
+      `<td>${ip}</td><td>${p.h}</td><td>${p.r}</td><td>${p.er}</td>`+
+      `<td>${p.bb+p.hbp}</td><td>${p.k}</td><td>${p.outs?era.toFixed(2):'-'}</td>`;
+    pb.appendChild(tr);
+  });
+  pt.appendChild(pb); pit.appendChild(pt); c.appendChild(pit);
+
+  /* ---- 상대 타자 (누가 위험한지) ---- */
+  const oppTeam=TBYID[WHATIF.opp];
+  const oLine=WHATIF.home?r.away:r.home;
+  const oh=el('div','card');
+  oh.innerHTML=`<div class="card-h">${oppTeam.name} 타자</div>`;
+  const ot=el('table','wi-t');
+  ot.innerHTML='<thead><tr><th>이름</th><th>타수</th><th>안타</th><th>타점</th><th>홈런</th></tr></thead>';
+  const ob=el('tbody');
+  let oppRows=0;
+  Object.keys(r.box).forEach(pid=>{
+    if(TBYID['wwzw'].players.some(p=>p.id===pid)) return;
+    const b=r.box[pid]; if(!b.pa) return;
+    const pl=oppTeam.players.find(p=>p.id===pid);
+    const tr=el('tr', (b.h>=2||b.hr)?'wi-hot':'');
+    tr.innerHTML=`<td class="wi-n">${pl?pl.name:pid}</td><td>${b.ab}</td>`+
+      `<td>${b.h}</td><td>${b.rbi}</td><td>${b.hr}</td>`;
+    ob.appendChild(tr); oppRows++;
+  });
+  if(oppRows){ ot.appendChild(ob); oh.appendChild(ot); c.appendChild(oh); }
+
+  /* ---- 경기 흐름 몇 줄 ---- */
+  const hl=(r.log||[]).filter(l=>l.t==='play'&&/홈런|3루타|2루타|병살|실책|역전/.test(l.text||''));
+  if(hl.length){
+    const lg=el('div','card');
+    lg.innerHTML='<div class="card-h">이런 장면이 나온다</div>';
+    hl.slice(0,8).forEach(l=>{
+      lg.appendChild(el('div','wi-hl',`${l.inning||''}회 · ${l.text}`));
+    });
+    c.appendChild(lg);
+  }
+
+  const again=el('button','btn primary','한 번 더 돌려보기');
+  again.onclick=()=>{ WHATIF.runs++; WHATIF.res=whatIfRun(WHATIF.runs); renderWhatIf(); };
+  c.appendChild(again);
+  c.appendChild(el('p','muted',
+    '돌릴 때마다 결과가 달라진다. 야구가 원래 그렇다 — 여러 번 돌려보고 경향을 봐라.'));
+}
+
 function renderHall(){
   const c=$('#view'); c.innerHTML='';
   const us=TBYID['wwzw'];
@@ -14885,7 +15203,9 @@ function throwBall(mound, type, opts){
   const hand=(o.hand===-1?-1:1);
   const bkx=(T.bx/100)*W*hand, bky=(T.by/100)*H;
   const ax=tx-bkx, ay=ty-bky;          // 겉보기 조준점 (여기서 시작해 목표로 휜다)
-  const dur=(o.dur||900)/T.spd;
+  /* exact 를 주면 넘긴 시간 그대로 쓴다 — 타석 화면은 구속(km/h)에서
+     비행시간을 직접 계산해서 넘기므로 구종 보정을 두 번 먹으면 안 된다. */
+  const dur=o.exact?(o.dur||900):((o.dur||900)/T.spd);
   let t0=null, raf=null, hit=false;
   const trails=[];
   const stop=()=>{ if(raf)cancelAnimationFrame(raf); raf=null; };
@@ -15123,54 +15443,178 @@ function moundResult(mound,text,color,big){
   setTimeout(()=>r.classList.remove('on'), big?1100:800);
 }
 
-/* 타이밍 스윙 — 공이 실제로 날아오고, 존에 닿는 순간에 맞춰 누른다.
-   막대가 아니라 공 자체가 타이밍 기준이다. 구종마다 속도·궤적이 달라서
-   커브가 오면 기다려야 하고 직구면 빨리 나가야 한다.                  */
+/* ---------- 타격 — 노림수 · 위치 · 타이밍 ----------
+   [제보] "직접 플레이 했을 때 퀄리티가 난 너무 똥이라고 생각해"
+
+   예전에는 q = 1-|t-0.90|*5.2 한 줄이 타격의 전부였다. 타이밍 하나.
+   공이 어디로 오는지(cx,cy)도, 타자 능력치도 판정에 안 들어갔다. 그래서
+     · 존 밖으로 한참 빠진 공을 휘둘러도 타이밍만 맞으면 정타가 나왔고
+     · 컨택 87 송승민으로 치나 67 김선호로 치나 조작감이 똑같았다
+   야구 껍데기를 쓴 리듬게임이었다. 능력치를 올려도 손끝에 아무 변화가
+   없으니, 키우는 재미와 치는 재미가 완전히 따로 놀았다.
+
+   이제 세 층이다.
+     1. 노림수 — 빠른공이냐 변화구냐를 미리 찍는다. 맞히면 창이 넓어지고
+                 틀리면 좁아진다. 그 폭을 타자 <선구안>이 정한다.
+     2. 위치   — 공이 오는 자리를 화면에서 손가락으로 직접 친다.
+     3. 타이밍 — 그 탭이 언제 들어왔는가.
+   탭 한 번에 2와 3이 같이 들어온다. 버튼은 안 늘고 판단만 깊어진다.
+
+   그리고 빗맞으면 왜 빗맞았는지 반드시 알려준다.
+   안 느는 게임은 무조건 재미없다.                                     */
+
+/* 판정 창은 능력치가 정한다. 여기가 이 게임의 심장이다 —
+   훈련해서 컨택을 올리면 손끝으로 느껴져야 한다.
+
+   컨택 87 · 상대 구위 45 · 노림수 적중(선구안 60) →  타이밍 ±0.23초
+   컨택 40 · 상대 구위 80 · 노림수 실패           →  타이밍 ±0.07초
+   같은 공이 사람에 따라 세 배 넓어진다. 그게 능력치다.               */
+function batWindows(bat, pit, guess){
+  const con=(bat&&bat.con)||40, eye=(bat&&bat.eye)||40;
+  const stf=(pit&&pit.stf)||40;
+  const conF=0.72+con/100*0.62;            // 컨택 40 → 0.97 · 87 → 1.26
+  const stfF=1.24-stf/100*0.48;            // 구위 30 → 1.10 · 80 → 0.86
+  const gT=(guess==='hit')?(1+eye/100*0.55):((guess==='miss')?0.62:1);
+  const gL=(guess==='hit')?1.15:((guess==='miss')?0.80:1);
+  return { tw:0.135*conF*stfF*gT,          // 타이밍 창 — 비행시간 대비 비율
+           lw:1.55*conF*gL };              // 위치 허용 오차 — 존 칸 단위
+}
+
+/* 왜 그렇게 됐는지 한 줄. 빨랐는지 늦었는지를 알려줘야 다음에 고친다. */
+function swingNote(o){
+  const out=[];
+  if(o.guess==='miss') out.push(`${o.want} 노렸는데 ${o.came}가 왔다`);
+  const ms=Math.abs(o.errMs);
+  if(ms>=25) out.push(`${(ms/1000).toFixed(2)}초 ${o.errMs<0?'빨랐다':'늦었다'}`);
+  if(o.dist>=0.8){
+    const dx=o.ballX-o.tapX, dy=o.ballY-o.tapY, wz=[];
+    if(Math.abs(dy)>=0.6) wz.push(dy>0?'낮은':'높은');
+    if(Math.abs(dx)>=0.6) wz.push((dx*(o.batLeft?-1:1)<0)?'몸쪽':'바깥쪽');
+    if(wz.length) out.push(`공은 더 ${wz.join(' ')} 코스였다`);
+  }
+  return out.slice(0,2).join(' · ');
+}
+
 function renderSwing(box, d){
   const bat=LIVE.batter();
   const def=LIVE.def();
   const myP=LIVE.curPitcher(def);
   const isMine=bat&&bat.id===(ST.playerId||MYID);
+  const batLeft=!!(bat&&bat.bats==='L');
   const w=el('div','pl-wrap');
-  w.innerHTML=`<div class="pl-t">타석</div>
-    <div class="pl-sub">${LIVE.inning}회 ${LIVE.outs}아웃 ·
-      <b style="color:#e2eaf5">${bat?bat.name:''}</b>${isMine?' <span class="metag">내 선수</span>':''}
-      · 상대 ${myP.name} (구위 ${myP.stf})<br>
-      존 안으로 들어오면 치고, <b>빠지면 참아라</b>. 4볼이면 볼넷, 3스트라이크면 삼진.</div>`;
+  const head=el('div'); w.appendChild(head);
+
   const mv=moundView({label:`<b>${myP.name}</b>${handTag(myP)}`,
-    pitLeft:throwHandOf(myP)==='L', batLeft:!!(bat&&bat.bats==='L'), usDef:false});
+    pitLeft:throwHandOf(myP)==='L', batLeft:batLeft, usDef:false});
+  mv.classList.add('tapon');
   w.appendChild(mv);
   if(bat) moundWho(mv,bat.id,'타석');
-  /* 타이밍 게이지 — 공이 오는 동안 채워진다. 초록 칸에서 치면 정타다.
-     [요청] "인게임 플레이 요소가 더 있었으면"
-     예전에는 감으로만 눌렀다. 이제 눈으로 보고 잰다.                 */
+
+  const ars=arsenalOf(myP);
+  const hasBreak=ars.some(k=>k!=='ff');
+
+  const aim=el('div','aim'); w.appendChild(aim);
+  /* 타이밍 게이지 — 공이 오는 동안 찬다. 눈으로 재는 보조선이다. */
   const gauge=el('div','swg');
   gauge.innerHTML='<i class="swg-fill"></i><u class="swg-good"></u><b class="swg-mark"></b>';
   w.appendChild(gauge);
-  const hit=el('button','pl-hit','준비...');
-  hit.disabled=true;
-  const take=el('button','pl-skip','지켜본다');
-  take.disabled=true;
-  w.appendChild(hit); w.appendChild(take);
+  const note=el('div','swnote'); w.appendChild(note);
+  const take=el('button','pl-hit','지켜본다 — 참는다');
+  take.disabled=true;                              // 준비 시간 동안은 잠근다
+  take.disabled=true;                              // 준비 시간 동안은 잠근다
+  const auto=el('button','pl-skip','알아서 치게 둔다');
+  w.appendChild(take); w.appendChild(auto);
   box.appendChild(w);
 
-  const ars=arsenalOf(myP);
-  let anim=null, done=false, phase='ready', inZone=true, resolved=false, curType='ff';
+  let anim=null, done=false, resolved=false, phase='ready';
+  let inZone=true, curType='ff', bx=1, by=1, curDur=1000, curKmh=0, fouls=0;
+  let aimSel='none';
+
+  /* ---- 노림수 ---- */
+  const drawAim=()=>{
+    const lock=(phase==='pitch');
+    aim.innerHTML='';
+    aim.appendChild(el('div','aim-l', hasBreak
+      ? (lock?'공 오는 중 — 노림수는 못 바꾼다':'노림수 — 맞히면 넓어지고 틀리면 좁아진다')
+      : '이 투수는 직구밖에 없다 — 노릴 것도 없다'));
+    const row=el('div','aim-row');
+    [['fast','빠른공'],['break','변화구'],['none','안 노린다']].forEach(([k,n])=>{
+      if(k==='break'&&!hasBreak) return;
+      const b=el('button',aimSel===k?'on':'',n);
+      b.disabled=lock||done||resolved;
+      b.onclick=()=>{ if(done||resolved||phase==='pitch')return; aimSel=k; drawAim(); drawHead(); };
+      row.appendChild(b);
+    });
+    aim.appendChild(row);
+  };
+
+  /* ---- 머리말 — 지금 내 창이 얼마나 넓은지까지 보여준다 ----
+     [요청] 투수 화면은 상대 타자 성적을 보여주는데 타석은 아무것도 없었다.
+     양쪽 정보량을 맞춘다.                                             */
+  const drawHead=()=>{
+    const c=LIVE.count();
+    const guessNow=(aimSel==='none')?'none':'hit';
+    const W=batWindows(bat,myP,guessNow);
+    const Wm=batWindows(bat,myP,(aimSel==='none')?'none':'miss');
+    const tb=(bat&&LIVE.box[bat.id])||null;
+    const today=(tb&&tb.pa)
+      ? `${tb.ab}타수 ${tb.h}안타${tb.hr?` · 홈런 ${tb.hr}`:''}${tb.k?` · 삼진 ${tb.k}`:''}`
+      : '첫 타석';
+    const sec=v=>`±${(v*curDur/1000).toFixed(2)}초`;
+    head.innerHTML=`<div class="pl-t">타석 · ${c.b}볼 ${c.s}스트라이크</div>
+      <div class="pl-sub">${LIVE.inning}회 ${LIVE.outs}아웃 · 상대
+        <b style="color:#e2eaf5">${myP.name}</b> (구위 ${myP.stf} 제구 ${myP.ctl}
+        · 최고 ${Math.round(topKmh(myP))}km/h)</div>
+      ${bat?`<div class="bat-info">
+        <div class="bi-top"><b>${bat.name}</b>${isMine?' <span class="metag">내 선수</span>':''}
+          <em class="${batLeft?'lh':''}">${batLeft?'좌타':'우타'}</em></div>
+        <div class="bi-r">컨택 ${Math.round(bat.con)} · 파워 ${Math.round(bat.pow)} · 선구 ${Math.round(bat.eye)}</div>
+        <div class="bi-t">오늘 ${today}</div></div>`:''}
+      <div class="bwin">노림수 맞히면 <b>${sec(W.tw)}</b>${aimSel==='none'?'':`
+        · 틀리면 <b style="color:#e08a70">${sec(Wm.tw)}</b>`}</div>
+      <div class="pl-sub"><b>공이 오는 자리를 화면에서 그대로 쳐라.</b>
+        존 밖이면 참는 게 낫다. 4볼이면 볼넷, 3스트라이크면 삼진.</div>`;
+  };
 
   const paint=()=>{
     const c=LIVE.count();
     const cb=mv.querySelector('#cnt');
     if(cb) cb.innerHTML=`<b>${c.b}</b>-<b>${c.s}</b>`;
-    mvScore(mv);
+    mvScore(mv); drawHead();
   };
-  const endPA=(endKind,label,color,big)=>{
-    if(resolved)return; resolved=true; done=true;
+
+  /* 탭한 지점을 존 칸 좌표로 바꾼다. throwBall 이 공을 놓는 식과 똑같이 —
+     칸 간격은 존 폭의 0.303 이다. 그래야 보이는 대로 판정이 나온다.  */
+  const cellOf=(ev)=>{
+    const zs=mv.querySelector('#szone');
+    if(!zs) return {x:1,y:1};
+    const zb=zs.getBoundingClientRect();
+    const sx=Math.max(1,zb.width*0.303), sy=Math.max(1,zb.height*0.303);
+    /* 좌표가 없으면(테스트 환경·키보드 입력) 한가운데를 친 걸로 본다 */
+    const num=(v,f)=>(typeof v==='number'&&isFinite(v))?v:f;
+    const px=num(ev.clientX, zb.left+zb.width/2), py=num(ev.clientY, zb.top+zb.height/2);
+    return { x:1+(px-(zb.left+zb.width/2))/sx, y:1+(py-(zb.top+zb.height/2))/sy };
+  };
+  const markTap=(ev)=>{
+    const mb=mv.getBoundingClientRect();
+    let m=mv.querySelector('.swtap');
+    if(!m){ m=el('div','swtap'); mv.appendChild(m); }
+    const nx=(typeof ev.clientX==='number'&&isFinite(ev.clientX))?ev.clientX:mb.left+mb.width/2;
+    const ny=(typeof ev.clientY==='number'&&isFinite(ev.clientY))?ev.clientY:mb.top+mb.height/2;
+    m.style.left=((nx-mb.left)/Math.max(1,mb.width)*100).toFixed(2)+'%';
+    m.style.top=((ny-mb.top)/Math.max(1,mb.height)*100).toFixed(2)+'%';
+    m.classList.remove('on'); void m.offsetWidth; m.classList.add('on');
+  };
+
+  const endPA=(label,color,big)=>{
+    if(resolved)return; resolved=true; done=true; phase='over';
     if(anim)anim.stop();
-    hit.disabled=true; take.disabled=true;
+    take.disabled=true; auto.disabled=true; drawAim();
     if(big) mv.classList.add('impact');
     playThenClose(box,mv,'playskip',label,color);
   };
-  /* 다음 공 */
+
+  /* ---- 다음 공 ---- */
   const nextPitch=()=>{
     if(done||resolved)return;
     const type=ars[(LIVE.rng()*ars.length)|0];
@@ -15179,97 +15623,124 @@ function renderSwing(box, d){
     /* 제구가 나쁘면 존 밖으로 빠진다 — 그게 '볼'이다 */
     const ctlOk=LIVE.rng() < Math.max(0.30,Math.min(0.86,(myP.ctl+18)/78));
     inZone=ctlOk;
-    let cx,cy;
-    if(ctlOk){ cx=(LIVE.rng()*3)|0; cy=(LIVE.rng()*3)|0; }
+    if(ctlOk){ bx=(LIVE.rng()*3)|0; by=(LIVE.rng()*3)|0; }
     else { const side=(LIVE.rng()*4)|0;
-      cx=side===0?-1:(side===1?3:(LIVE.rng()*3)|0);
-      cy=side===2?-1:(side===3?3:(LIVE.rng()*3)|0); }
+      bx=side===0?-1:(side===1?3:(LIVE.rng()*3)|0);
+      by=side===2?-1:(side===3?3:(LIVE.rng()*3)|0); }
+    /* [제보] 구속이 장식이었다 — dur 이 1000 고정이라 145 를 띄워도
+       공은 똑같이 왔다. 이제 뜬 숫자가 그대로 비행시간이 된다.
+       110km/h 를 기준으로, 빠르면 진짜로 빨리 온다.                  */
+    curKmh=pitchKmh(myP,type);
+    curDur=Math.round(Math.max(620,Math.min(1700,1050*(110/Math.max(60,curKmh)))));
     const l=mv.querySelector('.lbl');
-    if(l) l.innerHTML=`<b>${myP.name}</b>${handTag(myP)} · ${T.n}`;
-    hit.textContent='스윙!'; hit.disabled=false; take.disabled=false; phase='pitch';
+    if(l) l.innerHTML=`<b>${myP.name}</b>${handTag(myP)}`;
+    phase='pitch'; take.disabled=false; drawAim(); drawHead();
     windup(mv,()=>{
       if(done||resolved)return;
       const fill=gauge.querySelector('.swg-fill'), mark=gauge.querySelector('.swg-mark');
       gauge.classList.add('on'); mark.classList.remove('on');
-      mvSpeed(mv, pitchKmh(myP,type));
-      anim=throwBall(mv,type,{cx,cy,dur:1000,hand:pitchHand(myP,bat),
+      mvSpeed(mv, curKmh);
+      anim=throwBall(mv,type,{cx:bx,cy:by,dur:curDur,exact:true,hand:pitchHand(myP,bat),
         onTick:(t)=>{ if(fill) fill.style.width=(t*100).toFixed(1)+'%'; },
-        onEnd:()=>{
-        if(done||resolved)return;
-        // 안 휘두르고 그냥 지나갔다
-        judge(null);
-      }});
+        onEnd:()=>{ if(done||resolved)return; judge(null); }});
     });
   };
-  /* 스윙(q) 또는 지켜보기(null) 판정 */
-  const judge=(q)=>{
+
+  /* ---- 판정 ---- */
+  const judge=(tap)=>{
     if(done||resolved)return;
     if(anim)anim.stop();
-    hit.disabled=true; take.disabled=true;
-    let kind, pre, col;
-    if(q==null){
-      /* 타석에서도 심판은 사람이다. 억울하면 항의할 수 있다. */
-      const truth = inZone?'strike':'ball';
+    phase='judge'; take.disabled=true; drawAim();
+    let kind, pre, col, q=null, msg='';
+
+    if(!tap){
+      /* 안 휘둘렀다 — 심판이 본다. 4부리그 심판은 사람이다. */
+      const truth=inZone?'strike':'ball';
       const bias=LIVE._umpBias||0;
-      const good = (truth==='strike');            // 뒤집히면 타자인 우리가 이득
+      const good=(truth==='strike');            // 뒤집히면 타자인 우리가 이득
       const mp=0.08*(good?(1+bias*0.35):Math.max(0.2,1-bias*0.35));
       const miss=LIVE.rng()<mp;
-      kind = miss ? (truth==='ball'?'strike':'ball') : truth;
-      if(miss && !good){
+      kind=miss?(truth==='ball'?'strike':'ball'):truth;
+      if(miss&&!good){
         LIVE._badCall={ truth, called:kind, pa:LIVE.paSeq };
         pre='스트라이크?! (빠진 공이었다)'; col='#e2c05a';
       } else if(miss){
         pre='볼! (사실 들어왔다)'; col='#e2c05a';
         LIVE.log.push({t:'mgr',text:'심판이 우리 쪽으로 봐줬다 — 들어온 공이 볼'});
       } else {
-        pre  = inZone?'스트라이크':'볼';
-        col  = inZone?'#e08a70':'#7fc48f';
+        pre=inZone?'스트라이크':'볼';
+        col=inZone?'#e08a70':'#7fc48f';
+        msg=inZone?'존 안이었다 — 쳤어야 했다':'잘 참았다';
       }
-    } else if(q<0.25){
-      kind='strike'; pre='헛스윙'; col='#e08a70';
     } else {
-      kind='contact'; pre = q>=0.75?'정타!':'맞혔다'; col='#7fc48f';
+      const guess=(aimSel==='none')?'none'
+        :(((aimSel==='fast')===(curType==='ff'))?'hit':'miss');
+      const W=batWindows(bat,myP,guess);
+      const errT=tap.t-0.90;                        // + 면 늦었다
+      const timing=Math.max(0,1-Math.abs(errT)/W.tw);
+      const dist=Math.hypot(tap.x-bx, tap.y-by);
+      const loc=Math.max(0,1-dist/W.lw);
+      /* 둘 다 필요하다. 타이밍만 맞고 자리를 못 맞히면 배트에 안 닿는다. */
+      q=Math.pow(timing,0.85)*Math.pow(loc,0.70);
+      msg=swingNote({guess, want:(aimSel==='fast'?'빠른공':'변화구'),
+        came:PITCH_TYPES[curType].n, errMs:errT*curDur,
+        dist, tapX:tap.x, tapY:tap.y, ballX:bx, ballY:by, batLeft});
+      /* 파울이 생겼다 — 엔진엔 원래 있었는데 타석에서 안 썼다.
+         타석의 리듬은 파울이 만든다. 다만 무한정 끌면 지루하니 여섯 번까지. */
+      if(q<0.18){ kind='strike'; pre='헛스윙'; col='#e08a70'; }
+      else if(q<0.38&&fouls<6){ kind='foul'; pre='파울'; col='#c9a227'; fouls++; }
+      else { kind='contact';
+        pre=(q>=0.75?'정타!!':(q>=0.55?'잘 맞았다':'맞혔다'));
+        col='#7fc48f'; }
+      if(q>=0.72) mvImpact(mv);
     }
-    const r=LIVE.pitchResult(kind,q,curType);
+
+    const r=LIVE.pitchResult(kind, q, curType);
+    note.textContent=msg||'';
     paint();
-    if(!r){                                   // 타석이 안 끝났다 — 다음 공
+    if(!r){                                     // 타석이 안 끝났다 — 다음 공
       moundResult(mv,pre,col);
-      if(LIVE._badCall && LIVE._badCall.pa===LIVE.paSeq) showArgue(box, mv, paint);
-      setTimeout(()=>{ if(!done&&!resolved){ phase='wait'; nextPitch(); } },720);
+      if(LIVE._badCall&&LIVE._badCall.pa===LIVE.paSeq) showArgue(box,mv,paint);
+      setTimeout(()=>{ if(!done&&!resolved){ phase='wait'; nextPitch(); } },820);
       return;
     }
-    if(r.end==='BB'){ endPA('BB','볼넷',' #7fc48f'.trim(),false); return; }
-    if(r.end==='K'){  endPA('K','삼진 아웃','#e08a70',false); return; }
-    endPA('contact',pre,col,q>=0.75);         // 인플레이 — 실제 결과는 엔진이
+    if(r.end==='BB'){ endPA('볼넷','#7fc48f',false); return; }
+    if(r.end==='K'){  endPA('삼진 아웃','#e08a70',false); return; }
+    endPA(pre,col,q>=0.75);                     // 인플레이 — 결과는 엔진이 낸다
   };
 
-  hit.onclick=()=>{
+  /* ---- 입력 ---- */
+  mv.addEventListener('pointerdown',(ev)=>{
     if(phase!=='pitch'||done||resolved) return;
+    ev.preventDefault();
+    markTap(ev);
     mvSwing(mv);                                   // 배트를 돌린다
-    if(!anim){ judge(0.05); return; }
+    if(!anim){ judge({t:0.4,x:1,y:1}); return; }
     const t=anim.progress();
     const mk=gauge.querySelector('.swg-mark');
     if(mk){ mk.style.left=(t*100).toFixed(1)+'%'; mk.classList.add('on'); }
-    const q=Math.max(0,1-Math.abs(t-0.90)*5.2);
-    if(q>=0.72) mvImpact(mv);                      // 잘 맞으면 화면이 번쩍한다
-    judge(q);
-  };
+    const c=cellOf(ev);
+    judge({t, x:c.x, y:c.y});
+  });
   take.onclick=()=>{ if(phase!=='pitch'||done||resolved)return; judge(null); };
+  auto.onclick=()=>{ if(done||resolved)return;
+    done=true; resolved=true; if(anim)anim.stop();
+    playThenClose(box,mv,'playskip','알아서 치게 뒀다','#9fb0c4'); };
 
   /* 첫 공 전에만 준비 시간을 준다 */
   let cnt=3;
   const tick=()=>{
     if(done)return;
     if(cnt>0){
-      hit.textContent='준비... '+cnt;
       const l=mv.querySelector('.lbl');
       if(l) l.innerHTML=`<b>${myP.name}</b> 투구 준비 · ${cnt}`;
+      note.textContent=(cnt===3?'화면에서 공이 오는 자리를 직접 쳐라':'');
       cnt--; setTimeout(tick,600); return;
     }
     nextPitch();
   };
-  paint();
-  setTimeout(tick,260);
+  drawAim(); paint();
+  tick();                       // 바로 '투구 준비 · 3' 이 뜨게. 빈 화면을 안 보여준다
   box._cleanup=()=>{ done=true; resolved=true; if(anim)anim.stop(); };
 }
 
@@ -18083,6 +18554,17 @@ function renderMore(){
   pcard.appendChild(pb);
   c.appendChild(pcard);
 
+  /* 만약에 — 실전 전에 돌려보는 단판 시뮬레이션.
+     [예정] 메인화면이 생기면 거기로 옮긴다. 지금은 여기서 들어간다. */
+  const wcard=el('div','card');
+  wcard.appendChild(el('div','card-h','만약에'));
+  wcard.appendChild(el('p','muted',
+    '상대·구장·날씨를 골라서 지금 라인업으로 한 판 돌려본다. 기록에는 안 남는다.'));
+  const wb=el('button','btn primary','붙어보면 어떻게 될까');
+  wb.onclick=()=>{ whatIfInit(); go('whatif'); };
+  wcard.appendChild(wb);
+  c.appendChild(wcard);
+
   const card=el('div','card');
   card.appendChild(el('div','card-h','데이터'));
   const r=el('div','btn-row');
@@ -18134,7 +18616,7 @@ function renderMore(){
 const VIEWS={home:renderHome,squad:renderSquad,lineup:renderLineup,kakao:renderKakao,
   game:renderGame,train:renderTrain,scout:renderScout,stand:renderStand,stats:renderStats,
   records:renderRecords,pick:renderPick,more:renderMore,meet:renderMeet,recruit:renderRecruit,
-  tutorial:renderTutorial,player:renderPlayer,hall:renderHall};
+  tutorial:renderTutorial,player:renderPlayer,hall:renderHall,whatif:renderWhatIf};
 function go(v){
   clearInterval(playTimer);
   curView=v;

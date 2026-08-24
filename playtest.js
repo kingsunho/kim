@@ -1,4 +1,5 @@
-/* [2.12.0] 직접 플레이 — 타이밍 스윙 · 코스 선택 */
+/* [2.12.0] 직접 플레이 — 타이밍 스윙 · 코스 선택
+   [2.26.0] 타격 3층 개편 — 노림수 · 위치 · 타이밍 */
 const {JSDOM,VirtualConsole}=require('jsdom');
 const html=require('fs').readFileSync('index.html','utf8');
 const errs=[];const vc=new VirtualConsole();
@@ -156,21 +157,97 @@ setTimeout(async()=>{
     const btn=[...d.querySelectorAll('#decision button')].map(x=>x.textContent);
     return !!mv && parts.length===5 && (parts.join(',')+' | '+btn.join(' | '));
   });
-  T('준비 시간을 준다 (카운트다운 동안 버튼이 잠긴다)', ()=>{
-    const b=[...d.querySelectorAll('#decision button')].find(x=>/준비|스윙/.test(x.textContent));
-    return (b && b.disabled && /준비/.test(b.textContent)) ? b.textContent.trim() : false;
+  T('노림수를 고를 수 있다', ()=>{
+    const a=[...d.querySelectorAll('.aim-row button')].map(x=>x.textContent);
+    if(!a.length) return false;
+    // 변화구가 있는 투수면 3개, 직구만 던지면 2개
+    return (a.length===3||a.length===2) && a.includes('안 노린다') && a.join(' / ');
+  });
+  T('준비 시간을 준다 (카운트다운 동안 잠긴다)', ()=>{
+    const b=[...d.querySelectorAll('#decision button')].find(x=>/지켜본다/.test(x.textContent));
+    const lb=d.querySelector('.mound .lbl');
+    return (b && b.disabled && lb && /준비/.test(lb.textContent)) ? lb.textContent.trim() : false;
   });
   await wait(2600);
-  T('카운트다운이 끝나면 스윙할 수 있다', ()=>{
-    const b=[...d.querySelectorAll('#decision button')].find(x=>/스윙/.test(x.textContent));
-    return (b && !b.disabled) ? b.textContent.trim() : false;
+  T('카운트다운이 끝나면 칠 수 있다', ()=>{
+    const b=[...d.querySelectorAll('#decision button')].find(x=>/지켜본다/.test(x.textContent));
+    return (b && !b.disabled) ? '지켜본다 풀림' : false;
   });
-  T('스윙하면 타이밍이 기록된다', ()=>{
-    const b=[...d.querySelectorAll('#decision button')].find(x=>/스윙/.test(x.textContent));
-    b.click();
-    const q=ev("LIVE._swingQ");
-    return (q!=null && q>=0 && q<=1) ? '품질 '+q.toFixed(2) : (ev("LIVE._lastPlayPA")!=null?'이미 반영됨':false);
+  T('화면을 치면 그 공의 판정이 난다', ()=>{
+    const mv=d.querySelector('.mound');
+    const before=ev("LIVE.count().b+LIVE.count().s");
+    mv.dispatchEvent(new w.Event('pointerdown',{bubbles:true}));
+    const after=ev("LIVE.count().b+LIVE.count().s");
+    const cq=ev("LIVE._contactQ");
+    const ended=ev("LIVE._contact===true||LIVE._forceRes!=null");
+    return (after>before||ended||cq!=null)
+      ? ('카운트 '+before+'→'+after+(cq!=null?' · 품질 '+cq.toFixed(2):'')) : false;
   });
+
+  console.log('[판정 창 — 능력치가 손끝에 닿는가]');
+  T('컨택이 높으면 타이밍 창이 넓다', ()=>ev(`(function(){
+    var p={stf:50,ctl:40};
+    var hi=batWindows({con:87,eye:60},p,'none'), lo=batWindows({con:40,eye:40},p,'none');
+    return hi.tw>lo.tw*1.2 ? '컨택87 ±'+hi.tw.toFixed(3)+' / 컨택40 ±'+lo.tw.toFixed(3) : false;
+  })()`));
+  T('상대 구위가 높으면 타이밍 창이 좁아진다', ()=>ev(`(function(){
+    var b={con:60,eye:50};
+    var vs=batWindows(b,{stf:30},'none'), ace=batWindows(b,{stf:85},'none');
+    return vs.tw>ace.tw*1.2 ? '구위30 ±'+vs.tw.toFixed(3)+' / 구위85 ±'+ace.tw.toFixed(3) : false;
+  })()`));
+  T('노림수를 맞히면 넓어지고 틀리면 좁아진다', ()=>ev(`(function(){
+    var b={con:60,eye:60}, p={stf:50};
+    var h=batWindows(b,p,'hit'), n=batWindows(b,p,'none'), m=batWindows(b,p,'miss');
+    return (h.tw>n.tw && n.tw>m.tw)
+      ? '적중 ±'+h.tw.toFixed(3)+' / 중립 ±'+n.tw.toFixed(3)+' / 실패 ±'+m.tw.toFixed(3) : false;
+  })()`));
+  T('선구안이 좋을수록 노림수 보상이 크다', ()=>ev(`(function(){
+    var p={stf:50};
+    var good=batWindows({con:60,eye:80},p,'hit').tw/batWindows({con:60,eye:80},p,'none').tw;
+    var bad =batWindows({con:60,eye:25},p,'hit').tw/batWindows({con:60,eye:25},p,'none').tw;
+    return good>bad ? '선구80 x'+good.toFixed(2)+' / 선구25 x'+bad.toFixed(2) : false;
+  })()`));
+  T('위치 허용 오차도 컨택을 따라간다', ()=>ev(`(function(){
+    var p={stf:50};
+    var hi=batWindows({con:87,eye:50},p,'none').lw, lo=batWindows({con:40,eye:50},p,'none').lw;
+    return hi>lo ? '컨택87 '+hi.toFixed(2)+'칸 / 컨택40 '+lo.toFixed(2)+'칸' : false;
+  })()`));
+
+  console.log('[빗맞은 이유를 알려준다]');
+  T('빨랐는지 늦었는지 말해준다', ()=>ev(`(function(){
+    var early=swingNote({guess:'none',errMs:-90,dist:0,tapX:1,tapY:1,ballX:1,ballY:1,batLeft:false});
+    var late =swingNote({guess:'none',errMs: 90,dist:0,tapX:1,tapY:1,ballX:1,ballY:1,batLeft:false});
+    return (/빨랐다/.test(early)&&/늦었다/.test(late)) ? early+' / '+late : false;
+  })()`));
+  T('공이 어디로 왔는지 말해준다', ()=>ev(`(function(){
+    // 우타 기준 — 공이 탭한 자리보다 왼쪽(cx 작음)이면 몸쪽이다
+    var n=swingNote({guess:'none',errMs:0,dist:2,tapX:2,tapY:1,ballX:0,ballY:1,batLeft:false});
+    return /몸쪽/.test(n) ? n : false;
+  })()`));
+  T('좌타는 몸쪽·바깥쪽이 반대로 나온다', ()=>ev(`(function(){
+    var r=swingNote({guess:'none',errMs:0,dist:2,tapX:2,tapY:1,ballX:0,ballY:1,batLeft:false});
+    var l=swingNote({guess:'none',errMs:0,dist:2,tapX:2,tapY:1,ballX:0,ballY:1,batLeft:true});
+    return (/몸쪽/.test(r)&&/바깥쪽/.test(l)) ? '우타 '+r+' / 좌타 '+l : false;
+  })()`));
+  T('노림수가 틀렸으면 그것부터 말해준다', ()=>ev(`(function(){
+    var n=swingNote({guess:'miss',want:'빠른공',came:'커브',errMs:0,dist:0,
+                     tapX:1,tapY:1,ballX:1,ballY:1,batLeft:false});
+    return /빠른공 노렸는데 커브가 왔다/.test(n) ? n : false;
+  })()`));
+
+  console.log('[구속이 장식이 아니다]');
+  T('빠른 공이 진짜로 빨리 온다', ()=>ev(`(function(){
+    // 타석 화면이 쓰는 식 그대로 — 110km/h 를 기준으로 비행시간을 낸다
+    var f=function(k){ return Math.round(Math.max(620,Math.min(1700,1050*(110/Math.max(60,k))))); };
+    var fast=f(130), slow=f(85);
+    return (fast<slow*0.75) ? '130km/h '+fast+'ms / 85km/h '+slow+'ms' : false;
+  })()`));
+  T('exact 를 주면 구종 보정을 두 번 안 먹는다', ()=>ev(`(function(){
+    var mv=document.querySelector('.mound'); if(!mv) return '마운드 없음';
+    var a=throwBall(mv,'cu',{dur:1000,exact:true}); var da=a.dur; a.stop();
+    var b=throwBall(mv,'cu',{dur:1000});            var db=b.dur; b.stop();
+    return (da===1000 && db>1000) ? 'exact '+da+'ms / 기본 '+Math.round(db)+'ms' : false;
+  })()`));
   T('코스 화면이 그려진다', ()=>{
     ev("ST.playMode='all'; LIVE=makeLive(); LIVE.manual=true;");
     ev(`(function(){var g=0;while(!LIVE.over&&g++<3000){

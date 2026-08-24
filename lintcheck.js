@@ -33,7 +33,7 @@ const isDefined=(n)=>{
 };
 const BUILTIN=new Set(['if','for','while','switch','catch','function','return','typeof','new','do',
  'Math','JSON','Object','Array','String','Number','Date','Map','Set','Promise','parseInt','parseFloat',
- 'isNaN','setTimeout','setInterval','clearInterval','clearTimeout','console','document','window',
+ 'isNaN','isFinite','setTimeout','setInterval','clearInterval','clearTimeout','console','document','window',
  'localStorage','navigator','location','fetch','btoa','atob','encodeURIComponent','decodeURIComponent',
  'requestAnimationFrame','cancelAnimationFrame','performance','alert','confirm','Boolean','Symbol','RegExp','Error','TextEncoder','TextDecoder',
  'Uint8Array','Float32Array','AudioContext','webkitAudioContext','caches','performance','structuredClone',
