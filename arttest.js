@@ -16,6 +16,7 @@ const EXE='/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 const errs=[];
 const T=(n,r)=>{const ok=!!r&&!(typeof r==='string'&&r[0]==='!');
   console.log((ok?'  ✅ ':'  ❌ ')+n+(typeof r==='string'?' :: '+r:''));if(!ok)errs.push(n);};
+const MVW_=a=>'있음';
 
 (async()=>{
   const b=await chromium.launch(require('fs').existsSync(EXE)?{executablePath:EXE}:{});
@@ -202,6 +203,50 @@ const T=(n,r)=>{const ok=!!r&&!(typeof r==='string'&&r[0]==='!');
     /* 발바닥 밑에 그림자 타원(반지름 h*0.075=15px)을 깔아서 그만큼 더 나온다 */
     T(`${k} — 발이 바닥선에 선다`, Math.abs(o.bot-300)<=17 ? `아래끝 ${o.bot}` : `!아래끝 ${o.bot}`);
   });
+  /* [제보] "투구 동작은 화면 아래쪽을 향해 공을 던지는 방향이어야 합니다"
+     그림 한 장이라 팔이 안 움직이면 매 프레임 팔 벌리고 서 있는 꼴이 된다.
+     던지는 팔을 어깨에서 잘라 따로 돌린다 — 진짜로 도는지 픽셀로 본다.   */
+  const arm=await p.evaluate(()=>{
+    const c=document.createElement('canvas'); c.width=500; c.height=500;
+    const g=c.getContext('2d');
+    const u={cap:'#2f5fb0',sh:'#eef2f8',pants:'#dfe4ec',st:'rgba(47,95,176,.35)',gl:'#5b3a1e'};
+    const box=pose=>{
+      g.clearRect(0,0,500,500);
+      mvFig(g,'pit',250,400,240,u,pose,false);
+      const d=g.getImageData(0,0,500,500).data;
+      let top=-1,minx=999,maxx=-1,armTop=-1;
+      for(let y=0;y<500;y++)for(let x=0;x<500;x++){
+        if(d[(y*500+x)*4+3]>40){
+          if(top<0)top=y; if(x<minx)minx=x; if(x>maxx)maxx=x;
+          /* 던지는 팔은 화면 왼쪽이다. 머리(가운데)를 빼고 왼쪽만 본다 */
+          if(x<215 && armTop<0) armTop=y;
+        } }
+      return {top,minx,maxx,armTop};
+    };
+    return {
+      hasPiece: !!MV_FIGS.parm && MV_FIGS.parm[2]>20,
+      angles: ['idle','wind','cock','rel','follow'].map(k=>MV_FIG_POSE[k][6]),
+      ball:   ['idle','wind','cock','rel','follow'].map(k=>MV_FIG_POSE[k][7]),
+      idle: box('idle'), cock: box('cock'), rel: box('rel'), follow: box('follow')
+    };
+  });
+  T('던지는 팔이 따로 있다', arm.hasPiece ? `조각 ${MVW_(arm)}` : '!팔 조각이 없다');
+  T('자세마다 팔 각이 다르다', (()=>{
+      const a=arm.angles.filter(x=>typeof x==='number');
+      const uniq=[...new Set(a.map(x=>x.toFixed(2)))];
+      return (a.length===5 && uniq.length===5)
+        ? a.map(x=>(x*180/Math.PI).toFixed(0)+'도').join(' → ') : '!'+uniq.length+'가지뿐';
+    })());
+  T('팔이 실제로 머리 위까지 올라간다',
+    arm.cock.armTop < arm.idle.armTop-60
+      ? `세트 ${arm.idle.armTop} → 코킹 ${arm.cock.armTop} (${arm.idle.armTop-arm.cock.armTop}px 올라감)`
+      : `!${arm.idle.armTop}→${arm.cock.armTop}`);
+  T('공을 놓은 뒤에는 손에 공이 없다',
+    arm.ball[4]===0 && arm.ball[0]===1 ? '팔로스루만 공 없음' : '!'+JSON.stringify(arm.ball));
+  T('팔로스루에서는 팔이 다시 내려온다',
+    arm.follow.armTop > arm.cock.armTop+50
+      ? `코킹 ${arm.cock.armTop} → 팔로스루 ${arm.follow.armTop}` : '!안 내려온다');
+
   T('세트 자세는 스트라이드보다 다리가 좁다',
     (place['pit:idle'].maxx-place['pit:idle'].minx) <
     (place['pit:rel'].maxx-place['pit:rel'].minx)-10
