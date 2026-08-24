@@ -22,8 +22,9 @@ const T=(n,r)=>{const ok=!!r&&!(typeof r==='string'&&r[0]==='!');
   const p=await b.newPage();
   await p.goto('file://'+require('path').resolve(process.argv[2]||'index.html'));
   await p.waitForTimeout(1200);
-  await p.evaluate(()=>{ mvSheetInit(); });
+  await p.evaluate(()=>{ mvSheetInit(); mvFigInit(); });
   await p.waitForFunction(()=>MV_SHEET_OK===true,null,{timeout:20000});
+  await p.waitForFunction(()=>MV_FIG_OK===true,null,{timeout:20000});
 
   const r=await p.evaluate(()=>{
     const c=document.createElement('canvas');
@@ -138,6 +139,74 @@ const T=(n,r)=>{const ok=!!r&&!(typeof r==='string'&&r[0]==='!');
       ? 'x='+geo.stand.armF[0] : '!x='+geo.stand.armF[0]);
   T('배트가 서 있다', Math.abs(geo.stand.bat-Math.PI)<0.9
       ? 'bat='+geo.stand.bat : '!bat='+geo.stand.bat);
+
+  /* ---- 통짜 그림 (타자·투수) ----
+     [제보] "미안한데 투수 타자는 이렇게 연결 되어야지.."
+     화면에서 제일 큰 두 사람은 관절 조립을 그만두고 그림 한 장으로 그린다.
+     그림이 끊겨 있으면(알파 구멍) 또 몸이 갈라져 보이니 여기서도 검사한다. */
+  console.log('\n[통짜 그림]');
+  const fig=await p.evaluate(()=>{
+    const c=document.createElement('canvas');
+    c.width=MV_FIG.naturalWidth; c.height=MV_FIG.naturalHeight;
+    const q=c.getContext('2d'); q.drawImage(MV_FIG,0,0);
+    const W=c.width,H=c.height,d=q.getImageData(0,0,W,H).data;
+    const A=(x,y)=>d[(y*W+x)*4+3];
+    const seen=new Uint8Array(W*H), st=[];
+    const push=(x,y)=>{ const i=y*W+x; if(!seen[i]&&A(x,y)<100){seen[i]=1;st.push(i);} };
+    for(let x=0;x<W;x++){ push(x,0); push(x,H-1); }
+    for(let y=0;y<H;y++){ push(0,y); push(W-1,y); }
+    while(st.length){ const i=st.pop(), x=i%W, y=(i-x)/W;
+      if(x>0)push(x-1,y); if(x<W-1)push(x+1,y);
+      if(y>0)push(x,y-1); if(y<H-1)push(x,y+1); }
+    let holes=0;
+    for(let y=0;y<H;y++)for(let x=0;x<W;x++) if(A(x,y)<100&&!seen[y*W+x]) holes++;
+    /* 그림에서 배트를 지웠는지 — 손잡이와 배트 끝 중간이 비어 있어야 한다 */
+    const Fb=MV_FIGS.bat;
+    const mid=A(Math.round(Fb[0]+60), Math.round(Fb[1]+88));
+    /* 발바닥이 상자 맨 아래에 붙어 있는지 */
+    const anch={bat:MV_FIG_ANCH.bat, pit:MV_FIG_ANCH.pit};
+    return {W,H,holes,batMid:mid,anch,
+      poses:Object.keys(MV_FIG_POSE),
+      hasBat:MV_FIG_POSE.stand[4]!=null&&MV_FIG_POSE.swing[4]!=null,
+      batTurn:(MV_FIG_POSE.stand[4]!=null&&MV_FIG_POSE.swing[4]!=null)
+        ? Math.abs(MV_FIG_POSE.stand[4]-MV_FIG_POSE.swing[4]) : 0};
+  });
+  T(`통짜 그림이 붙어 있다 (${fig.W}x${fig.H})`, fig.W>0&&fig.H>0);
+  T('그림 안쪽에 뚫린 구멍이 없다', fig.holes===0?'0개':'!'+fig.holes+'개');
+  T('타자 그림에서 배트를 지웠다', fig.batMid<60?`a=${fig.batMid}`:`!아직 배트가 있다 a=${fig.batMid}`);
+  T('배트를 따로 돌린다 (자세마다 각도)', fig.hasBat && fig.batTurn>1.5
+      ? `${(fig.batTurn*180/Math.PI).toFixed(0)}도 돈다` : '!배트가 안 돈다');
+  T('발바닥이 상자 맨 아래다', fig.anch.bat[2]>0.99&&fig.anch.pit[2]>0.99
+      ? `타자 ${fig.anch.bat[2]} · 투수 ${fig.anch.pit[2]}` : '!'+JSON.stringify(fig.anch));
+
+  const place=await p.evaluate(()=>{
+    /* 발바닥이 정확히 (x,y) 에 오는지 — 캔버스에 그려서 실제로 재본다 */
+    const c=document.createElement('canvas'); c.width=400; c.height=400;
+    const g=c.getContext('2d');
+    const u={cap:'#2f5fb0',sh:'#eef2f8',pants:'#dfe4ec',st:'rgba(47,95,176,.35)',gl:'#5b3a1e'};
+    const out={};
+    [['bat','stand'],['pit','rel'],['pit','idle']].forEach(([k,pose])=>{
+      g.clearRect(0,0,400,400);
+      mvFig(g,k,200,300,200,u,pose,false);
+      const d=g.getImageData(0,0,400,400).data;
+      let top=-1,bot=-1,minx=999,maxx=-1;
+      for(let y=0;y<400;y++)for(let x=0;x<400;x++){
+        if(d[(y*400+x)*4+3]>40){ if(top<0)top=y; bot=y;
+          if(x<minx)minx=x; if(x>maxx)maxx=x; } }
+      out[k+':'+pose]={top,bot,minx,maxx};
+    });
+    return out;
+  });
+  Object.keys(place).forEach(k=>{
+    const o=place[k];
+    /* 발바닥 밑에 그림자 타원(반지름 h*0.075=15px)을 깔아서 그만큼 더 나온다 */
+    T(`${k} — 발이 바닥선에 선다`, Math.abs(o.bot-300)<=17 ? `아래끝 ${o.bot}` : `!아래끝 ${o.bot}`);
+  });
+  T('세트 자세는 스트라이드보다 다리가 좁다',
+    (place['pit:idle'].maxx-place['pit:idle'].minx) <
+    (place['pit:rel'].maxx-place['pit:rel'].minx)-10
+      ? `${place['pit:idle'].maxx-place['pit:idle'].minx}px < ${place['pit:rel'].maxx-place['pit:rel'].minx}px`
+      : '!다리 폭이 그대로다');
 
   await p.close();
 
