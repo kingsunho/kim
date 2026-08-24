@@ -888,6 +888,31 @@ table.stand td.nm{text-align:left;font-weight:700;font-size:12px}
   70%{transform:translate(-2px,-1px)}}
 .mound.impact .szone{border-color:rgba(255,220,120,.9)}
 /* 포수 미트가 그냥 갈색 동그라미로 보여서 뭔지 몰랐다 — 글러브 모양 + 이름 */
+.bat-info{background:linear-gradient(135deg,rgba(232,118,44,.10),var(--panel));
+  border:1px solid var(--line);border-radius:9px;padding:7px 9px;margin:7px 0}
+.bi-top{display:flex;align-items:baseline;gap:6px}
+.bi-top b{font-size:14px;font-weight:900;color:var(--tx)}
+.bi-top em{font-style:normal;font-size:10px;color:var(--dm);
+  background:var(--panel2);border-radius:4px;padding:1px 5px}
+.bi-top em.lh{color:#7fc4d8;background:rgba(127,196,216,.15)}
+.bi-r{font-size:10.5px;color:var(--dim);margin-top:3px}
+.bi-t{font-size:10.5px;color:var(--gold);margin-top:2px}
+.chase{margin:8px 0 2px}
+.chase>span{display:block;font-size:10.5px;color:var(--dm);margin-bottom:4px}
+.chase-row{display:flex;gap:5px}
+.chb{flex:1;padding:9px 4px;border-radius:8px;font-size:11.5px;font-weight:700;
+  background:var(--panel);border:1px dashed #3d4855;color:var(--dim)}
+.chb:active{background:var(--panel2)}
+.argue{background:linear-gradient(135deg,rgba(226,192,90,.16),var(--panel2));
+  border:1px solid rgba(226,192,90,.45);border-radius:10px;padding:9px;margin-bottom:9px}
+.argue>span{display:block;font-size:12px;color:var(--tx);line-height:1.5}
+.argue b{color:#e2c05a}
+.argue-row{display:flex;gap:5px;margin-top:7px}
+.argb{flex:1;padding:9px 4px;border-radius:8px;font-size:11.5px;font-weight:800;
+  background:var(--panel);border:1px solid var(--line);color:var(--tx)}
+.argb.hot{background:rgba(224,138,112,.16);border-color:rgba(224,138,112,.5);color:#e08a70}
+.argb.ghost{color:var(--dm);font-weight:600}
+.argb:disabled{opacity:.4}
 .pt-row.picked{outline:2px solid rgba(232,118,44,.75);outline-offset:-2px;
   background:rgba(232,118,44,.10)}
 .pt-main,.pt-n{cursor:pointer}
@@ -6325,8 +6350,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.24.0';
-const APP_VERSION_NOTE = '구속 · 로테이션 터치 · 라인업 동기화';
+const APP_VERSION = '2.25.0';
+const APP_VERSION_NOTE = '심판 오심·항의 · 유인구 · 구종별 타격';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6347,6 +6372,17 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.25.0', t:'심판 오심·항의 · 유인구 · 구종별 타격', items:[
+    '심판이 오락가락한다. 애매한 코스는 11%, 한가운데도 3% 확률로 뒤집힌다',
+    '우리가 손해 본 오심에는 항의할 수 있다. 감독 액션을 하나 쓴다',
+    '물병 걷어차기가 항의 수단이 됐다. 먹힐 확률은 높지만 심판이 등을 돌릴 위험도 크다',
+    '항의가 먹히면 그 경기 내내 심판이 우리 쪽으로 조금 기운다. 안 먹히면 반대다',
+    '유인구 — 높게·낮게·바깥쪽·몸쪽으로 일부러 뺄 수 있다. 2스트라이크에 변화구면 잘 속는다',
+    '맞은 구종이 결과에 반영된다. 직구는 잘 뻗고(파워 x1.16) 포크는 눌려 맞는다(x0.82)',
+    '투수일 때 상대 타자 정보가 나온다 — 몇 번 타자, 좌우, 컨택·파워·선구·주루, 오늘 성적',
+    '높은 가운데 코스만 색이 없던 것도 고쳤다',
+    '후반부터 하이라이트가 안 나오던 것도 고쳤다. 한 경기 14장면에서 끊고 있었다',
+  ]},
   {v:'2.24.0', t:'구속 · 로테이션 터치 · 라인업 동기화', items:[
     '구속이 매번 똑같이 나오던 걸 고쳤다. 공마다 다르고 최고 구속은 어쩌다 한 번 나온다',
     '실제 스피드건 기록에 맞췄다 — 송승민 최고 115, 김준희 112. 구위 낮은 투수는 90대다',
@@ -8108,12 +8144,22 @@ LiveGame.prototype.countText = function(){
 /* 공 하나의 결과를 반영한다.
    kind: 'ball' | 'strike' | 'foul' | 'contact'
    반환: null(계속) | {end:'BB'|'K'|'contact'}                            */
-LiveGame.prototype.pitchResult = function(kind, q){
+/* 맞았을 때 구종이 결과에 미치는 영향.
+   직구는 잘 뻗고, 떨어지는 공은 땅볼이 되기 쉽다.                    */
+const CONTACT_BY_PITCH={
+  ff:{pow:1.16, babip:1.04},      // 직구 — 정타면 멀리 간다
+  sl:{pow:0.92, babip:0.98},      // 슬라이더 — 배트 끝에 맞기 쉽다
+  cu:{pow:0.86, babip:0.95},      // 커브 — 위에서 눌러 치게 된다
+  ch:{pow:0.90, babip:1.00},      // 체인지업 — 앞에서 걸린다
+  fk:{pow:0.82, babip:0.93},      // 포크 — 땅볼
+};
+LiveGame.prototype.pitchResult = function(kind, q, type){
   const c=this.count();
   if(kind==='ball'){ c.b++; if(c.b>=4){ this._forceRes={type:'BB'}; return {end:'BB'}; } return null; }
   if(kind==='strike'){ c.s++; if(c.s>=3){ this._forceRes={type:'K'}; return {end:'K'}; } return null; }
   if(kind==='foul'){ if(c.s<2)c.s++; return null; }
-  if(kind==='contact'){ this._contact=true; this._contactQ=q; return {end:'contact'}; }
+  if(kind==='contact'){ this._contact=true; this._contactQ=q;
+    this._contactType=type||'ff'; return {end:'contact'}; }
   return null;
 };
 
@@ -8126,7 +8172,14 @@ LiveGame.prototype.consumePlayMods = function(off, def){
     const q=this._contactQ==null?0.6:this._contactQ;
     out.babip=1+(q-0.5)*0.30;
     out.pow=1+Math.max(0,q-0.7)*0.75;
-    this._contact=false; this._contactQ=null;
+    /* [요청] "변화구 던지면 쳤을 때랑 직구 던지면 쳤을 때랑 뭔가 있어야
+       더 머리를 쓰면서 플레이할 듯"
+       직구는 맞으면 잘 뻗는다 — 속도가 그대로 반사된다.
+       변화구는 배트 중심을 비껴 맞기 쉬워서 힘이 덜 실린다.
+       대신 변화구는 애초에 맞히기가 어렵다(코스 쪽에서 이미 반영된다). */
+    const ct=CONTACT_BY_PITCH[this._contactType||'ff'];
+    if(ct){ out.pow*=ct.pow; out.babip*=ct.babip; }
+    this._contact=false; this._contactQ=null; this._contactType=null;
     this._swingQ=null; this._pitchHit=null;
     return out;
   }
@@ -13746,7 +13799,10 @@ function sceneWorth(d){
   if(!d||!LIVE||!LIVE.manual) return false;
   const mode=ST.sceneMode||'key';
   if(mode==='off') return false;
-  if((LIVE._scenes||0)>=14 && d.kind!=='HR') return false;
+  /* [제보] "후반부턴 치거나 그러면 하이라이트 장면이 안 나온다"
+     한 경기 14장면에서 끊고 있었다. 우리 리그는 한 경기 20점씩도 나서
+     5회쯤이면 상한에 걸렸다. 홈런·득점은 끝까지 보여준다.            */
+  if((LIVE._scenes||0)>=40) return false;
   if(mode==='all') return true;
   const K=d.kind;
   if(K==='HR'||K==='3B'||K==='DP'||K==='E'||K==='AS') return true;
@@ -14871,6 +14927,80 @@ function windup(mound, cb){
     setTimeout(()=>mvPaint(mound,{pit:'idle'}),520);
   },300);
 }
+/* ---------- 심판 항의 ----------
+   [요청] "심판 판정에 항의하기 (물병 걷어차기를 이런 데 활용하면 좋겠네)"
+   오심이 나면 항의 버튼이 뜬다. 감독 액션을 한 번 쓰고, 결과는 셋이다.
+   먹히면 다음 판정이 우리 쪽으로 조금 기울고, 안 먹히면 사기가 깎이고,
+   심하면 심판이 더 짜게 본다. 물병을 차면 세게 항의하는 대신 위험하다. */
+const ARGUE_OK=[
+  '심판이 잠깐 멈칫하더니 고개를 끄덕였다',
+  '옆 심판이랑 얘기하더니 다음부터는 좀 봐주는 눈치다',
+  '"알겠습니다" 하고 넘어갔다. 얼굴은 굳었다',
+];
+const ARGUE_NO=[
+  '심판이 손사래를 쳤다. "판정은 판정입니다"',
+  '들은 척도 안 한다',
+  '"한 번만 더 하시면 퇴장입니다"',
+];
+const ARGUE_BOTTLE=[
+  '물병이 그라운드로 날아갔다. 양 팀이 다 쳐다본다',
+  '더그아웃 앞 물병을 걷어찼다. 소리가 크게 났다',
+];
+function showArgue(box, mv, redraw){
+  if(!LIVE||!LIVE._badCall) return;
+  const bc=LIVE._badCall;
+  const wrap=$('#decision'); if(!wrap) return;
+  let bar=wrap.querySelector('.argue');
+  if(bar) bar.remove();
+  bar=el('div','argue');
+  bar.innerHTML=`<span>심판 판정이 이상하다 — <b>${bc.truth==='ball'?'빠진 공을 스트라이크':'들어온 공을 볼'}</b>로 봤다</span>`;
+  const row=el('div','argue-row');
+  const left=(LIVE.mgr&&LIVE.mgr.left)||0;
+  const b1=el('button','argb',`항의한다 (감독 액션 ${left})`);
+  b1.disabled=left<=0;
+  b1.onclick=()=>doArgue(false, bar, redraw);
+  const b2=el('button','argb hot',`물병을 걷어찬다`);
+  b2.disabled=left<=0;
+  b2.onclick=()=>doArgue(true, bar, redraw);
+  const b3=el('button','argb ghost','넘어간다');
+  b3.onclick=()=>{ LIVE._badCall=null; bar.remove(); };
+  row.appendChild(b1); row.appendChild(b2); row.appendChild(b3);
+  bar.appendChild(row);
+  wrap.insertBefore(bar, wrap.firstChild);
+}
+function doArgue(bottle, bar, redraw){
+  if(!LIVE) return;
+  if(!LIVE.mgr || LIVE.mgr.left<=0){ toast('감독 액션이 없다'); return; }
+  LIVE.mgr.left--;
+  LIVE._badCall=null;
+  const rng=LIVE.rng;
+  /* 물병까지 차면 먹힐 확률은 오르지만 심판이 등을 돌릴 위험도 크다 */
+  const p=bottle?0.46:0.34;
+  const r=rng();
+  let txt, mood, tone;
+  if(r<p){
+    LIVE._umpBias=Math.min(3,(LIVE._umpBias||0)+1);   // 다음 판정이 우리 쪽으로
+    txt=pickOne(bottle?ARGUE_BOTTLE:ARGUE_OK,rng)+(bottle?' — 그래도 먹혔다':'');
+    mood='ok'; tone='#7fc48f';
+    LIVE.log.push({t:'mgr',text:'심판 항의 — '+txt});
+  } else if(bottle && r>0.88){
+    LIVE._umpBias=Math.max(-3,(LIVE._umpBias||0)-2); // 완전히 등을 돌렸다
+    txt=pickOne(ARGUE_BOTTLE,rng)+' — 심판이 단단히 벼르고 있다';
+    mood='bad'; tone='#e08a70';
+    LIVE.log.push({t:'mgr',text:'심판 항의 실패 — '+txt});
+  } else {
+    LIVE._umpBias=Math.max(-3,(LIVE._umpBias||0)-1);
+    txt=pickOne(ARGUE_NO,rng);
+    mood='bad'; tone='#e08a70';
+    LIVE.log.push({t:'mgr',text:'심판 항의 — '+txt});
+  }
+  if(bar){ bar.innerHTML=`<span style="color:${tone}">${txt}</span>`;
+    setTimeout(()=>{ if(bar.parentNode)bar.remove(); },2200); }
+  flushLog();
+  if(redraw) redraw();
+  toast(mood==='ok'?'항의가 먹혔다':'항의가 안 먹혔다');
+}
+
 /* 구속 — 실제 스피드건 기록에 맞췄다.
    [제보] "김준희가 113이 최고구속이었고(최대로 끌어내야) 송승민은 115.
    사회인은 100만 일정하게 내도 공이 진짜 빠른 편인 거임"
@@ -15025,7 +15155,7 @@ function renderSwing(box, d){
   box.appendChild(w);
 
   const ars=arsenalOf(myP);
-  let anim=null, done=false, phase='ready', inZone=true, resolved=false;
+  let anim=null, done=false, phase='ready', inZone=true, resolved=false, curType='ff';
 
   const paint=()=>{
     const c=LIVE.count();
@@ -15044,6 +15174,7 @@ function renderSwing(box, d){
   const nextPitch=()=>{
     if(done||resolved)return;
     const type=ars[(LIVE.rng()*ars.length)|0];
+    curType=type;
     const T=PITCH_TYPES[type];
     /* 제구가 나쁘면 존 밖으로 빠진다 — 그게 '볼'이다 */
     const ctlOk=LIVE.rng() < Math.max(0.30,Math.min(0.86,(myP.ctl+18)/78));
@@ -15077,18 +15208,33 @@ function renderSwing(box, d){
     hit.disabled=true; take.disabled=true;
     let kind, pre, col;
     if(q==null){
-      kind = inZone?'strike':'ball';
-      pre  = inZone?'스트라이크':'볼';
-      col  = inZone?'#e08a70':'#7fc48f';
+      /* 타석에서도 심판은 사람이다. 억울하면 항의할 수 있다. */
+      const truth = inZone?'strike':'ball';
+      const bias=LIVE._umpBias||0;
+      const good = (truth==='strike');            // 뒤집히면 타자인 우리가 이득
+      const mp=0.08*(good?(1+bias*0.35):Math.max(0.2,1-bias*0.35));
+      const miss=LIVE.rng()<mp;
+      kind = miss ? (truth==='ball'?'strike':'ball') : truth;
+      if(miss && !good){
+        LIVE._badCall={ truth, called:kind, pa:LIVE.paSeq };
+        pre='스트라이크?! (빠진 공이었다)'; col='#e2c05a';
+      } else if(miss){
+        pre='볼! (사실 들어왔다)'; col='#e2c05a';
+        LIVE.log.push({t:'mgr',text:'심판이 우리 쪽으로 봐줬다 — 들어온 공이 볼'});
+      } else {
+        pre  = inZone?'스트라이크':'볼';
+        col  = inZone?'#e08a70':'#7fc48f';
+      }
     } else if(q<0.25){
       kind='strike'; pre='헛스윙'; col='#e08a70';
     } else {
       kind='contact'; pre = q>=0.75?'정타!':'맞혔다'; col='#7fc48f';
     }
-    const r=LIVE.pitchResult(kind,q);
+    const r=LIVE.pitchResult(kind,q,curType);
     paint();
     if(!r){                                   // 타석이 안 끝났다 — 다음 공
       moundResult(mv,pre,col);
+      if(LIVE._badCall && LIVE._badCall.pa===LIVE.paSeq) showArgue(box, mv, paint);
       setTimeout(()=>{ if(!done&&!resolved){ phase='wait'; nextPitch(); } },720);
       return;
     }
@@ -15169,11 +15315,23 @@ function renderPitch(box, d){
     const bat=off.team.players.find(x=>x.id===slot.id);
     const c=LIVE.count();
     const sharp=Math.round(Math.max(15,Math.min(100,(p.ctl-20)/45*100)));
+    /* [요청] "투수일 때 상대 타자 몇 번 타자고 오늘 성적 몇이고 이름이 나오게"
+       거를지 승부할지 정하려면 이게 있어야 한다.                      */
+    const ord=(off.slots||[]).findIndex(x=>x.id===(bat&&bat.id));
+    const tb=(bat&&LIVE.box[bat.id])||null;
+    const todayS=(tb&&tb.pa)
+      ? `${tb.ab}타수 ${tb.h}안타${tb.hr?` · 홈런 ${tb.hr}`:''}${tb.d2+tb.d3?` · 장타 ${tb.d2+tb.d3}`:''}`+
+        `${tb.bb+tb.hbp?` · ${tb.bb+tb.hbp}사사구`:''}${tb.k?` · 삼진 ${tb.k}`:''}`
+      : '첫 타석';
     head.innerHTML=`<div class="pl-t">투구 · ${c.b}볼 ${c.s}스트라이크</div>
       <div class="pl-sub">${LIVE.inning}회 ${LIVE.outs}아웃 ·
-        마운드 <b style="color:#e2eaf5">${p.name}</b> (구위 ${p.stf} 제구 ${p.ctl})
-        · 상대 타석 ${bat?bat.name:'—'}${bat&&bat.bats==='L'?' <b style="color:#7fc4d8">좌타</b>':(bat?' <span style="color:#8b97a6">우타</span>':'')}<br>
-        ${c.b===3?'<b style="color:#e08a70">3볼이다. 하나만 더 빠지면 볼넷</b>'
+        마운드 <b style="color:#e2eaf5">${p.name}</b> (구위 ${p.stf} 제구 ${p.ctl})</div>
+      ${bat?`<div class="bat-info">
+        <div class="bi-top"><b>${ord>=0?`${ord+1}번 `:''}${bat.name}</b>
+          <em class="${bat.bats==='L'?'lh':''}">${bat.bats==='L'?'좌타':'우타'}</em></div>
+        <div class="bi-r">컨택 ${Math.round(bat.con)} · 파워 ${Math.round(bat.pow)} · 선구 ${Math.round(bat.eye)} · 주루 ${Math.round(bat.spd)}</div>
+        <div class="bi-t">오늘 ${todayS}</div></div>`:''}
+      <div class="pl-sub">${c.b===3?'<b style="color:#e08a70">3볼이다. 하나만 더 빠지면 볼넷</b>'
          :(c.s===2?'<b style="color:#7fc48f">2스트라이크. 유인구를 던져볼 만하다</b>'
          :'구종과 코스를 고르면 던진다.')} 제구 성공률 약 ${sharp}%.</div>`;
     const cb=mv.querySelector('#cnt'); if(cb) cb.innerHTML=`<b>${c.b}</b>-<b>${c.s}</b>`;
@@ -15202,7 +15360,7 @@ function renderPitch(box, d){
       ` · 최고 <b>${Math.round(topKmh(p))}km/h</b>`;
   };
 
-  const throwTo=(r,c2)=>{
+  const throwTo=(r,c2,isChase)=>{
     if(busy||resolved)return; busy=true;
     const p=LIVE.curPitcher(def);
     const slot=off.slots[off.order%9];
@@ -15210,9 +15368,10 @@ function renderPitch(box, d){
     const T=PITCH_TYPES[type];
     const sharpF=Math.max(0.25,Math.min(1,(p.ctl-18)/42));
     const corner=(r!==1||c2!==1);
-    const ok=LIVE.rng() < (corner?0.42:0.72)*sharpF*(1-T.hard);
-    /* 빗나가면 옆 칸 — 크게 빗나가면 존 밖(볼)까지 간다 */
-    let ax=c2, ay=r, out=false;
+    /* 유인구는 애초에 빼려고 던지는 공이라 '제구 실패' 라는 게 없다.
+       대신 존에 안 들어가니 타자가 참으면 무조건 볼이다.              */
+    const ok= isChase ? true : (LIVE.rng() < (corner?0.42:0.72)*sharpF*(1-T.hard));
+    let ax=c2, ay=r, out=!!isChase;
     if(!ok){
       const bad=LIVE.rng()<0.45;
       if(bad){ out=true;
@@ -15235,21 +15394,47 @@ function renderPitch(box, d){
         if(cnt.s===2) sw+=0.22;                     // 투 스트라이크면 커트라도
         if(cnt.b===3) sw-=0.18;                     // 쓰리볼이면 골라 나간다
         sw -= (eye-40)*0.004;
+        /* 유인구는 변화구일수록, 2스트라이크일수록 잘 속는다 */
+        if(isChase){ sw += (T.hard>0?0.10:0) + (cnt.s===2?0.14:0) - (cnt.b>=2?0.10:0); }
         const swung = LIVE.rng() < Math.max(0.05,Math.min(0.92,sw));
         let kind, pre, col;
         if(!swung){
-          kind = out?'ball':'strike';
-          pre  = out?'볼':'스트라이크 (안 휘둘렀다)';
-          col  = out?'#e08a70':'#7fc48f';
+          /* [요청] "실제 심판 판정이 오락가락한 것처럼 그것도 넣자.
+             볼인데 스트라이크라고 하고 스트라이크인데 볼이라고 해서
+             심판 판정에 항의하기"
+             4부리그 심판은 사람이다. 존 경계에서 가끔 뒤집힌다.       */
+          const truth = out?'ball':'strike';
+          const edge = out || corner;                 // 애매한 코스일수록 잘 뒤집힌다
+          /* 항의가 먹히면 심판이 우리 쪽으로 조금 기운다(_umpBias) */
+          const bias=LIVE._umpBias||0;
+          const good = (truth==='ball');              // 뒤집히면 우리(투수)에게 이득
+          const mp=(edge?0.11:0.03)*(good?(1+bias*0.35):Math.max(0.2,1-bias*0.35));
+          const miss = LIVE.rng() < mp;
+          kind = miss ? (truth==='ball'?'strike':'ball') : truth;
+          if(miss && !good){
+            // 들어온 공을 볼로 봤다 — 우리 손해다. 항의할 수 있다.
+            LIVE._badCall={ truth, called:kind, pa:LIVE.paSeq };
+            pre = '볼?! (들어온 공이었다)';
+            col = '#e2c05a';
+          } else if(miss){
+            pre = '스트라이크! (사실 빠졌다)';
+            col = '#e2c05a';
+            LIVE.log.push({t:'mgr',text:'심판이 후하게 봐줬다 — 빠진 공이 스트라이크'});
+          } else {
+            pre  = out?'볼':'스트라이크 (안 휘둘렀다)';
+            col  = out?'#e08a70':'#7fc48f';
+          }
         } else {
           const hitP=Math.max(0.18,Math.min(0.86,0.42+(con-40)*0.006-(out?0.20:0)-(corner&&ok?0.10:0)));
           if(LIVE.rng()<hitP){ kind='contact'; pre='맞았다'; col='#e08a70'; }
           else { kind='strike'; pre='헛스윙!'; col='#7fc48f'; }
         }
-        const res=LIVE.pitchResult(kind, kind==='contact'?0.55:null);
+        const res=LIVE.pitchResult(kind, kind==='contact'?0.55:null, type);
         draw();
         if(!res){
           moundResult(mv,pre,col);
+          /* 오심이면 항의할 수 있다 — 감독 액션을 하나 쓴다 */
+          if(LIVE._badCall && LIVE._badCall.pa===LIVE.paSeq) showArgue(box, mv, draw);
           busy=false;
           setTimeout(()=>{ if(!resolved) draw(); },700);
           return;
@@ -15262,8 +15447,25 @@ function renderPitch(box, d){
     });
   };
 
+  /* [요청] "투수 볼도 노려서 던질 수 있게 해줘야 할 듯. 변화구"
+     2스트라이크에서 일부러 빼는 공. 스트라이크는 안 되지만 타자가 속으면
+     헛스윙이고, 참으면 볼이다. 존 안으로 던지는 것보다 제구가 쉽다.   */
+  const chase=el('div','chase');
+  chase.innerHTML='<span>유인구 — 일부러 뺀다</span>';
+  const crow=el('div','chase-row');
+  [['높게',1,-1],['낮게',1,3],['바깥쪽',3,1],['몸쪽',-1,1]].forEach(([n,cx,cy])=>{
+    const b3=el('button','chb',n);
+    b3.onclick=()=>throwTo(cy,cx,true);
+    crow.appendChild(b3);
+  });
+  chase.appendChild(crow);
+  w.insertBefore(chase, skip);      // 존 바로 아래에 붙인다
+
   for(let r=0;r<3;r++)for(let c2=0;c2<3;c2++){
-    const b2=el('button',(r===1&&c2===1)?'hot':((r===2||c2===0||c2===2)?'cold':''),NAMES[r][c2]);
+    /* [제보] "중앙 하이볼 던질 때는 왜 거긴 색깔 안 나오지"
+       높은 가운데(0,1)만 클래스가 안 붙어서 혼자 무색이었다.
+       한가운데만 hot, 나머지 여덟 칸은 전부 cold 다.                 */
+    const b2=el('button',(r===1&&c2===1)?'hot':'cold',NAMES[r][c2]);
     b2.onclick=()=>throwTo(r,c2);
     g.appendChild(b2);
   }

@@ -220,8 +220,11 @@ const txt=()=>d.querySelector('#view').textContent;
       if(!document.getElementById('decision')){var b=document.createElement('div');b.id='decision';document.body.appendChild(b);}
       var g=0; while(!LIVE.def().isUser && g++<200){ if(LIVE.pending)LIVE.applyDecision('change'); LIVE.step(); }
       showDecision({kind:'pitch',label:'투구'}); })()`);
-    const t=d.querySelector('#decision').textContent;
-    return /(좌타|우타)/.test(t) ? (t.match(/상대 타석 [^\n]{0,12}/)||[''])[0].trim() : '!표시 없다';
+    /* [2.25.0] 타자 정보가 머리말에서 전용 카드(.bat-info)로 옮겨갔다 */
+    const bi=d.querySelector('#decision .bat-info');
+    if(!bi) return '!타자 카드가 없다';
+    const t=bi.querySelector('.bi-top').textContent.replace(/\s+/g,' ').trim();
+    return /(좌타|우타)/.test(t) ? t : `!${t}`;
   });
   T('변화구가 어느 쪽으로 휘는지 알려준다', ()=>{
     const t=d.querySelector('.zinfo').textContent;
