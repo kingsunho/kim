@@ -228,6 +228,40 @@ const txt=()=>d.querySelector('#view').textContent;
     return /(바깥으로|몸쪽으로) (흘러|파고)/.test(t) ? t.split('한가운데')[0].trim().slice(0,52) : `!${t.slice(0,40)}`;
   });
 
+  console.log('\n[그림 해상도 · 플레이 요소]');
+  T('캔버스를 화면 해상도로 그린다', ()=>{
+    /* [제보] "픽셀 단위가 너무 잘 보여"
+       작게 그려서 확대하면 블록이 보인다. 논리 좌표의 MVS 배로 만든다. */
+    const m=ev(`(function(){var m=moundView({});var c=m.querySelector('.mv-cv');
+      return c.width+'x'+c.height;})()`);
+    return m===(480*3)+'x'+(270*3) ? m : `!${m}`;
+  });
+  T('확대 픽셀 처리(pixelated)를 안 쓴다', ()=>{
+    const html=ev("document.documentElement.innerHTML");
+    const mv=(html.match(/\.mv-cv\{[^}]*\}/)||[''])[0];
+    const ps=(html.match(/\.ps-cv\{[^}]*\}/)||[''])[0];
+    return (!/pixelated/.test(mv)&&!/pixelated/.test(ps)) ? '두 캔버스 다 부드럽게' : '!아직 pixelated';
+  });
+  T('선수를 곡선으로 그린다', ()=>{
+    const src=ev("String(mvGuy)");
+    const has=['arc(','quadraticCurveTo','createLinearGradient'].filter(k=>src.indexOf(k)>=0);
+    return has.length===3 ? '곡선·그라데이션' : `!${has.join(',')}`;
+  });
+  T('구속이 구위·구종을 따라간다', ()=>{
+    const fast=ev("pitchKmh({stf:70},'ff')"), slow=ev("pitchKmh({stf:30},'ff')");
+    const cu=ev("pitchKmh({stf:70},'cu')");
+    return (fast>slow && cu<fast && fast<150 && slow>100)
+      ? `구위70 직구 ${fast} · 구위30 ${slow} · 커브 ${cu}` : `!${fast}/${slow}/${cu}`;
+  });
+  T('타이밍 게이지가 타격 화면에 있다', ()=>{
+    const src=ev("String(renderSwing)");
+    return /swg/.test(src) && /onTick/.test(src) ? '게이지 + 진행 표시' : '!없다';
+  });
+  T('스윙 순간이 눈금으로 남는다', ()=>{
+    const src=ev("String(renderSwing)");
+    return /swg-mark/.test(src) ? '눈금 표시' : '!없다';
+  });
+
   console.log(errs.length?`\n❌ ${errs.length}건`:'\n✅ 이상 없음');
   process.exit(errs.length?1:0);
 })();
