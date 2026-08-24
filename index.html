@@ -983,21 +983,22 @@ table.stand td.nm{text-align:left;font-weight:700;font-size:12px}
 .wi-sc.w b:first-of-type{color:#7fc48f}
 .wi-sc.l b:first-of-type{color:#e08a70}
 .wi-vd{text-align:center;font-size:12px;font-weight:800;color:#c9a227;margin-bottom:8px}
-/* [제보] "시뮬레이션 깨지는데요? 안타 에러 점수"
-   이닝 칸을 담은 <i> 가 flex 기본값(줄어들 수 있음)이라, 폭이 모자라면
-   <i> 박스만 3칸으로 쪼그라들고 안에 든 칸들은 그대로 밖으로 삐져나왔다.
-   그 위에 R·H·E 가 겹쳐 찍혀서 4·5·6회 점수가 안 보였다.
-   이제 줄을 max-content 로 두고 <i> 를 안 줄인다 — 모자라면 가로로 민다. */
+/* [제보] "만약에 깨진다니깐" (아이폰 사파리)
+   이닝 칸을 <i> 로 한 겹 더 감싸놨던 게 화근이었다. 그 <i> 가 쪼그라들면
+   안에 든 칸들이 밖으로 삐져나오고, 그 위에 R·H·E 가 겹쳐 찍혔다.
+   flex:0 0 auto 로 막아봤지만 사파리에서는 그대로였다.
+
+   그래서 **감싸는 상자를 아예 없앴다.** 이름·이닝칸·R·H·E 가 전부 한 줄의
+   형제다. 줄어들 중간 상자가 없으니 겹칠 수가 없다. 모자라면 가로로 민다. */
 .wi-line{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .wl-r{display:flex;align-items:center;gap:2px;font-size:10px;font-weight:800;
   color:#cfe0ee;line-height:1.9;white-space:nowrap;width:max-content;min-width:100%}
-.wl-r span{flex:0 0 58px;overflow:hidden;text-overflow:ellipsis}
-.wl-r i{flex:0 0 auto;display:flex;gap:2px;font-style:normal}
-.wl-r i u,.wl-r>b{flex:0 0 18px;text-align:center;text-decoration:none;
-  background:#131a22;border-radius:3px}
+.wl-r>span{flex:0 0 58px;min-width:58px;overflow:hidden;text-overflow:ellipsis}
+.wl-r>u,.wl-r>b{flex:0 0 18px;min-width:18px;overflow:hidden;
+  text-align:center;text-decoration:none;background:#131a22;border-radius:3px}
 .wl-r>b{color:#ffd15c;margin-left:2px}
 .wl-h{color:#6f7c8c}
-.wl-h i u,.wl-h>b{background:transparent}
+.wl-h>u,.wl-h>b{background:transparent}
 .wi-t{width:100%;border-collapse:collapse;font-size:11px;margin-top:2px}
 .wi-t th{color:#6f7c8c;font-weight:700;font-size:9.5px;padding:4px 2px;
   border-bottom:1px solid var(--line);text-align:right}
@@ -1509,7 +1510,13 @@ const LG = {
      실제 2026시즌 팀 유일 홈런도 '좌측 그라운드(인정) 홈런' 이었고
      담장을 넘어간 타구는 시즌 내내 0개였다.
      3루타가 될 타구에서만 굴리고, 발이 느리면 아예 안 된다.        */
-  ITP_BASE: 0.40,        // 3루타 중 이만큼이 그라운드 홈런으로 넘어간다(기준 주력)
+  /* [제보] "시뮬레이션 돌리면 왜 이렇게 홈런이 잘 나와"
+     맞는 말이었다. 배나물(3루타 배수 1.55)에서 우리 팀 빠른 발이 치면
+     3루타의 55% 가 그라운드 홈런으로 넘어가서, 두 경기에 한 번씩 나왔다.
+     구장 배수를 두 번 먹인 게 문제였다 — 배나물은 이미 3루타 자체가
+     1.55배 많은데, 거기서 홈까지 도는 확률에도 또 1.55배를 곱했다.
+     이제 제곱근만 먹이고 기준 확률도 낮췄다. 그라운드 홈런은 드물어야 한다. */
+  ITP_BASE: 0.22,        // 3루타 중 이만큼이 그라운드 홈런으로 넘어간다(기준 주력)
   ITP_MIN_SPD: 50,       // 이보다 느리면 3루에서 멈춘다
 };
 
@@ -1870,7 +1877,7 @@ function simPA(bat,pit,offTeam,defTeam,rng,tac,cond,park,mods){
     if(spdE>=LG.ITP_MIN_SPD){
       const fast=(spdE-LG.ITP_MIN_SPD)/20;                 // 주력이 빠를수록
       const sloppy=Math.exp(-((defTeam._slotDef!=null?defTeam._slotDef:defTeam.mean.def)-46)*0.020);
-      const chance=clamp(LG.ITP_BASE*(0.5+fast)*sloppy*(park.d3||1), 0, 0.55);
+      const chance=clamp(LG.ITP_BASE*(0.5+fast)*sloppy*Math.sqrt(park.d3||1), 0, 0.34);
       if(rng()<chance) return {type:'HR', itp:true};
     }
     return {type:'3B'};
@@ -6452,8 +6459,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.33.0';
-const APP_VERSION_NOTE = '투수가 타자를 향해 던진다 — 팔이 머리 위를 넘어온다';
+const APP_VERSION = '2.33.1';
+const APP_VERSION_NOTE = '만약에 점수판 다시 고침 · 그라운드 홈런이 너무 많던 것';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6474,6 +6481,16 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.33.1', t:'만약에 점수판 다시 고침 · 그라운드 홈런이 너무 많던 것', items:[
+    '[제보] 만약에 이닝별 점수판이 아이폰에서 아직도 겹쳤다',
+    '이닝 칸을 한 겹 더 감싸던 상자를 아예 없앴다. 줄어들 중간 상자가 없으니 겹칠 수가 없다',
+    '칸이 모자라면 가로로 밀어서 본다. 겹치는 것보다 낫다',
+    '[제보] 시뮬레이션 돌리면 홈런이 너무 잘 나왔다. 맞는 말이었다',
+    '배나물야구장에서 빠른 발이 3루타를 치면 절반 넘게 그라운드 홈런이 됐다',
+    '구장 배수를 두 번 먹인 게 문제였다 — 3루타 자체가 1.55배 많은데 홈까지 도는 확률에도 또 1.55배',
+    '이제 제곱근만 먹인다. 그라운드 홈런이 경기당 0.51개에서 0.27개로 줄었다',
+    '실제 2026시즌 팀 홈런은 그라운드 홈런 한 개뿐이었다. 그 정도로 드물어야 맞다',
+  ]},
   {v:'2.33.0', t:'투수가 타자를 향해 던진다 — 팔이 머리 위를 넘어온다', items:[
     '[제보] "투수 → 공 → 타자 → 포수 가 한 축으로 이어져야 한다"',
     '그림 한 장이라 팔이 안 움직여서, 매 프레임 팔 벌리고 서 있는 꼴이었다',
@@ -11853,10 +11870,10 @@ function renderWhatIf(){
       <span>우완좌완</span><b>${S.us.runs}</b><i>:</i><b>${S.them.runs}</b><span>${S.them.team.name}</span>
     </div>
     <div class="wi-vd">${tie?'무승부':(won?'이긴다':'진다')}${r.mercy?' · 콜드게임':''}</div>
-    <div class="wi-line"><div class="wl-r wl-h"><span></span><i>${hd()}</i><b>R</b><b>H</b><b>E</b></div>
-      <div class="wl-r"><span>${WHATIF.home?S.them.team.name:'우완좌완'}</span><i>${cells(r.away)}</i>
+    <div class="wi-line"><div class="wl-r wl-h"><span></span>${hd()}<b>R</b><b>H</b><b>E</b></div>
+      <div class="wl-r"><span>${WHATIF.home?S.them.team.name:'우완좌완'}</span>${cells(r.away)}
         <b>${r.away.runs}</b><b>${r.away.hits}</b><b>${r.away.errs}</b></div>
-      <div class="wl-r"><span>${WHATIF.home?'우완좌완':S.them.team.name}</span><i>${cells(r.home)}</i>
+      <div class="wl-r"><span>${WHATIF.home?'우완좌완':S.them.team.name}</span>${cells(r.home)}
         <b>${r.home.runs}</b><b>${r.home.hits}</b><b>${r.home.errs}</b></div></div>`;
   c.appendChild(sc);
 

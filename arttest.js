@@ -273,7 +273,7 @@ const MVW_=a=>'있음';
     /* 옛 브라우저(삼성 인터넷 구버전 등)는 flex 항목의 min-width:auto 를
        구현하지 않아서 내용보다 더 줄어든다. 그 상황을 강제로 만들어 본다 —
        실제로 제보된 화면이 딱 이 모양이었다. */
-    await q.addStyleTag({content:'.wl-r i{min-width:0}'});
+    await q.addStyleTag({content:'.wl-r>span,.wl-r>u,.wl-r>b{min-width:0}'});
     const r=await q.evaluate(()=>{
       ST.tutDone=true; whatIfInit(); WHATIF.runs=1; WHATIF.res=whatIfRun(1);
       /* 연장까지 가는 최악을 억지로 만들어 본다 */
@@ -286,8 +286,7 @@ const MVW_=a=>'있음';
       if(!rows.length) return {err:'행이 없다'};
       let overlap=0, cells=0;
       rows.forEach(row=>{
-        const i=row.querySelector('i'); if(!i) return;
-        const us=[...i.querySelectorAll('u')].map(u=>u.getBoundingClientRect());
+        const us=[...row.querySelectorAll(':scope>u')].map(u=>u.getBoundingClientRect());
         const bs=[...row.querySelectorAll(':scope>b')].map(x=>x.getBoundingClientRect());
         cells=Math.max(cells,us.length);
         us.forEach(u=>bs.forEach(bb=>{
