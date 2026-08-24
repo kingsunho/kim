@@ -71,7 +71,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   });
   T('유인구는 존 밖 좌표로 던진다', ()=>{
     const src=ev("String(renderPitch)");
-    return /\['높게',1,-1\]/.test(src) && /throwTo\(cy,cx,true\)/.test(src) ? '존 밖 4방향' : '!좌표가 안 맞는다';
+    return /\['높게',1,-1\]/.test(src) && /throwTo\(cy,cx,true,/.test(src) ? '존 밖 4방향' : '!좌표가 안 맞는다';
   });
   T('유인구는 제구 실패가 없다 (일부러 빼는 공)', ()=>{
     const src=ev("String(renderPitch)");

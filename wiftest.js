@@ -108,29 +108,111 @@ const nameOf_=(ev,id)=>ev(`nameOf(${JSON.stringify(id)})`);
       if(/못 나온다|출전 불가|결장/.test(txt)) return '!못 나온다는 말이 뜬다';
       return (n===9) ? ('9명 · 결장 표시 없음 · 결장자 '+benchOut+'명 포함') : '!'+n+'명';
     })()`));
-  T('선발 투수를 고를 수 있다', ()=>{
+  T('투수 순서를 두 명 눌러 바꾼다', ()=>{
     ev("whatIfInit(); go('whatif')");
-    const chips=[...d.querySelectorAll('#view .wi-chip')];
-    if(chips.length<3) return '!투수 칩이 없다';
-    const before=ev("WHATIF.sp");
-    const other=chips.find(b=>!b.classList.contains('on'));
-    other.click();
-    const after=ev("WHATIF.sp");
-    return after&&after!==before ? `${nameOf_(ev,before)} → ${nameOf_(ev,after)}` : '!안 바뀐다';
+    const rows=[...d.querySelectorAll('#view .wi-pr')];
+    if(rows.length<2) return '!투수 순서 목록이 없다';
+    const before=ev("whatIfSp()");
+    rows[0].click(); rows[2].click();
+    const after=ev("whatIfSp()");
+    return after&&after!==before
+      ? `선발 ${nameOf_(ev,before)} → ${nameOf_(ev,after)}` : '!안 바뀐다';
   });
-  T('선발로 올리면 야수 자리에서 빠진다', ()=>ev(`(function(){
+  T('선발이 바뀌면 야수 자리에서 빠진다', ()=>ev(`(function(){
+      whatIfInit(); go('whatif'); wiPen=null;
+      var rows=[].slice.call(document.querySelectorAll('#view .wi-pr'));
+      rows[0].click(); rows[3].click();
+      var sp=whatIfSp();
+      return (WHATIF.useDH && !WHATIF.line.some(function(s){return s.id===sp;}))
+        ? nameOf(sp)+' 마운드만' : '!아직 야수 자리에 있다';
+    })()`));
+  T('구원 순서가 실제 등판 순서다', ()=>ev(`(function(){
       whatIfInit();
-      var vic=WHATIF.line[3].id;          // 4번 타자를 선발로 올린다
-      WHATIF.sp=null; whatIfInit();
-      var id=WHATIF.line[3].id;
-      // 화면을 거치지 않고 같은 규칙을 부른다
+      var r=whatIfRun(31);
+      var used=Object.keys(r.pbox).filter(function(id){
+        return TBYID['wwzw'].pitchers.some(function(p){return p.id===id;})
+          && (r.pbox[id].outs||r.pbox[id].bf); });
+      var want=whatIfPen().slice(0,used.length);
+      return used.join()===want.join()
+        ? used.map(nameOf).join(' → ') : ('!'+used.map(nameOf).join()+' vs '+want.map(nameOf).join());
+    })()`));
+
+  console.log('\n[오늘 나올 사람]');
+  T('눌러서 오늘 안 나오게 뺀다', ()=>ev(`(function(){
+      whatIfInit(); go('whatif');
+      var chips=[].slice.call(document.querySelectorAll('#view .wi-av .wi-chip'));
+      if(!chips.length) return '!명단 칩이 없다';
+      var before=whatIfAvail().length;
+      chips[chips.length-1].click();
+      var after=whatIfAvail().length;
+      return after===before-1 ? (before+'명 → '+after+'명') : '!'+before+'→'+after;
+    })()`));
+  T('뺀 사람은 타순에도 벤치에도 안 남는다', ()=>ev(`(function(){
+      whatIfInit();
+      var id=WHATIF.line[5].id;
+      WHATIF.out={}; WHATIF.out[id]=1;
+      var i=WHATIF.line.findIndex(function(s){return s.id===id;});
+      var rep=whatIfAvail().find(function(q){
+        return q.id!==whatIfSp() && !WHATIF.line.some(function(x){return x.id===q.id;}); });
+      if(rep) WHATIF.line[i].id=rep.id;
+      whatIfDH(); go('whatif');
+      var txt=document.querySelector('#view').textContent;
+      var inLine=WHATIF.line.some(function(s){return s.id===id;});
+      var inPen=whatIfPen().indexOf(id)>=0;
+      return (!inLine&&!inPen) ? (nameOf(id)+' 빠짐') : '!아직 남아 있다';
+    })()`));
+  T('아홉 명 밑으로는 못 뺀다', ()=>ev(`(function(){
+      whatIfInit();
+      var all=TBYID['wwzw'].players;
+      WHATIF.out={};
+      all.slice(0,all.length-9).forEach(function(p){ WHATIF.out[p.id]=1; });
       go('whatif');
-      var chips=[].slice.call(document.querySelectorAll('#view .wi-chip'));
-      var b=chips.filter(function(x){return x.textContent.indexOf(nameOf(id))===0;})[0];
-      if(!b) return '!그 선수 칩이 없다';
+      var chips=[].slice.call(document.querySelectorAll('#view .wi-av .wi-chip'))
+        .filter(function(b){return b.className.indexOf('off')<0;});
+      var before=whatIfAvail().length;
+      if(chips.length) chips[0].click();
+      return whatIfAvail().length===before ? (before+'명에서 안 줄어든다') : '!더 뺐다';
+    })()`));
+
+  console.log('\n[지명타자]');
+  T('토글이 화면에 있다', ()=>{
+    ev("whatIfInit(); go('whatif')");
+    const b=[...d.querySelectorAll('#view .toggle')].find(x=>/사용|미사용/.test(x.textContent));
+    return b ? b.textContent : '!토글이 없다';
+  });
+  T('미사용으로 바꾸면 선발 투수가 타순에 들어온다', ()=>ev(`(function(){
+      whatIfInit(); go('whatif');
+      var b=[].slice.call(document.querySelectorAll('#view .toggle'))
+        .filter(function(x){return /사용|미사용/.test(x.textContent);})[0];
+      if(!b) return '!토글이 없다';
       b.click();
-      return (WHATIF.sp===id && !WHATIF.line.some(function(s){return s.id===id;}))
-        ? nameOf(id)+' 마운드로' : '!아직 야수 자리에 있다';
+      var sp=whatIfSp();
+      var slot=WHATIF.line.filter(function(s){return s.id===sp;})[0];
+      var dh=WHATIF.line.filter(function(s){return s.pos==='DH';}).length;
+      return (WHATIF.useDH===false && slot && slot.pos==='P' && dh===0)
+        ? (nameOf(sp)+' 가 투수로 타순에') : '!'+(slot?slot.pos:'없음')+' · DH '+dh;
+    })()`));
+  T('다시 사용으로 바꾸면 투수가 타순에서 빠진다', ()=>ev(`(function(){
+      var b=[].slice.call(document.querySelectorAll('#view .toggle'))
+        .filter(function(x){return /사용|미사용/.test(x.textContent);})[0];
+      b.click();
+      var sp=whatIfSp();
+      var dh=WHATIF.line.filter(function(s){return s.pos==='DH';}).length;
+      return (WHATIF.useDH===true && !WHATIF.line.some(function(s){return s.id===sp;}) && dh===1)
+        ? '지명타자 한 자리' : '!DH '+dh;
+    })()`));
+  T('미사용으로 돌려도 아홉 명 그대로다', ()=>ev(`(function(){
+      whatIfInit(); WHATIF.useDH=false; whatIfDH();
+      var ids=WHATIF.line.map(function(s){return s.id;});
+      var dup=ids.some(function(x,i){return ids.indexOf(x)!==i;});
+      return (WHATIF.line.length===9 && !dup) ? '9명 · 중복 없음'
+        : '!'+WHATIF.line.length+'명'+(dup?' 중복':'');
+    })()`));
+  T('미사용으로 돌려도 돌아간다', ()=>ev(`(function(){
+      whatIfInit(); WHATIF.useDH=false; whatIfDH();
+      var bad=whatIfLineOK(); if(bad) return '!'+bad;
+      var r=whatIfRun(41);
+      return (r && r.home && r.away) ? (r.away.runs+':'+r.home.runs) : '!결과가 없다';
     })()`));
   T('두 번 눌러서 타순을 바꾼다', ()=>ev(`(function(){
       whatIfInit(); go('whatif'); wiPick=null;
