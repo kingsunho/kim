@@ -888,6 +888,9 @@ table.stand td.nm{text-align:left;font-weight:700;font-size:12px}
   70%{transform:translate(-2px,-1px)}}
 .mound.impact .szone{border-color:rgba(255,220,120,.9)}
 /* 포수 미트가 그냥 갈색 동그라미로 보여서 뭔지 몰랐다 — 글러브 모양 + 이름 */
+.pt-row.picked{outline:2px solid rgba(232,118,44,.75);outline-offset:-2px;
+  background:rgba(232,118,44,.10)}
+.pt-main,.pt-n{cursor:pointer}
 .swg{position:relative;height:14px;border-radius:7px;margin:9px 0 7px;
   background:#131c28;border:1px solid var(--line);overflow:hidden;opacity:.45;
   transition:opacity .2s}
@@ -6322,8 +6325,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.23.0';
-const APP_VERSION_NOTE = '그림 전면 개선 · 타이밍 게이지 · 구속';
+const APP_VERSION = '2.24.0';
+const APP_VERSION_NOTE = '구속 · 로테이션 터치 · 라인업 동기화';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6344,6 +6347,16 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.24.0', t:'구속 · 로테이션 터치 · 라인업 동기화', items:[
+    '구속이 매번 똑같이 나오던 걸 고쳤다. 공마다 다르고 최고 구속은 어쩌다 한 번 나온다',
+    '실제 스피드건 기록에 맞췄다 — 송승민 최고 115, 김준희 112. 구위 낮은 투수는 90대다',
+    '우리 팀이 리그에서 제일 빠르다. 상대는 111 위로 안 나온다 (실제로 상대 에이스가 100~110이었다)',
+    '투구 화면에 그 투수의 최고 구속이 나온다',
+    '경기가 끝나 로테이션이 한 칸 돌면 타순의 투수 자리도 같이 돈다. 지난 경기 투수가 그대로 남아 있던 걸 고쳤다',
+    '로테이션과 타순이 어긋나 있으면 라인업 화면을 여는 것만으로 맞춰진다 (지명타자 미사용 기준)',
+    '투수 로테이션도 터치로 바꾼다. 이름 하나 누르고 다른 이름을 누르면 순서가 맞바뀐다',
+    '홈런 비거리가 146m 로 나오던 걸 고쳤다. 담장(중앙 118m) 기준으로 환산해서 120~132m 가 나온다',
+  ]},
   {v:'2.23.0', t:'그림 전면 개선 · 타이밍 게이지 · 구속', items:[
     '픽셀이 블록으로 보이던 걸 고쳤다. 작게 그려 확대하던 방식을 버리고 화면 해상도로 직접 그린다',
     '선수를 사각형 쌓기에서 곡선·그라데이션·외곽선으로 다시 그렸다. 모자 챙, 귀, 벨트, 등번호, 신발까지',
@@ -11950,6 +11963,20 @@ function tapSwap(i){
   swapIdx=null; saveGame(true); renderLineup();
   toast(`${an} ${i+1}번 · ${bn} ${j+1}번`);
 }
+/* 로테이션 탭-투-스왑. 라인업 타순 바꾸기와 같은 방식이다. */
+let rotSwap=null;
+function tapSwapRot(i){
+  const a=ST.rotation||[];
+  if(!a[i]) return;
+  if(rotSwap===null){ rotSwap=i; renderLineup(); return; }
+  if(rotSwap===i){ rotSwap=null; renderLineup(); return; }
+  const an=nameOf(a[rotSwap]), bn=nameOf(a[i]);
+  const t=a[rotSwap]; a[rotSwap]=a[i]; a[i]=t;
+  rotSwap=null;
+  syncStarter(); saveGame(true); renderLineup();
+  toast(`${an} ↔ ${bn} 순서를 바꿨다 · 오늘 선발 ${nameOf(gameRotation()[0])}`);
+}
+
 function tapSwapPos(pos){
   const idx=ST.lineup.findIndex(x=>x.pos===pos);
   if(idx<0) return;
@@ -12093,7 +12120,7 @@ function renderLineup(){
   const tabs=el('div','lu-tabs');
   [['list','명단'],['field','야구장'],['depth','뎁스']].forEach(([k,n])=>{
     const b=el('button',ST.luView===k?'on':'',n);
-    b.onclick=()=>{ ST.luView=k; swapIdx=null; saveGame(true); renderLineup(); };
+    b.onclick=()=>{ ST.luView=k; swapIdx=null; rotSwap=null; saveGame(true); renderLineup(); };
     tabs.appendChild(b);
   });
   c.appendChild(tabs);
@@ -12177,16 +12204,24 @@ function renderLineup(){
 
   const pc=el('div','card');
   pc.appendChild(el('div','card-h','투수 로테이션'));
+  /* [요청] "투수 자동으로 올라와 있는데 여기도 터치로 변경하게 해줘"
+     ▲▼ 로 한 칸씩 미는 건 답답하다. 라인업처럼 둘을 눌러서 맞바꾼다.  */
   pc.appendChild(el('p','muted',
     '위에서부터 선발 · 첫 번째 불펜 · 두 번째 불펜 순으로 올라간다. '+
+    '<b>이름 하나 누르고 다른 이름을 누르면</b> 순서가 맞바뀐다. '+
     '이번 주에 못 나오는 투수는 그 경기만 건너뛰고, 로테이션에서 사라지지 않는다.'));
+  pc.lastChild.innerHTML=pc.lastChild.textContent
+    .replace('이름 하나 누르고 다른 이름을 누르면','<b>이름 하나 누르고 다른 이름을 누르면</b>');
+  if(rotSwap!=null && ST.rotation[rotSwap])
+    pc.appendChild(el('div','warn',
+      `${nameOf(ST.rotation[rotSwap])} 선택됨 — 바꿀 자리를 눌러라. 같은 걸 또 누르면 취소.`));
   const gRot=gameRotation();
   ST.rotation.forEach((pid,i)=>{
     const p=t.pitchers.find(x=>x.id===pid); if(!p)return;
     const s2=ST.pit[pid]||blankPit();
     const out=!isAvailable(pid);
     const gi=gRot.indexOf(pid);
-    const row=el('div','pt-row'+(out?' bad':''));
+    const row=el('div','pt-row'+(out?' bad':'')+(rotSwap===i?' picked':''));
     const roleNow = out ? '이번 주 결장' : (gi===0?'오늘 선발':`오늘 ${gi+1}번째`);
     row.innerHTML=`<div class="pt-n">${i===0?'선발':i+'번'}</div>
       <div class="pt-main"><div class="pt-name">${p.name}${handTag(p)}</div>
@@ -12196,9 +12231,14 @@ function renderLineup(){
       <div class="pt-ctl"><button class="up"${i===0?' disabled':''}>▲</button>`+
       `<button class="dn"${i===ST.rotation.length-1?' disabled':''}>▼</button>`+
       `<button class="rm" title="로테이션에서 뺀다">×</button></div>`;
-    row.querySelector('.up').onclick=()=>{if(i>0){const a=ST.rotation;[a[i-1],a[i]]=[a[i],a[i-1]];syncStarter();saveGame(true);renderLineup();}};
-    row.querySelector('.dn').onclick=()=>{const a=ST.rotation;if(i<a.length-1){[a[i+1],a[i]]=[a[i],a[i+1]];syncStarter();saveGame(true);renderLineup();}};
-    row.querySelector('.rm').onclick=()=>{
+    // 이름 쪽을 누르면 탭-투-스왑
+    row.querySelector('.pt-main').onclick=()=>tapSwapRot(i);
+    row.querySelector('.pt-n').onclick=()=>tapSwapRot(i);
+    row.querySelector('.up').onclick=(e)=>{e.stopPropagation();
+      if(i>0){const a=ST.rotation;[a[i-1],a[i]]=[a[i],a[i-1]];rotSwap=null;syncStarter();saveGame(true);renderLineup();}};
+    row.querySelector('.dn').onclick=(e)=>{e.stopPropagation();
+      const a=ST.rotation;if(i<a.length-1){[a[i+1],a[i]]=[a[i],a[i+1]];rotSwap=null;syncStarter();saveGame(true);renderLineup();}};
+    row.querySelector('.rm').onclick=(e)=>{ e.stopPropagation();
       if(ST.rotation.length<=1){toast('투수가 최소 한 명은 있어야 한다');return;}
       ST.rotation=ST.rotation.filter(x=>x!==pid);
       syncStarter(); saveGame(true); renderLineup(); toast(`${p.name} 로테이션에서 제외`);
@@ -12334,7 +12374,23 @@ function resolveStarterField0(){
   const rot=gameRotation();
   const sp=rot&&rot[0]; if(!sp) return null;
   const i=ST.lineup.findIndex(s=>s.id===sp);
-  if(i<0) return null;                        // 타순 밖 — 정상
+  if(i<0){
+    /* [제보] "투수는 이승민으로 되어 있는데 라인업은 김준희로 되어 있음
+       (벤치 이승민이고)"
+       지명타자를 안 쓰면 선발이 타순에 들어와야 한다. 그런데 경기가 끝나고
+       로테이션이 한 칸 돌아가면 타순의 P 자리는 지난 경기 투수 그대로였다.
+       경기를 시작할 때(makeLive)서야 바뀌니, 화면과 발표문에는 계속 엉뚱한
+       사람이 투수로 찍혔다. 여기서 미리 맞춘다.                        */
+    if(!ST.useDH){
+      const pIdx=ST.lineup.findIndex(x=>x.pos==='P');
+      if(pIdx>=0 && ST.lineup[pIdx].id!==sp){
+        const out=ST.lineup[pIdx].id;
+        ST.lineup[pIdx].id=sp;
+        return {starter:sp, benchedOut:out, pos:'P'};
+      }
+    }
+    return null;                              // 타순 밖 — 정상(지명타자)
+  }
   const pos=ST.lineup[i].pos;
   if(pos==='P') return null;                  // 이미 투수 자리
   const bench=()=>t.players.filter(q=>isAvailable(q.id)&&!ST.lineup.some(x=>x.id===q.id));
@@ -13467,7 +13523,7 @@ function psScene(d){
      인정 홈런(itp)은 담장을 못 넘긴 타구다. 그런데 홈런이라고 다 담장
      밖으로 날려버려서 공이 화면에서 사라졌다. 인정 홈런은 외야 구석에
      떨어뜨리고, 타자가 발로 네 베이스를 도는 걸 보여준다.              */
-  const dist = (K==='HR'&&d.itp)?182 : K==='HR'?242 : K==='3B'?176 : K==='2B'?162 :
+  const dist = (K==='HR'&&d.itp)?178 : K==='HR'?(202+rng()*16) : K==='3B'?176 : K==='2B'?162 :
                K==='1B'?126 : K==='FB'?(120+rng()*40) : K==='SF'?150 :
                K==='E'?70 : (46+rng()*40);        // 땅볼·병살은 내야
   const land=psSpot(ang, dist);
@@ -13638,7 +13694,9 @@ function psPlay(d, done, opt){
       ban.textContent=st.big; ban.style.color=st.color; ban.classList.add('on');
       /* 홈런은 비거리와 그때 점수까지 — 중계 화면처럼 */
       if(K==='HR'){
-        const m=Math.round(sc.dist*0.62)+(d.itp?0:14);
+        /* [제보] "홈런 비거리 146m는 ㅋㅋㅋ 구장 긴 곳 중앙이 118m인데"
+           담장(캔버스 195px)이 중앙 118m 다. 1px = 0.605m 로 환산한다.  */
+        const m=Math.round(sc.dist*0.605);
         sub.innerHTML=`<b>${d.bat.name}</b> · ${m}m · ${d.runs}점<br>`+
           `<i class="ps-sc">${thN} ${tR} : ${uR} ${usN}</i>`;
       } else sub.textContent=d.text||'';
@@ -14813,12 +14871,31 @@ function windup(mound, cb){
     setTimeout(()=>mvPaint(mound,{pit:'idle'}),520);
   },300);
 }
-/* 구속 — 사회인야구 기준. 직구 110~135km/h 언저리에서 논다.
-   구위가 높을수록 빠르고, 변화구는 구종별 배수만큼 느리다.          */
-function pitchKmh(pit, type){
-  const T=PITCH_TYPES[type]||PITCH_TYPES.ff;
+/* 구속 — 실제 스피드건 기록에 맞췄다.
+   [제보] "김준희가 113이 최고구속이었고(최대로 끌어내야) 송승민은 115.
+   사회인은 100만 일정하게 내도 공이 진짜 빠른 편인 거임"
+
+   송승민 구위 60 → 115, 김준희 구위 54 → 112. 두 점을 지나는 직선이다.
+   구위 20대 투수는 95 언저리, 상대 팀 아리랑볼 투수는 더 낮게 나온다.   */
+function topKmh(pit){
   const stf=(pit&&pit.stf)||30;
-  return Math.round((104+stf*0.42)*T.spd);
+  const top=86+stf*0.485;
+  /* [제보] "근데 우리 팀이 구속은 제일 빠른 편이긴 해"
+     실제 상대 팀 스피드건 기록은 안산유나이티드 고진선이 100~110,
+     나머지는 75~85 짜리 아리랑볼도 많다. 상대는 111 위로 안 올린다.
+     상대 투수는 구위가 높아도 제구·변화구로 막는 유형으로 본다.      */
+  const ours=!!(pit&&pit.id&&TBYID['wwzw'].pitchers.some(p=>p.id===pit.id));
+  return ours ? top : Math.min(top, 111);
+}
+/* 그 공 하나의 구속. 매번 다르다 — 최고 구속은 어쩌다 한 번 나온다.
+   [제보] "구속이 너무 다 똑같이 나온다. 랜덤이어야 되는데"            */
+function pitchKmh(pit, type, rng){
+  const T=PITCH_TYPES[type]||PITCH_TYPES.ff;
+  const r=rng||Math.random;
+  const top=topKmh(pit);
+  // 여덟 번에 한 번쯤 최고 구속 근처, 보통은 2~7 낮다
+  const off=(r()<0.12)?(r()*1.6):(2+r()*5);
+  return Math.round((top-off)*T.spd);
 }
 /* 릴리스 순간에 구속을 띄운다 */
 function mvSpeed(mound, kmh){
@@ -15121,7 +15198,8 @@ function renderPitch(box, d){
       `<b style="color:#e08a70">한가운데</b>는 넣기 쉽지만 맞기도 쉽다.<br>
       <b style="color:#7fc48f">구석·낮은 코스</b>는 어렵지만 타자가 잘 못 친다.<br>
       빠지면 <b>볼</b>이다. 변화구는 위력적이지만 더 자주 빠진다.<br>
-      제구 ${p.ctl} — ${p.ctl>=45?'웬만하면 들어간다':(p.ctl>=30?'가끔 몰린다':'자주 빠진다')}`;
+      제구 ${p.ctl} — ${p.ctl>=45?'웬만하면 들어간다':(p.ctl>=30?'가끔 몰린다':'자주 빠진다')}`+
+      ` · 최고 <b>${Math.round(topKmh(p))}km/h</b>`;
   };
 
   const throwTo=(r,c2)=>{
@@ -15711,6 +15789,9 @@ function commitGame(res,usSide,thSide,uSlots){
         const gap=Math.max(3, Math.min(rot.length-1, Math.round(3+(best-sk(sp0))/9)));
         rot.splice(i,1);
         rot.splice(Math.min(gap, rot.length), 0, sp0);
+        /* 로테이션이 돌면 타순의 투수 자리도 같이 돌아야 한다.
+           안 그러면 다음 주 라인업에 지난 경기 투수가 그대로 남는다. */
+        syncStarter();
       }
     }
   }

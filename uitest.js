@@ -248,10 +248,14 @@ const txt=()=>d.querySelector('#view').textContent;
     return has.length===3 ? '곡선·그라데이션' : `!${has.join(',')}`;
   });
   T('구속이 구위·구종을 따라간다', ()=>{
-    const fast=ev("pitchKmh({stf:70},'ff')"), slow=ev("pitchKmh({stf:30},'ff')");
-    const cu=ev("pitchKmh({stf:70},'cu')");
-    return (fast>slow && cu<fast && fast<150 && slow>100)
-      ? `구위70 직구 ${fast} · 구위30 ${slow} · 커브 ${cu}` : `!${fast}/${slow}/${cu}`;
+    /* [2.24.0] 구속은 공마다 랜덤이라 한 번 값으로는 못 잰다.
+       최고 구속(topKmh)과 여러 번의 평균으로 본다. */
+    const hi=ev("topKmh({id:'swm',stf:60})"), lo=ev("topKmh({stf:22})");
+    const avg=(stf,t)=>ev(`(function(){var s=0;for(var i=0;i<200;i++)s+=pitchKmh({stf:${stf}},'${t}');return s/200})()`);
+    const ff=avg(60,'ff'), cu=avg(60,'cu');
+    return (hi>lo && ff>cu && hi<=120 && lo>=93)
+      ? `최고 구위60 ${hi.toFixed(0)} / 구위22 ${lo.toFixed(0)} · 평균 직구 ${ff.toFixed(0)} 커브 ${cu.toFixed(0)}`
+      : `!${hi}/${lo}/${ff}/${cu}`;
   });
   T('타이밍 게이지가 타격 화면에 있다', ()=>{
     const src=ev("String(renderSwing)");
