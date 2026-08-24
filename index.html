@@ -941,6 +941,14 @@ table.stand td.nm{text-align:left;font-weight:700;font-size:12px}
 .wi-lu b{color:#e2eaf5}
 .wi-lu i{font-style:normal;color:#6f7c8c;font-size:10px}
 .wi-card{border-color:#2f3d4e;background:linear-gradient(180deg,#151d27,#111820)}
+.wi-sp,.wi-bench{margin:8px 0 2px}
+.wi-sp>b,.wi-bench>b{display:block;font-size:11.5px;color:var(--dm);margin-bottom:5px}
+.wi-chips{display:flex;flex-wrap:wrap;gap:5px}
+.wi-chip{background:#161b22;border:1px solid #2a323d;border-radius:8px;color:#c3cede;
+  font-size:11.5px;font-weight:700;padding:6px 9px;line-height:1.2}
+.wi-chip i{font-style:normal;color:#6f7c8c;font-size:10px;font-weight:600;margin-left:3px}
+.wi-chip.on{background:#243449;border-color:var(--gold);color:#fff}
+.wi-chip.on i{color:#c9b071}
 .wi-card .card-h::after{content:'순수 시뮬';margin-left:7px;font-size:9.5px;font-weight:700;
   color:#0d1117;background:#7fb3ff;border-radius:6px;padding:2px 6px;vertical-align:2px}
 .wi-sc{display:flex;align-items:center;justify-content:center;gap:7px;
@@ -6414,8 +6422,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.29.0';
-const APP_VERSION_NOTE = '헬멧이 검정으로 · 다리가 이어졌다 · 베이스가 제자리로';
+const APP_VERSION = '2.30.0';
+const APP_VERSION_NOTE = '다리 꼬임·팔 방향 바로잡기 · 만약에는 내가 라인업을 짠다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6436,6 +6444,20 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.30.0', t:'다리 꼬임·팔 방향 바로잡기 · 만약에는 내가 라인업을 짠다', items:[
+    '[제보] 허벅지랑 종아리가 엇갈려서 다리가 꼬여 보였다. 팔도 반대로 꺾여 보였다',
+    '뒤쪽 다리·팔을 뒤집어 그릴 때 뼈 끝(무릎·팔꿈치)이 3.6칸이나 딴 데로 밀려 있었다',
+    '그 자리에 정강이를 붙이니 무릎에서 다리가 어긋났다. 뒤집기를 뼈 축 기준으로 바꿨다',
+    '관절 좌표도 전부 다시 쟀다. 무릎이 바지 중심에서 한참 벗어난 자리에 박혀 있었다',
+    '소매 조각을 다시 잘랐다. 팔뚝이 섞여 들어가 있어서 팔이 뭉툭했다',
+    '[제보] 만약에 모드에서 자꾸 못 온다는 사람이 나왔다',
+    '만약에는 결장이 없는 판이다. 이제 열네 명 전부 후보다',
+    '선발 투수를 직접 고른다. 고른 사람은 야수 자리에서 자동으로 빠진다',
+    '아홉 명을 직접 골라서 타순까지 짠다 — 이름 두 번 누르면 자리가 맞바뀐다',
+    '벤치에서 눌러도 들어간다. 수비 자리는 옆의 칸을 눌러서 바꾼다',
+    '「원본 베스트로 채우기」 「지금 라인업 그대로」 로 한 번에 채울 수도 있다',
+    '같은 사람이 두 번 들어가 있으면 돌리기 전에 막는다',
+  ]},
   {v:'2.29.0', t:'헬멧이 검정으로 · 다리가 이어졌다 · 베이스가 제자리로', items:[
     '[제보] 헬멧이 초록색이었다. 색을 칠한 게 아니라 그림에 구멍이 나서 잔디가 비친 거였다',
     '사람 그림 12조각의 어두운 부분이 통째로 투명하게 저장돼 있었다 — 모자·헬멧·소매·스파이크·배트 전부',
@@ -11254,9 +11276,38 @@ function whatIfInit(){
     park: (next&&next.park) || ST.park || 'benamul',
     weather: ST.weather||'clear',
     home: next?!!next.homeGame:true,
-    useMine: false,          // 기본은 원본 능력치 · 베스트 라인업
+    /* [제보] "자꾸 만약에 모드에서 못 온다는 사람이 나옴. 그냥 그날 나올
+       사람만 내가 선택할 수 있게. 라인업 짤 수 있게 해주고"
+       여기는 결장·부상이 없는 판이다. 열네 명 전부 후보고, 아홉 명을
+       직접 골라서 타순·수비까지 짠다. 선발 투수도 직접 고른다.        */
+    sp: whatIfRotBest()[0]||null,
+    line: null,
     res: null, runs: 0,
   };
+  WHATIF.line=whatIfBest(WHATIF.sp);
+}
+/* 원본 구위·제구 순 로테이션 — 세이브를 안 본다 */
+function whatIfRotBest(){
+  return whatIfRoster().pitchers.slice()
+    .sort((a,b)=>(b.stf*1.1+b.ctl*1.3+b.sta*0.8)-(a.stf*1.1+a.ctl*1.3+a.sta*0.8))
+    .map(p=>p.id);
+}
+/* 지금 세이브의 라인업을 그대로 가져온다 (능력치는 그래도 원본을 쓴다).
+   결장·부상은 안 본다 — 여기서는 아무도 못 나올 이유가 없다.        */
+function whatIfMine(){
+  const t=TBYID['wwzw'];
+  const src=(ST.lineup&&ST.lineup.length===9)?ST.lineup:recommendLineup();
+  return src.filter(s=>t.players.some(p=>p.id===s.id)).map(s=>({id:s.id,pos:s.pos}));
+}
+/* 라인업이 성립하는지 — 아홉 명, 중복 없음 */
+function whatIfLineOK(){
+  const L=(WHATIF&&WHATIF.line)||[];
+  if(L.length!==9) return '아홉 명을 채워라';
+  const ids=L.map(s=>s.id);
+  if(ids.some((x,i)=>ids.indexOf(x)!==i)) return '같은 사람이 두 번 들어가 있다';
+  if(WHATIF.sp && ids.indexOf(WHATIF.sp)>=0)
+    return nameOf(WHATIF.sp)+'은(는) 선발 투수다. 야수 자리에서 빼라';
+  return null;
 }
 
 /* [제보] "만약에 모드에서는 내가 플레이 하고 있는 대로 성적이 들어가 있는 게
@@ -11334,22 +11385,15 @@ function whatIfRun(seed){
   const park=PARKS.find(p=>p.id===WHATIF.park)||PARKS[0];
   const hot=(WHATIF.weather==='hot'||WHATIF.weather==='humid');
 
-  /* 로테이션 먼저 — 라인업이 선발을 피해서 짜여야 한다. */
-  let uRot;
-  if(WHATIF.useMine && ST.rotation && ST.rotation.length){
-    uRot=ST.rotation.slice();
-  } else {
-    /* 원본 구위·제구 순으로 세운다 — 로테이션도 세이브를 안 본다 */
-    uRot=raw.pitchers.slice()
-      .sort((a,b)=>(b.stf*1.1+b.ctl*1.3+b.sta*0.8)-(a.stf*1.1+a.ctl*1.3+a.sta*0.8))
-      .slice(0,6).map(p=>p.id);
-  }
-  uRot=uRot.filter(id=>raw.pitchers.some(p=>p.id===id));
+  /* 선발은 내가 고른 사람. 뒤는 원본 구위 순으로 붙인다. */
+  let uRot=whatIfRotBest();
+  if(WHATIF.sp) uRot=[WHATIF.sp].concat(uRot.filter(id=>id!==WHATIF.sp));
+  uRot=uRot.filter(id=>raw.pitchers.some(p=>p.id===id)).slice(0,6);
   if(!uRot.length) uRot=raw.pitchers.slice(0,1).map(p=>p.id);
 
-  /* 라인업 — 기본은 원본 능력치 기준 베스트. 지금 라인업으로 볼 수도 있다. */
-  const uLine=(WHATIF.useMine && ST.lineup && ST.lineup.length===9)
-    ? ST.lineup.map(s=>({id:s.id,pos:s.pos}))
+  /* 라인업 — 내가 짠 그대로 쓴다. 아직 안 짰으면 원본 베스트로 채운다. */
+  const uLine=(WHATIF.line&&WHATIF.line.length===9)
+    ? WHATIF.line.map(s=>({id:s.id,pos:s.pos}))
     : whatIfBest(uRot[0]);
 
   /* 순수 판 — 피로·더위·장비·컨디션·사기 전부 안 먹인다.
@@ -11383,6 +11427,53 @@ function whatIfRun(seed){
 function whatIfSides(r){
   const H=WHATIF.home;
   return { us: H?r.home:r.away, them: H?r.away:r.home };
+}
+
+/* 만약에 라인업 — 탭 두 번으로 자리를 바꾼다. 라인업 화면과 같은 방식이다. */
+let wiPick=null;
+function wiTap(from,i,id){
+  if(!WHATIF||!WHATIF.line) return;
+  if(!wiPick){ wiPick={from,i,id}; renderWhatIf(); return; }
+  if(wiPick.from===from && wiPick.id===id){ wiPick=null; renderWhatIf(); return; }
+  const L=WHATIF.line;
+  if(wiPick.from==='line' && from==='line'){
+    const t=L[wiPick.i]; L[wiPick.i]=L[i]; L[i]=t;      // 타순만 맞바꾼다
+    toast(`${nameOf(L[i].id)} ${wiPick.i+1}번 · ${nameOf(L[wiPick.i].id)} ${i+1}번`);
+  } else if(wiPick.from==='bench' && from==='line'){
+    const out=L[i].id; L[i].id=wiPick.id;
+    toast(`${nameOf(wiPick.id)} 투입 · ${nameOf(out)} 벤치`);
+  } else if(wiPick.from==='line' && from==='bench'){
+    const out=L[wiPick.i].id; L[wiPick.i].id=id;
+    toast(`${nameOf(id)} 투입 · ${nameOf(out)} 벤치`);
+  } else { wiPick={from,i,id}; renderWhatIf(); return; }   // 벤치끼리는 의미 없다
+  wiPick=null; WHATIF.res=null; renderWhatIf();
+}
+/* 수비 자리 고르기 — 라인업 화면과 같은 하단 시트를 쓴다.
+   이미 그 자리를 보는 사람이 있으면 서로 맞바꾼다. */
+function wiPosPick(i){
+  if(!WHATIF||!WHATIF.line||!WHATIF.line[i]) return;
+  const L=WHATIF.line, cur=L[i].pos;
+  $('#sheet-title').textContent=`${nameOf(L[i].id)} 수비 자리`;
+  const body=$('#sheet-body'); body.innerHTML='';
+  const taken={}; L.forEach((s,k)=>{ if(k!==i) taken[s.pos]=true; });
+  ALLPOS.filter(x=>x!=='P').forEach(pos=>{
+    const fitV=(typeof posFit==='function')?posFit(L[i].id,pos):1;
+    const row=el('button','pick-row'+(pos===cur?' cur':'')+(taken[pos]?' used':''));
+    const note=(pos==='DH')?'수비를 안 본다'
+      :(fitV<=0?'불가 (좌투)':(fitV>=45?'주 포지션':'익숙하지 않다 — 수비 하락'));
+    row.innerHTML=`<div class="pk-l"><div class="pk-name">${POSNAMES[pos]||pos}</div>
+      <div class="pk-note">${note}</div></div>
+      <div class="pk-r"><div class="pk-stat">${taken[pos]?'중복':(fitV>0?fitV:'—')}</div></div>`;
+    if(fitV<=0) row.classList.add('bad');
+    row.onclick=()=>{
+      const j=L.findIndex(x=>x.pos===pos);
+      if(j>=0&&j!==i) L[j].pos=cur;
+      L[i].pos=pos; WHATIF.res=null;
+      closeSheet(); renderWhatIf();
+    };
+    body.appendChild(row);
+  });
+  $('#sheet').classList.add('open');
 }
 
 function renderWhatIf(){
@@ -11430,40 +11521,112 @@ function renderWhatIf(){
   const pk=PARKS.find(p=>p.id===WHATIF.park)||PARKS[0];
   setup.appendChild(el('p','wi-note', pk.desc+' — '+pk.note));
 
-  setup.appendChild(row('라인업',
-    [['0','원본 베스트 (실제 기록 기준)'],['1','지금 짜둔 라인업']],
-    WHATIF.useMine?'1':'0',
-    v=>{ WHATIF.useMine=(v==='1'); WHATIF.res=null; renderWhatIf(); }));
+  c.appendChild(setup);
 
-  /* 뭘로 돌리는지 눈에 보여야 한다. 능력치는 어느 쪽이든 원본을 쓴다. */
-  const wrRot=whatIfRoster().pitchers.slice()
-    .sort((a,b)=>(b.stf*1.1+b.ctl*1.3+b.sta*0.8)-(a.stf*1.1+a.ctl*1.3+a.sta*0.8));
-  const spId=WHATIF.useMine
-    ? ((ST.rotation&&ST.rotation[0])||recommendRotation()[0])
-    : (wrRot[0]&&wrRot[0].id);
-  const lu=WHATIF.useMine
-    ? ((ST.lineup&&ST.lineup.length===9)?ST.lineup:recommendLineup())
-    : whatIfBest(spId);
-  const luBox=el('div','wi-lu');
-  luBox.innerHTML=`<b>${WHATIF.useMine?'지금 라인업으로 돌린다':'원본 능력치 베스트로 돌린다'}</b><br>`+
-    lu.map((s,i)=>`${i+1}. ${nameOf(s.id)} <i>${s.pos}</i>`).join(' · ')+
-    `<br>선발 <b>${nameOf(spId)}</b>`;
-  setup.appendChild(luBox);
-  if(WHATIF.useMine){
-    const goLu=el('button','btn','라인업 바꾸러 가기');
-    goLu.onclick=()=>go('lineup');
-    setup.appendChild(goLu);
-  }
+  /* ---- 오늘 나올 사람 · 타순 · 수비 ----
+     [제보] "그날 나올 사람만 내가 선택할 수 있게. 라인업 짤 수 있게 해주고"
+     여기는 결장이 없는 판이다. 열네 명 전부 후보고 아홉을 직접 고른다.   */
+  const t=TBYID['wwzw'];
+  const lu=el('div','card');
+  lu.appendChild(el('div','card-h','오늘 나올 사람'));
 
+  const sp=el('div','wi-sp');
+  sp.innerHTML='<b>선발 투수</b>';
+  const spWrap=el('div','wi-chips');
+  whatIfRotBest().forEach(id=>{
+    const q=whatIfRoster().pitchers.find(p=>p.id===id); if(!q) return;
+    const b=el('button','wi-chip'+(WHATIF.sp===id?' on':''),
+      `${nameOf(id)} <i>구위 ${q.stf}</i>`);
+    b.innerHTML=`${nameOf(id)} <i>구위 ${q.stf}</i>`;
+    b.onclick=()=>{
+      WHATIF.sp=id; WHATIF.res=null;
+      /* 선발로 올린 사람이 야수 자리에 있으면 벤치에서 대신 채운다 */
+      const i=WHATIF.line.findIndex(x=>x.id===id);
+      if(i>=0){
+        const rep=t.players.find(p=>p.id!==id && !WHATIF.line.some(x=>x.id===p.id));
+        if(rep) WHATIF.line[i].id=rep.id;
+        else WHATIF.line.splice(i,1);
+      }
+      renderWhatIf();
+    };
+    spWrap.appendChild(b);
+  });
+  sp.appendChild(spWrap);
+  lu.appendChild(sp);
+
+  const fill=el('div','btn-row');
+  const fb1=el('button','btn','원본 베스트로 채우기');
+  fb1.onclick=()=>{ WHATIF.line=whatIfBest(WHATIF.sp); WHATIF.res=null; wiPick=null; renderWhatIf(); };
+  const fb2=el('button','btn','지금 라인업 그대로');
+  fb2.onclick=()=>{
+    WHATIF.line=whatIfMine();
+    if(WHATIF.sp && WHATIF.line.some(x=>x.id===WHATIF.sp)){
+      const i=WHATIF.line.findIndex(x=>x.id===WHATIF.sp);
+      const rep=t.players.find(p=>p.id!==WHATIF.sp && !WHATIF.line.some(x=>x.id===p.id));
+      if(rep) WHATIF.line[i].id=rep.id;
+    }
+    WHATIF.res=null; wiPick=null; renderWhatIf();
+  };
+  fill.appendChild(fb1); fill.appendChild(fb2);
+  lu.appendChild(fill);
+
+  lu.appendChild(el('p','wi-note', wiPick
+    ? `${nameOf(wiPick.id)} 선택됨 — 보낼 자리를 눌러라. 같은 걸 또 누르면 취소.`
+    : '이름 하나 누르고 다른 이름을 누르면 자리가 맞바뀐다. 벤치에서 눌러도 된다. 포지션은 옆의 칸.'));
+
+  const list=el('div','lineup');
+  (WHATIF.line||[]).forEach((s,i)=>{
+    const p=t.players.find(x=>x.id===s.id); if(!p) return;
+    const o=WWZW.find(x=>x.id===s.id)||p;
+    const row=el('div','lp-row'+((wiPick&&wiPick.from==='line'&&wiPick.i===i)?' picked':''));
+    row.innerHTML=`<div class="lp-n">${i+1}</div>
+      <div class="lp-main"><div class="lp-name">${p.no!=null?`<span class="pc-no">#${p.no}</span> `:''}${p.name}${p.bats==='L'?'<span class="lh">좌</span>':''}</div>
+      <div class="lp-stat">컨택 ${o.con} · 파워 ${o.pow} · 선구 ${o.eye} · 주루 ${o.spd}</div></div>
+      <button class="pos-badge">${POSNAMES[s.pos]||s.pos}</button>`;
+    row.querySelector('.lp-main').onclick=()=>wiTap('line',i,s.id);
+    row.querySelector('.lp-n').onclick=()=>wiTap('line',i,s.id);
+    row.querySelector('.pos-badge').onclick=e=>{ e.stopPropagation(); wiPosPick(i); };
+    list.appendChild(row);
+  });
+  lu.appendChild(list);
+
+  const dup={}; (WHATIF.line||[]).forEach(s=>dup[s.pos]=(dup[s.pos]||0)+1);
+  const dd=Object.keys(dup).filter(k=>dup[k]>1);
+  if(dd.length) lu.appendChild(el('div','warn',
+    `수비 자리가 겹친다: ${dd.map(x=>POSNAMES[x]||x).join(', ')}`));
+
+  const benchIds=t.players.filter(p=>
+    !(WHATIF.line||[]).some(s=>s.id===p.id) && p.id!==WHATIF.sp);
+  const bw=el('div','wi-bench');
+  bw.innerHTML=`<b>벤치 (${benchIds.length}명)</b>`;
+  const bwrap=el('div','wi-chips');
+  benchIds.forEach(p=>{
+    const o=WWZW.find(x=>x.id===p.id)||p;
+    const b=el('button','wi-chip'+((wiPick&&wiPick.from==='bench'&&wiPick.id===p.id)?' on':''));
+    b.innerHTML=`${p.name} <i>${o.con}/${o.pow}</i>`;
+    b.onclick=()=>wiTap('bench',-1,p.id);
+    bwrap.appendChild(b);
+  });
+  if(!benchIds.length) bwrap.appendChild(el('p','muted','벤치가 비었다.'));
+  bw.appendChild(bwrap);
+  lu.appendChild(bw);
+  c.appendChild(lu);
+
+  const bad=whatIfLineOK();
+  if(bad) c.appendChild(el('div','warn',bad));
+
+  const runC=el('div','card');
   const runB=el('button','btn primary', WHATIF.res?'다시 돌려보기':'돌려보기');
+  if(bad) runB.disabled=true;
   runB.onclick=()=>{
+    if(whatIfLineOK()){ toast(whatIfLineOK()); return; }
     WHATIF.runs++;
     WHATIF.res=whatIfRun(WHATIF.runs);
     renderWhatIf();
     try{ SFX&&SFX.play&&SFX.play('hit'); }catch(e){}
   };
-  setup.appendChild(runB);
-  c.appendChild(setup);
+  runC.appendChild(runB);
+  c.appendChild(runC);
 
   if(!WHATIF.res) return;
 
@@ -15288,19 +15451,24 @@ const MV_PARTS={"head_cap":[46,22,89,136],"torso":[195,23,150,132],"uarm":[402,3
  "glove":[207,383,126,134],"ball":[384,384,132,131],"head_helm":[572,376,117,147],
  /* uarm 은 '소매 + 굽힌 팔뚝' 이 한 장에 같이 그려져 있다. 관절로 쓰려면
     소매(윗팔)만 잘라 써야 해서 왼쪽 위 조각을 따로 잡아뒀다. 팔뚝은 farm 을 쓴다. */
- "sleeve":[410,35,44,78]};
+ "sleeve":[402,35,53,64]};
 /* 뼈 파츠 — [시작관절x, 시작관절y, 끝관절x, 끝관절y] (파츠 상자 비율) */
 const MV_JOINTS={
   /* [버그 이력] 골반 → 목 으로 적어놨더니 mvBone 이 '+y 가 뼈 방향' 규칙대로
      180도 돌려버려서 유니폼 상의가 다리 위에 거꾸로 덮였다. 등의 한자가
      뒤집혀 찍힌 게 증거였다. 뼈는 언제나 아래 방향으로 적는다.        */
+  /* [제보] "허벅지 종아리 교차된 게 이상하고 팔도 반대로 된 것 같은데"
+     관절 좌표를 눈대중으로 적어놨더니 그림의 실제 중심선에서 벗어나 있었다.
+     넓적다리 무릎은 x=0.46 인데 그 높이의 바지 중심은 0.71 이었고,
+     정강이 무릎은 0.57 인데 중심은 0.45 였다. 서로 **반대쪽으로** 밀려서
+     무릎에서 다리가 어긋나 X 로 겹쳐 보였다. 팔도 같은 이유로 어깨와
+     팔꿈치가 뒤바뀐 쪽으로 밀려 있었다.
+     이제 파츠마다 그 높이의 불투명 픽셀 중심을 재서 관절을 박았다.      */
   torso: [0.50,0.03, 0.50,0.97],     // 목 → 골반
-  sleeve:[0.52,0.06, 0.46,0.94],     // 어깨 → 팔꿈치
-  farm:  [0.50,0.05, 0.50,0.72],     // 팔꿈치 → 손목 (손은 그 아래로 삐져나온다)
-  /* 무릎을 그림 맨 아래(0.95)에 두면 바지 끝이 딱 잘려서 이음매가 보인다.
-     0.86 으로 올려서 바지 밑단이 무릎 아래를 덮게 한다. */
-  thigh: [0.53,0.04, 0.46,0.86],     // 골반 → 무릎
-  shin:  [0.57,0.05, 0.49,0.76],     // 무릎 → 발목 (스파이크는 그 아래)
+  sleeve:[0.40,0.05, 0.53,0.95],     // 어깨 → 팔꿈치 (소매만 잘라 쓴다)
+  farm:  [0.57,0.05, 0.48,0.72],     // 팔꿈치 → 손목 (손은 그 아래로 삐져나온다)
+  thigh: [0.40,0.05, 0.71,0.88],     // 골반 → 무릎 (바지 밑단이 무릎 아래를 덮는다)
+  shin:  [0.45,0.06, 0.29,0.77],     // 무릎 → 발목 (스파이크는 그 아래)
   bat:   [0.09,0.91, 0.94,0.08]      // 손잡이 → 배트 끝
 };
 /* 뼈가 아닌 파츠 — [기준점x, 기준점y, 그릴 높이] */
@@ -15386,8 +15554,14 @@ function mvBone(g,sheet,k,len,mir){
   const ax=J[0]*P[2], ay=J[1]*P[3], bx=J[2]*P[2], by=J[3]*P[3];
   const vx=bx-ax, vy=by-ay, Lp=Math.hypot(vx,vy)||1, sc=len/Lp;
   g.save();
+  /* [버그 이력] 예전엔 rotate 뒤에 scale(-sc,sc) 로 뒤집었다. 그러면 그림의
+     세로축 기준으로 뒤집혀서 **뼈 끝(무릎·팔꿈치)이 딴 데로 가버린다.**
+     넓적다리는 3.6 칸이나 밀렸고, 그 자리에 정강이를 붙이니 무릎에서 다리가
+     어긋나 X 로 겹쳐 보였다. 팔도 같은 이유로 반대로 꺾여 보였다.
+     뒤집기는 **뼈 축 기준**이어야 한다 — 회전보다 먼저 걸어야 한다.      */
+  if(mir) g.scale(-1,1);
   g.rotate(Math.atan2(vx,vy));
-  g.scale(mir?-sc:sc, sc);
+  g.scale(sc,sc);
   g.drawImage(sheet, P[0],P[1],P[2],P[3], -ax,-ay, P[2],P[3]);
   g.restore();
 }

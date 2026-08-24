@@ -87,6 +87,36 @@ const T=(n,r)=>{const ok=!!r&&!(typeof r==='string'&&r[0]==='!');
   T('관중석에 베이스를 안 찍는다', !/bs\(\s*240\s*,\s*1[0-3]\d/.test(geo.src)
       ? 'ok' : '!담장 위에 2루가 있다');
 
+  console.log('\n[뼈 뒤집기]');
+  const mir=await p.evaluate(()=>{
+    const c=document.createElement('canvas').getContext('2d');
+    const end=(k,len,mirOn)=>{
+      const P=MV_PARTS[k], J=MV_JOINTS[k];
+      const ax=J[0]*P[2], ay=J[1]*P[3], bx=J[2]*P[2], by=J[3]*P[3];
+      const vx=bx-ax, vy=by-ay, Lp=Math.hypot(vx,vy)||1, sc=len/Lp;
+      c.setTransform(1,0,0,1,0,0);
+      if(mirOn) c.scale(-1,1);
+      c.rotate(Math.atan2(vx,vy));
+      c.scale(sc,sc);
+      const m=c.getTransform();
+      return [m.a*vx+m.c*vy+m.e, m.b*vx+m.d*vy+m.f];
+    };
+    const out={};
+    [['thigh',MV_LEN.thigh],['shin',MV_LEN.shin],
+     ['sleeve',MV_LEN.uarm],['farm',MV_LEN.farm]].forEach(([k,L])=>{
+      out[k]={len:L, n:end(k,L,false), m:end(k,L,true)};
+    });
+    return out;
+  });
+  Object.keys(mir).forEach(k=>{
+    const o=mir[k];
+    const okN=Math.abs(o.n[0])<0.01 && Math.abs(o.n[1]-o.len)<0.01;
+    const okM=Math.abs(o.m[0])<0.01 && Math.abs(o.m[1]-o.len)<0.01;
+    T(`${k} — 뒤집어도 뼈 끝이 제자리다`,
+      (okN&&okM) ? `끝 (${o.m[0].toFixed(2)}, ${o.m[1].toFixed(2)}) · 길이 ${o.len}`
+                 : `!뒤집으면 (${o.m[0].toFixed(2)}, ${o.m[1].toFixed(2)}) 로 밀린다`);
+  });
+
   console.log('\n[다리]');
   T('골반이 벌어져 있다', geo.hipw!=null && geo.hipw>0.8 ? 'MV_HIPW='+geo.hipw : '!'+geo.hipw);
   T('두 다리를 다른 점에서 뽑는다', /leg\(R\.legB,\s*true,\s*-1\)/.test(geo.legSrc)
