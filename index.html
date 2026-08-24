@@ -958,12 +958,17 @@ table.stand td.nm{text-align:left;font-weight:700;font-size:12px}
 .wi-sc.w b:first-of-type{color:#7fc48f}
 .wi-sc.l b:first-of-type{color:#e08a70}
 .wi-vd{text-align:center;font-size:12px;font-weight:800;color:#c9a227;margin-bottom:8px}
-.wi-line{overflow-x:auto}
+/* [제보] "시뮬레이션 깨지는데요? 안타 에러 점수"
+   이닝 칸을 담은 <i> 가 flex 기본값(줄어들 수 있음)이라, 폭이 모자라면
+   <i> 박스만 3칸으로 쪼그라들고 안에 든 칸들은 그대로 밖으로 삐져나왔다.
+   그 위에 R·H·E 가 겹쳐 찍혀서 4·5·6회 점수가 안 보였다.
+   이제 줄을 max-content 로 두고 <i> 를 안 줄인다 — 모자라면 가로로 민다. */
+.wi-line{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .wl-r{display:flex;align-items:center;gap:2px;font-size:10px;font-weight:800;
-  color:#cfe0ee;line-height:1.9;white-space:nowrap}
-.wl-r span{flex:0 0 66px;overflow:hidden;text-overflow:ellipsis}
-.wl-r i{display:flex;gap:2px;font-style:normal}
-.wl-r i u,.wl-r>b{flex:0 0 19px;text-align:center;text-decoration:none;
+  color:#cfe0ee;line-height:1.9;white-space:nowrap;width:max-content;min-width:100%}
+.wl-r span{flex:0 0 58px;overflow:hidden;text-overflow:ellipsis}
+.wl-r i{flex:0 0 auto;display:flex;gap:2px;font-style:normal}
+.wl-r i u,.wl-r>b{flex:0 0 18px;text-align:center;text-decoration:none;
   background:#131a22;border-radius:3px}
 .wl-r>b{color:#ffd15c;margin-left:2px}
 .wl-h{color:#6f7c8c}
@@ -6422,8 +6427,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.30.0';
-const APP_VERSION_NOTE = '다리 꼬임·팔 방향 바로잡기 · 만약에는 내가 라인업을 짠다';
+const APP_VERSION = '2.30.1';
+const APP_VERSION_NOTE = '만약에 이닝별 점수판이 겹쳐 찍히던 것 수정';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6444,6 +6449,13 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.30.1', t:'만약에 이닝별 점수판이 겹쳐 찍히던 것 수정', items:[
+    '[제보] 시뮬레이션 결과의 이닝별 점수판이 깨졌다. R·H·E 가 4·5·6회 점수 위에 겹쳐 찍혔다',
+    '이닝 칸을 담은 상자가 내용보다 더 줄어들면서 칸들이 밖으로 삐져나온 거였다',
+    '옛 브라우저(삼성 인터넷 구버전 등)에서만 나온다. 최신 크롬은 멀쩡해서 못 찾을 뻔했다',
+    '이제 줄을 안 줄인다. 칸이 모자라면 가로로 밀어서 본다',
+    '이름 칸과 이닝 칸을 조금 좁혀서 좁은 폰에서도 한눈에 들어온다',
+  ]},
   {v:'2.30.0', t:'다리 꼬임·팔 방향 바로잡기 · 만약에는 내가 라인업을 짠다', items:[
     '[제보] 허벅지랑 종아리가 엇갈려서 다리가 꼬여 보였다. 팔도 반대로 꺾여 보였다',
     '뒤쪽 다리·팔을 뒤집어 그릴 때 뼈 끝(무릎·팔꿈치)이 3.6칸이나 딴 데로 밀려 있었다',

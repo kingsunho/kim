@@ -139,6 +139,56 @@ const T=(n,r)=>{const ok=!!r&&!(typeof r==='string'&&r[0]==='!');
   T('배트가 서 있다', Math.abs(geo.stand.bat-Math.PI)<0.9
       ? 'bat='+geo.stand.bat : '!bat='+geo.stand.bat);
 
+  await p.close();
+
+  /* ---- 만약에 라인스코어가 안 겹치는지 ----
+     [제보] "시뮬레이션 깨지는데요? 안타 에러 점수"
+     이닝 칸을 담은 <i> 가 줄어들면서 칸들이 밖으로 삐져나오고, 그 위에
+     R·H·E 가 겹쳐 찍혔다. jsdom 은 레이아웃을 안 재서 못 잡는다.       */
+  console.log('\n[만약에 라인스코어]');
+  for(const W of [280,320,360,412,768]){
+    const q=await b.newPage({viewport:{width:W,height:900}});
+    await q.goto('file://'+require('path').resolve(process.argv[2]||'index.html'));
+    await q.waitForTimeout(900);
+    await q.evaluate(()=>{const l=document.getElementById('lock');if(l)l.classList.add('off');});
+    await q.waitForTimeout(150);
+    await q.locator('.pickcard').first().click();
+    await q.waitForTimeout(150);
+    await q.getByText('이 선수로 시작').click();
+    await q.waitForTimeout(500);
+    /* 옛 브라우저(삼성 인터넷 구버전 등)는 flex 항목의 min-width:auto 를
+       구현하지 않아서 내용보다 더 줄어든다. 그 상황을 강제로 만들어 본다 —
+       실제로 제보된 화면이 딱 이 모양이었다. */
+    await q.addStyleTag({content:'.wl-r i{min-width:0}'});
+    const r=await q.evaluate(()=>{
+      ST.tutDone=true; whatIfInit(); WHATIF.runs=1; WHATIF.res=whatIfRun(1);
+      /* 연장까지 가는 최악을 억지로 만들어 본다 */
+      if(WHATIF.res){
+        WHATIF.res.away.line=[1,0,0,2,3,1,0,4,2,1,0,3];
+        WHATIF.res.home.line=[2,3,0,1,0,0,5,1,1,0,2,0];
+      }
+      go('whatif');
+      const rows=[...document.querySelectorAll('.wl-r')];
+      if(!rows.length) return {err:'행이 없다'};
+      let overlap=0, cells=0;
+      rows.forEach(row=>{
+        const i=row.querySelector('i'); if(!i) return;
+        const us=[...i.querySelectorAll('u')].map(u=>u.getBoundingClientRect());
+        const bs=[...row.querySelectorAll(':scope>b')].map(x=>x.getBoundingClientRect());
+        cells=Math.max(cells,us.length);
+        us.forEach(u=>bs.forEach(bb=>{
+          if(u.left<bb.right-0.5 && bb.left<u.right-0.5) overlap++; }));
+      });
+      const box=document.querySelector('.wi-line');
+      return {overlap, cells, scroll:box.scrollWidth, client:box.clientWidth};
+    });
+    T(`폭 ${W} — 이닝 칸과 R·H·E 가 안 겹친다`,
+      r.err ? '!'+r.err
+        : (r.overlap===0 ? `${r.cells}이닝 · 겹침 0${r.scroll>r.client+1?' (가로 스크롤)':''}`
+                         : `!${r.overlap}군데 겹친다`));
+    await q.close();
+  }
+
   await b.close();
   console.log(errs.length?('\n❌ '+errs.length+'건\n'+errs.join('\n')):'\n✅ 이상 없음');
   process.exit(errs.length?1:0);
