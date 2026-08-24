@@ -79,7 +79,18 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   });
   T('변화구·2스트라이크면 더 잘 속는다', ()=>{
     const src=ev("String(renderPitch)");
-    return /isChase\)\{ sw \+= /.test(src) ? '유인 확률 보정' : '!없다';
+    /* v2.36.0 — 보정식이 여러 줄로 늘어났다 (구위·볼카운트까지 본다) */
+    const has=/if\(isChase\)\{[\s\S]{0,400}?cnt\.s===2\?0\.22/.test(src);
+    return has ? '구종·카운트·구위·볼카운트를 다 본다' : '!없다';
+  });
+  T('유인구도 몰릴 수 있다 — 던질 이유와 위험이 같이 있다', ()=>{
+    const src=ev("String(renderPitch)");
+    return /const hang\s*=\s*isChase/.test(src) && /if\(hang\)\{/.test(src)
+      ? '제구가 나쁘면 존으로 몰린다' : '!백발백중이다';
+  });
+  T('속을 확률을 화면에 보여준다', ()=>{
+    const src=ev("String(renderPitch)");
+    return /속을 확률/.test(src) && /몰릴 위험/.test(src) ? '유인구 버튼 위에 표시' : '!안 보여준다';
   });
 
   console.log('\n[심판 오심과 항의]');

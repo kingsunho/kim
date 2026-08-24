@@ -86,6 +86,52 @@ const T=(n,r)=>{const ok=!!r&&!(typeof r==='string'&&r[0]==='!');
     ['pit','bat','pitw'].every(k=>fg.anch[k][2]===1&&fg.anch[k][1]===0)
       ? 'ok' : '!'+JSON.stringify(fg.anch));
 
+  console.log('\n[스윙이 눈에 보인다]');
+  const sw=await p.evaluate(()=>{
+    const fr=[0,0.2,0.38,0.5,0.62,0.8,1].map(t=>mvSwingPose(t));
+    /* 실제로 그려서 프레임마다 그림이 달라지는지 픽셀로 본다 */
+    const c=document.createElement('canvas'); c.width=300; c.height=300;
+    const g=c.getContext('2d');
+    const u={cap:'#2f5fb0',sh:'#eef2f8',pants:'#dfe4ec',st:'rgba(47,95,176,.35)',gl:'#5b3a1e'};
+    const sig=[];
+    [0,0.38,0.62,1].forEach(t=>{
+      g.clearRect(0,0,300,300);
+      mvFig(g,'swing',150,260,u,false,{no:1,swT:t});
+      const d=g.getImageData(0,0,300,300).data;
+      let n=0,sx=0;
+      for(let i=3;i<d.length;i+=4) if(d[i]>60){ n++; sx+=((i-3)/4)%300; }
+      sig.push({n, cx:n?Math.round(sx/n):0});
+    });
+    /* 등번호가 데이터에서 오는지 — 다른 번호를 주면 그림이 달라져야 한다 */
+    const px=(no)=>{ g.clearRect(0,0,300,300);
+      mvFig(g,'stand',150,260,u,false,{no:no,swT:0});
+      const d=g.getImageData(0,0,300,300).data; let h=0;
+      for(let i=0;i<d.length;i+=4) h=(h*31+d[i]+d[i+1]*3+d[i+3]*7)|0;
+      return h; };
+    return {fr, sig, h1:px(1), h2:px(88), h0:px(null)};
+  });
+  T('스윙 중에 몸이 돌아간다', (()=>{
+      const r=sw.fr.map(f=>f.rot);
+      return (Math.max(...r)-Math.min(...r))>0.25
+        ? `회전 ${Math.min(...r).toFixed(2)} → ${Math.max(...r).toFixed(2)}` : '!'+r.join(',');
+    })());
+  T('배트 잔상이 떴다가 사라진다', (()=>{
+      const b=sw.fr.map(f=>f.blur);
+      return Math.max(...b)>0.8 && b[0]===0 && b[b.length-1]<0.2
+        ? `0 → ${Math.max(...b).toFixed(2)} → ${b[b.length-1].toFixed(2)}` : '!'+b.join(',');
+    })());
+  T('프레임마다 실제로 그림이 다르다', (()=>{
+      /* 몸이 돌아가면 그림의 무게중심이 옆으로 밀린다. 픽셀 수보다 이게 확실하다 */
+      const s0=sw.sig[0], s1=sw.sig[1], s2=sw.sig[2], s3=sw.sig[3];
+      const moved=(a,b)=>Math.abs(a.cx-b.cx);
+      return moved(s1,s0)>=4 && moved(s2,s0)>=6 && moved(s3,s0)<=1
+        ? `무게중심 ${s0.cx} → ${s1.cx} → ${s2.cx} → ${s3.cx} (되돌아옴)`
+        : '!'+JSON.stringify(sw.sig);
+    })());
+  T('등번호가 선수 데이터에서 온다 (그림에 안 박혀 있다)',
+    sw.h1!==sw.h2 && sw.h1!==sw.h0
+      ? '번호를 바꾸면 그림도 바뀐다' : '!등번호가 고정이다');
+
   console.log('\n[누가 누구를 보고 있나 — 그림 픽셀로]');
   const face=await p.evaluate(()=>{
     const c=document.createElement('canvas');
