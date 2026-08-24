@@ -133,7 +133,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   });
   T('뒷다리를 좌우로 뒤집어 그린다', ()=>{
     const src=ev("String(mvGuySprite)");
-    return /leg\(R\.legB,\s*true\)/.test(src) && /leg\(R\.legF,\s*false\)/.test(src)
+    return /leg\(R\.legB,\s*true\s*,/.test(src) && /leg\(R\.legF,\s*false\s*,/.test(src)
       ? 'ok' : '!뒷다리 미러 없음';
   });
 
