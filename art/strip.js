@@ -60,6 +60,29 @@ while(head<tail){
   if(x>0)push(x-1,y); if(x<W-1)push(x+1,y);
   if(y>0)push(x,y-1); if(y<H-1)push(x,y+1);
 }
+/* 테두리에서 못 닿는 안쪽 구멍도 뚫는다 — 포수 마스크 창살 사이 같은 곳.
+   완전히 둘러싸여 있어서 번짐이 못 들어간다. 체커보드 색이면 배경이다. */
+let holes=0;
+for(let p=0;p<W*H;p++){ if(bg[p]||!isBg(p*4)) continue;
+  const y0=(p/W)|0, x0=p%W;
+  let h2=0,t2=0, ok=true, mem=[];
+  qx[t2]=x0; qy[t2]=y0; t2++; bg[p]=1; mem.push(p);
+  while(h2<t2){
+    const x=qx[h2],y=qy[h2]; h2++;
+    for(let k=0;k<4;k++){
+      const nx=x+(k===0?-1:k===1?1:0), ny=y+(k===2?-1:k===3?1:0);
+      if(nx<0||ny<0||nx>=W||ny>=H) continue;
+      const q=ny*W+nx;
+      if(bg[q]||!isBg(q*4)) continue;
+      bg[q]=1; mem.push(q); qx[t2]=nx; qy[t2]=ny; t2++;
+    }
+    if(t2>W*H-1){ ok=false; break; }
+  }
+  if(ok && mem.length>=25) holes+=mem.length;
+  else mem.forEach(q=>bg[q]=0);
+}
+if(holes) console.log(`안쪽 구멍 ${holes}개도 뚫었다`);
+
 let n=0; for(let p=0;p<W*H;p++) if(bg[p])n++;
 console.log(`배경으로 판정 ${n}개 (${(n/(W*H)*100).toFixed(1)}%)`);
 if(n<W*H*0.25){ console.error('❌ 배경이 너무 적게 잡혔다 — 번짐이 막혔다'); process.exit(1); }

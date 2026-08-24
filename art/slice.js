@@ -47,11 +47,14 @@ for(let sy=0;sy<H;sy++)for(let sx=0;sx<W;sx++){
 console.log(`덩어리 ${blobs.length}개 찾음`);
 
 /* ---- 가까운 덩어리끼리 묶는다 (신발이 다리와 떨어져 나오는 경우) ---- */
-const GAP=Math.round(Math.min(W,H)*0.035);
+/* 간격은 좁게 잡는다. 넓게 잡으면 옆 칸 파츠까지 한 덩어리로 붙는다 —
+   처음에 0.035*폭(31px)으로 잡았다가 12개를 4개로 붙여버렸다.
+   붙여야 할 것은 신발과 다리처럼 거의 닿아 있는 것뿐이다.          */
+const GAP=8;
 const near=(a,b)=>{
-  const ax2=a.x+a.w+GAP, ay2=a.y+a.h+GAP;
-  const bx2=b.x+b.w+GAP, by2=b.y+b.h+GAP;
-  return !(ax2<b.x-GAP||bx2<a.x-GAP||ay2<b.y-GAP||by2<a.y-GAP);
+  const gx=Math.max(a.x,b.x)-Math.min(a.x+a.w,b.x+b.w);   // 음수면 겹친다
+  const gy=Math.max(a.y,b.y)-Math.min(a.y+a.h,b.y+b.h);
+  return gx<=GAP && gy<=GAP;
 };
 let merged=true;
 while(merged){
@@ -80,12 +83,14 @@ rows.forEach(r=>r.items.sort((a,b)=>a.x-b.x));
 const order=[].concat(...rows.map(r=>r.items));
 
 /* ---- 이름 붙이기 (제미나이에게 준 배치 순서) ---- */
+/* 두 번째 시트에서 배치가 살짝 바뀌었다 — 2행 3번이 검정 글러브에서
+   포수 마스크로, 3행 2번이 야수용 갈색 글러브가 됐다.              */
 const KEYS=['head_cap','torso','uarm','farm',
-            'thigh','shin','glove','bat',
-            'catcher','mitt','ball','head_helm'];
+            'thigh','shin','mask','bat',
+            'catcher','glove','ball','head_helm'];
 const KO={head_cap:'머리(모자)',torso:'몸통',uarm:'윗팔',farm:'아랫팔+손',
-  thigh:'허벅지',shin:'종아리+신발',glove:'글러브',bat:'배트',
-  catcher:'포수',mitt:'미트',ball:'공',head_helm:'머리(헬멧)'};
+  thigh:'허벅지',shin:'종아리+신발',mask:'포수 마스크',bat:'배트',
+  catcher:'포수(뒷모습)',glove:'글러브',ball:'공',head_helm:'머리(헬멧)'};
 
 console.log(`\n줄 ${rows.length}개 · 줄마다 ${rows.map(r=>r.items.length).join('/')}개`);
 const out={sheet:{w:W,h:H}, parts:{}};
