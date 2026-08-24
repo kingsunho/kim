@@ -245,10 +245,30 @@ const txt=()=>d.querySelector('#view').textContent;
     const ps=(html.match(/\.ps-cv\{[^}]*\}/)||[''])[0];
     return (!/pixelated/.test(mv)&&!/pixelated/.test(ps)) ? '두 캔버스 다 부드럽게' : '!아직 pixelated';
   });
-  T('선수를 곡선으로 그린다', ()=>{
-    const src=ev("String(mvGuy)");
-    const has=['arc(','quadraticCurveTo','createLinearGradient'].filter(k=>src.indexOf(k)>=0);
-    return has.length===3 ? '곡선·그라데이션' : `!${has.join(',')}`;
+  /* [2.27.0] 손으로 그리던 선화를 파츠 시트로 갈아끼웠다.
+     예전 검사는 mvGuy 안에 arc/quadraticCurveTo 가 있는지 봤는데,
+     이제 mvGuy 는 갈림길만 하고 실제로는 파츠를 관절로 이어 붙인다.
+     선화(mvGuyVec)는 시트를 못 읽을 때의 대비책으로 남아 있어야 한다. */
+  T('사람을 파츠 시트로 그린다', ()=>{
+    const parts=ev("Object.keys(MV_PARTS).length");
+    const poses=ev("Object.keys(MV_POSES).length");
+    const ik=ev("typeof mvIK==='function'");
+    const sheet=ev("MV_SHEET_SRC.slice(0,15)");
+    return (parts>=12 && poses>=6 && ik && /^data:image\/webp/.test(sheet))
+      ? `파츠 ${parts}개 · 포즈 ${poses}개 · 역기구학 있음` : `!파츠${parts} 포즈${poses} ik${ik}`;
+  });
+  T('시트를 못 읽으면 선화로 그린다', ()=>{
+    const vec=ev("String(mvGuyVec)");
+    const has=['arc(','quadraticCurveTo','createLinearGradient'].filter(k=>vec.indexOf(k)>=0);
+    const falls=ev("(function(){var o=MV_SHEET_OK; MV_SHEET_OK=false; var r=mvSheetFor({cap:'#2f5fb0'}); MV_SHEET_OK=o; return r===null})()");
+    return (has.length===3 && falls) ? '대비책 있음' : `!곡선${has.length} 대비책${falls}`;
+  });
+  T('구장 셋이 서로 다르게 그려진다', ()=>{
+    const ids=ev("Object.keys(MV_PARKS)");
+    const keys=['back','stand','board','grass','infieldGrass'];
+    const rows=ids.map(id=>keys.map(k=>JSON.stringify(ev(`MV_PARKS['${id}'].${k}`))).join('|'));
+    const uniq=new Set(rows).size;
+    return uniq===3 ? `${ids.join(' / ')} 전부 다름` : `!같은 구장이 있다 (${uniq}종)`;
   });
   T('구속이 구위·구종을 따라간다', ()=>{
     /* [2.24.0] 구속은 공마다 랜덤이라 한 번 값으로는 못 잰다.

@@ -4,3 +4,7 @@ package-lock.json
 # 미리보기용으로 만든 임시 산출물 (index.html 에서 뽑아 쓰는 것들)
 bgm-preview.html
 loading-preview.html
+
+# art/ 작업물 — 미리보기 PNG 와 중간 파일 (index.html 에는 sheet.webp 만 들어간다)
+art/_*.png
+art/_sheet.png

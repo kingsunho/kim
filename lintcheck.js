@@ -37,7 +37,7 @@ const BUILTIN=new Set(['if','for','while','switch','catch','function','return','
  'localStorage','navigator','location','fetch','btoa','atob','encodeURIComponent','decodeURIComponent',
  'requestAnimationFrame','cancelAnimationFrame','performance','alert','confirm','Boolean','Symbol','RegExp','Error','TextEncoder','TextDecoder',
  'Uint8Array','Float32Array','AudioContext','webkitAudioContext','caches','performance','structuredClone',
- 'Blob','FileReader','URL','undefined','Intl','WeakMap','Proxy','Reflect','BigInt',
+ 'Blob','FileReader','URL','undefined','Intl','WeakMap','Proxy','Reflect','BigInt','Image',
  /* 정규식 패턴 안에만 등장하는 것들 */
  'iP','Android','OS','var','sort','minor','WAR','Version','CriOS','EdgA','SamsungBrowser','Chrome',
  'Firefox','FxiOS','Safari','Mac','SM','Galaxy','iPhone','iPad','iPod',
