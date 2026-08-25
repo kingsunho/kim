@@ -1,4 +1,4 @@
-/* [2.50.0] 컨택했는데 삼진 · 투구수 표시.
+/* [2.50.0~] 컨택했는데 삼진 · 투구수 · 오늘 못 나오는 사람 표시.
 
    [제보] "투스트라이크에서 잘맞았는데 삼진이라고 나옴"
    [요청] "투구수 현황 표시도 가능한가?"
@@ -151,6 +151,67 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
     const bad=ev(`Object.keys(ST.pit).some(function(k){return ST.pit[k].np==null})`);
     return bad===false && '전부 0 으로 채워진다';
   });
+  console.log('\n[투구수를 팀 합계까지 보여준다]');
+  /* [제보] "투구수가 왜 이렇게 적냐"
+     숫자는 멀쩡했다(경기당 팀 156구·등판 2.5명). 화면이 **지금 던지는 사람 것
+     하나**만 보여줘서, 교체하면 0구부터 다시 세니 적어 보였던 것이다. */
+  T('교체가 있으면 팀 누계도 같이 적는다', ()=>{
+    const src=ev("String(paintLiveCtl)");
+    return /teamNp/.test(src) && /팀 \$\{teamNp\}구/.test(src) && '팀 누계 표시';
+  });
+  T('한 명만 던졌으면 팀 누계는 안 붙인다', ()=>{
+    const src=ev("String(paintLiveCtl)");
+    return /used>1\?/.test(src) && '투수 1명이면 생략';
+  });
+  T('박스스코어에도 팀 합계 줄이 있다', ()=>{
+    const src=ev("String(pitBoxCard)");
+    return /팀 합계 \$\{NP\}구/.test(src) && '있음';
+  });
+
+  console.log('\n[오늘 못 나오는 사람이 눈에 띄나]');
+  /* [제보] "불참율이 적어졌네 / 라인업 발표하고 나서 불참하네"
+     발표 전 결장이 주당 2.3명(발표 후 번복의 5배)인데도 홈 화면 4000px
+     아래에 묻혀 있어서 안 보였다. 확률이 아니라 자리가 문제였다. */
+  const A=ev(`(function(){
+    /* 결장자가 여럿 나오는 주를 찾는다 */
+    for(let n=1;n<200;n++){
+      ST.weekSeq=n; ST.round=0; ST.weekDone=false; ST.events=[];
+      const r=runWeek();
+      if(!r && Object.keys(ST.absent||{}).length>=2) return {seq:n,
+        n:Object.keys(ST.absent).length, names:Object.keys(ST.absent).map(nameOf)};
+    }
+    return null;
+  })()`);
+  T('결장자가 여러 명 나오는 주가 있다', ()=>A && `${A.n}명 (${A.names.join(', ')})`);
+  w.go('home'); await wait(150);
+  T('소식 맨 위에 몇 명 빠지는지 요약이 뜬다', ()=>{
+    const e=d.querySelector('#view .out-sum');
+    return e && new RegExp('오늘 '+A.n+'명 못 나온다').test(e.textContent)
+      && e.textContent.replace(/\s+/g,' ').trim().slice(0,40);
+  });
+  T('요약이 결장 카드보다 위에 있다', ()=>{
+    const sum=d.querySelector('#view .out-sum');
+    const first=d.querySelector('#view .evt');
+    if(!sum||!first) return false;
+    /* DOM 순서로 본다 — jsdom 은 레이아웃이 없다 */
+    /* Node 는 이 프로세스의 전역이 아니다 — jsdom 창 것을 써야 한다 */
+    return (sum.compareDocumentPosition(first)&w.Node.DOCUMENT_POSITION_FOLLOWING)>0
+      && '요약 → 카드 순서';
+  });
+  T('결장 카드가 다른 소식보다 먼저 나온다', ()=>{
+    const evts=[...d.querySelectorAll('#view .evt')];
+    if(evts.length<2) return false;
+    const kinds=evts.map(x=>x.className);
+    const lastAbs=kinds.map((c,i)=>/evt-absent/.test(c)?i:-1).filter(i=>i>=0).pop();
+    const firstOther=kinds.findIndex(c=>!/evt-absent/.test(c));
+    return (firstOther<0 || lastAbs<firstOther) && `결장 ${lastAbs+1}개가 앞`;
+  });
+  T('경기 카드에도 오늘 빠진 사람이 적힌다', ()=>{
+    const e=d.querySelector('#view .out-line');
+    return e && /오늘 빠짐/.test(e.textContent)
+      && e.textContent.replace(/\s+/g,' ').trim().slice(0,44);
+  });
+
   T('도는 동안 에러 없음', ()=>jsErr.length===0 && '깨끗');
 
   console.log(errs.length? '\n❌ '+errs.length+'개 실패' : '\n✅ 이상 없음');

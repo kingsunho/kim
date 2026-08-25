@@ -1516,6 +1516,17 @@ table.hl-tbl td.hl-o{color:#c98a80}
   background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 8px}
 .np-now b{color:var(--tx);font-weight:800}
 .np-now i{font-style:normal;font-size:10.5px;opacity:.85;margin-left:4px}
+.np-now em{display:block;font-style:normal;font-size:10.5px;color:var(--gold);
+  opacity:.9;margin-top:3px}
+/* 오늘 못 나오는 사람 — 소식 맨 위 요약과 경기 카드 한 줄 */
+.out-sum{background:rgba(224,138,112,.12);border:1px solid rgba(224,138,112,.45);
+  border-radius:9px;padding:8px 10px;margin-bottom:9px;font-size:12.5px;line-height:1.55}
+.out-sum b{color:#e08a70;font-weight:800;display:block;margin-bottom:2px}
+.out-sum span{color:var(--dim)}
+.out-line{margin-top:8px;padding-top:8px;border-top:1px solid var(--line);
+  font-size:11.5px;color:var(--dim);line-height:1.7}
+.out-line b{color:#e08a70;font-weight:800}
+.out-line i{font-style:normal;font-size:10px;opacity:.7;margin-left:3px}
 .subtabs.sub6{gap:4px}
 .sub6 .subtab{padding:9px 3px;font-size:11px;letter-spacing:-.3px}
 .slash{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px;padding:8px 10px 10px}
@@ -6982,8 +6993,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.51.0';
-const APP_VERSION_NOTE = '구장 규격이 들어갔다 — 칠 때마다 비거리가 나온다';
+const APP_VERSION = '2.51.1';
+const APP_VERSION_NOTE = '오늘 못 나오는 사람과 팀 투구수가 눈에 띈다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7004,6 +7015,13 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.51.1', t:'안 보이던 걸 보이게', items:[
+    '「불참율이 적어졌다」는 제보를 받고 400주를 재봤다. 발표 전 결장이 주당 2.3명(92%의 주)으로 발표 후 번복(0.46명)보다 다섯 배 많았다. 확률은 멀쩡했고 안 보였을 뿐이다',
+    '결장 카드가 날씨·음주·연락 사이에 섞여서 홈 화면 한참 아래에 묻혀 있었다. 이제 소식 맨 위에 「오늘 3명 못 나온다」로 먼저 알려주고, 결장을 다른 소식보다 앞에 놓는다',
+    '경기 카드에도 오늘 빠진 사람과 사유를 적는다 — 여기가 경기로 들어가는 문이라서',
+    '「투구수가 적다」도 재봤다. 경기당 팀 합계 156구에 등판 2.5명으로 정상이었다. 화면이 지금 던지는 사람 것만 보여줘서, 교체하면 0구부터 다시 세니 적어 보였던 것이다',
+    '이제 교체가 있으면 「팀 82구 · 투수 2명」을 같이 적는다. 박스스코어에도 팀 합계 줄이 생겼다',
+  ]},
   {v:'2.51.0', t:'구장 규격 · 타구 비거리', items:[
     '구장마다 좌·중·우 담장 거리가 들어갔다. 배나물 98/122/98 · 성곡 93/105/93 · 신길 95/115/95',
     '칠 때마다 비거리가 나온다. 「이건 2루타 (좌중간 94m)」 처럼 안타·홈런은 물론 땅볼·뜬공·실책·파울까지 전부 붙는다',
@@ -11636,7 +11654,22 @@ function renderHome(){
   if(ST.events&&ST.events.length){
     const ec=el('div','card');
     ec.appendChild(el('div','card-h','이번 주 소식'));
-    ST.events.forEach(e=>{
+    /* [제보] "불참율이 적어졌네 / 라인업 발표하고 나서 불참하네"
+       재보니 발표 전 결장이 주당 2.3명(92% 의 주)으로 발표 후 번복(0.46명)보다
+       다섯 배나 많았다. 확률은 멀쩡했다 — **안 보였을 뿐이다.**
+       결장 카드가 날씨·음주·연락 카드 사이에 섞여서 홈 화면 4000px 아래에
+       묻혀 있었다. 반면 발표 후 번복은 라인업을 잠가서 길을 막으니 무조건 눈에 띈다.
+       그래서 기억에는 '발표 후에만 빠진다' 로 남는다.
+       결장을 맨 위로 올리고 몇 명인지 먼저 말한다.                     */
+    const outs=ST.events.filter(e=>e.type==='absent');
+    const rest=ST.events.filter(e=>e.type!=='absent');
+    if(outs.length){
+      const sum=el('div','out-sum');
+      sum.innerHTML=`<b>오늘 ${outs.length}명 못 나온다</b> `
+        +`<span>${outs.map(e=>nmLink(e.pid,nameOf(e.pid))).join(' · ')}</span>`;
+      wireNames(sum); ec.appendChild(sum);
+    }
+    outs.concat(rest).forEach(e=>{
       const row=el('div','evt evt-'+e.type);
       row.innerHTML=`<div class="evt-t">${e.title}</div><div class="evt-b">${e.body}</div><div class="evt-e">${e.effect}</div>`;
       ec.appendChild(row);
@@ -11666,6 +11699,15 @@ function renderHome(){
     card.appendChild(b);
   } else {
     const avail=us.players.filter(p=>isAvailable(p.id)).length;
+    /* 오늘 빠지는 사람은 경기 카드에서도 짚어준다 — 여기가 경기로 들어가는 문이다 */
+    const outNow=us.players.filter(p=>(ST.absent&&ST.absent[p.id])||(ST.injury&&ST.injury[p.id]));
+    if(outNow.length){
+      const ol=el('div','out-line');
+      ol.innerHTML=`오늘 빠짐 <b>${outNow.length}명</b> · `
+        +outNow.map(p=>`${nmLink(p.id,p.name)}<i>${ST.injury&&ST.injury[p.id]
+            ? ST.injury[p.id].name : (ST.absent[p.id]||'')}</i>`).join(', ');
+      wireNames(ol); card.appendChild(ol);
+    }
     if(avail<9){
       card.appendChild(el('div','warn',
         `출전 가능 인원 ${avail}명. 9명이 안 되면 몰수패(0:7)다. 용병을 부르면 채울 수 있다.`));
@@ -16520,9 +16562,18 @@ function paintLiveCtl(){
      우리가 수비 중일 때만 뜬다 — 공격 중엔 우리 투수가 안 던지고 있다. */
   const curP=LIVE.curPitcher(sd), curL=curP?LIVE.pbox[curP.id]:null;
   if(curL && (curL.np||curL.bf) && !LIVE.off().isUser){
+    /* [제보] "투구수가 왜 이렇게 적냐"
+       화면에 뜨는 건 **지금 던지는 사람 것 하나**였다. 교체하면 0구부터
+       다시 세니까, 팀이 90구를 던졌어도 "김한규 12구" 로 보인다.
+       재보니 경기당 팀 합계는 156구(등판 2.5명)로 멀쩡했다 —
+       숫자가 아니라 보여주는 방식이 문제였다. 팀 누계를 같이 적는다. */
+    let teamNp=0, teamOuts=0, used=0;
+    (sd.rot||[]).forEach(pid=>{ const pb=LIVE.pbox[pid];
+      if(pb&&pb.bf){ teamNp+=pb.np||0; teamOuts+=pb.outs||0; used++; } });
     const inf=el('div','np-now');
     inf.innerHTML=`<b>${curP.name}</b> ${curL.np||0}구`
-      +` <i>${ipStr(curL)}이닝 · ${curL.h}피안타 ${curL.r}실점</i>`;
+      +` <i>${ipStr(curL)}이닝 · ${curL.h}피안타 ${curL.r}실점</i>`
+      +(used>1?`<em>팀 ${teamNp}구 · 투수 ${used}명</em>`:'');
     lc.appendChild(inf);
   }
   const pc=el('button','btn');
@@ -19558,8 +19609,13 @@ function pitBoxCard(title, side, res, isUs){
   if(!n) card.appendChild(el('p','muted','기록이 없다.'));
   else {
     /* 실점과 자책이 갈리면 왜 갈렸는지 알려준다 — 안 그러면 ERA 가 이상해 보인다 */
-    let R=0,ER=0;
-    list.forEach(pid=>{ const l=res.pbox[pid]; if(l&&l.bf){ R+=l.r; ER+=l.er; } });
+    let R=0,ER=0,NP=0,OU=0;
+    list.forEach(pid=>{ const l=res.pbox[pid];
+      if(l&&l.bf){ R+=l.r; ER+=l.er; NP+=l.np||0; OU+=l.outs||0; } });
+    /* [제보] "투구수가 왜 이렇게 적냐" — 한 명씩만 보면 적어 보인다.
+       팀이 오늘 몇 개를 던졌는지 한 줄로 적어준다. */
+    if(NP) card.appendChild(Object.assign(el('p','muted'),{textContent:
+      `팀 합계 ${NP}구 · ${n}명 · ${ipStr({outs:OU})}이닝`}));
     const errN=(side.errs||0);
     if(R>ER) card.appendChild(Object.assign(el('p','muted'),{textContent:
       `실점 ${R} 중 자책은 ${ER}. 나머지 ${R-ER}점은 실책${errN?` ${errN}개`:''} 때문에 `+
