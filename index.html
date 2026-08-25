@@ -2198,6 +2198,7 @@ function simGame(home,away,opts){
   const rng=opts.rng||makeRng((Date.now()*7919)>>>0);
   const INN=opts.innings||7;
   const log=[],box={},pbox={},scoreLog=[];
+  let paNo=0;                       // 타구 비거리용 일련번호
 
   const S=[
     {team:away,slots:opts.awayLineup,rot:opts.awayRotation,home:false,
@@ -2286,6 +2287,12 @@ function simGame(home,away,opts){
 
         const res=simPA(bat,pit,off.team,def.team,rng,off.tac,off.cond[bat.id],opts.park);
         pl.np=(pl.np||0)+pitchesForPA(res.type, rng);      // 투구수 — 결과에서 되짚는다
+        /* 비거리 — 라이브 엔진과 같은 함수를 쓴다. 여긴 타석 번호가 없어서
+           이닝·순번으로 하나 만들어 넘긴다(경기 난수는 안 건드린다). */
+        paNo++;
+        const bbK = (res.type==='OUT') ? (res.gb?'GB':'FB') : res.type;
+        const bb = ['1B','2B','3B','HR','OUT','E'].indexOf(res.type)>=0
+          ? battedBall(paNo, bbK, opts.park, bat.bats||'R', !!res.itp) : null;
         const bl=box[bat.id]; bl.pa++;
         const score=(rid,e)=>{if(!rid)return;box[rid].r++;off.runs++;ir++;pl.r++;
           if(isEarned(e,rid,outs,led))pl.er++;
@@ -2314,28 +2321,28 @@ function simGame(home,away,opts){
           adv(1,false);bases[0]=bat.id;
           const fpos=fid?(def.slots.find(x=>x.id===fid)||{}).pos:null;
           log.push({t:'play',inning:inn,half,cls:'err',
-            text:fid?`${bat.name} ${POSNAMES[fpos]||''} ${nameInSide(fid,def)} 실책으로 출루`
-                    :`${bat.name} 상대 실책 출루`});}
+            text:(fid?`${bat.name} ${POSNAMES[fpos]||''} ${nameInSide(fid,def)} 실책으로 출루`
+                    :`${bat.name} 상대 실책 출루`)+bbTag(bb)});}
         else if(res.type==='OUT'){
           bl.ab++;pl.outs++;outs++;
           if(res.gb&&bases[0]&&outs<3&&rng()<0.16){bases[0]=null;pl.outs++;outs++;
-            log.push({t:'play',inning:inn,half,text:`${bat.name} 병살타`,cls:'out'});}
+            log.push({t:'play',inning:inn,half,text:`${bat.name} 병살타${bbTag(bb)}`,cls:'out'});}
           else if(bases[2]&&outs<3&&!res.gb&&rng()<0.30){score(bases[2],true);bl.rbi++;bases[2]=null;
-            log.push({t:'play',inning:inn,half,text:`${bat.name} 희생플라이 · 1점`,cls:'score'});}
-          else log.push({t:'play',inning:inn,half,text:`${bat.name} ${res.gb?'땅볼':'뜬공'} 아웃`,cls:'out'});}
+            log.push({t:'play',inning:inn,half,text:`${bat.name} 희생플라이 · 1점${bbTag(bb)}`,cls:'score'});}
+          else log.push({t:'play',inning:inn,half,text:`${bat.name} ${res.gb?'땅볼':'뜬공'} 아웃${bbTag(bb)}`,cls:'out'});}
         else{
           bl.ab++;bl.h++;pl.h++;off.hits++;
           if(res.type==='1B'){adv(rng()<0.35?2:1,true);bases[0]=bat.id;
-            log.push({t:'play',inning:inn,half,text:`${bat.name} 안타`,cls:'hit'});}
+            log.push({t:'play',inning:inn,half,text:`${bat.name} 안타${bbTag(bb)}`,cls:'hit'});}
           else if(res.type==='2B'){bl.d2++;adv(2,true);bases[1]=bat.id;
-            log.push({t:'play',inning:inn,half,text:`${bat.name} 2루타`,cls:'hit'});}
+            log.push({t:'play',inning:inn,half,text:`${bat.name} 2루타${bbTag(bb)}`,cls:'hit'});}
           else if(res.type==='3B'){bl.d3++;adv(3,true);bases[2]=bat.id;
-            log.push({t:'play',inning:inn,half,text:`${bat.name} 3루타`,cls:'hit'});}
+            log.push({t:'play',inning:inn,half,text:`${bat.name} 3루타${bbTag(bb)}`,cls:'hit'});}
           else{bl.hr++;let c=1;for(let b=0;b<3;b++)if(bases[b]){score(bases[b],true);c++;bases[b]=null;}
             score(bat.id,true);bl.rbi+=c;
             if(res.itp) box[bat.id].itp=(box[bat.id].itp||0)+1;
             log.push({t:'play',inning:inn,half,
-              text:res.itp?`${bat.name} 그라운드 홈런! ${c}점`:`${bat.name} 홈런! ${c}점`,cls:'hr'});}}
+              text:(res.itp?`${bat.name} 그라운드 홈런! ${c}점`:`${bat.name} 홈런! ${c}점`)+bbTag(bb),cls:'hr'});}}
 
         /* 홈팀 말 공격 중 승부가 끝나면 그 자리에서 — 끝내기도, 콜드도 */
         if(half===1){
@@ -2568,21 +2575,105 @@ const TRAIT_INFO = {
   '똑딱이':'배트에 맞히긴 잘하는데 장타가 안 나온다. 삼진이 적고 단타 위주다',
 };
 
-/* ---------- 경기장 ---------- */
+/* ---------- 경기장 ----------
+   dim 은 실측 담장 거리 [좌, 중, 우] (m). 비거리 판정과 중계 화면이 이걸 쓴다.
+
+   [제보] "경기 규격 좌 중 우 순이야 성곡: 95 115 95 / 성곡: 93 105 93 /
+           배나물: 98 122 98"
+   성곡이 두 번 적혀 있고 신길이 빠져 있었다. 우리 리그 구장은 셋이고
+   숫자도 셋이라 하나는 신길로 봤다. 어느 쪽이 성곡인지는 기존 구장 성격에
+   맞췄다 — 성곡은 원래 홈런이 제일 잘 나오는 구장(hr 2.30)이라
+   더 짧은 93/105/93 을, 신길은 중간이라 95/115/95 를 줬다.
+   **바뀐 거면 이 두 줄만 서로 바꾸면 된다.**
+
+   구장 배수(hr·d2·d3…)는 실제 기록에서 맞춰둔 값이라 건드리지 않았다.
+   규격은 비거리를 '담장까지 몇 m 였나'로 말해주는 데 쓴다.            */
 const PARKS = [
-  {id:'benamul',name:'배나물야구장',
+  {id:'benamul',name:'배나물야구장', dim:[98,122,98],
    desc:'문학경기장과 길이가 같다. 담장이 멀어 홈런이 거의 안 나오고 갭이 넓다.',
    hr:0.45, d2:1.10, d3:1.55, err:1.00, babip:1.02,
    note:'3루타가 많이 나온다'},
-  {id:'seonggok',name:'성곡야구장',
-   desc:'좌측 담장이 짧다. 당겨치는 우타에게 유리하다.',
+  {id:'seonggok',name:'성곡야구장', dim:[93,105,93],
+   desc:'담장이 가장 가깝다. 넘길 힘만 있으면 홈런이 나온다.',
    hr:2.30, d2:1.15, d3:0.60, err:1.00, babip:1.00,
-   note:'좌측 담장이 짧아 홈런이 나온다'},
-  {id:'singil',name:'신길야구장',
+   note:'중앙 105m — 리그에서 제일 짧다'},
+  {id:'singil',name:'신길야구장', dim:[95,115,95],
    desc:'내야는 흙, 외야는 잔디. 그라운드 상태가 고르지 않다.',
    hr:0.80, d2:0.95, d3:0.90, err:1.30, babip:1.08,
    note:'실책과 내야안타가 늘어난다'},
 ];
+/* 그 각도에서 담장까지 몇 m 인가.
+   ang 는 중앙이 0, 좌측이 음수, 우측이 양수(도). 파울선이 ±PS_FOUL.
+   담장은 직선이 아니라 곡선이라 라인 쪽으로 갈수록 급히 짧아진다.     */
+const PARK_DIM_DEFAULT=[95,115,95];
+function fenceAt(park, ang){
+  const D=(park&&park.dim)||PARK_DIM_DEFAULT;
+  const foul=(typeof PS_FOUL!=='undefined')?PS_FOUL:50.2;
+  const t=Math.max(-1,Math.min(1,(ang||0)/foul));
+  const side=(t<0)?D[0]:D[2];
+  return D[1]+(side-D[1])*Math.pow(Math.abs(t),1.35);
+}
+/* ================= 타구 비거리 =================
+   [요청] "칠때마다 비거리도 적어주고 파울이나 땅볼 이런 거에도 말이지"
+
+   엔진은 타구 방향도 비거리도 모른다. simPA 가 결과만 낸다.
+   그래서 **결과에서 되짚어 만든다** — 투구수(v2.50.0)와 같은 방식이다.
+
+   중요한 규칙 두 개.
+   ① 결과와 어긋나면 안 된다. 홈런인데 담장 앞에 떨어지면 거짓말이 된다.
+      그래서 담장 거리(fenceAt)를 기준으로 잡는다.
+      홈런은 담장 너머, 3루타·2루타는 담장 앞, 땅볼은 내야.
+   ② **로그와 중계 화면이 같은 숫자를 써야 한다.** 로그엔 96m 라고 적어놓고
+      화면에서는 딴 데 떨어지면 바로 들킨다. 그래서 경기 난수를 쓰지 않고
+      타석 번호로 자기 난수를 돌린다 — 어디서 몇 번을 불러도 같은 값이 나온다.
+      (경기 난수를 건드리면 시드가 밀려서 경기 자체가 바뀌기도 한다)   */
+function bbRng(seq){
+  let s=((seq|0)*2654435761 + 0x9E3779B9)>>>0;
+  return ()=>{ s=(s*1664525+1013904223)>>>0; return s/4294967296; };
+}
+/* kind: HR 3B 2B 1B FB GB DP SF E FOUL · itp = 그라운드 홈런 */
+function battedBall(seq, kind, park, bats, itp){
+  const rng=bbRng(seq);
+  const foul=(typeof PS_FOUL!=='undefined')?PS_FOUL:50.2;
+  /* 방향 — 당겨치는 쪽으로 치우치되 반대쪽으로도 간다.
+     [주의] 예전 psAngle 은 폭이 좁아서 **우타가 우측으로 아예 안 쳤다**
+     (실측 우측 0.0% · 우중간 1.1%). 4부 타자들은 그렇게 안 친다 —
+     실제 기록에도 "좌측 44% 로 균형 타구" 같은 메모가 있다.
+     난수를 둘 더해서(삼각분포) 가운데가 두껍고 양쪽으로 꼬리가 남게 한다. */
+  const pull=(bats==='L')?18:-18;
+  let ang=pull*(0.30+rng()*0.70)+((rng()+rng())-1)*56;
+  ang=Math.max(-foul+1.5, Math.min(foul-1.5, ang));
+  const F=fenceAt(park, ang);
+  const u=rng(), v=rng();
+  let m;
+  if(kind==='HR' && !itp)      m=F+1+u*13;              // 담장을 넘겼다
+  else if(kind==='HR')         m=F-5+u*5;               // 그라운드 홈런 — 담장 앞
+  else if(kind==='3B')         m=F*(0.82+u*0.14);
+  else if(kind==='2B')         m=F*(0.72+u*0.20);
+  else if(kind==='SF')         m=F*(0.66+u*0.20);
+  else if(kind==='FB')         m=F*(0.48+u*0.44);
+  else if(kind==='1B')         m=F*(0.34+u*0.36);
+  else if(kind==='E')          m=18+u*38;
+  else if(kind==='FOUL')       m=8+u*46;
+  else                         m=12+u*30;               // 땅볼·병살은 내야
+  /* 파울은 파울선 밖으로 나간 타구다 — 각도를 선 밖으로 밀어준다 */
+  if(kind==='FOUL') ang=(ang<0?-1:1)*(foul+2+v*16);
+  return {m:Math.round(m), ang, dir:dirName(ang), fence:Math.round(F)};
+}
+/* 로그에 붙일 꼬리표 — '(좌중간 96m)' */
+function bbTag(bb){
+  if(!bb) return '';
+  return ` (${bb.dir} ${bb.m}m)`;
+}
+/* 타구 방향 이름 — 로그에 '좌중간 96m' 처럼 적는다 */
+function dirName(ang){
+  const a=ang||0;
+  if(a<-32) return '좌측';
+  if(a<-11) return '좌중간';
+  if(a<=11) return '중앙';
+  if(a<=32) return '우중간';
+  return '우측';
+}
 
 /* ---------- 능력 ---------- */
 function calcCA(p){
@@ -5408,9 +5499,9 @@ const POST_PARK={
   benamul:[['배나물은 진짜 넓다 공이 안 넘어간다','배나물은 진짜 넓네요 공이 안 넘어갑니다'],
     ['갭만 노리면 3루타 나오는 구장이다','갭만 노리면 3루타 나오는 구장입니다'],
     ['외야 뛰다가 다리 풀렸다','외야 뛰다가 다리 풀렸습니다']],
-  seonggok:[['성곡 좌측 담장은 진짜 가깝다','성곡 좌측 담장은 진짜 가깝네요'],
-    ['당겨치면 넘어갈 것 같은 기분이 든다','당겨치면 넘어갈 것 같은 기분이 듭니다'],
-    ['좌익수 자리가 제일 무섭다','좌익수 자리가 제일 무섭습니다']],
+  seonggok:[['성곡은 담장이 진짜 가깝다 중앙이 105m 라던데','성곡은 담장이 진짜 가깝죠. 중앙이 105m 라던데요'],
+    ['여기서 안 넘기면 어디서 넘기냐','여기서 안 넘기면 어디서 넘기겠습니까'],
+    ['외야수들 오늘 뒤로 좀 서라','외야수분들 오늘 뒤로 좀 서시죠']],
   singil:[['신길 내야 흙이 오늘도 말썽이다','신길 내야 흙이 오늘도 말썽입니다'],
     ['바운드가 튀어서 못 잡겠더라','바운드가 튀어서 못 잡겠더라고요'],
     ['내야안타가 이렇게 많이 나오는 구장이','내야안타가 이렇게 많이 나오는 구장이']],
@@ -6891,8 +6982,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.50.0';
-const APP_VERSION_NOTE = '맞혔는데 삼진 나던 것 · 투구수가 보인다';
+const APP_VERSION = '2.51.0';
+const APP_VERSION_NOTE = '구장 규격이 들어갔다 — 칠 때마다 비거리가 나온다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6913,6 +7004,15 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.51.0', t:'구장 규격 · 타구 비거리', items:[
+    '구장마다 좌·중·우 담장 거리가 들어갔다. 배나물 98/122/98 · 성곡 93/105/93 · 신길 95/115/95',
+    '칠 때마다 비거리가 나온다. 「이건 2루타 (좌중간 94m)」 처럼 안타·홈런은 물론 땅볼·뜬공·실책·파울까지 전부 붙는다',
+    '비거리는 결과와 절대 안 어긋난다. 홈런은 반드시 담장 밖, 그라운드 홈런은 담장 앞에 떨어진다',
+    '중계 화면 담장이 그 구장 모양대로 그려진다. 배나물은 중앙이 쑥 들어가고 성곡은 전체가 가깝다',
+    '타구 애니메이션이 비거리를 따라간다. 15m 땅볼은 툭 굴러가고 130m 홈런은 한참 떠 있는다 — 결과 종류가 아니라 거리가 정한다',
+    '로그에 적힌 숫자와 화면에 날아가는 거리가 같다',
+    '우타가 우측으로 아예 안 치던 것도 고쳤다(실측 우측 0.0%였다). 이제 당기는 쪽이 51%, 반대쪽이 18% 다',
+  ]},
   {v:'2.50.0', t:'맞혔는데 삼진 나던 것 · 투구수', items:[
     '2스트라이크에서 잘 맞혔는데 삼진으로 처리되는 일이 있었다. 진짜 버그였고, 고쳤다',
     '배트에 맞으면 삼진·볼넷이 안 나오게 확률을 0.0008배로 눌러놨는데 엔진의 하한값 1%가 그걸 도로 끌어올리고 있었다. 컨택 100번에 한 번은 삼진, 90번에 한 번은 볼넷이 나왔다는 뜻이다',
@@ -9456,6 +9556,12 @@ LiveGame.prototype.stepPA = function(){
      엔진이 통째로 낸 타석은 결과에서 되짚어 굴린다. */
   pl.np=(pl.np||0)+(this._paPitches>0 ? this._paPitches : pitchesForPA(res.type, rng));
   this._paPitches=0;
+  /* [요청] "칠때마다 비거리도 적어주고"
+     인플레이 타구면 방향·비거리를 만들어 둔다. 로그도 중계 화면도 이걸 쓴다. */
+  const bbKind = (res.type==='OUT') ? (res.gb?'GB':'FB') : res.type;
+  const bb = ['1B','2B','3B','HR','OUT','E'].indexOf(res.type)>=0
+    ? battedBall(this.paSeq, bbKind, this.park, bat.bats||'R', !!res.itp) : null;
+  this._bb=bb;
   // 번트 앤 런은 주자가 한 베이스 더 간다
   const advOdds = (off.isUser && this._buntRun) ? 0.62 : 0.35;
 
@@ -9501,9 +9607,9 @@ LiveGame.prototype.stepPA = function(){
       this.box[efid].e=(this.box[efid].e||0)+1;
       this.lastErr={id:efid, pos:(def.slots.find(x=>x.id===efid)||{}).pos}; }
     adv(1,false);this.bases[0]=bat.id; onBase(bat.id);
-    events.push({cls:'err', text: efid
+    events.push({cls:'err', text: (efid
       ? `${bat.name} ${POSNAMES[(this.lastErr||{}).pos]||''} ${nameInSide(efid,def)} 실책으로 출루`
-      : `${bat.name} 상대 실책 출루`});
+      : `${bat.name} 상대 실책 출루`)+bbTag(bb)});
     // 안산 야수가 실책하면 고진선이 폭발한다 (경기당 1회)
     if(this.gojin && !this.gojin.threw && !def.isUser && rng()<0.65){
       this.gojin.threw=true;
@@ -9520,7 +9626,7 @@ LiveGame.prototype.stepPA = function(){
       + ((mm && mm.traits.includes('똥차'))?0.045:0);   // 똥차는 1루에서 못 산다
     if(res.gb&&this.bases[0]&&this.outs<3&&rng()<dpRisk){this.bases[0]=null;pl.outs++;this.outs++;
       this.dpCount=(this.dpCount||0)+1;
-      events.push({text:`${bat.name} 병살타`,cls:'out'});
+      events.push({text:`${bat.name} 병살타${bbTag(bb)}`,cls:'out'});
       this.hl('dp',off,bat.name,'');}
     else if(this.bases[2]&&this.outs<3&&!res.gb&&rng()<0.30){
       // 홈보살 특성 보유 외야수가 있으면 잡아낸다
@@ -9529,15 +9635,15 @@ LiveGame.prototype.stepPA = function(){
         .find(p=>META[p.id]&&META[p.id].traits.includes('홈보살'));
       if(of && rng()<0.10){
         this.bases[2]=null; pl.outs++; this.outs++;
-        events.push({text:`${bat.name} 뜬공 — ${of.name} 홈 보살! 주자 아웃`,cls:'sb'});
+        events.push({text:`${bat.name} 뜬공 — ${of.name} 홈 보살! 주자 아웃${bbTag(bb)}`,cls:'sb'});
         this.assists=(this.assists||0)+1;
         this.assistBy=of.id;
       } else {
         score(this.bases[2],true);bl.rbi++;this.bases[2]=null;
-        events.push({text:`${bat.name} 희생플라이 · 1점`,cls:'score'});
+        events.push({text:`${bat.name} 희생플라이 · 1점${bbTag(bb)}`,cls:'score'});
       }
     }
-    else events.push({text:`${bat.name} ${res.gb?'땅볼':'뜬공'} 아웃`,cls:'out'});
+    else events.push({text:`${bat.name} ${res.gb?'땅볼':'뜬공'} 아웃${bbTag(bb)}`,cls:'out'});
   }
   else{
     bl.ab++;bl.h++;pl.h++;off.hits++;
@@ -9551,26 +9657,26 @@ LiveGame.prototype.stepPA = function(){
         this.box[r3]&&(this.box[r3].cs=this.box[r3].cs);
         pl.outs++; this.outs++;
         this.assists=(this.assists||0)+1; this.assistBy=of.id;
-        events.push({text:`${bat.name} 안타 — ${of.name} 홈 보살! 3루 주자 아웃`,cls:'sb'});
+        events.push({text:`${bat.name} 안타 — ${of.name} 홈 보살! 3루 주자 아웃${bbTag(bb)}`,cls:'sb'});
         if(this.outs<3){ adv(rng()<advOdds?2:1,true); this.bases[0]=bat.id; onBase(bat.id); }
       } else {
         adv(rng()<advOdds?2:1,true);this.bases[0]=bat.id; onBase(bat.id);
-        events.push({text:`${bat.name} 안타`,cls:'hit'});
+        events.push({text:`${bat.name} 안타${bbTag(bb)}`,cls:'hit'});
       }
     }
     else if(res.type==='2B'){bl.d2++;adv(2,true);this.bases[1]=bat.id; onBase(bat.id);
-      events.push({text:`${bat.name} 2루타`,cls:'hit'});
+      events.push({text:`${bat.name} 2루타${bbTag(bb)}`,cls:'hit'});
       this.hl('d2',off,bat.name,'');}
     else if(res.type==='3B'){bl.d3++;adv(3,true);this.bases[2]=bat.id; onBase(bat.id);
-      events.push({text:`${bat.name} 3루타`,cls:'hit'});
+      events.push({text:`${bat.name} 3루타${bbTag(bb)}`,cls:'hit'});
       this.hl('d3',off,bat.name,'');}
     else{bl.hr++;let c=1;for(let b=0;b<3;b++)if(this.bases[b]){score(this.bases[b],true);c++;this.bases[b]=null;}
       score(bat.id,true);bl.rbi+=c;
       const slam=(c===4), itp=!!res.itp;
       bl.itp=(bl.itp||0)+(itp?1:0);
-      events.push({text: itp
+      events.push({text: (itp
           ? `${bat.name} 그라운드 홈런!! ${c}점 (담장은 안 넘었다)`
-          : (slam?`${bat.name} 만루홈런!! 4점`:`${bat.name} 홈런! ${c}점`),cls:'hr'});
+          : (slam?`${bat.name} 만루홈런!! 4점`:`${bat.name} 홈런! ${c}점`))+bbTag(bb),cls:'hr'});
       this.hl('hr',off,bat.name,
         itp?(slam?'만루 그라운드 홈런':'그라운드 홈런'):(slam?'만루홈런':(c>1?`${c}점 홈런`:'솔로 홈런')));
       if(slam) this.feats.push({kind:'만루홈런',pid:bat.id,us:!!off.isUser,
@@ -9592,7 +9698,7 @@ LiveGame.prototype.stepPA = function(){
     if(/병살/.test(txt)) kind='DP';
     else if(/희생플라이/.test(txt)) kind='SF';
     else if(/보살/.test(txt)) kind='AS';
-    return {seq:self.paSeq, kind, itp:!!res.itp,
+    return {seq:self.paSeq, kind, itp:!!res.itp, bb:self._bb||null,
       bat:{id:bat.id,name:bat.name,bats:bat.bats||'R'},
       pit:{id:pit.id,name:pit.name},
       us:!!off.isUser, before:psBefore, after:self.bases.slice(),
@@ -15471,8 +15577,28 @@ function psNearest(p){
 /* ---------- 도트 그리기 ---------- */
 const PS_FOUL=50.2;                 // 홈에서 1·3루 쪽으로 벌어진 각도(도)
 function psRad(a){ return (a-90)*Math.PI/180; }
-function psField(g){
-  const HX=160, HY=236, FENCE=196;
+/* 지금 경기가 열리는 구장. 중계 화면이 담장을 이 규격대로 그린다. */
+function psPark(){
+  if(typeof WHATIF!=='undefined' && WHATIF && WHATIF.park)
+    return PARKS.find(p=>p.id===WHATIF.park)||PARKS[0];
+  return (typeof ST!=='undefined'&&ST) ? (PARKS.find(p=>p.id===ST.park)||PARKS[0]) : PARKS[0];
+}
+/* 각도별 담장 반지름(px) — 구장 규격을 그대로 옮긴다 */
+function psFenceR(park, angDeg){ return fenceAt(park, angDeg)/PS_MPP; }
+/* 담장 곡선을 따라가는 경로를 만든다 */
+function psFencePath(g, park, pad){
+  const HX=160, HY=236;
+  g.beginPath();
+  for(let a=-PS_FOUL;a<=PS_FOUL+0.01;a+=2){
+    const r=psFenceR(park,a)+(pad||0);
+    const rad=psRad(a);
+    const x=HX+Math.cos(rad)*r, y=HY+Math.sin(rad)*r;
+    if(a<=-PS_FOUL) g.moveTo(x,y); else g.lineTo(x,y);
+  }
+}
+function psField(g, parkIn){
+  const park=parkIn||psPark();
+  const HX=160, HY=236;
   const stripes=(x0,y0,w,h,c1,c2)=>{
     for(let x=x0;x<x0+w;x+=20){
       g.fillStyle=(((x/20)|0)%2)?c1:c2;
@@ -15481,18 +15607,20 @@ function psField(g){
   };
   // 파울 지역 · 담장 밖 — 어두운 잔디
   stripes(0,0,PSW,PSH,'#2c5b28','#31632c');
-  // 페어 지역만 밝게
+  /* 페어 지역만 밝게 — 담장은 구장 규격대로 생겼다.
+     [요청] 좌·중·우 규격이 생겼으니 원이 아니라 그 모양으로 그린다.
+     배나물(98/122/98)은 중앙이 쑥 들어가고, 성곡(93/105/93)은 전체가 가깝다. */
   g.save();
   g.beginPath(); g.moveTo(HX,HY);
-  g.arc(HX,HY,FENCE,psRad(-PS_FOUL),psRad(PS_FOUL));
+  psFencePath(g,park,0);
   g.closePath(); g.clip();
   stripes(0,0,PSW,PSH,'#3f8437','#489240');
   g.restore();
   // 담장
-  g.strokeStyle='#8b9b7c'; g.lineWidth=2;
-  g.beginPath(); g.arc(HX,HY,FENCE,psRad(-PS_FOUL),psRad(PS_FOUL)); g.stroke();
   g.strokeStyle='rgba(0,0,0,.25)'; g.lineWidth=4;
-  g.beginPath(); g.arc(HX,HY,FENCE+3,psRad(-PS_FOUL),psRad(PS_FOUL)); g.stroke();
+  psFencePath(g,park,3); g.stroke();
+  g.strokeStyle='#8b9b7c'; g.lineWidth=2;
+  psFencePath(g,park,0); g.stroke();
   // 내야 흙 — 홈에서 부채꼴
   g.fillStyle='#b98a52';
   g.beginPath(); g.moveTo(HX,HY);
@@ -15515,7 +15643,7 @@ function psField(g){
   // 파울 라인 — 1·3루 베이스를 지나 담장까지
   g.strokeStyle='#eef2ec'; g.lineWidth=2;
   [-PS_FOUL,PS_FOUL].forEach(a=>{
-    const p=psSpot(a,FENCE);
+    const p=psSpot(a,psFenceR(park,a));       // 라인도 그 구장 담장까지만
     g.beginPath(); g.moveTo(HX,HY); g.lineTo(p.x,p.y); g.stroke();
   });
   // 베이스
@@ -15569,21 +15697,43 @@ function psAngle(d,rng){
   const pull=(d.bat.bats==='L')?18:-18;          // 좌타는 우측으로 당긴다
   return pull*(0.4+rng()*0.8)+(rng()-0.5)*44;
 }
+/* 미터 ↔ 캔버스 픽셀. 담장 118m 를 195px 로 그리던 기존 환산을 그대로 쓴다. */
+const PS_MPP=0.605;
+/* 내야는 그림이 실제보다 크게 그려져 있다 — 2루가 실제 38.8m 인데 104px 다
+   (선형 환산이면 64px). 도식이라 그게 보기 좋아서 그렇게 잡혀 있었다.
+   그런데 이제 공이 실제 비거리대로 날아가니, 그대로 환산하면
+   **15m 땅볼이 홈플레이트 위에 떨어지고 야수가 홈으로 달려온다.**
+   그래서 내야(0~38.8m)와 외야(38.8m~담장)를 따로 매핑한다.
+   그림 비율은 그대로 두면서 거리는 단조증가한다.                     */
+const PS_IN_M=38.8, PS_IN_PX=104;
+function psMtoPx(m, park, ang){
+  if(m<=PS_IN_M) return Math.max(6, m/PS_IN_M*PS_IN_PX);
+  const F=fenceAt(park,ang), Fpx=F/PS_MPP;
+  const rate=(Fpx-PS_IN_PX)/Math.max(1,(F-PS_IN_M));   // 외야 1m 당 픽셀
+  return PS_IN_PX+(m-PS_IN_M)*rate;
+}
 function psScene(d){
   let s=(d.seq*2654435761)>>>0;
   const rng=()=>{ s=(s*1664525+1013904223)>>>0; return s/4294967296; };
-  const ang=psAngle(d,rng);
   const K=d.kind;
-  /* [제보] "그라운드 홈런 되면 갑자기 외야로 사라져"
-     인정 홈런(itp)은 담장을 못 넘긴 타구다. 그런데 홈런이라고 다 담장
-     밖으로 날려버려서 공이 화면에서 사라졌다. 인정 홈런은 외야 구석에
-     떨어뜨리고, 타자가 발로 네 베이스를 도는 걸 보여준다.              */
+  /* [요청] "칠 때 나오는 애니메이션을 비거리에 따라 확실히 달리해달라"
+     예전엔 결과별로 박아둔 상수(2루타면 무조건 162px)를 썼다. 그래서
+     95m 짜리 2루타와 115m 짜리 2루타가 화면에서 똑같이 날아갔다.
+     이제 엔진이 만든 실제 비거리(d.bb)를 그대로 픽셀로 환산한다 —
+     **로그에 적힌 숫자와 화면에 보이는 거리가 같아진다.**            */
+  if(d.bb && d.bb.m){
+    const dist=psMtoPx(d.bb.m, psPark(), d.bb.ang);
+    const land=psSpot(d.bb.ang, dist);
+    return {ang:d.bb.ang, land, pos:psNearest(land), dist, m:d.bb.m, rng};
+  }
+  /* 비거리가 없는 옛 장면(세이브에 남은 하이라이트)은 예전 방식으로 */
+  const ang=psAngle(d,rng);
   const dist = (K==='HR'&&d.itp)?178 : K==='HR'?(202+rng()*16) : K==='3B'?176 : K==='2B'?162 :
                K==='1B'?126 : K==='FB'?(120+rng()*40) : K==='SF'?150 :
                K==='E'?70 : (46+rng()*40);        // 땅볼·병살은 내야
   const land=psSpot(ang, dist);
   const pos=psNearest(land);
-  return {ang, land, pos, dist, rng};
+  return {ang, land, pos, dist, m:Math.round(dist*PS_MPP), rng};
 }
 
 /* ---------- 재생 ---------- */
@@ -15629,8 +15779,11 @@ function psPlay(d, done, opt){
   if(K==='K'){ T.swing=[t,t+180]; t+=420; }
   else if(K==='BB'||K==='HBP'){ T.walk=[t,t+700]; t+=760; }
   else if(inPlay){
-    const fly=(K==='HR'||K==='FB'||K==='SF'||K==='2B'||K==='3B');
-    T.fly=[t, t+(K==='HR'?(d.itp?880:1000):(fly?760:520))];
+    /* [요청] "비거리에 따라 확실히 달리해줘"
+       체공 시간을 거리에 그대로 매단다. 20m 땅볼은 짧게 툭, 130m 홈런은
+       한참 떠 있는다. 결과 종류가 아니라 **거리**가 시간을 정한다.    */
+    const flyMs=Math.round(300+Math.max(10,sc.m||60)*5.4);
+    T.fly=[t, t+flyMs];
     T.chase=[t, T.fly[1]+120];
     t=T.fly[1]+120;
     if(K==='GB'||K==='DP'||K==='FB'||K==='SF'||K==='AS'){ T.throw=[t,t+320]; t+=340; }
@@ -15717,7 +15870,9 @@ function psPlay(d, done, opt){
       if(kf!=null&&kf>0){
         const p={x:lerp(160,sc.land.x,kf), y:lerp(232,sc.land.y,kf)};
         const over=(K==='HR'&&!d.itp);            // 담장을 넘기는 진짜 홈런
-        const hMax=over?58:(K==='HR')?30:(K==='GB'||K==='DP'||K==='E')?3:26;
+        /* 뜬 공은 멀리 갈수록 높이 뜬다. 땅볼은 거리와 상관없이 낮게 깐다. */
+        const grounder=(K==='GB'||K==='DP'||K==='E');
+        const hMax=grounder?3:Math.min(62, 6+Math.max(0,(sc.m||60))*0.42)*(over?1.15:1);
         // 담장을 넘는 홈런은 내려오지 않는다. 인정 홈런은 외야에 떨어진다.
         bz=over?Math.sin(Math.PI*Math.min(1,kf)*0.72)*hMax
                :Math.sin(Math.PI*Math.min(1,kf))*hMax;
@@ -15747,13 +15902,18 @@ function psPlay(d, done, opt){
     if(now>=T.hold[0]-260 && !ban.textContent){
       const st=psBanner(d);
       ban.textContent=st.big; ban.style.color=st.color; ban.classList.add('on');
-      /* 홈런은 비거리와 그때 점수까지 — 중계 화면처럼 */
+      /* [요청] "칠 때마다 비거리도 적어주고"
+         예전엔 홈런에만 비거리가 붙었다. 이제 인플레이 타구는 전부 붙는다.
+         숫자는 엔진이 만든 그 값 그대로다 — 로그와 화면이 어긋나지 않는다. */
+      const bbm=d.bb&&d.bb.m;
       if(K==='HR'){
-        /* [제보] "홈런 비거리 146m는 ㅋㅋㅋ 구장 긴 곳 중앙이 118m인데"
-           담장(캔버스 195px)이 중앙 118m 다. 1px = 0.605m 로 환산한다.  */
-        const m=Math.round(sc.dist*0.605);
-        sub.innerHTML=`<b>${d.bat.name}</b> · ${m}m · ${d.runs}점<br>`+
-          `<i class="ps-sc">${thN} ${tR} : ${uR} ${usN}</i>`;
+        sub.innerHTML=`<b>${d.bat.name}</b> · ${bbm||Math.round(sc.dist*PS_MPP)}m`
+          +(d.bb?` ${d.bb.dir}`:'')+` · ${d.runs}점<br>`
+          +`<i class="ps-sc">${thN} ${tR} : ${uR} ${usN}</i>`;
+      } else if(bbm){
+        /* 결과 문구에 이미 '(좌중간 106m)' 이 붙어 있다. 자막에서는
+           담장까지 몇 m 였는지만 덧붙인다 — 같은 숫자를 두 번 쓰면 지저분하다. */
+        sub.innerHTML=`${d.text||''}<br><i class="ps-sc">담장까지 ${d.bb.fence}m</i>`;
       } else sub.textContent=d.text||'';
       sub.classList.add('on');
       const sh=box.querySelector('.ps-shade'); if(sh) sh.classList.add('on');
@@ -18763,7 +18923,12 @@ function renderSwing(box, d){
       /* 파울이 생겼다 — 엔진엔 원래 있었는데 타석에서 안 썼다.
          타석의 리듬은 파울이 만든다. 다만 무한정 끌면 지루하니 여섯 번까지. */
       if(q<0.18){ kind='strike'; pre='헛스윙'; col='#e08a70'; }
-      else if(q<0.38&&fouls<6){ kind='foul'; pre='파울'; col='#c9a227'; fouls++; }
+      else if(q<0.38&&fouls<6){
+        /* [요청] "파울이나 땅볼 이런 거에도 비거리를 적어달라"
+           파울은 타석이 안 끝나서 엔진을 안 타니 여기서 직접 만든다.
+           타석 번호에 파울 횟수를 섞어야 파울마다 다른 데로 간다. */
+        const fb=battedBall(LIVE.paSeq*97+fouls, 'FOUL', LIVE.park, bat.bats||'R', false);
+        kind='foul'; pre=`파울 (${fb.dir} ${fb.m}m)`; col='#c9a227'; fouls++; }
       else { kind='contact';
         pre=(q>=0.75?'정타!!':(q>=0.55?'잘 맞았다':'맞혔다'));
         col='#7fc48f'; }
