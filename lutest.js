@@ -100,6 +100,101 @@ setTimeout(async()=>{
     return ST.rotation.indexOf('없는투수')<0 && ST.rotation.length>0;
   })()`));
 
+  console.log('\n[결장자가 있어도 베스트를 저장한다]');
+  /* [제보] "못 나오는 사람이 있어도 베스트 라인업을 저장해놓고 그 자리만
+     바꾸게 하려는 건데, 지금은 다 나오는 날에만 저장이 된다" */
+  const bs=JSON.parse(ev(`(function(){
+    ST.absent={}; ST.injury={}; ST.useDH=true;
+    ST.lineup=recommendLineup(); applyDHRule(); fixLineupPositions();
+    var best=ST.lineup.map(function(s){return s.id}).join(',');
+    var victim=ST.lineup[2].id;
+    ST.absent[victim]='개인 사정';              // 이 사람이 못 나온다
+    // 경기 화면에 들어가면 그 자리가 자동으로 메워진다.
+    // 발표·우천 게이트를 넘겨줘야 그 코드까지 간다.
+    ST.weekDone=true; ST.announced=true; ST.lineupDirty=false; ST.events=[];
+    ST.seasonOver=false;
+    go('game');
+    var afterFill=ST.lineup.map(function(s){return s.id}).join(',');
+    var slot=ST.lineup[2];
+    var snap=luSnapshot('베스트');
+    var saved=snap.lineup.map(function(s){return s.id});
+    return JSON.stringify({victim:victim, best:best, afterFill:afterFill,
+      saved:saved.join(','),
+      savedHasVictim: saved.indexOf(victim)>=0,
+      savedHasFill:   saved.indexOf(slot.id)>=0 && slot.id!==victim,
+      ofKept:slot.of===victim, filledId:slot.id});
+  })()`));
+  T('경기 화면에서 결장자 자리가 자동으로 메워진다', ()=>
+    bs.afterFill!==bs.best && bs.filledId!==bs.victim);
+  T('그 자리에 원래 주인이 기록으로 남는다', ()=>bs.ofKept && `${bs.victim} 자리`);
+  /* 핵심 검사 — 저장본에 **원래 주인이 들어 있고 대타는 없어야** 한다.
+     타순 전체를 통째로 비교하면 안 된다. 경기 화면에 들어갈 때
+     applyDHRule 이 투수 자리를 손대서 순서가 조금 달라질 수 있다. */
+  T('저장본에 원래 주인이 들어 있다', ()=>bs.savedHasVictim && bs.victim);
+  T('저장본에 그날 대타는 안 들어간다', ()=>!bs.savedHasFill);
+  T('원래 주인이 다시 나오면 제자리로 돌아온다', ()=>ev(`(function(){
+    ST.absent={};                                 // 이제 나올 수 있다
+    var n=luRestoreIntent();
+    return n>0 && ST.lineup[2].id==='${bs.victim}' && !ST.lineup[2].of;
+  })()`));
+  T('감독이 직접 고른 자리는 되돌리지 않는다', ()=>ev(`(function(){
+    ST.absent={}; ST.injury={};
+    ST.lineup=recommendLineup(); applyDHRule(); fixLineupPositions();
+    var orig=ST.lineup[4].id;
+    ST.lineup[4].of=orig;                         // 자동 보충 흔적이 있다고 치고
+    var bench=TBYID['wwzw'].players.find(function(p){
+      return !ST.lineup.some(function(s){return s.id===p.id}) && isAvailable(p.id); });
+    if(!bench) return '벤치가 비었다';
+    ST.lineup[4].id=bench.id;
+    // 감독이 직접 고르는 경로를 태운다
+    openPicker(4);
+    var rows=[].slice.call(document.querySelectorAll('#sheet-body .pick-row'));
+    var target=null;
+    for(var i=0;i<rows.length;i++){ if(rows[i].textContent.indexOf(nameOf(bench.id))>=0){ target=rows[i]; break; } }
+    if(!target) return '벤치 선수를 시트에서 못 찾았다';
+    target.click();
+    return !ST.lineup[4].of ? '흔적 지워짐' : false;
+  })()`));
+  T('여전히 못 나오는 사람은 제자리로 안 돌아간다', ()=>ev(`(function(){
+    ST.absent={}; ST.injury={};
+    ST.lineup=recommendLineup(); applyDHRule(); fixLineupPositions();
+    var victim=ST.lineup[1].id;
+    ST.absent[victim]='아직 못 나온다';
+    ST.lineup[1].of=victim;
+    var bench=TBYID['wwzw'].players.find(function(p){
+      return !ST.lineup.some(function(s){return s.id===p.id}) && isAvailable(p.id); });
+    ST.lineup[1].id=bench.id;
+    luRestoreIntent();
+    return ST.lineup[1].id===bench.id && ST.lineup[1].of===victim;
+  })()`));
+  T('불러올 때 메운 자리에도 원래 주인이 남는다', ()=>ev(`(function(){
+    ST.absent={}; ST.injury={};
+    ST.lineup=recommendLineup(); applyDHRule(); fixLineupPositions();
+    var snap=luSnapshot('E');
+    var victim=snap.lineup[5].id;
+    ST.absent[victim]='결장';
+    var r=luApply(snap);
+    if(!r.ok) return '적용 실패';
+    var slot=ST.lineup.find(function(s){return s.of===victim});
+    ST.absent={};
+    return !!slot && slot.id!==victim;
+  })()`));
+  T('라인업 화면에 원래 주인 이름표가 붙는다', ()=>{
+    ev(`(function(){
+      ST.absent={}; ST.injury={};
+      ST.lineup=recommendLineup(); applyDHRule(); fixLineupPositions();
+      var victim=ST.lineup[3].id;
+      ST.absent[victim]='결장';
+      var bench=TBYID['wwzw'].players.find(function(p){
+        return !ST.lineup.some(function(s){return s.id===p.id}) && isAvailable(p.id); });
+      ST.lineup[3].of=victim; ST.lineup[3].id=bench.id;
+    })()`);
+    w.go('lineup');
+    const ok=d.querySelectorAll('#view .tagof').length>=1;
+    ev("ST.absent={}");
+    return ok;
+  });
+
   console.log('\n[화면]');
   T('라인업 화면에 저장 칸이 나온다', ()=>{
     ev("ST.luSaved=[]"); w.go('lineup');

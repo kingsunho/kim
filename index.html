@@ -107,6 +107,10 @@ button{font-family:inherit;cursor:pointer}
 .od-tag span{display:block;font-size:11px;color:var(--dim);margin-top:2px;line-height:1.5}
 .od-det{font-size:11px;color:var(--dim);margin-top:8px}
 .od-det b{color:var(--ink)}
+/* 결장자 대신 들어간 자리 — 원래 주인 이름을 달아둔다 */
+.tagof{display:inline-block;margin-left:5px;padding:1px 5px;border-radius:4px;
+  background:rgba(201,162,39,.16);color:var(--gold);font-size:9px;font-weight:700;
+  vertical-align:middle}
 /* 저장된 라인업 칸 */
 .lu-h{font-size:11px;font-weight:800;color:var(--gold);margin-top:16px;letter-spacing:.2px}
 .lu-slots{margin-top:8px}
@@ -6733,8 +6737,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.46.0';
-const APP_VERSION_NOTE = '라인업 저장 · 상대 팀 유니폼 색 · 사람 그림 손봄';
+const APP_VERSION = '2.46.1';
+const APP_VERSION_NOTE = '못 나오는 사람이 있어도 베스트 라인업이 저장된다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6755,6 +6759,13 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.46.1', t:'못 나오는 사람이 있어도 베스트 라인업이 저장된다', items:[
+    '결장자가 있는 주에 저장하면 그날 대타가 그대로 담기던 것 — 다 나오는 날에만 저장이 됐다',
+    '이제 자동으로 메운 자리는 원래 주인을 기억한다. 저장하면 대타가 아니라 원래 짜둔 사람이 담긴다',
+    '그 사람이 다시 나올 수 있게 되면 라인업이 알아서 제자리로 돌아간다',
+    '라인업 화면에서 대타 자리에 「○○○ 자리」 라고 표시된다',
+    '감독이 직접 고른 자리는 되돌리지 않는다 — 직접 고른 게 곧 의도다',
+  ]},
   {v:'2.46.0', t:'라인업을 저장한다 · 상대 팀 옷 색이 갈린다', items:[
     '짜놓은 라인업을 네 칸까지 저장한다. 타순·수비 위치·투수 로테이션·팀 전술·지명타자 여부까지 통째로 담긴다',
     '이름을 붙여두고 라인업 화면에서 「불러오기」 한 번이면 끝이다. 매주 새로 짤 필요가 없다',
@@ -13527,6 +13538,7 @@ function tapSwapPos(pos){
 function renderLineup(){
   const c=$('#view'); c.innerHTML='';
   const t=TBYID['wwzw'];
+  luRestoreIntent();          // 다시 나올 수 있게 된 사람은 제자리로
 
   const park=PARKS.find(p=>p.id===ST.park)||PARKS[0];
   const head=el('div','card');
@@ -13566,7 +13578,8 @@ function renderLineup(){
       bad.forEach(b=>{
         const i=ST.lineup.findIndex(s2=>s2.id===b.id);
         const rep=pool.find(p=>posFit(p.id,ST.lineup[i].pos)>0)||pool[0];
-        if(rep){ST.lineup[i].id=rep.id;pool.splice(pool.indexOf(rep),1);}
+        if(rep){ ST.lineup[i].of=ST.lineup[i].of||ST.lineup[i].id;
+                 ST.lineup[i].id=rep.id; pool.splice(pool.indexOf(rep),1); }
       });
       toast(`${bad.length}명 결장 — 자동 교체함`);
     } else toast('지난 라인업 적용');
@@ -13674,7 +13687,7 @@ function renderLineup(){
     const bad=!isAvailable(p.id);
     const row=el('div','lp-row'+(bad?' bad':''));
     row.innerHTML=`<div class="lp-n">${i+1}</div>
-      <div class="lp-main"><div class="lp-name">${p.no!=null?`<span class="pc-no">#${p.no}</span> `:''}${p.name}${formTag(p.id)?`<span class="ftag">${formTag(p.id)}</span>`:''}${p.bats==='L'?'<span class="lh">좌</span>':''}${bdayTag(p.id)}${bad?'<span class="tagx">출전 불가</span>':''}</div>
+      <div class="lp-main"><div class="lp-name">${p.no!=null?`<span class="pc-no">#${p.no}</span> `:''}${p.name}${formTag(p.id)?`<span class="ftag">${formTag(p.id)}</span>`:''}${p.bats==='L'?'<span class="lh">좌</span>':''}${bdayTag(p.id)}${bad?'<span class="tagx">출전 불가</span>':''}${s.of?`<span class="tagof">${nameOf(s.of)} 자리</span>`:''}</div>
       <div class="lp-stat">${condLabel(ST.cond[p.id]||70)} · ${b.pa?`${fmt3(avg(b))} OPS ${ops(b).toFixed(3)}`:'기록 없음'}</div></div>
       <button class="pos-badge">${POSNAMES[s.pos]}</button>
       <button class="lp-sub">교체</button>`;
@@ -13924,7 +13937,10 @@ function luPresets(){
 function luSnapshot(name){
   return {
     name: (name||'').slice(0,12) || '이름 없음',
-    lineup: (ST.lineup||[]).map(s=>({id:s.id,pos:s.pos})),
+    /* 자동 보충으로 바뀐 자리는 **원래 주인**을 담는다.
+       베스트 라인업을 저장하는 거지 그날의 대타를 저장하는 게 아니다.
+       결장자를 메우는 건 불러올 때(luApply) 다시 한다.               */
+    lineup: (ST.lineup||[]).map(s=>({id:s.of||s.id, pos:s.pos})),
     rotation: (ST.rotation||[]).slice(),
     tactics: {...(ST.tactics||{bat:'normal',run:'normal',hook:'normal'})},
     useDH: !!ST.useDH,
@@ -13949,7 +13965,8 @@ function luApply(pre){
     if(isAvailable(sl.id)) return;
     out.push(sl.id);
     const rep=pool.find(p=>posFit(p.id,sl.pos)>0)||pool[0];
-    if(rep){ filled.push([sl.id,rep.id]); sl.id=rep.id; pool.splice(pool.indexOf(rep),1); }
+    /* 메운 자리에도 원래 주인을 남긴다 — 다음에 그 사람이 나오면 제자리로 돌아간다 */
+    if(rep){ filled.push([sl.id,rep.id]); sl.of=sl.id; sl.id=rep.id; pool.splice(pool.indexOf(rep),1); }
   });
   // 빠진 자리가 있으면(선수가 팀을 떠난 경우) 추천으로 채운다
   if(lineup.length<9){
@@ -13965,6 +13982,20 @@ function luApply(pre){
   if(pre.useDH!=null) ST.useDH=!!pre.useDH;
   sanitizeRotation(); applyDHRule(); fixLineupPositions();
   return {ok:true, gone, out, filled};
+}
+/* 자동 보충으로 비켜난 자리를 되돌린다.
+   원래 주인이 다시 나올 수 있게 되면 제자리로 넣고 흔적을 지운다.
+   베스트 라인업이 기본이고 결장 교체는 그날만이라는 게 요점이다. */
+function luRestoreIntent(){
+  if(!Array.isArray(ST.lineup)) return 0;
+  let n=0;
+  ST.lineup.forEach(sl=>{
+    if(!sl.of) return;
+    if(!isAvailable(sl.of)) return;                       // 아직도 못 나온다
+    if(ST.lineup.some(x=>x.id===sl.of)){ delete sl.of; return; }  // 감독이 딴 자리로 옮겼다
+    sl.id=sl.of; delete sl.of; n++;
+  });
+  return n;
 }
 function syncStarter(){
   // 라인업에 투수 자리가 있으면 선발 투수를 자동으로 그 자리에 넣는다
@@ -14234,8 +14265,11 @@ function openPicker(idx){
     row.onclick=()=>{
       const wasP = ST.lineup[idx].pos==='P';
       const o=ST.lineup.findIndex(s=>s.id===p.id);
-      if(o>=0&&o!==idx){const tmp=ST.lineup[o].id;ST.lineup[o].id=ST.lineup[idx].id;ST.lineup[idx].id=tmp;}
+      if(o>=0&&o!==idx){const tmp=ST.lineup[o].id;ST.lineup[o].id=ST.lineup[idx].id;ST.lineup[idx].id=tmp;
+        delete ST.lineup[o].of;}
       else ST.lineup[idx].id=p.id;
+      /* 감독이 직접 고른 자리는 그게 곧 의도다 — 자동 보충 흔적을 지운다 */
+      delete ST.lineup[idx].of;
       // 타순의 투수 자리를 바꿨으면 선발도 그 사람으로 따라간다
       if(wasP && TBYID['wwzw'].pitchers.some(x=>x.id===p.id)) setStarter(p.id);
       closeSheet();saveGame(true);renderLineup();
@@ -15515,6 +15549,7 @@ function renderGame(){
     return;
   }
 
+  luRestoreIntent();          // 다시 나올 수 있게 된 사람은 제자리로
   const avail=TBYID['wwzw'].players.filter(p=>isAvailable(p.id)).length;
   const bad=ST.lineup.filter(s=>!isAvailable(s.id));
   if(bad.length){
@@ -15524,7 +15559,14 @@ function renderGame(){
       bad.forEach(b2=>{
         const i=ST.lineup.findIndex(x=>x.id===b2.id);
         const rep=pool.find(p=>posFit(p.id,ST.lineup[i].pos)>0)||pool[0];
-        if(rep){ST.lineup[i].id=rep.id;pool.splice(pool.indexOf(rep),1);}
+        /* 원래 이 자리 주인을 남긴다 (sl.of).
+           [제보] "못 나오는 사람이 있어도 베스트 라인업을 저장해놓고 그 자리만
+           바꾸게 하려는 건데, 지금은 다 나오는 날에만 저장이 된다"
+           맞는 말이었다. 여기서 id 를 덮어쓰고 저장까지 해버리니까
+           **원래 누구 자리였는지가 영영 사라졌다.** 그 상태로 라인업을
+           저장하면 베스트가 아니라 '그날의 임시 라인업' 이 담긴다. */
+        if(rep){ ST.lineup[i].of=ST.lineup[i].of||ST.lineup[i].id;
+                 ST.lineup[i].id=rep.id; pool.splice(pool.indexOf(rep),1); }
       });
       applyDHRule(); saveGame(true);
       c.appendChild(el('div','warn',
