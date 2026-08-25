@@ -107,6 +107,8 @@ button{font-family:inherit;cursor:pointer}
 .od-tag span{display:block;font-size:11px;color:var(--dim);margin-top:2px;line-height:1.5}
 .od-det{font-size:11px;color:var(--dim);margin-top:8px}
 .od-det b{color:var(--ink)}
+/* 박스스코어 실책 칸 — 0 이 아니면 눈에 띄게 */
+.bx-e{color:#e0a08f;font-weight:800}
 /* 결장자 대신 들어간 자리 — 원래 주인 이름을 달아둔다 */
 .tagof{display:inline-block;margin-left:5px;padding:1px 5px;border-radius:4px;
   background:rgba(201,162,39,.16);color:var(--gold);font-size:9px;font-weight:700;
@@ -2104,7 +2106,66 @@ function decidePitchers(log, awayWin){
 }
 
 /* ---------- 경기 ---------- */
-function newBox(){return {pa:0,ab:0,h:0,d2:0,d3:0,hr:0,bb:0,hbp:0,k:0,rbi:0,r:0,sb:0,cs:0};}
+/* =========================================================
+   자책점 · 실책 — 야구 규칙대로
+   ---------------------------------------------------------
+   [제보] "승계주자 자책점, 실책 실점 이런 거 ERA 가 이상하게 되는 것 같다.
+           야구 룰대로 수정해라. 누구 실책인지도 기록에 남게 해줘"
+
+   ① 자책점 (공식야구규칙 9.16)
+      실책이 **없었다고 치고 이닝을 재구성**해서, 그때 안 났을 점수는
+      전부 비자책이다. 예전 코드는 두 군데가 틀려 있었다.
+        · 실책으로 걸어 나간 타자가 나중에 안타로 들어오면 **자책**으로 잡혔다.
+          실책으로 살아난 사람의 득점은 언제나 비자책이다.
+        · '이닝이 끝났어야 하는' 규칙이 아예 없었다. 실책이 아웃 하나를
+          날렸으면, 그 아웃으로 이닝이 끝났을 시점부터의 모든 점수가 비자책이다.
+      그래서 반이닝마다 두 가지를 들고 다닌다 —
+        errOuts : 실책이 날려버린 아웃 개수 (허수 아웃)
+        roe     : 실책으로 출루한 주자들
+      득점할 때 `자책 후보 && 그 주자가 roe 가 아니고 && outs+errOuts < 3`
+      이면 자책, 아니면 비자책이다.
+      (폭투·포일로 들어온 점수는 규칙상 자책이다 — 그건 그대로 둔다)
+
+   ② 실책은 누가 했나
+      예전엔 팀 합계(side.errs)만 셌다. 이제 그 자리를 지키던 야수에게 단다.
+      땅볼 처리가 많은 자리일수록, 수비가 나쁜 사람일수록 자주 나온다.
+      박스스코어와 선수 카드에 E 로 남는다.
+   ========================================================= */
+/* 실책이 어느 자리에서 나오나. 4부 사회인야구는 내야 땅볼 처리에서 압도적이다 */
+const ERR_POS_W={SS:0.21,'3B':0.18,'2B':0.15,'1B':0.11,LF:0.09,CF:0.07,RF:0.09,C:0.06,P:0.04};
+function pickErrorFielder(side, rng){
+  const slots=(side&&side.slots)?side.slots.filter(x=>x&&x.pos&&x.pos!=='DH'):[];
+  if(!slots.length) return null;
+  const players=(side.team&&side.team.players)||[];
+  const w=[]; let tot=0;
+  slots.forEach(sl=>{
+    const p=players.find(x=>x.id===sl.id);
+    const dv=p?p.def:45;
+    // 수비 46 이 기준. 나쁠수록 지수적으로 자주 저지른다
+    const k=(ERR_POS_W[sl.pos]||0.05)*Math.exp((46-dv)*0.016);
+    w.push(k); tot+=k;
+  });
+  if(tot<=0) return slots[0].id;
+  let r=rng()*tot;
+  for(let i=0;i<w.length;i++){ r-=w[i]; if(r<=0) return slots[i].id; }
+  return slots[slots.length-1].id;
+}
+/* 그 팀 명단에서 이름을 찾는다. 상대 팀 선수는 nameOf 로 안 나온다 */
+function nameInSide(pid, side){
+  const p=((side&&side.team&&side.team.players)||[]).find(x=>x.id===pid);
+  if(p) return p.name;
+  return (typeof nameOf==='function')?nameOf(pid):pid;
+}
+/* 반이닝 시작 — 실책 장부를 비운다 */
+function newErrLedger(){ return {outs:0, roe:{}}; }
+/* 지금 이 득점이 자책인가 */
+function isEarned(cand, rid, outs, led){
+  if(!cand) return false;
+  if(led && led.roe[rid]) return false;          // 실책으로 살아난 주자
+  if(led && (outs+led.outs)>=3) return false;    // 이닝이 이미 끝났어야 한다
+  return true;
+}
+function newBox(){return {pa:0,ab:0,h:0,d2:0,d3:0,hr:0,bb:0,hbp:0,k:0,rbi:0,r:0,sb:0,cs:0,e:0};}
 function newPit(){return {outs:0,h:0,r:0,er:0,bb:0,k:0,hbp:0,sbA:0,bf:0};}
 
 function simGame(home,away,opts){
@@ -2161,6 +2222,7 @@ function simGame(home,away,opts){
       if(inn>INN && half===0 && S[0].runs!==S[1].runs){ over=true; break; }
 
       let outs=0,bases=[null,null,null],ir=0;
+      const led=newErrLedger();        // 이 반이닝의 실책 장부
       change(def,inn);
       log.push({t:'inning',inning:inn,half,
         text:`${inn}회 ${half===0?'초':'말'}${inn>INN?' (연장)':''} · ${off.team.name} 공격`});
@@ -2198,7 +2260,8 @@ function simGame(home,away,opts){
 
         const res=simPA(bat,pit,off.team,def.team,rng,off.tac,off.cond[bat.id],opts.park);
         const bl=box[bat.id]; bl.pa++;
-        const score=(rid,e)=>{if(!rid)return;box[rid].r++;off.runs++;ir++;pl.r++;if(e)pl.er++;
+        const score=(rid,e)=>{if(!rid)return;box[rid].r++;off.runs++;ir++;pl.r++;
+          if(isEarned(e,rid,outs,led))pl.er++;
           scoreLog.push({d:pit.id, f:(off.rot[off.pIdx]||off.rot[0]),
             a:S[0].runs, h:S[1].runs});};
         const adv=(n,e)=>{for(let b=2;b>=0;b--){if(bases[b]){const nb=b+n;
@@ -2214,8 +2277,18 @@ function simGame(home,away,opts){
           else if(bases[0]){bases[1]=bases[0];}
           bases[0]=bat.id;
           log.push({t:'play',inning:inn,half,text:`${bat.name} ${isBB?'볼넷':'몸에 맞는 공'}`,cls:'bb'});}
-        else if(res.type==='E'){bl.ab++;def.errs++;adv(1,false);bases[0]=bat.id;
-          log.push({t:'play',inning:inn,half,text:`${bat.name} 상대 실책 출루`,cls:'err'});}
+        else if(res.type==='E'){
+          bl.ab++;def.errs++;
+          /* 실책 하나가 아웃 하나를 날린 것으로 친다. 이 뒤로 이닝이
+             끝났어야 할 시점부터의 점수는 전부 비자책이 된다. */
+          led.outs++; led.roe[bat.id]=true;
+          const fid=pickErrorFielder(def,rng);
+          if(fid){ box[fid]=box[fid]||newBox(); box[fid].e=(box[fid].e||0)+1; }
+          adv(1,false);bases[0]=bat.id;
+          const fpos=fid?(def.slots.find(x=>x.id===fid)||{}).pos:null;
+          log.push({t:'play',inning:inn,half,cls:'err',
+            text:fid?`${bat.name} ${POSNAMES[fpos]||''} ${nameInSide(fid,def)} 실책으로 출루`
+                    :`${bat.name} 상대 실책 출루`});}
         else if(res.type==='OUT'){
           bl.ab++;pl.outs++;outs++;
           if(res.gb&&bases[0]&&outs<3&&rng()<0.16){bases[0]=null;pl.outs++;outs++;
@@ -3120,7 +3193,7 @@ const TEAM_MILESTONES = [
 ];
 
 function blankCareer(){
-  return {g:0,pa:0,ab:0,h:0,d2:0,d3:0,hr:0,bb:0,hbp:0,k:0,rbi:0,r:0,sb:0,cs:0,
+  return {g:0,pa:0,ab:0,h:0,d2:0,d3:0,hr:0,bb:0,hbp:0,k:0,rbi:0,r:0,sb:0,cs:0,e:0,
     pg:0,pw:0,pl:0,pouts:0,ph:0,per:0,pbb:0,pk:0};
 }
 function blankTeamCareer(){
@@ -3182,7 +3255,7 @@ function accrueCareer(ST, res, uSlots, won, tie, dpCount){
     const c=ST.career[s.id];
     const before={...c};
     c.g++;
-    ['pa','ab','h','d2','d3','hr','bb','hbp','k','rbi','r','sb','cs'].forEach(k=>c[k]+=b[k]||0);
+    ['pa','ab','h','d2','d3','hr','bb','hbp','k','rbi','r','sb','cs','e'].forEach(k=>c[k]+=b[k]||0);
     out.push(...checkMilestones(ST,s.id,before,c,{date}));
     ST.teamCareer.h+=b.h||0; ST.teamCareer.d2+=b.d2||0; ST.teamCareer.d3+=b.d3||0;
     ST.teamCareer.hr+=b.hr||0; ST.teamCareer.r+=b.r||0; ST.teamCareer.rbi+=b.rbi||0;
@@ -6761,8 +6834,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.46.2';
-const APP_VERSION_NOTE = '새로고침하면 송정민이 사라지던 것 — 급한 수정';
+const APP_VERSION = '2.47.0';
+const APP_VERSION_NOTE = '자책점을 야구 규칙대로 · 실책이 누구 것인지 남는다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6783,6 +6856,19 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.47.0', t:'자책점을 야구 규칙대로 · 실책이 누구 것인지 남는다', items:[
+    '야구는 기록을 위한 스포츠다. 실점과 자책점이 제대로 갈리게 고쳤다',
+    '실책으로 걸어 나간 타자가 나중에 안타로 들어오면 자책으로 잡히던 것 — 실책으로 살아난 사람의 득점은 언제나 비자책이다',
+    '「이닝이 끝났어야 하는」 규칙이 아예 없었다. 실책이 아웃 하나를 날렸으면, 그 아웃으로 이닝이 끝났을 시점부터 난 점수는 전부 투수 책임이 아니다',
+    '공식야구규칙 9.16 그대로다 — 실책이 없었다고 치고 이닝을 다시 세운다',
+    '승계주자 규칙은 원래 있었다. 그 위에 자책 판정을 얹었다',
+    '실책이 누구 것인지 남는다. 예전엔 팀 합계만 셌다',
+    '땅볼이 많이 가는 자리일수록, 수비가 나쁜 사람일수록 자주 나온다',
+    '중계에 「이건 유격 김선호 실책으로 출루」 처럼 이름이 찍힌다',
+    '박스스코어·시즌 기록·통산 기록에 실책 칸이 생겼다',
+    '투수 박스에 실점과 자책이 갈리면 왜 갈렸는지 한 줄로 설명한다',
+    '실측 286경기에서 자책률 70.3%. 자책이 실점을 넘는 경우는 한 건도 없다',
+  ]},
   {v:'2.46.2', t:'새로고침하면 송정민이 사라지던 것', items:[
     '3년차에 전역 복귀한 송정민이 새로고침 한 번에 로스터에서 통째로 사라졌다. 급한 수정이다',
     '선수 능력치는 세이브에 안 들어가고 매번 원본 명단에서 새로 만드는데, 송정민은 그 명단에 없고 전역 이벤트가 한 번 밀어 넣는 사람이었다',
@@ -7748,7 +7834,7 @@ function leagueName(pid){
   return '?';
 }
 function leagueAwards(snap){
-  const BK=['g','pa','ab','h','d2','d3','hr','bb','hbp','k','rbi','r','sb'];
+  const BK=['g','pa','ab','h','d2','d3','hr','bb','hbp','k','rbi','r','sb','e'];
   const PK=['g','outs','h','r','er','bb','hbp','k','w'];
   const B={}, P={};
   Object.keys(ST.lgBat||{}).forEach(id=>{
@@ -7809,7 +7895,7 @@ function runMiniAwards(ST){
      23팀 전원을 한 줄에 세우고, 그중 우리 선수가 이기면 그때 상이 된다.
      감독상·팀 공헌상만 팀 내부 상이라 그대로 둔다.                     */
   const B={}, P={};
-  const BK=['g','pa','ab','h','d2','d3','hr','bb','hbp','k','rbi','r','sb'];
+  const BK=['g','pa','ab','h','d2','d3','hr','bb','hbp','k','rbi','r','sb','e'];
   const PK=['g','outs','h','r','er','bb','hbp','k','w'];
   Object.keys(ST.lgBat||{}).forEach(id=>{
     if(!leagueOwner(id))return;
@@ -8549,7 +8635,7 @@ function promiseLabel(pr){
    ========================================================= */
 'use strict';
 
-function newBoxL(){return {pa:0,ab:0,h:0,d2:0,d3:0,hr:0,bb:0,hbp:0,k:0,rbi:0,r:0,sb:0,cs:0};}
+function newBoxL(){return {pa:0,ab:0,h:0,d2:0,d3:0,hr:0,bb:0,hbp:0,k:0,rbi:0,r:0,sb:0,cs:0,e:0};}
 function newPitL(){return {outs:0,h:0,r:0,er:0,bb:0,k:0,hbp:0,sbA:0,bf:0};}
 
 function LiveGame(cfg){
@@ -8569,6 +8655,7 @@ function LiveGame(cfg){
      투수의 실점·자책으로 달린다. 바뀐 투수가 뒤집어쓰면 안 된다.
      [제보] "투수들 책임 주자 들어오면 ERA가 실책 아닐 경우 원래 투수가 가져가잖아" */
   this.runnerP = {};
+  this.errLed = newErrLedger();   // 이 반이닝의 실책 장부 (자책 판정에 쓴다)
   this.gone = {};         // 이 경기에서 빠진 사람 — 다시 못 들어온다
   this.cnt = {b:0,s:0};   // 직접 플레이용 볼카운트
   this.cntPA = -1;        // 그 카운트가 어느 타석 것인지
@@ -9253,7 +9340,7 @@ LiveGame.prototype.stepPA = function(){
   const score=(rid,e)=>{ if(!rid)return; this.box[rid].r++; off.runs++; this.curIR=(this.curIR||0)+1;
     // 그 주자를 내보낸 투수에게 단다 (승계주자 규칙). 기록이 없으면 지금 던지는 투수.
     const own=this.runnerP[rid], opl=(own&&this.pbox[own])?this.pbox[own]:pl;
-    opl.r++; if(e)opl.er++;
+    opl.r++; if(isEarned(e,rid,this.outs,this.errLed))opl.er++;
     delete this.runnerP[rid];
     this.scoreLog.push({d:pit.id, f:this.curPitcher(off).id,
       a:this.away.runs, h:this.home.runs}); };
@@ -9281,8 +9368,20 @@ LiveGame.prototype.stepPA = function(){
     this.bases[0]=bat.id; onBase(bat.id);
     events.push({text:`${bat.name} ${isBB?'볼넷':'몸에 맞는 공'}`,cls:'bb'});
   }
-  else if(res.type==='E'){ bl.ab++;def.errs++;adv(1,false);this.bases[0]=bat.id; onBase(bat.id);
-    events.push({text:`${bat.name} 상대 실책 출루`,cls:'err'});
+  else if(res.type==='E'){
+    bl.ab++;def.errs++;
+    if(!this.errLed) this.errLed=newErrLedger();
+    /* 실책 하나가 아웃 하나를 날렸다 — 이 뒤로 이닝이 끝났어야 할
+       시점부터의 점수는 전부 비자책이다 */
+    this.errLed.outs++; this.errLed.roe[bat.id]=true;
+    const efid=pickErrorFielder(def,rng);
+    if(efid){ this.box[efid]=this.box[efid]||newBoxL();
+      this.box[efid].e=(this.box[efid].e||0)+1;
+      this.lastErr={id:efid, pos:(def.slots.find(x=>x.id===efid)||{}).pos}; }
+    adv(1,false);this.bases[0]=bat.id; onBase(bat.id);
+    events.push({cls:'err', text: efid
+      ? `${bat.name} ${POSNAMES[(this.lastErr||{}).pos]||''} ${nameInSide(efid,def)} 실책으로 출루`
+      : `${bat.name} 상대 실책 출루`});
     // 안산 야수가 실책하면 고진선이 폭발한다 (경기당 1회)
     if(this.gojin && !this.gojin.threw && !def.isUser && rng()<0.65){
       this.gojin.threw=true;
@@ -9440,6 +9539,7 @@ LiveGame.prototype.endHalf = function(){
   off.line.push(this.curIR||0);
   this.curIR=0;
   this.outs=0; this.bases=[null,null,null]; this.runnerP={};
+  this.errLed=newErrLedger();          // 반이닝이 바뀌면 실책 장부도 새로
 
   if(this.half===0){
     this.half=1;
@@ -10110,7 +10210,7 @@ function ops(b){return obp(b)+slg(b);}
 function fmt3(v){return v.toFixed(3).replace(/^0\./,'.');}
 function era(p){return p.outs?(p.er*7)/(p.outs/3):0;}
 function ipStr(p){return Math.floor(p.outs/3)+(p.outs%3?'.'+(p.outs%3):'');}
-function blankBat(){return {g:0,pa:0,ab:0,h:0,d2:0,d3:0,hr:0,bb:0,hbp:0,k:0,rbi:0,r:0,sb:0,cs:0};}
+function blankBat(){return {g:0,pa:0,ab:0,h:0,d2:0,d3:0,hr:0,bb:0,hbp:0,k:0,rbi:0,r:0,sb:0,cs:0,e:0};}
 function blankPit(){return {g:0,gs:0,w:0,l:0,outs:0,h:0,r:0,er:0,bb:0,k:0,hbp:0,sbA:0};}
 
 /* ================= 내 선수 성장 =================
@@ -12704,8 +12804,8 @@ function renderHall(){
       `<div class="slash"><b>${fmt3(a1)}</b><i>/</i><b>${fmt3(o1)}</b><i>/</i><b>${fmt3(s1)}</b>
         <span>타율 · 출루 · 장타 &nbsp;·&nbsp; OPS <b>${fmt3(o1+s1)}</b></span></div>
       <div class="ot-tbl"><table>
-        <thead><tr><th>G</th><th>타석</th><th>타수</th><th>안타</th><th>2B</th><th>3B</th><th>HR</th><th>루타</th><th>타점</th><th>득점</th><th>볼넷</th><th>삼진</th><th>도루</th></tr></thead>
-        <tbody><tr><td>${cr.g}</td><td>${cr.pa}</td><td>${cr.ab}</td><td>${cr.h}</td><td>${cr.d2}</td><td>${cr.d3}</td><td>${cr.hr}</td><td>${tb}</td><td>${cr.rbi}</td><td>${cr.r}</td><td>${cr.bb}</td><td>${cr.k}</td><td>${cr.sb}</td></tr></tbody>
+        <thead><tr><th>G</th><th>타석</th><th>타수</th><th>안타</th><th>2B</th><th>3B</th><th>HR</th><th>루타</th><th>타점</th><th>득점</th><th>볼넷</th><th>삼진</th><th>도루</th><th>실책</th></tr></thead>
+        <tbody><tr><td>${cr.g}</td><td>${cr.pa}</td><td>${cr.ab}</td><td>${cr.h}</td><td>${cr.d2}</td><td>${cr.d3}</td><td>${cr.hr}</td><td>${tb}</td><td>${cr.rbi}</td><td>${cr.r}</td><td>${cr.bb}</td><td>${cr.k}</td><td>${cr.sb}</td><td>${cr.e||0}</td></tr></tbody>
       </table></div>`, `${cr.g}경기`));
   }
   if(cr&&cr.pg){
@@ -19040,14 +19140,15 @@ function batBoxCard(title, side, res, isUs){
   const card=el('div','card');
   card.appendChild(el('div','card-h',title));
   const t=el('table','box');
-  t.innerHTML='<tr><th>타자</th><th>타수</th><th>안타</th><th>타점</th><th>득점</th><th>도루</th><th>삼진</th></tr>';
+  /* E(실책)는 실제 박스스코어에도 들어가는 칸이다. 누가 흘렸는지 남긴다 */
+  t.innerHTML='<tr><th>타자</th><th>타수</th><th>안타</th><th>타점</th><th>득점</th><th>도루</th><th>삼진</th><th>실책</th></tr>';
   const players=(side.team&&side.team.players)||[];
-  const tot={ab:0,h:0,rbi:0,r:0,sb:0,k:0};
+  const tot={ab:0,h:0,rbi:0,r:0,sb:0,k:0,e:0};
   let subs=0;
   usedList(side).forEach(u=>{
     const p=players.find(x=>x.id===u.id); if(!p) return;
     const b=res.box[u.id]||{};
-    ['ab','h','rbi','r','sb','k'].forEach(k=>tot[k]+=b[k]||0);
+    ['ab','h','rbi','r','sb','k','e'].forEach(k=>tot[k]+=b[k]||0);
     if(!u.starter) subs++;
     const tr=el('tr', u.starter?'':'subrow');
     const label = u.starter
@@ -19056,12 +19157,13 @@ function batBoxCard(title, side, res, isUs){
         +`<i>${POSNAMES[u.pos]||u.pos||''}</i>`;
     tr.innerHTML=`<td class="nm${u.starter?'':' sub'}">${label}</td>`+
       `<td>${b.ab||0}</td><td>${b.h||0}</td><td>${b.rbi||0}</td>`+
-      `<td>${b.r||0}</td><td>${b.sb||0}</td><td>${b.k||0}</td>`;
+      `<td>${b.r||0}</td><td>${b.sb||0}</td><td>${b.k||0}</td>`+
+      `<td class="${b.e?'bx-e':''}">${b.e||0}</td>`;
     t.appendChild(tr);
   });
   const tr=el('tr','tot');
   tr.innerHTML=`<td class="nm">합계</td><td>${tot.ab}</td><td>${tot.h}</td>`+
-    `<td>${tot.rbi}</td><td>${tot.r}</td><td>${tot.sb}</td><td>${tot.k}</td>`;
+    `<td>${tot.rbi}</td><td>${tot.r}</td><td>${tot.sb}</td><td>${tot.k}</td><td>${tot.e}</td>`;
   t.appendChild(tr);
   wireNames(t);
   card.appendChild(t);
@@ -19095,6 +19197,15 @@ function pitBoxCard(title, side, res, isUs){
   wireNames(t);
   card.appendChild(t);
   if(!n) card.appendChild(el('p','muted','기록이 없다.'));
+  else {
+    /* 실점과 자책이 갈리면 왜 갈렸는지 알려준다 — 안 그러면 ERA 가 이상해 보인다 */
+    let R=0,ER=0;
+    list.forEach(pid=>{ const l=res.pbox[pid]; if(l&&l.bf){ R+=l.r; ER+=l.er; } });
+    const errN=(side.errs||0);
+    if(R>ER) card.appendChild(Object.assign(el('p','muted'),{textContent:
+      `실점 ${R} 중 자책은 ${ER}. 나머지 ${R-ER}점은 실책${errN?` ${errN}개`:''} 때문에 `+
+      `끝났어야 할 이닝이 이어지면서 난 점수라 투수 책임이 아니다 — ERA 에 안 들어간다.`}));
+  }
   return card;
 }
 
@@ -19275,9 +19386,9 @@ function commitGame(res,usSide,thSide,uSlots){
   uUniq.forEach(s=>{
     const b=res.box[s.id]; if(!b)return;
     const acc=ST.bat[s.id]; if(!acc)return;
-    acc.g++; ['pa','ab','h','d2','d3','hr','bb','hbp','k','rbi','r','sb','cs'].forEach(k=>acc[k]+=b[k]||0);
+    acc.g++; ['pa','ab','h','d2','d3','hr','bb','hbp','k','rbi','r','sb','cs','e'].forEach(k=>acc[k]+=b[k]||0);
     const lg=ST.lgBat[s.id];
-    if(lg){lg.g++;['pa','ab','h','d2','d3','hr','bb','hbp','k','rbi','r','sb','cs'].forEach(k=>lg[k]+=b[k]||0);}
+    if(lg){lg.g++;['pa','ab','h','d2','d3','hr','bb','hbp','k','rbi','r','sb','cs','e'].forEach(k=>lg[k]+=b[k]||0);}
     ST.cond[s.id]=Math.max(20,(ST.cond[s.id]||70)-(8+(b.pa||0)*1.2));
   });
 
@@ -19285,7 +19396,7 @@ function commitGame(res,usSide,thSide,uSlots){
   (thSide.team&&thSide.team.players||[]).forEach(p=>{
     const b=res.box[p.id]; if(!b||!b.pa)return;
     const lg=ST.lgBat[p.id]||(ST.lgBat[p.id]=blankBat());
-    lg.g++; ['pa','ab','h','d2','d3','hr','bb','hbp','k','rbi','r','sb','cs'].forEach(k=>lg[k]+=b[k]||0);
+    lg.g++; ['pa','ab','h','d2','d3','hr','bb','hbp','k','rbi','r','sb','cs','e'].forEach(k=>lg[k]+=b[k]||0);
   });
   const gRot=(ST.gameRotation&&ST.gameRotation.length)?ST.gameRotation:ST.rotation;
   gRot.forEach((pid,i)=>{
@@ -19496,7 +19607,7 @@ function simOtherGames(exclude){
     ST.weekGames.games.push({a:a.id, h:h.id, ar:r.away.runs, hr:r.home.runs, cold:!!r.mercy,
       aO:o?decOdds(o.aw):null, hO:o?decOdds(o.hw):null});
     for(const pid in r.box){const lg=ST.lgBat[pid];if(!lg)continue;const b=r.box[pid];
-      if(b.pa>0)lg.g++;['pa','ab','h','d2','d3','hr','bb','hbp','k','rbi','r','sb','cs'].forEach(k=>lg[k]+=b[k]||0);}
+      if(b.pa>0)lg.g++;['pa','ab','h','d2','d3','hr','bb','hbp','k','rbi','r','sb','cs','e'].forEach(k=>lg[k]+=b[k]||0);}
     accrueLgPit(r);
   }
 }
@@ -21296,13 +21407,14 @@ function renderRecords(){
         : Object.keys(src.bat||{}).map(id=>({id,name:src.bat[id].name||nameOf(id),b:src.bat[id]}));
       const bc=el('div','card'); bc.appendChild(el('div','card-h','타격'));
       const bt=el('table','box wide');
-      bt.innerHTML='<tr><th>선수</th><th>G</th><th>타수</th><th>안타</th><th>2B</th><th>HR</th><th>타점</th><th>득점</th><th>도루</th><th>타율</th><th>OPS</th></tr>';
+      bt.innerHTML='<tr><th>선수</th><th>G</th><th>타수</th><th>안타</th><th>2B</th><th>HR</th><th>타점</th><th>득점</th><th>도루</th><th>실책</th><th>타율</th><th>OPS</th></tr>';
       let anyB=false;
       bat.filter(x=>x.b&&(x.b.pa||x.b.g)).sort((x,y)=>ops(y.b)-ops(x.b)).forEach(x=>{
         anyB=true;
         const tr=el('tr',isMe(x.id)?'me':'');
         tr.innerHTML=`<td class="nm">${nmLink(x.id,x.name)}</td><td>${x.b.g}</td><td>${x.b.ab}</td><td>${x.b.h}</td>`+
           `<td>${x.b.d2}</td><td>${x.b.hr}</td><td>${x.b.rbi}</td><td>${x.b.r}</td><td>${x.b.sb}</td>`+
+          `<td class="${x.b.e?'bx-e':''}">${x.b.e||0}</td>`+
           `<td>${x.b.ab?fmt3(avg(x.b)):'—'}</td><td>${x.b.pa?ops(x.b).toFixed(3):'—'}</td>`;
         bt.appendChild(tr);
       });
