@@ -1508,6 +1508,14 @@ table.hl-tbl td.hl-o{color:#c98a80}
 /* 내쫓은 선수가 상대 팀에 있을 때 */
 .warn.exiled{border-color:var(--red)}
 .exiled-l{margin-top:6px;font-size:11.5px;color:var(--red);font-weight:700}
+/* 지금 던지는 투수의 투구수 — 교체 판단용.
+   #livectl 은 .btn-row(display:flex) 라 그냥 넣으면 버튼 옆에서 눌려 찌그러진다.
+   flex-wrap 을 켜고 100% 를 차지하게 해서 **제 줄을 갖게** 한다. */
+#livectl{flex-wrap:wrap}
+.np-now{flex:1 0 100%;text-align:center;font-size:12px;color:var(--dim);
+  background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 8px}
+.np-now b{color:var(--tx);font-weight:800}
+.np-now i{font-style:normal;font-size:10.5px;opacity:.85;margin-left:4px}
 .subtabs.sub6{gap:4px}
 .sub6 .subtab{padding:9px 3px;font-size:11px;letter-spacing:-.3px}
 .slash{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px;padding:8px 10px 10px}
@@ -2054,7 +2062,16 @@ function simPA(bat,pit,offTeam,defTeam,rng,tac,cond,park,mods){
   else if(tac.bat==='contact'){ tK=0.74; tBB=0.92; tBip=1.02; tPow=0.86; }
   let kR  = clamp(LG.K  * offTeam.tend.k  * fK  * pK * tK * (mods.k||1), 0.01, 0.55);
   let bbR = clamp(LG.BB * offTeam.tend.bb * fBB * pBB * tBB * (mods.bb||1), 0.01, 0.42);
-  const hbpR = LG.HBP * (mods.hbp||1);
+  let hbpR = LG.HBP * (mods.hbp||1);
+  /* [제보] "투스트라이크에서 잘 맞았는데 삼진이라고 나옴"
+     배트에 맞으면 삼진·볼넷이 안 나오게 k·bb 를 0.0008 배로 눌러놨는데,
+     바로 위 clamp 의 **하한 0.01 이 그걸 도로 끌어올리고 있었다.**
+     0.0008 을 곱하든 0 을 곱하든 최소 1% 는 남는다는 뜻이라,
+     컨택 100번에 한 번은 삼진, 90번에 한 번은 볼넷이 나왔다.
+     하한은 리그 전체 비율이 붕괴하지 말라고 둔 것이지 이런 데 쓰라는 게 아니다.
+     그래서 '이 타석은 인플레이로 끝난다' 를 확률이 아니라 **플래그로** 못 박는다.
+     확률로 미는 방식은 언젠가 또 새어 나온다.                            */
+  if(mods.inPlay){ kR=0; bbR=0; hbpR=0; }
 
   let r=rng();
   if(r<kR) return {type:'K'};
@@ -2175,7 +2192,7 @@ function isEarned(cand, rid, outs, led){
   return true;
 }
 function newBox(){return {pa:0,ab:0,h:0,d2:0,d3:0,hr:0,bb:0,hbp:0,k:0,rbi:0,r:0,sb:0,cs:0,e:0};}
-function newPit(){return {outs:0,h:0,r:0,er:0,bb:0,k:0,hbp:0,sbA:0,bf:0};}
+function newPit(){return {outs:0,h:0,r:0,er:0,bb:0,k:0,hbp:0,sbA:0,bf:0,np:0};}
 
 function simGame(home,away,opts){
   const rng=opts.rng||makeRng((Date.now()*7919)>>>0);
@@ -2268,6 +2285,7 @@ function simGame(home,away,opts){
         }
 
         const res=simPA(bat,pit,off.team,def.team,rng,off.tac,off.cond[bat.id],opts.park);
+        pl.np=(pl.np||0)+pitchesForPA(res.type, rng);      // 투구수 — 결과에서 되짚는다
         const bl=box[bat.id]; bl.pa++;
         const score=(rid,e)=>{if(!rid)return;box[rid].r++;off.runs++;ir++;pl.r++;
           if(isEarned(e,rid,outs,led))pl.er++;
@@ -6873,8 +6891,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.49.1';
-const APP_VERSION_NOTE = '화면 내려놓으면 중계도 같이 멈춘다';
+const APP_VERSION = '2.50.0';
+const APP_VERSION_NOTE = '맞혔는데 삼진 나던 것 · 투구수가 보인다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6895,6 +6913,14 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.50.0', t:'맞혔는데 삼진 나던 것 · 투구수', items:[
+    '2스트라이크에서 잘 맞혔는데 삼진으로 처리되는 일이 있었다. 진짜 버그였고, 고쳤다',
+    '배트에 맞으면 삼진·볼넷이 안 나오게 확률을 0.0008배로 눌러놨는데 엔진의 하한값 1%가 그걸 도로 끌어올리고 있었다. 컨택 100번에 한 번은 삼진, 90번에 한 번은 볼넷이 나왔다는 뜻이다',
+    '이제 확률로 미는 게 아니라 「이 타석은 인플레이로 끝난다」고 못을 박는다. 30000번 돌려서 삼진·볼넷 0건 확인했다',
+    '투구수가 생겼다. 경기 중에는 투수 교체 버튼 위에 지금 던지는 투수의 투구수가 뜬다 — 언제 바꿀지 정하라고 거기 뒀다',
+    '박스스코어 투수표에도 투구 칸이 생겼다. 시즌·리그 기록에도 쌓인다',
+    '직접 지휘로 한 타석을 손으로 치면 진짜로 던진 개수를 센다. 엔진이 통째로 낸 타석은 결과에서 되짚어 굴린다 — 삼진은 최소 3구, 볼넷은 최소 4구를 지킨다',
+  ]},
   {v:'2.49.1', t:'화면을 내려놓으면 중계도 같이 멈춘다', items:[
     '직접 지휘 중에 화면을 내려도 중계 타이머가 계속 돌고 있었다. 0.52초마다 경기를 굴리고 화면을 다시 그린다',
     'v2.43.0 에서 브금은 재웠는데 이건 남아 있었다. 이제 같이 멈추고, 돌아오면 그 자리에서 이어진다',
@@ -8698,7 +8724,7 @@ function promiseLabel(pr){
 'use strict';
 
 function newBoxL(){return {pa:0,ab:0,h:0,d2:0,d3:0,hr:0,bb:0,hbp:0,k:0,rbi:0,r:0,sb:0,cs:0,e:0};}
-function newPitL(){return {outs:0,h:0,r:0,er:0,bb:0,k:0,hbp:0,sbA:0,bf:0};}
+function newPitL(){return {outs:0,h:0,r:0,er:0,bb:0,k:0,hbp:0,sbA:0,bf:0,np:0};}
 
 function LiveGame(cfg){
   this.INN = cfg.innings || 7;
@@ -8983,6 +9009,30 @@ function breakShare(pit){
 }
 
 
+/* ================= 투구수 =================
+   [요청] "투구수 현황 표시도 가능한가?"
+
+   엔진은 공을 한 개씩 굴리지 않는다. simPA 가 타석 결과를 한 번에 낸다.
+   그래서 투구수는 **결과에서 되짚어 굴린다.** 야구 규칙상 못 어기는 것만
+   지키면 나머지는 분포다 —
+     · 삼진은 최소 3구   · 볼넷은 최소 4구
+   직접 지휘로 한 타석을 손으로 치면 그때는 진짜로 던진 개수를 센다
+   (pitchResult 가 공 하나마다 불린다). 그쪽이 있으면 그걸 쓴다.
+
+   이 리그 기준 타석당 평균 약 4.1구가 나온다 — 볼넷이 15.7% 나 되는
+   리그라 카운트가 깊어진다. 7이닝이면 130구 안팎이다.               */
+function pitchesForPA(type, rng){
+  const r=rng();
+  if(type==='K')   return 3+((r*5)|0);      // 3~7
+  if(type==='BB')  return 4+((r*5)|0);      // 4~8
+  if(type==='HBP') return 1+((r*4)|0);      // 1~4
+  return 1+((r*6)|0);                        // 인플레이 1~6
+}
+/* 투구수를 '85구' 처럼. 아직 안 던졌으면 빈 문자열 */
+function npStr(pl){
+  const n=(pl&&pl.np)||0;
+  return n? n+'구' : '';
+}
 /* 타이밍 품질(0~1) → 타격 보정 */
 function swingMods(q){
   /* [제보] "정타 쳐도 볼넷 헛스윙 삼진은 뭔데"
@@ -9068,6 +9118,9 @@ const CONTACT_BY_PITCH={
   fk:{pow:0.82, babip:0.93},      // 포크 — 땅볼
 };
 LiveGame.prototype.pitchResult = function(kind, q, type){
+  /* 직접 지휘로 한 타석을 손으로 치면 공 하나마다 여기를 지난다.
+     그때는 굴리지 않고 **진짜 던진 개수**를 쓴다. */
+  this._paPitches=(this._paPitches||0)+1;
   const c=this.count();
   if(kind==='ball'){ c.b++; if(c.b>=4){ this._forceRes={type:'BB'}; return {end:'BB'}; } return null; }
   if(kind==='strike'){ c.s++; if(c.s>=3){ this._forceRes={type:'K'}; return {end:'K'}; } return null; }
@@ -9081,8 +9134,10 @@ LiveGame.prototype.pitchResult = function(kind, q, type){
 LiveGame.prototype.consumePlayMods = function(off, def){
   let out=null;
   if(this._contact){
-    // 배트에 맞았다 — 삼진·볼넷은 나올 수 없다. 인플레이 결과만.
-    out={k:0.0008, bb:0.0008, hbp:0.0008};
+    /* 배트에 맞았다 — 삼진·볼넷은 나올 수 없다. 인플레이 결과만.
+       inPlay 는 확률이 아니라 못이다. k/bb/hbp 배수는 남겨두지만
+       (다른 경로에서 참고한다) 실제 차단은 simPA 의 inPlay 가 한다. */
+    out={k:0.0008, bb:0.0008, hbp:0.0008, inPlay:true};
     const q=this._contactQ==null?0.6:this._contactQ;
     out.babip=1+(q-0.5)*0.30;
     out.pow=1+Math.max(0,q-0.7)*0.75;
@@ -9396,6 +9451,11 @@ LiveGame.prototype.stepPA = function(){
   let res;
   if(this._forceRes){ res=this._forceRes; this._forceRes=null; }
   else res = simPA(batE, pitE, off.team, def.team, rng, off.tac, cond, parkE, allMods);
+  /* [요청] "투구수 현황 표시도 가능한가?"
+     손으로 친 타석은 pitchResult 가 공마다 세어 뒀다(_paPitches).
+     엔진이 통째로 낸 타석은 결과에서 되짚어 굴린다. */
+  pl.np=(pl.np||0)+(this._paPitches>0 ? this._paPitches : pitchesForPA(res.type, rng));
+  this._paPitches=0;
   // 번트 앤 런은 주자가 한 베이스 더 간다
   const advOdds = (off.isUser && this._buntRun) ? 0.62 : 0.35;
 
@@ -10273,7 +10333,7 @@ function fmt3(v){return v.toFixed(3).replace(/^0\./,'.');}
 function era(p){return p.outs?(p.er*7)/(p.outs/3):0;}
 function ipStr(p){return Math.floor(p.outs/3)+(p.outs%3?'.'+(p.outs%3):'');}
 function blankBat(){return {g:0,pa:0,ab:0,h:0,d2:0,d3:0,hr:0,bb:0,hbp:0,k:0,rbi:0,r:0,sb:0,cs:0,e:0};}
-function blankPit(){return {g:0,gs:0,w:0,l:0,outs:0,h:0,r:0,er:0,bb:0,k:0,hbp:0,sbA:0};}
+function blankPit(){return {g:0,gs:0,w:0,l:0,outs:0,h:0,r:0,er:0,bb:0,k:0,hbp:0,sbA:0,np:0};}
 
 /* ================= 내 선수 성장 =================
    내가 고른 선수는 한계가 따로 없다. 대신 그냥 오르지는 않는다.
@@ -12717,7 +12777,7 @@ function renderWhatIf(){
   const pit=el('div','card');
   pit.innerHTML='<div class="card-h">우리 투수</div>';
   const pt=el('table','wi-t');
-  pt.innerHTML='<thead><tr><th>이름</th><th>이닝</th><th>피안타</th><th>실점</th>'+
+  pt.innerHTML='<thead><tr><th>이름</th><th>투구</th><th>이닝</th><th>피안타</th><th>실점</th>'+
     '<th>자책</th><th>볼넷</th><th>탈삼진</th><th>방어율</th></tr></thead>';
   const pb=el('tbody');
   Object.keys(r.pbox).forEach(pid=>{
@@ -12728,6 +12788,7 @@ function renderWhatIf(){
     const tr=el('tr', (pid===r.wp?'wi-hot':''));
     tr.innerHTML=`<td class="wi-n">${nameOf(pid)}`+
       `${pid===r.wp?'<em>승</em>':(pid===r.lp?'<em class="lp">패</em>':'')}</td>`+
+      `<td>${p.np||0}</td>`+
       `<td>${ip}</td><td>${p.h}</td><td>${p.r}</td><td>${p.er}</td>`+
       `<td>${p.bb+p.hbp}</td><td>${p.k}</td><td>${p.outs?era.toFixed(2):'-'}</td>`;
     pb.appendChild(tr);
@@ -16294,6 +16355,16 @@ function paintLiveCtl(){
      판단창은 확률로 뜨는 데다, 수비 판단 횟수가 떨어지면 아예 안 뜬다.
      감독 액션처럼 밖으로 뺀다. 작전·판단 횟수를 쓰지 않는다.        */
   const sd=LIVE.userSide();
+  /* [요청] "투구수 현황 표시도 가능한가?"
+     교체를 언제 할지 정하는 데 제일 필요한 숫자라 교체 버튼 바로 옆에 둔다.
+     우리가 수비 중일 때만 뜬다 — 공격 중엔 우리 투수가 안 던지고 있다. */
+  const curP=LIVE.curPitcher(sd), curL=curP?LIVE.pbox[curP.id]:null;
+  if(curL && (curL.np||curL.bf) && !LIVE.off().isUser){
+    const inf=el('div','np-now');
+    inf.innerHTML=`<b>${curP.name}</b> ${curL.np||0}구`
+      +` <i>${ipStr(curL)}이닝 · ${curL.h}피안타 ${curL.r}실점</i>`;
+    lc.appendChild(inf);
+  }
   const pc=el('button','btn');
   if(!LIVE.hasNextPitcher(sd)){
     pc.textContent='🔄 남은 투수 없음';
@@ -19300,7 +19371,7 @@ function pitBoxCard(title, side, res, isUs){
   const card=el('div','card');
   card.appendChild(el('div','card-h',title));
   const t=el('table','box');
-  t.innerHTML='<tr><th>투수</th><th>이닝</th><th>피안타</th><th>실점</th><th>자책</th><th>사사구</th><th>삼진</th></tr>';
+  t.innerHTML='<tr><th>투수</th><th>투구</th><th>이닝</th><th>피안타</th><th>실점</th><th>자책</th><th>사사구</th><th>삼진</th></tr>';
   const list=(side.rot&&side.rot.length)?side.rot:((side.team&&side.team.pitchers)||[]).map(x=>x.id);
   const pool=(side.team&&side.team.pitchers)||[];
   let n=0;
@@ -19312,6 +19383,7 @@ function pitBoxCard(title, side, res, isUs){
       : (res.lp===pid?'<span class="subtag">패</span>':''));
     const tr=el('tr');
     tr.innerHTML=`<td class="nm"><span class="ordn">${n}</span>${nmLink(pid,p.name)}${dec}</td>`+
+      `<td>${l.np||0}</td>`+
       `<td>${ipStr(l)}</td><td>${l.h}</td><td>${l.r}</td><td>${l.er}</td>`+
       `<td>${(l.bb||0)+(l.hbp||0)}</td><td>${l.k}</td>`;
     t.appendChild(tr);
@@ -19525,7 +19597,7 @@ function commitGame(res,usSide,thSide,uSlots){
     const l=res.pbox[pid]; if(!l||!l.bf)return;
     const acc=ST.pit[pid]; if(!acc)return;
     acc.g++; if(i===0)acc.gs++;
-    ['outs','h','r','er','bb','k','hbp','sbA'].forEach(k=>acc[k]+=l[k]||0);
+    ['outs','h','r','er','bb','k','hbp','sbA','np'].forEach(k=>acc[k]+=l[k]||0);
     if(res.wp===pid)acc.w++; if(res.lp===pid)acc.l++;
   });
 
@@ -19744,7 +19816,7 @@ function accrueLgPit(r){
     if(!l||!l.bf)continue;
     const a=ST.lgPit[pid]||(ST.lgPit[pid]=blankPit());
     a.g++;
-    ['outs','h','r','er','bb','k','hbp','sbA'].forEach(k=>a[k]+=l[k]||0);
+    ['outs','h','r','er','bb','k','hbp','sbA','np'].forEach(k=>a[k]+=l[k]||0);
     if(!tie){ if(r.wp===pid)a.w++; if(r.lp===pid)a.l++; }
   }
 }
@@ -22426,6 +22498,10 @@ function normalizeState(){
   if(ST.gearLevel==null)ST.gearLevel=0;
   if(ST.weekSeq==null)ST.weekSeq=0;
   if(ST.injCount==null)ST.injCount=0;
+  /* [요청] "투구수 현황" — v2.50.0 에 생긴 칸이다. 옛 세이브에는 없다.
+     0 으로 채워두지 않으면 표에 undefined 가 찍힌다. */
+  [ST.pit, ST.lgPit].forEach(m=>{ if(!m)return;
+    Object.keys(m).forEach(id=>{ if(m[id] && m[id].np==null) m[id].np=0; }); });
   if(!ST.trainFocus)ST.trainFocus='none';
   // 집중 훈련 — 로스터에서 빠진 선수가 대상이면 해제한다
   if(ST.trainTarget===undefined)ST.trainTarget=null;
