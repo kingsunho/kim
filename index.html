@@ -1499,6 +1499,12 @@ table.hl-tbl td.hl-o{color:#c98a80}
 .ps-sc{display:inline-block;margin-top:3px;font-style:normal;font-size:11px;
   font-weight:800;color:#ffd15c;background:rgba(0,0,0,.5);padding:2px 8px;border-radius:5px}
 .ps-skip{position:absolute;right:8px;bottom:7px;font-size:10px;color:rgba(255,255,255,.5)}
+/* WAR 판 — 양수는 파랗게, 음수는 붉게. 표본 얇은 줄은 흐리게 */
+.warboard td.pos{color:#7fd4a0}
+.warboard td.neg{color:#e08a8a}
+.warboard tr.thin{opacity:.45}
+.warboard td:last-child{font-size:10px;white-space:nowrap}
+.pc-adv i.warsp{font-style:normal;color:var(--dim);font-size:10.5px}
 .subtabs.sub6{gap:4px}
 .sub6 .subtab{padding:9px 3px;font-size:11px;letter-spacing:-.3px}
 .slash{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px;padding:8px 10px 10px}
@@ -6834,8 +6840,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.47.0';
-const APP_VERSION_NOTE = '자책점을 야구 규칙대로 · 실책이 누구 것인지 남는다';
+const APP_VERSION = '2.48.0';
+const APP_VERSION_NOTE = 'WAR 을 이 리그 숫자로 다시 깔았다 — 투수·타자 따로, 합쳐서';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6856,6 +6862,16 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.48.0', t:'WAR — 투수와 타자를 따로 재고 합친다', items:[
+    '예전 WAR 은 MLB 상수를 그대로 빌려 쓰고 있었다. 10점 = 1승, wOBA 계수 .89/2.10, "타석당 약 0.17점" — 이 리그에서는 전부 틀린 값이다',
+    '1180팀-경기 43189타석을 돌려서 전부 다시 쟀다. 승리당 득점은 16.1점이다. 팀당 9.5득점(9이닝 환산 12.2점)짜리 리그라 1승이 그만큼 비싸다',
+    '사건 하나의 값도 다시 뽑았다 — 단타 .78 · 2루타 1.06 · 3루타 1.33 · 홈런 1.59. 타율 .450 리그에서는 홈런과 단타의 간격이 MLB만큼 안 벌어진다. 파워보다 출루가 값지다',
+    '대체선수 수준은 이 리그 하위 3팀(승률 .182)으로 잡았다. 용병으로 기준을 잡아보니 아홉 명 다 용병인 팀은 22경기에서 0.1승이라 기준이 될 수 없었다',
+    '투수는 자책(ER) 기준이다. 이 리그는 실점의 28%가 비자책이라 실점으로 재면 수비가 무너진 날이 통째로 투수 탓이 된다',
+    '수비는 실책만 센다. 실책 하나 = 1.044점. 범위나 송구는 게임이 안 재니 넣지 않았다',
+    '선수단 화면 WAR 탭에 타격·수비·투구가 칸으로 갈린 표가 생겼다. 투타 겸업은 둘 다 잡혀서 합쳐진다',
+    '숫자 옆에 표본(타석·이닝)을 항상 같이 적는다. 22경기짜리 시즌이라 표본을 모르면 0.3 차이를 진짜 차이로 읽게 된다',
+  ]},
   {v:'2.47.0', t:'자책점을 야구 규칙대로 · 실책이 누구 것인지 남는다', items:[
     '야구는 기록을 위한 스포츠다. 실점과 자책점이 제대로 갈리게 고쳤다',
     '실책으로 걸어 나간 타자가 나중에 안타로 들어오면 자책으로 잡히던 것 — 실책으로 살아난 사람의 득점은 언제나 비자책이다',
@@ -7972,7 +7988,9 @@ function runMiniAwards(ST){
   const eraOf=l=>l.outs?((l.er*7)/(l.outs/3)):99;
   const wbA=(typeof leagueWoba==='function')?leagueWoba():null;   // 이 함수 뒤쪽에 lgw 가 이미 있다
   const erA=(typeof leagueEra==='function')?leagueEra():8.5;
-  const runsOf=b=>(!b||!b.pa||!wbA||!wbA.woba)?0:((woba(b)-wbA.woba)/WOBA_SCALE)*b.pa;
+  /* 공격 기여 = 리그 평균 타자가 같은 타석에서 만들었을 점수 대비 얼마나 더 만들었나.
+     WAR 과 같은 선형 가중치를 쓰니 단위(점)가 서로 맞는다. */
+  const runsOf=b=>(!b||!b.pa||!wbA)?0:(batRunsRaw(b)-wbA.rpa*b.pa);
   const gPlayed=(ST.stand&&ST.stand['wwzw'])?ST.stand['wwzw'].g:0;
   const minPA=6, minAB=8, minOuts=qualOuts(gPlayed);   // 경기당 1이닝
   give('mvp', rank(B,b=>b.pa>=minPA,runsOf,
@@ -13329,14 +13347,53 @@ function renderSquad(){
   c.appendChild(tabs);
 
   const us=TBYID['wwzw'];
-  const lgw=leagueWoba();
+  const lgw=leagueWoba(), lgE=leagueEra();
+  const warBoardHost=el('div','');
+  c.appendChild(warBoardHost);
+  /* WAR 정렬은 **투수까지 합친 값**으로 한다.
+     [요청] "투수 war 타자 war 따로 해서 선수 합쳐도 되고"
+     송승민처럼 던지고 치는 사람이 타격만으로 줄 세워지면 순위가 거짓말이 된다. */
+  const wfCache={};
+  const wf=id=>wfCache[id]||(wfCache[id]=warFull(id,lgw,lgE));
   const list=us.players.slice().sort((a,b)=>{
-    if(squadSort==='war')return warOf(b.id,ST.bat[b.id]||blankBat(),lgw)-warOf(a.id,ST.bat[a.id]||blankBat(),lgw);
+    if(squadSort==='war')return wf(b.id).total-wf(a.id).total;
     if(squadSort==='ca')return effCA(b.id)-effCA(a.id);
     if(squadSort==='val')return playerValue(b,META[b.id],ST.bat[b.id])-playerValue(a,META[a.id],ST.bat[a.id]);
     if(squadSort==='cond')return (ST.cond[b.id]||0)-(ST.cond[a.id]||0);
     return (ST.morale[b.id]||0)-(ST.morale[a.id]||0);
   });
+
+  /* ── WAR 판 ──
+     [요청] "투수 war 타자 war 따로 해서 선수 합쳐도 되고"
+     칸마다 표본(타석·이닝)을 같이 적는다. 22경기짜리 시즌이라
+     표본을 안 보여주면 0.3 차이를 진짜 차이로 읽어버린다.        */
+  if(squadSort==='war'){
+    const card=el('div','card');
+    card.appendChild(el('div','card-h','WAR — 몇 승을 보탰나'));
+    const tb=el('table','box warboard');
+    tb.innerHTML='<tr><th>선수</th><th>타격</th><th>수비</th><th>투구</th><th>합계</th><th>표본</th></tr>';
+    let anyThin=false;
+    list.forEach(p=>{
+      const f=wf(p.id);
+      if(!f.pa && !f.outs) return;
+      if(f.thin) anyThin=true;
+      const tr=el('tr', f.thin?'thin':'');
+      const num=(v,on)=>on?`<td class="${v>=0?'pos':'neg'}">${v.toFixed(2)}</td>`:'<td class="dimc">—</td>';
+      tr.innerHTML=`<td class="nm">${nmLink(p.id,p.name)}</td>`
+        +num(f.bat,!!f.pa)+num(f.def,!!f.g)+num(f.pit,!!f.outs)
+        +`<td><b>${f.total.toFixed(2)}</b></td>`
+        +`<td class="dimc">${warSampleStr(f)}</td>`;
+      tb.appendChild(tr);
+    });
+    card.appendChild(tb);
+    const sum=list.reduce((a,p)=>a+wf(p.id).total,0);
+    card.appendChild(el('p','muted',
+      `합계 ${sum.toFixed(2)}승. 대체선수(이 리그 하위권 팀 수준)로만 채운 팀은 22경기에서 5승 언저리다 — `
+      +`거기에 이 숫자를 더한 만큼이 우리 승수다.`));
+    if(anyThin) card.appendChild(el('p','muted',
+      `흐린 줄은 표본이 얇다(${WAR_MIN_PA}타석·${(WAR_MIN_OUTS/3).toFixed(0)}이닝 미만). 참고만 해라.`));
+    warBoardHost.appendChild(card);
+  }
 
   let total=0;
   list.forEach(p=>{
@@ -13365,7 +13422,7 @@ function renderSquad(){
       </div>
       <div class="pc-rate"><span>컨택 ${Math.round(p.con)}</span><span>파워 ${Math.round(p.pow)}</span><span>선구 ${Math.round(p.eye)}</span><span>주루 ${Math.round(p.spd)}</span><span>수비 ${Math.round(p.def)}</span><span>어깨 ${Math.round(p.arm)}</span></div>
       <div class="pc-stat">${b.pa?`${b.g}경기 ${fmt3(avg(b))} · OPS ${ops(b).toFixed(3)} · ${b.hr}홈런 ${b.rbi}타점 ${b.sb}도루`:'출전 기록 없음'}</div>
-      ${b.pa?`<div class="pc-adv">wRC+ <b>${wrcPlus(b,lgw)}</b> · WAR <b>${warOf(p.id,b,lgw).toFixed(2)}</b> · ISO ${fmt3(iso(b))} · BB/K ${bbk(b).toFixed(2)}</div>`:''}
+      ${b.pa?`<div class="pc-adv">wRC+ <b>${wrcPlus(b,lgw)}</b> · WAR <b>${wf(p.id).total.toFixed(2)}</b>${warSplitStr(wf(p.id))} · ISO ${fmt3(iso(b))} · BB/K ${bbk(b).toFixed(2)}</div>`:''}
       <div class="pc-att">출석 성향 ${Math.round((m.attend!=null?m.attend:0.85)*100)}%${(m.attend!=null&&m.attend<0.6)?' · 자주 빠진다':''}</div>
       <div class="pc-desc">${m.desc||''}</div>`;
     // 진행 중인 약속을 카드에 바로 보여준다
@@ -20708,66 +20765,179 @@ function leagueBase(){
 /* =========================================================
    wRC+ · WAR
    ---------------------------------------------------------
-   리그 평균을 기준으로 환산한다. 사회인 4부라 표본이 작으니
-   실제 KBO 계수 대신 이 리그 실측(BABIP .451 · BB 15.6%)에 맞춘
-   단순 선형 가중치를 쓴다. 100이 평균, 0이 대체선수 수준이다.
+   [요청] "투수 war 타자 war 따로 해서 선수 합쳐도 되고"
+
+   예전 판은 MLB 상수를 그대로 빌려 썼다. 이 리그에서는 전부 틀린 값이다.
+     · 10점 = 1승      → 여기는 팀당 9.5득점이라 1승이 훨씬 비싸다
+     · wOBA 계수 .89/2.10 → BABIP .451 리그에서는 단타와 홈런의 격차가 그렇게 안 벌어진다
+     · "타석당 약 0.17점" → 실측은 0.253점이었다
+     · 대체선수 가산 0.030 → 근거 없이 박아둔 숫자였다
+
+   그래서 전부 **이 엔진에서 직접 재서** 다시 깔았다.
+   1180팀-경기 43189타석을 돌려 회귀로 뽑았고, 재현 오차 0.2% 다.
+   (`wartest.js` 가 매번 다시 재서 이 상수들이 아직 맞는지 검사한다)
+
+   ── 선형 가중치 (사건 하나의 득점 가치) ────────────────────
+   1루타 .781 · 2루타 1.057 · 3루타 1.332 · 홈런 1.585
+   볼넷+몸맞 .644 · 도루 .104 · 도루실패 -.477 · 아웃 -.263
+
+   MLB 값(1루타 .47 / 홈런 1.40)보다 전부 크다. 득점 환경이 두 배니 당연하다.
+   눈여겨볼 건 **홈런과 단타의 간격이 좁다**는 것이다(MLB 3.0배 → 여기 2.0배).
+   타율 .450 짜리 리그에서는 어차피 뒤 타자가 불러들이니, 혼자 넘기는 값이
+   상대적으로 싸진다. 그래서 이 게임에서 파워보다 출루가 더 값지다.
+
+   ── 승리당 득점 (RPW) ──────────────────────────────────
+   피타고리안 지수 x = (양팀 합계 득점)^0.287 = 18.6^0.287 = 2.32
+   RPW = 4R/x = 4 × 9.32 / 2.32 = 16.1
+   같은 식에 MLB(4.5득점)를 넣으면 9.6 이 나온다 — 익숙한 "10점당 1승" 이다.
+   7이닝제라 경기당 득점이 낮아 보여도 9이닝 환산 12.2점짜리 리그다.
+
+   ── 대체선수 수준 ──────────────────────────────────────
+   처음엔 용병(조창익·박재민·최민서)을 기준으로 잡으려 했다. 공짜로 부를 수
+   있는 사람이니 정의에 딱 맞아 보였다. 재보니 **용병 아홉으로 채운 팀은
+   경기당 0.94득점, 22경기에서 0.1승** 이었다. 대체선수가 아니라 그냥 재난이다.
+   WAR 의 대체수준은 "한 명 빠졌을 때 공짜로 메우는 수준" 이지 "전원을
+   그걸로 채웠을 때" 가 아니라서, 그대로 쓰면 모두의 WAR 이 부풀어 오른다.
+
+   그래서 **이 리그 하위 3팀(SEW KOREA · 마이볼 · 보스)** 을 기준으로 삼았다.
+   실측 승률 .182 — 22경기로 치면 4승이다. 진짜로 존재하는 팀 중 제일 아래고,
+   "이보다 못하면 팀이라고 부르기 어렵다" 는 선이라 대체수준으로 자연스럽다.
+     타자 : 타석당 0.1779점 (리그평균 0.2497) → 타석당 -0.0718
+     투수 : 아웃당 자책 0.4907 (리그평균 0.3788) → 아웃당 +0.1119
+   검산 — 대체수준 팀은 22경기에서 평균팀보다 101점 부족하고, 16.1로 나누면
+   6.3승 아래다. 평균이 11승이니 4.7승 — 실측 4.0승과 맞는다.
+   타격:투구 비중이 57:43 으로 갈리는 것도 통상적인 WAR 구성과 같다.
+
+   ── 투수는 자책(ER) 기준 ────────────────────────────────
+   v2.47.0 에서 자책점을 야구 규칙대로 계산하게 됐고 실책도 개인에게 달렸다.
+   그래서 팀 실점을 **투수(자책) + 야수(비자책)** 로 겹치지도 새지도 않게
+   나눌 수 있다. 이 리그는 실점의 28.6% 가 비자책이다 —
+   실제 2026시즌에도 김한규가 25실점 중 자책이 8점이었다(수비 붕괴).
+   실점(RA) 기준으로 하면 그 17점이 통째로 투수 탓이 된다. 그건 틀렸다.
+
+   ── 수비는 실책만 ──────────────────────────────────────
+   넣을지 한참 고민했다. 수비 범위·송구는 이 게임이 아예 안 재니 넣을 수가 없고,
+   실책만으로 수비를 평가하면 반쪽이다. 그래도 넣기로 한 이유는
+   ① 실책이 이제 진짜 개인 기록이고 ② 이 리그에서 비자책이 실점의 28.6% 라
+   무시하기엔 너무 크고 ③ 김선호의 실제 시즌 실책 8개 같은 게 기록에
+   남아야 이야기가 된다. 대신 **실책 하나치**만 세고 그 이상은 손대지 않는다.
+   실책 1개 = 1.044점 (아웃이 될 타구가 1루타가 된 값 = .781 + .263).
+
+   ── 표본 ───────────────────────────────────────────────
+   한 시즌이 22경기다. 주전도 90타석 남짓이라 WAR 이 크게 흔들린다.
+   그래서 **숫자 옆에 항상 표본(타석·이닝)을 같이 보여주고**,
+   규정타석·규정이닝에 못 미치면 화면에서 흐리게 표시한다.
+   숨기지는 않는다 — 안 보이면 오해가 더 커진다.
    ========================================================= */
-const WOBA_W = {bb:0.69, hbp:0.72, h1:0.89, d2:1.27, d3:1.62, hr:2.10};
+/* 사건 하나의 득점 가치 — 이 엔진에서 회귀로 뽑았다 */
+const WAR_LW = {s1:0.781, d2:1.057, d3:1.332, hr:1.585, bb:0.644, sb:0.104, cs:-0.477, out:-0.263};
+const WAR_RPW = 16.1;              // 승리당 득점
+const WAR_REPL_BAT = 0.0718;       // 대체 타자는 타석당 이만큼 덜 만든다
+const WAR_REPL_PIT = 0.1119;       // 대체 투수는 아웃당 이만큼 더 내준다
+const WAR_ERR_RUN = 1.044;         // 실책 하나가 내주는 점수
+/* 리그 기록이 아직 안 쌓였을 때 쓸 실측 기본값 */
+const WAR_LG_FALLBACK = {rpa:0.2530, ero:0.3757, ePerG:0.2228};
+const WAR_MIN_PA = 20;             // 이 아래는 화면에서 흐리게 (참고용)
+const WAR_MIN_OUTS = 27;           // 9이닝
+
+/* 타석 하나하나의 득점 가치를 다 더한다 (선형 가중치) */
+function batRunsRaw(b){
+  if(!b) return 0;
+  const s1=(b.h||0)-(b.d2||0)-(b.d3||0)-(b.hr||0);
+  return WAR_LW.s1*s1 + WAR_LW.d2*(b.d2||0) + WAR_LW.d3*(b.d3||0) + WAR_LW.hr*(b.hr||0)
+       + WAR_LW.bb*((b.bb||0)+(b.hbp||0))
+       + WAR_LW.sb*(b.sb||0) + WAR_LW.cs*(b.cs||0)
+       + WAR_LW.out*((b.ab||0)-(b.h||0));
+}
+/* wOBA 는 wRC+ 기준선으로만 쓴다. 계수는 위 선형 가중치를 그대로 옮겼다 —
+   MLB 모양(홈런이 단타의 3배)을 쓰면 이 리그에서 파워를 과대평가한다. */
 function woba(b){
   if(!b||!b.pa) return 0;
   const h1=b.h-b.d2-b.d3-b.hr;
-  return (WOBA_W.bb*b.bb + WOBA_W.hbp*b.hbp + WOBA_W.h1*h1
-        + WOBA_W.d2*b.d2 + WOBA_W.d3*b.d3 + WOBA_W.hr*b.hr) / b.pa;
+  return (WAR_LW.bb*(b.bb+b.hbp) + WAR_LW.s1*h1
+        + WAR_LW.d2*b.d2 + WAR_LW.d3*b.d3 + WAR_LW.hr*b.hr) / b.pa;
 }
-/* 리그 전체 wOBA 와 타석당 득점 */
+/* 리그 평균 — 실제로 쌓인 기록에서 낸다. 표본이 얇으면 실측 기본값으로 간다. */
 function leagueWoba(){
-  let pa=0,ab=0,h=0,d2=0,d3=0,hr=0,bb=0,hbp=0;
+  let pa=0,ab=0,h=0,d2=0,d3=0,hr=0,bb=0,hbp=0,sb=0,cs=0,e=0,g=0;
   Object.keys(ST.lgBat||{}).forEach(id=>{const b=ST.lgBat[id];
-    pa+=b.pa;ab+=b.ab;h+=b.h;d2+=b.d2;d3+=b.d3;hr+=b.hr;bb+=b.bb;hbp+=b.hbp;});
-  if(!pa) return {woba:0.42, rpa:0.17};
-  const agg={pa,ab,h,d2,d3,hr,bb,hbp};
-  return {woba:woba(agg), rpa:0.17};      // 이 리그는 타석당 약 0.17점
+    pa+=b.pa;ab+=b.ab;h+=b.h;d2+=b.d2;d3+=b.d3;hr+=b.hr;bb+=b.bb;hbp+=b.hbp;
+    sb+=b.sb||0;cs+=b.cs||0;e+=b.e||0;g+=b.g||0;});
+  if(pa<200) return {woba:0.24, rpa:WAR_LG_FALLBACK.rpa, ePerG:WAR_LG_FALLBACK.ePerG, pa:pa};
+  const agg={pa,ab,h,d2,d3,hr,bb,hbp,sb,cs};
+  return {woba:woba(agg), rpa:batRunsRaw(agg)/pa,
+          ePerG: g? e/g : WAR_LG_FALLBACK.ePerG, pa:pa};
 }
 /* wRC+ : 100 = 리그 평균 */
 function wrcPlus(b, lg){
-  if(!b||!b.pa||!lg||!lg.woba) return 0;
+  if(!b||!b.pa) return 0;
   const L=lg||leagueWoba();
+  if(!L||!L.woba) return 0;
   return Math.round((woba(b)/L.woba)*100);
 }
-/* WAR (타자) — 아주 단순한 근사.
-   (선수 wOBA − 리그 wOBA) / wOBA스케일 × 타석 = 타격 득점
-   + 포지션·수비 보정, 10점 = 1승으로 환산한다.                        */
-const WOBA_SCALE = 1.15;
+/* 타격 WAR — 리그 평균 대비 만든 점수 + 대체수준 가산 */
+function warBatOf(b, lg){
+  if(!b||!b.pa) return 0;
+  const L=lg||leagueWoba();
+  const above = batRunsRaw(b) - L.rpa*b.pa;      // 평균 대비 득점
+  return (above + WAR_REPL_BAT*b.pa) / WAR_RPW;
+}
+/* 수비 WAR — 실책만. 리그 평균만큼 저지르면 0 이다. */
+function warDefOf(b, lg){
+  if(!b||!b.g) return 0;
+  const L=lg||leagueWoba();
+  const expect=(L.ePerG!=null?L.ePerG:WAR_LG_FALLBACK.ePerG)*b.g;
+  return ((expect-(b.e||0))*WAR_ERR_RUN)/WAR_RPW;
+}
+/* 야수 WAR = 타격 + 수비. 예전 호출부가 이 이름을 쓰고 있어 그대로 둔다. */
 function warOf(pid, b, lg){
   if(!b||!b.pa) return 0;
   const L=lg||leagueWoba();
-  if(!L.woba) return 0;
-  const batRuns=((woba(b)-L.woba)/WOBA_SCALE)*b.pa;
-  const p=TBYID['wwzw'].players.find(x=>x.id===pid);
-  const m=META[pid];
-  // 포지션 보정 (어려운 자리일수록 가산)
-  let posAdj=0;
-  if(m&&m.pos){
-    const best=Object.keys(m.pos).reduce((a,k)=>m.pos[k]>(m.pos[a]||0)?k:a,'RF');
-    posAdj = ({C:1.1,SS:0.7,'2B':0.3,'3B':0.2,CF:0.3,LF:-0.4,RF:-0.4,'1B':-0.8,DH:-1.2,P:0}[best]||0);
-  }
-  const defRuns = p ? ((p.def-46)*0.035*(b.g||0)) : 0;
-  const posRuns = posAdj*(b.g||0)*0.08;
-  const repl = 0.030*b.pa;                 // 대체선수 대비 가산
-  return (batRuns+defRuns+posRuns+repl)/10;
+  return warBatOf(b,L) + warDefOf(b,L);
 }
-/* 투수 WAR — 리그 평균 자책 대비 */
+/* 투수 WAR — 자책 기준. lgEra 는 '7이닝 환산 리그 평균 자책' 이다. */
 function warPit(s, lgEra){
   if(!s||!s.outs) return 0;
-  const ip=s.outs/3;
-  const e=(s.er*7)/ip;                      // 이 리그 기준 7이닝 환산
-  const base=lgEra||8.5;
-  return ((base-e)*ip/7)/10 + ip*0.012;
+  const lgEro=(lgEra!=null?lgEra:leagueEra())/21;      // 7이닝 = 아웃 21개
+  const saved=(lgEro*s.outs) - (s.er||0);             // 평균 대비 덜 내준 자책
+  return (saved + WAR_REPL_PIT*s.outs) / WAR_RPW;
 }
 function leagueEra(){
   let er=0,outs=0;
   Object.keys(ST.lgPit||{}).forEach(id=>{const s2=ST.lgPit[id];er+=s2.er;outs+=s2.outs;});
-  return outs? (er*7)/(outs/3) : 8.5;
+  if(outs<300) return WAR_LG_FALLBACK.ero*21;
+  return (er/outs)*21;
+}
+/* "타격 1.08 · 수비 -0.04 · 투구 1.20" 처럼 쪼개서 보여준다.
+   0 인 항목은 뺀다 — 안 던지는 사람한테 투구 0.00 을 붙여봐야 자리만 먹는다. */
+function warSplitStr(f){
+  if(!f) return '';
+  const parts=[];
+  if(f.pa) parts.push('타격 '+f.bat.toFixed(2));
+  if(f.g)  parts.push('수비 '+f.def.toFixed(2));
+  if(f.outs) parts.push('투구 '+f.pit.toFixed(2));
+  if(parts.length<2) return '';
+  return ' <i class="warsp">('+parts.join(' · ')+')</i>';
+}
+/* 표본이 얼마나 되는지 — WAR 옆에 항상 같이 붙인다.
+   22경기짜리 시즌이라 이게 없으면 숫자를 그대로 믿어버린다. */
+function warSampleStr(f){
+  if(!f) return '';
+  const p2=[];
+  if(f.pa) p2.push(f.pa+'타석');
+  if(f.outs) p2.push((f.outs/3).toFixed(1)+'이닝');
+  return p2.join(' · ');
+}
+/* 한 선수의 WAR 전부 — 타격·수비·투구와 표본까지 같이 준다.
+   [요청] "투수 war 타자 war 따로 해서 선수 합쳐도 되고" */
+function warFull(pid, lg, le){
+  const L=lg||leagueWoba(), E=(le!=null?le:leagueEra());
+  const b=(ST.bat&&ST.bat[pid])||(ST.lgBat&&ST.lgBat[pid])||null;
+  const s=(ST.pit&&ST.pit[pid])||(ST.lgPit&&ST.lgPit[pid])||null;
+  const bat=b?warBatOf(b,L):0, def=b?warDefOf(b,L):0, pit=s?warPit(s,E):0;
+  return {bat, def, pit, total:bat+def+pit,
+    pa:(b&&b.pa)||0, outs:(s&&s.outs)||0, g:(b&&b.g)||0, e:(b&&b.e)||0,
+    thin: ((b&&b.pa)||0)<WAR_MIN_PA && ((s&&s.outs)||0)<WAR_MIN_OUTS};
 }
 
 /* OPS+ — 100이 리그 평균. 사회인야구라 표본이 작아 참고용이다. */
