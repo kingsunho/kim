@@ -156,16 +156,113 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
      숫자는 멀쩡했다(경기당 팀 156구·등판 2.5명). 화면이 **지금 던지는 사람 것
      하나**만 보여줘서, 교체하면 0구부터 다시 세니 적어 보였던 것이다. */
   T('교체가 있으면 팀 누계도 같이 적는다', ()=>{
-    const src=ev("String(paintLiveCtl)");
-    return /teamNp/.test(src) && /팀 \$\{teamNp\}구/.test(src) && '팀 누계 표시';
+    const src=ev("String(paintNpBar)+String(npNow)");
+    return /teamNp/.test(src) && /팀 \$\{nn\.teamNp\}구/.test(src) && '팀 누계 표시';
   });
   T('한 명만 던졌으면 팀 누계는 안 붙인다', ()=>{
-    const src=ev("String(paintLiveCtl)");
+    const src=ev("String(paintNpBar)");
     return /used>1\?/.test(src) && '투수 1명이면 생략';
   });
   T('박스스코어에도 팀 합계 줄이 있다', ()=>{
     const src=ev("String(pitBoxCard)");
     return /팀 합계 \$\{NP\}구/.test(src) && '있음';
+  });
+
+  /* ================================================================
+     [2.52.0] [요청] "인게임 중에 실시간 투구수 나오게 해줘 우리든 상대든"
+     v2.51.1 까지는 교체 버튼 옆에 **우리 투수 것만**, 그것도 우리가 수비
+     중일 때만 떴다. 공격 중에는 상대 투수가 몇 구 던졌는지 볼 데가 없었다.
+     이제 점수판 밑 #np-bar 가 양 팀을 항상 띄운다.                    */
+  console.log('\n[경기 중 양 팀 투구수 판]');
+  const cells=()=>[...d.querySelectorAll('#np-bar .np-cell')];
+  const lit=()=>cells().findIndex(c=>c.classList.contains('on'));
+  const setup=ev(`(function(){
+    if(!document.getElementById('stage')){
+      const st=document.createElement('div'); st.id='stage'; document.body.appendChild(st); }
+    ST.weekDone=true; ST.announced=true; ST.lineupDirty=false; ST.events=[]; ST.absent={};
+    ST.lineup=recommendLineup(); applyDHRule(); sanitizeRotation();
+    LIVE=makeLive(); LIVE.manual=true; LIVE.round=ST.round;
+    buildLiveStage(); LIVE._logSeen=0;
+    /* 양 팀 투수가 다 던진 시점까지만 굴린다 — 경기를 끝내면 판이 숨는다 */
+    let k=0; while(!LIVE.over && LIVE.inning<3 && k++<400){ LIVE.pending=null; LIVE.step(); }
+    updateLiveUI();
+    return {over:LIVE.over, inn:LIVE.inning, opp:LIVE.oppSide().team.name};
+  })()`);
+  T('경기 화면에 투구수 판이 붙는다', ()=>
+    !setup.over && d.getElementById('np-bar') && `${setup.inn}회까지 굴림`);
+  T('칸이 둘이다 — 상대와 우리', ()=>cells().length===2 && `${setup.opp} · 우완좌완`);
+  T('왼쪽이 상대, 오른쪽이 우리 (점수판과 같은 순서)', ()=>{
+    const w0=cells()[0].querySelector('.who').textContent;
+    const w1=cells()[1].querySelector('.who').textContent;
+    return w0.indexOf(setup.opp)>=0 && w1.indexOf('우완좌완')>=0 && `${w0} | ${w1}`;
+  });
+  T('두 칸 모두 투구수가 찍혀 있다 — 상대 것도 보인다', ()=>{
+    const v=cells().map(c=>c.querySelector('b u') && c.querySelector('b u').textContent);
+    if(v.some(x=>!x || !/^\d+구$/.test(x))) return false;
+    /* 방금 올라온 투수는 0구가 맞다 — 교체하면 0부터 다시 센다.
+       그래서 "양 팀이 던지긴 했나" 는 팀 누계로 확인한다.          */
+    const t=ev("[npNow(LIVE.oppSide()).teamNp, npNow(LIVE.userSide()).teamNp]");
+    return t[0]>0 && t[1]>0 && `${v.join(' / ')} · 팀 ${t[0]}구 / ${t[1]}구`;
+  });
+  T('이름·이닝·피안타·실점이 같이 적힌다', ()=>{
+    const t=cells()[0].textContent.replace(/\s+/g,' ').trim();
+    return /이닝/.test(t) && /피안타/.test(t) && /실점/.test(t) && t.slice(0,42);
+  });
+  T('지금 던지는 쪽에만 불이 들어온다', ()=>{
+    const on=cells().filter(c=>c.classList.contains('on')).length;
+    const want=ev("LIVE.def()===LIVE.userSide()?1:0");
+    return on===1 && lit()===want && `${lit()}번 칸(${want?'우리':'상대'} 수비)`;
+  });
+  T('공수가 바뀌면 불도 따라 옮겨간다', ()=>{
+    const a=lit();
+    const r=ev(`(function(){const h0=LIVE.half; let k=0;
+      while(!LIVE.over && LIVE.half===h0 && k++<400){ LIVE.pending=null; LIVE.step(); }
+      updateLiveUI();
+      return {over:LIVE.over, want:LIVE.def()===LIVE.userSide()?1:0};})()`);
+    if(r.over) return false;
+    return lit()===r.want && lit()!==a && `${a}번 칸 → ${lit()}번 칸`;
+  });
+  T('타석이 지나면 숫자가 실제로 는다', ()=>{
+    const before=cells().map(c=>parseInt(c.querySelector('b u').textContent));
+    /* 몇 타석만 굴린다 — 여기서 경기를 끝내버리면 판이 숨어서 볼 게 없다 */
+    const r=ev(`(function(){let k=0;
+      while(!LIVE.over && k++<3){ LIVE.pending=null; LIVE.step(); }
+      updateLiveUI(); return LIVE.over;})()`);
+    if(r) return false;
+    const after=cells().map(c=>parseInt(c.querySelector('b u').textContent));
+    /* 교체가 있으면 그 칸은 0구부터 다시 센다 — 팀 누계가 그걸 받아준다 */
+    const grew=after.some((v,i)=>v>before[i]);
+    const team=cells().map(c=>{const e=c.querySelector('em');return e?e.textContent:''});
+    return grew && `${before.join('/')} → ${after.join('/')}${team.join('')?' · '+team.filter(Boolean).join(' '):''}`;
+  });
+  T('교체가 있는 칸은 팀 누계를 같이 적는다', ()=>{
+    /* 교체가 날 때까지 굴린다. 경기가 끝나기 전에 잡아야 해서
+       새 경기를 하나 더 켜고 한 타석씩 보면서 간다.                 */
+    const r=ev(`(function(){
+      for(let g=0;g<4;g++){
+        LIVE=makeLive(); LIVE.manual=true; buildLiveStage(); LIVE._logSeen=0;
+        let k=0;
+        while(!LIVE.over && k++<900){
+          LIVE.pending=null; LIVE.step(); updateLiveUI();
+          if(LIVE.over) break;
+          if(document.querySelectorAll('#np-bar .np-cell em').length)
+            return {hit:true, inn:LIVE.inning};
+        }
+      }
+      return {hit:false};})()`);
+    if(!r.hit) return false;
+    const em=[...d.querySelectorAll('#np-bar .np-cell em')].map(e=>e.textContent);
+    return /팀 \d+구 · \d+명/.test(em[0]) && `${r.inn}회 · ${em.join(' ')}`;
+  });
+  T('경기가 끝나면 판이 사라진다 — 박스스코어가 이어받는다', ()=>{
+    ev(`(function(){let k=0; while(!LIVE.over&&k++<3000){LIVE.pending=null;LIVE.step();}
+      updateLiveUI();})()`);
+    const bar=d.getElementById('np-bar');
+    return bar && bar.style.display==='none' && bar.children.length===0 && '숨는다';
+  });
+  T('교체 버튼 옆에서는 같은 숫자를 두 번 안 그린다', ()=>{
+    const src=ev("String(paintLiveCtl)");
+    return !/np-now/.test(src) && !/구`/.test(src) && '중복 없음';
   });
 
   console.log('\n[오늘 못 나오는 사람이 눈에 띄나]');
