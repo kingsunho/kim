@@ -8,3 +8,4 @@ loading-preview.html
 # art/ 작업물 — 미리보기 PNG 와 중간 파일 (index.html 에는 sheet.webp 만 들어간다)
 art/_*.png
 art/_sheet.png
+art/_*.webp
