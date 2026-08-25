@@ -6483,8 +6483,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.40.0';
-const APP_VERSION_NOTE = '새로고침으로 결과를 다시 굴리던 구멍을 막았다';
+const APP_VERSION = '2.41.0';
+const APP_VERSION_NOTE = '명예의 전당 조건을 훨씬 까다롭게 했다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6505,6 +6505,14 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.41.0', t:'명예의 전당 조건을 다시 잡았다', items:[
+    '예전엔 통산 100경기 하나만 넘어도 헌액이었다. 한 시즌이 22경기니까 다섯 시즌 그냥 출석만 해도 들어갔다',
+    '출전 수는 이제 업적이 아니라 자격 요건이다 — 통산 120경기(또는 150이닝)를 넘긴 사람만 심사한다',
+    '업적 기준을 세 시즌 실측으로 다시 잡았다. 통산 350안타 · 250타점 · 280도루 · 35승 · 350탈삼진 · 300이닝 — 여덟 시즌쯤 최고로 뛰어야 하나 걸린다',
+    '홈런만 20개에서 12개로 낮췄다. 4부 리그 한 시즌 홈런이 한두 개라 20개는 열다섯 시즌짜리, 사실상 없는 조건이었다',
+    '시즌 개인 타이틀은 3회에서 25회로 올렸다. 제일 잘하는 한 명이 한 시즌에 대여섯 개를 쓸어간다',
+    '구단 단일 시즌 최고 기록 — 비율 기록(타율·OPS·방어율)은 원래부터 규정타석·규정이닝을 봤다. 다만 진행 중인 시즌은 그때까지 치른 경기로 기준을 잡아서, 개막 3경기에 6타석 4안타면 타율 .667 이 구단 기록으로 올라왔다. 이제 다 치렀을 때를 기준으로 본다',
+  ]},
   {v:'2.40.0', t:'새로고침으로 다시 굴리던 구멍', items:[
     '경기 난수가 시계를 타고 있어서, 경기 도중이나 결과 화면에서 새로고침하면 완전히 다른 경기가 나왔다. 이길 때까지 돌릴 수 있었다는 뜻이다',
     '이제 그 주에 고정된 난수를 쓴다. 다시 시작해도 같은 공이 온다',
@@ -19264,7 +19272,17 @@ function renderRecords(){
     };
     const hi=(f)=>bestOf(f,(a,b)=>a>b), lo=(f)=>bestOf(f,(a,b)=>a<b);
     const B=(y,id)=>y.bat[id], P=(y,id)=>y.pit[id];
-    const gOf=y=>(y.rec&&y.rec.g)||0;
+    /* 규정타석·규정이닝 기준 경기 수.
+       [제보] "구단별 단일 시즌 최고 기록도 규정타석 규정이닝 맞게 되는 거지?"
+       비율 기록(타율·OPS·ERA)은 원래부터 qualPA/qualOuts 를 걸고 있었다.
+       다만 **진행 중인 시즌**은 그때까지 치른 경기로 기준을 잡아서,
+       개막 3경기에 6타석 4안타면 타율 .667 이 구단 최고 기록으로 올라왔다.
+       진행 중인 시즌은 **다 치렀을 때**를 기준으로 잡는다 — 시즌이 끝나야
+       구단 기록에 낄 수 있다는 뜻이고, 그게 규정타석의 원래 뜻이다.
+       누적 기록(안타·홈런·이닝…)은 예나 지금이나 최소 기준이 없다. 맞다.  */
+    const fullG=(ST.schedule||[]).filter(x=>!x.po).length||22;
+    const gOf=y=>(y.rec&&y.rec.g)||0;                    // 그 해 팀 리더용 — 지금까지 치른 만큼
+    const gMark=y=>y.live ? Math.max(gOf(y), fullG) : gOf(y);   // 구단 기록용 — 다 치렀을 때 기준
     const SEASON_MARKS=[
       {n:'한 시즌 최다 안타', t:hi((y,i)=>B(y,i)?B(y,i).h:null), u:'안타'},
       {n:'한 시즌 최다 홈런', t:hi((y,i)=>B(y,i)?B(y,i).hr:null), u:'홈런'},
@@ -19273,15 +19291,15 @@ function renderRecords(){
       {n:'한 시즌 최다 도루', t:hi((y,i)=>B(y,i)?B(y,i).sb:null), u:'도루'},
       {n:'한 시즌 최다 2루타',t:hi((y,i)=>B(y,i)?B(y,i).d2:null), u:'2루타'},
       {n:'한 시즌 최고 타율', t:hi((y,i)=>{const b=B(y,i);
-        return b&&b.pa>=qualPA(gOf(y))&&b.ab?avg(b):null;}), f:v=>fmt3(v), note:'규정타석'},
+        return b&&b.pa>=qualPA(gMark(y))&&b.ab?avg(b):null;}), f:v=>fmt3(v), note:'규정타석'},
       {n:'한 시즌 최고 OPS',  t:hi((y,i)=>{const b=B(y,i);
-        return b&&b.pa>=qualPA(gOf(y))?ops(b):null;}), f:v=>fmt3(v), note:'규정타석'},
+        return b&&b.pa>=qualPA(gMark(y))?ops(b):null;}), f:v=>fmt3(v), note:'규정타석'},
       {n:'한 시즌 최다 승',   t:hi((y,i)=>P(y,i)?(P(y,i).w||0):null), u:'승'},
       {n:'한 시즌 최다 탈삼진',t:hi((y,i)=>P(y,i)?P(y,i).k:null), u:'탈삼진'},
       {n:'한 시즌 최다 이닝', t:hi((y,i)=>P(y,i)?P(y,i).outs:null),
         f:v=>`${Math.floor(v/3)}${v%3?'.'+(v%3):''}이닝`},
       {n:'한 시즌 최저 ERA',  t:lo((y,i)=>{const q=P(y,i);
-        return q&&q.outs>=qualOuts(gOf(y))?era(q):null;}), f:v=>v.toFixed(2), note:'규정이닝'},
+        return q&&q.outs>=qualOuts(gMark(y))?era(q):null;}), f:v=>v.toFixed(2), note:'규정이닝'},
     ];
     const mc=el('div','card');
     mc.appendChild(el('div','card-h','구단 단일 시즌 최고 기록'));
@@ -19307,28 +19325,59 @@ function renderRecords(){
       :'아직 한 경기도 안 했다.'));
     c.appendChild(mc);
 
-    /* ---- 헌액자 ---- */
+    /* ---- 헌액자 ----
+       [제보] "명예의 전당 헌액자도 조건 더더더 까다롭게 해야할듯.
+               경기만 나오면 누구나 하겠네"
+
+       맞는 말이었다. 예전엔 '통산 100경기' 하나만 넘어도 헌액이었는데
+       한 시즌이 22경기라 **다섯 시즌 그냥 출석만 해도 들어갔다.**
+       나머지 기준도 주전이면 두세 시즌이면 넘는 숫자였다 —
+       통산 100안타는 두 시즌, 100이닝은 한 시즌 반이었다.
+
+       세 시즌을 실제 경기 흐름(결장·부상·로테이션 포함)으로 돌려서
+       한 시즌에 얼마나 쌓이는지 재고 다시 잡았다.
+         주전 한 시즌 — 22경기 · 안타 40 · 타점 25 · 도루 33 · 홈런 1~2
+         에이스 한 시즌 — 15등판 · 39이닝 · 39탈삼진 · 4승 · 개인 타이틀 6개
+       그래서 **여덟 시즌쯤 최고로 뛴 사람**이 겨우 하나 걸리는 선에 맞췄다.
+
+       홈런만 반대로 낮췄다(20 → 12). 4부 리그에서 한 시즌 홈런은 한두 개라
+       20개는 열다섯 시즌이 걸렸다 — 있으나 마나 한 조건이었다.
+
+       그리고 출전 수는 업적 목록에서 뺐다. 나오는 건 업적이 아니다 —
+       대신 **최소 근속**으로만 쓴다. 오래 뛰었다고 들어가지는 않지만,
+       짧게 뛰고 숫자 하나 튀어서 들어가지도 않게. */
+    const HOF_MIN_G=120;            // 야수 최소 근속 — 약 여섯 시즌
+    const HOF_MIN_OUTS=450;         // 투수 최소 근속 — 150이닝, 에이스 기준 네 시즌
     const HOF_REQ=[
-      {n:'통산 100경기', f:c2=>c2.g,     need:100, u:'경기'},
-      {n:'통산 100안타', f:c2=>c2.h,     need:100, u:'안타'},
-      {n:'통산 20홈런',  f:c2=>c2.hr,    need:20,  u:'홈런'},
-      {n:'통산 100타점', f:c2=>c2.rbi,   need:100, u:'타점'},
-      {n:'통산 50도루',  f:c2=>c2.sb,    need:50,  u:'도루'},
-      {n:'통산 20승',    f:c2=>c2.pw,    need:20,  u:'승'},
-      {n:'통산 150탈삼진',f:c2=>c2.pk,   need:150, u:'탈삼진'},
-      {n:'통산 100이닝', f:c2=>Math.floor((c2.pouts||0)/3), need:100, u:'이닝'},
+      {n:'통산 350안타', f:c2=>c2.h,     need:350, u:'안타'},
+      {n:'통산 12홈런',  f:c2=>c2.hr,    need:12,  u:'홈런'},
+      {n:'통산 250타점', f:c2=>c2.rbi,   need:250, u:'타점'},
+      {n:'통산 280도루', f:c2=>c2.sb,    need:280, u:'도루'},
+      {n:'통산 35승',    f:c2=>c2.pw,    need:35,  u:'승'},
+      {n:'통산 350탈삼진',f:c2=>c2.pk,   need:350, u:'탈삼진'},
+      {n:'통산 300이닝', f:c2=>Math.floor((c2.pouts||0)/3), need:300, u:'이닝'},
     ];
+    const HOF_TITLES=25;            // 시즌 개인 타이틀 — 3회에서 올렸다.
+                                    // 제일 잘하는 한 명이 한 시즌에 대여섯 개를 쓸어간다
     const titleCnt=id=>(ST.hall||[]).filter(h=>h.pid===id&&h.scope!=='구간').length;
+    /* '구단 단일 시즌 최고 기록 보유' 도 헌액 사유로 넣어볼까 했는데 뺐다.
+       1년차가 끝나면 그 열두 부문을 잘하는 서너 명이 통째로 나눠 갖는다.
+       한 시즌만 뛰고도 절반을 들고 있으니, 까다롭게 하려는 것과 정반대다. */
+    const servedOK=c2=>(c2.g||0)>=HOF_MIN_G || (c2.pouts||0)>=HOF_MIN_OUTS;
     const hc2=el('div','card');
     hc2.appendChild(el('div','card-h','헌액자'));
     hc2.appendChild(el('p','muted',
-      '아래 중 하나만 넘기면 헌액이다 — '+HOF_REQ.map(x=>x.n).join(' · ')+' · 시즌 개인 타이틀 3회.'));
+      `자격은 통산 ${HOF_MIN_G}경기 또는 ${Math.round(HOF_MIN_OUTS/3)}이닝이다. 그걸 넘긴 사람 중에 `+
+      HOF_REQ.map(x=>x.n).join(' · ')+
+      ` · 시즌 개인 타이틀 ${HOF_TITLES}회 — `+
+      '이 중 하나를 해낸 사람만 들어간다. 출전 수는 자격일 뿐 업적이 아니다.'));
     const inducted=[];
     us.players.forEach(p=>{
       const c2=(ST.career&&ST.career[p.id])||blankCareer();
+      if(!servedOK(c2))return;                       // 근속 미달은 심사 대상이 아니다
       const got=HOF_REQ.filter(r=>r.f(c2)>=r.need).map(r=>`${r.n}`);
       const tt=titleCnt(p.id);
-      if(tt>=3)got.push(`개인 타이틀 ${tt}회`);
+      if(tt>=HOF_TITLES)got.push(`개인 타이틀 ${tt}회`);
       if(got.length)inducted.push({p,got,c2});
     });
     if(inducted.length){
@@ -19349,12 +19398,13 @@ function renderRecords(){
         const c2=(ST.career&&ST.career[p.id])||blankCareer();
         HOF_REQ.forEach(r=>{
           const pct=r.f(c2)/r.need;
-          if(pct>0&&(!near||pct>near.pct))near={p,r,pct,have:r.f(c2)};
+          if(pct>0&&(!near||pct>near.pct))near={p,r,pct,have:r.f(c2),served:servedOK(c2)};
         });
       });
       hc2.appendChild(el('p','muted',near
-        ? `아직 아무도 없다. 제일 가까운 건 ${nameOf(near.p.id)} — ${near.r.n} 중 ${near.have}${near.r.u} (${Math.round(near.pct*100)}%).`
-        : '아직 아무도 없다. 시즌을 몇 번 넘겨야 나온다.'));
+        ? `아직 아무도 없다. 제일 가까운 건 ${nameOf(near.p.id)} — ${near.r.n} 중 ${near.have}${near.r.u} (${Math.round(near.pct*100)}%)`
+          +(near.served?'.':' — 근속은 아직 모자란다.')
+        : '아직 아무도 없다. 시즌을 여러 번 넘겨야 나온다.'));
     }
     c.appendChild(hc2);
 

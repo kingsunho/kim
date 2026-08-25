@@ -87,7 +87,62 @@ const txt=()=>d.querySelector('#view').textContent;
     });return found})()`.replace('__NM__',nm));
     return ok ? `${nm} (규정이닝 충족)` : `!${nm} 규정 미달`;
   });
-  T('헌액 기준이 안내된다', ()=>/헌액자/.test(txt())&&/통산 100경기/.test(txt()));
+  T('헌액 기준이 안내된다', ()=>/헌액자/.test(txt())&&/통산 350안타/.test(txt()));
+  /* [제보] "경기만 나오면 누구나 하겠네"
+     출전 수는 자격일 뿐 업적이 아니다 — 오래 뛰기만 해서는 못 들어간다 */
+  T('출전만 많은 사람은 헌액이 안 된다', ()=>{
+    const before=ev("JSON.stringify(ST.career)");
+    ev(`(function(){
+      var id=TBYID['wwzw'].players[0].id;
+      ST.career[id]=Object.assign(blankCareer(),{g:400,h:120,hr:2,rbi:80,sb:30});
+      ST.hall=(ST.hall||[]).filter(function(h){return h.pid!==id});
+      window.__probe=id; })()`);
+    w.go('records'); ev("recTab='hof'"); w.go('records');
+    const nm=ev("nameOf(window.__probe)");
+    const rows=[...d.querySelectorAll('#view .hof-row')].map(x=>x.textContent);
+    const inn=rows.some(t=>t.indexOf(nm)>=0);
+    ev("ST.career=JSON.parse("+JSON.stringify(before)+")");
+    if(inn) console.log('     ↳ '+nm+' 가 출전만으로 들어갔다');
+    return !inn && `${nm} 400경기 120안타 — 안 들어간다`;
+  });
+  T('업적을 넘기면 헌액된다', ()=>{
+    const before=ev("JSON.stringify(ST.career)");
+    ev(`(function(){
+      var id=TBYID['wwzw'].players[0].id;
+      ST.career[id]=Object.assign(blankCareer(),{g:400,h:420,hr:9,rbi:310,sb:120});
+      window.__probe=id; })()`);
+    w.go('records'); ev("recTab='hof'"); w.go('records');
+    const nm=ev("nameOf(window.__probe)");
+    const rows=[...d.querySelectorAll('#view .hof-row')].map(x=>x.textContent);
+    const inn=rows.some(t=>t.indexOf(nm)>=0);
+    ev("ST.career=JSON.parse("+JSON.stringify(before)+")");
+    return inn && `${nm} 420안타 — 들어간다`;
+  });
+  T('근속이 모자라면 업적이 있어도 안 된다', ()=>{
+    const before=ev("JSON.stringify(ST.career)");
+    ev(`(function(){
+      var id=TBYID['wwzw'].players[0].id;
+      ST.career[id]=Object.assign(blankCareer(),{g:20,h:420,hr:9,rbi:310,sb:120});
+      window.__probe=id; })()`);
+    w.go('records'); ev("recTab='hof'"); w.go('records');
+    const nm=ev("nameOf(window.__probe)");
+    const rows=[...d.querySelectorAll('#view .hof-row')].map(x=>x.textContent);
+    const inn=rows.some(t=>t.indexOf(nm)>=0);
+    ev("ST.career=JSON.parse("+JSON.stringify(before)+")");
+    return !inn && '20경기짜리는 심사 대상이 아니다';
+  });
+  /* [제보] "구단별 단일 시즌 최고 기록도 규정타석 규정이닝 맞게 되는 거지?" */
+  T('진행 중인 시즌은 다 치른 기준으로 규정타석을 본다', ()=>ev(`(function(){
+    var full=(ST.schedule||[]).filter(function(x){return !x.po}).length||22;
+    /* 개막 직후를 흉내 낸다 — 3경기 6타석 4안타 */
+    var id=TBYID['wwzw'].players[0].id;
+    var save=JSON.stringify([ST.stand['wwzw'],ST.bat[id]]);
+    ST.stand['wwzw'].g=3;
+    ST.bat[id]={g:3,pa:6,ab:6,h:4,d2:0,d3:0,hr:0,bb:0,k:0,r:2,rbi:2,sb:0};
+    var pass = 6 < qualPA(full);       // 6타석은 풀시즌 규정타석에 한참 못 미친다
+    var r=JSON.parse(save); ST.stand['wwzw']=r[0]; ST.bat[id]=r[1];
+    return pass ? '풀시즌 규정타석 '+qualPA(full)+'타석 (3경기 6타석으로는 못 낀다)' : false;
+  })()`));
   T('시즌 연표가 시즌 수만큼 나온다', ()=>{
     const yrs=ev("hofSeasons().length");
     const heads=[...d.querySelectorAll('#view .card-h')].filter(x=>/년차/.test(x.textContent));
