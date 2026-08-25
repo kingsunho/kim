@@ -107,6 +107,22 @@ button{font-family:inherit;cursor:pointer}
 .od-tag span{display:block;font-size:11px;color:var(--dim);margin-top:2px;line-height:1.5}
 .od-det{font-size:11px;color:var(--dim);margin-top:8px}
 .od-det b{color:var(--ink)}
+/* 저장된 라인업 칸 */
+.lu-h{font-size:11px;font-weight:800;color:var(--gold);margin-top:16px;letter-spacing:.2px}
+.lu-slots{margin-top:8px}
+.lu-slot{display:flex;align-items:center;gap:8px;padding:9px 10px;margin-top:6px;
+  background:var(--panel2);border:1px solid var(--line);border-radius:10px}
+.lu-slot.empty{border-style:dashed;opacity:.75}
+.lu-l{flex:1 1 auto;min-width:0}
+.lu-l b{display:block;font-size:12.5px;font-weight:800}
+.lu-l span{display:block;font-size:10px;color:var(--dim);margin-top:2px;line-height:1.45;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lu-act{flex:0 0 auto;display:flex;gap:6px}
+.btn.sm{margin-top:0;padding:6px 10px;font-size:11px}
+.lu-name{margin:10px 0 4px}
+.lu-name input{width:100%;box-sizing:border-box;padding:10px 12px;font-size:15px;
+  background:var(--panel2);border:1px solid var(--line);border-radius:9px;color:var(--ink)}
+.lu-name input:focus{outline:none;border-color:var(--gold)}
 /* 이번 주 리그 대진 · 배당 */
 .lgo{margin-top:4px}
 .lgo-r{display:flex;align-items:center;gap:7px;padding:7px 2px;
@@ -1728,11 +1744,24 @@ const WWZW = [
    pos:['3B','DH','LF'],pitch:{stf:44,ctl:34,sta:44},
    real:{g:12,pa:27,ab:22,h:7,d2:0,d3:0,hr:0,bb:4,hbp:1,k:3,sb:1,cs:0,rbi:7,r:4},
    note:'BB/K 1.33 팀 2위. 22타수 장타 0 · 27타석 도루 1 — 똑딱이 · 똥차'},
-  {id:'ujh',name:'우진혁',bats:'R',no:10,con:34,pow:20,eye:46,spd:35,def:40,arm:40,
+  /* 컨택 34 → 28 · 파워 20 → 18 · 선구 46 → 42
+     타율 .273 만 보면 중위권인데 wRC+ 는 50 이다 — 리그 평균의 절반이고
+     권혁준(25) 다음으로 낮다. 14타석에 삼진 5개(35.7%)로 팀에서 세 번째로
+     나쁘고, 11타수 장타 0 에 타구의 84% 가 내야를 못 벗어났다.
+     그런데 컨택이 34 로 김준희(wRC+ 83)의 26 보다 높게 잡혀 있었다.
+     표본 14타석짜리 타율을 그대로 믿은 값이라 조정 지표에 맞춰 내린다.
+     사사구 3개는 살아 있어서 선구는 조금만 깎는다.                      */
+  {id:'ujh',name:'우진혁',bats:'R',no:10,con:28,pow:18,eye:42,spd:35,def:40,arm:40,
    pos:['RF','2B','LF'],pitch:null,
    real:{g:6,pa:14,ab:11,h:3,d2:0,d3:0,hr:0,bb:2,hbp:1,k:5,sb:3,cs:1,rbi:3,r:3},
    note:'내야 타구 84%'},
-  {id:'kjh',name:'김준희',bats:'R',no:29,con:26,pow:24,eye:42,spd:42,def:52,arm:70,
+  /* 컨택 26 → 32 · 선구 42 → 44
+     타율 .211 은 낮은데 wRC+ 는 83 으로 우진혁(50)보다 훨씬 높다.
+     23타석 삼진 5개(21.7%)로 우진혁(35.7%)의 절반 수준이고 사사구 4개,
+     도루 4개 실패 0 이다. 안타가 안 나왔을 뿐 타석 내용은 나쁘지 않았다.
+     타율만 보고 26 까지 내려놨던 걸 조정 지표 쪽으로 되돌린다.
+     파워는 19타수 2루타 1개뿐이라 그대로 둔다.                          */
+  {id:'kjh',name:'김준희',bats:'R',no:29,con:32,pow:24,eye:44,spd:42,def:52,arm:70,
    pos:['RF','P','LF'],pitch:{stf:54,ctl:20,sta:46},
    real:{g:10,pa:23,ab:19,h:4,d2:1,d3:0,hr:0,bb:3,hbp:1,k:5,sb:4,cs:0,rbi:2,r:4},
    note:'어깨 70 팀 1위. 8/9 우익 노바운드 홈 보살'},
@@ -6704,8 +6733,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.45.0';
-const APP_VERSION_NOTE = '남의 팀 경기 배당도 본다 · 지난주 리그 결과';
+const APP_VERSION = '2.46.0';
+const APP_VERSION_NOTE = '라인업 저장 · 상대 팀 유니폼 색 · 사람 그림 손봄';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6726,6 +6755,20 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.46.0', t:'라인업을 저장한다 · 상대 팀 옷 색이 갈린다', items:[
+    '짜놓은 라인업을 네 칸까지 저장한다. 타순·수비 위치·투수 로테이션·팀 전술·지명타자 여부까지 통째로 담긴다',
+    '이름을 붙여두고 라인업 화면에서 「불러오기」 한 번이면 끝이다. 매주 새로 짤 필요가 없다',
+    '불러올 때 그날 못 나오는 사람은 벤치에서 자동으로 메우고, 몇 명 바뀌었는지 알려준다',
+    '상대 팀 유니폼이 팀마다 다른 색이 됐다. 예전엔 스물세 팀이 전부 같은 빨강이었다',
+    '상의를 통째로 물들인다. 예전엔 모자와 소매만 물들고 상의는 우리랑 똑같은 흰색이라 헷갈렸다',
+    '우리 팀만 흰 유니폼이다. 화면에서 흰옷이면 우리, 색옷이면 상대다',
+    '야구공과 배팅장갑은 물들지 않는다. 흰 픽셀을 다 물들이면 공까지 팀 색이 된다',
+    '수비수 팔이 유니폼 안에 파묻혀 손만 떠 있던 것 — 팔꿈치가 몸통 안쪽으로 꺾이고 있었다',
+    '수비수 다리가 뻣뻣한 막대 두 개로 보이던 것. 골반을 낮춰서 무릎이 굽을 자리를 만들었다',
+    '위팔이 아래팔보다 짧았다. 사람은 반대다 — 총 길이는 그대로 두고 나누는 비율만 바로잡았다',
+    '타자 등번호가 등 한가운데가 아니라 어깨죽지에 붙어 있던 것',
+    '우승 세리머니에서 한마디 하는 사람 이름을 이광재 → 이영재로 고쳤다',
+  ]},
   {v:'2.45.0', t:'리그 전체 배당 — 남의 팀 경기도 누가 유리한지 본다', items:[
     '순위 화면에 「이번 주 리그」 가 생겼다. 우리 경기 말고 남의 팀끼리 붙는 열 경기가 다 나온다',
     '경기마다 양쪽 배당과 승률 바가 붙는다. 어느 팀이 탑독인지 한눈에 보인다',
@@ -10179,7 +10222,7 @@ function newSeason(){
     trainRain:false, trainPush:false,
     bond:(function(){const o={};TBYID['wwzw'].players.forEach(p=>o[p.id]=50);return o;})(),
     drinkInvite:null, poach:null,                          // 우정·술약속·영입제안
-    lastLineup:null, oppEvent:null, mystery:null, canParty:false, teamBuff:null,
+    lastLineup:null, luSaved:[], oppEvent:null, mystery:null, canParty:false, teamBuff:null,
     kakaoPost:[], partyDone:false, lastFreePass:0, awards:null,
     caStart:(function(){const o={};TBYID['wwzw'].players.forEach(p=>o[p.id]=calcCA(p));return o;})()};
 }
@@ -13545,6 +13588,7 @@ function renderLineup(){
     saveGame(true);go('kakao');
   };
   br.appendChild(b0);br.appendChild(b1); head.appendChild(br);
+  renderLuSaved(head);
   const br2=el('div','btn-row');
   if(ST.lineupDirty){
     const okb=el('button','btn primary','라인업 확정');
@@ -13774,6 +13818,153 @@ function renderLineup(){
     tc.appendChild(g);
   });
   c.appendChild(tc);
+}
+/* 이름 붙이기 — prompt() 는 폰에서 볼썽사나워서 시트로 받는다 */
+function luNameSheet(dflt, done){
+  const body=$('#sheet-body'); if(!body) return;
+  body.innerHTML='';
+  $('#sheet-title').textContent='라인업 이름';
+  body.appendChild(el('div','sheet-note',
+    '나중에 알아볼 이름을 붙여라. 최대 12자.'));
+  const wrap=el('div','lu-name');
+  wrap.innerHTML=`<input id="lu-nm" type="text" maxlength="12" value="${dflt||''}">`;
+  body.appendChild(wrap);
+  const row=el('div','btn-row');
+  const ok=el('button','btn primary','저장');
+  ok.onclick=()=>{
+    const el2=document.getElementById('lu-nm');
+    const v=(el2&&el2.value||'').trim();
+    closeSheet();
+    done(v||dflt||'베스트');
+  };
+  const no=el('button','btn','취소');
+  no.onclick=()=>closeSheet();
+  row.appendChild(ok); row.appendChild(no);
+  body.appendChild(row);
+  $('#sheet').classList.add('open');
+  setTimeout(()=>{ const e=document.getElementById('lu-nm'); if(e){ e.focus(); e.select&&e.select(); } },60);
+}
+
+/* ---------- 저장된 라인업 칸 ---------- */
+function renderLuSaved(host){
+  const list=luPresets();
+  host.appendChild(el('div','lu-h','저장된 라인업'));
+  host.appendChild(el('div','set-note',
+    '타순·수비 위치·투수 로테이션·팀 전술·지명타자 여부까지 통째로 담는다. '+
+    '불러올 때 그날 못 나오는 사람은 벤치에서 자동으로 메운다.'));
+  const wrap=el('div','lu-slots');
+  for(let i=0;i<LU_SLOTS;i++){
+    const pre=list[i];
+    const row=el('div','lu-slot'+(pre?'':' empty'));
+    if(pre){
+      const sp=pre.rotation&&pre.rotation[0];
+      const TN={patient:'공 보기',normal:'기본',aggressive:'적극',contact:'정확히',
+                hold:'자제',quick:'빠른 교체',long:'길게'};
+      row.innerHTML=`<div class="lu-l">
+          <b>${pre.name}</b>
+          <span>선발 ${sp?nameOf(sp):'—'} · ${pre.useDH?'지명타자':'투수 타석'}
+            · 타격 ${TN[(pre.tactics||{}).bat]||'기본'} · 주루 ${TN[(pre.tactics||{}).run]||'기본'}</span>
+          <span class="dimx">${pre.season||1}년차 ${pre.at||'?'}차전에 저장</span>
+        </div>`;
+      const use=el('button','btn primary sm','불러오기');
+      use.onclick=()=>{
+        const r=luApply(pre);
+        if(!r.ok){ toast('나올 수 있는 사람이 모자라서 못 불러온다'); return; }
+        saveGame(true); renderLineup();
+        let m=`${pre.name} 적용`;
+        if(r.gone.length) m+=` · 팀에 없는 ${r.gone.length}명 제외`;
+        if(r.filled.length) m+=` · 결장 ${r.filled.length}명 교체`;
+        toast(m);
+      };
+      const del=el('button','btn sm','지우기');
+      del.onclick=()=>{
+        if(!confirm(`「${pre.name}」 지울까?`)) return;
+        list.splice(i,1); saveGame(true); renderLineup(); toast('지웠다');
+      };
+      const act=el('div','lu-act'); act.appendChild(use); act.appendChild(del);
+      row.appendChild(act);
+    } else {
+      row.innerHTML=`<div class="lu-l"><b>빈 칸</b><span>지금 짜놓은 라인업을 여기 담는다</span></div>`;
+      const sv=el('button','btn sm','여기 저장');
+      sv.onclick=()=>{
+        if(!ST.lineup||ST.lineup.length<9){ toast('라인업이 9명이 안 된다'); return; }
+        luNameSheet(['베스트','주말','원정','비 오는 날'][i]||'베스트', nm=>{
+          list[i]=luSnapshot(nm);
+          saveGame(true); renderLineup(); toast(`「${list[i].name}」 저장`);
+        });
+      };
+      const act=el('div','lu-act'); act.appendChild(sv);
+      row.appendChild(act);
+    }
+    wrap.appendChild(row);
+  }
+  host.appendChild(wrap);
+}
+
+/* =========================================================
+   라인업 저장 — 짜놓은 판을 통째로 꺼내 쓴다
+   ---------------------------------------------------------
+   [제보] "자기가 짜놓는 베스트 라인업, 타순하고 투수하고 전술까지
+           그걸 저장할 수 있게 하자. 매번 새로 짜는 게 귀찮다"
+
+   '지난 경기 그대로'(ST.lastLineup)가 이미 있었지만 두 가지가 부족했다.
+     ① 타순·수비만 담고 **로테이션과 전술은 안 담았다**
+     ② 경기가 끝날 때마다 덮어써져서 '내가 짜둔 베스트' 를 못 남긴다
+   그래서 이름 붙여 저장하는 칸을 따로 뒀다. 네 개까지.
+
+   [설계] 저장한 사람이 그날 못 나올 수 있다. 불러올 때 결장자를 벤치에서
+   메우고 **누가 바뀌었는지 알려준다** — 몰래 채워 넣으면 화면과 실제가
+   어긋난다(예전에 그래서 문제가 됐다).                              */
+const LU_SLOTS=4;
+function luPresets(){
+  if(!Array.isArray(ST.luSaved)) ST.luSaved=[];
+  return ST.luSaved;
+}
+/* 지금 화면의 라인업·로테이션·전술을 한 덩어리로 뜬다 */
+function luSnapshot(name){
+  return {
+    name: (name||'').slice(0,12) || '이름 없음',
+    lineup: (ST.lineup||[]).map(s=>({id:s.id,pos:s.pos})),
+    rotation: (ST.rotation||[]).slice(),
+    tactics: {...(ST.tactics||{bat:'normal',run:'normal',hook:'normal'})},
+    useDH: !!ST.useDH,
+    at: (ST.round||0)+1,
+    season: ST.seasonNo||1,
+  };
+}
+/* 저장본을 지금 팀에 맞춰 적용한다. 없어진 선수·결장자를 정리해서
+   {ok, gone, out, filled} 로 무슨 일이 있었는지 돌려준다.        */
+function luApply(pre){
+  const us=TBYID['wwzw'];
+  const has=id=>us.players.some(p=>p.id===id);
+  const gone=[], out=[], filled=[];
+  let lineup=(pre.lineup||[]).filter(sl=>{
+    if(!has(sl.id)){ gone.push(sl.id); return false; }
+    return true;
+  }).map(sl=>({id:sl.id,pos:sl.pos}));
+
+  // 그날 못 나오는 사람을 벤치에서 메운다
+  const pool=us.players.filter(p=>isAvailable(p.id) && !lineup.some(s2=>s2.id===p.id));
+  lineup.forEach(sl=>{
+    if(isAvailable(sl.id)) return;
+    out.push(sl.id);
+    const rep=pool.find(p=>posFit(p.id,sl.pos)>0)||pool[0];
+    if(rep){ filled.push([sl.id,rep.id]); sl.id=rep.id; pool.splice(pool.indexOf(rep),1); }
+  });
+  // 빠진 자리가 있으면(선수가 팀을 떠난 경우) 추천으로 채운다
+  if(lineup.length<9){
+    const rec=recommendLineup();
+    rec.forEach(r=>{ if(lineup.length<9 && !lineup.some(s2=>s2.id===r.id)) lineup.push({id:r.id,pos:r.pos}); });
+  }
+  if(lineup.length<9) return {ok:false, gone, out, filled};
+
+  ST.lineup=lineup;
+  const rot=(pre.rotation||[]).filter(id=>has(id) && us.pitchers.some(p=>p.id===id));
+  ST.rotation = rot.length ? rot : recommendRotation();
+  if(pre.tactics) ST.tactics={...ST.tactics, ...pre.tactics};
+  if(pre.useDH!=null) ST.useDH=!!pre.useDH;
+  sanitizeRotation(); applyDHRule(); fixLineupPositions();
+  return {ok:true, gone, out, filled};
 }
 function syncStarter(){
   // 라인업에 투수 자리가 있으면 선발 투수를 자동으로 그 자리에 넣는다
@@ -16489,8 +16680,16 @@ const MV_ANCH={
   ball:     [0.50,0.50, 2.4],
   mask:     [0.50,0.88, 9.2]
 };
-/* 뼈 길이 (키 40 기준) */
-const MV_LEN={torso:11.5, uarm:6.2, farm:6.4, thigh:9.2, shin:7.6, bat:19.0};
+/* 뼈 길이 (키 40 기준)
+   [제보] "팔 크기도 몸통과 비교하면 어색하다"
+   재보니 **위팔이 아래팔보다 짧았다.** 사람은 반대다.
+     예전: 위팔 6.2 · 아래팔 6.4
+     인체: 위팔 0.186·키, 아래팔 0.146·키 → 몸통(목~골반 11.5) 대비 7.13 / 5.60
+   총 길이(12.6)는 원래 맞았다. 나누는 비율만 뒤집혀 있었던 것이라
+   총량은 그대로 두고 나누는 자리만 바꿨다 — 다른 포즈의 손 위치는
+   그대로고 팔꿈치만 제자리를 찾는다(IK 는 손을 목표로 푼다).
+   그 결과 팔꿈치가 -3.80 에서 -2.86 으로 내려와 허리 높이에 온다.  */
+const MV_LEN={torso:11.5, uarm:7.1, farm:5.5, thigh:9.2, shin:7.6, bat:19.0};
 /* 몸통 좌표계(원점=골반)에서 어깨와 목이 어디인가 */
 const MV_SH=[-4.73,-9.91], MV_NECK=-11.5;
 /* 골반 반폭 — 다리 두 개가 한 점에서 나오면 무릎 아래가 겹쳐 한 다리가 된다 */
@@ -16506,7 +16705,17 @@ const MV_HIPW=1.35;
      위·왼쪽이라 소매에 반쯤 걸쳐 [번호][한자] 로 읽혔다.
      이제 그림에서 재서 박는다 — 한자 아래단(세로 0.59)보다 아래,
      단추선(가로 0.52)보다 오른쪽. 그래서 [한자] 다음에 [번호] 로 읽힌다.  */
-const MV_FIELDER_NO=[0.665, 0.770, 0.160];
+/* [v2.46.0] 유니폼 그림을 재서 다시 잡았다 (art/_armfit.js).
+     가슴 로고 중심 (0.337, 0.348) · 단추선 x=0.520 · 가슴 한자 y 0.402~0.674
+   야구 유니폼은 한쪽 가슴에 로고가 있으면 번호는 **반대쪽 가슴 같은 높이**다.
+   로고를 단추선에 대칭시키면 x = 2*0.520 - 0.337 = 0.703.
+     가로 0.665 → 0.703 : 쪽은 원래 맞았다(로고 반대쪽). 4% 만 보정.
+     세로 0.770 → 0.348 : 이게 틀렸다. 0.770 은 한자(0.402~0.674) 아래,
+                          배꼽 근처였다. 가슴이 아니라 배에 번호를 찍고 있었다.
+     크기 0.160 → 0.130 : 로고 높이 0.098 과 짝이 맞게.
+   [주의] 이 값은 지금 **화면에 안 나온다.** mvGuy 호출부 어디도 no 를 안 넘기고
+   야수는 20px 라 h>=34 조건에도 안 걸린다. 야수 번호를 켤 거면 그때 쓴다. */
+const MV_FIELDER_NO=[0.703, 0.348, 0.130];
 /* 번호 잉크. 유니폼 천을 물들인 만큼 번호도 같이 물들여야 원정 팀(빨강)
    등에 우리 팀 네이비가 안 찍힌다 */
 const MV_INK=[219, 0.54, 0.29];          // 가슴 한자에서 뽑은 색 (색상각, 채도, 명도)
@@ -16526,6 +16735,20 @@ function mvInkFor(u){
 }
 
 let MV_SHEET=null, MV_SHEET_OK=false;
+/* 팀 색으로 물들인 시트 보관함.
+   [주의] 팀마다 색이 다르니까 그냥 쌓아두면 안 된다 —
+   파츠 시트 1.48MB + 통짜 시트 2.45MB 라, 23팀을 다 만나면 90MB 다.
+   한 경기에 상대는 하나뿐이니 최근 몇 장만 들고 있으면 된다.        */
+const MV_TINT_MAX=3;
+function mvCachePut(store,key,val){
+  store[key]=val;
+  const ks=Object.keys(store);
+  if(ks.length>MV_TINT_MAX){
+    // 제일 먼저 들어온 것부터 버린다 (자바스크립트 객체는 넣은 순서를 지킨다)
+    for(let i=0;i<ks.length-MV_TINT_MAX;i++) delete store[ks[i]];
+  }
+  return val;
+}
 const MV_TINT={};
 /* 시트에 그려진 우리 팀 네이비의 색상각. 이것과 비슷하면 색을 안 바꾼다 */
 const MV_SHEET_HUE=228;
@@ -16542,24 +16765,113 @@ function mvHue(hex){
 /* 유니폼 색 바꾸기 — 시트에서 '네이비 천' 인 픽셀만 골라 색상각을 옮긴다.
    살색(약 22도)·흰 유니폼(채도 거의 0)·글러브 갈색(약 23도)·검은 스파이크는
    조건에 안 걸려서 그대로 남는다. 순수 함수라 art/pose.js 도 이걸 쓴다. */
-function mvTintPixels(d, hue){
+/* HSV → RGB (0~1). 아래 두 군데서 같이 쓴다 */
+function mvHsv2rgb(h,s,v){
+  const hh=((h%360)+360)/60, ii=Math.floor(hh)%6, f=hh-Math.floor(hh);
+  const p=v*(1-s), q=v*(1-s*f), t=v*(1-s*(1-f));
+  if(ii===0)return[v,t,p]; if(ii===1)return[q,v,p]; if(ii===2)return[p,v,t];
+  if(ii===3)return[p,q,v]; if(ii===4)return[t,p,v]; return[v,p,q];
+}
+/* =========================================================
+   유니폼 물들이기
+   ---------------------------------------------------------
+   [제보] "우리 팀 제외 다른 팀은 옷 그냥 단색 다른 색으로 만들 수 없냐.
+           옷이 같아서 헷갈려"
+
+   맞는 말이었다. 두 가지가 겹쳐 있었다.
+     ① 상대 23팀이 **전부 같은 빨강 하나**를 썼다 (mvPaint 의 away 상수).
+        누구랑 붙어도 상대 유니폼이 똑같았다.
+     ② 그나마도 물드는 건 **네이비 부분(모자·소매·스타킹)뿐**이고
+        상의 몸통은 우리와 똑같은 흰색으로 남았다.
+        20px 짜리 야수에서 소매 색만으로 팀을 가리는 건 무리다.
+
+   이제 상대 팀은 **상·하의 흰 천까지 팀 색으로 물들인다.** 우리 팀만 흰색이다.
+   그래서 화면에서 흰 유니폼 = 우리, 색 유니폼 = 상대 로 바로 갈린다.
+
+   [함정] 흰 픽셀을 다 물들이면 **야구공과 배팅장갑도 같이 물든다.**
+   공은 파츠 시트에서 53% 가 흰색이다. 그래서 물들일 자리를 상자로 제한한다
+   (MV_BODY_OK / MV_FIG_KEEP). 실제 픽셀을 세서 잡은 값이다.        */
+const MV_WHITE_S=0.12, MV_WHITE_V=0.55;      // 이 아래면 '흰 천' 으로 본다
+/* 상의는 진하게, 바지는 옅게. 아래위를 똑같이 물들이면 잠옷처럼 보인다 —
+   실제 원정 유니폼도 상의만 색이고 바지는 회색에 가깝다.            */
+const MV_SAT_TOP=0.46, MV_SAT_LEG=0.18;
+/* 파츠 시트에서 흰 천을 물들여도 되는 상자 — 유니폼이 그려진 파츠만.
+   ball(53% 흰색) · glove · bat · mask 는 여기 없으니 안 물든다. */
+const MV_BODY_OK=[['torso',MV_SAT_TOP],['catcher',MV_SAT_TOP],
+                  ['thigh',MV_SAT_LEG],['shin',MV_SAT_LEG]];
+/* 통짜 그림에서 **물들이면 안 되는** 자리 (시트 픽셀).
+   pit 의 손에 든 공, bat 의 배팅장갑 두 짝. 흰 덩어리를 세서 잡았다. */
+const MV_FIG_KEEP=[
+  [0,0,40,44],          // pit — 왼쪽 위, 던지려고 든 공
+  [640,170,90,80],      // bat — 오른쪽, 배팅장갑
+];
+/* 통짜 그림은 파츠가 안 나뉘어 있으니 벨트 높이로 위아래를 가른다.
+   [x0, x1, 상의끝y, 바지시작y] — 그 사이는 **서서히 섞는다.**
+
+   [버그 이력] 처음엔 딱 잘랐더니 와인드업 투수의 **든 다리에 가로 이음매**가
+   생겼다. 무릎을 들면 허벅지가 벨트 높이를 가로지르는데, 거기서 채도가
+   툭 바뀌니까 다리에 선이 그어진 것처럼 보였다.
+   어떤 가로선을 그어도 든 다리는 그 선을 지난다 — 그래서 자르지 않고 섞는다.
+   벨트 y 는 흰 천 덩어리 경계를 세서 잡았다.                        */
+const MV_FIG_BELT=[
+  [  0, 336, 292, 336],    // pit  — 상의 아래끝 316 · 바지 위끝 282
+  [336, 723, 358, 392],    // bat  — 벨트 370~380
+  [723, 955, 240, 292],    // pitw — 상의 아래끝 267 · 든 다리가 걸쳐서 넓게 섞는다
+];
+function mvInRects(x,y,rects){
+  for(let i=0;i<rects.length;i++){
+    const r=rects[i];
+    if(x>=r[0]&&y>=r[1]&&x<r[0]+r[2]&&y<r[1]+r[3]) return true;
+  }
+  return false;
+}
+/* 이 자리에 쓸 채도. 어느 구역에도 안 들면 null (= 안 물들인다) */
+function mvZoneSat(x,y,zones,dflt){
+  if(!zones) return dflt;
+  for(let i=0;i<zones.length;i++){
+    const r=zones[i][0];
+    if(x>=r[0]&&y>=r[1]&&x<r[0]+r[2]&&y<r[1]+r[3]) return zones[i][1];
+  }
+  return null;
+}
+/* 통짜 그림용 — 벨트 위아래를 부드럽게 잇는다 */
+function mvBeltSat(x,y,belts){
+  for(let i=0;i<belts.length;i++){
+    const b=belts[i];
+    if(x<b[0]||x>=b[1]) continue;
+    if(y<=b[2]) return MV_SAT_TOP;
+    if(y>=b[3]) return MV_SAT_LEG;
+    const t=(y-b[2])/Math.max(1,(b[3]-b[2]));
+    return MV_SAT_TOP+(MV_SAT_LEG-MV_SAT_TOP)*t;
+  }
+  return MV_SAT_TOP;
+}
+/* body 를 주면 흰 천도 물들인다. body.ok 안이면 물들이고, body.keep 안이면 놔둔다. */
+function mvTintPixels(d, hue, body, W){
   for(let i=0;i<d.length;i+=4){
     if(d[i+3]===0) continue;
     const r=d[i]/255, g2=d[i+1]/255, b=d[i+2]/255;
     const mx=Math.max(r,g2,b), mn=Math.min(r,g2,b), dl=mx-mn;
-    if(dl<0.10 || mx<0.05) continue;                 // 흰 천·검정은 건드리지 않는다
+    const s0=mx?dl/mx:0;
+    if(dl<0.10 || mx<0.05){
+      /* ---- 흰 천 ---- 상대 팀만, 정해진 자리에서만 */
+      if(!body || s0>=MV_WHITE_S || mx<MV_WHITE_V) continue;
+      const px=(i/4)%W, py=Math.floor((i/4)/W);
+      if(body.keep && mvInRects(px,py,body.keep)) continue;
+      const sat=body.belts ? mvBeltSat(px,py,body.belts)
+                           : mvZoneSat(px,py,body.zones, MV_SAT_TOP);
+      if(sat==null) continue;
+      /* 명도(옷 주름)는 그대로 두고 색만 입힌다. 살짝 눌러야 천처럼 보인다 */
+      const c=mvHsv2rgb(hue, sat, mx*(0.90+(1-sat)*0.06));
+      d[i]=c[0]*255; d[i+1]=c[1]*255; d[i+2]=c[2]*255;
+      continue;
+    }
     let h;
     if(mx===r) h=((g2-b)/dl)%6; else if(mx===g2) h=(b-r)/dl+2; else h=(r-g2)/dl+4;
     h*=60; if(h<0)h+=360;
     if(h<192||h>270) continue;                       // 네이비 천만
-    const s=dl/mx, v=mx;
-    const hh=hue/60, ii=Math.floor(hh)%6, f=hh-Math.floor(hh);
-    const p=v*(1-s), q=v*(1-s*f), t=v*(1-s*(1-f));
-    let nr,ng,nb;
-    if(ii===0){nr=v;ng=t;nb=p;} else if(ii===1){nr=q;ng=v;nb=p;}
-    else if(ii===2){nr=p;ng=v;nb=t;} else if(ii===3){nr=p;ng=q;nb=v;}
-    else if(ii===4){nr=t;ng=p;nb=v;} else {nr=v;ng=p;nb=q;}
-    d[i]=nr*255; d[i+1]=ng*255; d[i+2]=nb*255;
+    const c=mvHsv2rgb(hue, s0, mx);
+    d[i]=c[0]*255; d[i+1]=c[1]*255; d[i+2]=c[2]*255;
   }
 }
 /* 이 유니폼으로 그릴 시트를 준다. 팀색마다 한 번만 만들고 캐시한다 */
@@ -16576,10 +16888,12 @@ function mvSheetFor(u){
     const q=c.getContext('2d');
     q.drawImage(MV_SHEET,0,0);
     const im=q.getImageData(0,0,c.width,c.height);
-    mvTintPixels(im.data, mvHue(hex));
+    /* 유니폼이 그려진 파츠 상자 안에서만 흰 천을 물들인다 — 공은 놔둔다 */
+    const zones=MV_BODY_OK.map(([k,sat])=>[MV_PARTS[k],sat]).filter(z=>z[0]);
+    mvTintPixels(im.data, mvHue(hex), {zones}, c.width);
     q.putImageData(im,0,0);
-    MV_TINT[hex]=c;
-  }catch(e){ MV_TINT[hex]=MV_SHEET; }
+    mvCachePut(MV_TINT,hex,c);
+  }catch(e){ mvCachePut(MV_TINT,hex,MV_SHEET); }
   return MV_TINT[hex];
 }
 /* 지금 좌표계의 원점이 시작 관절이고 +y 가 뼈 방향이라고 본다.
@@ -16602,11 +16916,77 @@ function mvBoneTx(g,k,len,mir){
   g.translate(-ax,-ay);      // 여기서부터 원점 = 파츠 그림의 왼쪽 위 픽셀
   return P;
 }
+/* ---------- 파츠 조립 디버그 ----------
+   [요청] "각 파츠의 bounding box 와 anchor point 를 표시하는 디버그 모드"
+   기본은 꺼져 있다. 콘솔에서 mvDebug(true) 로 켜고 mvDebug(false) 로 끈다.
+   **좌표는 하나도 안 바꾼다.** 지금 그려지고 있는 그대로를 재서 보여줄 뿐이다.
+   그려지는 위치 그대로를 표시하려고 실제 변환 스택 위에서 찍는다 —
+   따로 계산해서 그리면 '계산은 맞는데 화면은 틀린' 경우를 못 잡는다.     */
+let MV_DBG=false;
+let MV_DBG_LOG=null;        // mvDebugDump 가 켜두면 좌표가 여기 쌓인다
+function mvDebug(on){
+  MV_DBG=(on!==false);
+  if(typeof mvRepaintAll==='function') mvRepaintAll();
+  return MV_DBG;
+}
+/* 지금 변환 행렬 [a,b,c,d,e,f]. 브라우저는 getTransform, 미리보기 셈틀은 g.m */
+function mvDbgMat(g){
+  try{
+    if(g.getTransform){ const m=g.getTransform(); return [m.a,m.b,m.c,m.d,m.e,m.f]; }
+  }catch(e){}
+  return (g && g.m && g.m.length===6) ? g.m : null;
+}
+/* 지금 변환의 원점을 화면 좌표로 환산한다. 없으면 null */
+function mvDbgPt(g){
+  const m=mvDbgMat(g);
+  return m ? {x:+m[4].toFixed(2), y:+m[5].toFixed(2)} : null;
+}
+/* 지금 좌표계에서 '화면 1px' 이 몇 단위인가. 표시 크기를 어디서나 같게 만든다 */
+function mvDbgUnit(g,hint){
+  const m=mvDbgMat(g);
+  if(m){ const k=Math.hypot(m[0],m[1]); if(k>1e-6) return 1/k; }
+  return 1/Math.max(1e-6,(hint||1));
+}
+/* 지금 변환의 원점에 십자 표시 */
+function mvDbgMark(g,label,color,hint){
+  if(!MV_DBG&&!MV_DBG_LOG) return;
+  if(MV_DBG_LOG&&label) MV_DBG_LOG.push({what:label, screen:mvDbgPt(g)});
+  if(!MV_DBG) return;
+  const u=mvDbgUnit(g,hint);              // 화면 1px
+  g.save();
+  g.strokeStyle=color||'#00e5ff'; g.lineWidth=u;
+  g.beginPath();
+  g.moveTo(-4*u,0); g.lineTo(4*u,0); g.moveTo(0,-4*u); g.lineTo(0,4*u);
+  g.stroke();
+  g.beginPath(); g.arc(0,0,2.5*u,0,Math.PI*2); g.stroke();
+  g.restore();
+}
 /* 뼈 파츠 하나 그리기. 좌표계를 걸고 그림만 얹는다 */
 function mvBone(g,sheet,k,len,mir){
   g.save();
   const P=mvBoneTx(g,k,len,mir);
   g.drawImage(sheet, P[0],P[1],P[2],P[3], 0,0, P[2],P[3]);
+  if(MV_DBG||MV_DBG_LOG){
+    const J=MV_JOINTS[k];
+    const u=mvDbgUnit(g,1);
+    if(MV_DBG){
+      g.save();
+      g.strokeStyle='rgba(255,90,90,.9)'; g.lineWidth=u;
+      g.strokeRect(0,0,P[2],P[3]);                       // 파츠 bounding box
+      g.strokeStyle='rgba(255,220,0,.95)';
+      g.beginPath();                                     // 뼈 축 (시작관절 → 끝관절)
+      g.moveTo(J[0]*P[2],J[1]*P[3]); g.lineTo(J[2]*P[2],J[3]*P[3]); g.stroke();
+      g.restore();
+    }
+    if(MV_DBG_LOG){
+      g.save(); g.translate(J[0]*P[2],J[1]*P[3]);
+      MV_DBG_LOG.push({what:k+' 시작관절', screen:mvDbgPt(g)}); g.restore();
+      g.save(); g.translate(J[2]*P[2],J[3]*P[3]);
+      MV_DBG_LOG.push({what:k+' 끝관절', screen:mvDbgPt(g)}); g.restore();
+      g.save(); g.translate(0,0);
+      MV_DBG_LOG.push({what:k+' bbox 좌상', screen:mvDbgPt(g), wh:[P[2],P[3]], mir:!!mir}); g.restore();
+    }
+  }
   g.restore();
 }
 /* 뼈가 아닌 파츠. 기준점이 원점에 오게, 정해진 높이로 그린다 */
@@ -16616,7 +16996,14 @@ function mvAnchor(g,sheet,k,mir,hOver){
   g.save();
   g.scale(mir?-sc:sc, sc);
   g.drawImage(sheet, P[0],P[1],P[2],P[3], -A[0]*P[2], -A[1]*P[3], P[2],P[3]);
+  if(MV_DBG){
+    g.save();
+    g.strokeStyle='rgba(120,255,120,.9)'; g.lineWidth=mvDbgUnit(g,sc);
+    g.strokeRect(-A[0]*P[2], -A[1]*P[3], P[2],P[3]);
+    g.restore();
+  }
   g.restore();
+  mvDbgMark(g,k+' anchor','#7cff7c');
 }
 /* 두 뼈 역기구학 — '손이 여기 왔으면 좋겠다' 를 주면 어깨·팔꿈치 각을 푼다.
    팔 각도를 손으로 적어보니 두 손으로 배트를 잡게 만드는 게 사실상 불가능했다.
@@ -16650,8 +17037,11 @@ function mvArm(g,sheet,sx0,sy0,t,hand,mir,layer){
   if(layer!=='lo') mvBone(g,sheet,'sleeve',MV_LEN.uarm,mir);
   if(layer!=='up'){
     g.translate(0,MV_LEN.uarm);
+    if(MV_DBG||MV_DBG_LOG) mvDbgMark(g,(mir?'armB':'armF')+' 팔꿈치','#66ccff',1);
     g.rotate(-(a[1]-a[0]));
     mvBone(g,sheet,'farm',MV_LEN.farm,mir);
+    if(MV_DBG||MV_DBG_LOG){ g.save(); g.translate(0,MV_LEN.farm);
+      mvDbgMark(g,(mir?'armB':'armF')+' 손목','#99ddff',1); g.restore(); }
     if(hand==='glove'){
       g.save(); g.translate(0,MV_LEN.farm+1.0); g.rotate(0.25); mvAnchor(g,sheet,'glove',mir); g.restore();
     }
@@ -16679,12 +17069,54 @@ const MV_POSES={
      좌우로 뒤집어서 때우면 얼굴·몸통·다리까지 같이 뒤집힌다.
      **어느 팔이 왼팔인지부터 바로잡는다** — 글러브를 armF(화면 오른쪽)로 옮겼다.
      좌투는 idleL 을 쓴다. 팔 좌표는 그대로고 글러브만 반대 손이다.      */
-  idle:  {hip:[0,-19.0], lean:0.00, narrow:1.00,
-          legB:[-0.13,-0.03], legF:[0.13,0.03],
-          armB:[-6.1,2.2,-1], armF:[6.1,2.2,1], handF:'glove', head:0.00},
-  idleL: {hip:[0,-19.0], lean:0.00, narrow:1.00,
-          legB:[-0.13,-0.03], legF:[0.13,0.03],
-          armB:[-6.1,2.2,-1], armF:[6.1,2.2,1], handB:'glove', head:0.00},
+  /* ================= 좌우 이름 정리 =================
+     [요청] "B/F 가 실제 선수의 왼쪽/오른쪽인지 화면상의 앞/뒤인지 명확하지 않다"
+
+     **B/F 는 그리는 순서(뒤/앞)다. 해부학적 좌우가 아니다.**
+       legB/armB — 먼저 그린다 = 화면에서 뒤. flip 이 없으면 **화면 왼쪽**(x 음수)
+       legF/armF — 나중에 그린다 = 화면에서 앞. flip 이 없으면 **화면 오른쪽**(x 양수)
+
+     야수는 포수 뒤 카메라를 **마주 본다.** 마주 본 사람의 왼쪽은 화면 오른쪽이다.
+       flip=false 일 때 → armF/legF = 그 선수의 **왼팔·왼다리**
+                       → armB/legB = 그 선수의 **오른팔·오른다리**
+     mvGuySprite 가 flip 을 걸면 scale(-1,1) 로 통째로 뒤집히므로 이게 서로 바뀐다.
+
+     그래서 우투수(글러브는 왼손)는 idle 이 armF 에 글러브를 물린다.
+     좌투는 idleL 이 armB 에 물린다. 팔 좌표는 둘이 같다.            */
+
+  /* ---------- 수비 준비 자세 ----------
+     [제보] "양쪽 팔이 어깨에 자연스럽게 붙지 않는다 · 몸통 안쪽으로 파고든다"
+            "양쪽 다리가 좌우로 벌려놓은 스틱처럼 보인다"
+
+     둘 다 눈대중이 아니라 그림을 재서 고쳤다 (art/_armfit.js).
+
+     ① 팔 — 팔꿈치가 유니폼 안에 파묻혀 있었다.
+        유니폼(torso) 그림의 불투명 픽셀을 몸통 좌표계로 환산하면
+        어깨 높이(y=-9.91)에서 옷 반폭이 **5.24** 다. 그런데 어깨 anchor 는
+        x=4.73 — 어깨 관절이 옷 안쪽 0.51 에 박혀 있다.
+        거기서 bend=+1 로 IK 를 풀면 팔꿈치가 **안쪽으로** 꺾여 (3.81,-3.78) 에
+        떨어지는데, 그 높이의 옷 반폭이 3.76 이다. 팔꿈치가 옷 밖으로 0.06 —
+        사실상 파묻힌다. 소매는 원래 몸통 뒤에 그리니까 위팔이 통째로 안 보이고,
+        바지 위로 삐져나온 손만 떠 있었다. 그게 "팔이 몸통에 파고든다" 의 정체다.
+        bend 를 반대로 잡으면 팔꿈치가 (5.75,-3.80) 로 나와 옷 밖으로 1.99 다.
+        손도 4.6 으로 당겨서 팔이 20도쯤만 굽게 했다 — 벌어져 보이지 않는다.
+
+     ② 다리 — 무릎이 굽을 자리가 없었다.
+        다리 길이가 thigh 9.2 + shin 7.6 = 16.8 인데 골반이 19 높이에 있었다.
+        신발이 발목 아래로 2.45 내려오니 발이 땅에 닿으려면 골반→발목 세로
+        거리가 16.55 여야 한다. 남는 여유가 **0.25** 뿐이라 다리가 언제나
+        쭉 편 상태로 고정됐다. 그래서 스틱처럼 보인 것이다.
+        수비 준비 자세는 원래 골반을 낮춘다. 19 → 18.5 로 내리면 여유가
+        1.95 가 되어 무릎이 25~33도 굽는다. 발도 2.77 → 4.2 로 벌어져
+        어깨 너비(4.73)에 가까워진다.
+        좌우를 일부러 조금 다르게 뒀다 — 뒤쪽(legB)이 약간 좁고 약간 높다.
+        화면에서 위에 있는 쪽이 먼 발이라 자연스럽게 앞뒤 차이로 읽힌다.  */
+  idle:  {hip:[0,-18.5], lean:0.00, narrow:1.00,
+          legB:[-0.425,0.145], legF:[0.375,-0.055],
+          armB:[-4.4,2.5,1], armF:[4.4,2.5,-1], handF:'glove', head:0.00},
+  idleL: {hip:[0,-18.5], lean:0.00, narrow:1.00,
+          legB:[-0.425,0.145], legF:[0.375,-0.055],
+          armB:[-4.4,2.5,1], armF:[4.4,2.5,-1], handB:'glove', head:0.00},
   /* 투수 — 셋업에서 팔로스루까지. 던지는 팔이 armB(뒤쪽) 다 */
   wind:  {hip:[0,-19.6], lean:-0.10, narrow:1.00,
           legB:[0.05,0.02], legF:[-1.30,-0.18],
@@ -16732,9 +17164,15 @@ function mvGuySprite(g,sheet,x,y,h,u,pose,flip,no){
         시작해서, 자른 자리에 선이 두 줄 생겼다. 정강이를 **먼저** 그리고
         넓적다리를 그 위에 덮어서 이음매를 가린다.                     */
   const leg=(a,mir,side)=>{
-    g.save(); g.translate(hx+side*MV_HIPW,hy); g.rotate(-a[0]);
-    g.save(); g.translate(0,MV_LEN.thigh); g.rotate(-(a[1]-a[0]));
+    g.save(); g.translate(hx+side*MV_HIPW,hy);
+    mvDbgMark(g,(side<0?'legB':'legF')+' hip anchor','#ff8c00',s);   // 골반에서 다리가 나오는 점
+    g.rotate(-a[0]);
+    g.save(); g.translate(0,MV_LEN.thigh);
+    mvDbgMark(g,(side<0?'legB':'legF')+' 무릎','#ffb84d',s);
+    g.rotate(-(a[1]-a[0]));
     mvBone(g,sheet,'shin',MV_LEN.shin,mir);
+    g.save(); g.translate(0,MV_LEN.shin);
+    mvDbgMark(g,(side<0?'legB':'legF')+' 발목','#ffd699',s); g.restore();
     g.restore();
     mvBone(g,sheet,'thigh',MV_LEN.thigh,mir);
     g.restore();
@@ -16748,6 +17186,12 @@ function mvGuySprite(g,sheet,x,y,h,u,pose,flip,no){
      야수는 우리를 마주 보니까 armB = 그 사람의 오른팔, armF = 왼팔이다.
      flip 을 걸면 통째로 뒤집히므로 좌우가 서로 바뀐다.                  */
   const shx=MV_SH[0]*R.narrow;
+  if(MV_DBG||MV_DBG_LOG){
+    mvDbgMark(g,'골반 중심(몸통 원점)','#ff00ff',s);
+    g.save(); g.translate(shx,MV_SH[1]);  mvDbgMark(g,'armB shoulder anchor','#00e5ff',s); g.restore();
+    g.save(); g.translate(-shx,MV_SH[1]); mvDbgMark(g,'armF shoulder anchor','#00e5ff',s); g.restore();
+    g.save(); g.translate(0,MV_NECK);     mvDbgMark(g,'neck / head anchor','#ffffff',s); g.restore();
+  }
   mvArm(g,sheet,shx,MV_SH[1],R.armB,R.handB,true);          // 뒤쪽 팔 — 통째로 몸통 뒤
   mvArm(g,sheet,-shx,MV_SH[1],R.armF,R.handF,false,'up');   // 앞쪽 팔의 어깨도 몸통 뒤
   g.save(); g.scale(R.narrow,1); g.translate(0,MV_NECK);
@@ -16762,6 +17206,11 @@ function mvGuySprite(g,sheet,x,y,h,u,pose,flip,no){
     g.font='700 '+(MV_FIELDER_NO[2]*P[3]).toFixed(1)+'px sans-serif';
     g.textAlign='center'; g.textBaseline='middle';
     g.fillText(String(no), MV_FIELDER_NO[0]*P[2], MV_FIELDER_NO[1]*P[3]);
+    if(MV_DBG||MV_DBG_LOG){
+      g.save(); g.translate(MV_FIELDER_NO[0]*P[2], MV_FIELDER_NO[1]*P[3]);
+      mvDbgMark(g,'등번호(야수) — torso local '+MV_FIELDER_NO[0]+','+MV_FIELDER_NO[1],'#ffff00',1);
+      g.restore();
+    }
     g.restore();
   }
   g.restore();
@@ -16779,6 +17228,71 @@ function mvGuySprite(g,sheet,x,y,h,u,pose,flip,no){
   g.restore();
   g.restore();
   mvShadow(g,x,y,h);
+}
+/* ---------- 좌표 덤프 ----------
+   [요청] "몸통의 좌/우 어깨 좌표 · 양쪽 팔의 shoulder anchor · 골반 중심 ·
+           양쪽 다리의 hip anchor · 양쪽 발 위치 · 머리의 neck/head anchor ·
+           유니폼 번호의 local coordinate"
+   화면에 그리지 않고 숫자만 뽑는다. 실제로 그리는 경로를 그대로 태워서
+   재기 때문에 '표에 적힌 값'이 아니라 '실제로 찍히는 자리'가 나온다.
+   콘솔에서 mvDebugDump("idle") 처럼 부른다.                            */
+/* 골반에서 시작해 무릎·발목까지 푼다. leg 가 거는 변환과 같은 순서다. */
+function mvFK2(x0,y0,a0,a1,l1,l2){
+  const t=-a0, k=-(a1-a0), tk=t+k;
+  const kX=x0-l1*Math.sin(t), kY=y0+l1*Math.cos(t);
+  const eX=kX-l2*Math.sin(tk), eY=kY+l2*Math.cos(tk);
+  return {mid:[+kX.toFixed(3),+kY.toFixed(3)], end:[+eX.toFixed(3),+eY.toFixed(3)]};
+}
+function mvDebugDump(pose,flip,h){
+  const R=MV_POSES[pose||'idle']||MV_POSES.idle;
+  const hx=R.hip[0], hy=R.hip[1], nw=R.narrow;
+  const L={};
+  L['골반 중심 hip']=[hx,hy];
+  L['골반 반폭 MV_HIPW']=MV_HIPW;
+  L['legB hip anchor']=[+(hx-MV_HIPW).toFixed(3), hy];
+  L['legF hip anchor']=[+(hx+MV_HIPW).toFixed(3), hy];
+  L['MV_SH 원본 어깨']=MV_SH.slice();
+  L['narrow 배수']=nw;
+  L['armB shoulder anchor']=[+(MV_SH[0]*nw).toFixed(3), MV_SH[1]];
+  L['armF shoulder anchor']=[+(-MV_SH[0]*nw).toFixed(3), MV_SH[1]];
+  L['어깨 사이 폭']=+(Math.abs(MV_SH[0]*nw)*2).toFixed(3);
+  L['neck / head anchor']=[0, MV_NECK];
+  L['몸통 기울기 lean rad']=R.lean;
+  L['머리 회전 head rad']=R.head;
+  L['armB 손 목표 xy+굽힘']=R.armB;
+  L['armF 손 목표 xy+굽힘']=R.armF;
+  L['legB 각도 rad']=R.legB;
+  L['legF 각도 rad']=R.legF;
+  L['뼈 길이 MV_LEN']=Object.assign({},MV_LEN);
+  const fb=mvFK2(hx-MV_HIPW,hy,R.legB[0],R.legB[1],MV_LEN.thigh,MV_LEN.shin);
+  const ff=mvFK2(hx+MV_HIPW,hy,R.legF[0],R.legF[1],MV_LEN.thigh,MV_LEN.shin);
+  L['legB 무릎']=fb.mid; L['legB 발목']=fb.end;
+  L['legF 무릎']=ff.mid; L['legF 발목']=ff.end;
+  L['두 발목 x 차이']=+(ff.end[0]-fb.end[0]).toFixed(3);
+  L['두 발목 y 차이']=+(ff.end[1]-fb.end[1]).toFixed(3);
+  const arm=(sx0,t)=>{
+    const A=mvIK(t[0]-sx0, t[1]-MV_SH[1], MV_LEN.uarm, MV_LEN.farm, t[2]);
+    const r=mvFK2(sx0,MV_SH[1],A[0],A[1],MV_LEN.uarm,MV_LEN.farm);
+    return {각도rad:[+A[0].toFixed(3),+A[1].toFixed(3)], 팔꿈치:r.mid, 손목:r.end};
+  };
+  L['armB 팔']=arm(MV_SH[0]*nw, R.armB);
+  L['armF 팔']=arm(-MV_SH[0]*nw, R.armF);
+  L['등번호 야수 — torso 그림 비율']=MV_FIELDER_NO.slice();
+  L['등번호 타자 — 통짜그림 픽셀']=MV_BAT_NO.slice();
+  const out={pose:pose||'idle', flip:!!flip, h:h||40, local:L, marks:[]};
+  // 실제 그리기 경로를 태워서 화면 좌표까지 받는다 (캔버스가 되는 환경에서만)
+  try{
+    const cv=document.createElement('canvas'); cv.width=480; cv.height=270;
+    const g=cv.getContext('2d');
+    const sheet=(typeof mvSheetFor==='function'?mvSheetFor(null):null)||MV_SHEET;
+    if(g && g.getTransform && sheet){
+      MV_DBG_LOG=[];
+      mvGuySprite(g,sheet,240,200,h||40,null,pose||'idle',!!flip,7);
+      out.marks=MV_DBG_LOG;
+    }
+    MV_DBG_LOG=null;
+  }catch(e){ MV_DBG_LOG=null; out.err=e.message; }
+  return out;
 }
 /* 포수는 통짜다 — 쭈그린 자세를 관절로 만들면 어색해서 그림 한 장을 쓴다 */
 function mvCatcherSprite(g,sheet,x,y,h){
@@ -17015,10 +17529,11 @@ function mvFigFor(u){
     const q=c.getContext('2d');
     q.drawImage(MV_FIG,0,0);
     const im=q.getImageData(0,0,c.width,c.height);
-    mvTintPixels(im.data, mvHue(hex));
+    /* 통짜 그림은 몸 전체가 유니폼이라, 공·배팅장갑만 빼고 물들인다 */
+    mvTintPixels(im.data, mvHue(hex), {keep:MV_FIG_KEEP, belts:MV_FIG_BELT}, c.width);
     q.putImageData(im,0,0);
-    MV_FIG_TINT[hex]=c;
-  }catch(e){ MV_FIG_TINT[hex]=MV_FIG; }
+    mvCachePut(MV_FIG_TINT,hex,c);
+  }catch(e){ mvCachePut(MV_FIG_TINT,hex,MV_FIG); }
   return MV_FIG_TINT[hex];
 }
 /* 등번호가 있던 자리 (타자 그림 픽셀) — [중앙x, 중앙y, 글자높이]
@@ -17029,7 +17544,12 @@ function mvFigFor(u){
    그 안에서 찍으니까 번호가 옷에 붙어 따라 움직인다. 타자는 등을 보이고
    서 있어서 여기가 등판 한가운데다. 야수(파츠 조립)는 가슴이 보이니까
    자리가 다르다 — MV_FIELDER_NO 를 따로 쓴다.                      */
-const MV_BAT_NO=[212.5, 286.5, 62];
+/* [v2.46.0] 등판을 재서 다시 잡았다.
+     흰 등판 세로 구간 y 235~368 (368~380 이 벨트) → 한가운데 301
+     팔에 안 가리는 줄(y 290~350)의 등판 가로 중심 = 216.7
+   예전 [212.5, 286.5] 는 중심보다 15px 위였다. 글자 높이가 62 라
+   위쪽 절반이 네이비 어깨 요크에 올라타서 번호가 어깨죽지에 붙어 보였다. */
+const MV_BAT_NO=[216.5, 301.0, 62];
 /* 스윙 — 그림이 한 장이라 몸을 통째로 돌려서 휘두르는 걸 보여준다.
    [제보] "스윙 버튼을 눌러도 배트가 움직이는 게 안 보인다"
    판정(타이밍·위치)은 원래부터 제대로 돌고 있었다. 눈에 안 보였을 뿐이다.
@@ -17109,6 +17629,11 @@ function mvSheetInit(){
 function mvRepaintAll(){
   try{ document.querySelectorAll('.mound').forEach(m=>mvPaint(m)); }catch(e){}
 }
+/* 디버그 모드는 주소에 ?mvdebug=1 을 붙여도 켜진다 — 폰에서 콘솔 없이 보려고.
+   임시 도구다. 평소에는 꺼져 있고 그리는 좌표에는 아무 영향이 없다. */
+try{
+  if(typeof location!=='undefined' && /[?&]mvdebug=1/.test(location.search||'')) mvDebug(true);
+}catch(e){}
 let MV_OK=null;                     // 캔버스를 쓸 수 있는 환경인가 (한 번만 본다)
 /* 화면 전체를 다시 그린다 */
 function mvPaint(mound, o){
@@ -17124,7 +17649,7 @@ function mvPaint(mound, o){
   g.clearRect(0,0,MVW,MVH);
   mvSky(g); mvCity(g); mvLights(g); mvBoard(g); mvStand(g); mvField(g);
   const home={cap:'#2f5fb0', sh:'#eef2f8', pants:'#dfe4ec', st:'rgba(47,95,176,.35)', gl:'#5b3a1e'};
-  const away={cap:'#b23a34', sh:'#e6ddd0', pants:'#d8d0c4', st:'rgba(178,58,52,.30)', gl:'#4a3018'};
+  const away=mvOppUniform();
   const du=st.usDef?home:away, ou=st.usDef?away:home;
   /* 크기는 실제 중계 화면 비율을 따른다.
      타자(1m 앞) 88px 을 기준으로 투수(18m 뒤)는 45%, 야수는 그 절반.
@@ -17151,6 +17676,57 @@ function mvPaint(mound, o){
     mvGuy(g, bx, MV_BOXC[2]-2, 80, ou, st.bat, !st.batLeft);
 }
 
+/* ---------- 팀마다 다른 유니폼 색 ----------
+   [제보] "옷이 같아서 헷갈려"
+   예전엔 상대가 누구든 away 상수 하나(빨강)였다. 23팀이 전부 같은 옷이었다.
+   이제 팀마다 색을 나눠 준다.
+
+   색상각을 고르게 흩되 **우리 네이비(228도) 근처는 비운다** —
+   200~256도를 건너뛰어서 상대가 우리처럼 보이는 일이 없게.
+   남은 304도를 팀 수로 나눈다. 팀 순서대로가 아니라 소수를 곱해 섞어서,
+   일정에서 이웃한 팀끼리 색이 붙지 않게 했다.                       */
+const MV_HUE_GAP=[200,256];              // 우리 색 근처 — 여기는 안 쓴다
+function mvTeamHue(idx, n){
+  const span=360-(MV_HUE_GAP[1]-MV_HUE_GAP[0]);
+  const k=((idx*7)%Math.max(1,n))/Math.max(1,n);      // 7 은 서로소라 골고루 흩어진다
+  let h=k*span;
+  if(h>=MV_HUE_GAP[0]) h+=(MV_HUE_GAP[1]-MV_HUE_GAP[0]);
+  return h;
+}
+function mvHexFromHue(h,s,v){
+  const c=mvHsv2rgb(h,s,v);
+  const x=n=>('0'+Math.round(n*255).toString(16)).slice(-2);
+  return '#'+x(c[0])+x(c[1])+x(c[2]);
+}
+/* 이번 경기 상대의 유니폼. 경기 중이 아니면 예전 기본색(빨강) 을 쓴다 */
+function mvOppUniform(){
+  let idx=-1, n=23;
+  try{
+    if(typeof TEAMS!=='undefined' && TEAMS.length){
+      const rest=TEAMS.filter(t=>t.id!=='wwzw');
+      n=rest.length||23;
+      let oid=null;
+      // 경기 중이면 중계 상태에서, 아니면 이번 주 일정에서 상대를 찾는다
+      if(typeof LIVE!=='undefined' && LIVE && LIVE.home && LIVE.away){
+        const ht=LIVE.home.team, at=LIVE.away.team;
+        const o=(ht&&ht.id==='wwzw')?at:ht;
+        if(o&&o.id&&o.id!=='wwzw') oid=o.id;
+      }
+      if(!oid && typeof ST!=='undefined' && ST && ST.schedule && ST.schedule[ST.round])
+        oid=ST.schedule[ST.round].opp;
+      if(oid) idx=rest.findIndex(t=>t.id===oid);
+    }
+  }catch(e){}
+  if(idx<0) return {cap:'#b23a34', sh:'#e6ddd0', pants:'#d8d0c4',
+                    st:'rgba(178,58,52,.30)', gl:'#4a3018'};
+  const h=mvTeamHue(idx,n);
+  const c=mvHsv2rgb(h,0.30,0.90);
+  return {cap:mvHexFromHue(h,0.62,0.70),
+          sh: mvHexFromHue(h,0.16,0.93),
+          pants:mvHexFromHue(h,0.12,0.86),
+          st:`rgba(${Math.round(c[0]*255)},${Math.round(c[1]*255)},${Math.round(c[2]*255)},.30)`,
+          gl:'#4a3018'};
+}
 /* 내야 네 자리 — [화면x, 화면y, 포지션]. 왼쪽부터 3루·유격·2루·1루 */
 const MV_FIELD_SPOT=[[64,168,'3B'],[150,158,'SS'],[330,158,'2B'],[416,168,'1B']];
 /* 이 자리를 지키는 사람이 좌투인가. 경기 중이 아니거나 못 찾으면 우투로 본다 */
@@ -21370,6 +21946,13 @@ function normalizeState(){
   if(PLAY_OK.indexOf(ST.playBat)<0)ST.playBat=ST.playMode;
   if(PLAY_OK.indexOf(ST.playPit)<0)ST.playPit=ST.playMode;
   if(!ST.pitchWait)ST.pitchWait={};
+  /* 저장된 라인업 — 옛 세이브에는 없다. 팀에서 없어진 선수는 여기서 털어낸다 */
+  if(!Array.isArray(ST.luSaved))ST.luSaved=[];
+  ST.luSaved=ST.luSaved.filter(x=>x&&Array.isArray(x.lineup)).slice(0,LU_SLOTS);
+  ST.luSaved.forEach(pre=>{
+    pre.lineup=pre.lineup.filter(sl=>sl&&sl.id&&!isMerc(sl.id));
+    pre.rotation=(pre.rotation||[]).filter(id=>!isMerc(id));
+  });
   // 배당 — 옛 세이브에는 없다. 열쇠가 안 맞으면 알아서 다시 뽑는다.
   if(ST.odds===undefined)ST.odds=null;
   if(ST.oddsAtStart===undefined)ST.oddsAtStart=null;
