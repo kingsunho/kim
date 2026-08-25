@@ -107,6 +107,24 @@ button{font-family:inherit;cursor:pointer}
 .od-tag span{display:block;font-size:11px;color:var(--dim);margin-top:2px;line-height:1.5}
 .od-det{font-size:11px;color:var(--dim);margin-top:8px}
 .od-det b{color:var(--ink)}
+/* 이번 주 리그 대진 · 배당 */
+.lgo{margin-top:4px}
+.lgo-r{display:flex;align-items:center;gap:7px;padding:7px 2px;
+  border-bottom:1px solid var(--line);font-size:11.5px}
+.lgo-r:last-child{border-bottom:0}
+.lgo-t{flex:1 1 0;min-width:0;color:var(--dim);white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.lgo-t.r{text-align:right}
+.lgo-t.fav{color:var(--ink);font-weight:700}
+.lgo-t.win{color:var(--gold);font-weight:800}
+.lgo-t em{font-style:normal;display:block;font-size:10px;color:var(--gold);margin-top:1px}
+.lgo-m{flex:0 0 84px;text-align:center;font-size:10.5px;color:var(--dim)}
+.lgo-bar{display:block;height:5px;border-radius:3px;background:#2a3140;overflow:hidden}
+.lgo-bar u{display:block;height:100%;background:var(--gold);text-decoration:none}
+.lgo-m b{display:block;font-size:12.5px;font-weight:800;color:var(--ink)}
+.lgo-m i{display:block;font-style:normal;font-size:9.5px;margin-top:1px}
+.lgo-m i.hit{color:#6f8f6a}
+.lgo-m i.miss{color:var(--gold)}
 /* 경기 끝나고 배당 정산 한 줄 */
 .od-settle{display:flex;align-items:baseline;gap:9px;margin-top:10px;padding:9px 11px;
   border-radius:9px;background:var(--panel2);border-left:3px solid var(--line)}
@@ -6686,8 +6704,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.44.0';
-const APP_VERSION_NOTE = '경기 전에 배당이 나온다 — 탑독이냐 언더독이냐';
+const APP_VERSION = '2.45.0';
+const APP_VERSION_NOTE = '남의 팀 경기 배당도 본다 · 지난주 리그 결과';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6708,6 +6726,16 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.45.0', t:'리그 전체 배당 — 남의 팀 경기도 누가 유리한지 본다', items:[
+    '순위 화면에 「이번 주 리그」 가 생겼다. 우리 경기 말고 남의 팀끼리 붙는 열 경기가 다 나온다',
+    '경기마다 양쪽 배당과 승률 바가 붙는다. 어느 팀이 탑독인지 한눈에 보인다',
+    '대진은 원래도 그 주 시드로 정해져 있었다. 그래서 붙기 전에 미리 보여줄 수 있다',
+    '경기당 200번씩 돌린다. 우리 경기(300번)보다는 거칠지만 참고용으로는 충분하다',
+    '한 줄씩 차례로 채워진다 — 열 경기를 한꺼번에 돌리면 폰이 멈춘다',
+    '「지난주 리그」 카드도 생겼다. 남의 팀 결과와 함께, 걸렸던 배당이 맞았는지 「배당대로」/「이변」 으로 표시한다',
+    '주간 요약에 「배당이 10경기 중 7경기를 맞혔다」 가 뜬다',
+    '남의 팀 경기 결과 자체는 예전과 한 톨도 안 달라진다 — 짝짓기와 경기가 같은 난수열을 쓰도록 코드만 나눴다',
+  ]},
   {v:'2.44.0', t:'오늘의 배당 — 우리가 탑독인지 언더독인지', items:[
     'FM 처럼 경기 전에 배당이 뜬다. 우완좌완 1.28 · 상대 3.85 같은 식이다',
     '탑독 / 언더독 딱지가 붙는다 — 압도적 우세 · 우세 · 백중세 · 열세 · 절대 열세 다섯 단계',
@@ -10121,6 +10149,7 @@ function newSeason(){
     tactics:{bat:'normal',run:'normal',hook:'normal'},
     subCfg:{bench:'normal', protect:3, pitchAsk:true},     // 자동 교체 설정
     odds:null, oddsAtStart:null,                           // 오늘의 배당 (캐시 · 경기 시작 시점 스냅샷)
+    lgOdds:null, weekGames:{round:-1,games:[]},             // 남의 팀 대진 배당 · 그 주 결과
     budget:120,events:[],kakao:[],lastOrder:{},absent:{},weekDone:false,weekSeq:0,notices:[],injCount:0,
     trainFocus:'none',trainLog:[],seasonOver:false,mittMissing:false,scoutBlocked:false,
     fieldMod:{err:1,cond:0},signed:[],
@@ -15577,6 +15606,55 @@ function computeOdds(){
   const n=ODDS_N;
   return {w:w/n, d:d/n, l:l/n, rf:rf/n, ra:ra/n, cold:cold/n, n, wN:w, dN:d};
 }
+/* ---------- 남의 팀 경기 배당 ----------
+   [요청] "상대팀끼리 붙는 경기도 배당 보게 해줘"
+   우리 경기랑 같은 방식이다 — 그 카드를 돌려보고 몇 번 이겼는지 센다.
+   다만 열한 경기를 한꺼번에 돌리면 폰이 1~2초 멈춘다. 그래서
+     · 경기당 200번으로 줄이고 (우리 경기는 300번)
+     · 한 프레임에 한 경기씩 계산해서 줄이 차례로 채워지게 한다
+   남의 경기는 참고용이라 ±4%p 쯤 오차는 봐줄 만하다.            */
+const ODDS_N_LG = 200;
+function lgOddsKey(){
+  const s=ST.schedule[ST.round]||{};
+  return [ST.seed, ST.round, s.opp||'-', s.po?1:0].join('|');
+}
+/* 한 카드만 돌린다. idx 로 시드를 갈라서 경기마다 다른 난수열을 쓴다. */
+function pairOdds(a, h, idx){
+  const rng=makeRng((((ST.seed||0)+(ST.round||0)*31337+idx*7919+661)>>>0));
+  const aL=aiLineup(a), aR=aiRotation(a), hL=aiLineup(h), hR=aiRotation(h);
+  let aw=0,hw=0,d=0,ar=0,hr=0;
+  for(let i=0;i<ODDS_N_LG;i++){
+    const r=simGame(h,a,{rng, innings:7,
+      awayLineup:aL, awayRotation:aR, homeLineup:hL, homeRotation:hR});
+    ar+=r.away.runs; hr+=r.home.runs;
+    if(r.tie)d++; else if(r.away.runs>r.home.runs)aw++; else hw++;
+  }
+  const n=ODDS_N_LG;
+  return {a:a.id, h:h.id, aw:aw/n, hw:hw/n, d:d/n, ar:ar/n, hr:hr/n, n};
+}
+/* 이번 주 대진 목록. 배당은 아직 안 뽑은 줄이 있을 수 있다(o:null). */
+function leagueOdds(){
+  const k=lgOddsKey();
+  const s=ST.schedule[ST.round]||{};
+  if(!ST.lgOdds || ST.lgOdds.k!==k){
+    if(s.po){ ST.lgOdds={k, rows:[]}; return ST.lgOdds; }
+    const W=weekPairings(s.opp);
+    ST.lgOdds={k, rows:W.pairs.map(p=>({a:p.away.id, h:p.home.id, o:null}))};
+  }
+  return ST.lgOdds;
+}
+/* 아직 안 뽑은 줄 하나를 계산한다. 다 뽑았으면 false. */
+function leagueOddsStep(){
+  const L=leagueOdds();
+  const i=L.rows.findIndex(r=>!r.o);
+  if(i<0) return false;
+  const a=TBYID[L.rows[i].a], h=TBYID[L.rows[i].h];
+  if(!a||!h){ L.rows.splice(i,1); return L.rows.some(r=>!r.o); }
+  try{ L.rows[i].o=pairOdds(a,h,i); }
+  catch(e){ L.rows[i].o={a:a.id,h:h.id,aw:0.5,hw:0.5,d:0,ar:0,hr:0,n:0,bad:true}; }
+  return L.rows.some(r=>!r.o);
+}
+
 /* 캐시를 앞에 두고 부른다. 열쇠가 같으면 다시 안 돌린다. */
 function teamOdds(){
   const k=oddsKey();
@@ -18730,17 +18808,41 @@ function commitGame(res,usSide,thSide,uSlots){
   toast(champ ? '우승!' : (tie?'무승부':(won?'승리':'패배')));
 }
 
-function simOtherGames(exclude){
+/* 이번 주 남의 팀끼리 붙는 대진.
+   ---------------------------------------------------------
+   [요청] "상대팀끼리 붙는 경기도 배당 보게 해줘"
+   대진은 그 주 시드로 이미 정해져 있다 — 경기를 돌리기 전에도 누가
+   누구와 붙는지 알 수 있다는 뜻이다. 그래서 미리 뽑아서 배당을 붙인다.
+
+   [중요] 짝짓기와 경기가 **같은 난수열**을 쓴다. 섞기가 앞의 몇 개를
+   먹고 그다음부터 경기가 굴러간다. 그래서 여기서 rng 를 통째로 넘겨준다 —
+   따로 만들면 남의 팀 경기 결과가 예전 세이브와 달라진다.       */
+function weekPairings(exclude){
   const rest=TEAMS.filter(t=>t.id!=='wwzw'&&t.id!==exclude);
   const rng=makeRng((ST.seed+ST.round*104729)>>>0);
   for(let i=rest.length-1;i>0;i--){const j=(rng()*(i+1))|0;[rest[i],rest[j]]=[rest[j],rest[i]];}
-  for(let i=0;i+1<rest.length;i+=2){
-    const a=rest[i],h=rest[i+1];
+  const pairs=[];
+  for(let i=0;i+1<rest.length;i+=2) pairs.push({away:rest[i], home:rest[i+1]});
+  return {pairs, rng};
+}
+function simOtherGames(exclude){
+  const W=weekPairings(exclude), rng=W.rng;
+  /* 이번 주 남의 경기 결과 — 순위 화면에서 '지난주 결과'로 보여준다.
+     경기가 끝나면 곧바로 ST.round 가 넘어가기 때문에 몇 주차 것인지 같이 박아둔다.
+     그때 걸려 있던 배당도 같이 남긴다. 안 그러면 캐시가 덮어써져서
+     "이 경기 배당이 얼마였더라"를 되찾을 수 없다.                 */
+  const od=(ST.lgOdds && ST.lgOdds.k===lgOddsKey()) ? ST.lgOdds.rows : [];
+  ST.weekGames={round:ST.round, games:[]};
+  for(let k=0;k<W.pairs.length;k++){
+    const a=W.pairs[k].away, h=W.pairs[k].home;
     const r=simGame(h,a,{rng,innings:7,awayLineup:aiLineup(a),awayRotation:aiRotation(a),
       homeLineup:aiLineup(h),homeRotation:aiRotation(h)});
     const sa=ST.stand[a.id],sh=ST.stand[h.id];
     sa.g++;sh.g++;sa.rf+=r.away.runs;sa.ra+=r.home.runs;sh.rf+=r.home.runs;sh.ra+=r.away.runs;
     if(r.tie){sa.t++;sh.t++;}else if(r.away.runs>r.home.runs){sa.w++;sh.l++;}else{sh.w++;sa.l++;}
+    const o=(od.find(x=>x.a===a.id&&x.h===h.id)||{}).o||null;
+    ST.weekGames.games.push({a:a.id, h:h.id, ar:r.away.runs, hr:r.home.runs, cold:!!r.mercy,
+      aO:o?decOdds(o.aw):null, hO:o?decOdds(o.hw):null});
     for(const pid in r.box){const lg=ST.lgBat[pid];if(!lg)continue;const b=r.box[pid];
       if(b.pa>0)lg.g++;['pa','ab','h','d2','d3','hr','bb','hbp','k','rbi','r','sb','cs'].forEach(k=>lg[k]+=b[k]||0);}
     accrueLgPit(r);
@@ -19681,8 +19783,106 @@ function renderRecruit(){
 }
 
 /* ---------- 순위·기록 ---------- */
+/* ---------- 리그 대진 · 배당 ----------
+   [요청] "상대팀끼리 붙는 경기도 배당 보게 해줘"
+   카드 두 장이다.
+     · 이번 주 — 아직 안 붙은 카드에 배당을 건다
+     · 지난주 — 결과와 함께, 그때 걸렸던 배당이 맞았는지
+   열한 경기를 한꺼번에 돌리면 폰이 1~2초 멈춘다. 한 프레임에 한 줄씩 채운다. */
+let lgOddsTimer=null;
+function lgoRow(a, h, o, g){
+  const row=el('div','lgo-r');
+  if(g){
+    const aWin=g.ar>g.hr, tie=g.ar===g.hr;
+    const favA=(g.aO!=null&&g.hO!=null)?(g.aO<=g.hO):null;
+    const hit = (tie||favA===null) ? null : (aWin===favA);
+    const wO = aWin?g.aO:g.hO;
+    row.className='lgo-r done';
+    row.innerHTML=`<span class="lgo-t${aWin&&!tie?' win':''}">${a.name}</span>
+      <span class="lgo-m"><b>${g.ar} : ${g.hr}</b>
+        <i class="${hit===null?'':(hit?'hit':'miss')}">${
+          tie ? '무승부'
+              : (hit===null ? (g.cold?'콜드':'')
+              : (hit?`배당대로 ${wO.toFixed(2)}`:`이변 ${wO.toFixed(2)}`))
+        }</i></span>
+      <span class="lgo-t r${!aWin&&!tie?' win':''}">${h.name}</span>`;
+    return row;
+  }
+  if(!o){
+    row.innerHTML=`<span class="lgo-t">${a.name}</span>
+      <span class="lgo-m dimx">…</span>
+      <span class="lgo-t r">${h.name}</span>`;
+    return row;
+  }
+  const aO=decOdds(o.aw), hO=decOdds(o.hw), aFav=o.aw>=o.hw;
+  row.innerHTML=`<span class="lgo-t${aFav?' fav':''}">${a.name}<em>${aO.toFixed(2)}</em></span>
+    <span class="lgo-m"><span class="lgo-bar"><u style="width:${Math.round(o.aw*100)}%"></u></span></span>
+    <span class="lgo-t r${aFav?'':' fav'}">${h.name}<em>${hO.toFixed(2)}</em></span>`;
+  return row;
+}
+/* 지난주 남의 경기 결과 */
+function renderLastWeekCard(c){
+  const wg=ST.weekGames;
+  if(!wg || !wg.games || !wg.games.length) return;
+  if(wg.round!==(ST.round||0)-1) return;         // 바로 지난주 것만 보여준다
+  const card=el('div','card');
+  card.appendChild(el('div','card-h',`지난주 리그 · ${wg.games.length}경기`));
+  const hits=wg.games.filter(g=>g.aO!=null&&g.ar!==g.hr&&((g.ar>g.hr)===(g.aO<=g.hO))).length;
+  const judged=wg.games.filter(g=>g.aO!=null&&g.ar!==g.hr).length;
+  card.appendChild(el('p','muted', judged
+    ? `배당이 ${judged}경기 중 ${hits}경기를 맞혔다.`
+    : '지난주 남의 팀끼리 붙은 결과다.'));
+  const wrap=el('div','lgo');
+  wg.games.forEach(g=>{
+    const a=TBYID[g.a], h=TBYID[g.h];
+    if(a&&h) wrap.appendChild(lgoRow(a,h,null,g));
+  });
+  card.appendChild(wrap);
+  c.appendChild(card);
+}
+/* 이번 주 대진 + 배당 */
+function renderLeagueCard(c){
+  const sch=ST.schedule[ST.round];
+  if(!sch) return;
+  if(sch.po){
+    const pc=el('div','card');
+    pc.appendChild(el('div','card-h','이번 주 리그'));
+    pc.appendChild(el('p','muted','플레이오프 주간이다. 네 팀만 뛴다.'));
+    c.appendChild(pc); return;
+  }
+  const L=leagueOdds();
+  if(!L.rows.length) return;
+  const card=el('div','card');
+  card.appendChild(el('div','card-h',`이번 주 리그 · ${L.rows.length}경기`));
+  card.appendChild(el('p','muted',
+    '우리 경기 말고 이번 주에 붙는 카드다. 왼쪽이 원정, 오른쪽이 홈이다.'));
+  const wrap=el('div','lgo');
+  L.rows.forEach(r=>{
+    const a=TBYID[r.a], h=TBYID[r.h];
+    if(a&&h) wrap.appendChild(lgoRow(a,h,r.o,null));
+  });
+  card.appendChild(wrap);
+  const left=L.rows.filter(x=>!x.o).length;
+  card.appendChild(el('div','set-note', left
+    ? `배당 뽑는 중 — ${left}경기 남음`
+    : `경기당 ${ODDS_N_LG}번씩 돌려본 결과다. 우리 경기 배당(300번)보다는 거칠다.`));
+  c.appendChild(card);
+
+  // 남은 줄이 있으면 한 프레임에 하나씩 채운다
+  if(lgOddsTimer){ clearTimeout(lgOddsTimer); lgOddsTimer=null; }
+  if(left){
+    lgOddsTimer=setTimeout(()=>{
+      lgOddsTimer=null;
+      leagueOddsStep();
+      if(curView==='stand') renderStand();
+    }, 20);
+  }
+}
+
 function renderStand(){
   const c=$('#view'); c.innerHTML='';
+  renderLeagueCard(c);
+  renderLastWeekCard(c);
   const card=el('div','card');
   card.appendChild(el('div','card-h','리그 순위'));
   const t=el('table','stand');
@@ -21173,6 +21373,11 @@ function normalizeState(){
   // 배당 — 옛 세이브에는 없다. 열쇠가 안 맞으면 알아서 다시 뽑는다.
   if(ST.odds===undefined)ST.odds=null;
   if(ST.oddsAtStart===undefined)ST.oddsAtStart=null;
+  if(ST.lgOdds===undefined)ST.lgOdds=null;
+  // 이번 주 남의 경기 — 예전엔 없었고, 잠깐 배열이던 시기가 있다
+  if(!ST.weekGames || typeof ST.weekGames!=='object' || Array.isArray(ST.weekGames))
+    ST.weekGames={round:-1, games:[]};
+  if(!Array.isArray(ST.weekGames.games))ST.weekGames.games=[];
   if(!ST.luView)ST.luView='list';
   if(!ST.depMode)ST.depMode='now';
   if(!ST.park)ST.park='benamul';

@@ -171,6 +171,115 @@ setTimeout(async()=>{
     return !/오늘의 배당/.test(t);
   });
 
+  console.log('\n[남의 팀 경기 배당]');
+  T('이번 주 대진이 뽑힌다', ()=>{
+    const rows=ev("leagueOdds().rows.length");
+    return rows>0 ? `${rows}경기` : false;
+  });
+  T('대진에 우리 팀과 우리 상대는 안 들어간다', ()=>{
+    const opp=ev("ST.schedule[ST.round].opp");
+    const rows=ev("JSON.stringify(leagueOdds().rows.map(r=>[r.a,r.h]))");
+    return !/wwzw/.test(rows) && rows.indexOf('"'+opp+'"')<0;
+  });
+  T('같은 팀이 두 번 나오지 않는다', ()=>{
+    const rows=JSON.parse(ev("JSON.stringify(leagueOdds().rows.map(r=>[r.a,r.h]))"));
+    const seen=new Set();
+    for(const [a,h] of rows){ if(seen.has(a)||seen.has(h))return false; seen.add(a); seen.add(h); }
+    return true;
+  });
+  T('한 번에 한 경기씩 채워진다', ()=>{
+    ev("ST.lgOdds=null"); const total=ev("leagueOdds().rows.length");
+    ev("leagueOddsStep()");
+    const done1=ev("leagueOdds().rows.filter(r=>r.o).length");
+    ev("leagueOddsStep()");
+    const done2=ev("leagueOdds().rows.filter(r=>r.o).length");
+    return done1===1 && done2===2 ? `${done2}/${total}` : `${done1} → ${done2}`;
+  });
+  T('다 채우면 더 돌 게 없다고 한다', ()=>{
+    let guard=0; while(ev("leagueOddsStep()") && guard++<60){}
+    return ev("leagueOdds().rows.every(r=>!!r.o)") && ev("leagueOddsStep()")===false;
+  });
+  T('양쪽 확률 합이 1이다', ()=>ev("leagueOdds().rows.every(r=>Math.abs(r.o.aw+r.o.hw+r.o.d-1)<1e-9)"));
+  T('주가 바뀌면 대진을 다시 뽑는다', ()=>{
+    const k1=ev("lgOddsKey()");
+    ev("ST.round++"); const k2=ev("lgOddsKey()"); ev("ST.round--");
+    return k1!==k2;
+  });
+  /* 여기가 핵심 — 미리 보여준 대진이 실제로 붙는 대진과 같아야 한다.
+     weekPairings 와 simOtherGames 가 같은 난수열을 쓰는지 확인한다. */
+  T('미리 뽑은 대진이 실제로 붙는 대진과 같다', ()=>{
+    const pred=ev("JSON.stringify(weekPairings(ST.schedule[ST.round].opp).pairs.map(p=>p.away.id+'@'+p.home.id))");
+    ev("simOtherGames(ST.schedule[ST.round].opp)");
+    const act=ev("JSON.stringify(ST.weekGames.games.map(g=>g.a+'@'+g.h))");
+    return pred===act ? `${JSON.parse(pred).length}경기 일치` : `예상 ${pred}\n실제 ${act}`;
+  });
+  T('결과에 몇 주차인지 박힌다', ()=>ev("ST.weekGames.round")===ev("ST.round"));
+  T('결과에 그때 걸렸던 배당이 남는다', ()=>{
+    const g=ev("JSON.parse(JSON.stringify(ST.weekGames.games[0]))");
+    return g.aO>=1 && g.hO>=1 ? `${g.aO.toFixed(2)} vs ${g.hO.toFixed(2)}` : '배당이 안 남았다';
+  });
+  T('배당 예측이 실제 결과와 대충 맞는다', ()=>{
+    const gs=JSON.parse(ev("JSON.stringify(ST.weekGames.games)"));
+    const judged=gs.filter(g=>g.aO!=null&&g.ar!==g.hr);
+    const hit=judged.filter(g=>(g.ar>g.hr)===(g.aO<=g.hO)).length;
+    // 절반은 넘어야 배당이 정보를 담고 있다는 뜻이다
+    return hit*2>=judged.length ? `${judged.length}경기 중 ${hit}경기 적중` : `${hit}/${judged.length} — 동전 던지기만도 못하다`;
+  });
+
+  console.log('\n[리그 화면]');
+  T('순위 화면에 이번 주 대진 카드가 뜬다', ()=>{
+    ev("ST.lgOdds=null"); w.go('stand');
+    const t=d.getElementById('view').textContent;
+    return /이번 주 리그/.test(t) && /리그 순위/.test(t);
+  });
+  T('배당을 다 뽑으면 줄마다 숫자가 붙는다', ()=>{
+    let guard=0; while(ev("leagueOddsStep()") && guard++<60){}
+    w.go('stand');
+    const rows=[...d.querySelectorAll('#view .lgo-r')];
+    const withOdds=rows.filter(r=>r.querySelectorAll('.lgo-t em').length===2);
+    return rows.length>0 && withOdds.length===rows.filter(r=>!r.classList.contains('done')).length
+      ? `${withOdds.length}줄` : `${withOdds.length}/${rows.length}`;
+  });
+  T('유리한 쪽이 줄마다 하나씩 표시된다', ()=>{
+    const rows=[...d.querySelectorAll('#view .lgo-r')].filter(r=>!r.classList.contains('done'));
+    return rows.length>0 && rows.every(r=>r.querySelectorAll('.lgo-t.fav').length===1);
+  });
+  T('지난주 결과 카드가 뜬다', ()=>{
+    ev("ST.weekGames.round=ST.round-1"); w.go('stand');
+    const t=d.getElementById('view').textContent;
+    return /지난주 리그/.test(t) && /배당이 \d+경기 중 \d+경기를 맞혔다/.test(t);
+  });
+  T('지난주 줄에 점수와 적중 여부가 나온다', ()=>{
+    const done=[...d.querySelectorAll('#view .lgo-r.done')];
+    if(!done.length) return false;
+    const ok=done.every(r=>/^\d+ : \d+$/.test(r.querySelector('.lgo-m b').textContent.trim()));
+    const marks=done.filter(r=>/배당대로|이변|무승부/.test(r.querySelector('.lgo-m i').textContent));
+    return ok && marks.length===done.length ? `${done.length}줄` : `점수 ${ok} · 판정 ${marks.length}/${done.length}`;
+  });
+  T('지난주가 아니면 안 뜬다', ()=>{
+    ev("ST.weekGames.round=ST.round-5"); w.go('stand');
+    const t=d.getElementById('view').textContent;
+    ev("ST.weekGames.round=ST.round-1");
+    return !/지난주 리그/.test(t);
+  });
+  T('리그 화면에 undefined / NaN 없음', ()=>{
+    w.go('stand'); return !/undefined|NaN/.test(d.getElementById('view').textContent);
+  });
+  T('플레이오프 주간에는 대진 대신 안내가 나온다', ()=>{
+    ev("ST.schedule[ST.round].po=true; ST.lgOdds=null;"); w.go('stand');
+    const t=d.getElementById('view').textContent;
+    // 지난주 결과 카드는 플레이오프 주간에도 그대로 남는다 — 예정 대진만 없어야 한다
+    const upcoming=[...d.querySelectorAll('#view .lgo-r')].filter(r=>!r.classList.contains('done'));
+    ev("delete ST.schedule[ST.round].po; ST.lgOdds=null;");
+    return /플레이오프 주간이다/.test(t) && upcoming.length===0;
+  });
+  T('옛 세이브(배열이던 weekGames)도 안 깨진다', ()=>{
+    ev("ST.weekGames=[{a:'sasin',h:'ilgu',ar:3,hr:2}]; normalizeState();");
+    w.go('stand');
+    return ev("ST.weekGames&&Array.isArray(ST.weekGames.games)")
+      && !/undefined|NaN/.test(d.getElementById('view').textContent);
+  });
+
   console.log('\n[경기 후 정산]');
   T('결과 화면에 배당 정산 줄이 붙는다', ()=>{
     ev(`(function(){
