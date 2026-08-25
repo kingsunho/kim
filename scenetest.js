@@ -228,8 +228,10 @@ const txt=()=>d.querySelector('#view').textContent;
     w.go('more');
     const bs=[...d.querySelectorAll('#view .btn')].filter(b=>/중요한 장면만|매 타석|끄기/.test(b.textContent));
     const off=[...d.querySelectorAll('#view .btn')].filter(b=>b.textContent==='끄기');
+    /* [2.43.0] 직접 플레이가 타석·마운드로 갈리면서 '끄기' 버튼이 셋이 됐다.
+       경기 장면은 맨 마지막 묶음이다 — 인덱스 대신 마지막 걸 누른다. */
     if(off.length<2) return '!장면 설정이 없다';
-    off[1].click();
+    off[off.length-1].click();
     const r=ev("ST.sceneMode")==='off';
     ev("ST.sceneMode='key'");
     return r;

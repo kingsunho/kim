@@ -49,12 +49,19 @@ setTimeout(async()=>{
   });
 
   console.log('\n[전시장 트로피 클릭 → 포디움]');
-  const who=hall.length?hall[0].pid:'ksh';
+  /* [간헐 실패] 예전에는 hall[0] 의 트로피를 무조건 눌렀다.
+     감독상(kind 'mgr')은 설계상 후보 순위가 없는 상이라, 그날 시상 결과에 따라
+     hall[0] 이 감독상이면 포디움 검사가 통째로 실패했다. 게임 버그가 아니라
+     테스트가 상 종류를 안 가린 것이다. 포디움이 있는 상을 골라서 누른다. */
+  const pick=hall.find(h=>h.kind!=='mgr'&&h.podium&&h.podium.length)||hall[0];
+  const who=pick?pick.pid:'ksh';
   ev(`hallWho='${who}'`); w.go('hall'); await wait(120);
-  const tro=d.querySelectorAll('#view .tro.tap');
+  const all=[...d.querySelectorAll('#view .tro.tap')];
+  const tro=all.filter((_,i)=>true);
   T('트로피가 클릭 가능하다', ()=>tro.length>0);
   if(tro.length){
-    tro[0].click(); await wait(80);
+    // 감독상 트로피는 건너뛴다
+    (tro.find(t=>!/감독상/.test(t.textContent))||tro[0]).click(); await wait(80);
     const sb=d.getElementById('sheet-body').textContent;
     T('시트가 열린다', ()=>d.getElementById('sheet').classList.contains('open'));
     T('선정 기준이 보인다', ()=>/선정 기준/.test(sb));

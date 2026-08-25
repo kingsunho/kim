@@ -121,7 +121,9 @@ setTimeout(async()=>{
   console.log('   ', JSON.stringify(lg));
   T('파워가 내려갔다 (48 → 34)', ()=>lg.pow===34);
   T('컨택이 내려갔다 (80 → 74)', ()=>lg.con===74);
-  T('주루·선구는 그대로', ()=>lg.spd===70&&lg.eye===44);
+  // v2.43.0 주루 재조정 — 70 → 62. 도루 13개가 다리가 아니라 리그 사정이었다.
+  T('주루가 내려갔다 (70 → 62)', ()=>lg.spd===62);
+  T('선구는 그대로', ()=>lg.eye===44);
 
   console.log(errs.length?`\n❌ ${errs.length}건\n`+errs.join('\n'):'\n✅ 전부 통과');
   process.exit(errs.length?1:0);

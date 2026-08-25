@@ -17,13 +17,18 @@ setTimeout(async()=>{
   ev("ST.lineup=recommendLineup(); ST.rotation=recommendRotation();");
 
   console.log('[설정]');
-  T('끄기 / 중요한 순간만 / 매 타석 세 가지', ()=>{
+  /* [2.43.0] 타석(공격)과 마운드(수비)를 따로 잡는다. 선택지도 넷으로 늘었다. */
+  T('끄기 / 내 선수만 / 중요한 순간만 / 매 타석 네 가지', ()=>{
     ev("go('more')");
     const b=[...d.querySelectorAll('#view .btn')].map(x=>x.textContent);
-    return ['끄기','중요한 순간만','매 타석'].every(n=>b.includes(n)) && '있음';
+    return ['끄기','내 선수만','중요한 순간만','매 타석'].every(n=>b.includes(n)) && '있음';
+  });
+  T('타석과 마운드를 따로 정한다', ()=>{
+    ev("ST.playBat='all'; ST.playPit='off';");
+    return ev("playModeFor('bat')")==='all' && ev("playModeFor('pit')")==='off' ? '따로 산다' : false;
   });
   T('끄면 조작을 안 물어본다', ()=>ev(`(function(){
-    ST.playMode='off';
+    ST.playMode=ST.playBat=ST.playPit='off';
     LIVE=makeLive(); LIVE.manual=true;
     var n=0,g=0;
     while(!LIVE.over && g++<4000){
@@ -35,7 +40,7 @@ setTimeout(async()=>{
     return n===0 ? '한 경기 0회' : false;
   })()`));
   T('매 타석 모드면 자주 물어본다', ()=>ev(`(function(){
-    ST.playMode='all';
+    ST.playMode=ST.playBat=ST.playPit='all';
     LIVE=makeLive(); LIVE.manual=true;
     var sw=0,pi=0,g=0;
     while(!LIVE.over && g++<4000){
@@ -54,7 +59,7 @@ setTimeout(async()=>{
        14경기가 전부 같은 경기라 비교가 안 된다. 두 모드에 같은 시드 열을 준다. */
     var seed0=ST.seed;
     function count(mode){
-      ST.playMode=mode; var tot=0;
+      ST.playMode=ST.playBat=ST.playPit=mode; var tot=0;
       for(var t=0;t<14;t++){
         ST.seed=(seed0+t*7919)>>>0;
         LIVE=makeLive(); LIVE.manual=true;
@@ -79,7 +84,7 @@ setTimeout(async()=>{
   console.log('[타이밍이 실제로 결과에 반영되나]');
   T('잘 맞히면 안타 확률이 오른다 (400타석)', ()=>ev(`(function(){
     function trial(q){
-      ST.playMode='all';
+      ST.playMode=ST.playBat=ST.playPit='all';
       var h=0,ab=0;
       for(var t=0;t<14;t++){
         LIVE=makeLive(); LIVE.manual=true;
@@ -115,7 +120,7 @@ setTimeout(async()=>{
     return (a.bb<0.1 && a.hbp<0.1 && b.bb<0.1) ? '볼넷 x'+a.bb+' · 사구 x'+a.hbp : false;
   })()`));
   T('정타 치고 볼넷·삼진 나는 일이 거의 없다 (실측)', ()=>ev(`(function(){
-    ST.playMode='all';
+    ST.playMode=ST.playBat=ST.playPit='all';
     var bb=0,k=0,pa=0;
     for(var t=0;t<40;t++){
       LIVE=makeLive(); LIVE.manual=true;
@@ -148,7 +153,7 @@ setTimeout(async()=>{
 
   console.log('[화면]');
   T('스윙 화면이 그려진다', ()=>{
-    ev("ST.playMode='all'; LIVE=makeLive(); LIVE.manual=true;");
+    ev("ST.playMode=ST.playBat=ST.playPit='all'; LIVE=makeLive(); LIVE.manual=true;");
     ev(`(function(){var g=0;while(!LIVE.over&&g++<3000){
       var dd=LIVE.detectDecision();
       if(dd&&dd.kind==='swing'){window._d=dd;return;}
@@ -254,7 +259,7 @@ setTimeout(async()=>{
     return (da===1000 && db>1000) ? 'exact '+da+'ms / 기본 '+Math.round(db)+'ms' : false;
   })()`));
   T('코스 화면이 그려진다', ()=>{
-    ev("ST.playMode='all'; LIVE=makeLive(); LIVE.manual=true;");
+    ev("ST.playMode=ST.playBat=ST.playPit='all'; LIVE=makeLive(); LIVE.manual=true;");
     ev(`(function(){var g=0;while(!LIVE.over&&g++<3000){
       var dd=LIVE.detectDecision();
       if(dd&&dd.kind==='pitch'){window._d2=dd;return;}

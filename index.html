@@ -97,6 +97,9 @@ button{font-family:inherit;cursor:pointer}
 .btn.small{padding:11px;font-size:13px}
 .btn-row{display:flex;gap:9px}
 .btn-row .btn{margin-top:12px}
+/* 설정 안에서 버튼 묶음 위에 붙는 작은 제목 */
+.set-sub{font-size:11px;font-weight:800;color:var(--gold);margin-top:14px;letter-spacing:.2px}
+.set-note{font-size:10.5px;color:var(--dim);line-height:1.5;margin-top:6px}
 
 /* 팀 성향 */
 .tend-row{display:flex;align-items:center;gap:10px;margin:7px 0}
@@ -1567,6 +1570,30 @@ const LG = {
   K: 0.1582, BB: 0.1494, HBP: 0.035, BABIP: 0.4688,
   H1: 0.741, H2: 0.163, H3: 0.075, HR: 0.0035,
   SB_PER_PA: 0.240, SB_SUCCESS: 0.90,
+  /* 도루 시도율 — 상한에 붙어 있어서 주루가 아무 의미가 없었다.
+     [제보] "우리 팀 주루가 다들 너무 좋게 나온다. 특히 송정민"
+     재보니 시도율이 clamp 상한 0.85 에 통째로 붙어 있었다.
+       att = 0.240 * 5.64 * tend.sb(0.70) * exp((spd-46)*0.020)
+     우리 팀은 앞 계수만 0.947 이라, spd 42 만 넘으면 exp 항이 0.9 를 넘겨
+     곱이 0.85 를 뚫는다. 즉 이건(70)·김선호(66)·유지효(45)·송정민(48) 이
+     전부 '타석의 85% 에서 뛴다' 로 똑같이 취급됐다.
+     실측 880경기에서 팀 8.37도루/경기 — 실제 2026시즌 4.00 의 두 배다.
+     spd 40 인 정민수(1.04)가 spd 66 인 김선호(1.22)와 거의 같았다.
+
+     고친 방식 두 가지.
+       ① 앞 계수를 5.64 → 2.25 로 줄이고 상한을 0.85 → 0.70 으로 내려서 포화를 푼다
+          (팀 최고인 이건이 0.62 라, 상한은 그보다 위에 둬야 「적극 주루」 지시가 먹는다)
+       ② exp 기울기를 0.020 → 0.0305 로 세워서 주루 차이가 실제로 갈리게 한다
+     같은 880경기 재측정 — 팀 8.37 → 3.75도루/경기 (실제 4.00).
+     선수별로도 이건(62) 0.92 · 김상훈(33) 0.18 로 다섯 배가 벌어진다.
+     도루자는 0.31/경기로 실제(13경기 4실패 = 0.31)와 그대로 맞는다.
+     성공률 기준점도 50 → 42 로 옮겼다. 능력치를 통째로 내렸으니
+     기준점을 그대로 두면 팀 성공률이 실제(52도루 4실패 = 92.9%)보다 떨어진다. */
+  SB_MULT: 2.25,         // 예전 5.64
+  SB_SPD_K: 0.0305,      // 예전 0.020 — 주루 1점당 시도율 배수
+  SB_SPD_MID: 46,        // 기울기 기준점
+  SB_MAX: 0.70,          // 예전 0.85 — 여기 붙으면 주루가 무의미해진다
+  SB_SU_MID: 42,         // 성공률 기준 주루 (예전 50)
   ERR_PER_BIP: 0.075,
   /* 그라운드 홈런 — 4부 사회인야구에서 홈런은 대부분 이쪽이다.
      담장을 넘기는 힘보다, 외야가 공을 놓치고 우왕좌왕하는 사이 다리로 도는 것.
@@ -1584,12 +1611,31 @@ const LG = {
 };
 
 /* ---------- 우완좌완 실제 선수 ---------- */
+/* 주루 전면 재조정 (v2.43.0)
+   ---------------------------------------------------------
+   [제보] "우리 팀 전체적으로 주루 너프시켜야 될 듯. 어느 정도 다들 좋게 나온다"
+
+   원래 spd 를 실제 도루 개수에서 뽑았다. 그게 틀렸다.
+   REAL_SEASON.coreRule.sbRule 에 우리가 직접 적어둔 문장이 있다 —
+     "2루 송구 금지 (저지율 3% → 기대값 음수)"
+   4부 리그 포수들이 2루로 아예 안 던진다. 그래서 시즌 52도루 4실패(92.9%)가
+   나온 거지, 우리 팀 다리가 빨라서가 아니다. 도루 개수는 **주력이 아니라
+   리그 환경**을 재고 있었다. 그걸 그대로 능력치로 옮겨 담았으니
+   팀 전원이 40~70 대에 몰렸다.
+
+   다시 뽑을 때 쓴 근거는 도루가 아니라 **다리로만 만들 수 있는 기록**이다 —
+   3루타 · 내야안타 · 주루사. 이 기준으로는 팀에서 다리로 먹는 사람이
+   이건·김선호 둘뿐이고, 나머지는 평균 이하다.
+
+   spd 는 도루 말고도 BABIP(내야안타) · 그라운드 홈런(ITP_MIN_SPD 50) ·
+   타순 추천에 같이 들어간다. 그래서 내린 폭이 도루에만 그치지 않는다 —
+   의도한 것이다. 발로 먹던 팀이 발로 덜 먹게 된다.               */
 const WWZW = [
-  {id:'swm',name:'송승민',bats:'R',no:37,con:87,pow:74,eye:60,spd:58,def:60,arm:65,
+  {id:'swm',name:'송승민',bats:'R',no:37,con:87,pow:74,eye:60,spd:48,def:60,arm:65,
    pos:['SS','P','C','3B','1B','2B','LF','CF','RF'],pitch:{stf:60,ctl:44,sta:56},
    real:{g:7,pa:20,ab:15,h:10,d2:5,d3:0,hr:0,bb:2,hbp:3,k:2,sb:5,cs:0,rbi:12,r:10},
    note:'투타 겸업 에이스. OPS 1.750 · 유격 최다 출전, 전 포지션 소화'},
-  {id:'ksh',name:'김선호',bats:'R',no:1,con:67,pow:55,eye:36,spd:66,def:38,arm:50,
+  {id:'ksh',name:'김선호',bats:'R',no:1,con:67,pow:55,eye:36,spd:60,def:38,arm:50,
    pos:['2B','SS'],pitch:null,
    real:{g:12,pa:37,ab:33,h:17,d2:0,d3:3,hr:1,bb:4,hbp:0,k:7,sb:11,cs:0,rbi:15,r:17},
    note:'팀 최다 안타·타점·득점. 실책 8개'},
@@ -1600,53 +1646,56 @@ const WWZW = [
      · 컨택 80 → 74 : 타율 .517 은 팀 3위다. 위에 있는 정민수(.556)가 73,
        바로 밑 김선호(.515)가 67인데 혼자 80은 앞뒤가 안 맞았다.
        삼진 1개(컨택 능력)를 감안해 정민수보다 살짝 위로만 남긴다.
-     주루 70 · 도루 13(실패 1)은 실제 기록 그대로라 건드리지 않는다.       */
-  {id:'lg',name:'이건',bats:'R',no:11,con:74,pow:34,eye:44,spd:70,def:55,arm:45,
+     · 주루 70 → 62 (v2.43.0) : 예전엔 "도루 13(실패 1)은 실제 기록 그대로"
+       라고 적어두고 안 건드렸는데, 그 도루 13개가 다리가 아니라 리그 환경이었다
+       (위 WWZW 머리 주석 참고). 다만 3루타 2개는 진짜 다리로 만든 것이고
+       주루사도 없어서, 내려도 팀 1위 자리는 그대로 남긴다.                 */
+  {id:'lg',name:'이건',bats:'R',no:11,con:74,pow:34,eye:44,spd:62,def:55,arm:45,
    pos:['CF','LF','C'],pitch:{stf:28,ctl:18,sta:38},
    real:{g:13,pa:37,ab:29,h:15,d2:2,d3:2,hr:0,bb:2,hbp:6,k:1,sb:13,cs:1,rbi:3,r:17},
    note:'전 경기 출장. 37타석 삼진 1개 · 홈런 0 · 타점 3 — 장타보다 발로 먹는 유형'},
-  {id:'kig',name:'김인규',bats:'R',no:7,con:63,pow:64,eye:30,spd:24,def:50,arm:62,
+  {id:'kig',name:'김인규',bats:'R',no:7,con:63,pow:64,eye:30,spd:22,def:50,arm:62,
    pos:['C','3B','1B'],pitch:{stf:50,ctl:13,sta:22},
    real:{g:12,pa:34,ab:28,h:12,d2:5,d3:0,hr:0,bb:1,hbp:4,k:4,sb:1,cs:0,rbi:13,r:11},
    realPit:{g:2,ip:0.667,h:4,r:12,er:9,bb:10,k:2,era:94.50},
    note:'주전 포수. 2루타 5개 팀 공동 1위. 공은 빠른데 0.2이닝 10사사구 ERA 94.50'},
-  {id:'jms',name:'정민수',bats:'R',no:8,con:73,pow:33,eye:46,spd:40,def:45,arm:45,
+  {id:'jms',name:'정민수',bats:'R',no:8,con:73,pow:33,eye:46,spd:35,def:45,arm:45,
    pos:['LF','RF','2B'],pitch:null,
    real:{g:8,pa:21,ab:18,h:10,d2:1,d3:0,hr:0,bb:2,hbp:1,k:2,sb:3,cs:1,rbi:6,r:4},
    note:'좌측 44%로 팀 두 번째 균형 타구'},
-  {id:'yjh',name:'유지효',bats:'R',no:99,con:60,pow:28,eye:46,spd:45,def:45,arm:45,
+  {id:'yjh',name:'유지효',bats:'R',no:99,con:60,pow:28,eye:46,spd:38,def:45,arm:45,
    pos:['1B','C','RF'],pitch:{stf:22,ctl:16,sta:26},
    real:{g:7,pa:20,ab:17,h:7,d2:1,d3:0,hr:0,bb:2,hbp:0,k:1,sb:4,cs:0,rbi:6,r:5},
    note:'백업 포수 자원. 20타석 OPS .921'},
-  {id:'ksn',name:'김상훈',bats:'R',no:18,con:39,pow:62,eye:42,spd:40,def:45,arm:50,
+  {id:'ksn',name:'김상훈',bats:'R',no:18,con:39,pow:62,eye:42,spd:33,def:45,arm:50,
    pos:['1B','LF'],pitch:null,
    real:{g:9,pa:25,ab:21,h:6,d2:4,d3:0,hr:0,bb:4,hbp:0,k:7,sb:3,cs:1,rbi:6,r:6},
    note:'ISO .190. 외야 타구 58%로 팀 2위'},
-  {id:'ksw',name:'김선우',bats:'R',no:39,con:46,pow:40,eye:26,spd:45,def:56,arm:55,
+  {id:'ksw',name:'김선우',bats:'R',no:39,con:46,pow:40,eye:26,spd:40,def:56,arm:55,
    pos:['SS','2B','3B'],pitch:null,
    real:{g:5,pa:12,ab:11,h:4,d2:1,d3:0,hr:0,bb:0,hbp:0,k:3,sb:3,cs:0,rbi:3,r:3},
    note:'송구 실책 0건. 표본 12타석'},
-  {id:'khg',name:'김한규',bats:'R',no:52,con:48,pow:20,eye:62,spd:30,def:40,arm:44,
+  {id:'khg',name:'김한규',bats:'R',no:52,con:48,pow:20,eye:62,spd:28,def:40,arm:44,
    pos:['3B','DH','LF'],pitch:{stf:44,ctl:34,sta:44},
    real:{g:12,pa:27,ab:22,h:7,d2:0,d3:0,hr:0,bb:4,hbp:1,k:3,sb:1,cs:0,rbi:7,r:4},
    note:'BB/K 1.33 팀 2위. 22타수 장타 0 · 27타석 도루 1 — 똑딱이 · 똥차'},
-  {id:'ujh',name:'우진혁',bats:'R',no:10,con:34,pow:20,eye:46,spd:40,def:40,arm:40,
+  {id:'ujh',name:'우진혁',bats:'R',no:10,con:34,pow:20,eye:46,spd:35,def:40,arm:40,
    pos:['RF','2B','LF'],pitch:null,
    real:{g:6,pa:14,ab:11,h:3,d2:0,d3:0,hr:0,bb:2,hbp:1,k:5,sb:3,cs:1,rbi:3,r:3},
    note:'내야 타구 84%'},
-  {id:'kjh',name:'김준희',bats:'R',no:29,con:26,pow:24,eye:42,spd:45,def:52,arm:70,
+  {id:'kjh',name:'김준희',bats:'R',no:29,con:26,pow:24,eye:42,spd:42,def:52,arm:70,
    pos:['RF','P','LF'],pitch:{stf:54,ctl:20,sta:46},
    real:{g:10,pa:23,ab:19,h:4,d2:1,d3:0,hr:0,bb:3,hbp:1,k:5,sb:4,cs:0,rbi:2,r:4},
    note:'어깨 70 팀 1위. 8/9 우익 노바운드 홈 보살'},
-  {id:'lsm',name:'이승민',bats:'L',no:56,con:26,pow:30,eye:32,spd:25,def:35,arm:45,
+  {id:'lsm',name:'이승민',bats:'L',no:56,con:26,pow:30,eye:32,spd:24,def:35,arm:45,
    pos:['LF','1B','P'],pitch:{stf:48,ctl:17,sta:38},
    real:{g:5,pa:11,ab:10,h:2,d2:1,d3:0,hr:0,bb:1,hbp:0,k:4,sb:0,cs:0,rbi:0,r:2},
    note:'팀 유일 좌완·좌타. 우측 67%'},
-  {id:'khj',name:'권혁준',bats:'R',no:21,con:18,pow:18,eye:30,spd:35,def:52,arm:45,
+  {id:'khj',name:'권혁준',bats:'R',no:21,con:18,pow:18,eye:30,spd:33,def:52,arm:45,
    pos:['SS','3B','2B'],pitch:null,
    real:{g:5,pa:12,ab:10,h:1,d2:0,d3:0,hr:0,bb:2,hbp:0,k:6,sb:1,cs:0,rbi:0,r:3},
    note:'리틀야구단 출신. 수비 지도 자원'},
-  {id:'lmh',name:'이민혁',bats:'R',no:32,con:12,pow:16,eye:14,spd:25,def:35,arm:45,
+  {id:'lmh',name:'이민혁',bats:'R',no:32,con:12,pow:16,eye:14,spd:24,def:35,arm:45,
    pos:['LF','1B','C'],pitch:null,
    real:{g:5,pa:12,ab:12,h:0,d2:0,d3:0,hr:0,bb:0,hbp:0,k:11,sb:0,cs:0,rbi:0,r:0},
    note:'12타석 삼진 11개. 포수 출장은 1이닝'},
@@ -2049,9 +2098,10 @@ function simGame(home,away,opts){
             let runMul=1;
             if(off.tac.run==='aggressive')runMul=1.6;
             else if(off.tac.run==='hold')runMul=0.12;
-            const att=clamp(LG.SB_PER_PA*5.64*off.team.tend.sb*runMul*Math.exp((rn.spd-46)*0.020),0.0,0.85);
+            const att=clamp(LG.SB_PER_PA*LG.SB_MULT*off.team.tend.sb*runMul
+                            *Math.exp((rn.spd-LG.SB_SPD_MID)*LG.SB_SPD_K),0.0,LG.SB_MAX);
             if(rng()<att){
-              const su=clamp(LG.SB_SUCCESS+(rn.spd-50)*0.0030-(def.cArm-46)*0.0060,0.45,0.99);
+              const su=clamp(LG.SB_SUCCESS+(rn.spd-LG.SB_SU_MID)*0.0030-(def.cArm-46)*0.0060,0.45,0.99);
               if(rng()<su){
                 bases[1]=bases[0];bases[0]=null;box[rn.id].sb++;pl.sbA++;def.sbAllowed++;
                 log.push({t:'play',inning:inn,half,text:`${rn.name} 2루 도루 성공`,cls:'sb'});
@@ -3991,8 +4041,14 @@ function checkDischarge(ST){
   if(ST.discharged) return null;
   const us=TBYID['wwzw'];
   if(us.players.some(p=>p.id==='sjm')) { ST.discharged=true; return null; }
+  /* [제보] "특히 송정민이 주루 너무 빠름"
+     맞는 말이었다. spd 48 을 준 근거가 아무것도 없었다 —
+     송정민은 2026시즌 기록이 투수 기록뿐이다(4경기 16.2이닝).
+     REAL_SEASON.batting 열네 명 명단에 이름 자체가 없다.
+     타석에 선 기록이 없는 사람한테 팀 중위권 주력을 붙여놨으니
+     복귀하자마자 이건 다음으로 뛰어다녔다. 투수 몸으로 되돌린다. */
   const np={id:'sjm',name:'송정민',bats:'R',
-    con:70,pow:62,eye:48,spd:48,def:50,arm:62,
+    con:70,pow:62,eye:48,spd:30,def:50,arm:62,
     pos:['P','1B','LF'],pitch:{stf:66,ctl:44,sta:62},real:null,no:47};
   us.players.push(np);
   META['sjm']={born:2006,speech:'jon',throws:'R',car:false,school:'군포고',drink:1,loyal:88,pot:16,
@@ -6306,9 +6362,16 @@ const BGM=(function(){
       }
     }
   }
+  /* 스케줄러 주기 — 25ms(초당 40회) 는 폰 배터리에 너무 잦다.
+     [제보] "갤럭시 쓰는 애가 배터리가 빨리 단다"
+     룩어헤드를 0.12 → 0.32 로 늘리면 100ms 마다 깨워도 이음매가 안 생긴다.
+     타이머 웨이크업이 초당 40회 → 10회로 줄었다. 소리는 그대로다.
+     (룩어헤드 안의 음은 이미 예약돼 있지만, 볼륨은 master 게인을
+      setTargetAtTime 으로 한 번에 눌러서 끄기·더킹이 늦지 않는다.)   */
+  const LOOKAHEAD=0.32, TICK_MS=100;
   function tick(){
     if(!ctx) return;
-    while(nextT < ctx.currentTime+0.12){
+    while(nextT < ctx.currentTime+LOOKAHEAD){
       schedule(step,nextT);
       step=(step+1)%TOTAL;
       nextT+=SP16;
@@ -6325,15 +6388,51 @@ const BGM=(function(){
   function start(){
     if(!hasAudio||playing) return;
     if(!ctx){ try{ build(); }catch(e){ return; } }
+    if(susT){ clearTimeout(susT); susT=null; }
     if(ctx.state==='suspended'){ try{ ctx.resume(); }catch(e){} }
     step=0; nextT=ctx.currentTime+0.08;
-    timer=setInterval(tick,25);
+    timer=setInterval(tick,TICK_MS);
     playing=true; applyVol();
+  }
+  /* ================= 배터리 =================
+     [제보] "갤럭시 쓰는 애가 배터리가 빨리 단다. 사운드 때문인 것 같다.
+             브금이 백그라운드로 계속 나온다는 소문"
+     소문이 맞았다. 원인이 두 개였다.
+
+     1) AudioContext 를 한 번 열면 영영 안 닫았다.
+        예전 stop() 은 타이머를 끄고 master 게인만 0으로 내렸다.
+        컨텍스트는 계속 'running' 이라 오디오 렌더 스레드가 돌고,
+        안드로이드는 AudioTrack 이 열려 있는 동안 오디오 DSP 를 깨워둔다.
+        **소리를 껐는데도 배터리가 닳던** 게 이것 때문이다.
+
+     2) 백그라운드로 넘어갈 때 아무 처리도 안 했다.
+        안드로이드 크롬은 '소리를 내고 있는 탭(audible)' 을 백그라운드
+        스로틀링에서 면제한다. 그래서 홈 버튼을 누르거나 화면을 꺼도
+        BGM 이 계속 나오고, 스케줄러도 초당 그대로 돌고, 탭이
+        freeze 도 안 됐다. "영상 판정" 이라는 소문은 정확히는
+        audible 탭 판정인데 결과는 같다.
+
+     이제 끄거나 화면을 벗어나면 0.4초 뒤 컨텍스트를 suspend 한다.
+     suspend 된 컨텍스트는 오디오 하드웨어를 놓기 때문에 탭이 조용해지고,
+     그러면 브라우저가 알아서 백그라운드 스로틀링을 걸어준다.
+     닫지(close) 않고 재우는 이유는, 닫으면 다시 만들 때
+     사용자 제스처가 또 필요해서 복귀할 때 소리가 안 나기 때문이다.   */
+  let susT=null;
+  function sleepCtx(){
+    if(!ctx||ctx.state!=='running') return;
+    if(susT) clearTimeout(susT);
+    // 페이드가 끝난 뒤에 재운다 — 바로 끊으면 '뚝' 소리가 난다
+    susT=setTimeout(()=>{ susT=null;
+      if(playing) return;                        // 그새 다시 켰으면 그냥 둔다
+      try{ ctx.suspend(); }catch(e){}
+      try{ if(silentEl) silentEl.pause(); }catch(e){}   // 아이폰 무음 트랙도 같이 멈춘다
+    },400);
   }
   function stop(){
     if(timer){ clearInterval(timer); timer=null; }
     playing=false;
     if(master&&ctx) master.gain.setTargetAtTime(0,ctx.currentTime,0.05);
+    sleepCtx();
   }
   /* ================= iOS 대응 =================
      [제보] PC 는 나는데 아이폰 사파리에서 소리가 안 난다.
@@ -6365,12 +6464,17 @@ const BGM=(function(){
      /iP(hone|ad|od)/.test(navigator.userAgent||'') ||
      ((navigator.maxTouchPoints||0)>1 && /Mac/.test(navigator.platform||'')));
   function openAudioSession(){
+    /* 여기는 아이폰 무음 스위치 대응 전용이다.
+       [배터리] 예전에는 audioSession 을 플랫폼 상관없이 잡았다.
+       안드로이드에서 이게 지원되기 시작하면 '음악 재생 중' 을 스스로
+       선언하는 셈이라, 화면을 꺼도 계속 돌아가는 쪽으로 붙는다.
+       아이폰 말고는 아예 손대지 않는다.                              */
+    if(!isIOS) return;
     // 무음 스위치를 넘기는 공식 경로 (Safari 16.4+)
     let official=false;
     try{ if(navigator.audioSession){ navigator.audioSession.type='playback'; official=true; } }catch(e){}
     // 구버전 아이폰 폴백 — 무음 트랙을 하나 물려서 미디어 세션을 연다.
-    // 다른 플랫폼에서는 굳이 안 만든다 (안드로이드는 재생 알림이 뜬다).
-    if(official || !isIOS) return;
+    if(official) return;
     try{
       if(!silentEl){
         silentEl=document.createElement('audio');
@@ -6408,6 +6512,29 @@ const BGM=(function(){
           toast('🔊 BGM 재생 중 — 상단 스피커를 누르면 끈다'); },900);
       }
     }
+  }
+  /* 화면을 벗어나면 재우고, 돌아오면 깨운다.
+     [배터리] 이게 없어서 홈 버튼을 눌러도 BGM 이 계속 나왔다.
+     pagehide 까지 잡는 이유 — 아이폰 사파리는 앱 전환에서
+     visibilitychange 가 안 오고 pagehide 만 오는 경우가 있다.       */
+  let wasOn=false;
+  function onHide(){
+    if(!hasAudio||!ctx) return;
+    wasOn=playing;
+    if(playing) stop();       // stop 안에서 suspend 까지 간다
+    else sleepCtx();          // 꺼져 있어도 컨텍스트는 재운다
+  }
+  function onShow(){
+    if(!hasAudio||!ctx) return;
+    if(wasOn && state.on) start();
+    wasOn=false;
+  }
+  if(typeof document!=='undefined'){
+    document.addEventListener('visibilitychange',()=>{
+      if(document.hidden) onHide(); else onShow();
+    });
+    window.addEventListener('pagehide',onHide);
+    window.addEventListener('pageshow',onShow);
   }
   /* 정말로 열렸는지 — 진단 패널에 그대로 띄운다 */
   function status(){
@@ -6528,8 +6655,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.42.0';
-const APP_VERSION_NOTE = '우승하면 헹가래를 친다';
+const APP_VERSION = '2.43.0';
+const APP_VERSION_NOTE = '주루 너프 · 배터리 · 지목 훈련 · 직접 플레이 투타 분리';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6550,6 +6677,22 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.43.0', t:'주루를 다시 쟀다 · 배터리 · 원하는 능력치를 지목한다', items:[
+    '도루가 두 배로 나오고 있었다. 시도율 계산이 상한에 통째로 붙어 있어서 이건(주루 70)이든 유지효(45)든 똑같이 뛰었다',
+    '팀 도루가 경기당 8.4개였다. 실제 2026시즌은 4.0개다. 이제 3.8개로 맞췄다',
+    '주루 능력치를 전원 다시 뽑았다. 실제 도루 개수는 우리 다리가 아니라 4부 포수들이 2루로 안 던지는 리그 사정이었다 (저지율 3%)',
+    '송정민 주루 48 → 30. 2026시즌 기록이 투수 기록뿐인 사람한테 팀 중위권 주력이 붙어 있었다',
+    '갤럭시 배터리 — 소리를 껐는데도 오디오 장치를 계속 붙잡고 있었다. 이제 끄면 완전히 재운다',
+    '다른 앱으로 넘어가면 브금이 멈춘다. 예전엔 화면을 꺼도 계속 돌면서 배터리를 먹었다',
+    '소리 스케줄러를 초당 40번 → 10번으로 줄였다. 소리는 그대로다',
+    '집중 훈련에서 올릴 능력치를 지목할 수 있다. 타격이면 컨택/파워, 수비면 수비/어깨 중에서 고른다',
+    '투구 훈련에 구위와 체력이 열렸다. 예전엔 제구만 올랐다',
+    '지목해도 성장 총량은 안 늘어난다 — 방향만 정하는 것이다. 같은 걸 계속 시키면 정체가 오고, 이미 높은 능력치는 잘 안 오른다',
+    '투수 능력치가 시즌을 못 넘어가고 있었다. 한 해 내내 제구를 올려놔도 이듬해 개막에 원래대로 돌아갔다',
+    '직접 플레이를 타석과 마운드로 나눴다. 치는 것만 직접 하고 던지는 건 자동으로 둘 수 있다',
+    '「내 선수만」이 생겼다 — 내가 고른 선수가 타석에 서거나 마운드에 있을 때만 물어본다',
+    '자동 교체를 설정에서 정한다 — 벤치 기용 정도, 잘 치는 선수 보호 인원, 투수 교체 기준, 교체할 때 물어볼지',
+  ]},
   {v:'2.42.0', t:'우승 세리머니', items:[
     '결승을 이기면 토스트 한 줄로 끝나던 걸 화면 전체로 키웠다',
     '색종이가 쏟아지고 트로피가 뜨고, 그날 결승에 나온 사람들이 헹가래를 친다',
@@ -8388,8 +8531,10 @@ LiveGame.prototype.checkPitcherChange = function(s){
   const bbLim = hk==='quick'?3:(hk==='long'?7:5);
   const rLim  = hk==='quick'?4:(hk==='long'?9:6);
   if((l.outs>=lim||l.bb+l.hbp>=bbLim||l.r>=rLim) && this.hasNextPitcher(s)){
-    if(s.isUser){
-      // 유저 팀이면 교체 여부를 물어본다
+    /* 유저 팀이면 교체 여부를 물어본다.
+       [설정] 매번 묻는 게 성가시면 설정에서 끌 수 있다 — 그러면 알아서 바꾼다.  */
+    const ask=!(ST&&ST.subCfg&&ST.subCfg.pitchAsk===false);
+    if(s.isUser && ask){
       this.pending={kind:'pitcherChange', side:s, from:p.name, to:this.curPitcherNext(s)};
       return true;
     }
@@ -8436,7 +8581,23 @@ LiveGame.prototype.curPitcherNext = function(s){
      2. 중요한 순간에만 뜬다 — 매 타석 조작하면 22경기를 못 한다
      3. 설정에서 끌 수 있다. 자동 진행은 예전 그대로
    ========================================================= */
-const PLAY_OFF='off', PLAY_KEY='key', PLAY_ALL='all';
+/* 조작을 언제 물어볼지 — 타석(공격)과 마운드(수비)를 따로 잡는다.
+   [요청] "직접플레이 투수 타자 둘 다 설정할 수 있게 해줘야 될 듯.
+           하고 싶은 것만 할 수 있게나 뭐 상황에 따라서나"
+   예전에는 ST.playMode 하나가 둘을 같이 묶고 있어서
+   '타격만 직접 하고 투구는 자동' 같은 게 안 됐다. 둘로 쪼갠다.
+     off  — 안 물어본다
+     mine — 내가 고른 선수가 타석에 서거나 마운드에 있을 때만
+     key  — 득점권·후반 접전·내 선수 (예전 '중요한 순간만')
+     all  — 매 타석                                                */
+const PLAY_OFF='off', PLAY_MINE='mine', PLAY_KEY='key', PLAY_ALL='all';
+const PLAY_OPTS=[[PLAY_OFF,'끄기'],[PLAY_MINE,'내 선수만'],[PLAY_KEY,'중요한 순간만'],[PLAY_ALL,'매 타석']];
+/* 옛 세이브의 ST.playMode 하나를 양쪽에 그대로 물려준다 */
+function playModeFor(which){
+  if(typeof ST==='undefined'||!ST) return PLAY_OFF;
+  const v = which==='pit' ? ST.playPit : ST.playBat;
+  return v || ST.playMode || PLAY_OFF;
+}
 
 /* ---------- 구종 ----------
    4부 사회인야구다. 다들 직구·슬라이더 정도고, 잘 던지는 사람만 커브까지 간다.
@@ -8544,13 +8705,28 @@ function pitchMods(hit, ctl){
     : { k:1-0.10, babip:1+0.08, bb:1+0.12 };
 }
 LiveGame.prototype.playModeOn = function(){
-  const m=(typeof ST!=='undefined'&&ST&&ST.playMode)?ST.playMode:PLAY_OFF;
-  return this.manual && m!==PLAY_OFF;
+  return this.manual &&
+    (playModeFor('bat')!==PLAY_OFF || playModeFor('pit')!==PLAY_OFF);
 };
-/* 조작을 물어볼 만한 상황인가 */
-LiveGame.prototype.playWorthIt = function(){
-  const m=(typeof ST!=='undefined'&&ST&&ST.playMode)?ST.playMode:PLAY_OFF;
+/* 지금 이 쪽(bat=타석 / pit=마운드) 조작을 물어볼 상황인가 */
+LiveGame.prototype.playAsk = function(which){
+  if(!this.manual) return false;
+  const m=playModeFor(which);
+  if(m===PLAY_OFF) return false;
   if(m===PLAY_ALL) return true;
+  const myId=this.myId||(ST&&ST.playerId);
+  // 내 선수가 타석에 섰거나 마운드에 서 있나
+  const mine=(()=>{
+    if(which==='bat'){ const b=this.batter(); return !!(b&&b.id===myId); }
+    const p=this.curPitcher(this.def()); return !!(p&&p.id===myId);
+  })();
+  if(m===PLAY_MINE) return mine;
+  /* PLAY_KEY — 득점권 · 후반 접전 · 내 선수 타석
+     타석은 '내 선수' 를 중요한 순간으로 쳐준다 — 아홉 타석에 한 번이라 부담이 없다.
+     마운드는 안 쳐준다. 내 선수가 던지고 있으면 그 이닝 타자 전원이 걸려서
+     '중요한 순간만' 이 사실상 '매 타석' 이 돼버린다.
+     내가 던질 때 전부 잡고 싶으면 그건 「내 선수만」 을 고르면 된다.        */
+  if(which==='bat' && mine) return true;
   const us=this.userIsHome?this.home:this.away;
   const th=this.userIsHome?this.away:this.home;
   const diff=Math.abs(us.runs-th.runs);
@@ -8558,10 +8734,10 @@ LiveGame.prototype.playWorthIt = function(){
   const late=this.inning>=this.INN-2;
   if(risp && this.outs<3) return true;            // 득점권
   if(late && diff<=3) return true;                // 후반 접전
-  const bat=this.batter();
-  if(bat && bat.id===(this.myId||(ST&&ST.playerId))) return true;   // 내 선수 타석
   return false;
 };
+/* 예전 이름 — 타석 기준으로 남겨둔다 */
+LiveGame.prototype.playWorthIt = function(){ return this.playAsk('bat'); };
 /* ---------- 볼카운트 ----------
    [제보] "투수할 때 카운트도 알려줘야 될 듯. 어디에 공 던져야 될지 생각은 해야 되니깐"
           "가끔 볼 던져서 볼도 구분하게 해줘야 한다"
@@ -8636,9 +8812,9 @@ LiveGame.prototype.detectDecision = function(){
   const off=this.off();
 
   /* 직접 플레이 — 작전 판단보다 먼저 물어본다 (그 타석에 바로 걸리니까) */
-  if(this.playModeOn() && this.playWorthIt() && this.paSeq!==this._lastPlayPA){
-    if(off.isUser)            return {kind:'swing', label:'타이밍'};
-    if(this.def().isUser)     return {kind:'pitch', label:'코스'};
+  if(this.manual && this.paSeq!==this._lastPlayPA){
+    if(off.isUser && this.playAsk('bat'))        return {kind:'swing', label:'타이밍'};
+    if(this.def().isUser && this.playAsk('pit')) return {kind:'pitch', label:'코스'};
   }
 
   /* 우리가 수비 중일 때의 판단 지점 — 투수 교체·고의4구·시프트 */
@@ -8757,9 +8933,10 @@ LiveGame.prototype.stepPA = function(){
       /* 똥차 — 발이 느려서 애초에 스타트를 끊지 않는다 */
       const rmm=(typeof META!=='undefined')?META[rn.id]:null;
       if(rmm && rmm.traits.includes('똥차')) runMul*=0.35;
-      const att=clamp(LG.SB_PER_PA*5.64*off.team.tend.sb*runMul*Math.exp((rn.spd-46)*0.020),0,0.85);
+      const att=clamp(LG.SB_PER_PA*LG.SB_MULT*off.team.tend.sb*runMul
+                      *Math.exp((rn.spd-LG.SB_SPD_MID)*LG.SB_SPD_K),0,LG.SB_MAX);
       if(rng()<att){
-        const su=clamp(LG.SB_SUCCESS+(rn.spd-50)*0.0030-(def.cArm-46)*0.0060,0.45,0.99);
+        const su=clamp(LG.SB_SUCCESS+(rn.spd-LG.SB_SU_MID)*0.0030-(def.cArm-46)*0.0060,0.45,0.99);
         if(rng()<su){
           this.bases[1]=this.bases[0];this.bases[0]=null;
           this.box[rn.id].sb++;pl.sbA++;def.sbAllowed++;
@@ -9137,15 +9314,30 @@ LiveGame.prototype.endHalf = function(){
   }
 };
 
+/* 자동 교체 설정
+   ---------------------------------------------------------
+   [요청] "자동으로 돌릴 때 교체하는 거 사용자가 설정할 수 있게 해줘"
+   예전에는 5회부터 최대 3명, 시즌 OPS 상위 3명 보호가 코드에 박혀 있었다.
+   사람마다 원하는 게 다르다 — 주전으로 끝까지 가고 싶은 사람도 있고
+   다 같이 한 타석씩 돌리고 싶은 사람도 있다. 그래서 밖으로 뺀다.       */
+const BENCH_CFG={
+  none:   {n:'안 씀',   max:0, from:99, d:'선발 아홉 명으로 끝까지 간다'},
+  few:    {n:'조금',    max:2, from:6,  d:'6회부터 두 명까지'},
+  normal: {n:'보통',    max:3, from:5,  d:'5회부터 세 명까지 (예전 기본값)'},
+  many:   {n:'많이',    max:5, from:4,  d:'4회부터 다섯 명까지 — 다 같이 돈다'},
+};
+function benchCfg(){ return BENCH_CFG[(ST&&ST.subCfg&&ST.subCfg.bench)||'normal']||BENCH_CFG.normal; }
 /* 사회인야구는 나온 사람을 그냥 앉혀두지 않는다.
    경기 후반이 되면 벤치에서 기다린 사람을 한 번은 타석에 세운다.
    대신 잘 치고 있는 사람을 빼지는 않는다 — 그날 무안타인 사람과 바꾼다.
    (선발 투수는 건드리지 않는다)                                        */
 LiveGame.prototype.benchRotation = function(){
   const us=this.userSide(); if(!us||!us.isUser) return;
-  if(this.inning < Math.max(4, this.INN-2)) return;      // 5회부터
+  const cfg=benchCfg();
+  if(cfg.max<=0) return;                                  // '안 씀'
+  if(this.inning < Math.max(cfg.from-1, this.INN-2)) return;
   if(this._benchDone==null) this._benchDone=0;
-  if(this._benchDone>=3) return;                          // 한 경기 세 명까지
+  if(this._benchDone>=cfg.max) return;
   const team=us.team;
   const cand=(this.benchPool||[]).filter(id=>this.canEnter(us,id));
   if(!cand.length) return;
@@ -9156,12 +9348,14 @@ LiveGame.prototype.benchRotation = function(){
      오늘 마운드에 올라갈 사람과 시즌 성적 상위 타자는 그날 무안타라도 안 뺀다.
      빼버리면 정작 던질 사람이 없어지고, 주전이 벤치에 앉는다.            */
   const willPitch=new Set((us.rot||[]).slice(us.pIdx));   // 지금 던지는 사람 + 남은 등판 예정자
+  const protectN=(ST&&ST.subCfg&&ST.subCfg.protect!=null)?ST.subCfg.protect:3;
   const keyBats=(()=>{
+    if(protectN<=0) return new Set();                     // 보호 끔 — 성적 상관없이 돌린다
     const rank=us.slots.map(sl=>{
       const sb=(typeof ST!=='undefined'&&ST&&ST.bat)?ST.bat[sl.id]:null;
       return {id:sl.id, v:(sb&&sb.pa>=8)?ops(sb):-1};
     }).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
-    return new Set(rank.slice(0,3).map(x=>x.id));         // 시즌 OPS 팀 상위 3명
+    return new Set(rank.slice(0,protectN).map(x=>x.id));  // 시즌 OPS 팀 상위 N명
   })();
 
   // 그날 무안타인 야수 중에서 타수가 제일 많은 사람을 뺀다
@@ -9882,6 +10076,7 @@ function newSeason(){
     cond:ps.cond,morale:ps.morale,injury:ps.injury,ca:ps.ca,growth:ps.growth,
     lineup:null,rotation:null,
     tactics:{bat:'normal',run:'normal',hook:'normal'},
+    subCfg:{bench:'normal', protect:3, pitchAsk:true},     // 자동 교체 설정
     budget:120,events:[],kakao:[],lastOrder:{},absent:{},weekDone:false,weekSeq:0,notices:[],injCount:0,
     trainFocus:'none',trainLog:[],seasonOver:false,mittMissing:false,scoutBlocked:false,
     fieldMod:{err:1,cond:0},signed:[],
@@ -9891,6 +10086,8 @@ function newSeason(){
     playoff:null, form:{}, hall:[], awardBonus:{}, awardSnap:null, awardReply:null,
     ultimatum:{}, broken:{}, leftPlayers:carriedLeft, noCar:{},
     playMode:(typeof ST!=='undefined'&&ST&&ST.playMode)?ST.playMode:PLAY_KEY,
+    playBat:(typeof ST!=='undefined'&&ST&&ST.playBat)?ST.playBat:PLAY_KEY,
+    playPit:(typeof ST!=='undefined'&&ST&&ST.playPit)?ST.playPit:PLAY_KEY,
     sceneMode:(typeof ST!=='undefined'&&ST&&ST.sceneMode)?ST.sceneMode:'key',
     pitchWait:{}, luView:'list', depMode:'now',
     appVer:APP_VERSION,
@@ -9898,6 +10095,7 @@ function newSeason(){
     playSec:(typeof ST!=='undefined'&&ST&&ST.playSec)?ST.playSec:0,
     promise:{}, meet:null, meetRound:{}, gameStarters:[],   // 면담·약속
     trainTarget:null, trainAttend:[], trainAttendKey:null,  // 집중 훈련
+    trainStat:null, statStreak:{}, pitGain:{},             // 지목 훈련 (투수 예산은 시즌마다 새로 찬다)
     mercs:[],                                              // 이번 경기 용병
     recruit:null,                                          // 영입 접촉 진행 상태
     gear:{}, duesCount:0, gearMeeting:null, feeDue:false,  // 장비·회비
@@ -10905,7 +11103,12 @@ function renderHome(){
         ratings:{}, budget:ST.budget, seasonLog:log, feats:ST.feats||[],
         hall:ST.hall||[], awardBonus:ST.awardBonus||{}, gear:ST.gear||{}, playSec:ST.playSec||0,
         dev:ST.dev||null};
-      TBYID['wwzw'].players.forEach(p=>keep.ratings[p.id]={con:p.con,pow:p.pow,eye:p.eye,spd:p.spd,def:p.def,arm:p.arm});
+      /* [버그] 투수 능력치가 시즌을 못 넘어갔다.
+         야수 여섯 개만 담고 p.pitch 를 안 담아서, 한 시즌 내내 제구를 올려놔도
+         이듬해 개막에 원래 값으로 되돌아갔다. 투구 훈련이 사실상 헛일이었다.
+         지목 훈련으로 구위·체력까지 올릴 수 있게 됐으니 여기서 같이 고친다. */
+      TBYID['wwzw'].players.forEach(p=>keep.ratings[p.id]={con:p.con,pow:p.pow,eye:p.eye,spd:p.spd,def:p.def,arm:p.arm,
+        pitch:p.pitch?{...p.pitch}:null});
       TEAMS=buildAllTeams();TBYID={};TEAMS.forEach(t=>TBYID[t.id]=t);
       // 능력치 이월
       TBYID['wwzw'].players.forEach(p=>{ const r=keep.ratings[p.id]; if(r)Object.assign(p,r); });
@@ -18304,6 +18507,67 @@ function accrueLgPit(r){
 }
 
 /* ---------- 훈련 ---------- */
+/* =========================================================
+   지목 훈련 — 원하는 능력치를 골라서 올린다
+   ---------------------------------------------------------
+   [요청] "집중훈련 이렇게 원하는 스탯을 좀 올려줄 수 있는 시스템 같은 걸 원한다.
+           너무 쉽게 올리면 밸런스가 망가질 것 같고"
+
+   맞는 걱정이라 **총량은 한 톨도 안 늘렸다. 방향만 고르게 했다.**
+   원래 타격 훈련은 컨택/파워를 매주 동전 던지기로 골랐고,
+   수비 훈련은 수비/어깨를 6:4로 골랐다. 그걸 사람이 정하는 것뿐이다.
+   성장의 벽은 예전 그대로 잠재치(PA)다 — `if(ca>=pa)return` 은 안 건드렸다.
+   지목해도 잠재를 넘겨 크지 않는다.
+
+   그래도 한 스탯만 80까지 몰아치는 건 막아야 해서 대가를 셋 붙였다.
+     ① 정체 — 같은 스탯을 연속으로 시키면 효율이 떨어진다.
+        1주 1.00 → 2주 0.80 → 3주 0.62 → 4주부터 0.50.
+        다른 스탯으로 바꾸면 초기화된다. 한 우물만 파면 손해다.
+     ② 고점 저항 — 이미 높은 능력치는 덜 오른다. 65 넘으면 급격히 둔해진다.
+        4부 사회인야구에서 잘하는 걸 더 잘하게 만드는 건 원래 어렵다.
+     ③ 곁다리 감소 — 지목을 켜면 나머지 선수의 곁다리 성장이 0.35 → 0.26.
+        한 명한테 몰아주는 값을 팀이 낸다. 끄면 예전 그대로다.
+
+   그리고 투구 훈련에 구위·체력을 열었다. 예전에는 제구(ctl) 하나만
+   올랐고, 구위(stf)와 체력(sta)은 훈련으로 영원히 못 올렸다.
+   대신 투수 능력치는 calcCA 에 안 들어가서 잠재 한도의 통제를 못 받는다.
+   그래서 **시즌 예산**을 따로 뒀다 (PIT_BUDGET). 한 시즌에 올릴 수 있는
+   총량이 정해져 있고 시즌이 넘어가면 새로 찬다.
+   ========================================================= */
+const STAT_KN={con:'컨택',pow:'파워',eye:'선구',spd:'주루',def:'수비',arm:'어깨',
+               ctl:'제구',stf:'구위',sta:'체력'};
+/* 훈련 종목별로 지목할 수 있는 능력치 */
+const STAT_PICK={
+  bat:  ['con','pow'],
+  field:['def','arm'],
+  run:  ['spd'],
+  eye:  ['eye'],
+  pitch:['ctl','stf','sta'],
+  hard: ['con','pow','eye','spd','def'],
+};
+/* 투수 능력치는 잠재 한도를 안 쓴다 — 시즌 예산으로 따로 막는다.
+   제구는 연습으로 제일 잘 늘고, 구속은 사회인야구에서 거의 안 는다.  */
+const PIT_BUDGET={ctl:6.0, stf:3.0, sta:4.5};
+const PIT_RATE  ={ctl:0.90, stf:0.45, sta:0.65};   // 같은 훈련량 대비 상승폭
+/* 같은 스탯을 연속으로 지목했을 때 */
+function statStreakMul(n){ return n<=1?1:(n===2?0.80:(n===3?0.62:0.50)); }
+/* 이미 높은 능력치는 덜 오른다 */
+function statCeilMul(v){
+  if(v<50) return 1;
+  if(v<65) return 1-(v-50)*0.020;      // 50→1.00, 64→0.72
+  return Math.max(0.28, 0.70-(v-65)*0.028);  // 65→0.70, 80→0.28
+}
+function pitGainLeft(pid,k){
+  const g=(ST.pitGain&&ST.pitGain[pid])?(ST.pitGain[pid][k]||0):0;
+  return Math.max(0,(PIT_BUDGET[k]||0)-g);
+}
+/* 이번 훈련 종목에서 지목이 살아 있나 */
+function activeTrainStat(){
+  const f=ST.trainFocus||'none';
+  const opts=STAT_PICK[f];
+  if(!opts) return null;
+  return (ST.trainStat && opts.indexOf(ST.trainStat)>=0) ? ST.trainStat : null;
+}
 const TRAININGS=[
   {k:'none',n:'훈련 없음',d:'컨디션 회복에 집중',eff:'컨디션 +6'},
   {k:'bat',n:'타격 훈련',d:'배팅장에서 스윙을 다듬는다',eff:'컨택·파워 성장'},
@@ -18448,11 +18712,31 @@ function applyTraining(){
   if(!tgt) gains.push('집중 대상 미지정 — 전원 곁다리 성장만');
 
   if(att.indexOf(ST.playerId||MYID)>=0) devEarn('train');   // 내가 훈련에 나왔다
+
+  /* ---- 지목 훈련 ----
+     집중 대상이 있고, 그 사람한테 올릴 능력치를 골라놨을 때만 걸린다.
+     지목은 집중 대상 한 명한테만 적용된다 — 팀 전체에 걸면 그냥 배수라
+     밸런스가 무너진다. 나머지는 예전대로 무작위로 오른다.          */
+  const pick=tgt?activeTrainStat():null;
+  if(pick){
+    if(!ST.statStreak)ST.statStreak={};
+    const prev=ST.statStreak[tgt];
+    ST.statStreak[tgt]=(prev&&prev.k===pick)?{k:pick,n:(prev.n||0)+1}:{k:pick,n:1};
+  } else if(tgt && ST.statStreak && ST.statStreak[tgt]){
+    delete ST.statStreak[tgt];              // 지목을 풀면 정체도 풀린다
+  }
+  const pickN=pick?((ST.statStreak[tgt]||{}).n||1):0;
+  const pickMul=pick?statStreakMul(pickN):1;
+
   att.forEach(pid=>{
     const p=us.players.find(x=>x.id===pid); if(!p)return;
     if(ST.injury[pid])return;
     const pa=effPA(pid), ca=effCA(pid);
-    if(ca>=pa)return;
+    /* 투수 능력치(ctl/stf/sta)는 calcCA 에 안 들어간다.
+       그래서 잠재가 꽉 찬 사람도 투구 훈련은 계속 받을 수 있어야 한다 —
+       대신 시즌 예산(PIT_BUDGET)이 따로 막는다.                     */
+    const pitOnly = (f==='pitch');
+    if(ca>=pa && !pitOnly)return;
     const m=META[pid];
     let rate=0.30;
     if(f==='field'){
@@ -18473,20 +18757,52 @@ function applyTraining(){
     // 1명 집중 훈련 — 지정한 선수만 제대로 크고 나머지는 곁다리로 조금 큰다.
     // 집중 대상은 한 시즌(22경기) 몰아주면 CA +4~5, 즉 잠재 여지의 1/4~1/3이 찬다.
     // 팀 전체 성장 총량은 예전(전원 균등)보다 낮다 — 고르는 게 이 시스템의 핵심이라 의도한 것이다.
-    rate *= (pid===tgt ? 3.4 : 0.35);
+    // 지목을 켜면 나머지 사람의 곁다리 성장이 줄어든다 — 몰아주는 값이다
+    rate *= (pid===tgt ? 3.4 : (pick?0.26:0.35));
     rate*=((ST.morale[pid]||70)/70);
-    const g=Math.min(pa-ca, rate*(0.35+Math.random()*0.85));
-    if(g<=0)return;
-    const key=f==='bat'?(Math.random()<0.5?'con':'pow'):f==='field'?(Math.random()<0.6?'def':'arm')
-      :f==='run'?'spd':f==='eye'?'eye':f==='pitch'?null:['con','pow','eye','spd','def'][(Math.random()*5)|0];
-    if(key&&p[key]<80)p[key]=Math.min(80,p[key]+g);
-    if(f==='pitch'&&p.pitch){
-      p.pitch.ctl=Math.min(80,p.pitch.ctl+g*0.9);
-      const pp=us.pitchers.find(x=>x.id===pid); if(pp)pp.ctl=Math.round(p.pitch.ctl);
+
+    /* 올릴 능력치를 고른다. 집중 대상이 지목해뒀으면 그걸 쓰고,
+       아니면 예전처럼 종목 안에서 무작위로 뽑는다.                 */
+    const me=(pid===tgt&&pick);
+    const key = me ? (['ctl','stf','sta'].indexOf(pick)>=0?null:pick)
+      : (f==='bat'?(Math.random()<0.5?'con':'pow'):f==='field'?(Math.random()<0.6?'def':'arm')
+        :f==='run'?'spd':f==='eye'?'eye':f==='pitch'?null:['con','pow','eye','spd','def'][(Math.random()*5)|0]);
+    const pkey = f==='pitch' ? (me?pick:'ctl') : null;
+
+    if(me){
+      rate*=pickMul;                                   // 같은 걸 계속 시키면 정체
+      rate*=statCeilMul(key?p[key]:(p.pitch?p.pitch[pkey]:40));  // 고점일수록 둔해진다
     }
+
+    let g=rate*(0.35+Math.random()*0.85);
+    if(!pitOnly) g=Math.min(pa-ca, g);                  // 야수 능력치는 잠재가 벽이다
+    if(g<=0)return;
+
+    let label=null, shown=g;
+    if(key&&p[key]<80){ p[key]=Math.min(80,p[key]+g); label=STAT_KN[key]; }
+    if(pkey&&p.pitch){
+      // 투수 능력치는 시즌 예산 안에서만 오른다
+      if(!ST.pitGain)ST.pitGain={};
+      if(!ST.pitGain[pid])ST.pitGain[pid]={};
+      const room=pitGainLeft(pid,pkey);
+      const up=Math.min(room, g*(PIT_RATE[pkey]||0.8), Math.max(0,80-p.pitch[pkey]));
+      if(up>0){
+        p.pitch[pkey]=Math.min(80,p.pitch[pkey]+up);
+        ST.pitGain[pid][pkey]=(ST.pitGain[pid][pkey]||0)+up;
+        const pp=us.pitchers.find(x=>x.id===pid);
+        if(pp){ pp.ctl=Math.round(p.pitch.ctl); pp.stf=Math.round(p.pitch.stf); pp.sta=Math.round(p.pitch.sta); }
+        label=STAT_KN[pkey]; shown=up;
+      } else if(me&&room<=0){
+        gains.push(`${p.name} ${STAT_KN[pkey]} — 이번 시즌 훈련 여지를 다 썼다`);
+      }
+    }
+    if(!label)return;
     ST.ca[pid]=calcCA(p);
-    if(pid===tgt) gains.unshift(`${p.name} ${key?KN[key]:'제구'} +${g.toFixed(2)} (집중)`);
-    else if(g>=0.25) gains.push(`${p.name} ${key?KN[key]:'제구'} 상승`);
+    if(pid===tgt){
+      const tail=me?` (지목${pickN>1?` · ${pickN}주째 정체 ×${pickMul.toFixed(2)}`:''})`:' (집중)';
+      gains.unshift(`${p.name} ${label} +${shown.toFixed(2)}${tail}`);
+    }
+    else if(shown>=0.25) gains.push(`${p.name} ${label} 상승`);
   });
 
   // 강도 높은 훈련은 나온 사람만 몸이 축나고 다친다
@@ -18513,8 +18829,11 @@ function renderTrain(){
 
   const card=el('div','card');
   card.appendChild(el('div','card-h','주간 훈련'));
-  card.appendChild(el('p','muted',
-    '한 명을 정해 집중적으로 키운다. 나온 사람만 큰다. 잠재 한도 안에서만 성장한다.'));
+  card.appendChild(el('p','muted',''));
+  card.lastChild.innerHTML=
+    '한 명을 정해 집중적으로 키운다. 나온 사람만 큰다. 잠재 한도 안에서만 성장한다.<br>'+
+    '<b>올릴 능력치를 지목</b>할 수도 있다 — 총량은 그대로고 방향만 정해진다. '+
+    '같은 걸 계속 시키면 정체가 오니까 돌려가면서 시켜라.';
 
   /* 사회인야구는 훈련이 경기보다 참석이 나쁘다.
      매주 부르면 점점 안 나오니 쉬어가는 주도 필요하다. */
@@ -18560,7 +18879,7 @@ function renderTrain(){
   if(tgt){
     const room=effPA(tgt)-effCA(tgt);
     frow.innerHTML=`<div class="fo-l"><b>${nmLink(tgt,nameOf(tgt))}</b>
-      <span>${trainAttends(tgt)?'훈련 참석 · 집중 성장 ×2.2':'이번 주 불참 — 집중 효과 없음'}</span></div>
+      <span>${trainAttends(tgt)?'훈련 참석 · 집중 성장 ×3.4':'이번 주 불참 — 집중 효과 없음'}</span></div>
       <div class="fo-r">성장 여지 +${room.toFixed(1)}</div>`;
     if(!trainAttends(tgt))frow.classList.add('miss');
   } else {
@@ -18589,6 +18908,68 @@ function renderTrain(){
     $('#sheet').classList.add('open');
   };
   fc.appendChild(fb);
+
+  /* ---- 지목 훈련 : 올릴 능력치를 직접 고른다 ---- */
+  const pickOpts=STAT_PICK[ST.trainFocus||'none'];
+  if(pickOpts && pickOpts.length){
+    const cur=activeTrainStat();
+    const stk=(cur&&tgt&&ST.statStreak&&ST.statStreak[tgt]&&ST.statStreak[tgt].k===cur)
+      ? (ST.statStreak[tgt].n||0) : 0;
+    const sr=el('div','focus-row');
+    if(!tgt){
+      sr.innerHTML=`<div class="fo-l"><b>지목 훈련</b><span>집중 대상을 먼저 골라야 지목할 수 있다</span></div>`;
+      sr.classList.add('miss');
+    } else if(cur){
+      const tp=us.players.find(x=>x.id===tgt);
+      const now=['ctl','stf','sta'].indexOf(cur)>=0
+        ? (tp&&tp.pitch?tp.pitch[cur]:null) : (tp?tp[cur]:null);
+      const nx=statStreakMul(stk+1);
+      sr.innerHTML=`<div class="fo-l"><b>${STAT_KN[cur]} 지목</b>
+        <span>${now==null?'이 선수는 투수 능력치가 없다':
+          `현재 ${Math.round(now)} · 고점 저항 ×${statCeilMul(now).toFixed(2)}`}${
+          stk>=1?` · ${stk}주 연속 → 이번 주 ×${nx.toFixed(2)}`:''}</span></div>
+        <div class="fo-r">${nx>=1?'정상':`정체 ×${nx.toFixed(2)}`}</div>`;
+      if(now==null||nx<0.7)sr.classList.add('miss');
+    } else {
+      sr.innerHTML=`<div class="fo-l"><b>지목 안 함</b>
+        <span>${pickOpts.map(k=>STAT_KN[k]).join(' · ')} 중에서 매주 알아서 오른다</span></div>`;
+    }
+    fc.appendChild(sr);
+    const sb2=el('button','btn','올릴 능력치 고르기');
+    sb2.onclick=()=>{
+      if(!tgt){toast('집중 훈련 대상을 먼저 골라라');return;}
+      const tp=us.players.find(x=>x.id===tgt);
+      const body=$('#sheet-body'); body.innerHTML='';
+      $('#sheet-title').textContent=`${nameOf(tgt)} — 올릴 능력치`;
+      body.appendChild(el('div','sheet-note',
+        '지목해도 성장 총량은 안 늘어난다. 어디로 갈지만 정하는 것이다. '+
+        '같은 걸 연속으로 시키면 정체가 오고(2주 ×0.80 · 3주 ×0.62 · 4주부터 ×0.50), '+
+        '이미 높은 능력치는 잘 안 오른다. 지목하는 동안 다른 선수 곁다리 성장이 줄어든다.'));
+      const none=el('button','pick-row'+(activeTrainStat()?'':' cur'));
+      none.innerHTML=`<div class="pk-l"><div class="pk-name">지목 안 함</div>
+        <div class="pk-note">예전처럼 종목 안에서 무작위로 오른다 · 곁다리 성장 유지</div></div>`;
+      none.onclick=()=>{ ST.trainStat=null; closeSheet(); saveGame(true); renderTrain();
+        toast('지목 해제 — 무작위로 오른다'); };
+      body.appendChild(none);
+      pickOpts.forEach(k=>{
+        const isPit=['ctl','stf','sta'].indexOf(k)>=0;
+        const now=isPit?(tp&&tp.pitch?tp.pitch[k]:null):(tp?tp[k]:null);
+        const bad=(now==null)||(now>=80);
+        const r=el('button','pick-row'+(bad?' bad':'')+(activeTrainStat()===k?' cur':''));
+        const note=now==null?'이 선수는 투수가 아니다'
+          :isPit?`시즌 여지 ${pitGainLeft(tgt,k).toFixed(1)} 남음 · 상승폭 ×${PIT_RATE[k]}`
+          :`고점 저항 ×${statCeilMul(now).toFixed(2)}${now>=80?' · 한계 도달':''}`;
+        r.innerHTML=`<div class="pk-l"><div class="pk-name">${STAT_KN[k]}</div>
+          <div class="pk-note">${note}</div></div>
+          <div class="pk-r"><div class="pk-stat">${now==null?'—':Math.round(now)}</div></div>`;
+        if(!bad)r.onclick=()=>{ ST.trainStat=k; closeSheet(); saveGame(true); renderTrain();
+          toast(`${nameOf(tgt)} ${STAT_KN[k]} 지목`); };
+        body.appendChild(r);
+      });
+      $('#sheet').classList.add('open');
+    };
+    fc.appendChild(sb2);
+  }
 
   /* 포지션 적응 훈련이면 목표 자리도 골라야 한다 */
   if(ST.trainFocus==='pos'){
@@ -18645,7 +19026,10 @@ function renderTrain(){
   TRAININGS.forEach(t=>{
     const b=el('button','trainb'+(ST.trainFocus===t.k?' on':''));
     b.innerHTML=`<b>${t.n}</b><span>${t.d}</span><i>${t.eff}</i>`;
-    b.onclick=()=>{ST.trainFocus=t.k;ST.trainAttendKey=null;saveGame(true);renderTrain();
+    b.onclick=()=>{ST.trainFocus=t.k;ST.trainAttendKey=null;
+      // 종목을 바꾸면 지목한 능력치가 그 종목에 없을 수 있다
+      if(ST.trainStat&&!(STAT_PICK[t.k]||[]).includes(ST.trainStat))ST.trainStat=null;
+      saveGame(true);renderTrain();
       toast(t.k==='pos'?'포지션 훈련 — 대상과 자리를 골라라':t.n+' 지정');};
     g.appendChild(b);
   });
@@ -20044,16 +20428,21 @@ function renderMore(){
   const pn=el('p','muted');
   pn.innerHTML='<b>직접 지휘</b>로 경기할 때 타이밍 스윙과 코스 선택을 넣는다.<br>'+
     '잘 맞혀도 <b>확률이 조금 오를 뿐</b> 결과가 정해지지는 않는다. 못 맞혀도 경기는 굴러간다.<br>'+
-    '<b>중요한 순간만</b>을 고르면 득점권·후반 접전·내 선수 타석에서만 뜬다.';
+    '<b>타석</b>(공격)과 <b>마운드</b>(수비)를 따로 정한다 — 치는 것만 하고 던지는 건 자동으로 둘 수 있다.<br>'+
+    '<span class="dimx">내 선수만 = 내가 고른 선수가 타석에 서거나 마운드에 있을 때만 · '+
+    '중요한 순간만 = 득점권 · 후반 접전 · 내 선수</span>';
   pl.appendChild(pn);
-  const plRow=el('div','btn-row');
-  [[PLAY_OFF,'끄기'],[PLAY_KEY,'중요한 순간만'],[PLAY_ALL,'매 타석']].forEach(([k,n])=>{
-    const b=el('button','btn'+((ST.playMode||PLAY_OFF)===k?' primary':''),n);
-    b.onclick=()=>{ ST.playMode=k; saveGame(true); renderMore();
-      toast(k===PLAY_OFF?'직접 플레이 끔':(k===PLAY_KEY?'중요한 순간에만 물어본다':'매 타석 물어본다')); };
-    plRow.appendChild(b);
+  [['bat','타석 — 타이밍 스윙','playBat'],['pit','마운드 — 코스 선택','playPit']].forEach(([which,label,skey])=>{
+    pl.appendChild(el('div','set-sub',label));
+    const row=el('div','btn-row');
+    PLAY_OPTS.forEach(([k,n])=>{
+      const b=el('button','btn'+((ST[skey]||PLAY_OFF)===k?' primary':''),n);
+      b.onclick=()=>{ ST[skey]=k; saveGame(true); renderMore();
+        toast(`${which==='bat'?'타석':'마운드'} · ${n}`); };
+      row.appendChild(b);
+    });
+    pl.appendChild(row);
   });
-  pl.appendChild(plRow);
 
   /* 2D 경기 장면 — 중요한 장면을 그라운드 그림으로 보여준다 */
   const sn=el('p','muted');
@@ -20069,6 +20458,72 @@ function renderMore(){
   });
   pl.appendChild(snRow);
   c.appendChild(pl);
+
+  /* ---- 자동 교체 ----
+     [요청] "자동으로 돌릴 때 교체하는 거 사용자가 설정할 수 있게 해줘" */
+  const ac2=el('div','card');
+  ac2.appendChild(el('div','card-h','자동 교체'));
+  const an=el('p','muted');
+  an.innerHTML='경기가 자동으로 굴러갈 때 <b>누구를 언제 바꿀지</b> 정한다. '+
+    '직접 지휘로 해도 여기서 정한 대로 움직인다.';
+  ac2.appendChild(an);
+
+  // 벤치 선수 기용
+  ac2.appendChild(el('div','set-sub','벤치 선수 기용'));
+  const bRow=el('div','btn-row');
+  ['none','few','normal','many'].forEach(k=>{
+    const cf=BENCH_CFG[k];
+    const b=el('button','btn'+(ST.subCfg.bench===k?' primary':''),cf.n);
+    b.onclick=()=>{ ST.subCfg.bench=k; saveGame(true); renderMore(); toast(`벤치 기용 · ${cf.n}`); };
+    bRow.appendChild(b);
+  });
+  ac2.appendChild(bRow);
+  ac2.appendChild(el('div','set-note',benchCfg().d+
+    ' · 그날 안타 없는 야수 중 타수가 제일 많은 사람과 바꾼다. 오늘 던질 투수는 안 뺀다.'));
+
+  // 주전 보호
+  ac2.appendChild(el('div','set-sub','잘 치는 선수 보호'));
+  const kRow=el('div','btn-row');
+  [[0,'안 함'],[2,'2명'],[3,'3명'],[5,'5명']].forEach(([n,lab])=>{
+    const b=el('button','btn'+(ST.subCfg.protect===n?' primary':''),lab);
+    b.onclick=()=>{ ST.subCfg.protect=n; saveGame(true); renderMore();
+      toast(n?`시즌 OPS 상위 ${n}명 보호`:'보호 안 함 — 성적 상관없이 돌린다'); };
+    kRow.appendChild(b);
+  });
+  ac2.appendChild(kRow);
+  ac2.appendChild(el('div','set-note',
+    ST.subCfg.protect
+      ? `시즌 OPS 팀 상위 ${ST.subCfg.protect}명은 그날 무안타여도 안 뺀다. 대체 불가 자원이라는 뜻이다.`
+      : '성적을 안 본다. 무안타면 주전이든 누구든 교체 대상이 된다.'));
+
+  // 투수 교체 기준
+  ac2.appendChild(el('div','set-sub','투수 교체 기준'));
+  const hRow=el('div','btn-row');
+  [['quick','빨리','사사구 3개 · 3실점이면 내린다'],
+   ['normal','보통','사사구 5개 · 6실점'],
+   ['long','길게','사사구 7개 · 9실점까지 끌고 간다']].forEach(([k,lab])=>{
+    const b=el('button','btn'+((ST.tactics.hook||'normal')===k?' primary':''),lab);
+    b.onclick=()=>{ ST.tactics.hook=k; saveGame(true); renderMore(); toast(`투수 교체 · ${lab}`); };
+    hRow.appendChild(b);
+  });
+  ac2.appendChild(hRow);
+  ac2.appendChild(el('div','set-note',
+    '한계 이닝도 같이 움직인다 — 빨리는 ×0.72, 길게는 ×1.30. 라인업 화면의 작전 설정과 같은 값이다.'));
+
+  // 교체할 때 물어보기
+  ac2.appendChild(el('div','set-sub','투수 바꿀 때 물어보기'));
+  const qRow=el('div','btn-row');
+  [[true,'물어본다'],[false,'알아서 바꾼다']].forEach(([v,lab])=>{
+    const b=el('button','btn'+(ST.subCfg.pitchAsk===v?' primary':''),lab);
+    b.onclick=()=>{ ST.subCfg.pitchAsk=v; saveGame(true); renderMore();
+      toast(v?'교체 때 물어본다':'교체를 알아서 한다'); };
+    qRow.appendChild(b);
+  });
+  ac2.appendChild(qRow);
+  ac2.appendChild(el('div','set-note',
+    '직접 지휘 중에 교체 시점이 오면 창을 띄울지 정한다. 끄면 위 기준대로 알아서 바꾼다. '+
+    '경기 화면의 「투수 교체」 버튼은 언제든 그대로 쓸 수 있다.'));
+  c.appendChild(ac2);
 
   // 세이브/로드
   const sv=el('div','card');
@@ -20176,11 +20631,18 @@ function renderMore(){
       '한 번 끄면 다음에 열어도 꺼진 채로 열린다. 켜두면 계속 켜진다. '+
       '상단 스피커 버튼이나 PC 에서는 M 키로도 바꿀 수 있다.<br>'+
       '경기 화면에서는 중계에 안 묻히게 저절로 작아진다.'));
+    /* 껐을 때도 suspended 로 잡히니까, 켜뒀는데 안 열린 경우만 경고한다 */
     const st=BGM.status();
-    if(/suspended|아직/.test(st)){
+    if(BGM.on && /suspended|아직/.test(st)){
       sc.appendChild(el('div','warn',
         '소리가 아직 안 열렸다. 화면을 한 번 누르면 열린다.'));
     }
+    sc.appendChild(el('p','muted',''));
+    sc.lastChild.innerHTML=
+      '<b>배터리</b> — 소리를 끄거나 다른 앱으로 넘어가면 오디오를 <b>완전히 재운다</b>. '+
+      '예전에는 껐어도 오디오 장치를 붙잡고 있어서, 화면을 꺼도 브금이 계속 돌고 '+
+      '배터리가 닳았다. 이제 화면을 벗어나면 멈추고 돌아오면 다시 켜진다.<br>'+
+      `<span class="dimx">현재 오디오 상태: ${st}</span>`;
     sc.appendChild(el('p','muted',
       '<b>아이폰에서 소리가 안 나면</b> — 옆면 <b>벨/무음 스위치</b>가 무음으로 내려가 있는지 먼저 봐라. '+
       '무음이면 소리가 통째로 죽는다. 그다음 화면을 한 번 누르고, 그래도 안 나면 '+
@@ -20439,9 +20901,18 @@ function normalizeState(){
   });
   us.pitchers.forEach(p=>{if(!ST.pit[p.id])ST.pit[p.id]=blankPit();if(ST.rest[p.id]==null)ST.rest[p.id]=3;});
   if(!ST.tactics)ST.tactics={bat:'normal',run:'normal',hook:'normal'};
+  // 자동 교체 설정 — 옛 세이브에는 없다. 예전 동작이 그대로 기본값이다.
+  if(!ST.subCfg)ST.subCfg={};
+  if(!BENCH_CFG[ST.subCfg.bench])ST.subCfg.bench='normal';
+  if(typeof ST.subCfg.protect!=='number'||ST.subCfg.protect<0||ST.subCfg.protect>5)ST.subCfg.protect=3;
+  if(typeof ST.subCfg.pitchAsk!=='boolean')ST.subCfg.pitchAsk=true;
   if(ST.budget==null)ST.budget=120;
   if(ST.useDH==null)ST.useDH=true;
   if(!ST.playMode)ST.playMode=PLAY_KEY;
+  // 직접 플레이 — 예전엔 한 값이 투/타를 같이 묶고 있었다. 그대로 양쪽에 물려준다.
+  const PLAY_OK=[PLAY_OFF,PLAY_MINE,PLAY_KEY,PLAY_ALL];
+  if(PLAY_OK.indexOf(ST.playBat)<0)ST.playBat=ST.playMode;
+  if(PLAY_OK.indexOf(ST.playPit)<0)ST.playPit=ST.playMode;
   if(!ST.pitchWait)ST.pitchWait={};
   if(!ST.luView)ST.luView='list';
   if(!ST.depMode)ST.depMode='now';
@@ -20457,6 +20928,13 @@ function normalizeState(){
   if(!ST.posTrain)ST.posTrain={};
   Object.keys(ST.posTrain).forEach(id=>{ if(!us.players.some(p=>p.id===id))delete ST.posTrain[id]; });
   if(ST.trainPos===undefined)ST.trainPos=null;
+  // 지목 훈련 — 옛 세이브에는 없다
+  if(ST.trainStat===undefined)ST.trainStat=null;
+  if(ST.trainStat&&!Object.keys(STAT_KN).includes(ST.trainStat))ST.trainStat=null;
+  if(!ST.statStreak)ST.statStreak={};
+  Object.keys(ST.statStreak).forEach(id=>{ if(!us.players.some(p=>p.id===id))delete ST.statStreak[id]; });
+  if(!ST.pitGain)ST.pitGain={};
+  Object.keys(ST.pitGain).forEach(id=>{ if(!us.players.some(p=>p.id===id))delete ST.pitGain[id]; });
   if(ST.trainStreak==null)ST.trainStreak=0;
   if(ST.trainRain==null)ST.trainRain=false;
   if(ST.trainPush==null)ST.trainPush=false;
