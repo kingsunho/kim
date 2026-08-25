@@ -54,7 +54,7 @@ const ov=()=>d.querySelector('.ch-ov');
     const dl=new Set([...ov().querySelectorAll('.ch-guy')].map(x=>x.style.animationDelay));
     return dl.size>=5 ? dl.size+'가지' : '!다 같이 뛴다';
   });
-  T('한마디가 붙는다', ()=>/이광재/.test(ov().querySelector('.ch-say').textContent));
+  T('한마디가 붙는다', ()=>/이영재/.test(ov().querySelector('.ch-say').textContent));
   /* 사진은 base64 라 안에 undefined 같은 글자가 우연히 들어간다. 빼고 본다 */
   T('undefined·NaN 이 없다', ()=>
     !/undefined|NaN/.test(ov().innerHTML.replace(/src="data:[^"]*"/g,'src=""')));

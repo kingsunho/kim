@@ -85,6 +85,37 @@ button{font-family:inherit;cursor:pointer}
 .opp-name{font-size:20px;font-weight:800;letter-spacing:-.02em}
 .opp-ops{font-size:12px;color:var(--dim);margin-top:3px}
 .scout{font-size:12px;color:#a9b4c2;line-height:1.65;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+/* 오늘의 배당 — FM 식 승부 예측 */
+.od-row{display:flex;align-items:center;gap:8px;margin-top:4px}
+.od-side{flex:1 1 0;min-width:0;text-align:center;padding:9px 6px;border-radius:10px;
+  background:var(--panel2);border:1px solid var(--line)}
+.od-side.fav{border-color:var(--gold);background:rgba(201,162,39,.10)}
+.od-tm{display:block;font-size:11px;color:var(--dim);white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.od-v{display:block;font-size:21px;font-weight:800;line-height:1.25;margin-top:2px}
+.od-side.fav .od-v{color:var(--gold)}
+.od-p{display:block;font-style:normal;font-size:10.5px;color:var(--dim);margin-top:1px}
+.od-vs{flex:0 0 auto;font-size:10.5px;color:var(--dim);font-weight:800}
+.od-bar{display:flex;height:7px;border-radius:4px;overflow:hidden;background:#2a3140;margin-top:9px}
+.od-bar u{display:block;height:100%;background:linear-gradient(90deg,#c9a227,#e0be4d);text-decoration:none}
+.od-tag{margin-top:10px;padding:9px 11px;border-radius:9px;background:var(--panel2);
+  border-left:3px solid var(--line)}
+.od-tag.up{border-left-color:var(--gold)}
+.od-tag.dn{border-left-color:#7d5a5a}
+.od-tag b{display:block;font-size:13px;font-weight:800}
+.od-tag.up b{color:var(--gold)}
+.od-tag span{display:block;font-size:11px;color:var(--dim);margin-top:2px;line-height:1.5}
+.od-det{font-size:11px;color:var(--dim);margin-top:8px}
+.od-det b{color:var(--ink)}
+/* 경기 끝나고 배당 정산 한 줄 */
+.od-settle{display:flex;align-items:baseline;gap:9px;margin-top:10px;padding:9px 11px;
+  border-radius:9px;background:var(--panel2);border-left:3px solid var(--line)}
+.od-settle.up{border-left-color:var(--gold)}
+.od-settle.dn{border-left-color:#7d5a5a}
+.od-settle.mid{border-left-color:#4a5568}
+.ods-l{flex:0 0 auto;font-size:10px;color:var(--dim);font-weight:800}
+.ods-r{flex:1 1 auto;min-width:0;font-size:11.5px;color:#a9b4c2;line-height:1.5}
+.od-settle.up .ods-r b{color:var(--gold)}
 .vs{display:flex;align-items:center;justify-content:center;gap:12px;font-size:16px;font-weight:700;margin:6px 0}
 .vs b{color:var(--dim);font-size:12px;font-weight:600}
 
@@ -6655,8 +6686,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.43.0';
-const APP_VERSION_NOTE = '주루 너프 · 배터리 · 지목 훈련 · 직접 플레이 투타 분리';
+const APP_VERSION = '2.44.0';
+const APP_VERSION_NOTE = '경기 전에 배당이 나온다 — 탑독이냐 언더독이냐';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6677,6 +6708,18 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.44.0', t:'오늘의 배당 — 우리가 탑독인지 언더독인지', items:[
+    'FM 처럼 경기 전에 배당이 뜬다. 우완좌완 1.28 · 상대 3.85 같은 식이다',
+    '탑독 / 언더독 딱지가 붙는다 — 압도적 우세 · 우세 · 백중세 · 열세 · 절대 열세 다섯 단계',
+    '어림잡은 숫자가 아니다. 오늘 카드를 그대로 300번 돌려보고 몇 번 이겼는지 센 것이다',
+    '지금 라인업 · 로테이션 · 구장 · 컨디션 그대로 돌린다. 라인업을 바꾸면 배당도 같이 움직인다',
+    '예상 스코어와 콜드게임 확률도 같이 나온다',
+    '배당은 김한규가 뽑는다. 삐쳐서 분석 자료를 안 넘긴 주에는 배당도 없다',
+    '경기가 끝나면 정산 한 줄이 붙는다 — 언더독으로 이긴 날은 「배당 3.85 를 뒤집었다」',
+    '배당은 실제 경기와 다른 난수를 쓴다. 돌려본 결과로 오늘 경기를 미리 알 수는 없다',
+    '중계와 배당이 같은 대진 세팅을 쓰도록 코드를 한 군데로 모았다. 배당이 실제 경기와 어긋날 수가 없다',
+    '우승 세리머니에서 한마디 하는 사람 이름을 이광재 → 이영재로 고쳤다. 이름을 잘못 적어놨었다',
+  ]},
   {v:'2.43.0', t:'주루를 다시 쟀다 · 배터리 · 원하는 능력치를 지목한다', items:[
     '도루가 두 배로 나오고 있었다. 시도율 계산이 상한에 통째로 붙어 있어서 이건(주루 70)이든 유지효(45)든 똑같이 뛰었다',
     '팀 도루가 경기당 8.4개였다. 실제 2026시즌은 4.0개다. 이제 3.8개로 맞췄다',
@@ -6697,7 +6740,7 @@ const CHANGELOG=[
     '결승을 이기면 토스트 한 줄로 끝나던 걸 화면 전체로 키웠다',
     '색종이가 쏟아지고 트로피가 뜨고, 그날 결승에 나온 사람들이 헹가래를 친다',
     '내가 고른 선수는 남들보다 더 높이 뛴다',
-    '이광재가 한마디 한다. 매번 다른 말이 나온다',
+    '이영재가 한마디 한다. 매번 다른 말이 나온다',
     '시즌 종료 화면에서 「우승 세리머니 다시 보기」 로 다시 볼 수 있다',
   ]},
   {v:'2.41.0', t:'명예의 전당 조건을 다시 잡았다', items:[
@@ -10077,6 +10120,7 @@ function newSeason(){
     lineup:null,rotation:null,
     tactics:{bat:'normal',run:'normal',hook:'normal'},
     subCfg:{bench:'normal', protect:3, pitchAsk:true},     // 자동 교체 설정
+    odds:null, oddsAtStart:null,                           // 오늘의 배당 (캐시 · 경기 시작 시점 스냅샷)
     budget:120,events:[],kakao:[],lastOrder:{},absent:{},weekDone:false,weekSeq:0,notices:[],injCount:0,
     trainFocus:'none',trainLog:[],seasonOver:false,mittMissing:false,scoutBlocked:false,
     fieldMod:{err:1,cond:0},signed:[],
@@ -11189,6 +11233,7 @@ function renderHome(){
     }
   }
   c.appendChild(card);
+  if(!rain) renderOddsCard(c, opp, next);
 
   const recent=ST.schedule.filter(s=>s.played).slice(-5).reverse();
   if(recent.length){
@@ -11485,6 +11530,82 @@ function scoutLine(opp){
   b.push(`선발 ${a.name} (구위 ${a.stf}/제구 ${a.ctl})`);
   return b.join(' · ');
 }
+/* ---------- 오늘의 배당 카드 ----------
+   배당을 뽑는 사람은 김한규다. META 에 '분석가' 가 붙어 있고
+   설명이 "스카우팅 담당. 상대 분석 자료는 다 이 사람 손에서 나온다" 다.
+   그래서 김한규가 삐쳐서 자료를 안 넘긴 주(ST.scoutBlocked)에는
+   상대 정보가 안 나오듯 배당도 안 나온다. 같은 사람이 만드는 거니까. */
+let oddsTried=null;      // 이 열쇠로 이미 한 번 뽑아봤나 (다시 그리기 루프 방지)
+function renderOddsCard(c, opp, next){
+  const card=el('div','card odds-card');
+  card.appendChild(el('div','card-h','오늘의 배당'));
+  if(ST.scoutBlocked){
+    card.appendChild(el('p','muted',
+      '김한규가 자료를 안 넘겼다. 배당도 이 사람이 뽑는 거라 오늘은 없다. 그냥 붙어봐야 안다.'));
+    c.appendChild(card); return;
+  }
+  /* 300경기를 돌리는 데 폰에서 0.3초쯤 걸린다. 그 사이 화면이 얼어붙으면
+     "눌렀는데 안 먹네" 가 된다. 그래서 캐시가 없으면 카드 자리를 먼저 잡아두고
+     한 프레임 뒤에 계산한 다음 다시 그린다.
+     oddsTried 는 무한 루프 방지용이다 — 계산이 실패하는 상황(라인업이 없다든지)
+     에서 다시 그리기를 반복하면 안 된다.                                */
+  const key=oddsKey();
+  let o=(ST.odds && ST.odds.k===key) ? ST.odds : null;
+  if(!o && oddsTried===key){
+    card.appendChild(el('p','muted','배당을 못 뽑았다. 라인업부터 확정해라.'));
+    c.appendChild(card); return;
+  }
+  if(!o){
+    card.appendChild(el('p','muted','김한규가 오늘 카드를 돌려보는 중…'));
+    c.appendChild(card);
+    setTimeout(()=>{
+      oddsTried=key;
+      try{ teamOdds(); }catch(e){}
+      if(curView==='home') renderHome();
+    }, 20);
+    return;
+  }
+  const band=oddsBand(o.w);
+  const ourO=decOdds(o.w), thO=decOdds(o.l);
+  const pct=Math.round(o.w*100);
+
+  const row=el('div','od-row');
+  row.innerHTML=`
+    <div class="od-side ${o.w>=o.l?'fav':''}">
+      <span class="od-tm">우완좌완</span>
+      <b class="od-v">${ourO.toFixed(2)}</b>
+      <em class="od-p">${pct}%</em></div>
+    <span class="od-vs">vs</span>
+    <div class="od-side ${o.l>o.w?'fav':''}">
+      <span class="od-tm">${opp.name}</span>
+      <b class="od-v">${thO.toFixed(2)}</b>
+      <em class="od-p">${Math.round(o.l*100)}%</em></div>`;
+  card.appendChild(row);
+
+  const bar=el('div','od-bar');
+  bar.innerHTML=`<u style="width:${Math.max(2,Math.min(98,pct))}%"></u>`;
+  card.appendChild(bar);
+
+  const tag=el('div','od-tag'+(band[2]==='탑독'?' up':(band[2]==='언더독'?' dn':'')));
+  tag.innerHTML=`<b>${band[2]?band[2]+' · ':''}${band[1]}</b><span>${band[3]}</span>`;
+  card.appendChild(tag);
+
+  const dt=el('div','od-det');
+  dt.innerHTML=
+    `예상 스코어 <b>${o.rf.toFixed(1)} : ${o.ra.toFixed(1)}</b>` +
+    ` · 콜드 확률 ${Math.round(o.cold*100)}%` +
+    (o.dN?` · 무승부 ${o.dN}회`:'');
+  card.appendChild(dt);
+
+  const note=el('p','muted','');
+  note.innerHTML=
+    `김한규가 오늘 카드를 <b>${o.n}번</b> 돌려봤다. <b>${o.wN}번</b> 이겼다.<br>`+
+    `<span class="dimx">지금 라인업·로테이션·구장·컨디션 그대로 돌린 결과다. `+
+    `라인업을 바꾸면 배당도 같이 움직인다.</span>`;
+  card.appendChild(note);
+  c.appendChild(card);
+}
+
 /* ================= 플레이오프 =================
    단원리그 C 규정. 정규시즌이 끝나면 상위 4팀이 붙는다.
      준결승  1위 vs 4위 · 2위 vs 3위
@@ -14695,7 +14816,7 @@ function showChampion(opt){
   });
   box.appendChild(crewBox);
   const sayBox=el('div','ch-say');
-  sayBox.innerHTML=`<b>이광재</b> ${say(me,say0[0],say0[1])}`;
+  sayBox.innerHTML=`<b>이영재</b> ${say(me,say0[0],say0[1])}`;
   box.appendChild(sayBox);
   const b=el('button','btn primary ch-close','정산하러 가기');
   b.onclick=()=>{ ov.remove(); if(o.after)o.after(); };
@@ -15323,20 +15444,16 @@ function setStarter(pid){
   return true;
 }
 
-function makeLive(){
-  sanitizeRotation();
-  ST.gameRotation=gameRotation();     // 이번 경기 등판 순서 스냅샷
-  /* 지명타자를 안 쓰면 타순의 투수 자리에 '실제로 던질 사람'이 앉아야 한다.
-     로테이션 1번이 그날 결장이면 타순 투수와 등판 투수가 어긋났었다.     */
-  if(!ST.useDH && ST.gameRotation.length){
-    const sp=ST.gameRotation[0];
-    const pIdx=ST.lineup.findIndex(x=>x.pos==='P');
-    if(pIdx>=0 && ST.lineup[pIdx].id!==sp){
-      const dup=ST.lineup.findIndex(x=>x.id===sp);
-      if(dup>=0 && dup!==pIdx){ ST.lineup[dup].pos=ST.lineup[pIdx].pos; }
-      ST.lineup[pIdx].id=sp; ST.lineup[pIdx].pos='P';
-    }
-  }
+/* =========================================================
+   경기 준비 — 중계와 배당이 같이 쓰는 대진 세팅
+   ---------------------------------------------------------
+   예전에는 이 로직이 makeLive 안에만 있었다. 배당을 뽑으려면
+   똑같은 걸 한 벌 더 써야 하는데, 그러면 둘이 조금씩 어긋나서
+   "배당은 70% 라더니 실제로는 전혀 다른 경기" 가 된다.
+   한 군데로 모아서 배당이 진짜 그 경기를 재게 한다.
+
+   ST 를 건드리지 않는다 — 배당은 화면 그릴 때마다 불릴 수 있다.  */
+function buildMatchup(uLine){
   const next=ST.schedule[ST.round];
   const opp=TBYID[next.opp];
   const raw=TBYID['wwzw'];
@@ -15352,18 +15469,6 @@ function makeLive(){
     }
     return np;
   })};
-  /* [제보] "새로고침을 이용해서 이길 때까지 돌리는 게 가능해요"
-     경기 난수를 Date.now() 로 깔고 있었다. LIVE 는 저장을 안 하니까
-     경기 도중이나 결과 화면에서 새로고침하면 경기가 통째로 사라지고,
-     다시 시작하면 **완전히 다른 경기**가 나왔다. 질 것 같으면 새로고침,
-     이길 때까지 반복 — 기록이 의미가 없어진다.
-     이제 그 주에 고정된 시드를 쓴다. 다시 시작해도 같은 공이 온다.
-     직접 지휘에서 내 선택이 달라지면 결과도 달라지는데, 그건 실력이라 놔둔다.
-     우취로 한 주를 다시 굴리면 weekSeq 가 올라가서 시드도 같이 바뀐다.  */
-  const rng=makeRng(((ST.seed||0)+(ST.round||0)*7919+(ST.weekSeq||0)*104729)>>>0);
-  const uLine=ST.lineup.map(s=>({id:s.id,pos:s.pos}));
-  // 약속(면담) 검사에 쓸 선발 라인업 스냅샷. 대타로 교체돼도 선발은 선발이다.
-  ST.gameStarters = uLine.map(x=>x.id);
   const cond={};
   raw.players.forEach(p=>{
     let cv=(ST.cond[p.id]||70)+((ST.morale[p.id]||70)-70)*0.18;
@@ -15376,7 +15481,6 @@ function makeLive(){
     if(bf){ if(bf.all)cv*=bf.all; if(bf.pow)cv+=(bf.pow-1)*40; if(bf.spd)cv+=(bf.spd-1)*30; }
     cond[p.id]=Math.max(20,Math.min(100,cv));
   });
-  const neutral={bat:'normal',run:'normal',hook:'normal'};
   const park=PARKS.find(p=>p.id===ST.park)||PARKS[0];
   const gearPenalty = ST.gearLevel===2?30:(ST.gearLevel===1?10:0);
   recalcTeamDefense(us, uLine, gearPenalty);
@@ -15392,6 +15496,133 @@ function makeLive(){
       stf:Math.max(18,p.stf+oe.oppP), ctl:Math.max(15,p.ctl+Math.round(oe.oppP*0.6))})); }
     oppMod.mean=opp.mean; oppMod._errMod=opp._errMod;
   }
+  return {next, oppRaw:opp, opp:oppMod, us, uLine, cond, park, gearPenalty};
+}
+
+/* =========================================================
+   오늘의 배당
+   ---------------------------------------------------------
+   [요청] "FM 축구게임처럼 경기 시작 전 배당 나오게 하자.
+           누구 팀이 탑독이고 언더독인지 대충 알 수 있게"
+
+   공식으로 어림잡지 않는다. **이 카드를 그대로 300번 돌려본다.**
+   같은 라인업 · 같은 로테이션 · 같은 구장 · 같은 컨디션으로
+   simGame 을 돌려서 몇 번 이겼는지 세는 것뿐이다.
+   그래서 배당이 실제 경기와 어긋날 수가 없다 —
+   라인업을 바꾸면 배당이 그 자리에서 움직인다. FM 이랑 같은 재미다.
+
+   [스컴 방지] 배당은 실제 경기 시드와 **다른** 시드를 쓴다.
+   같은 시드를 쓰면 돌려본 첫 경기가 곧 오늘 경기라 결과가 새어나간다.
+   그리고 열쇠(oddsKey)가 같으면 캐시를 그대로 내주니까,
+   화면을 들락날락해도 배당이 안 흔들린다.
+
+   [무승부] 이 리그는 연장을 가서 승부를 낸다. 300경기에 한 번 나올까 말까라
+   (실측 0.0~0.3%) 승·패 두 갈래만 걸고, 무승부는 주석으로만 알린다.   */
+const ODDS_N = 300;          // 돌려보는 경기 수 — 폰에서 0.2초쯤
+const ODDS_MARGIN = 1.06;    // 오버라운드(북메이커 마진). 6% 떼는 셈
+/* 승률 → 탑독/언더독 딱지. 실측 분포가 35~91% 라 여기 맞춰 잘랐다. */
+const ODDS_BANDS=[
+  [0.72,'압도적 우세','탑독', '이건 잡아야 하는 경기다'],
+  [0.58,'우세',      '탑독', '우리가 유리하다'],
+  [0.42,'백중세',    '',     '뚜껑을 열어봐야 안다'],
+  [0.28,'열세',      '언더독','불리하다. 잡으면 이변이다'],
+  [0.00,'절대 열세', '언더독','객관적으로는 안 된다. 그래서 하는 거다'],
+];
+function oddsBand(p){ return ODDS_BANDS.find(b=>p>=b[0]) || ODDS_BANDS[ODDS_BANDS.length-1]; }
+/* 소수 배당 — 확률의 역수에 마진을 먹인다 */
+function decOdds(p){
+  if(!(p>0.004)) return 99.0;
+  return Math.max(1.01, Math.round((1/p)/ODDS_MARGIN*100)/100);
+}
+function oddsSeed(){
+  // 실제 경기 시드(round*7919 + weekSeq*104729)와 겹치지 않게 상수를 갈랐다
+  return (((ST.seed||0)+(ST.round||0)*99991+(ST.weekSeq||0)*7717+424243)>>>0);
+}
+/* 배당이 다시 계산돼야 하는 조건 — 하나라도 바뀌면 열쇠가 바뀐다 */
+function oddsKey(){
+  const n=ST.schedule[ST.round]||{};
+  return [ST.round, ST.weekSeq, n.opp, n.homeGame?1:0, ST.park, ST.weather,
+    ST.useDH?1:0, ST.gearLevel,
+    (ST.lineup||[]).map(x=>x.id+':'+x.pos).join(','),
+    gameRotation().join(','),
+    (ST.tactics||{}).bat+(ST.tactics||{}).run+(ST.tactics||{}).hook,
+    ST.oppEvent?JSON.stringify(ST.oppEvent.eff||{}):'-',
+    // 컨디션은 5점 단위로만 본다 — 소수점 흔들림에 배당이 춤추지 않게
+    (ST.lineup||[]).map(x=>Math.round((ST.cond[x.id]||70)/5)).join('.'),
+  ].join('|');
+}
+function computeOdds(){
+  const rot=gameRotation();
+  const uLine=(ST.lineup||[]).map(s=>({id:s.id,pos:s.pos}));
+  if(!uLine.length || !rot.length) return null;
+  const M=buildMatchup(uLine);
+  const home=!!M.next.homeGame;
+  const oL=aiLineup(M.opp), oR=aiRotation(M.opp);
+  const neutral={bat:'normal',run:'normal',hook:'normal'};
+  const rng=makeRng(oddsSeed());
+  let w=0,d=0,l=0,rf=0,ra=0,cold=0;
+  for(let i=0;i<ODDS_N;i++){
+    const r=simGame(home?M.us:M.opp, home?M.opp:M.us, {
+      rng, innings:7, park:M.park, gearPenalty:M.gearPenalty,
+      homeLineup: home?uLine:oL,  awayLineup: home?oL:uLine,
+      homeRotation:home?rot:oR,   awayRotation:home?oR:rot,
+      homeTactics: home?{...ST.tactics}:neutral,
+      awayTactics: home?neutral:{...ST.tactics},
+      homeCond: home?M.cond:{},   awayCond: home?{}:M.cond,
+    });
+    const usS=home?r.home:r.away, thS=home?r.away:r.home;
+    rf+=usS.runs; ra+=thS.runs; if(r.mercy)cold++;
+    if(r.tie)d++; else if(usS.runs>thS.runs)w++; else l++;
+  }
+  const n=ODDS_N;
+  return {w:w/n, d:d/n, l:l/n, rf:rf/n, ra:ra/n, cold:cold/n, n, wN:w, dN:d};
+}
+/* 캐시를 앞에 두고 부른다. 열쇠가 같으면 다시 안 돌린다. */
+function teamOdds(){
+  const k=oddsKey();
+  if(ST.odds && ST.odds.k===k) return ST.odds;
+  let o=null;
+  try{ o=computeOdds(); }catch(e){ o=null; }
+  if(!o) return null;
+  o.k=k; ST.odds=o;
+  return o;
+}
+
+function makeLive(){
+  sanitizeRotation();
+  ST.gameRotation=gameRotation();     // 이번 경기 등판 순서 스냅샷
+  /* 지명타자를 안 쓰면 타순의 투수 자리에 '실제로 던질 사람'이 앉아야 한다.
+     로테이션 1번이 그날 결장이면 타순 투수와 등판 투수가 어긋났었다.     */
+  if(!ST.useDH && ST.gameRotation.length){
+    const sp=ST.gameRotation[0];
+    const pIdx=ST.lineup.findIndex(x=>x.pos==='P');
+    if(pIdx>=0 && ST.lineup[pIdx].id!==sp){
+      const dup=ST.lineup.findIndex(x=>x.id===sp);
+      if(dup>=0 && dup!==pIdx){ ST.lineup[dup].pos=ST.lineup[pIdx].pos; }
+      ST.lineup[pIdx].id=sp; ST.lineup[pIdx].pos='P';
+    }
+  }
+  const M=buildMatchup(ST.lineup.map(s=>({id:s.id,pos:s.pos})));
+  const next=M.next, opp=M.oppRaw, us=M.us;
+  /* [제보] "새로고침을 이용해서 이길 때까지 돌리는 게 가능해요"
+     경기 난수를 Date.now() 로 깔고 있었다. LIVE 는 저장을 안 하니까
+     경기 도중이나 결과 화면에서 새로고침하면 경기가 통째로 사라지고,
+     다시 시작하면 **완전히 다른 경기**가 나왔다. 질 것 같으면 새로고침,
+     이길 때까지 반복 — 기록이 의미가 없어진다.
+     이제 그 주에 고정된 시드를 쓴다. 다시 시작해도 같은 공이 온다.
+     직접 지휘에서 내 선택이 달라지면 결과도 달라지는데, 그건 실력이라 놔둔다.
+     우취로 한 주를 다시 굴리면 weekSeq 가 올라가서 시드도 같이 바뀐다.  */
+  const rng=makeRng(((ST.seed||0)+(ST.round||0)*7919+(ST.weekSeq||0)*104729)>>>0);
+  const uLine=M.uLine, cond=M.cond, park=M.park, gearPenalty=M.gearPenalty, oppMod=M.opp;
+  const neutral={bat:'normal',run:'normal',hook:'normal'};
+  // 약속(면담) 검사에 쓸 선발 라인업 스냅샷. 대타로 교체돼도 선발은 선발이다.
+  ST.gameStarters = uLine.map(x=>x.id);
+  /* 오늘 걸린 배당을 박아둔다 — 경기가 끝나고 "이 배당을 뒤집었다"를 말하려면
+     그때 가서 다시 뽑으면 안 된다. 라인업이 경기 중에 바뀌기 때문이다. */
+  try{ const od=teamOdds();
+    ST.oddsAtStart = od ? {w:od.w, dec:decOdds(od.w), them:decOdds(od.l),
+                           band:oddsBand(od.w)[1], tag:oddsBand(od.w)[2]} : null;
+  }catch(e){ ST.oddsAtStart=null; }
   return new LiveGame({
     innings:7,rng,userIsHome:next.homeGame,
     home: next.homeGame?us:oppMod,
@@ -18160,6 +18391,31 @@ function showResult(){
   ls.innerHTML=`<table>${h}${row(res.away)}${row(res.home)}</table>`;
   stage.appendChild(ls);
 
+  /* ---- 배당 정산 ----
+     경기 전에 걸린 배당을 다시 꺼내서 결과랑 맞춰본다.
+     언더독으로 이긴 날은 그 한 줄이 제일 기분 좋다.               */
+  const od0=ST.oddsAtStart;
+  if(od0 && od0.dec){
+    const won=usSide.runs>thSide.runs, tied=usSide.runs===thSide.runs;
+    const line=el('div','od-settle');
+    let cls='', txt='';
+    if(tied){
+      cls='mid'; txt=`무승부. 300번 돌려서 거의 안 나오던 쪽이 나왔다`;
+    } else if(won && od0.w<0.42){
+      cls='up'; txt=`<b>배당 ${od0.dec.toFixed(2)} 를 뒤집었다.</b> ${
+        od0.w<0.28?'객관적으로 안 되는 경기였다':'불리하다던 경기다'}`;
+    } else if(won){
+      cls='up'; txt=`배당 ${od0.dec.toFixed(2)} · ${od0.band}. 할 거 했다`;
+    } else if(!won && od0.w>=0.58){
+      cls='dn'; txt=`<b>${od0.band}(배당 ${od0.dec.toFixed(2)}) 였는데 졌다.</b> 이런 날이 제일 아프다`;
+    } else {
+      cls='dn'; txt=`배당 ${od0.dec.toFixed(2)} · ${od0.band}. 예상대로 흘렀다`;
+    }
+    line.className='od-settle '+cls;
+    line.innerHTML=`<span class="ods-l">경기 전 배당</span><span class="ods-r">${txt}</span>`;
+    stage.appendChild(line);
+  }
+
   /* ---- 경기 하이라이트 ---- 몇 회에 누가 뭘 했는지 */
   const HLN={hr:'홈런',d3:'3루타',d2:'2루타',dp:'병살타',cs:'도루자'};
   const HLC={hr:'hl-hr',d3:'hl-x',d2:'hl-x',dp:'hl-o',cs:'hl-o'};
@@ -20914,6 +21170,9 @@ function normalizeState(){
   if(PLAY_OK.indexOf(ST.playBat)<0)ST.playBat=ST.playMode;
   if(PLAY_OK.indexOf(ST.playPit)<0)ST.playPit=ST.playMode;
   if(!ST.pitchWait)ST.pitchWait={};
+  // 배당 — 옛 세이브에는 없다. 열쇠가 안 맞으면 알아서 다시 뽑는다.
+  if(ST.odds===undefined)ST.odds=null;
+  if(ST.oddsAtStart===undefined)ST.oddsAtStart=null;
   if(!ST.luView)ST.luView='list';
   if(!ST.depMode)ST.depMode='now';
   if(!ST.park)ST.park='benamul';
