@@ -4117,32 +4117,56 @@ function leaveTeam(ST, pid){
 function unhappyLabel(l){ return ['정상','약간 불만','불만','강한 불만','이적 요구'][Math.min(4,l||0)]; }
 
 /* ================= 전역 복귀 ================= */
-function checkDischarge(ST){
-  // 3년차(3시즌째) 개막에 송정민 전역
-  if(ST.seasonNo<3) return null;
-  if(ST.discharged) return null;
+/* 송정민을 로스터에 올린다. **여러 번 불러도 안전하다.**
+
+   [버그 이력] "3년차인데 송정민이 라인업에 복귀했었는데, 새로고침하니까
+   송정민이 사라졌다"
+   큰 사고였다. 선수 능력치는 세이브에 안 들어간다 — 매번 WWZW 상수에서
+   로스터를 새로 만든다. 그런데 송정민은 그 상수에 없고 전역 이벤트가
+   **그때 한 번** 밀어 넣는 사람이었다. checkDischarge 는 ST.discharged 가
+   true 면 곧바로 return 하니까, 새로고침하면
+     로스터 재생성(송정민 없음) → checkDischarge 가 '이미 전역했다' 며 통과
+   가 되어 **영영 사라졌다.** 시즌 기록(ST.bat.sjm)만 유령으로 남는다.
+
+   영입 선수(new_ 접두사)는 normalizeState 에 복구 경로가 있었는데
+   전역 복귀만 빠져 있었다. 그래서 올리는 일을 여기로 떼어내고
+   normalizeState 가 매번 부르게 했다.
+
+   [주의] 이미 있는 기록을 덮어쓰면 안 된다. 처음 전역할 때만 빈 기록을
+   만들고, 복구할 때는 있는 것을 그대로 둔다 (전부 || 로 받는다).      */
+function addDischarged(ST){
   const us=TBYID['wwzw'];
-  if(us.players.some(p=>p.id==='sjm')) { ST.discharged=true; return null; }
-  /* [제보] "특히 송정민이 주루 너무 빠름"
-     맞는 말이었다. spd 48 을 준 근거가 아무것도 없었다 —
-     송정민은 2026시즌 기록이 투수 기록뿐이다(4경기 16.2이닝).
-     REAL_SEASON.batting 열네 명 명단에 이름 자체가 없다.
-     타석에 선 기록이 없는 사람한테 팀 중위권 주력을 붙여놨으니
-     복귀하자마자 이건 다음으로 뛰어다녔다. 투수 몸으로 되돌린다. */
+  if(us.players.some(p=>p.id==='sjm')) return false;
+  /* 팀을 나간 사람이면 다시 올리지 않는다 — applyLeftPlayers 가 뺀 걸
+     여기서 도로 넣으면 나간 사람이 부활한다 */
+  if((ST.leftPlayers||[]).some(r=>r&&r.pid==='sjm')) return false;
   const np={id:'sjm',name:'송정민',bats:'R',
     con:70,pow:62,eye:48,spd:30,def:50,arm:62,
     pos:['P','1B','LF'],pitch:{stf:66,ctl:44,sta:62},real:null,no:47};
   us.players.push(np);
-  META['sjm']={born:2006,speech:'jon',throws:'R',car:false,school:'군포고',drink:1,loyal:88,pot:16,
+  META['sjm']=META['sjm']||{born:2006,speech:'jon',throws:'R',car:false,school:'군포고',drink:1,loyal:88,pot:16,
     traits:['좌완킬러','미완성','성실','전역'],friends:['swm'],rival:null,coach:{},
     pos:PR({P:66,'1B':50,LF:45,RF:45,CF:40,'3B':40,'2B':38,SS:35,C:35}),
     desc:'송승민의 동생. 전역 후 복귀.'};
-  ST.bat['sjm']=blankBat(); ST.lgBat['sjm']=blankBat();
-  ST.cond['sjm']=78; ST.morale['sjm']=92; ST.injury['sjm']=null;
-  ST.ca['sjm']=calcCA(np); ST.caStart['sjm']=ST.ca['sjm'];
+  ST.bat['sjm']=ST.bat['sjm']||blankBat();
+  ST.lgBat['sjm']=ST.lgBat['sjm']||blankBat();
+  if(ST.cond['sjm']==null)ST.cond['sjm']=78;
+  if(ST.morale['sjm']==null)ST.morale['sjm']=92;
+  if(ST.injury['sjm']===undefined)ST.injury['sjm']=null;
+  if(ST.ca['sjm']==null)ST.ca['sjm']=calcCA(np);
+  if(ST.caStart&&ST.caStart['sjm']==null)ST.caStart['sjm']=ST.ca['sjm'];
   ST.career['sjm']=ST.career['sjm']||blankCareer();
+  ST.pit['sjm']=ST.pit['sjm']||blankPit();
+  if(ST.rest&&ST.rest['sjm']==null)ST.rest['sjm']=3;
   finalizeTeam(us); buildPitcherPool();
-  ST.pit['sjm']=ST.pit['sjm']||blankPit(); ST.rest['sjm']=3;
+  return true;
+}
+/* ================= 전역 복귀 ================= */
+function checkDischarge(ST){
+  // 3년차(3시즌째) 개막에 송정민 전역
+  if(ST.seasonNo<3) return null;
+  if(ST.discharged) return null;
+  if(!addDischarged(ST)){ ST.discharged=true; return null; }
   ST.discharged=true;
   return {type:'discharge',title:'송정민 전역 복귀',
     body:'군에 갔던 송정민이 돌아왔다. 구위가 더 좋아졌다는 소문이다.',
@@ -6737,8 +6761,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.46.1';
-const APP_VERSION_NOTE = '못 나오는 사람이 있어도 베스트 라인업이 저장된다';
+const APP_VERSION = '2.46.2';
+const APP_VERSION_NOTE = '새로고침하면 송정민이 사라지던 것 — 급한 수정';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6759,6 +6783,13 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.46.2', t:'새로고침하면 송정민이 사라지던 것', items:[
+    '3년차에 전역 복귀한 송정민이 새로고침 한 번에 로스터에서 통째로 사라졌다. 급한 수정이다',
+    '선수 능력치는 세이브에 안 들어가고 매번 원본 명단에서 새로 만드는데, 송정민은 그 명단에 없고 전역 이벤트가 한 번 밀어 넣는 사람이었다',
+    '이제 불러올 때마다 다시 올려준다. 쌓인 기록·컨디션·라인업 자리는 그대로 둔다',
+    '시즌을 넘길 때도 훈련으로 올린 능력치가 같이 넘어간다. 예전엔 개막에 원래대로 돌아갔다',
+    '팀을 나간 뒤라면 다시 올라오지 않는다',
+  ]},
   {v:'2.46.1', t:'못 나오는 사람이 있어도 베스트 라인업이 저장된다', items:[
     '결장자가 있는 주에 저장하면 그날 대타가 그대로 담기던 것 — 다 나오는 날에만 저장이 됐다',
     '이제 자동으로 메운 자리는 원래 주인을 기억한다. 저장하면 대타가 아니라 원래 짜둔 사람이 담긴다',
@@ -11237,6 +11268,9 @@ function renderHome(){
       TBYID['wwzw'].players.forEach(p=>keep.ratings[p.id]={con:p.con,pow:p.pow,eye:p.eye,spd:p.spd,def:p.def,arm:p.arm,
         pitch:p.pitch?{...p.pitch}:null});
       TEAMS=buildAllTeams();TBYID={};TEAMS.forEach(t=>TBYID[t.id]=t);
+      /* 전역 복귀자는 WWZW 상수에 없어서 방금 만든 로스터에 빠져 있다.
+         능력치를 이월하기 **전에** 먼저 올려야 한 해 동안 훈련한 게 안 날아간다. */
+      if(ST.discharged) addDischarged(ST);
       // 능력치 이월
       TBYID['wwzw'].players.forEach(p=>{ const r=keep.ratings[p.id]; if(r)Object.assign(p,r); });
       finalizeTeam(TBYID['wwzw']); buildPitcherPool();
@@ -21940,6 +21974,9 @@ function applyLeftPlayers(){
 function normalizeState(){
   const us=TBYID['wwzw'];
   applyLeftPlayers();        // 나간 사람은 계속 나가 있어야 한다
+  /* 전역 복귀한 송정민은 WWZW 상수에 없다. 매번 다시 올려준다 —
+     안 그러면 새로고침 한 번에 로스터에서 사라진다. */
+  if(ST.discharged) addDischarged(ST);
   Object.keys(ST.bat||{}).forEach(id=>{
     if(id.startsWith('new_')&&!us.players.some(p=>p.id===id)){
       const srcId=id.slice(4);
