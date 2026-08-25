@@ -4141,7 +4141,13 @@ const CHAT_POOL=[CHAT_POS,CHAT_GEAR,CHAT_MEET,CHAT_AFTER,CHAT_RESULT,CHAT_PRAC];
 function buildKakaoPre(ST){
   const us=TBYID['wwzw'];
   const msgs=[];
-  const rng=Math.random;
+  /* [제보] "새로고침 하면 못 온다고 하는 사람이 바뀜"
+     발표 난수를 Math.random 으로 굴리고 있었다. 그래서 발표를 다시 부르면
+     번복 불참자가 매번 새로 뽑혔다 — 마음에 드는 명단이 나올 때까지
+     돌릴 수 있었다. 이제 **그 주에 고정된 시드**로 굴린다.
+     같은 주에는 몇 번을 불러도 같은 사람이 같은 핑계로 빠진다.
+     (우취로 주를 다시 굴리면 weekSeq 가 올라가니 그때는 바뀐다)       */
+  const rng=makeRng(((ST.seed||0)+(ST.round||0)*15731+(ST.weekSeq||0)*7717+4813)>>>0);
   /* 방어: 주간 처리를 건너뛴 상태에서도 안전하게 동작해야 한다 */
   if(!ST.buff)ST.buff={};
   if(!ST.absent)ST.absent={};
@@ -6477,8 +6483,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.39.0';
-const APP_VERSION_NOTE = '어깨에서 팔이 꺾여 보이던 것과 등번호 자리를 고쳤다';
+const APP_VERSION = '2.40.0';
+const APP_VERSION_NOTE = '새로고침으로 결과를 다시 굴리던 구멍을 막았다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6499,6 +6505,13 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.40.0', t:'새로고침으로 다시 굴리던 구멍', items:[
+    '경기 난수가 시계를 타고 있어서, 경기 도중이나 결과 화면에서 새로고침하면 완전히 다른 경기가 나왔다. 이길 때까지 돌릴 수 있었다는 뜻이다',
+    '이제 그 주에 고정된 난수를 쓴다. 다시 시작해도 같은 공이 온다',
+    '라인업 화면의 카톡 발표 버튼에 잠금이 없어서, 다시 누를 때마다 갑자기 못 온다는 사람이 새로 뽑혔다. 발표는 그 주에 한 번이다',
+    '발표 난수도 그 주에 고정했다. 몇 번을 불러도 같은 사람이 같은 핑계로 빠진다',
+    '경기 화면에 잠금 없는 「단톡방에 사정해본다」 가 한 벌 더 있었다. 성공할 때까지 계속 누를 수 있었다 — 한 사람당 한 번짜리로 합쳤다',
+  ]},
   {v:'2.39.0', t:'어깨에서 팔이 꺾여 보이던 것과 등번호 자리', items:[
     '앞쪽 팔 소매가 가슴 위에 통째로 얹혀서 유니폼 한자를 한 글자 가리고 있었다. 어깨는 몸통 뒤, 팔뚝과 손만 앞으로 그리게 바꿨다',
     '등번호를 유니폼 그림 좌표에 박았다. 옷을 따라 같이 기울고 같이 좁아진다',
@@ -13093,8 +13106,14 @@ function renderLineup(){
     } else toast('지난 라인업 적용');
     applyDHRule(); saveGame(true); renderLineup();
   };
-  const b2=el('button','btn','카톡 발표');
+  /* 발표는 그 주에 딱 한 번이다.
+     [제보] "새로고침 하면 못 온다고 하는 사람이 바뀜"
+     카톡 화면 쪽 발표 버튼에는 잠금이 있었는데 **여기 라인업 화면 버튼에는
+     없었다.** 그래서 발표를 계속 다시 눌러 번복 불참자를 다시 뽑을 수 있었다.
+     이제 발표가 끝났으면 카톡방으로 넘어가기만 한다.                  */
+  const b2=el('button','btn', ST.announced?'카톡방 열기':'카톡 발표');
   b2.onclick=()=>{
+    if(ST.announced){ go('kakao'); return; }
     ST.kakao=buildKakaoPre(ST); ST.announced=true;
     /* 발표 직후 빠지는 사람이 생기면 자동으로 메우지 않는다.
        감독이 직접 라인업을 다시 확정해야 경기로 넘어간다.
@@ -14846,30 +14865,12 @@ function renderGame(){
     } else {
       c.appendChild(el('div','warn',
         `출전 가능 인원이 ${avail}명뿐이다. 9명을 못 채우면 몰수패(0:7)다. 용병을 부르면 채울 수 있다.`));
-      const b0=el('button','btn','단톡방에 사정해본다');
-      b0.onclick=()=>{
-        const cands=TBYID['wwzw'].players.filter(p=>ST.absent&&ST.absent[p.id]);
-        if(!cands.length){toast('부를 사람이 없다');return;}
-        const p=cands[(Math.random()*cands.length)|0];
-        ST.kakao=ST.kakao||[];
-        if(Math.random()<0.45){
-          delete ST.absent[p.id];
-          ST.morale[p.id]=Math.max(10,ST.morale[p.id]-6);
-          ST.cond[p.id]=Math.max(25,ST.cond[p.id]-10);
-          ST.kakao.push({who:p.id,text:say(p.id,'알겠다 늦게라도 갈게','알겠습니다 늦게라도 가겠습니다'),mood:'flat'});
-          ST.lineup=recommendLineup(); applyDHRule();
-          toast(`${p.name}이(가) 오기로 했다`);
-        } else {
-          ST.kakao.push({who:p.id,text:say(p.id,'미안하다 진짜 안 된다','정말 죄송합니다 안 됩니다'),mood:'sad'});
-          toast(`${p.name} 못 온다고 한다`);
-        }
-        saveGame(true); go('game');
-      };
-      const bm2=el('button','btn','용병 부른다');
-      bm2.onclick=()=>openMercSheet(()=>go('game'));
-      c.appendChild(bm2);
-      const b1=el('button','btn danger','몰수패 처리'); b1.onclick=forfeit;
-      c.appendChild(b0); c.appendChild(b1);
+      /* [버그 이력] 여기에 '사정해본다' 가 한 벌 더 박혀 있었다.
+         홈 화면 쪽(shortHandedButtons)은 한 사람당 한 번만 물어보게
+         begAsked 로 잠가 뒀는데, 이쪽 옛 판은 잠금이 없어서
+         **성공할 때까지 계속 누를 수 있었다.** 확률도 45% 로 딴판이었다.
+         잠금 있는 한 벌로 합친다.                                   */
+      shortHandedButtons(c, 'game');
       return;
     }
   }
@@ -15023,7 +15024,15 @@ function makeLive(){
     }
     return np;
   })};
-  const rng=makeRng((ST.seed+ST.round*7919+(Date.now()%100000))>>>0);
+  /* [제보] "새로고침을 이용해서 이길 때까지 돌리는 게 가능해요"
+     경기 난수를 Date.now() 로 깔고 있었다. LIVE 는 저장을 안 하니까
+     경기 도중이나 결과 화면에서 새로고침하면 경기가 통째로 사라지고,
+     다시 시작하면 **완전히 다른 경기**가 나왔다. 질 것 같으면 새로고침,
+     이길 때까지 반복 — 기록이 의미가 없어진다.
+     이제 그 주에 고정된 시드를 쓴다. 다시 시작해도 같은 공이 온다.
+     직접 지휘에서 내 선택이 달라지면 결과도 달라지는데, 그건 실력이라 놔둔다.
+     우취로 한 주를 다시 굴리면 weekSeq 가 올라가서 시드도 같이 바뀐다.  */
+  const rng=makeRng(((ST.seed||0)+(ST.round||0)*7919+(ST.weekSeq||0)*104729)>>>0);
   const uLine=ST.lineup.map(s=>({id:s.id,pos:s.pos}));
   // 약속(면담) 검사에 쓸 선발 라인업 스냅샷. 대타로 교체돼도 선발은 선발이다.
   ST.gameStarters = uLine.map(x=>x.id);

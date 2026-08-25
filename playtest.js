@@ -50,9 +50,13 @@ setTimeout(async()=>{
     return (sw>10&&pi>10) ? '스윙 '+sw+'회 · 코스 '+pi+'회' : false;
   })()`));
   T('중요한 순간만 모드는 훨씬 적게 뜬다', ()=>ev(`(function(){
+    /* [2.40.0] 경기 난수가 ST 에서 나온다(새로고침 재굴림 차단). 시드를 안 돌리면
+       14경기가 전부 같은 경기라 비교가 안 된다. 두 모드에 같은 시드 열을 준다. */
+    var seed0=ST.seed;
     function count(mode){
       ST.playMode=mode; var tot=0;
       for(var t=0;t<14;t++){
+        ST.seed=(seed0+t*7919)>>>0;
         LIVE=makeLive(); LIVE.manual=true;
         var g=0;
         while(!LIVE.over && g++<4000){
@@ -68,6 +72,7 @@ setTimeout(async()=>{
       return tot;
     }
     var all=count('all'), key=count('key');
+    ST.seed=seed0;
     return key<all*0.8 ? '14경기 — 매 타석 '+all+'회 / 중요한 순간만 '+key+'회' : false;
   })()`));
 

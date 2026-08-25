@@ -24,7 +24,12 @@ const T=(n,f)=>{try{const r=f();const ok=r===true||(typeof r==='string'&&!/^!/.t
   console.log('[물통차기 — 3% 자해]');
   const r=ev(`(function(){
     let hurt=0, tries=0, subbed=0, legOnly=true;
+    /* [2.40.0] 경기 난수가 ST 에서 나온다 — 새로고침으로 다시 굴리는 걸 막느라
+       Date.now() 를 뺐다. 그래서 시드를 안 바꾸면 4000경기가 전부 같은 경기다.
+       실제 시즌이 매주 다른 경기인 것처럼 여기서도 시드를 돌려준다. */
+    const seed0=ST.seed;
     for(let t=0;t<4000;t++){
+      ST.seed=(seed0+t*7919)>>>0;
       const L=makeLive(); L.myId=ST.playerId||MYID;
       // 몇 타석 굴려서 벤치풀이 생기게
       for(let k=0;k<20&&!L.over;k++){ L.pending=null; L.step(); }
@@ -38,6 +43,7 @@ const T=(n,f)=>{try{const r=f();const ok=r===true||(typeof r==='string'&&!/^!/.t
         if(!L.userSide().slots.some(x=>x.id===iv.id)) subbed++;
       }
     }
+    ST.seed=seed0;
     return {hurt,tries,rate:(hurt/tries*100).toFixed(2),subbed,legOnly};
   })()`);
   console.log(`   ${r.tries}번 차서 ${r.hurt}번 다침 (${r.rate}%)`);
