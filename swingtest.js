@@ -101,6 +101,74 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   T('존 밖 공은 헛스윙이 된다', ()=>out<0.30 ? `존 밖 q=${out.toFixed(2)}` : `!q=${out.toFixed(2)}`);
   T('많이 빠진 공은 아예 못 닿는다', ()=>farOut<0.05 ? `q=${farOut.toFixed(2)}` : `!q=${farOut.toFixed(2)}`);
 
+  console.log('\n[구종 배분 — 변화구만 노리면 되는 걸 막았다]');
+  T('직구가 제일 많이 들어온다', ()=>ev(`(function(){
+      var bad=[];
+      TBYID['wwzw'].pitchers.concat([{stf:80,ctl:80},{stf:60,ctl:50},{stf:45,ctl:60}])
+        .forEach(function(p){
+          var mix=pitchMix(p);
+          var ff=mix.filter(function(m){return m[0]==='ff';})[0];
+          if(!ff || mix.some(function(m){return m[0]!=='ff' && m[1]>=ff[1];}))
+            bad.push((p.name||'가상')+' ');
+        });
+      return bad.length? '!'+bad.join('') : '전부 직구가 최다';
+    })()`));
+  T('변화구를 통틀어 노려도 절반을 못 넘는다', ()=>ev(`(function(){
+      var worst=0, who='';
+      [{stf:80,ctl:80},{stf:70,ctl:30},{stf:45,ctl:60},{stf:60,ctl:50},{stf:30,ctl:30}]
+        .concat(TBYID['wwzw'].pitchers).forEach(function(p){
+          var b=breakShare(p);
+          if(b>worst){ worst=b; who=(p.name||('구위'+p.stf+'/제구'+p.ctl)); }
+        });
+      return worst<0.50 ? ('제일 높은 게 '+who+' '+Math.round(worst*100)+'%')
+                        : ('!'+who+' '+Math.round(worst*100)+'%');
+    })()`));
+  T('구종이 많을수록 하나하나는 줄어든다', ()=>ev(`(function(){
+      var a=pitchMix({stf:80,ctl:80});      // 5종
+      var b=pitchMix({stf:38,ctl:24});      // 2종
+      var a1=a.filter(function(m){return m[0]==='sl';})[0][1];
+      var b1=b.filter(function(m){return m[0]==='sl';})[0][1];
+      return a1<b1 ? ('5종 슬라이더 '+Math.round(a1*100)+'% < 2종 '+Math.round(b1*100)+'%')
+                   : ('!'+a1+'/'+b1);
+    })()`));
+  T('비율을 다 더하면 1 이다', ()=>ev(`(function(){
+      var bad=[];
+      [{stf:80,ctl:80},{stf:30,ctl:30},{stf:50,ctl:13}].forEach(function(p){
+        var t=pitchMix(p).reduce(function(a,m){return a+m[1];},0);
+        if(Math.abs(t-1)>1e-9) bad.push(t.toFixed(4));
+      });
+      return bad.length? '!'+bad.join(',') : 'ok';
+    })()`));
+  T('실제로 뽑아봐도 배분대로 나온다', ()=>ev(`(function(){
+      var p={stf:60,ctl:50}, n=20000, cnt={};
+      var rng=makeRng(4242);
+      for(var i=0;i<n;i++){ var k=pickPitch(p,rng); cnt[k]=(cnt[k]||0)+1; }
+      var want=pitchMix(p);
+      var bad=[];
+      want.forEach(function(m){
+        var got=(cnt[m[0]]||0)/n;
+        if(Math.abs(got-m[1])>0.02) bad.push(m[0]+' 기대'+m[1].toFixed(2)+' 실제'+got.toFixed(2));
+      });
+      return bad.length? '!'+bad.join(' / ')
+        : ('직구 '+Math.round((cnt.ff/n)*100)+'% (기대 '+Math.round(want[0][1]*100)+'%)');
+    })()`));
+  T('타석이 균등추첨을 안 쓴다', ()=>{
+    const src=ev("String(renderSwing)");
+    return /pickPitch\(myP/.test(src) && !/ars\[\(LIVE\.rng\(\)\*ars\.length\)/.test(src)
+      ? 'pickPitch 로 뽑는다' : '!아직 균등추첨이다';
+  });
+  T('배분을 화면에 보여준다', ()=>{
+    /* 4부리그 투수는 직구밖에 없는 경우가 흔하다. 변화구를 던지게 만들어 본다 */
+    openBat();
+    ev(`(function(){ var p=LIVE.curPitcher(LIVE.def());
+      p.stf=Math.max(p.stf,62); p.ctl=Math.max(p.ctl,50);
+      showDecision({kind:'swing',label:'타석'}); })()`);
+    const m=d.querySelector('#decision .aim-mix');
+    const shown = m ? m.textContent.replace(/\s+/g,' ').trim() : '!배분이 없다';
+    return /직구 \d+%/.test(shown) && /변화구 통틀어 \d+%/.test(shown)
+      ? shown.slice(0,64) : '!'+shown.slice(0,64);
+  });
+
   console.log('\n[실제로 눌러본다]');
   T('스윙 버튼을 누르면 타석이 진행된다', ()=>{
     openBat();

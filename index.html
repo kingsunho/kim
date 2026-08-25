@@ -1028,6 +1028,10 @@ table.stand td.nm{text-align:left;font-weight:700;font-size:12px}
 /* 노림수 — 타석의 첫 번째 층 */
 .aim{margin:8px 0 2px}
 .aim-l{font-size:10.5px;color:var(--dm);margin-bottom:4px}
+.aim-mix{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;margin:0 0 5px}
+.aim-mix u{text-decoration:none;font-size:10px;color:#8b95a3}
+.aim-mix u b{color:#cfe0ee;font-weight:800}
+.aim-mix i{font-style:normal;font-size:10px;color:#6f7c8c;margin-left:auto}
 .aim-row{display:flex;gap:5px}
 .aim-row button{flex:1;background:#161b22;border:1px solid #2a323d;border-radius:8px;
   color:#cfd7e2;font-size:12px;font-weight:700;padding:8px 4px}
@@ -6473,8 +6477,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.37.0';
-const APP_VERSION_NOTE = '[스윙] 버튼이 따로 생겼다 — 지켜보기와 헷갈리지 않게';
+const APP_VERSION = '2.37.1';
+const APP_VERSION_NOTE = '변화구만 노리면 되던 것 — 구종 배분을 실제처럼';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6495,6 +6499,16 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.37.1', t:'변화구만 노리면 되던 것 — 구종 배분을 실제처럼', items:[
+    '[제보] "변화구 투수는 변화구만 노리면 너무 쉽게 쳐진다는 소문이 있다"',
+    '사실이었다. 던질 구종을 그냥 균등 추첨하고 있었다',
+    '변화구를 네 개 던지는 투수면 「변화구」 하나만 노려도 5분의 4가 맞았다',
+    '이제 직구가 기본 58%다. 제구가 나쁘면 직구를 더 던지고, 구위가 좋으면 직구를 더 믿는다',
+    '남은 몫을 변화구들이 나눠 갖는다 — 종류가 늘수록 하나하나는 줄어든다',
+    '변화구를 통틀어 노려도 절반을 못 넘는다. 제일 높은 투수가 42%다',
+    '대신 노림수 화면에 배분을 그대로 깐다 — 직구 63% · 슬라이더 9% … 보고 고르면 된다',
+    '실제 사회인야구 4부도 직구가 압도적이다. 변화구는 제구 되는 투수만 자신 있게 던진다',
+  ]},
   {v:'2.37.0', t:'[스윙] 버튼이 따로 생겼다 — 지켜보기와 헷갈리지 않게', items:[
     '[제보] "주황색 지켜보기 버튼이 스윙 버튼인 줄 알았다"',
     '제일 크고 밝은 버튼이 지켜보기였으니 그럴 만했다. 스윙을 따로 뺐다',
@@ -8375,6 +8389,43 @@ function arsenalOf(pit){
   const skill=s*0.6+c*0.4;
   ['sl','ch','cu','fk'].forEach(k=>{ if(skill>=PITCH_TYPES[k].need) out.push(k); });
   return out;
+}
+/* 구종 배분 — 무엇을 얼마나 던지나. [[구종, 비율], ...]
+
+   [제보] "변화구 투수는 변화구만 노리면 너무 쉽게 쳐진다는 소문이 있다"
+   맞는 말이었다. 던질 구종을 arsenal 에서 **균등 추첨**하고 있었다.
+   변화구를 네 개 던지는 투수면 '변화구' 하나만 노려도 5분의 4가 맞았다.
+   노림수는 둘 중 하나(빠른공/변화구)를 고르는 건데 한쪽이 80% 면 게임이 안 된다.
+
+   실제 사회인야구 4부는 직구가 압도적이다. 변화구는 제구가 되는 투수만
+   자신 있게 던진다. 그래서
+     · 직구에 무게를 싣고 (기본 58%)
+     · 제구가 나쁘면 직구를 더 던진다 (변화구를 못 던지니까)
+     · 구위가 좋으면 직구를 더 믿는다
+     · 남은 몫을 변화구들이 나눠 갖는다 — 종류가 늘수록 하나하나는 줄어든다
+   이제 변화구를 많이 던지는 투수일수록 '어느 변화구냐' 가 갈리고,
+   '변화구' 를 노려도 절반을 못 넘는다.                                */
+function pitchMix(pit){
+  const ars=arsenalOf(pit);
+  const br=ars.filter(k=>k!=='ff');
+  if(!br.length) return [['ff',1]];
+  const c=(pit&&pit.ctl)||30, s=(pit&&pit.stf)||30;
+  let ff=0.58 + Math.max(0,46-c)*0.006 + Math.max(0,s-50)*0.004;
+  ff=Math.max(0.46,Math.min(0.78,ff));
+  const each=(1-ff)/br.length;
+  return [['ff',ff]].concat(br.map(k=>[k,each]));
+}
+/* 이번 공은 뭘 던지나 */
+function pickPitch(pit, rng){
+  const mix=pitchMix(pit);
+  const r=(rng||Math.random)();
+  let acc=0;
+  for(let i=0;i<mix.length;i++){ acc+=mix[i][1]; if(r<acc) return mix[i][0]; }
+  return mix[mix.length-1][0];
+}
+/* '변화구' 를 노렸을 때 맞을 확률 — 화면에 그대로 보여준다 */
+function breakShare(pit){
+  return pitchMix(pit).reduce((a,m)=>a+(m[0]==='ff'?0:m[1]),0);
 }
 
 
@@ -16846,6 +16897,16 @@ function renderSwing(box, d){
              :(phase==='ready'?'지금 고른다 — 맞히면 넓어지고 틀리면 좁아진다'
                               :'노림수 — 맞히면 넓어지고 틀리면 좁아진다'))
       : '이 투수는 직구밖에 없다 — 노릴 것도 없다'));
+    /* [제보] "변화구만 노리면 너무 쉽게 쳐진다"
+       이제 배분이 다르다. 감으로 찍지 말고 보고 고르라고 숫자를 깐다. */
+    if(hasBreak){
+      const mix=pitchMix(myP);
+      const mm=el('div','aim-mix');
+      mm.innerHTML=mix.map(([k,v])=>
+        `<u>${PITCH_TYPES[k].n} <b>${Math.round(v*100)}%</b></u>`).join('')+
+        `<i>변화구 통틀어 ${Math.round(breakShare(myP)*100)}%</i>`;
+      aim.appendChild(mm);
+    }
     const row=el('div','aim-row');
     [['fast','빠른공'],['break','변화구'],['none','안 노린다']].forEach(([k,n])=>{
       if(k==='break'&&!hasBreak) return;
@@ -16933,7 +16994,7 @@ function renderSwing(box, d){
   /* ---- 다음 공 ---- */
   const nextPitch=()=>{
     if(done||resolved)return;
-    const type=ars[(LIVE.rng()*ars.length)|0];
+    const type=pickPitch(myP, LIVE.rng);
     curType=type;
     const T=PITCH_TYPES[type];
     /* 제구가 나쁘면 존 밖으로 빠진다 — 그게 '볼'이다 */
