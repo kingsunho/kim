@@ -6873,8 +6873,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.49.0';
-const APP_VERSION_NOTE = '내쫓은 선수가 다른 팀에서 우리 앞에 나타난다';
+const APP_VERSION = '2.49.1';
+const APP_VERSION_NOTE = '화면 내려놓으면 중계도 같이 멈춘다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6895,6 +6895,10 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.49.1', t:'화면을 내려놓으면 중계도 같이 멈춘다', items:[
+    '직접 지휘 중에 화면을 내려도 중계 타이머가 계속 돌고 있었다. 0.52초마다 경기를 굴리고 화면을 다시 그린다',
+    'v2.43.0 에서 브금은 재웠는데 이건 남아 있었다. 이제 같이 멈추고, 돌아오면 그 자리에서 이어진다',
+  ]},
   {v:'2.49.0', t:'내보낸 선수가 다른 팀에서 우리 상대로 나온다', items:[
     '불만을 방치해서 나간 선수가 그동안은 그냥 사라졌다. 사람만 없어지고 아무 일도 안 일어나니, 방치하는 데 대가가 없었다',
     '이제 다른 팀 로스터로 들어간다. 그 팀과 붙는 날 상대 라인업에 그 이름이 있다',
@@ -16340,6 +16344,14 @@ function runLive(){
   const speed=520;
   playTimer=setInterval(()=>{
     if(!LIVE){clearInterval(playTimer);return;}
+    /* 화면을 내려놓은 동안에는 중계를 안 굴린다.
+       [제보] "갤럭시 배터리가 빨리 닳는다" 의 남은 조각이다.
+       v2.43.0 에서 브금은 재웠는데 이 타이머는 그대로 돌고 있었다 —
+       0.52초마다 step() 하고 DOM 을 다시 그린다.
+       (자동 진행은 while 로 즉시 끝내니 여기 안 온다. 이 타이머는
+        직접 지휘에서 판단과 판단 사이를 이어주는 용도다.)
+       돌아오면 그 자리에서 이어서 굴러간다 — 타이머는 살려둔다.     */
+    if(typeof document!=='undefined' && document.hidden) return;
     if(LIVE.over){clearInterval(playTimer);showResult();return;}
     if(LIVE.manual){
       const d=LIVE.pending||LIVE.detectDecision();
