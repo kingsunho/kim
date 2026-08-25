@@ -1505,6 +1505,9 @@ table.hl-tbl td.hl-o{color:#c98a80}
 .warboard tr.thin{opacity:.45}
 .warboard td:last-child{font-size:10px;white-space:nowrap}
 .pc-adv i.warsp{font-style:normal;color:var(--dim);font-size:10.5px}
+/* 내쫓은 선수가 상대 팀에 있을 때 */
+.warn.exiled{border-color:var(--red)}
+.exiled-l{margin-top:6px;font-size:11.5px;color:var(--red);font-weight:700}
 .subtabs.sub6{gap:4px}
 .sub6 .subtab{padding:9px 3px;font-size:11px;letter-spacing:-.3px}
 .slash{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px;padding:8px 10px 10px}
@@ -4171,6 +4174,7 @@ function leaveTeam(ST, pid){
   const i=us.players.findIndex(p=>p.id===pid);
   if(i<0)return msgs;
   const m=META[pid]||{friends:[]};
+  const gone=us.players[i];        // 상대 팀에 꽂으려면 원본이 필요하다
   us.players.splice(i,1);
   if(ST.lineup)ST.lineup=ST.lineup.filter(s=>s.id!==pid);
   if(ST.lineup&&ST.lineup.length<9&&us.players.length>=9)ST.lineup=recommendLineup();
@@ -4187,10 +4191,39 @@ function leaveTeam(ST, pid){
     if(close) addSpark(ST,q.id,'이탈',1);
   });
   ST.leftPlayers=ST.leftPlayers||[];
-  ST.leftPlayers.push({pid,name:nm,round:ST.round,season:ST.seasonNo||1});
+  /* [계획서] 분탕형 — "내쫓은 선수가 다른 팀 가서 우리 상대로 나오게 하기"
+     예전엔 나간 사람이 그냥 사라졌다. 사람을 잃은 것도 아니고 아무 일도
+     안 일어난 셈이라, 불만을 방치하는 데 대가가 없었다.
+     이제 **다른 팀 로스터에 들어가서 우리랑 붙는다.** */
+  const to=pickNewTeam(ST,pid);
+  const rec={pid,name:nm,round:ST.round,season:ST.seasonNo||1,to:to};
+  ST.leftPlayers.push(rec);
+  if(placeExile(rec,gone) && TBYID[to]) finalizeTeam(TBYID[to]);   // 곧바로 상대 로스터에
+  const toName=to?(TBYID[to]?TBYID[to].name:''):'';
   msgs.push({who:'lg',type:'notice',
-    text:`${nm} 팀 이탈\n로스터 ${us.players.length}명\n전원 사기 하락 · 친했던 선수는 더 크게 흔들린다`});
+    text:`${nm} 팀 이탈\n로스터 ${us.players.length}명`
+      +(toName?`\n${toName} 로 갔다고 한다 — 리그에서 다시 만난다`:'')
+      +`\n전원 사기 하락 · 친했던 선수는 더 크게 흔들린다`});
+  if(toName){
+    msgs.push({who:'lg',
+      text:say(ST.playerId||MYID,
+        `${nm} 그새 ${toName} 갔단다. 우리랑 붙는 날 두고 보자`,
+        `${nm} 씨가 벌써 ${toName} 로 갔답니다. 우리랑 붙는 날이 있겠죠`),mood:'angry'});
+  }
   return msgs;
+}
+/* 나간 선수가 어느 팀으로 가나.
+   시드로 정해서 새로고침해도 같은 팀이 나오게 한다 — 마음에 드는 팀이
+   나올 때까지 다시 굴리는 걸 막는다(v2.40.0 과 같은 이유).
+   아직 안 붙은 팀을 먼저 고른다. 그래야 그 시즌 안에 실제로 만난다. */
+function pickNewTeam(ST, pid){
+  const all=(TEAMS||[]).filter(t=>t.id!=='wwzw');
+  if(!all.length) return null;
+  const rng=makeRng(((ST.seed||0)+clayHash(pid)+(ST.seasonNo||1)*104729)>>>0);
+  const left=(ST.schedule||[]).filter(x=>!x.played&&!x.po).map(x=>x.opp);
+  const pool=all.filter(t=>left.indexOf(t.id)>=0);
+  const src=pool.length?pool:all;
+  return src[(rng()*src.length)|0].id;
 }
 
 function unhappyLabel(l){ return ['정상','약간 불만','불만','강한 불만','이적 요구'][Math.min(4,l||0)]; }
@@ -6840,8 +6873,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.48.0';
-const APP_VERSION_NOTE = 'WAR 을 이 리그 숫자로 다시 깔았다 — 투수·타자 따로, 합쳐서';
+const APP_VERSION = '2.49.0';
+const APP_VERSION_NOTE = '내쫓은 선수가 다른 팀에서 우리 앞에 나타난다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6862,6 +6895,13 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.49.0', t:'내보낸 선수가 다른 팀에서 우리 상대로 나온다', items:[
+    '불만을 방치해서 나간 선수가 그동안은 그냥 사라졌다. 사람만 없어지고 아무 일도 안 일어나니, 방치하는 데 대가가 없었다',
+    '이제 다른 팀 로스터로 들어간다. 그 팀과 붙는 날 상대 라인업에 그 이름이 있다',
+    '어느 팀으로 가는지는 시드로 정한다 — 새로고침해서 다시 뽑을 수 없다. 아직 안 붙은 팀을 먼저 고르니 그 시즌 안에 만난다',
+    '경기 전 화면과 홈 화면에서 "우리가 내보낸 사람이 저기 있다" 고 짚어준다. 라인업에 그냥 섞여 있으면 아무도 못 알아본다',
+    '새로고침해도 유지된다. 선수 능력치는 세이브에 안 들어가서 매 부팅마다 다시 꽂아준다',
+  ]},
   {v:'2.48.0', t:'WAR — 투수와 타자를 따로 재고 합친다', items:[
     '예전 WAR 은 MLB 상수를 그대로 빌려 쓰고 있었다. 10점 = 1승, wOBA 계수 .89/2.10, "타석당 약 0.17점" — 이 리그에서는 전부 틀린 값이다',
     '1180팀-경기 43189타석을 돌려서 전부 다시 쟀다. 승리당 득점은 16.1점이다. 팀당 9.5득점(9이닝 환산 12.2점)짜리 리그라 1승이 그만큼 비싸다',
@@ -11445,7 +11485,9 @@ function renderHome(){
     <div class="opp-name">${opp.name}</div>
     <div class="opp-ops">팀 OPS ${opp.ops.toFixed(3)} · 타율 ${fmt3(opp.avg)}</div>
     <div class="park"><b>${park.name}</b><span>${park.desc}</span></div>
-    <div class="scout">${ST.scoutBlocked?'김한규가 분석 자료를 안 넘겼다. 상대 정보가 없다.':scoutLine(opp)}</div>`;
+    <div class="scout">${ST.scoutBlocked?'김한규가 분석 자료를 안 넘겼다. 상대 정보가 없다.':scoutLine(opp)}</div>
+    ${(function(){const e=exiledOn(next.opp);return e.length
+      ?`<div class="exiled-l">${e.map(r=>r.name).join(', ')} — 우리가 내보낸 사람이 저기 있다</div>`:'';})()}`;
   if(rain){
     card.appendChild(el('p','muted','우천 취소다. 다음 주로 넘긴다.'));
     const b=el('button','btn','다음 주로');
@@ -15786,6 +15828,17 @@ function renderGame(){
     <p class="muted">${next.homeGame?'홈':'원정'} · 7이닝 · 콜드게임 있음</p>
     <div class="scout">${ST.scoutBlocked?'상대 정보 없음':scoutLine(opp)}</div>`;
   c.appendChild(head);
+
+  /* [계획서] 분탕형 — 내쫓은 선수가 이 팀에 있으면 경기 전에 알려준다.
+     그냥 라인업에 섞여 있으면 아무도 못 알아본다. 이름을 대놓고 띄워야
+     "쟤 우리가 내보낸 앤데" 가 된다.                                   */
+  const ex=exiledOn(next.opp);
+  if(ex.length){
+    const w=el('div','warn exiled');
+    w.innerHTML=`${ex.map(r=>nmLink(r.pid,r.name)).join(', ')}이(가) 저 팀에 있다. `
+      +`${ex.length>1?'우리가 내보낸 사람들이다.':'우리가 내보낸 사람이다.'}`;
+    wireNames(w); c.appendChild(w);
+  }
 
   const fx=resolveStarterField();
   /* [버그 이력] el(tag,cls,text) 는 textContent 로 넣는다. 여기에 nmLink() 의
@@ -22242,15 +22295,48 @@ function applyLeftPlayers(){
   if(!list.length) return 0;
   const us=TBYID['wwzw'];
   let n=0;
+  const touched={};
   list.forEach(rec=>{
     const pid=rec&&rec.pid; if(!pid) return;
     const i=us.players.findIndex(p=>p.id===pid);
+    /* 우리 로스터에서 빼기 전에 선수 객체를 챙겨둔다 —
+       WWZW 상수에서 매번 새로 만들어지니 여기가 원본을 잡을 유일한 자리다. */
+    const obj=(i>=0)?us.players[i]:null;
     if(i>=0){ us.players.splice(i,1); n++; }
     if(ST.lineup)  ST.lineup=ST.lineup.filter(x=>x.id!==pid);
     if(ST.rotation)ST.rotation=ST.rotation.filter(x=>x!==pid);
+
+    if(placeExile(rec,obj)) touched[rec.to]=1;
   });
   if(n){ finalizeTeam(us); buildPitcherPool(); }
+  Object.keys(touched).forEach(t=>{ if(TBYID[t]) finalizeTeam(TBYID[t]); });
   return n;
+}
+/* [계획서] 분탕형 — 나간 사람을 상대 팀 로스터에 꽂는다.
+   매 부팅마다 도는 경로라 **여러 번 불려도 한 번만 들어가야** 한다.
+   선수 객체는 WWZW 상수에서 매번 새로 만들어지므로, 우리 로스터에서
+   빼기 전에 잡아둔 것을 쓰고, 못 잡았으면 상수에서 다시 만든다.        */
+function placeExile(rec, obj){
+  const pid=rec&&rec.pid, to=rec&&rec.to;
+  if(!pid||!to) return false;
+  const dest=TBYID[to]; if(!dest||!dest.players) return false;
+  if(dest.players.some(p=>p.id===pid)) return false;      // 이미 들어가 있다
+  let src=obj;
+  if(!src){ const w=(typeof WWZW!=='undefined')?WWZW.find(x=>x.id===pid):null; if(w) src={...w}; }
+  if(!src) return false;
+  dest.players.push(src);
+  if(src.pitch){
+    dest.pitchers=dest.pitchers||[];
+    if(!dest.pitchers.some(q=>q.id===pid))
+      dest.pitchers.push({id:src.id,name:src.name,stf:src.pitch.stf,
+        ctl:src.pitch.ctl,sta:src.pitch.sta,playerId:src.id});
+  }
+  return true;
+}
+/* 이 팀에 우리 팀 나간 사람이 있나 — 경기 전 화면에서 알려준다 */
+function exiledOn(teamId){
+  return ((ST&&ST.leftPlayers)||[]).filter(r=>r&&r.to===teamId&&r.pid)
+    .filter(r=>{const t=TBYID[teamId];return t&&t.players.some(p=>p.id===r.pid);});
 }
 
 function normalizeState(){
