@@ -6477,8 +6477,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.37.1';
-const APP_VERSION_NOTE = '변화구만 노리면 되던 것 — 구종 배분을 실제처럼';
+const APP_VERSION = '2.38.0';
+const APP_VERSION_NOTE = '수비수 아홉 명이 전부 좌투로 그려지고 있었다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6499,6 +6499,14 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.38.0', t:'수비수 아홉 명이 전부 좌투로 그려지고 있었다', items:[
+    '[제보] "내야수 글러브가 전부 화면 왼쪽에 있다"',
+    '포수 뒤에서 보면 야수는 우리를 마주 본다. 마주 본 사람의 왼손은 화면 오른쪽이다',
+    '우투는 글러브를 왼손에 끼니 화면 오른쪽에 있어야 하는데, 기본 포즈가 반대 손에 물려 있었다',
+    '좌우로 뒤집어서 때우지 않았다 — 얼굴·몸통·다리는 그대로 두고 글러브 손만 바로잡았다',
+    '이제 자리별로 실제 선수를 찾아서 던지는 손대로 글러브를 끼운다. 좌투는 반대쪽이다',
+    '3루·유격·2루·1루 네 자리 전부 같은 규칙을 쓴다',
+  ]},
   {v:'2.37.1', t:'변화구만 노리면 되던 것 — 구종 배분을 실제처럼', items:[
     '[제보] "변화구 투수는 변화구만 노리면 너무 쉽게 쳐진다는 소문이 있다"',
     '사실이었다. 던질 구종을 그냥 균등 추첨하고 있었다',
@@ -15958,7 +15966,20 @@ function mvArm(g,sheet,sx0,sy0,t,hand,mir){
 
    화면 앞뒤: legB/armB 를 먼저 그리고 legF/armF 를 나중에 그린다.      */
 const MV_POSES={
+  /* [제보] "내야수 글러브가 전부 화면 왼쪽에 있다 — 다 좌투처럼 보인다"
+
+     포수 뒤에서 보면 야수는 우리를 **마주 본다.** 마주 본 사람의 왼손은
+     화면 오른쪽이다. 우투는 글러브를 왼손에 끼니까 화면 오른쪽에 있어야 한다.
+     그런데 기본 포즈가 handB(= 화면 왼쪽 팔)에 글러브를 물려 있었다.
+     아홉 명 전원이 좌투로 그려지고 있었던 셈이다.
+
+     좌우로 뒤집어서 때우면 얼굴·몸통·다리까지 같이 뒤집힌다.
+     **어느 팔이 왼팔인지부터 바로잡는다** — 글러브를 armF(화면 오른쪽)로 옮겼다.
+     좌투는 idleL 을 쓴다. 팔 좌표는 그대로고 글러브만 반대 손이다.      */
   idle:  {hip:[0,-19.0], lean:0.00, narrow:1.00,
+          legB:[-0.13,-0.03], legF:[0.13,0.03],
+          armB:[-6.1,2.2,-1], armF:[6.1,2.2,1], handF:'glove', head:0.00},
+  idleL: {hip:[0,-19.0], lean:0.00, narrow:1.00,
           legB:[-0.13,-0.03], legF:[0.13,0.03],
           armB:[-6.1,2.2,-1], armF:[6.1,2.2,1], handB:'glove', head:0.00},
   /* 투수 — 셋업에서 팔로스루까지. 던지는 팔이 armB(뒤쪽) 다 */
@@ -16392,7 +16413,11 @@ function mvPaint(mound, o){
   /* 크기는 실제 중계 화면 비율을 따른다.
      타자(1m 앞) 88px 을 기준으로 투수(18m 뒤)는 45%, 야수는 그 절반.
      [제보] "타자 크기랑 존 크기가 너무 이상적이지가 않잖아"          */
-  [[64,168],[150,158],[330,158],[416,168]].forEach(([x,y])=>mvGuy(g,x,y,20,du,'idle',false));
+  /* 내야 네 명 — 화면 왼쪽부터 3루·유격·2루·1루다.
+     자리를 지키는 실제 선수를 찾아서 던지는 손대로 글러브를 끼운다.
+     못 찾으면 우투로 본다(4부리그는 좌투가 드물다).                    */
+  MV_FIELD_SPOT.forEach(([x,y,pos])=>
+    mvGuy(g,x,y,20,du, fielderThrowsL(pos)?'idleL':'idle', false));
   /* 투수 — 통짜 그림. 그림은 우완이 던지는 자세라 좌완일 때만 뒤집는다.
      [제보] "투수 타자는 이렇게 연결 되어야지" — 관절 조립을 그만뒀다. */
   if(!mvFig(g, st.pit, MV_MOUND.x, MV_MOUND.y+14, du, !!st.pitLeft))
@@ -16410,6 +16435,18 @@ function mvPaint(mound, o){
     mvGuy(g, bx, MV_BOXC[2]-2, 80, ou, st.bat, !st.batLeft);
 }
 
+/* 내야 네 자리 — [화면x, 화면y, 포지션]. 왼쪽부터 3루·유격·2루·1루 */
+const MV_FIELD_SPOT=[[64,168,'3B'],[150,158,'SS'],[330,158,'2B'],[416,168,'1B']];
+/* 이 자리를 지키는 사람이 좌투인가. 경기 중이 아니거나 못 찾으면 우투로 본다 */
+function fielderThrowsL(pos){
+  try{
+    if(typeof LIVE==='undefined' || !LIVE || typeof LIVE.def!=='function') return false;
+    const d=LIVE.def(); if(!d||!d.slots) return false;
+    const s=d.slots.find(x=>x.pos===pos); if(!s) return false;
+    const p=((d.team&&d.team.players)||[]).find(x=>x.id===s.id);
+    return !!p && throwHandOf(p)==='L';
+  }catch(e){ return false; }
+}
 /* 좌완이면 이름 옆에 표시. 우완은 굳이 안 붙인다 — 대부분이 우완이다. */
 function handTag(pit){
   return throwHandOf(pit)==='L' ? '<i class="lhp">좌완</i>' : '';

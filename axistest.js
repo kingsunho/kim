@@ -167,6 +167,52 @@ const T=(n,r)=>{const ok=!!r&&!(typeof r==='string'&&r[0]==='!');
   T('타자 얼굴이 그림 위쪽으로 돌아가 있다 (마운드를 올려다본다)',
     face.bat.cy < 0.36 ? `살색 무게중심 높이 ${(face.bat.cy*100).toFixed(0)}%` : `!${(face.bat.cy*100).toFixed(0)}%`);
 
+  console.log('\n[수비수 글러브 — 우투는 왼손, 화면 오른쪽]');
+  const gl=await p.evaluate(()=>{
+    const P=MV_POSES;
+    const c=document.createElement('canvas'); c.width=200; c.height=200;
+    const g=c.getContext('2d');
+    const u={cap:'#2f5fb0',sh:'#eef2f8',pants:'#dfe4ec',st:'rgba(47,95,176,.35)',gl:'#5b3a1e'};
+    /* 글러브는 갈색이다. 어느 쪽에 있는지 무게중심으로 잰다 */
+    const side=(pose)=>{
+      g.clearRect(0,0,200,200);
+      mvGuy(g,100,180,60,u,pose,false,7);
+      const d=g.getImageData(0,0,200,200).data;
+      let n=0,sx=0;
+      for(let y=0;y<200;y++)for(let x=0;x<200;x++){
+        const i=(y*200+x)*4, r=d[i],gg=d[i+1],b=d[i+2];
+        if(d[i+3]>200 && r>95 && r<190 && gg>45 && gg<115 && b<80 && r>gg+35 && gg>b+10){
+          n++; sx+=x; }
+      }
+      return {n, cx:n?(sx/n-100):0};
+    };
+    return {
+      idleF:P.idle.handF, idleB:P.idle.handB,
+      idleLF:P.idleL&&P.idleL.handF, idleLB:P.idleL&&P.idleL.handB,
+      R:side('idle'), L:side('idleL'),
+      paint:String(mvPaint), spot:(typeof MV_FIELD_SPOT!=='undefined')?MV_FIELD_SPOT:null,
+      dflt:(typeof fielderThrowsL==='function')?fielderThrowsL('SS'):null
+    };
+  });
+  T('우투 포즈는 글러브가 앞팔(화면 오른쪽)에 있다',
+    gl.idleF==='glove' && !gl.idleB ? 'handF=glove' : `!handF=${gl.idleF} handB=${gl.idleB}`);
+  T('좌투 포즈(idleL)가 따로 있다',
+    gl.idleLB==='glove' && !gl.idleLF ? 'handB=glove' : `!handF=${gl.idleLF} handB=${gl.idleLB}`);
+  T('그려보면 우투 글러브가 화면 오른쪽이다',
+    gl.R.n>40 && gl.R.cx>4 ? `갈색 ${gl.R.n}px · 중심 +${gl.R.cx.toFixed(0)}` : `!${gl.R.n}px / ${gl.R.cx.toFixed(0)}`);
+  T('좌투는 화면 왼쪽이다',
+    gl.L.n>40 && gl.L.cx<-4 ? `갈색 ${gl.L.n}px · 중심 ${gl.L.cx.toFixed(0)}` : `!${gl.L.n}px / ${gl.L.cx.toFixed(0)}`);
+  T('좌우로 뒤집어서 때운 게 아니다 (몸은 그대로)', (()=>{
+      /* 팔 좌표는 두 포즈가 같아야 한다 — 글러브만 반대 손이다 */
+      return JSON.stringify(gl.idleF)!==JSON.stringify(gl.idleLF) ? '글러브 손만 다르다' : '!같다';
+    })());
+  T('내야 네 자리를 포지션으로 잡는다',
+    gl.spot && gl.spot.length===4 && gl.spot[0][2]==='3B' && gl.spot[3][2]==='1B'
+      ? gl.spot.map(v=>v[2]).join(' · ') : '!'+JSON.stringify(gl.spot));
+  T('자리별 실제 선수의 던지는 손을 본다',
+    /fielderThrowsL\(pos\)\?'idleL':'idle'/.test(gl.paint) ? 'throwHandOf 로 고른다' : '!전원 같은 포즈');
+  T('경기 중이 아니면 우투로 본다', gl.dflt===false ? '기본 우투' : '!'+gl.dflt);
+
   console.log('\n[실제로 그려본다]');
   const draw=await p.evaluate(()=>{
     const c=document.createElement('canvas'); c.width=MVW*2; c.height=MVH*2;
