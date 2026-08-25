@@ -1309,6 +1309,51 @@ table.hl-tbl td.hl-o{color:#c98a80}
 .fr-v{font-size:13px;margin-top:2px}
 .fr-d{font-size:10px;color:var(--dim);margin-top:2px}
 .fr-n{font-size:10.5px;color:#a9b4c2;margin-top:3px;line-height:1.45}
+/* ================= 우승 세리머니 =================
+   [요청] "우승하면 뭔가 축하하는 그런 모션 나오면 좋을듯"
+   토스트 한 줄로 끝나던 걸 화면 전체로 키웠다. 한 시즌을 다 돌려야
+   한 번 볼까 말까 한 장면이라, 여기만큼은 좀 요란해도 된다.
+   전부 CSS 애니메이션이다 — 캔버스를 안 쓰니 느린 기기에서도 안 버벅인다. */
+.ch-ov{position:fixed;inset:0;z-index:150;background:radial-gradient(120% 90% at 50% 0%,#1d2b45,#070b12 70%);
+  display:flex;align-items:center;justify-content:center;padding:14px;overflow:hidden}
+.ch-box{width:100%;max-width:430px;text-align:center;position:relative;z-index:2}
+/* 색종이 — 위에서 떨어지면서 돈다 */
+.ch-cf{position:absolute;top:-24px;width:7px;height:12px;opacity:0;border-radius:1px;
+  animation:chFall linear infinite}
+@keyframes chFall{0%{transform:translateY(-30px) rotate(0deg);opacity:0} 8%{opacity:1} 100%{transform:translateY(105vh) rotate(760deg);opacity:.9}}
+/* 트로피 — 툭 튀어나왔다가 계속 둥실거린다 */
+.ch-cup{font-size:74px;line-height:1;display:block;
+  animation:chPop .62s cubic-bezier(.2,1.5,.4,1) both, chFloat 2.6s 0.62s ease-in-out infinite}
+@keyframes chPop{0%{transform:scale(.2) rotate(-25deg);opacity:0} 60%{transform:scale(1.18) rotate(6deg);opacity:1} 100%{transform:scale(1) rotate(0)}}
+@keyframes chFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+.ch-lg{font-size:11px;letter-spacing:2.5px;color:var(--gold);margin-top:8px;
+  animation:chIn .5s .25s both}
+.ch-t{font-size:34px;font-weight:900;color:#fff;margin-top:2px;letter-spacing:-1px;
+  text-shadow:0 0 26px rgba(255,209,92,.55);animation:chIn .5s .35s both}
+.ch-sub{font-size:12.5px;color:var(--dim);margin-top:6px;animation:chIn .5s .45s both}
+.ch-prize{display:inline-block;margin-top:10px;padding:5px 13px;border-radius:999px;
+  background:rgba(255,209,92,.14);border:1px solid rgba(255,209,92,.45);
+  color:var(--gold);font-size:12px;font-weight:800;animation:chIn .5s .55s both}
+@keyframes chIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+/* 헹가래 — 사람들이 순서를 조금씩 어긋나게 뛴다. 내가 고른 선수만 더 높이 뜬다 */
+.ch-crew{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin-top:16px}
+.ch-guy{width:44px;animation:chJump 1.15s ease-in-out infinite}
+.ch-guy.me{width:56px;animation-name:chJumpBig}
+.ch-face{width:100%;aspect-ratio:1/1;border-radius:50%;overflow:hidden;background:var(--panel2);
+  border:2px solid rgba(255,209,92,.35)}
+.ch-guy.me .ch-face{border-color:var(--gold);box-shadow:0 0 16px rgba(255,209,92,.5)}
+.ch-face img,.ch-face svg{width:100%;height:100%;object-fit:cover;display:block}
+.ch-nm{font-size:9.5px;color:var(--dim);margin-top:3px;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+@keyframes chJump{0%,100%{transform:translateY(0)}45%{transform:translateY(-14px)}}
+@keyframes chJumpBig{0%,100%{transform:translateY(0)}45%{transform:translateY(-26px)}}
+.ch-say{margin-top:15px;font-size:12.5px;color:var(--tx);line-height:1.6;
+  background:rgba(255,255,255,.05);border:1px solid #2b3646;border-radius:10px;padding:10px 12px;
+  animation:chIn .5s .8s both}
+.ch-say b{color:var(--gold);font-weight:800}
+.ch-close{margin-top:15px;animation:chIn .5s 1s both}
+/* 움직임 줄이기(prefers-reduced-motion)는 파일 맨 위 전역 규칙이 이미
+   animation 을 통째로 끈다. 여기서 또 쓰면 셀렉터가 겹친다 */
 .rk-ov{position:fixed;inset:0;z-index:130;background:rgba(5,9,15,.9);
   display:flex;align-items:center;justify-content:center;padding:12px;overflow:auto}
 .rk-box{width:100%;max-width:440px;background:linear-gradient(180deg,#16202e,#0f1721);
@@ -6483,8 +6528,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.41.0';
-const APP_VERSION_NOTE = '명예의 전당 조건을 훨씬 까다롭게 했다';
+const APP_VERSION = '2.42.0';
+const APP_VERSION_NOTE = '우승하면 헹가래를 친다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -6505,6 +6550,13 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.42.0', t:'우승 세리머니', items:[
+    '결승을 이기면 토스트 한 줄로 끝나던 걸 화면 전체로 키웠다',
+    '색종이가 쏟아지고 트로피가 뜨고, 그날 결승에 나온 사람들이 헹가래를 친다',
+    '내가 고른 선수는 남들보다 더 높이 뛴다',
+    '이광재가 한마디 한다. 매번 다른 말이 나온다',
+    '시즌 종료 화면에서 「우승 세리머니 다시 보기」 로 다시 볼 수 있다',
+  ]},
   {v:'2.41.0', t:'명예의 전당 조건을 다시 잡았다', items:[
     '예전엔 통산 100경기 하나만 넘어도 헌액이었다. 한 시즌이 22경기니까 다섯 시즌 그냥 출석만 해도 들어갔다',
     '출전 수는 이제 업적이 아니라 자격 요건이다 — 통산 120경기(또는 150이닝)를 넘긴 사람만 심사한다',
@@ -10772,6 +10824,16 @@ function renderHome(){
       }
       saveGame(true);
     }
+    /* 우승했으면 세리머니를 다시 볼 수 있게 해둔다.
+       경기 직후에 한 번 뜨는데, 그때 화면을 못 본 사람도 있다. */
+    if(ST.playoff && ST.playoff.place==='우승'){
+      const cc=el('div','card');
+      cc.innerHTML=`<div class="card-h">🏆 단원리그 C 우승</div>
+        <p class="muted">${ST.year||2026} · ${ST.seasonNo||1}년차 · 상금 ${ST.playoff.prize||0}만원</p>`;
+      const cb=el('button','btn primary','우승 세리머니 다시 보기');
+      cb.onclick=()=>showChampion({prize:ST.playoff.prize, year:ST.year, season:ST.seasonNo});
+      cc.appendChild(cb); c.appendChild(cc);
+    }
     const aw=el('div','card');
     aw.appendChild(el('div','card-h','시즌 시상식'));
     ST.awards.filter(a=>!a.king).forEach(a=>{
@@ -14384,6 +14446,61 @@ function rankRows(kind){
 
 /* 경기 전 랭킹 화면. done() 을 부르면 경기로 넘어간다. */
 let rkTab='pit';
+/* 우승 세리머니.
+   [요청] "우승하면 뭔가 축하하는 그런 모션 나오면 좋을듯"
+   결승을 이긴 그 순간에 한 번 뜨고, 시즌 종료 화면에서 다시 볼 수 있다.
+   결승에 나온 사람들을 헹가래 태운다 — 내가 고른 선수는 더 높이 뜬다.  */
+const CHAMP_LINES=[
+  ['야 우리가 우승이다 진짜','우리가 우승했습니다 진짜로'],
+  ['4부에서 이 정도면 됐다 오늘은 마시자','4부에서 이 정도면 됐습니다. 오늘은 마시죠'],
+  ['상금 나오면 회비부터 메꾸자','상금 나오면 회비부터 메꿉시다'],
+  ['사진 찍어야지 다 모여봐','사진 찍어야죠 다 모여보세요'],
+  ['작년 이맘때 생각하면 진짜 말도 안 된다','작년 이맘때를 생각하면 말도 안 됩니다'],
+];
+function showChampion(opt){
+  const o=opt||{};
+  const ov=el('div','ch-ov');
+  /* 색종이 — 자리·색·속도를 조금씩 다르게 뿌린다. 다 같으면 커튼처럼 보인다 */
+  const COL=['#ffd15c','#e8762c','#5fa8ff','#7ce0a0','#ff7d9b','#ffffff'];
+  for(let i=0;i<44;i++){
+    const p2=el('i','ch-cf');
+    p2.style.left=(Math.random()*100).toFixed(1)+'%';
+    p2.style.background=COL[i%COL.length];
+    p2.style.animationDuration=(2.2+Math.random()*2.4).toFixed(2)+'s';
+    p2.style.animationDelay=(Math.random()*2.6).toFixed(2)+'s';
+    p2.style.width=(5+Math.random()*5).toFixed(1)+'px';
+    ov.appendChild(p2);
+  }
+  const box=el('div','ch-box');
+  const me=ST.playerId||MYID;
+  /* 헹가래에 태울 사람 — 결승에 나온 사람이 있으면 그 사람들, 없으면 팀 전체 */
+  let crew=(o.ids&&o.ids.length?o.ids:TBYID['wwzw'].players.map(p2=>p2.id))
+    .filter((v,i,a)=>a.indexOf(v)===i).slice(0,12);
+  if(crew.indexOf(me)<0 && TBYID['wwzw'].players.some(p2=>p2.id===me)) crew.unshift(me);
+  const say0=pickFresh(CHAMP_LINES,'CHAMP_LINES');
+  box.innerHTML=`<span class="ch-cup">🏆</span>
+    <div class="ch-lg">단원리그 C · ${o.year||ST.year||2026}</div>
+    <div class="ch-t">우 승</div>
+    <div class="ch-sub">${o.score?`결승 ${o.score} · `:''}${o.season||ST.seasonNo||1}년차</div>
+    ${o.prize?`<div class="ch-prize">상금 ${o.prize}만원 입금</div>`:''}`;
+  const crewBox=el('div','ch-crew');
+  crew.forEach((id,i)=>{
+    const g=el('div','ch-guy'+(id===me?' me':''));
+    g.style.animationDelay=(i*0.09).toFixed(2)+'s';
+    g.innerHTML=`<div class="ch-face">${avatarHTML(id)}</div><div class="ch-nm">${nameOf(id)}</div>`;
+    crewBox.appendChild(g);
+  });
+  box.appendChild(crewBox);
+  const sayBox=el('div','ch-say');
+  sayBox.innerHTML=`<b>이광재</b> ${say(me,say0[0],say0[1])}`;
+  box.appendChild(sayBox);
+  const b=el('button','btn primary ch-close','정산하러 가기');
+  b.onclick=()=>{ ov.remove(); if(o.after)o.after(); };
+  box.appendChild(b);
+  ov.appendChild(box);
+  ov.onclick=(e)=>{ if(e.target===ov){ ov.remove(); if(o.after)o.after(); } };
+  document.body.appendChild(ov);
+}
 function showRankIntro(done){
   const ov=el('div','rk-ov');
   const box=el('div','rk-box');
@@ -18145,8 +18262,13 @@ function commitGame(res,usSide,thSide,uSlots){
   }
   saveGame(true); LIVE=null; cardGameBox=null;
   go('kakao');
-  toast(sch.po&&ST.playoff&&ST.playoff.place==='우승' ? '우승!'
-    : (tie?'무승부':(won?'승리':'패배')));
+  /* [요청] "우승하면 뭔가 축하하는 그런 모션 나오면 좋을듯"
+     결승을 이긴 그 순간에 세리머니를 띄운다. 결승에 나온 사람들을
+     헹가래 태운다. 시즌 종료 화면에서 다시 볼 수 있다.            */
+  const champ = !!(sch.po && ST.playoff && ST.playoff.place==='우승');
+  if(champ) showChampion({ids:uIds, score:`${usSide.runs}:${thSide.runs}`,
+    prize:ST.playoff.prize, year:ST.year, season:ST.seasonNo});
+  toast(champ ? '우승!' : (tie?'무승부':(won?'승리':'패배')));
 }
 
 function simOtherGames(exclude){
