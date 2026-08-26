@@ -1556,6 +1556,25 @@ table.hl-tbl td.hl-o{color:#c98a80}
 .lu-n{flex:1;color:var(--tx);font-weight:700}
 .lu-ro.me .lu-n{color:var(--gold)}
 .lu-p{font-size:11px;color:var(--dim)}
+/* 어느 자리로 뛸 것인가 — 선수 모드 시작 */
+.rolecard{display:block;width:100%;text-align:left;background:var(--panel);
+  border:1px solid var(--line);border-radius:13px;padding:13px 14px;margin-bottom:10px;color:var(--ink)}
+.rolecard.on{border-color:var(--gold);background:rgba(201,162,39,.10)}
+.rc-top{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+.rc-i{font-size:19px;line-height:1}
+.rc-n{font-size:15px;font-weight:900;color:var(--tx)}
+.rc-l{font-size:11px;color:var(--gold);font-weight:700}
+.rc-d{font-size:12px;color:var(--dim);line-height:1.62;margin-top:6px}
+.rc-d b{color:#e0a08f;font-weight:800}
+.posgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+.poscard{background:var(--panel2);border:1px solid var(--line);border-radius:9px;
+  padding:9px 4px;text-align:center;color:var(--ink)}
+.poscard.on{border-color:var(--gold);background:rgba(201,162,39,.14)}
+.pg-n{display:block;font-size:13px;font-weight:800;color:var(--tx)}
+.pg-f{display:block;font-size:9.5px;margin-top:3px;color:var(--dim)}
+.poscard.ok .pg-f{color:#7fd6a5}
+.poscard.mid .pg-f{color:#e2c05a}
+.poscard.bad .pg-f{color:#e0a08f}
 /* 메인화면 — 감독 모드 / 선수 모드.
    [요청] "감독모드랑 이거 선택할 수 있는 메인화면이 거기엔 이안님 지우님 넣고" */
 .mode-guide{margin:2px 0 14px}
@@ -7068,8 +7087,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.56.1';
-const APP_VERSION_NOTE = '하이라이트 구장이 제 모양으로 돌아왔다';
+const APP_VERSION = '2.57.0';
+const APP_VERSION_NOTE = '어느 자리로 뛸지 내가 정한다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7090,6 +7109,14 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.57.0', t:'선수 모드 — 어느 자리로 뛸지 정한다', items:[
+    '선수 모드로 시작하면 선수를 고른 다음 「어느 자리로 뛸 건가」를 정한다. 타자 · 투수 · 투수 겸 타자 셋 중 하나다',
+    '타자를 고르면 수비 위치까지 고른다. 포수부터 우익수까지 여덟 자리 전부 고를 수 있다 — 막는 자리는 없다',
+    '자리마다 「원래 자리 / 해봤다 / 낯설다 / 처음이다」가 붙는데 이건 못 고른다는 뜻이 아니라 어디서 시작하는지를 알려주는 것이다. 김선호는 2루만 해봤고, 이건은 외야가 원래 자리고, 송승민은 아무 데나 세워도 되는 사람이다',
+    '「처음이다」 자리를 골라도 된다. 그게 다음에 새로 키울 때 완전히 다른 판이 되는 이유다',
+    '투수 겸 타자는 일부러 손이 많이 가게 만든다 — 훈련도 두 몫, 경기에서 직접 할 것도 두 몫, 성장도 갈린다',
+    '고등학교 3년도 여기서 정한 자리로 뛴다',
+  ]},
   {v:'2.56.1', t:'하이라이트 구장 고침', items:[
     '2루 아래에 초록색 삼각형이 튀어나오고 흙길이 두 갈래로 갈라지던 것을 고쳤다. 베이스 좌표는 처음부터 정확한 마름모였고(홈과 2루가 같은 X, 1·3루가 ±72로 대칭) 문제는 흙이었다',
     '내야 흙 부채꼴 반지름이 104인데 홈에서 2루까지가 120이었다. 2루가 흙 밖 잔디 위에 서 있었고, 내야 잔디 꼭짓점이 딱 104라 부채꼴 위쪽을 뚫고 외야 잔디와 그대로 이어졌다. 그게 삼각형이었다',
@@ -10734,7 +10761,9 @@ function newSeason(){
     gear:{}, duesCount:0, gearMeeting:null, feeDue:false,  // 장비·회비
     /* 'mgr' 감독 모드(여태 하던 것) · 'player' 선수 모드(감독은 이건) */
     mode:(typeof ST!=='undefined'&&ST&&ST.mode)?ST.mode:'mgr',
-    build:(typeof ST!=='undefined'&&ST&&ST.build)?ST.build:null,
+    /* 'bat' 타자 · 'pit' 투수 · 'two' 이도류 · myPos 는 수비 위치 */
+    role:(typeof ST!=='undefined'&&ST&&ST.role)?ST.role:null,
+    myPos:(typeof ST!=='undefined'&&ST&&ST.myPos)?ST.myPos:null,
     drunkIds:[],
     bossTalk:null, bossTalkCount:0, bossTalkAt:-99, valuePrev:{},  // 감독 면담·몸값
     tutDone:false, tutStep:0,                              // 튜토리얼
@@ -11216,6 +11245,8 @@ function renderPick(){
       ST.lineup=recommendLineup(); ST.rotation=recommendRotation();
     } else { ST.playerId=MYID; }
     await saveGame(true);
+    /* [요청] "이걸 먼저 설정하고 가야될듯" — 선수 모드는 자리부터 정한다 */
+    if(isPlayerMode() && !ST.role){ go('role'); return; }
     // 새 게임이면 룰 안내부터 보여준다
     if(!ST.tutDone){ ST.tutStep=0; go('tutorial'); }
     else go('home');
@@ -11378,6 +11409,129 @@ function paintStart(c, onPick){
   c.appendChild(note);
   c.appendChild(el('div','mc-cred',
     '안내를 맡은 하츠투하츠 이안·지우는 팬이라서 넣었습니다. 상업적 목적이 없습니다.'));
+}
+
+/* ---------- 어느 자리로 뛸 것인가 ----------
+   [요청] "투수, 타자는(포지션까지 선택가능), 투수 타자 둘다.
+           이걸 먼저 설정하고 가야될듯. 고교때도 그 포지션으로 뛰고.
+           투수 타자 둘다하면 둘다 훈련도해야하고 직접플레이할것도
+           늘어나서 조금 귀찮게 해야지"
+
+   선수 모드는 여기부터 시작한다. 고등학교 3년도 이 자리로 뛴다.
+   이도류는 **일부러 귀찮게 만든다** — 훈련이 두 몫이고 경기에서
+   직접 할 것도 두 몫이다. 그게 이도류의 값이다.                     */
+const PLAY_ROLES=[
+  {id:'bat', icon:'\u{1F3CF}', name:'타자', line:'치는 사람',
+   desc:'포지션까지 고른다. 타석에만 들어간다. 훈련도 타격 쪽만 하면 된다.'},
+  {id:'pit', icon:'\u{26BE}', name:'투수', line:'던지는 사람',
+   desc:'마운드에 선다. 지명타자를 쓰면 타석에는 안 들어간다. '+
+        '나가는 날이 적은 대신 나가면 경기를 통째로 짊어진다.'},
+  {id:'two', icon:'\u{2694}', name:'투수 · 타자', line:'둘 다',
+   desc:'치고 던진다. 대신 **훈련을 두 몫 해야 하고, 경기에서 직접 할 것도 두 몫**이다. '+
+        '성장도 갈린다 — 남들이 한 시즌에 갈 길을 두 시즌 걸려 간다.'},
+];
+const FIELD_POS=['C','1B','2B','3B','SS','LF','CF','RF'];
+function roleDef(id){ return PLAY_ROLES.find(r=>r.id===(id||(ST&&ST.role)))||null; }
+/* 이도류냐 — 훈련·직접 플레이가 두 몫이 되는 자리들이 이걸 본다 */
+function isTwoWay(){ return !!(ST && ST.role==='two'); }
+/* 내가 서는 자리. 투수면 'P' */
+function myPos(){
+  if(!ST) return null;
+  if(ST.role==='pit') return 'P';
+  return ST.myPos||null;
+}
+/* 그 사람의 그 자리 적성 (0~100). META 에 원래 박혀 있는 값이다 */
+function posFit(pid,pos){
+  const m=META[pid];
+  if(!m||!m.pos) return 40;
+  return m.pos[pos]!=null ? m.pos[pos] : 30;
+}
+/* [요청] "이건 키우는거니깐 자기가 원하는 포지션 할 수 있게해야지
+           그래야 새로 키우거나 할 때도 다른 포지션도 해보니깐"
+   그래서 **여덟 자리 전부 고를 수 있다.** 막는 자리는 없다.
+   적성은 말리는 게 아니라 **어디서 시작하는지**를 알려주는 숫자다.
+   안 해본 자리로 시작하면 고등학교 3년이 더 고생스럽고, 그만큼
+   다음 판이 완전히 다른 판이 된다. 그게 다시 하는 이유다.        */
+/* 실제 META 값 분포를 보고 잡은 경계다. 감으로 찍으면 안 맞는다 —
+     김선호  2루 56, 나머지 전부 0   (2루수만 해본 사람)
+     이건    중견 75 · 좌우 68 · 2·3루 42 · 유격 38 · 포수 26 · 1루 0
+     송승민  투수 70 · 나머지 52~64  (아무 데나 세워도 되는 사람)
+   0 은 '안 해봤다' 는 뜻이지 '못 한다' 는 뜻이 아니다.            */
+function fitLabel(v){
+  return v>=65?'원래 자리':(v>=45?'해봤다':(v>=25?'낯설다':'처음이다'));
+}
+function fitCls(v){ return v>=65?'ok':(v>=45?'mid':'bad'); }
+
+function renderRole(){
+  const c=$('#view'); c.innerHTML='';
+  const me=ST.playerId||MYID;
+  const head=el('div','card');
+  head.innerHTML='<div class="card-h">어느 자리로 뛸 건가</div>'+
+    '<p class="muted"><b>'+nameOf(me)+'</b> 로 뛴다. '+
+    '<b>고등학교 3년도 이 자리로 뛴다.</b> 나중에 바꾸려면 포지션 훈련을 다시 해야 한다.</p>';
+  c.appendChild(head);
+
+  PLAY_ROLES.forEach(r=>{
+    const b=el('button','rolecard'+(ST.role===r.id?' on':''));
+    b.innerHTML='<div class="rc-top"><span class="rc-i">'+r.icon+'</span>'+
+      '<span class="rc-n">'+r.name+'</span><span class="rc-l">'+r.line+'</span></div>'+
+      '<div class="rc-d">'+r.desc.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')+'</div>';
+    b.onclick=()=>{
+      ST.role=r.id;
+      if(r.id==='pit') ST.myPos=null;
+      else if(!ST.myPos){
+        /* 제일 잘 맞는 자리를 미리 찍어준다 — 고르라고 강요하진 않는다 */
+        let best=FIELD_POS[0], bv=-1;
+        FIELD_POS.forEach(p=>{ const v=posFit(me,p); if(v>bv){bv=v;best=p;} });
+        ST.myPos=best;
+      }
+      saveGame(true); renderRole();
+    };
+    c.appendChild(b);
+  });
+
+  if(ST.role==='bat'||ST.role==='two'){
+    const pc=el('div','card');
+    pc.appendChild(el('div','card-h','수비 위치'));
+    const pn=el('p','muted');
+    pn.innerHTML='<b>여덟 자리 다 고를 수 있다.</b> 밑에 적힌 건 '+nameOf(me)+
+      ' 가 그 자리를 얼마나 해봤는지 — 못 고른다는 뜻이 아니다.<br>'+
+      '「처음이다」 를 골라도 된다. 고등학교 3년 동안 몸으로 배우면 되고, '+
+      '그게 다음에 새로 키울 때 완전히 다른 판이 되는 이유다.';
+    pc.appendChild(pn);
+    const grid=el('div','posgrid');
+    FIELD_POS.forEach(p=>{
+      const v=posFit(me,p);
+      const b=el('button','poscard '+fitCls(v)+(ST.myPos===p?' on':''));
+      b.innerHTML='<span class="pg-n">'+POSNAMES[p]+'</span>'+
+        '<span class="pg-f">'+fitLabel(v)+'</span>';
+      b.onclick=()=>{ ST.myPos=p; saveGame(true); renderRole(); };
+      grid.appendChild(b);
+    });
+    pc.appendChild(grid);
+    c.appendChild(pc);
+  }
+
+  if(ST.role==='two'){
+    const w=el('div','warn');
+    w.innerHTML='<b>이도류는 손이 많이 간다.</b><br>'+
+      '· 훈련을 타격·투구 두 몫으로 나눠야 한다<br>'+
+      '· 경기에서 내 타석도 치고 내가 던지는 이닝도 직접 던진다<br>'+
+      '· 그만큼 한 쪽에 몰아주는 사람보다 느리게 큰다';
+    c.appendChild(w);
+  }
+
+  const ok=el('button','btn primary','이 자리로 시작');
+  ok.disabled=!ST.role||((ST.role!=='pit')&&!ST.myPos);
+  ok.onclick=async()=>{
+    await saveGame(true);
+    const lbl=roleDef().name+(myPos()&&myPos()!=='P'?' · '+POSNAMES[myPos()]:'');
+    if(!ST.tutDone){ ST.tutStep=0; go('tutorial'); }
+    else go('home');
+    toast(lbl+' 로 시작한다');
+  };
+  c.appendChild(ok);
+  if(ok.disabled) c.appendChild(el('p','muted','자리를 정해야 시작할 수 있다.'));
 }
 
 /* ---------- 홈 ---------- */
@@ -23459,7 +23613,8 @@ function renderMore(){
 const VIEWS={home:renderHome,squad:renderSquad,lineup:renderLineup,kakao:renderKakao,
   game:renderGame,train:renderTrain,scout:renderScout,stand:renderStand,stats:renderStats,
   records:renderRecords,pick:renderPick,more:renderMore,meet:renderMeet,recruit:renderRecruit,
-  tutorial:renderTutorial,player:renderPlayer,hall:renderHall,whatif:renderWhatIf};
+  tutorial:renderTutorial,player:renderPlayer,hall:renderHall,whatif:renderWhatIf,
+  role:renderRole};
 function go(v){
   clearInterval(playTimer);
   curView=v;
@@ -23552,6 +23707,9 @@ function normalizeState(){
   if(!ST.sceneMode)ST.sceneMode='key';     // 옛 세이브 — 2D 장면 기본값
   /* [v2.56.0] 모드. 옛 세이브는 전부 감독 모드다 — 여태 그것뿐이었다. */
   if(ST.mode!=='player') ST.mode='mgr';
+  if(ST.role && !PLAY_ROLES.some(r=>r.id===ST.role)) ST.role=null;
+  if(ST.myPos && FIELD_POS.indexOf(ST.myPos)<0) ST.myPos=null;
+  if(ST.role==='pit') ST.myPos=null;
   /* [v2.54.0] 타석 시작 방식. 옛 세이브는 '내가 누르면' 으로 들어온다 —
      예전 자동 리듬이 정신없다는 제보에서 나온 기본값이라 그쪽이 맞다. */
   if(ST.batReady!=='auto'&&ST.batReady!=='me')ST.batReady='me';
