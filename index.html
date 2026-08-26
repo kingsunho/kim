@@ -7204,8 +7204,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.61.0';
-const APP_VERSION_NOTE = '선수 모드가 선수의 화면이 됐다';
+const APP_VERSION = '2.62.0';
+const APP_VERSION_NOTE = '고등학교 경기를 직접 친다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7226,6 +7226,14 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.62.0', t:'고등학교 경기를 직접 친다', items:[
+    '고등학교 경기를 자동으로 돌리는 게 아니라 직접 친다. 본편 타석 화면 그대로 — 노림수 고르고, 「준비 됐다」 누르고, 공 보고 스윙한다',
+    '내 타석에서만 멈춘다. 나머지 타석은 즉시 굴러간다. 여섯 경기를 다 손으로 치면 프롤로그가 아니라 시즌이 된다',
+    '점수판에 군포고·흥진고가 뜬다. 우리 팀 이름이 「우완좌완」으로 박혀 있어서 고등학교 경기인데 우완좌완이 나오던 것을 고쳤다',
+    '고등학교에서는 투수 교체·감독 액션 버튼이 안 뜬다. 고등학생은 감독이 아니다',
+    '알루미늄 배트라 담장이 조금 가깝다 — 홈런이 1.2배 잘 나온다',
+    '직접 치기 싫은 날은 「알아서 치게 둔다」로 넘길 수 있다',
+  ]},
   {v:'2.61.0', t:'선수 모드가 선수의 화면이 됐다', items:[
     '선수 모드 홈이 팀 관리가 아니라 나를 보여준다. 내 성적, 오늘 몇 번인지, 그리고 「실제 나까지」',
     '「실제 나까지」는 오른쪽 숫자가 그 사람의 2026시즌 실측 능력치다. 거기까지 가면 실물과 같아지고 넘어서면 실제보다 잘하는 게 된다. 한계는 없다',
@@ -11997,8 +12005,17 @@ function hsPlay(){
     awayLineup:homeUs?fLine:uLine, awayRotation:homeUs?fRot:uRot,
     homeLineup:homeUs?uLine:fLine, homeRotation:homeUs?uRot:fRot,
   });
+  return hsCommit(res, B);
+}
+/* 경기 결과를 프롤로그 상태에 반영한다.
+   자동으로 돌린 경기(hsPlay)와 직접 친 경기(hsLiveEnd)가 같이 쓴다 —
+   두 군데서 따로 세면 기록이 어긋난다.                              */
+function hsCommit(res, B){
+  const H=hsSlot(), s=B.s, me=B.me, year=B.year, homeUs=B.homeUs;
+  const uLine=B.uLine;
   const usSide=homeUs?res.home:res.away, thSide=homeUs?res.away:res.home;
   const won=usSide.runs>thSide.runs, tie=usSide.runs===thSide.runs;
+  const foe=B.foe;
   /* 내 기록 */
   const b=res.box[me]||null, q=res.pbox[me]||null;
   if(b) ['pa','ab','h','d2','d3','hr','bb','hbp','k','rbi','r','sb','cs','e']
@@ -12024,6 +12041,78 @@ function hsPlay(){
      그래서 결과를 통째로 남긴다. 나중에 다시 펴 보려면 이게 있어야 한다. */
   H.res.push({...H.pending});
   return H.pending;
+}
+/* ---------- 고교 경기를 직접 친다 ----------
+   [요청] "고교도 해주고"
+
+   본편 경기 화면(LiveGame + 타석 미니게임)을 **고교 팀으로 그대로 태운다.**
+   LiveGame 은 cfg 로 팀·라인업·로테이션을 받으니 ST 없이도 돌아간다.
+   다만 끝났을 때 showResult()(=ST.schedule 을 보는 본편 결과 화면)로 가면
+   안 된다. runLive 에 갈래를 하나 만들어 hsRunLive 로 보낸다.
+
+   **내 타석에서만 멈춘다.** 나머지는 즉시 굴린다 — 6경기를 다 손으로
+   치면 프롤로그가 아니라 시즌이 된다. "짧게" 가 요청이었다.        */
+let HS_B=null;                     // 지금 치르는 경기의 재료
+function hsLiveStart(){
+  const H=hsSlot(); const B=hsBuild(H.i); if(!B) return;
+  HS_B=B; H.playing=true;
+  const c=$('#view'); c.innerHTML='';
+  const cast=hsCast(B.year);
+  const head=el('div','card');
+  head.innerHTML='<div class="hs-yr">'+B.year+'년 · 고'+B.s.y+' · '+B.s.when+'</div>'+
+    '<div class="card-h">'+B.s.kind+'</div>'+
+    '<div class="hs-kind">'+cast.ourSchool+' vs '+
+      (B.s.rival?HS_SCHOOLS[hsFoe()].name:B.foe.name)+' · '+HS_INN+'이닝</div>';
+  c.appendChild(head);
+  const st=el('div','stage'); st.id='stage'; c.appendChild(st);
+  const T={bat:'normal',run:'normal',hook:'normal'};
+  LIVE=new LiveGame({
+    away: B.homeUs?B.foe:B.us,  home: B.homeUs?B.us:B.foe,
+    awayLineup: B.homeUs?B.fLine:B.uLine, homeLineup: B.homeUs?B.uLine:B.fLine,
+    awayRotation: B.homeUs?B.fRot:B.uRot, homeRotation: B.homeUs?B.uRot:B.fRot,
+    awayTactics:T, homeTactics:T, awayCond:{}, homeCond:{},
+    userIsHome:B.homeUs, myId:B.me, rng:B.rng, innings:HS_INN,
+    /* 알루미늄 배트 — 담장을 조금 당겨 놓은 셈이다 */
+    park:{hr:1.20,d2:1.05,d3:1.00,err:1.10,babip:1.00},
+  });
+  LIVE.manual=true; LIVE._hs=true; LIVE._logSeen=0;
+  buildLiveStage();
+  flushLog(); updateLiveUI();
+  hsRunLive();
+}
+/* 내 타석까지 굴리고 멈춘다 */
+function hsRunLive(){
+  clearInterval(playTimer);
+  if(!LIVE||!LIVE._hs) return;
+  if(LIVE.over){ hsLiveEnd(); return; }
+  const me=ST.playerId||MYID;
+  let guard=0;
+  while(!LIVE.over && guard++<600){
+    const off=LIVE.off();
+    if(off.isUser && LIVE.paSeq!==LIVE._lastPlayPA){
+      const b=LIVE.batter();
+      if(b && b.id===me){
+        flushLog(); updateLiveUI();
+        showDecision({kind:'swing', label:'타석'});
+        return;
+      }
+    }
+    if(LIVE.pending) LIVE.applyDecision('change');
+    LIVE.step();
+  }
+  flushLog(); updateLiveUI();
+  hsLiveEnd();
+}
+function hsLiveEnd(){
+  clearInterval(playTimer);
+  const H=hsSlot();
+  if(!LIVE||!HS_B){ H.playing=false; renderHS(); return; }
+  LIVE.finish();
+  const res=LIVE.result;
+  hsCommit(res, HS_B);
+  H.playing=false; HS_B=null; LIVE=null;
+  saveGame(true);
+  renderHS();
 }
 /* ---------- 졸업 ---------- */
 function hsLin(v,lo,hi){ return Math.max(0,Math.min(1,(v-lo)/(hi-lo))); }
@@ -12217,8 +12306,17 @@ function hsPastList(c){
   c.appendChild(card);
 }
 function renderHS(){
-  const c=$('#view'); c.innerHTML='';
   const H=hsSlot();
+  /* 직접 치는 중이면 경기 화면을 다시 세운다(새로고침·화면 복귀) */
+  if(H.playing){
+    if(LIVE && LIVE._hs && !LIVE.over){
+      const c0=$('#view');
+      if(!$('#stage')){ hsLiveStart(); return; }
+      return;
+    }
+    H.playing=false;
+  }
+  const c=$('#view'); c.innerHTML='';
   const me=ST.playerId||MYID;
 
   /* ---- 지난 경기 펴보기 (졸업 뒤에도 된다) ---- */
@@ -12371,9 +12469,19 @@ function renderHS(){
   }).join('');
   c.appendChild(prog);
 
-  const b=el('button','btn primary','경기 시작');
-  b.onclick=async()=>{ hsPlay(); H.sayAt=0; await saveGame(true); renderHS(); };
+  const inLine=!!(B && B.uLine.some(x=>x.id===(ST.playerId||MYID)));
+  const b=el('button','btn primary', inLine?'경기 시작 — 내 타석은 직접 친다':'경기 시작');
+  b.onclick=async()=>{
+    H.sayAt=0;
+    if(inLine){ await saveGame(true); hsLiveStart(); return; }
+    hsPlay(); await saveGame(true); renderHS();
+  };
   c.appendChild(b);
+  if(inLine){
+    const auto=el('button','btn sm','알아서 치게 둔다');
+    auto.onclick=async()=>{ H.sayAt=0; hsPlay(); await saveGame(true); renderHS(); };
+    c.appendChild(auto);
+  }
   hsPastList(c);
 }
 /* 에필로그 — [실화] 군포고 애들끼리 "오랜만에 야구할까" 하고 모였고,
@@ -18126,6 +18234,7 @@ function psScene(d){
 
 /* ---------- 재생 ---------- */
 let psRun=null;
+/* 고교 경기의 팀 이름 — psPlay 머리말도 LIVE 를 봐야 한다 */
 function psPlay(d, done, opt){
   const o=opt||{};
   if(psRun){ try{psRun.kill();}catch(e){} psRun=null; }
@@ -18134,8 +18243,10 @@ function psPlay(d, done, opt){
   const ov=el('div','ps-ov');
   const box=el('div','ps-box');
   const inn=`${d.inning}회 ${d.half===0?'초':'말'}`;
-  const usN='우완좌완', thN=(LIVE&&LIVE.userIsHome?LIVE.away:LIVE.home)?
-    (LIVE.userIsHome?LIVE.away:LIVE.home).team.name:'상대';
+  const usN=(LIVE&&(LIVE.userIsHome?LIVE.home:LIVE.away))
+    ? (LIVE.userIsHome?LIVE.home:LIVE.away).team.name : '우완좌완';
+  const thN=(LIVE&&(LIVE.userIsHome?LIVE.away:LIVE.home))
+    ? (LIVE.userIsHome?LIVE.away:LIVE.home).team.name : '상대';
   /* 다시 보기 때 최종 점수가 찍히면 안 된다. 그 타석 직후 점수를 쓴다. */
   const hasS=(d.sa!=null&&d.sh!=null);
   const uR=hasS?(LIVE&&LIVE.userIsHome?d.sh:d.sa):(LIVE?(LIVE.userIsHome?LIVE.home.runs:LIVE.away.runs):0);
@@ -18820,9 +18931,11 @@ function buildLiveStage(){
   const stage=$('#stage'); if(!stage) return null;
   stage.innerHTML='';
   const sb=el('div','scoreboard');
+  /* [버그] 우리 팀 이름이 '우완좌완' 으로 박혀 있었다. 고등학교 경기에서는
+     군포고·흥진고가 뛰는데 점수판에 우완좌완이 떴다. LIVE 에서 읽는다. */
   sb.innerHTML=`<div class="sb-team"><span id="sb-tn">상대</span><b id="sb-them">0</b></div>
     <div class="sb-mid"><div id="sb-inn">1회 초</div><div class="sb-out" id="sb-out"></div></div>
-    <div class="sb-team"><span>우완좌완</span><b id="sb-us">0</b></div>`;
+    <div class="sb-team"><span id="sb-un">우완좌완</span><b id="sb-us">0</b></div>`;
   stage.appendChild(sb);
   /* [요청] "인게임 중에 실시간 투구수" — 스코어보드 바로 밑.
      빈 껍데기만 만들어 두고 내용은 updateLiveUI 가 매 타석 다시 채운다. */
@@ -18835,6 +18948,8 @@ function buildLiveStage(){
   const ctl=el('div','btn-row'); ctl.id='livectl'; stage.appendChild(ctl);
   const tn=$('#sb-tn');
   if(tn) tn.textContent=(LIVE.userIsHome?LIVE.away:LIVE.home).team.name;
+  const un=$('#sb-un');
+  if(un) un.textContent=(LIVE.userIsHome?LIVE.home:LIVE.away).team.name;
   return stage;
 }
 
@@ -18937,6 +19052,8 @@ function flushLog(){
 function paintLiveCtl(){
   const lc=$('#livectl'); if(!lc||!LIVE||LIVE.over) return;
   lc.innerHTML='';
+  /* 고등학생은 감독이 아니다. 교체도 작전도 내가 안 한다 */
+  if(LIVE._hs) return;
   if(!LIVE.manual) return;
   const b=el('button','btn','⚡ 감독 액션'+(LIVE.mgr.left>0?` (${LIVE.mgr.left})`:' 소진'));
   if(LIVE.mgr.left<=0) b.disabled=true;
@@ -18976,6 +19093,8 @@ function paintLiveCtl(){
 }
 
 function runLive(){
+  /* 고교 경기는 끝나는 자리가 다르다 — 본편 결과 화면으로 가면 안 된다 */
+  if(LIVE && LIVE._hs) return hsRunLive();
   clearInterval(playTimer);
   paintLiveCtl();
   if(!LIVE.manual){
