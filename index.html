@@ -48,15 +48,18 @@ button{font-family:inherit;cursor:pointer}
    제목이 헤더를 다 먹고 배지가 0폭으로 찌그러졌다. 배지는 안 줄인다. */
 .topbar .ver{font-size:10px;font-weight:700;color:var(--dim);
   border:1px solid var(--line);border-radius:4px;padding:2px 6px;letter-spacing:.02em;
-  flex:0 0 auto;white-space:nowrap}
+  flex:0 0 auto;white-space:nowrap;margin-left:6px}
 .topbar .ver.new{color:#0d1015;background:var(--gold);border-color:var(--gold)}
 /* 소리 버튼 — 배지와 같이 안 줄어든다 */
-.topbar .snd{margin-left:auto;background:none;border:1px solid var(--line);border-radius:4px;
+/* [주의] margin-left:auto 를 셋 다 주면 남는 폭이 셋으로 갈려서 사이가
+   벌어진다. 오른쪽으로 미는 건 **첫 버튼 하나**면 된다.            */
+.topbar .snd{margin-left:5px;background:none;border:1px solid var(--line);border-radius:4px;
   color:var(--dim);font-size:12px;line-height:1;padding:3px 6px;flex:0 0 auto;
   -webkit-tap-highlight-color:transparent}
+.topbar .snd:first-of-type{margin-left:auto}
+#homebtn{font-size:13px;color:#c9a227;border-color:rgba(201,162,39,.45)}
 .topbar .snd.on{color:var(--gold);border-color:rgba(201,162,39,.5)}
 .topbar .snd:active{opacity:.6}
-.topbar .ver{margin-left:6px}
 @media(max-width:360px){ .topbar span{display:none} }
 @media(max-width:300px){ .topbar h1{font-size:13px} }
 
@@ -546,7 +549,6 @@ table.stand td.nm{text-align:left;font-weight:700;font-size:12px}
 .kk-sys{display:inline-block;background:rgba(0,0,0,.18);color:#fff;font-size:10.5px;
   padding:4px 10px;border-radius:10px}
 
-.decision{margin-top:11px}
 .dec-h{font-size:14px;font-weight:800;color:var(--gold);margin-bottom:5px}
 .dec-i{font-size:12px;color:#a9b4c2;line-height:1.55;margin-bottom:9px}
 .dec-btns{display:flex;flex-direction:column;gap:7px}
@@ -934,15 +936,22 @@ table.stand td.nm{text-align:left;font-weight:700;font-size:12px}
 /* 존 크기는 실제 치수에서 나온다 — 폭 43cm : 높이 56cm (1 : 1.3).
    화면 폭의 10% (=48px) 로 잡으면 타자 어깨너비의 1.4배쯤 된다.
    [버그 이력] 예전엔 존이 96px 이라 타자(62px)보다 컸다. 말이 안 됐다. */
-/* 미트 — 내 배트가 닿는 범위. 존 한가운데에 겹쳐 놓는다.
+/* 타격 범위 — 내 배트가 닿는 범위. 존 한가운데에 겹쳐 놓는다.
    [참고] 마구마구가 미트를 눈에 보이게 해서 능력치를 손에 잡히게 했다.
-   숫자는 읽어야 알고 원은 보면 안다. */
-.mitt{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+   숫자는 읽어야 알고 원은 보면 안다.
+
+   [버그 이력] 처음엔 이걸 `.mitt` 라고 지었다. 그런데 **포수 글러브가
+   이미 `.mitt`** 였다. 이름이 겹치니까 아래쪽에 있는 글러브 스타일
+   (갈색 배경 · border-radius 9px · bottom 6.5%)이 뒤에서 이겨서,
+   동그란 범위 표시가 포수 옆에 갈색 네모로 찍혔다. id 도 둘 다
+   'mitt' 라 querySelector('#mitt') 가 엉뚱한 걸 잡았다.
+   CLAUDE.md 대로 **이름을 갈랐다** — 특이도로 이기려 들면 안 된다. */
+.hitmitt{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
   border-radius:50%;border:2px dashed rgba(127,214,165,.55);
   background:radial-gradient(circle,rgba(127,214,165,.10),rgba(127,214,165,0) 70%);
   pointer-events:none;display:none;box-sizing:border-box}
-.mitt.wide{border-color:rgba(255,209,92,.62)}
-.mitt.tight{border-color:rgba(224,138,112,.60)}
+.hitmitt.wide{border-color:rgba(255,209,92,.62)}
+.hitmitt.tight{border-color:rgba(224,138,112,.60)}
 .bw-m{display:block;font-style:normal;font-size:10px;color:var(--dim);opacity:.8;margin-top:3px}
 .szone{position:absolute;left:50%;top:80%;transform:translate(-50%,-50%);
   width:10%;padding-top:12.9%;border:2px solid rgba(255,255,255,.5);border-radius:2px}
@@ -1286,7 +1295,7 @@ table.hl-tbl td.hl-o{color:#c98a80}
 .sb-mid .sb-out{font-size:11px;color:var(--clay);letter-spacing:2px;margin-top:3px}
 
 /* 판단 */
-.decision{display:none}
+.decision{display:none;margin-top:11px}
 .decision.on{display:block;background:rgba(201,162,39,.09);border:1px solid #4a4223;
   border-radius:13px;padding:13px;margin-top:11px}
 .dec-t{font-size:12px;color:var(--gold);font-weight:800;letter-spacing:.05em}
@@ -1420,7 +1429,6 @@ table.hl-tbl td.hl-o{color:#c98a80}
   animation:chIn .5s .25s both}
 .ch-t{font-size:34px;font-weight:900;color:#fff;margin-top:2px;letter-spacing:-1px;
   text-shadow:0 0 26px rgba(255,209,92,.55);animation:chIn .5s .35s both}
-.ch-sub{font-size:12.5px;color:var(--dim);margin-top:6px;animation:chIn .5s .45s both}
 .ch-prize{display:inline-block;margin-top:10px;padding:5px 13px;border-radius:999px;
   background:rgba(255,209,92,.14);border:1px solid rgba(255,209,92,.45);
   color:var(--gold);font-size:12px;font-weight:800;animation:chIn .5s .55s both}
@@ -1774,7 +1782,11 @@ table.hl-tbl td.hl-o{color:#c98a80}
 .ch-next{margin-top:9px;padding-top:9px;border-top:1px solid var(--line);
   font-size:11.5px;color:var(--dim);font-weight:700}
 .ch-go{margin-top:7px;padding:15px;font-size:15px;font-weight:900}
-.ch-sub{margin-top:5px;font-size:10.5px;color:var(--dim);text-align:center;opacity:.85}
+/* [버그 이력] 이게 두 번 정의돼 있었다 — 우승 연출용(12.5px)과
+   진행 카드용(10.5px). 뒤엣것이 이기니까 우승 화면 글씨가 작게
+   나오고 있었다. 보이는 값 그대로 하나로 합쳋다.               */
+.ch-sub{margin-top:5px;font-size:10.5px;color:var(--dim);text-align:center;opacity:.85;
+  animation:chIn .5s .45s both}
 /* 오늘 못 나오는 사람 — 소식 맨 위 요약과 경기 카드 한 줄 */
 .out-sum{background:rgba(224,138,112,.12);border:1px solid rgba(224,138,112,.45);
   border-radius:9px;padding:8px 10px;margin-bottom:9px;font-size:12.5px;line-height:1.55}
@@ -1871,7 +1883,7 @@ td.dimc{color:var(--dm);text-align:left}
       링크와 코드를 밖으로 퍼뜨리지 마라.</p>
   </div>
 </div>
-<div class="topbar"><h1 id="mainbtn" title="메인화면">우완좌완 야구 매니저</h1><span>안산 4부리그</span><button class="snd" id="helpbtn" aria-label="도움말">?</button><button class="snd" id="sndbtn" aria-label="소리 켜기/끄기">🔊</button><b class="ver" id="appver"></b></div>
+<div class="topbar"><h1 id="mainbtn" title="메인화면">우완좌완 야구 매니저</h1><span>안산 4부리그</span><button class="snd" id="homebtn" aria-label="메인화면">⌂</button><button class="snd" id="helpbtn" aria-label="도움말">?</button><button class="snd" id="sndbtn" aria-label="소리 켜기/끄기">🔊</button><b class="ver" id="appver"></b></div>
 <div id="view"></div>
 <div id="sheet">
   <div id="sheet-bg"></div>
@@ -7323,8 +7335,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.68.0';
-const APP_VERSION_NOTE = '수비도 송구도 그라운드 위에서 정한다';
+const APP_VERSION = '2.69.0';
+const APP_VERSION_NOTE = '돌고 나서 어떻게 됐는지 끝까지 본다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7345,6 +7357,15 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.69.0', t:'돌고 나서 어떻게 됐는지 끝까지 본다', items:[
+    '「돈다」를 누르면 화면이 그냥 꺼졌다. 내가 누른 게 뭘 했는지 볼 수가 없었다. 이제 그라운드가 그대로 남아서 2막이 이어진다 — 야수가 공을 쫓아가 잡고, 송구가 베이스로 날아오고, 내가 베이스를 돌고, 「2루까지 갔다!」 나 「아웃 — 돌다 잡혔다」 가 크게 뜬다',
+    '연출이 결과를 만드는 게 아니다. 결과는 엔진이 먼저 정하고 화면은 그걸 재생만 한다. 그래서 화면에서 본 것과 기록에 남는 것이 어긋날 수가 없다',
+    '홈런이면 공이 담장을 넘어가고 베이스를 한 바퀴 돈다. 실책이면 「실책 — 살았다」 로 적는다',
+    '타석 1·2구에 포수 옆에 뜨던 갈색 네모를 없앴다. 지난 판에 새로 넣은 타격 범위 표시가 원래 있던 포수 글러브와 이름이 겹쳐서, 동그란 범위가 네모난 글러브 모양으로 찍히고 있었다. 이름을 갈랐다',
+    '메인화면 버튼을 헤더에 달았다. 위 제목이 버튼인 걸 아무도 몰랐고, 고교 프롤로그 중에는 탭까지 숨어서 나갈 길이 아예 없었다. 이제 어디서든 ⌂ 하나로 나간다',
+    '프롤로그 중에도 메인화면과 세이브 슬롯이 열린다. 고등학교를 하다 말고 다른 슬롯으로 갈아탈 수 있다',
+    '검사 도구를 고쳤다. CSS 이름이 겹친 걸 잡아야 할 lintcheck 가 정규식 실수로 못 잡고 있었다. 이번에 고치고 나니 겹쳐 있던 것 세 개(.mitt · .ch-sub · .decision)와 중복 id 두 개가 같이 나왔다. 우승 화면 글씨가 작게 나오던 것도 이것 때문이었다',
+  ]},
   {v:'2.68.0', t:'수비도 송구도 그라운드 위에서 정한다', items:[
     '남아 있던 판단창을 전부 그라운드로 옮겼다. 「텍스트로 다 하는 건 게임이 아니다」는 말이 맞다. 버튼 두 개만 뜨면 그건 메뉴지 경기가 아니다',
     '수비 — 타구가 내 자리로 오는 걸 보면서 정한다. 그라운드에 야수 아홉이 서 있고 내 자리는 금색으로 표시된다. 공이 진짜 타구 방향으로 뻗어 나가고, 그 사이에 「안전하게 / 달려든다」를 고른다',
@@ -9646,7 +9667,7 @@ function npStr(pl){
    실제 판정이 따로 논다.                                          */
 function paintMitt(mound, bat, pit, guess, show){
   if(!mound) return;
-  const m=mound.querySelector('#mitt'); if(!m) return;
+  const m=mound.querySelector('#hitmitt'); if(!m) return;
   if(!show){ m.style.display='none'; return; }
   const W=batWindows(bat, pit, guess);
   const zs=mound.querySelector('#szone');
@@ -9661,7 +9682,7 @@ function paintMitt(mound, bat, pit, guess, show){
   m.style.width=pct+'%';
   m.style.height='0';
   m.style.paddingTop=pct+'%';
-  m.className='mitt'+(W.lw>=1.7?' wide':(W.lw<=1.15?' tight':''));
+  m.className='hitmitt'+(W.lw>=1.7?' wide':(W.lw<=1.15?' tight':''));
 }
 /* 타이밍 품질(0~1) → 타격 보정 */
 function swingMods(q){
@@ -10164,6 +10185,16 @@ LiveGame.prototype.stepPA = function(){
   const bb = ['1B','2B','3B','HR','OUT','E'].indexOf(res.type)>=0
     ? battedBall(this.paSeq, bbKind, this.park, bat.bats||'R', !!res.itp) : null;
   this._bb=bb;
+  /* [제보] "돈다 누르면 그냥 그 화면이 사라지는데 공 날라갈때 수비가
+     따라가고 어떻게 할 것인지 상황판단이 되어야 되잖아"
+     맞는 말이다. 판단만 받고 화면을 꺼버리면 내가 뭘 한 건지 안 보인다.
+     결과를 여기 남겨두면 화면이 **그 결과 그대로** 2막을 재생할 수 있다.
+     연출이 결과를 만드는 게 아니라 결과를 보여주는 거라, 기록과 화면이
+     어긋날 수가 없다.                                                */
+  this._lastPlay = bb ? {
+    type:res.type, gb:!!res.gb, stretched:!!res.stretched, runOut:res.runOut||null,
+    ang:bb.ang, dist:bb.m, dir:bb.dir, err:res.type==='E'
+  } : null;
   // 번트 앤 런은 주자가 한 베이스 더 간다
   const advOdds = (off.isUser && this._buntRun) ? 0.62 : 0.35;
 
@@ -11057,8 +11088,10 @@ function startPlayClock(){
     ST.playSec=(ST.playSec||0)+5;
     devTickTime();
     if((ST.playSec-ptSavedAt)>=300){ ptSavedAt=ST.playSec; saveGame(true); }
-    const a=document.getElementById('pt-val'); if(a)a.textContent=fmtPlaySec(ST.playSec);
-    const b=document.getElementById('pt-line'); if(b)b.textContent=playTimeLine(ST.playSec);
+    /* [버그 이력] id 로 찾았는데 홈과 설정 두 화면이 같은 id 를 썬다.
+       getElementById 는 앞엣것만 주므로 한쪽은 안 올라간다. 클래스로 바꿔 둘 다. */
+    document.querySelectorAll('.pt-val').forEach(a=>{ a.textContent=fmtPlaySec(ST.playSec); });
+    document.querySelectorAll('.pt-line').forEach(b=>{ b.textContent=playTimeLine(ST.playSec); });
   },5000);
 }
 const POSNAMES = {C:'포수','1B':'1루','2B':'2루','3B':'3루',SS:'유격',LF:'좌익',CF:'중견',RF:'우익',DH:'지타',P:'투수'};
@@ -12839,12 +12872,16 @@ function renderStart(){
       ? nameOf(ST.playerId||MYID)+' · '+(ST.role==='pit'?'투수'
           :(ST.role==='two'?'투수·타자':(ST.myPos?POSNAMES[ST.myPos]:'타자')))
       : '감독 모드';
+    /* 고교 프롤로그 중이면 시즌 성적이 아직 없다. 거기 상태를 적는다. */
+    const inHS=(typeof hsActive==='function' && hsActive());
+    const tail=inHS
+      ? '고등학교 '+(((ST.hs&&ST.hs.g)||0)+1)+'경기째'
+      : (ST.seasonNo||1)+'년차 '+st.w+'승 '+st.l+'패';
     const b=el('button','startbig');
     b.innerHTML='<span class="sb-i">'+(ST.mode==='player'?'\u{26BE}':'\u{1F9E2}')+'</span>'+
       '<span class="sb-t">이어서 하기</span>'+
-      '<span class="sb-s">'+CURSLOT+'번 슬롯 · '+who+' · '+
-      (ST.seasonNo||1)+'년차 '+st.w+'승 '+st.l+'패</span>';
-    b.onclick=()=>go('home');
+      '<span class="sb-s">'+CURSLOT+'번 슬롯 · '+who+' · '+tail+'</span>';
+    b.onclick=()=>go(inHS?'hs':'home');
     c.appendChild(b);
   }
 
@@ -13465,8 +13502,8 @@ function renderHome(){
   // 플레이타임
   const ptc=el('div','card');
   ptc.innerHTML=`<div class="card-h">플레이타임</div>
-    <div class="pt-big" id="pt-val">${fmtPlaySec(ST.playSec)}</div>
-    <p class="muted" id="pt-line">${playTimeLine(ST.playSec)}</p>`;
+    <div class="pt-big pt-val">${fmtPlaySec(ST.playSec)}</div>
+    <p class="muted pt-line">${playTimeLine(ST.playSec)}</p>`;
   c.appendChild(ptc);
 
   // 면담에서 한 약속 — 라인업 짜기 전에 보이게 홈에 띄운다
@@ -18466,7 +18503,101 @@ function groundScene(host, o){
     if(k<1) requestAnimationFrame(draw);
   };
   draw();
-  return { stop:()=>{ stop=true; }, el:cv };
+
+  /* ---- 2막 — 고르고 나서 실제로 어떻게 됐는지 ----
+     [제보] "돈다 누르면 그냥 그 화면이 사라지는데 공 날라갈때 수비가
+             따라가고 어떻게 할 것인지 상황판단이 되어야 되잖아"
+
+     [참고] MLB The Show 도 주루 지시를 넣고 화면을 자르지 않는다.
+     야수가 공을 쫓아가고, 송구가 날아오고, 내가 베이스에 닿는 걸
+     끝까지 보여준다. 내가 누른 게 뭘 바꿨는지는 그걸 봐야 안다.
+
+     [되는 이유] 결과는 엔진이 이미 정했다(_lastPlay). 연출은 그걸
+     **재생만** 한다. 그림이 결과를 만드는 게 아니라서 로그와 어긋날 수 없다. */
+  const replay=(res, ms, onDone)=>{
+    stop=true;
+    if(!res){ if(onDone)onDone(); return; }
+    const dur2=ms||2400;
+    const rad2=psRad(res.ang!=null?res.ang:ang);
+    const rBall=Math.max(24, Math.min(fence*1.12, (res.dist||30)/PS_MPP));
+    const land={x:HX+Math.cos(rad2)*rBall, y:HY+Math.sin(rad2)*rBall};
+    const fk=psNearest(land, P), fp=psPosOf(fk, P);
+    const HR=(res.type==='HR');
+    /* 타자가 최종적으로 선 베이스. 주루사면 그 베이스에서 죽은 거다. */
+    let endB=1;
+    if(res.type==='2B') endB=2;
+    else if(res.type==='3B') endB=3;
+    else if(HR) endB=4;
+    else if(res.type==='OUT') endB=res.runOut ? (res.runOut==='1B'?2:3) : 1;
+    const safe=(res.type!=='OUT');
+    const tgt=(endB>=4)?{x:HX,y:HY}:PS_B[Math.min(3,endB)];
+    const BP=[{x:HX,y:HY}, PS_B[1], PS_B[2], PS_B[3], {x:HX,y:HY}];
+    const runAt=(b)=>{ const i=Math.max(0,Math.min(3,Math.floor(b))), f=b-i;
+      return {x:BP[i].x+(BP[i+1].x-BP[i].x)*f, y:BP[i].y+(BP[i+1].y-BP[i].y)*f}; };
+    const lerp=(a1,b1,t)=>({x:a1.x+(b1.x-a1.x)*t, y:a1.y+(b1.y-a1.y)*t});
+    const seg=(t,a1,b1)=>Math.max(0,Math.min(1,(t-a1)/(b1-a1)));
+    const t2=Date.now();
+    let stop2=false, told=false;
+    /* 판정 문구 — 내가 뭘 했는지가 한눈에 보여야 한다.
+       돌아서 성공했으면 그걸 말해주고, 돌다 죽었으면 그것도 말해준다. */
+    const label = HR ? '홈런!'
+      : res.type==='E' ? '실책 — 살았다'
+      : res.type==='OUT' ? (res.runOut ? '아웃 — 돌다 잡혔다' : '아웃')
+      : res.stretched ? endB+'루까지 갔다!'
+      : (endB===1?'안타':endB+'루타');
+    const lcol=HR?'#ffd15c':(safe?(res.stretched?'#ffd15c':'#7fc48f'):'#e08a70');
+    const draw2=()=>{
+      if(stop2) return;
+      const k=Math.min(1,(Date.now()-t2)/dur2);
+      g.setTransform(2,0,0,2,0,0);
+      psField(g, P);
+      /* 공 — 홈에서 낙구점까지, 그다음 송구로 베이스까지 */
+      const kc=seg(k,0,0.34), kt=seg(k,0.55,0.86);
+      const bp = HR ? lerp({x:HX,y:HY}, {x:HX+Math.cos(rad2)*fence*1.25,
+                                         y:HY+Math.sin(rad2)*fence*1.25}, Math.min(1,k*1.4))
+                    : (kt>0 ? lerp(land, tgt, kt) : lerp({x:HX,y:HY}, land, kc));
+      g.strokeStyle='rgba(255,255,255,.30)'; g.lineWidth=1.5;
+      g.beginPath(); g.moveTo(HX,HY); g.lineTo(land.x,land.y); g.stroke();
+      if(kt>0){ g.strokeStyle='rgba(255,209,92,.55)';
+        g.beginPath(); g.moveTo(land.x,land.y); g.lineTo(bp.x,bp.y); g.stroke(); }
+      /* 야수 — 공 쫓는 사람만 움직인다 */
+      Object.keys(PS_POS).forEach(kk=>{
+        if(kk===fk && !HR) return;
+        const p=psPosOf(kk,P);
+        dot(p.x,p.y,(kk===mine?5:3),(kk===mine?'#ffd15c':'#e9e4d8'));
+      });
+      if(!HR){
+        const cp=lerp(fp, land, Math.min(1,kc*1.05));
+        g.strokeStyle='rgba(233,228,216,.5)'; g.lineWidth=1;
+        g.beginPath(); g.arc(cp.x,cp.y,7,0,Math.PI*2); g.stroke();
+        dot(cp.x,cp.y,4.5,'#e9e4d8');
+      }
+      dot(bp.x,bp.y,4,'#fff');
+      /* 나 — 베이스를 돈다. 공과 거의 같이 도착한다 */
+      const rp=runAt(endB*Math.min(1,k/0.86));
+      dot(rp.x,rp.y,5,'#ffd15c');
+      /* 판정 — 작게 흘려 쓰면 안 보인다. 판을 깔고 크게 박는다. */
+      if(k>=0.84){
+        const w2=Math.max(84, label.length*17+30), h2=34;
+        const x2=160-w2/2, y2=14;      // 담장 위 빈 곳 — 주자와 베이스를 안 가린다
+        g.fillStyle='rgba(9,12,16,.78)';
+        g.beginPath();
+        if(g.roundRect) g.roundRect(x2,y2,w2,h2,9); else g.rect(x2,y2,w2,h2);
+        g.fill();
+        g.strokeStyle=lcol; g.lineWidth=1.6; g.stroke();
+        g.font='900 21px system-ui,-apple-system,sans-serif';
+        g.textAlign='center'; g.textBaseline='middle';
+        g.fillStyle=lcol; g.fillText(label, 160, y2+h2/2+1);
+        g.textBaseline='alphabetic'; g.textAlign='left';
+      }
+      if(k<1) requestAnimationFrame(draw2);
+      else if(!told){ told=true; if(onDone) onDone(); }
+    };
+    draw2();
+    stopAll=()=>{ stop2=true; };
+  };
+  let stopAll=null;
+  return { stop:()=>{ stop=true; if(stopAll) stopAll(); }, el:cv, replay };
 }
 function psField(g, parkIn){
   const park=parkIn||psPark();
@@ -21239,8 +21370,8 @@ function moundView(opts){
   m.innerHTML=`<canvas class="mv-cv" width="${MVW*MVS}" height="${MVH*MVS}"></canvas>
     <div class="mv-board" id="mvboard"></div>
     <div class="mv-top" id="mvtop"></div>
-    <div class="szone" id="szone"><i class="v1"></i><i class="v2"></i><i class="h1"></i><i class="h2"></i><b class="mitt" id="mitt"></b></div>
-    <div class="mitt" id="mitt"></div><div class="mitt-tag">포수</div>
+    <div class="szone" id="szone"><i class="v1"></i><i class="v2"></i><i class="h1"></i><i class="h2"></i><b class="hitmitt" id="hitmitt"></b></div>
+    <div class="mitt" id="cmitt"></div><div class="mitt-tag">포수</div>
     <div class="lbl">${o.label||''}</div>
     <div class="cnt" id="cnt"><b>0</b>-<b>0</b></div>
     <div class="who" id="mwho"></div>
@@ -21324,7 +21455,7 @@ function throwBall(mound, type, opts){
   const ty=zy+(cyv-1)*(zh*0.303);
   /* [제보] "포수 글러브 모양은 왜 거기 고정인건지 모르겠다"
      미트는 공 받는 자리로 움직여야 한다. 도착 지점으로 미리 붙여둔다. */
-  const mitt=mound.querySelector('#mitt'), mtag=mound.querySelector('.mitt-tag');
+  const mitt=mound.querySelector('#cmitt'), mtag=mound.querySelector('.mitt-tag');
   if(mitt){
     const mx=tx-W*0.5;
     const my=(H-ty)-H*0.13;
@@ -21557,7 +21688,10 @@ function paResultText(events){
   return null;
 }
 /* 판단을 반영하고 그 타석을 굴린 다음, 결과를 보여주고 닫는다 */
-function playThenClose(box, mv, choice, preText, preColor){
+/* hold 를 주면 **결과가 나온 뒤에 창을 안 닫고** 그쪽에 넘긴다.
+   hold(r, evs, done) 이 다 보여주고 done() 을 부르면 그때 닫는다.
+   주루 2막(야수가 쫓아가고 송구가 오고 세이프/아웃)이 이걸 쓴다. */
+function playThenClose(box, mv, choice, preText, preColor, hold){
   if(preText) moundResult(mv, preText, preColor);
   const go=()=>{
     LIVE.applyDecision(choice);
@@ -21584,6 +21718,10 @@ function playThenClose(box, mv, choice, preText, preColor){
       /* 그라운드 판단창에서는 상자 위에 결과를 크게 띄운다 */
       const t=box.querySelector('.rb-t');
       if(t){ t.textContent=r.raw||r.label; t.style.color=r.color||''; }
+    }
+    if(hold){
+      try{ hold(r, evs, ()=>{ if(mv) mv.classList.remove('impact'); decDone(box); }); return; }
+      catch(e){ /* 연출이 터져도 창은 닫혀야 한다 */ }
     }
     setTimeout(()=>{ if(mv) mv.classList.remove('impact'); decDone(box); },
       r?(r.big?1150:850):260);
@@ -21851,16 +21989,38 @@ function renderSwing(box, d){
     const t0=Date.now();
     let picked=false, sc=null;
     const bar=()=>box2.querySelector('.rb-bar > i');
-    const pick=(go)=>{
-      if(picked)return; picked=true;
-      if(sc) sc.stop();
-      const risk=Math.max(0,Math.min(1,(Date.now()-t0)/dur));
-      LIVE._stretch = go ? {go:true, risk} : null;
-      /* 화면을 되돌린다 — 결과는 이제 엔진이 낸다 */
+    /* 타석 화면을 되돌린다. 2막까지 다 보여준 다음에 부른다. */
+    const restore=()=>{
       mv.style.display=''; gauge.style.display='';
       acts.style.display=''; auto.style.display=''; aim.style.display='';
       try{ box2.parentNode&&box2.parentNode.removeChild(box2); }catch(e){}
-      after();
+    };
+    const pick=(go)=>{
+      if(picked)return; picked=true;
+      const risk=Math.max(0,Math.min(1,(Date.now()-t0)/dur));
+      LIVE._stretch = go ? {go:true, risk} : null;
+      /* [제보] "돈다 누르면 그냥 그 화면이 사라지는데"
+         여기서 창을 닫으면 내가 누른 게 뭘 했는지 안 보인다.
+         그라운드를 그대로 두고 **2막**을 이어서 튼다 — 야수가 공을
+         쫓아가고, 송구가 날아오고, 내가 베이스에 닿는다.
+         결과는 엔진이 정하고(hold 로 받는다) 화면은 그걸 재생만 한다. */
+      const t=box2.querySelector('.rb-t');
+      const nt=box2.querySelector('.rb-note');
+      if(t) t.textContent = go ? '돈다 — 1루를 돌았다' : '선다';
+      if(nt) nt.textContent = '…';
+      const b=bar(); if(b) b.style.width='100%';
+      b1.disabled=true; b2.disabled=true;
+      row.style.opacity='.35';
+      const hold=(r, evs, done)=>{
+        const play=(LIVE&&LIVE._lastPlay)||null;
+        if(t && r){ t.textContent=r.raw||r.label; t.style.color=r.color||''; }
+        if(nt) nt.textContent = go
+          ? '돌았다 — 여기서 갈렸다'
+          : '섰다 — 무리하지 않았다';
+        if(!sc || !sc.replay || !play){ restore(); done(); return; }
+        sc.replay(play, 2400, ()=>{ restore(); done(); });
+      };
+      after(hold);
     };
     const b1=el('button','rb-b stay','선다');
     b1.onclick=()=>pick(false);
@@ -21886,12 +22046,12 @@ function renderSwing(box, d){
     }
     box2._stop=()=>{ if(sc)sc.stop(); };
   };
-  const endPA=(label,color,big)=>{
+  const endPA=(label,color,big,hold)=>{
     if(resolved)return; resolved=true; done=true; phase='over';
     if(anim)anim.stop();
     take.disabled=true; swingB.disabled=true; auto.disabled=true; drawAim();
-    if(big) mv.classList.add('impact');
-    playThenClose(box,mv,'playskip',label,color);
+    if(big && !hold) mv.classList.add('impact');
+    playThenClose(box,mv,'playskip',label,color,hold);
   };
 
   /* ---- 다음 공 ---- */
@@ -21999,7 +22159,7 @@ function renderSwing(box, d){
     /* 배트에 맞았으면 주루를 물어본다. 잘 맞았을 때만 — 빗맞은 타구로
        한 베이스 더 갈 일은 없다. 설정에서 끌 수 있다. */
     if(kind==='contact' && q>=0.42 && (ST&&ST.runAsk!==false)){
-      askRun(pre, col, q>=0.75, ()=>endPA(pre,col,q>=0.75));
+      askRun(pre, col, q>=0.75, (hold)=>endPA(pre,col,q>=0.75,hold));
       return;
     }
     endPA(pre,col,q>=0.75);                     // 인플레이 — 결과는 엔진이 낸다
@@ -25928,8 +26088,8 @@ function renderMore(){
 
   const ptm=el('div','card');
   ptm.innerHTML=`<div class="card-h">플레이타임</div>
-    <div class="pt-big" id="pt-val">${fmtPlaySec(ST.playSec)}</div>
-    <p class="muted" id="pt-line">${playTimeLine(ST.playSec)}</p>
+    <div class="pt-big pt-val">${fmtPlaySec(ST.playSec)}</div>
+    <p class="muted pt-line">${playTimeLine(ST.playSec)}</p>
     <p class="muted">탭을 뒤로 보내두거나 폰을 잠근 시간은 세지 않는다. 실제로 보고 있던 시간만 쌓인다.</p>`;
   c.appendChild(ptm);
 
@@ -26024,8 +26184,12 @@ function paintTabs(){
   });
 }
 function go(v){
-  /* 고등학교를 하는 중에는 본편 화면으로 못 샌다. 아직 우완좌완이 아니다. */
-  if(typeof hsActive==='function' && hsActive() && v!=='hs' && v!=='tutorial' && v!=='more'){
+  /* 고등학교를 하는 중에는 본편 화면으로 못 샌다. 아직 우완좌완이 아니다.
+     [제보] "메인화면 갈 수 있는 버튼이 없는데" — 메인화면과 세이브 슬롯은
+     본편이 아니라 그 위에 있는 것이라 막으면 안 됐다. 프롤로그 도중에
+     다른 슬롯으로 갈아타거나 판을 새로 파는 길이 통째로 막혀 있었다. */
+  const HS_OK={hs:1, tutorial:1, more:1, start:1, slots:1};
+  if(typeof hsActive==='function' && hsActive() && !HS_OK[v]){
     v='hs';
   }
   /* 선수 모드에서 감독 일은 못 한다 — 안내하고 홈으로 돌린다 */
@@ -26499,6 +26663,11 @@ async function boot(){
   /* 위 타이틀 = 메인화면. 어디서든 한 번에 돌아온다 */
   const mb=$('#mainbtn');
   if(mb){ mb.style.cursor='pointer'; mb.onclick=(e)=>{ e.stopPropagation(); go('start'); }; }
+  /* [제보] "선수모드할때 메인화면 갈 수 있는 버튼이 없는데"
+     타이틀이 버튼인 걸 아무도 모른다. 고교 프롤로그 중에는 탭바까지
+     숨기니까 정말로 나갈 길이 없었다. 헤더에 대놓고 하나 둔다.   */
+  const hb2=$('#homebtn');
+  if(hb2) hb2.onclick=(e)=>{ e.stopPropagation(); go('start'); };
   /* 첫 탭에서 실패해도 다음 탭에서 다시 시도한다.
      열린 게 확인되면 그때 리스너를 뗀다. */
   const armEvents=['pointerdown','touchend','click','keydown'];

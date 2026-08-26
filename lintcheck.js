@@ -58,12 +58,47 @@ T('전부 선언돼 있다', ()=>missing.length===0 ? `호출 ${called.size}종 
 
 console.log('\n[CSS 중복 셀렉터]');
 const css=s.match(/<style>([\s\S]*?)<\/style>/)[1];
+/* [버그 이력] 예전엔 정규식 하나로 셀렉터를 뽑았다 — /^([^{@/\n][^{]*)\{/gm.
+   그런데 [^{] 은 **개행도 먹는다**. 그래서 `border-radius:50%;` 같은
+   속성 줄이 다음 룰의 여는 중괄호까지 통째로 삼켰고, 그 사이에 있던
+   진짜 셀렉터가 통계에서 사라졌다.
+   실제로 이것 때문에 `.mitt` 가 두 번 정의된 걸 못 잡았고, 포수 옆에
+   갈색 네모가 찍혔다. 이제 중괄호를 세면서 훑는다.                  */
+const cssNoC=css.replace(/\/\*[\s\S]*?\*\//g,'');
 const seen={};
-for(const m of css.matchAll(/^([^{@/\n][^{]*)\{/gm)){
-  const k=m[1].trim().replace(/\s+/g,' '); seen[k]=(seen[k]||0)+1;
+{
+  let buf='', scope='';
+  for(let i=0;i<cssNoC.length;i++){
+    const ch=cssNoC[i];
+    if(ch==='{'){
+      const sel=buf.trim().replace(/\s+/g,' ');
+      buf='';
+      /* @media 안과 밖은 서로 다른 조건이라 이름이 같아도 충돌이 아니다 */
+      if(sel.startsWith('@')){ scope=sel+' '; continue; }
+      if(sel) { const k=scope+sel; seen[k]=(seen[k]||0)+1; }
+      /* 선언 블록 안쪽은 통째로 건너뛴다 */
+      let d=1;
+      while(++i<cssNoC.length && d>0){
+        if(cssNoC[i]==='{')d++; else if(cssNoC[i]==='}')d--;
+      }
+      i--;
+      continue;
+    }
+    if(ch==='}'){ buf=''; scope=''; continue; }
+    buf+=ch;
+  }
 }
 const dupCss=Object.entries(seen).filter(([,v])=>v>1);
 T('중복 없음', ()=>dupCss.length===0?true:'!'+dupCss.map(([k,v])=>`${k}×${v}`).join(', '));
+
+/* [버그 이력] id 도 두 번 쓴 적이 있다 — `<b class="mitt" id="mitt">` 와
+   `<div class="mitt" id="mitt">`. querySelector('#mitt') 는 앞엣것만
+   잡으니까, 포수 글러브를 옮기려던 코드가 타격 범위 원을 옮겼다.    */
+console.log('\n[HTML id 중복]');
+const ids={};
+for(const m of s.matchAll(/\sid="([A-Za-z][\w-]*)"/g)) ids[m[1]]=(ids[m[1]]||0)+1;
+const dupId=Object.entries(ids).filter(([,v])=>v>1);
+T('중복 없음', ()=>dupId.length===0?true:'!'+dupId.map(([k,v])=>'#'+k+'×'+v).join(', '));
 
 console.log('\n[객체 중복 키]');
 const dupKey=[];

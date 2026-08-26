@@ -82,6 +82,33 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
   d.querySelector('#decision .rb-b.go').click(); await wait(400);
   T(ev("LIVE && LIVE._catchThrow==='go'"), '던진다가 엔진에 닿는다');
 
+  console.log('\n[\uc8fc\ub8e8 2\ub9c9 \u2014 \uace0\ub974\uace0 \ub098\uc11c\ub3c4 \ud654\uba74\uc774 \uc774\uc5b4\uc9c4\ub2e4]');
+  T(ev("/replay/.test(groundScene.toString())"), 'groundScene \uc774 2\ub9c9(replay)\uc744 \uac00\uc9c0\uace0 \uc788\ub2e4');
+  T(ev("/hold\\(r, evs, /.test(playThenClose.toString())"),
+    'playThenClose \uac00 \uacb0\uacfc\ub97c hold \uc5d0 \ub118\uae30\uace0 \ubc14\ub85c \uc548 \ub2eb\ub294\ub2e4');
+  T(ev("/_lastPlay/.test(LiveGame.prototype.stepPA.toString())"),
+    '\uc5d4\uc9c4\uc774 \ub9c8\uc9c0\ub9c9 \ud0c0\uad6c \uacb0\uacfc\ub97c \ub0a8\uae34\ub2e4');
+  T(ev(`(function(){
+    var seen=0;
+    for(var n=0;n<3;n++){ var L=makeLive(); var g=0;
+      while(!L.over && g++<3000){ L.pending=null; L.step();
+        var p=L._lastPlay;
+        if(p && p.ang!=null && p.dist!=null && p.type) seen++; } }
+    return seen>50 ? seen+'\ud0c0\uad6c\uc5d0\uc11c \ubc29\ud5a5\u00b7\uac70\ub9ac\uac00 \ub2e4 \ucc28 \uc788\ub2e4' : false; })()`),
+    '_lastPlay \uc5d0 \ubc29\ud5a5\u00b7\uac70\ub9ac\u00b7\uacb0\uacfc\uac00 \ub4e4\uc5b4 \uc788\ub2e4');
+  T(ev("/\ub3cc\ub2e4 \uc7a1\ud614\ub2e4/.test(groundScene.toString())"), '\ub3cc\ub2e4 \uc8fd\uc73c\uba74 \uadf8\ub807\uac8c \uc801\ud78c\ub2e4');
+  T(ev("/_stretch/.test(renderSwing.toString()) && !/removeChild\\(box2\\);\\s*\\n\\s*after\\(\\)/.test(renderSwing.toString())"),
+    '\uace0\ub974\uc790\ub9c8\uc790 \ucc3d\uc744 \uc5c6\uc560\uc9c0 \uc54a\ub294\ub2e4');
+
+  console.log('\n[\ubbf8\ud2b8 \uc774\ub984 \ucda9\ub3cc]');
+  T(ev("!!document.querySelector('.hitmitt') || true") &&
+    ev("/#hitmitt/.test(paintMitt.toString())"), '\ud0c0\uaca9 \ubc94\uc704\ub294 .hitmitt \ub97c \uc4f4\ub2e4');
+  T(ev("document.querySelectorAll('#mitt').length===0"), '#mitt \ub85c \uc911\ubcf5\ub41c \uc5d8\ub9ac\uba3c\ud2b8\uac00 \uc5c6\ub2e4');
+
+  console.log('\n[\uba54\uc778\ud654\uba74\uc73c\ub85c \ub098\uac00\ub294 \uae38]');
+  T(!!d.querySelector('#homebtn'), '\ud5e4\ub354\uc5d0 \uba54\uc778\ud654\uba74 \ubc84\ud2bc\uc774 \uc788\ub2e4');
+  T(ev("/HS_OK/.test(go.toString())"), '\uace0\uad50 \ud504\ub864\ub85c\uadf8 \uc911\uc5d0\ub3c4 \uba54\uc778\ud654\uba74\uc740 \uc5f4\ub9b0\ub2e4');
+
   console.log('\n[마운드 없이도 창이 닫힌다]');
   T(ev("playThenClose.toString().indexOf('r && mv')>0"),
     'playThenClose 가 mv 없이 불려도 안 터진다');

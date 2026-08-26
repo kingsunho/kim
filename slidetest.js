@@ -149,12 +149,22 @@ setTimeout(()=>{
     const R=ev("moundView({batLeft:false})._mv.batLeft");
     return (L===true&&R===false) ? '좌타/우타 구분' : '!안 바뀐다';
   });
+  /* [버그 이력] 여기서 찾던 #mitt 는 **두 개**였다 — 타격 범위 원과
+     포수 글러브가 같은 id 를 썼다. 이름을 갈랐으니 둘 다 확인한다. */
   T('구장 그림과 전광판이 붙어 있다', ()=>{
     const m=ev(`(function(){var m=moundView({});
       return [!!m.querySelector('.mv-cv'), !!m.querySelector('#mvboard'),
               !!m.querySelector('#mvtop'), !!m.querySelector('#szone'),
-              !!m.querySelector('#mitt')].join(',');})()`);
-    return m==='true,true,true,true,true' ? '캔버스·전광판·상단띠·존·미트' : `!${m}`;
+              !!m.querySelector('#hitmitt'), !!m.querySelector('#cmitt')].join(',');})()`);
+    return m==='true,true,true,true,true,true'
+      ? '캔버스·전광판·상단띠·존·타격범위·포수미트' : `!${m}`;
+  });
+  T('타격 범위와 포수 글러브가 서로 다른 것이다', ()=>{
+    const m=ev(`(function(){var m=moundView({});
+      return (m.querySelectorAll('#hitmitt').length===1)+','+
+             (m.querySelectorAll('#cmitt').length===1)+','+
+             (m.querySelector('#hitmitt')!==m.querySelector('#cmitt'));})()`);
+    return m==='true,true,true' ? '하나씩 · 서로 다른 엘리먼트' : `!${m}`;
   });
   T('좌완이 우타를 만나면 반대 손 맞대결이다', ()=>{
     const lsm=ev("pitchHand({id:'lsm'},{bats:'R'})"), swm=ev("pitchHand({id:'swm'},{bats:'R'})");
