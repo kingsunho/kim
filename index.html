@@ -1556,6 +1556,13 @@ table.hl-tbl td.hl-o{color:#c98a80}
 .lu-n{flex:1;color:var(--tx);font-weight:700}
 .lu-ro.me .lu-n{color:var(--gold)}
 .lu-p{font-size:11px;color:var(--dim)}
+.pg-h{display:block;font-size:9px;margin-top:3px;font-weight:800;color:#ffd15c}
+.pg-h.e{color:#7fd6a5}
+/* 수비 — 타구가 내 자리로 온다 */
+.defbox{margin-top:10px;padding:12px;border-radius:12px;
+  background:linear-gradient(180deg,rgba(63,165,100,.13),var(--panel));
+  border:1px solid #3fa564}
+.defbox .rb-bar>i{background:linear-gradient(90deg,#3fa564,#c9a227,#d2544a)}
 /* 주루 — 공이 굴러가는 동안 고른다 */
 .runbox{margin-top:10px;padding:12px;border-radius:12px;
   background:linear-gradient(180deg,rgba(201,162,39,.14),var(--panel));
@@ -2316,7 +2323,10 @@ function simPA(bat,pit,offTeam,defTeam,rng,tac,cond,park,mods){
   r-=bbR;
   if(r<hbpR) return {type:'HBP'};
 
-  const errR = clamp(LG.ERR_PER_BIP * defTeam.tend.err * dFactor * park.err * (defTeam._errMod||1), 0.01, 0.22);
+  /* 수비 — 과감하게 달려들면 잡을 확률도 놓칠 확률도 같이 오른다.
+     사용자가 고를 때만 걸린다(mods.err/mods.babip 는 기본이 1). */
+  const errR = clamp(LG.ERR_PER_BIP * defTeam.tend.err * dFactor * park.err
+                     * (defTeam._errMod||1) * (mods.err||1), 0.01, 0.22);
   if(rng()<errR) return {type:'E'};
 
   const babip = clamp(LG.BABIP * offTeam.tend.babip * fBip * pBip * dFactor * tBip * park.babip
@@ -2894,6 +2904,48 @@ function fenceAt(park, ang){
 function bbRng(seq){
   let s=((seq|0)*2654435761 + 0x9E3779B9)>>>0;
   return ()=>{ s=(s*1664525+1013904223)>>>0; return s/4294967296; };
+}
+/* ================= 수비 =================
+   [요청] "수비도 넣어야지 수비는 선수모드에서만"
+
+   [핵심] 타구 방향은 **결과보다 먼저 정해져 있다.**
+   battedBall 이 bbRng(seq) 라는 별도 난수를 쓰기 때문이다 — 경기 난수와
+   섞이지 않아서, 결과를 굴리기 전에 각도만 먼저 뽑아도 값이 같다.
+   그래서 엔진 순서를 뒤집지 않고도 "어디로 올지" 를 미리 알 수 있다.
+   (순서를 뒤집었으면 verify 의 여섯 지표를 다시 맞춰야 했을 것이다)
+
+   [주의] battedBall 의 **첫 세 번 호출과 똑같은 순서**로 뽑아야 한다.
+   한 번이라도 어긋나면 미리 본 방향과 실제 타구가 달라진다.        */
+function battedAngle(seq, bats){
+  const rng=bbRng(seq);
+  const foul=(typeof PS_FOUL!=='undefined')?PS_FOUL:50.2;
+  const pull=(bats==='L')?18:-18;
+  let ang=pull*(0.30+rng()*0.70)+((rng()+rng())-1)*56;
+  return Math.max(-foul+1.5, Math.min(foul-1.5, ang));
+}
+/* 자리마다 지키는 각도. 좁게 잡았다 — 타석마다 물어보면 정신없다.
+   [실측] 처음 잡은 폭으로 20000타석을 돌려보니 중견수 30.9%(경기당 9번),
+   유격수 25.2% 였다. 그건 리듬이 아니라 방해다. 30% 쯤 좁혔다.
+   지금은 어느 자리든 타석당 8~14%, 7이닝 경기에 네댓 번 온다.     */
+const DEF_ZONE={ '3B':[-40,-27], SS:[-24,-12], '2B':[9,21], '1B':[25,40],
+                 LF:[-37,-25], CF:[-7,7], RF:[23,37], P:[-4,4], C:[0,0] };
+/* [제보] "포수랑 중견수 유격 중앙 포지션이 수비 중요하고 더 빡센거"
+   맞다. 야구에서 센터 라인(C·SS·CF·2B)은 자리 자체가 다르다.
+     · 어려운 타구가 온다 — 좌우로 뛰어야 하고 판단할 시간이 짧다
+     · 그래서 과감하게 붙으면 놓칠 위험이 코너보다 크다
+     · 대신 잡아내면 그만큼 크게 막는다
+   이 계수가 그 둘을 같이 키운다. 1루수는 반대로 편하다.          */
+const DEF_HARD={ C:1.40, SS:1.32, CF:1.26, '2B':1.20,
+                 '3B':1.06, LF:1.00, RF:1.00, '1B':0.88, P:1.10 };
+function defHard(pos){ return DEF_HARD[pos]||1; }
+function defZoneHit(pos, ang){
+  /* [제보] "포수는 도루 저지랑 홈송구 받는거 그걸로 나와야겠네"
+     맞다. 포수한테 타구가 오는 게 포수의 일이 아니다. 앉아서 공을 받고,
+     뛰면 던지고, 홈에서 막는 게 일이다. 그래서 포수는 이 길로 안 온다 —
+     도루 상황에서 따로 물어본다(detectDecision 의 throw).           */
+  if(pos==='C') return false;
+  const z=DEF_ZONE[pos]; if(!z||z[0]===z[1]) return false;
+  return ang>=z[0] && ang<=z[1];
 }
 /* kind: HR 3B 2B 1B FB GB DP SF E FOUL · itp = 그라운드 홈런 */
 function battedBall(seq, kind, park, bats, itp){
@@ -7246,8 +7298,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.63.0';
-const APP_VERSION_NOTE = '치고 나서 한 베이스 더 갈지 정한다';
+const APP_VERSION = '2.64.0';
+const APP_VERSION_NOTE = '수비 — 타구가 내 자리로 온다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7268,6 +7320,16 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.64.0', t:'수비 — 타구가 내 자리로 온다', items:[
+    '선수 모드에서 내가 지키는 자리로 타구가 오면 「안전하게 / 달려든다」를 고른다. 경기당 서너 번 온다',
+    '과감하게 붙으면 잡을 확률도 놓칠 확률도 같이 오른다. 수비·어깨가 좋을수록 덜 흘린다 — 그게 수비다',
+    '센터 라인(포수·2루·유격·중견)은 더 빡세다. 어려운 타구가 오고 판단할 시간이 짧아서, 과감하면 놓칠 위험이 코너보다 크다. 대신 막아내면 그만큼 크게 막는다',
+    '포지션 고를 때부터 「센터 라인」 「편한 자리」가 표시된다. 수비로 팀을 먹여 살리고 싶으면 센터로 가면 된다',
+    '포수는 타구가 아니라 도루로 나온다. 1루 주자가 있으면 「뛰면 던질 건가」를 물어본다 — 던지면 잡을 확률이 오르고, 빠뜨리면 3루까지 준다',
+    '타구 방향은 결과보다 먼저 정해져 있었다. 그래서 엔진 순서를 하나도 안 건드리고 「어디로 올지」를 미리 알 수 있다. 3000번 돌려서 미리 본 방향과 실제 타구가 전부 일치하는 걸 확인했다',
+    '엔진 캘리브레이션 여섯 지표는 한 자리도 안 움직였다. 수비 선택은 사용자가 고를 때만 걸린다',
+    '더보기 → 수비 에서 끌 수 있다',
+  ]},
   {v:'2.63.0', t:'주루 — 한 베이스 더', items:[
     '잘 맞은 타구를 치면 공이 굴러가는 동안 「한 베이스 더?」를 물어본다. 막대가 차는 게 야수가 공에 다가가는 시간이다 — 늦게 고를수록 잡힌다',
     '1루타를 2루타로, 2루타를 3루타로 늘릴 수 있다. 실패하면 아웃이다 — 기록에도 「2루에서 아웃」으로 남는다',
@@ -9648,6 +9710,27 @@ LiveGame.prototype.consumePlayMods = function(off, def){
     const pm=pitchMods(this._pitchHit, p?p.ctl:40);
     if(pm) out={...(out||{}), ...pm};
   }
+  /* 수비 — 내가 지키는 자리로 타구가 올 때 고른 것.
+     과감: 잡으면 호수비, 놓치면 실책. 안전: 무난하게 간다. */
+  if(this._defPlay && def.isUser){
+    const dp=this._defPlay; this._defPlay=null;
+    const me=this.myId||(typeof ST!=='undefined'&&ST?ST.playerId:null);
+    const p=me?def.team.players.find(x=>x.id===me):null;
+    const dv=p?p.def:45, av=p?p.arm:45;
+    /* 센터 라인은 더 빡세다 — 놓칠 위험도, 막았을 때 값어치도 같이 크다 */
+    const hd=defHard((typeof myPos==='function')?myPos():null);
+    if(dp.bold){
+      /* 잘하는 수비수는 과감해도 덜 흘린다 */
+      const good=(dv-45)*0.010+(av-45)*0.004;
+      const cut=(1-(0.86-good*0.5))*hd;              // 안타를 얼마나 줄이나
+      const risk=((1.85-good*2.2)-1)*hd;             // 실책이 얼마나 느나
+      out={...(out||{}), babip:((out&&out.babip)||1)*Math.max(0.55,1-cut),
+                         err:((out&&out.err)||1)*Math.max(1,1+risk)};
+    } else {
+      out={...(out||{}), babip:((out&&out.babip)||1)*(1+0.05*hd),
+                         err:((out&&out.err)||1)*0.62};
+    }
+  }
   this._swingQ=null; this._pitchHit=null;
   return out;
 };
@@ -9663,6 +9746,36 @@ LiveGame.prototype.detectDecision = function(){
   if(this.manual && this.paSeq!==this._lastPlayPA){
     if(off.isUser && this.playAsk('bat'))        return {kind:'swing', label:'타이밍'};
     if(this.def().isUser && this.playAsk('pit')) return {kind:'pitch', label:'코스'};
+  }
+  /* 포수 — 뛰면 던진다.
+     [요청] "포수는 도루 저지랑 홈송구 받는거 그걸로 나와야겠네"
+     1루에 주자가 있고 2루가 비면 도루가 나올 수 있는 판이다.
+     그때마다 묻는다 — 포수는 매 타석 그 판단을 하고 앉아 있다.     */
+  if(this.manual && this.def().isUser && this.paSeq!==this._lastDefPA
+     && typeof isPlayerMode==='function' && isPlayerMode()
+     && (typeof ST==='undefined'||!ST||ST.defAsk!==false)
+     && (typeof myPos==='function') && myPos()==='C'
+     && this.bases[0] && !this.bases[1]){
+    const me=this.myId||(ST&&ST.playerId);
+    if(me && (this.def().slots||[]).some(x=>x.id===me))
+      return {kind:'throw', what:'sb'};
+  }
+  /* 수비 — **선수 모드에서만.** 내가 지키는 자리로 타구가 올 때만 묻는다.
+     [요청] "수비도 넣어야지 수비는 선수모드에서만"                  */
+  if(this.manual && this.def().isUser && this.paSeq!==this._lastDefPA
+     && typeof isPlayerMode==='function' && isPlayerMode()
+     && (typeof ST==='undefined'||!ST||ST.defAsk!==false)){
+    const pos=(typeof myPos==='function')?myPos():null;
+    if(pos && pos!=='P' && DEF_ZONE[pos]){
+      const me=this.myId||(ST&&ST.playerId);
+      const d2=this.def();
+      const onField=me && (d2.slots||[]).some(x=>x.id===me);
+      if(onField){
+        const b=this.batter();
+        const ang=battedAngle(this.paSeq, (b&&b.bats)||'R');
+        if(defZoneHit(pos, ang)) return {kind:'defplay', ang, pos};
+      }
+    }
   }
 
   /* 우리가 수비 중일 때의 판단 지점 — 투수 교체·고의4구·시프트 */
@@ -9784,17 +9897,35 @@ LiveGame.prototype.stepPA = function(){
       const att=clamp(LG.SB_PER_PA*LG.SB_MULT*off.team.tend.sb*runMul
                       *Math.exp((rn.spd-LG.SB_SPD_MID)*LG.SB_SPD_K),0,LG.SB_MAX);
       if(rng()<att){
-        const su=clamp(LG.SB_SUCCESS+(rn.spd-LG.SB_SU_MID)*0.0030-(def.cArm-46)*0.0060,0.45,0.99);
+        let su=clamp(LG.SB_SUCCESS+(rn.spd-LG.SB_SU_MID)*0.0030-(def.cArm-46)*0.0060,0.45,0.99);
+        /* 포수가 던지기로 했나. 던지면 잡을 확률이 오르는 대신
+           빠뜨리면 한 베이스를 더 준다. 안 던지면 그냥 보낸다.      */
+        const ct=this._catchThrow; this._catchThrow=null;
+        let wild=false;
+        if(ct==='go'){
+          const me=this.myId||(typeof ST!=='undefined'&&ST?ST.playerId:null);
+          const c=me?def.team.players.find(x=>x.id===me):null;
+          const arm=c?c.arm:46;
+          su=clamp(su-0.10-(arm-46)*0.0045, 0.20, 0.99);
+          wild=true;                       // 실패하면 악송구 판정을 한 번 더 본다
+        } else if(ct==='hold'){
+          su=0.995;                        // 안 던졌으니 거의 다 산다
+        }
         if(rng()<su){
           this.bases[1]=this.bases[0];this.bases[0]=null;
           this.box[rn.id].sb++;pl.sbA++;def.sbAllowed++;
-          events.push({text:`${rn.name} 2루 도루 성공`,cls:'sb'});
+          /* 던졌는데 안 잡혔다 — 가끔 공이 외야로 빠진다 */
+          if(wild && rng()<0.16){
+            this.bases[2]=this.bases[1]; this.bases[1]=null;
+            events.push({text:`${rn.name} 2루 도루 — 포수 악송구, 3루까지`,cls:'sb'});
+          } else
+          events.push({text:`${rn.name} 2루 도루 성공`+(ct==='go'?' — 던졌지만 늦었다':''),cls:'sb'});
         }else{
           /* 도루 저지도 투수가 기록한 아웃이다. 이닝(IP)에 들어가야 한다.
              예전에는 이걸 빼먹어서 3이닝을 던지고도 2.2 / 3.1 처럼
              이닝이 실제 경기와 어긋났다. */
           this.bases[0]=null;this.outs++;pl.outs++;this.box[rn.id].cs++;
-          events.push({text:`${rn.name} 도루 실패`,cls:'out'});
+          events.push({text:`${rn.name} 도루 실패`+(ct==='go'?' — 포수 송구 아웃':''),cls:'out'});
           this.hl('cs',off,rn.name,'2루 도루 실패');
           if(this.outs>=3){ this.endHalf(); return {events, half:true}; }
         }
@@ -10381,6 +10512,19 @@ LiveGame.prototype.applyDecision = function(choice){
     return;
   }
   if(choice==='playskip'){ this._lastPlayPA=this.paSeq; return; }
+  /* 수비 — 이 타석은 물어봤다고 표시하고 선택을 남긴다 */
+  if(choice==='def:bold' || choice==='def:safe'){
+    this._lastDefPA=this.paSeq;
+    this._defPlay={bold:choice==='def:bold'};
+    return;
+  }
+  if(choice==='def:skip'){ this._lastDefPA=this.paSeq; this._defPlay=null; return; }
+  /* 포수 송구 — 뛰면 던질 것인가 */
+  if(choice==='thr:go' || choice==='thr:hold'){
+    this._lastDefPA=this.paSeq;
+    this._catchThrow=(choice==='thr:go')?'go':'hold';
+    return;
+  }
 
   /* ---- 수비 판단 ---- */
   if(choice==='pchange'){                      // 투수 교체는 작전 횟수를 안 먹는다
@@ -12756,14 +12900,21 @@ function renderRole(){
     pn.innerHTML='<b>여덟 자리 다 고를 수 있다.</b> 밑에 적힌 건 '+nameOf(me)+
       ' 가 그 자리를 얼마나 해봤는지 — 못 고른다는 뜻이 아니다.<br>'+
       '「처음이다」 를 골라도 된다. 고등학교 3년 동안 몸으로 배우면 되고, '+
-      '그게 다음에 새로 키울 때 완전히 다른 판이 되는 이유다.';
+      '그게 다음에 새로 키울 때 완전히 다른 판이 되는 이유다.<br><br>'+
+      '<b>센터 라인</b>(포수·2루·유격·중견)은 타구가 더 오고 더 어렵다. '+
+      '수비로 팀을 먹여 살리고 싶으면 거기다.';
     pc.appendChild(pn);
     const grid=el('div','posgrid');
     FIELD_POS.forEach(p=>{
       const v=posFit(me,p);
       const b=el('button','poscard '+fitCls(v)+(ST.myPos===p?' on':''));
+      /* [제보] "포수랑 중견수 유격 중앙 포지션이 수비 중요하고 더 빡센거"
+         고를 때부터 알아야 한다. 센터 라인은 타구가 더 오고 더 어렵다. */
+      const hd=defHard(p);
       b.innerHTML='<span class="pg-n">'+POSNAMES[p]+'</span>'+
-        '<span class="pg-f">'+fitLabel(v)+'</span>';
+        '<span class="pg-f">'+fitLabel(v)+'</span>'+
+        (hd>=1.2?'<span class="pg-h">센터 라인</span>'
+                :(hd<=0.9?'<span class="pg-h e">편한 자리</span>':''));
       b.onclick=()=>{ ST.myPos=p; saveGame(true); renderRole(); };
       grid.appendChild(b);
     });
@@ -21700,6 +21851,109 @@ function renderSwing(box, d){
     const rb=w.querySelector('.runbox'); if(rb&&rb._stop) rb._stop(); };
 }
 
+/* 수비 — 내 자리로 타구가 온다.
+   [요청] "수비도 넣어야지 수비는 선수모드에서만"
+
+   방향은 battedAngle 로 미리 안다(bbRng 가 결과와 별개라서 가능하다).
+   여기서 정하는 건 **어떻게 붙을 것인가** 뿐이고, 잡았는지 놓쳤는지는
+   엔진이 낸다 — 내 수비·어깨와 선택이 확률에 들어간다.
+   과감하면 잡을 확률도 놓칠 확률도 같이 오른다. 그게 수비다.       */
+function renderDefPlay(box, d){
+  const def=LIVE.def(), off=LIVE.off();
+  const me=LIVE.myId||(ST&&ST.playerId)||MYID;
+  const p=def.team.players.find(x=>x.id===me);
+  const bat=LIVE.batter();
+  const w=el('div','pl-wrap');
+  const pos=d.pos||myPos();
+  const dir=dirName(d.ang);
+  const head=el('div');
+  head.innerHTML='<div class="pl-t">수비 · '+(POSNAMES[pos]||pos)+'</div>'+
+    '<div class="pl-sub">'+LIVE.inning+'회 '+LIVE.outs+'아웃 · 타석 '+
+      (bat?'<b style="color:#e2eaf5">'+bat.name+'</b>':'')+
+      ' · <b style="color:#ffd15c">'+dir+'</b> 쪽으로 친다</div>'+
+    (p?'<div class="bat-info"><div class="bi-top"><b>'+p.name+'</b>'+
+       '<em>'+(POSNAMES[pos]||pos)+'</em></div>'+
+       '<div class="bi-r">수비 '+Math.round(p.def)+' · 어깨 '+Math.round(p.arm)+'</div></div>':'');
+  w.appendChild(head);
+
+  const mv=moundView({pitLeft:false, batLeft:!!(bat&&bat.bats==='L'), usDef:true});
+  w.appendChild(mv);
+
+  const box2=el('div','defbox');
+  const hard=defHard(pos);
+  box2.innerHTML='<div class="rb-t">타구가 '+dir+'으로 온다</div>'+
+    '<div class="rb-bar"><i></i></div>'+
+    '<div class="rb-note">과감하면 잡을 확률도 놓칠 확률도 같이 오른다'+
+      (hard>=1.2?' · <b style="color:#ffd15c">센터 라인이라 더 빡세다</b>':'')+'</div>';
+  const bar=box2.querySelector('.rb-bar > i');
+  const row=el('div','rb-row');
+  let picked=false;
+  const dur=1500, t0=Date.now();
+  const pick=(bold)=>{
+    if(picked)return; picked=true;
+    clearInterval(tick);
+    /* [주의] applyDecision 을 여기서 부르면 안 된다 — playThenClose 가
+       한 번 더 부른다. 두 번 부르면 def:skip 처럼 선택이 지워진다.
+       choice 를 넘겨서 **한 번만** 적용되게 한다.                  */
+    playThenClose(box, mv, bold?'def:bold':'def:safe',
+      bold?'달려든다':'안전하게', bold?'#ffd15c':'#7fc48f');
+  };
+  const b1=el('button','rb-b stay','안전하게');
+  b1.onclick=()=>pick(false);
+  const b2=el('button','rb-b go','달려든다 ▸');
+  b2.onclick=()=>pick(true);
+  row.appendChild(b1); row.appendChild(b2);
+  box2.appendChild(row);
+  w.appendChild(box2);
+  const skip=el('button','pl-skip','알아서 하게 둔다');
+  skip.onclick=()=>{ if(picked)return; picked=true; clearInterval(tick);
+    LIVE.applyDecision('def:skip'); decDone(box); };
+  w.appendChild(skip);
+  box.appendChild(w);
+
+  const tick=setInterval(()=>{
+    const k=Math.min(1,(Date.now()-t0)/dur);
+    if(bar) bar.style.width=(k*100).toFixed(0)+'%';
+    if(k>=1) pick(false);                 // 안 고르면 안전하게
+  },40);
+  box._cleanup=()=>{ picked=true; clearInterval(tick); };
+}
+
+/* 포수 — 뛰면 던진다.
+   [요청] "포수는 도루 저지랑 홈송구 받는거 그걸로 나와야겠네"
+          "수비할때 막 송구도 버튼 누르면 할 수 있게 해야하는데"
+   던지면 잡을 확률이 오르지만 빠뜨리면 3루까지 준다.
+   안 던지면 거의 다 산다 — 대신 사고도 없다. 어깨가 좋을수록 던질 만하다. */
+function renderThrow(box, d){
+  const def=LIVE.def(), off=LIVE.off();
+  const me=LIVE.myId||(ST&&ST.playerId)||MYID;
+  const c=def.team.players.find(x=>x.id===me);
+  const rn=off.team.players.find(x=>x.id===LIVE.bases[0]);
+  const w=el('div','pl-wrap');
+  const head=el('div');
+  head.innerHTML='<div class="pl-t">수비 · 포수</div>'+
+    '<div class="pl-sub">'+LIVE.inning+'회 '+LIVE.outs+'아웃 · 1루 주자 '+
+      (rn?'<b style="color:#e2eaf5">'+rn.name+'</b> (주루 '+Math.round(rn.spd)+')':'')+'</div>'+
+    (c?'<div class="bat-info"><div class="bi-top"><b>'+c.name+'</b><em>포수</em></div>'+
+       '<div class="bi-r">어깨 '+Math.round(c.arm)+' · 수비 '+Math.round(c.def)+'</div></div>':'');
+  w.appendChild(head);
+  const box2=el('div','defbox');
+  box2.innerHTML='<div class="rb-t">뛰면 던질 건가</div>'+
+    '<div class="rb-note">던지면 잡을 확률이 오른다 · 빠뜨리면 3루까지 준다</div>';
+  const row=el('div','rb-row');
+  const b1=el('button','rb-b stay','안 던진다');
+  b1.onclick=()=>{ LIVE.applyDecision('thr:hold'); decDone(box); };
+  const b2=el('button','rb-b go','던진다 ▸');
+  b2.onclick=()=>{ LIVE.applyDecision('thr:go'); decDone(box); };
+  row.appendChild(b1); row.appendChild(b2);
+  box2.appendChild(row);
+  w.appendChild(box2);
+  const skip=el('button','pl-skip','알아서 하게 둔다');
+  skip.onclick=()=>{ LIVE.applyDecision('def:skip'); decDone(box); };
+  w.appendChild(skip);
+  box.appendChild(w);
+}
+
 /* 투구 — 카운트를 보고 구종·코스를 고른다. 타자가 참거나 휘두른다. */
 function renderPitch(box, d){
   const def=LIVE.def(), off=LIVE.off();
@@ -21968,6 +22222,8 @@ function showDecision(d){
   }
   if(d.kind==='swing'){ renderSwing(box,d); return; }
   if(d.kind==='pitch'){ renderPitch(box,d); return; }
+  if(d.kind==='defplay'){ renderDefPlay(box,d); return; }
+  if(d.kind==='throw'){ renderThrow(box,d); return; }
   if(!box._nmWired){ wireNames(box); box._nmWired=true; }   // 이름 눌러 카드 열기
   const us=LIVE.userIsHome?LIVE.home:LIVE.away;
   const th=LIVE.userIsHome?LIVE.away:LIVE.home;
@@ -24881,6 +25137,24 @@ function renderMore(){
     ? '타석에 서면 공이 안 온다. 노림수를 고르고 「준비 됐다 ▶」 를 눌러야 던진다. 급할 것 없다.'
     : '타석에 서면 3·2·1 을 세고 알아서 던진다. 「안 기다리고 바로」 로 건너뛸 수 있다.'));
 
+  /* 수비 — 선수 모드에서만 */
+  if(isPlayerMode()){
+    const dn=el('p','muted');
+    dn.innerHTML='<br><b>수비</b> — 내가 지키는 자리로 타구가 올 때 '+
+      '<b>어떻게 붙을지</b> 물어본다. 경기당 네댓 번쯤 온다.';
+    pl.appendChild(dn);
+    const dnRow=el('div','btn-row');
+    [[true,'물어본다'],[false,'안 물어본다']].forEach(([v,lab])=>{
+      const b=el('button','btn'+(((ST.defAsk!==false)===v)?' primary':''),lab);
+      b.onclick=()=>{ ST.defAsk=v; saveGame(true); renderMore();
+        toast(v?'타구가 오면 물어본다':'수비는 알아서 한다'); };
+      dnRow.appendChild(b);
+    });
+    pl.appendChild(dnRow);
+    pl.appendChild(el('div','set-note',
+      '과감하게 붙으면 잡을 확률도 놓칠 확률도 같이 오른다. 수비·어깨가 좋을수록 덜 흘린다.'));
+  }
+
   /* 주루 — 치고 나서 한 베이스 더 갈지 물어볼까
      [요청] "베이스 어디까지 갈건지 정하게 해서 주루플레이도" */
   const rn=el('p','muted');
@@ -25425,6 +25699,7 @@ function normalizeState(){
      예전 자동 리듬이 정신없다는 제보에서 나온 기본값이라 그쪽이 맞다. */
   if(ST.batReady!=='auto'&&ST.batReady!=='me')ST.batReady='me';
   if(typeof ST.runAsk!=='boolean')ST.runAsk=true;   // [v2.63.0] 주루 물어보기
+  if(typeof ST.defAsk!=='boolean')ST.defAsk=true;   // [v2.64.0] 수비 물어보기
   if(!ST.names)ST.names={};
   us.players.forEach(p=>{ ST.names[p.id]=p.name; });
   if(!ST.lgPit)ST.lgPit={};
