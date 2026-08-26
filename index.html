@@ -989,6 +989,12 @@ table.stand td.nm{text-align:left;font-weight:700;font-size:12px}
 /* 포수 미트가 그냥 갈색 동그라미로 보여서 뭔지 몰랐다 — 글러브 모양 + 이름 */
 .aim-go{width:100%;margin-top:6px;padding:9px;border-radius:8px;font-size:12px;
   font-weight:800;background:var(--panel2);border:1px solid #3c4450;color:var(--gold)}
+/* 이걸 눌러야 공이 오는 모드에서는 유일한 길이다 — 놓치면 화면이 멈춘 줄 안다.
+   [제보] "타자할 때 너무 바쁘고 정신없어" 에서 나온 자리다.        */
+.aim-go.now{padding:14px;font-size:15px;background:linear-gradient(180deg,#2f8f4e,#1f6f3a);
+  border-color:#3fa564;color:#fff;box-shadow:0 3px 0 #14512a;animation:aimpulse 1.6s ease-in-out infinite}
+@keyframes aimpulse{0%,100%{box-shadow:0 3px 0 #14512a}
+  50%{box-shadow:0 3px 0 #14512a, 0 0 0 5px rgba(63,165,100,.18)}}
 .bat-info{background:linear-gradient(135deg,rgba(232,118,44,.10),var(--panel));
   border:1px solid var(--line);border-radius:9px;padding:7px 9px;margin:7px 0}
 .bi-top{display:flex;align-items:baseline;gap:6px}
@@ -1528,6 +1534,18 @@ table.hl-tbl td.hl-o{color:#c98a80}
 .np-cell i{display:block;font-style:normal;font-size:10px;opacity:.85;margin-top:2px}
 .np-cell em{display:block;font-style:normal;font-size:9.5px;color:var(--gold);
   opacity:.9;margin-top:1px}
+/* 안 끝나는 결과 화면 — 쫓는 기록 세 줄 + 다음 걸음 한 번에.
+   [요청] "한번 시작하면 헤어나올 수 없게 만들고 싶다" */
+.card.chase{border-color:#3a4553;background:linear-gradient(180deg,rgba(201,162,39,.06),var(--panel))}
+.ch-l{font-size:12.5px;color:var(--dim);line-height:1.5;padding:6px 0;
+  border-bottom:1px solid rgba(255,255,255,.05)}
+.ch-l:last-of-type{border-bottom:0}
+.ch-l b{color:var(--tx);font-weight:800}
+.ch-l em{font-style:normal;color:var(--gold);font-weight:800}
+.ch-next{margin-top:9px;padding-top:9px;border-top:1px solid var(--line);
+  font-size:11.5px;color:var(--dim);font-weight:700}
+.ch-go{margin-top:7px;padding:15px;font-size:15px;font-weight:900}
+.ch-sub{margin-top:5px;font-size:10.5px;color:var(--dim);text-align:center;opacity:.85}
 /* 오늘 못 나오는 사람 — 소식 맨 위 요약과 경기 카드 한 줄 */
 .out-sum{background:rgba(224,138,112,.12);border:1px solid rgba(224,138,112,.45);
   border-radius:9px;padding:8px 10px;margin-bottom:9px;font-size:12.5px;line-height:1.55}
@@ -7003,8 +7021,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.53.0';
-const APP_VERSION_NOTE = '타자 그림을 새로 그렸다 · 양 팀 투구수';
+const APP_VERSION = '2.54.0';
+const APP_VERSION_NOTE = '타석은 내가 준비되면 · 경기가 끝나도 안 끝난다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7025,6 +7043,15 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.54.0', t:'타석은 내가 준비되면 · 안 끝나는 결과 화면', items:[
+    '타석에 들어가도 공이 바로 안 온다. 「준비 됐다 ▶」 를 눌러야 그때 던진다. 예전엔 3·2·1 을 세고 알아서 던져서, 노림수 고르고 상대 배분 보고 존에서 자리 잡는 걸 3초 안에 다 해야 했다',
+    '「너무 바쁘고 정신없다」는 제보에서 나왔다. 타석에서 제일 중요한 건 언제 붙을지를 내가 정하는 것이다. 이제 하루 종일 생각해도 된다',
+    '예전 리듬이 좋으면 더보기 → 타석 시작 에서 「3초 세고 자동」 으로 되돌릴 수 있다. 그 모드에선 버튼이 「안 기다리고 바로」 가 된다',
+    '경기가 끝나고 단톡방에 오면 맨 아래에 「진행 중」 이 뜬다. 연속 안타 몇 경기째인지, 통산 몇 호까지 몇 개 남았는지, 3할까지 몇 안타인지, 몇 연승 중인지 — 다음 경기가 건드릴 숫자 세 줄',
+    '그 밑에 다음 상대와 바로 가는 버튼이 있다. 예전엔 「다음 주로」 를 눌러 홈에 나가떨어진 다음 [이번 주 시작] [라인업] [경기 시작] 을 또 눌러야 했다. 이제 한 번이면 된다',
+    '숫자는 지어내지 않는다. 원래부터 쌓고 있던 통산 기록·마일스톤·일정에서 그대로 뽑는다. 한 사람이 세 줄을 다 먹지 않게, 종류도 겹치지 않게 골라서 보여준다',
+    '경기가 끝났는데 공 애니메이션이 남아 있으면 드물게 화면이 죽던 것도 같이 고쳤다',
+  ]},
   {v:'2.53.0', t:'타자를 새로 그렸다', items:[
     '중계 화면 타자 그림을 새로 받아서 갈아끼웠다. 예전 그림은 목이 90도로 꺾여 머리가 어깨에 파묻혀 있었고, 다리를 좌우로만 쫙 벌린 스쿼트라 타격 준비 자세로 안 보였다',
     '이제 목이 보이고, 앞발과 뒷발이 앞뒤로 어긋난 실제 우타 스탠스로 선다. 등신 비율도 투수 두 명과 맞췄다 — 예전엔 타자만 머리가 컸다',
@@ -7958,8 +7985,10 @@ function updateForm(ST, res, uSlots){
   uSlots.forEach(sl=>{
     const b=res.box&&res.box[sl.id]; if(!b||!b.ab)return;
     const f=formSlot(sl.id);
-    if(b.h>0){ f.cold=0; f.hot+=b.h; }
-    else { f.hot=0; f.cold+=b.ab; }
+    /* hg — 연속 안타 '경기' 수. hot 은 연속 안타 '개수' 라 따로 센다.
+       결과 화면에서 "6경기째" 로 쫓아가는 숫자다.                     */
+    if(b.h>0){ f.cold=0; f.hot+=b.h; f.hg=(f.hg||0)+1; }
+    else { f.hot=0; f.cold+=b.ab; f.hg=0; }
   });
   (ST.gameRotation||[]).forEach(pid=>{
     const l=res.pbox&&res.pbox[pid]; if(!l||l.outs<3)return;
@@ -10619,6 +10648,8 @@ function newSeason(){
     playBat:(typeof ST!=='undefined'&&ST&&ST.playBat)?ST.playBat:PLAY_KEY,
     playPit:(typeof ST!=='undefined'&&ST&&ST.playPit)?ST.playPit:PLAY_KEY,
     sceneMode:(typeof ST!=='undefined'&&ST&&ST.sceneMode)?ST.sceneMode:'key',
+    /* 타석에 서면 언제 공이 오나 — 'me' 내가 누르면 · 'auto' 3초 세고 */
+    batReady:(typeof ST!=='undefined'&&ST&&ST.batReady)?ST.batReady:'me',
     pitchWait:{}, luView:'list', depMode:'now',
     appVer:APP_VERSION,
     dev:{pts:0,games:0,trains:0,minTick:0},
@@ -15289,6 +15320,181 @@ function doMeet(kind){
   saveGame(true); renderMeet(); toast(tip);
 }
 
+/* ================= 안 끝나는 결과 화면 =================
+   [요청] "한번 시작하면 헤어나올 수 없게, 화장실 가서라도 하고 싶게"
+
+   기능이 모자란 게 아니었다. 경기가 끝나면 화면이 **깔끔하게 끝났다.**
+   단톡방 맨 아래 '다음 주로' 를 누르면 홈으로 나가떨어지고, 거기서
+   [이번 주 시작] → [라인업] → [경기 시작] 을 다시 눌러야 했다.
+   깔끔하게 끝나고 세 번 더 눌러야 하면 사람은 거기서 폰을 내려놓는다.
+
+   그래서 끝나는 자리에 **안 끝난 걸 남긴다** —
+   다음 경기가 건드릴 숫자 세 줄과, 거기로 바로 가는 버튼 하나.
+
+   숫자는 지어내지 않는다. 전부 이미 쌓고 있던 것에서 뽑는다
+   (ST.career 마일스톤 · ST.bat · ST.form.hg · ST.schedule · ST.stand).  */
+
+/* 마일스톤이 '코앞' 인 기준 — 항목마다 다르다.
+   안타는 4개 남으면 다음 주에 닿지만 홈런은 1개 남아도 멀다.
+   삼진은 여기 없다. 쫓아가고 싶은 기록이 아니다.                  */
+const CHASE_NEAR ={h:4, d2:2, d3:1, hr:1, rbi:4, r:4, sb:2, bb:3};
+const CHASE_PNEAR={k:5, w:1, outs:6};
+
+/* 팀 연승·연패 — 일정에서 바로 센다. 따로 저장 안 한다. */
+function teamStreak(){
+  const done=(ST.schedule||[]).filter(x=>x.played&&x.result);
+  let kind='', n=0;
+  for(let i=done.length-1;i>=0;i--){
+    const r=done[i].result, w=r.us>r.them, l=r.us<r.them;
+    if(!kind){ if(w)kind='w'; else if(l)kind='l'; else break; n=1; }
+    else if((kind==='w'&&w)||(kind==='l'&&l)) n++;
+    else break;
+  }
+  return {kind,n};
+}
+
+/* 지금 쫓고 있는 것들. 점수 높은 순으로 max 줄.
+   한 사람이 세 줄을 다 먹지 않게 사람당 한 줄만 남긴다.          */
+function chaseLines(max){
+  const out=[];
+  const us=TBYID['wwzw'];
+  /* k = 종류. 세 줄이 전부 '연속 안타' 로 채워지면 카드가 심심하다.
+     종류를 하나씩 먼저 뽑고, 자리가 남으면 그때 같은 종류를 더 넣는다. */
+  const push=(p,k,pid,t)=>out.push({p,k,pid,t});
+
+  us.players.forEach(pl=>{
+    /* ① 연속 안타 경기 — 제일 세다. 끊길까 봐 다음 경기를 켠다 */
+    const f=(ST.form||{})[pl.id];
+    if(f&&(f.hg||0)>=3) push(92+Math.min(8,f.hg), 'streak', pl.id,
+      `<b>${pl.name}</b> 연속 안타 <em>${f.hg}경기째</em>`);
+
+    /* ② 통산 마일스톤 코앞 */
+    const c=(ST.career||{})[pl.id];
+    if(c){
+      MILESTONE_KEYS.forEach(({k,label,marks})=>{
+        const near=CHASE_NEAR[k]; if(!near) return;
+        const cur=c[k]||0, m=marks.find(x=>x>cur);
+        if(m==null) return;
+        const left=m-cur; if(left>near) return;
+        push(80+(m>=50?6:0)+(near-left), 'mile', pl.id,
+          `<b>${pl.name}</b> 통산 ${m}호 ${label}까지 <em>${left}개</em>`);
+      });
+      PIT_MILESTONES.forEach(({k,label,marks,div})=>{
+        const near=CHASE_PNEAR[k]; if(!near) return;
+        const bk = k==='outs'?'pouts':(k==='k'?'pk':'pw');
+        const cur=c[bk]||0, m=marks.find(x=>x>cur);
+        if(m==null) return;
+        const left=m-cur; if(left>near) return;
+        const shown = div? `${(left/div).toFixed(1)}이닝` : `${left}${k==='w'?'승':'개'}`;
+        push(78+(near-left), 'mile', pl.id,
+          `<b>${pl.name}</b> 통산 ${div?m/div:m}${label}까지 <em>${shown}</em>`);
+      });
+    }
+
+    /* ③ 3할 진입까지 몇 안타 */
+    const b=(ST.bat||{})[pl.id];
+    if(b&&b.ab>=25){
+      const avg=b.h/b.ab;
+      if(avg<0.300&&avg>=0.235){
+        const need=Math.ceil((0.3*b.ab-b.h)/0.7);
+        if(need>0&&need<=5) push(74+(6-need), 'avg3', pl.id,
+          `<b>${pl.name}</b> ${fmt3(avg)} — <em>${need}안타</em>면 3할`);
+      }
+    }
+  });
+
+  /* ④ 팀 연승·연패 */
+  const sk=teamStreak();
+  if(sk.kind==='w'&&sk.n>=2) push(79+sk.n, 'wl', null, `팀 <em>${sk.n}연승</em> 중`);
+  if(sk.kind==='l'&&sk.n>=2) push(77+sk.n, 'wl', null, `<em>${sk.n}연패</em> — 여기서 끊어야 한다`);
+
+  /* ⑤ 다음 상대와 지난번에 어땠나 — 설욕이 제일 잘 먹힌다 */
+  const nx=ST.schedule&&ST.schedule[ST.round];
+  if(nx&&TBYID[nx.opp]){
+    const prev=(ST.schedule||[]).filter(x=>x.played&&x.result&&x.opp===nx.opp).slice(-1)[0];
+    if(prev){
+      const r=prev.result;
+      if(r.us<r.them) push(73, 'rev', null,
+        `지난번 ${TBYID[nx.opp].name}한테 <em>${r.us}:${r.them}</em>으로 졌다`);
+      else if(r.us>r.them) push(49, 'rev', null,
+        `지난번 ${TBYID[nx.opp].name}전 <em>${r.us}:${r.them}</em> 승`);
+    }
+  }
+
+  /* ⑥ 순위·승률 */
+  const st=(ST.stand&&ST.stand['wwzw'])||{w:0,l:0,t:0,g:0};
+  const rk=leagueRank('wwzw');
+  if(st.g>=3){
+    if(rk>=5&&rk<=9) push(71, 'rank', null, `리그 ${rk}위 — 플레이오프는 <em>4위</em>까지다`);
+    else if(rk<=4) push(53, 'rank', null, `리그 <em>${rk}위</em> — 지금이면 플레이오프에 간다`);
+  }
+  if(st.l>st.w) push(57, 'pct', null, `5할까지 <em>${st.l-st.w}승</em>`);
+  else if(st.w>st.l&&st.g>=3) push(45, 'pct', null, `${st.w}승 ${st.l}패 — 5할 위에 <em>+${st.w-st.l}</em>`);
+
+  out.sort((a,b)=>b.p-a.p);
+  const N=max||3, seenP={}, seenK={}, used={}, res=[];
+  /* 1차 — 종류를 겹치지 않게 하나씩. 2차 — 자리가 남으면 그때 채운다.
+     한 사람이 두 줄을 먹지는 않는다. used 로 같은 줄 재사용도 막는다. */
+  for(let pass=0; pass<2 && res.length<N; pass++){
+    for(let i=0;i<out.length;i++){
+      if(res.length>=N) break;
+      if(used[i]) continue;
+      const o=out[i];
+      if(o.pid&&seenP[o.pid]) continue;
+      if(pass===0&&seenK[o.k]) continue;
+      used[i]=1; seenK[o.k]=1;
+      if(o.pid) seenP[o.pid]=1;
+      res.push(o.t);
+    }
+  }
+  return res;
+}
+
+/* 다음에 뭘 눌러야 하나 — 한 번에 거기까지 데려간다.
+   홈 화면의 흐름 버튼과 같은 판단을 그대로 쓴다.                */
+function nextStepInfo(){
+  if(!ST.schedule||ST.round>=ST.schedule.length) return null;
+  const nx=ST.schedule[ST.round];
+  if(!nx||nx.played) return null;
+  const opp=TBYID[nx.opp];
+  const head=opp?`${nx.round}차전 · ${opp.name} · ${nx.homeGame?'홈':'원정'}`:null;
+  if(!ST.weekDone) return {head, label:'이번 주 시작 ▸',
+    sub:'회식·우취·개인 사정이 여기서 정해진다',
+    run:()=>{ const r=runWeek(); saveGame(true); if(r)toast('우천 취소'); go('home'); }};
+  if(ST.events&&ST.events.some(e=>e.type==='rain'||e.type==='postpone'))
+    return {head, label:'다음 주로 ▸', sub:'우천 취소다',
+      run:()=>{ const r=releaseMercs(true); if(r)toast(`우천 취소 — 용병 ${r}명 비용 환불`);
+        ST.weekDone=false; ST.events=[]; saveGame(true); go('home'); }};
+  const avail=TBYID['wwzw'].players.filter(p=>isAvailable(p.id)).length;
+  if(avail<9) return {head, label:'인원부터 채워라 ▸',
+    sub:`출전 가능 ${avail}명 — 9명이 안 되면 몰수패(0:7)다`, run:()=>go('home')};
+  if(ST.lineupDirty) return {head, label:'라인업 다시 확정 ▸',
+    sub:'못 온다는 사람이 생겼다', run:()=>go('lineup')};
+  if(!ST.announced) return {head, label:'라인업 발표부터 ▸',
+    sub:'단톡방에 올려야 경기로 넘어간다', run:()=>go('lineup')};
+  return {head, label:'경기 시작 ▸', sub:null, run:()=>go('game')};
+}
+
+/* 화면 맨 아래에 붙는 카드. 쫓는 것 세 줄 + 다음 걸음 하나. */
+function chaseCard(){
+  const step=nextStepInfo();
+  const lines=chaseLines(3);
+  if(!step&&!lines.length) return null;
+  const card=el('div','card chase');
+  if(lines.length){
+    card.appendChild(el('div','card-h','진행 중'));
+    lines.forEach(t=>{ const r=el('div','ch-l'); r.innerHTML=t; card.appendChild(r); });
+  }
+  if(step){
+    if(step.head) card.appendChild(Object.assign(el('div','ch-next'),{textContent:'다음 — '+step.head}));
+    const b=el('button','btn primary ch-go',step.label);
+    b.onclick=step.run;
+    card.appendChild(b);
+    if(step.sub) card.appendChild(Object.assign(el('div','ch-sub'),{textContent:step.sub}));
+  }
+  return card;
+}
+
 /* ---------- 카톡 ---------- */
 function renderKakao(){
   const c=$('#view'); c.innerHTML='';
@@ -15371,20 +15577,33 @@ function renderKakao(){
     c.appendChild(box);
   }
 
-  if(!played){
-    /* 카톡에 라인업을 올려야 경기로 넘어간다. 발표 없이 경기부터 하는 건 순서가 아니다. */
-    if(!announced){
-      c.appendChild(el('p','muted','라인업을 먼저 발표해야 경기로 넘어간다.'));
-    } else if(ST.lineupDirty){
-      c.appendChild(el('div','warn','못 온다는 사람이 생겼다. 라인업을 다시 확정해야 경기로 넘어간다.'));
-      const lb=el('button','btn primary','라인업 고치러 가기'); lb.onclick=()=>go('lineup');
-      c.appendChild(lb);
-    } else {
-      const g=el('button','btn primary','경기 시작'); g.onclick=()=>go('game');
-      c.appendChild(g);
-    }
+  /* [요청] "한번 시작하면 헤어나올 수 없게, 화장실 가서라도 하고 싶게"
+
+     경기가 끝나면 commitGame 이 여기로 데려다 놓는다 — 끝나는 자리다.
+     예전엔 '다음 주로' 하나뿐이었고, 그걸 누르면 홈에 내려놓고 끝이었다.
+     거기서 [이번 주 시작] → [라인업] → [경기 시작] 을 또 눌러야 했다.
+     이제 쫓는 기록 세 줄을 남기고, 다음에 눌러야 할 곳까지 한 번에 간다.
+
+     [주의] 여기 판정은 played 가 아니라 phase 다. commitGame 이 ST.round 를
+     이미 올려놨기 때문에 schedule[ST.round] 는 **다음 경기**고 played 는
+     false 다. 경기 후인지는 kakaoPost 가 찼는지로 안다.               */
+  if(phase==='post' || played){
+    const cc=chaseCard();
+    if(cc) c.appendChild(cc);
+    const g=el('button','btn'+(cc?'':' primary'),'홈으로'); g.onclick=()=>go('home');
+    c.appendChild(g);
+    return;
+  }
+  /* 경기 전 — 카톡에 라인업을 올려야 경기로 넘어간다.
+     발표 없이 경기부터 하는 건 순서가 아니다.                        */
+  if(!announced){
+    c.appendChild(el('p','muted','라인업을 먼저 발표해야 경기로 넘어간다.'));
+  } else if(ST.lineupDirty){
+    c.appendChild(el('div','warn','못 온다는 사람이 생겼다. 라인업을 다시 확정해야 경기로 넘어간다.'));
+    const lb=el('button','btn primary','라인업 고치러 가기'); lb.onclick=()=>go('lineup');
+    c.appendChild(lb);
   } else {
-    const g=el('button','btn primary','다음 주로'); g.onclick=()=>go('home');
+    const g=el('button','btn primary','경기 시작'); g.onclick=()=>go('game');
     c.appendChild(g);
   }
 }
@@ -18890,9 +19109,12 @@ function renderSwing(box, d){
       row.appendChild(b);
     });
     aim.appendChild(row);
-    /* 다 골랐으면 안 기다려도 된다 */
+    /* 이걸 눌러야 공이 온다 (자동 모드면 '안 기다리고 바로' 가 된다).
+       유일한 길일 때는 눈에 확 띄어야 해서 크게 그린다.            */
     if(phase==='ready'&&!done&&!resolved){
-      const go2=el('button','aim-go','준비 됐다 ▶');
+      const waits=(ST&&ST.batReady)!=='auto';
+      const go2=el('button','aim-go'+(waits?' now':''),
+        waits?'준비 됐다 ▶':'안 기다리고 바로 ▶');
       go2.onclick=()=>skipReady();
       aim.appendChild(go2);
     }
@@ -18922,7 +19144,7 @@ function renderSwing(box, d){
         <div class="bi-t">오늘 ${today}</div></div>`:''}
       <div class="bwin">노림수 맞히면 <b>${sec(W.tw)}</b>${aimSel==='none'?'':`
         · 틀리면 <b style="color:#e08a70">${sec(Wm.tw)}</b>`}</div>
-      <div class="pl-sub"><b>공이 올 때 [스윙] 을 눌러라.</b>
+      <div class="pl-sub">${(ST&&ST.batReady)!=='auto'&&phase==='ready'?'<b style="color:#ffd15c">준비되면 [준비 됐다 ▶] 를 눌러라. 그때 던진다.</b><br>':''}<b>공이 올 때 [스윙] 을 눌러라.</b>
         존 밖 공은 참는 게 낫다 — [지켜본다]. 4볼이면 볼넷, 3스트라이크면 삼진.<br>
         <span style="color:#6f7c8c">자리까지 노리고 싶으면 야구장에서 공이 올 자리를 직접 눌러도 된다.</span></div>`;
   };
@@ -18966,8 +19188,12 @@ function renderSwing(box, d){
   };
 
   /* ---- 다음 공 ---- */
+  /* [버그 이력] 경기가 끝나 LIVE 가 null 이 된 뒤에도 공 애니메이션이
+     남아 있으면 여기서 LIVE.rng / LIVE._umpBias 를 읽다가 터졌다.
+     done·resolved 는 이 창의 수명만 보고 경기의 수명은 안 본다.
+     둘 다 봐야 한다 — 결과 확정을 빨리 누르면 실제로 겹친다.      */
   const nextPitch=()=>{
-    if(done||resolved)return;
+    if(done||resolved||!LIVE)return;
     const type=pickPitch(myP, LIVE.rng);
     curType=type;
     const T=PITCH_TYPES[type];
@@ -18999,7 +19225,7 @@ function renderSwing(box, d){
 
   /* ---- 판정 ---- */
   const judge=(tap)=>{
-    if(done||resolved)return;
+    if(done||resolved||!LIVE)return;      // 경기가 이미 치워졌으면 판정할 것도 없다
     if(anim)anim.stop();
     phase='judge'; take.disabled=true; swingB.disabled=true; drawAim();
     let kind, pre, col, q=null, msg='';
@@ -19103,11 +19329,27 @@ function renderSwing(box, d){
      공 하나하나마다 준비 시간을 준다. 세는 동안 노림수를 바꿀 수 있고,
      다 골랐으면 '준비 됐다' 를 눌러 바로 넘어가도 된다.               */
   let cntT=null;
+  /* [제보] "타자할 때 준비 됐다 이거 눌러야 투수가 공 던지는 걸로 해줘.
+             너무 바쁘고 정신없어"
+     맞는 말이다. 예전엔 3·2·1 을 세고 **알아서 던졌다.** 노림수 고르고,
+     상대 배분 보고, 존에서 자리 잡고 — 3초 안에 다 하라는 건 무리였다.
+     타석에서 제일 중요한 건 '언제 붙을지' 를 내가 정하는 것이다.
+
+     이제 기본은 **내가 누를 때까지 기다린다.** 예전 리듬(3초 세고 자동)이
+     좋으면 더보기 → 타석 시작 에서 되돌릴 수 있다.
+     n(셀 숫자)은 자동일 때만 쓴다 — 인자를 없애면 두 번째 공부터
+     준비 단계를 안 타게 되니 그대로 둔다.                            */
   const ready=(n)=>{
     if(done||resolved)return;
     phase='ready'; take.disabled=true; swingB.disabled=true;
     let cnt=n;
     drawAim(); drawHead();
+    if((ST&&ST.batReady)!=='auto'){
+      const l=mv.querySelector('.lbl');
+      if(l) l.innerHTML=`<b>${myP.name}</b> 대기 중 — 준비되면 눌러라`;
+      note.textContent='천천히 골라라. [준비 됐다 ▶] 를 눌러야 공이 온다';
+      cntT=null; return;
+    }
     const tick=()=>{
       if(done||resolved){ cntT=null; return; }
       if(phase!=='ready'){ cntT=null; return; }   // '준비 됐다' 로 건너뛰었다
@@ -19122,7 +19364,9 @@ function renderSwing(box, d){
   };
   skipReady=()=>{ if(phase!=='ready'||done||resolved)return;
     if(cntT){clearTimeout(cntT);cntT=null;} phase='wait'; nextPitch(); };
-  note.textContent='공이 올 때 [스윙] — 존 밖이면 [지켜본다]';
+  note.textContent=(ST&&ST.batReady)==='auto'
+    ? '공이 올 때 [스윙] — 존 밖이면 [지켜본다]'
+    : '천천히 골라라. [준비 됐다 ▶] 를 눌러야 공이 온다';
   drawAim(); paint();
   ready(3);                     // 바로 '투구 준비 · 3' 이 뜨게. 빈 화면을 안 보여준다
   box._cleanup=()=>{ done=true; resolved=true; if(anim)anim.stop(); };
@@ -22257,6 +22501,24 @@ function renderMore(){
     pl.appendChild(row);
   });
 
+  /* 타석 시작 — 언제 공이 오나
+     [제보] "타자할 때 준비 됐다 이거 눌러야 투수가 공 던지는 걸로 해줘" */
+  const br=el('p','muted');
+  br.innerHTML='<br><b>타석 시작</b> — 직접 타석에 들어갔을 때 '+
+    '<b>언제 공이 오는지</b> 정한다. 노림수를 고를 시간이 모자라면 「내가 누르면」 으로 둬라.';
+  pl.appendChild(br);
+  const brRow=el('div','btn-row');
+  [['me','내가 누르면'],['auto','3초 세고 자동']].forEach(([k,nm])=>{
+    const b=el('button','btn'+(((ST.batReady||'me')===k)?' primary':''),nm);
+    b.onclick=()=>{ ST.batReady=k; saveGame(true); renderMore();
+      toast(k==='me'?'「준비 됐다」 를 눌러야 던진다':'3초 세고 알아서 던진다'); };
+    brRow.appendChild(b);
+  });
+  pl.appendChild(brRow);
+  pl.appendChild(el('div','set-note',(ST.batReady||'me')==='me'
+    ? '타석에 서면 공이 안 온다. 노림수를 고르고 「준비 됐다 ▶」 를 눌러야 던진다. 급할 것 없다.'
+    : '타석에 서면 3·2·1 을 세고 알아서 던진다. 「안 기다리고 바로」 로 건너뛸 수 있다.'));
+
   /* 2D 경기 장면 — 중요한 장면을 그라운드 그림으로 보여준다 */
   const sn=el('p','muted');
   sn.innerHTML='<br><b>경기 장면</b> — 직접 지휘 중에 홈런·득점·병살 같은 장면을 '+
@@ -22732,6 +22994,9 @@ function normalizeState(){
   /* 이름 장부 — 나중에 팀을 나가도 기록에 이름이 남게 한다.
      원년 멤버는 WWZW 상수로 찾지만, 영입해 온 사람은 여기 없으면 id 가 찍힌다. */
   if(!ST.sceneMode)ST.sceneMode='key';     // 옛 세이브 — 2D 장면 기본값
+  /* [v2.54.0] 타석 시작 방식. 옛 세이브는 '내가 누르면' 으로 들어온다 —
+     예전 자동 리듬이 정신없다는 제보에서 나온 기본값이라 그쪽이 맞다. */
+  if(ST.batReady!=='auto'&&ST.batReady!=='me')ST.batReady='me';
   if(!ST.names)ST.names={};
   us.players.forEach(p=>{ ST.names[p.id]=p.name; });
   if(!ST.lgPit)ST.lgPit={};

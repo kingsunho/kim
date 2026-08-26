@@ -173,13 +173,19 @@ setTimeout(async()=>{
     // 변화구가 있는 투수면 3개, 직구만 던지면 2개
     return (a.length===3||a.length===2) && a.includes('안 노린다') && a.join(' / ');
   });
-  T('준비 시간을 준다 (카운트다운 동안 잠긴다)', ()=>{
+  T('준비 시간을 준다 (누르기 전엔 잠긴다)', ()=>{
     const b=[...d.querySelectorAll('#decision button')].find(x=>/지켜본다/.test(x.textContent));
     const lb=d.querySelector('.mound .lbl');
     return (b && b.disabled && lb && /준비/.test(lb.textContent)) ? lb.textContent.trim() : false;
   });
-  await wait(2600);
-  T('카운트다운이 끝나면 칠 수 있다', ()=>{
+  /* [2.54.0] 예전엔 3·2·1 을 세고 알아서 던졌다. 이제 「준비 됐다 ▶」 를
+     눌러야 공이 온다 — 기다리기만 하면 영영 안 온다.
+     (이 두 줄은 2.54.0 전에도 실패하고 있었다. 2.6초로는 카운트다운이
+      안 끝났다. 이제 시간이 아니라 버튼을 눌러서 확실하게 넘긴다.)   */
+  T('「준비 됐다」 를 누르면 그때 공이 온다', ()=>{
+    const go=d.querySelector('#decision .aim-go');
+    if(!go) return false;
+    go.click();
     const b=[...d.querySelectorAll('#decision button')].find(x=>/지켜본다/.test(x.textContent));
     return (b && !b.disabled) ? '지켜본다 풀림' : false;
   });
@@ -258,6 +264,18 @@ setTimeout(async()=>{
     var b=throwBall(mv,'cu',{dur:1000});            var db=b.dur; b.stop();
     return (da===1000 && db>1000) ? 'exact '+da+'ms / 기본 '+Math.round(db)+'ms' : false;
   })()`));
+  /* [2.54.0] 앞의 타석 화면을 확실히 닫고 넘어간다.
+     안 닫으면 그 창의 공 애니메이션이 살아 있다가, 아래에서 새로 만든
+     LIVE 의 볼카운트를 건드린다. 예전엔 카운트다운을 기다리는 2.6초 동안
+     알아서 끝나 있어서 안 보이던 문제다.                            */
+  ev("(function(){var b=document.getElementById('decision'); if(b&&b._cleanup)b._cleanup();})()");
+  /* 타석이 실제로 끝나면 decDone → runLive 가 0.52초짜리 중계 타이머를 건다.
+     그걸 안 끄면 아래에서 LIVE 를 새로 만들어도 옛 타이머가 그 새 경기를
+     계속 굴려서, 투구 시험이 카운트를 확인하기 전에 타석이 지나가 버린다.
+     (2.54.0 전에는 이 두 줄이 실패해서 타석이 안 끝났고, 그래서 안 보였다) */
+  ev("if(typeof playTimer!=='undefined') clearInterval(playTimer);");
+  await wait(120);
+
   T('코스 화면이 그려진다', ()=>{
     ev("ST.playMode=ST.playBat=ST.playPit='all'; LIVE=makeLive(); LIVE.manual=true;");
     ev(`(function(){var g=0;while(!LIVE.over&&g++<3000){
@@ -279,7 +297,15 @@ setTimeout(async()=>{
     return true;
   });
 
-  await wait(3200);   // 와인드업(5단계) + 공 도달 + 타자 판정
+  /* 와인드업(5단계) + 공 도달 + 타자 판정.
+     3.2초를 그냥 기다렸더니 기계 사정에 따라 간당간당해서 들쭉날쭉했다.
+     시간이 아니라 **조건**을 기다린다 (최대 8초).                    */
+  for(let i=0;i<40;i++){
+    const c0=ev("LIVE.count()");
+    const closed0=!d.querySelector('#decision').classList.contains('on');
+    if(c0.b+c0.s>0 || closed0) break;
+    await wait(200);
+  }
   T('던지면 카운트가 올라가거나 타석이 끝난다', ()=>{
     const c=ev("LIVE.count()");
     const closed=!d.querySelector('#decision').classList.contains('on');
