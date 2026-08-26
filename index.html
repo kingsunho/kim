@@ -7068,8 +7068,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.56.0';
-const APP_VERSION_NOTE = '선수 모드 — 감독은 이건이다';
+const APP_VERSION = '2.56.1';
+const APP_VERSION_NOTE = '하이라이트 구장이 제 모양으로 돌아왔다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7090,6 +7090,13 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.56.1', t:'하이라이트 구장 고침', items:[
+    '2루 아래에 초록색 삼각형이 튀어나오고 흙길이 두 갈래로 갈라지던 것을 고쳤다. 베이스 좌표는 처음부터 정확한 마름모였고(홈과 2루가 같은 X, 1·3루가 ±72로 대칭) 문제는 흙이었다',
+    '내야 흙 부채꼴 반지름이 104인데 홈에서 2루까지가 120이었다. 2루가 흙 밖 잔디 위에 서 있었고, 내야 잔디 꼭짓점이 딱 104라 부채꼴 위쪽을 뚫고 외야 잔디와 그대로 이어졌다. 그게 삼각형이었다',
+    '이제 실제 구장처럼 부채꼴은 그대로 두고 다이아몬드 둘레에 흙을 두른다. 부채꼴만 키우면 파울선 쪽 흙이 담장까지 번진다',
+    '외야수가 담장 밖에 서 있던 것도 고쳤다. v2.51.0에서 구장마다 담장 규격이 생겼는데 외야수 좌표는 박혀 있는 그대로였다 — 배나물·신길은 좌우익수가, 성곡은 세 명 전부 담장 밖이었다',
+    '이제 좌표를 박지 않고 「각도와 담장까지의 몇 할」로 잡는다. 담장이 가까운 성곡에서는 앞으로 당겨 서고 깊은 배나물에서는 뒤로 물러난다 — 실제로도 그렇게 선다',
+  ]},
   {v:'2.56.0', t:'선수 모드 — 감독은 이건이다', items:[
     '시작 화면에 이안·지우가 나오고 「감독 모드」와 「선수 모드」를 고를 수 있다. 이어서 하던 사람은 더보기 → 모드 에서 바꾼다',
     '선수 모드에서는 라인업을 내가 안 짠다. 이건 감독이 짠다. 라인업 화면에 가면 편집이 아니라 「오늘 나는 몇 번인지」가 제일 크게 뜬다',
@@ -16314,10 +16321,26 @@ const PSS=3;
 const PSW=320, PSH=264;
 const PS_B=[{x:160,y:236},{x:232,y:176},{x:160,y:116},{x:88,y:176}];  // 홈·1·2·3루
 const PS_MOUND={x:160,y:176};
-/* 수비 위치 — 실제 좌표가 아니라 '보기 좋은' 자리다 */
+/* 수비 위치 — 실제 좌표가 아니라 '보기 좋은' 자리다.
+   내야수는 구장이 달라도 같은 자리에 선다(내야 크기는 규격이 하나다). */
 const PS_POS={ P:{x:160,y:172}, C:{x:160,y:256},
   '1B':{x:222,y:158}, '2B':{x:198,y:132}, SS:{x:122,y:132}, '3B':{x:98,y:158},
   LF:{x:64,y:74}, CF:{x:160,y:52}, RF:{x:256,y:74} };
+/* [제보] "외야수 위치가 담장 밖에 있어"
+   v2.51.0 에서 구장마다 담장 규격이 생겼는데(배나물 98/122/98 ·
+   성곡 93/105/93 · 신길 95/115/95) 외야수 좌표는 박혀 있는 그대로였다.
+   재보니 배나물·신길에서 좌·우익수가, 성곡에서는 **세 명 전부** 담장
+   밖에 서 있었다 (성곡 중앙 담장 173.6px 인데 중견수가 184px).
+
+   그래서 좌표를 박지 않는다. **각도와 「담장까지의 몇 할」** 로 잡으면
+   어느 구장에서도 알아서 안쪽에 선다. 담장이 가까운 성곡에서는 앞으로
+   당겨 서고, 깊은 배나물에서는 뒤로 물러난다 — 실제로도 그렇게 선다.  */
+const PS_OUT={ LF:{a:-30.7,k:0.84}, CF:{a:0,k:0.86}, RF:{a:30.7,k:0.84} };
+function psPosOf(k, park){
+  const o=PS_OUT[k];
+  if(!o) return PS_POS[k];
+  return psSpot(o.a, psFenceR(park||psPark(), o.a)*o.k);
+}
 const PS_UNI={ us:{cap:'#2f5fb0', sh:'#eef2f8', pants:'#dfe4ec'},
                them:{cap:'#b23a34', sh:'#e6ddd0', pants:'#d8d0c4'} };
 
@@ -16328,11 +16351,12 @@ function psSpot(a,r){
   return {x:160+Math.cos(rad)*r, y:236+Math.sin(rad)*r};
 }
 /* 그 지점에서 제일 가까운 수비수 */
-function psNearest(p){
+function psNearest(p, park){
   let best='CF', d0=1e9;
   Object.keys(PS_POS).forEach(k=>{
     if(k==='C'||k==='P') return;
-    const q=PS_POS[k], d=(q.x-p.x)*(q.x-p.x)+(q.y-p.y)*(q.y-p.y);
+    /* 외야수는 구장마다 서는 자리가 다르다 — 그린 자리와 같은 걸 봐야 한다 */
+    const q=psPosOf(k,park), d=(q.x-p.x)*(q.x-p.x)+(q.y-p.y)*(q.y-p.y);
     if(d<d0){d0=d;best=k;}
   });
   return best;
@@ -16385,14 +16409,36 @@ function psField(g, parkIn){
   psFencePath(g,park,3); g.stroke();
   g.strokeStyle='#8b9b7c'; g.lineWidth=2;
   psFencePath(g,park,0); g.stroke();
-  // 내야 흙 — 홈에서 부채꼴
+  /* 내야 흙 — 홈 앞 부채꼴 **+ 다이아몬드 둘레**
+
+     [제보] "2루 아래쪽에 초록색 삼각형이 튀어나온다. 양쪽 흙길이 2루를
+             향해 이상하게 갈라진다"
+     원인은 2루 좌표가 아니었다. 베이스는 처음부터 정확한 마름모였다
+     (홈 160,236 · 1루 +72 · 3루 -72 · 2루 같은 X). 문제는 **흙**이다.
+       · 흙 부채꼴 반지름이 104 였는데 홈에서 2루까지가 120 이다.
+         즉 2루가 흙 밖 잔디 위에 서 있었다.
+       · 내야 잔디 다이아몬드의 꼭짓점도 정확히 104 라, 부채꼴 위쪽을
+         뚫고 나가 **외야 잔디와 그대로 이어졌다.** 그게 초록 삼각형이다.
+       · 베이스 패스(굵은 갈색 선)만 그 위를 지나가니 흙길 두 줄이
+         잔디를 가르며 2루로 올라가는 것처럼 보였다.
+
+     부채꼴만 키우면 파울선 쪽 흙이 담장까지 번진다(성곡은 담장이 154px).
+     그래서 실제 구장처럼 **부채꼴은 그대로 두고 다이아몬드 둘레에 흙을
+     두른다.** 안쪽에 잔디를 얹으면 그게 곧 내야 잔디가 된다.          */
+  const dia=(k,f)=>{                       // 다이아몬드를 중심에서 k 배로
+    const CX=160, CY=176;                  // 1·3루를 잇는 선의 한가운데
+    f(CX,CY+60*k); f(CX+72*k,CY); f(CX,CY-60*k); f(CX-72*k,CY);
+  };
   g.fillStyle='#b98a52';
   g.beginPath(); g.moveTo(HX,HY);
   g.arc(HX,HY,104,psRad(-PS_FOUL),psRad(PS_FOUL)); g.closePath(); g.fill();
-  // 내야 잔디 — 다이아몬드 안쪽
+  g.beginPath();
+  { let first=true; dia(1.22,(x,y)=>{ if(first){g.moveTo(x,y);first=false;} else g.lineTo(x,y); }); }
+  g.closePath(); g.fill();
+  // 내야 잔디 — 다이아몬드 안쪽. 이제 흙 안에 완전히 들어간다
   g.fillStyle='#489240';
   g.beginPath();
-  g.moveTo(160,220); g.lineTo(216,176); g.lineTo(160,132); g.lineTo(104,176);
+  { let first=true; dia(0.735,(x,y)=>{ if(first){g.moveTo(x,y);first=false;} else g.lineTo(x,y); }); }
   g.closePath(); g.fill();
   // 베이스 패스
   g.strokeStyle='#b98a52'; g.lineWidth=8;
@@ -16601,10 +16647,11 @@ function psPlay(d, done, opt){
     /* 수비 — 타구를 쫓는 사람만 움직인다 */
     const pitL=(throwHandOf({id:(d.pit||{}).id})==='L');
     Object.keys(PS_POS).forEach(k=>{
-      let p=PS_POS[k], f=0;
+      const home=psPosOf(k);                 // 구장에 맞춘 제자리
+      let p=home, f=0;
       if(k===sc.pos && T.chase){
         const kk=seg(T.chase,now);
-        if(kk>0){ p={x:lerp(PS_POS[k].x,sc.land.x,kk), y:lerp(PS_POS[k].y,sc.land.y,kk)}; f=fr; }
+        if(kk>0){ p={x:lerp(home.x,sc.land.x,kk), y:lerp(home.y,sc.land.y,kk)}; f=fr; }
       }
       psMan(g,p.x,p.y,du,f,(k==='P')?pitL:false);   // 좌완은 글러브가 반대쪽
     });
