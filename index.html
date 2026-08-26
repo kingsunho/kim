@@ -1556,6 +1556,21 @@ table.hl-tbl td.hl-o{color:#c98a80}
 .lu-n{flex:1;color:var(--tx);font-weight:700}
 .lu-ro.me .lu-n{color:var(--gold)}
 .lu-p{font-size:11px;color:var(--dim)}
+/* 메인화면 — 이어서 / 슬롯 / 설정 */
+.startbig{display:block;width:100%;text-align:left;padding:15px 16px;margin-bottom:10px;
+  border-radius:13px;color:var(--ink);
+  background:linear-gradient(180deg,rgba(201,162,39,.16),var(--panel));
+  border:1px solid var(--gold)}
+.sb-i{font-size:20px;line-height:1}
+.sb-t{display:inline-block;font-size:17px;font-weight:900;color:var(--tx);margin-left:7px}
+.sb-s{display:block;font-size:11.5px;color:var(--dim);margin-top:5px}
+.startrow{display:flex;align-items:center;gap:11px;width:100%;text-align:left;
+  padding:13px 14px;margin-bottom:8px;border-radius:11px;color:var(--ink);
+  background:var(--panel);border:1px solid var(--line)}
+.sr-i{font-size:17px;line-height:1;flex-shrink:0}
+.sr-l{min-width:0}
+.sr-l b{display:block;font-size:13.5px;font-weight:900;color:var(--tx)}
+.sr-l i{display:block;font-style:normal;font-size:11px;color:var(--dim);margin-top:2px}
 /* 세이브 슬롯 — 슬롯마다 따로 굴러가는 판 */
 .slots{margin-top:2px}
 .slotc{display:flex;align-items:center;gap:9px;padding:11px 12px;margin-bottom:8px;
@@ -1722,7 +1737,7 @@ td.dimc{color:var(--dm);text-align:left}
       링크와 코드를 밖으로 퍼뜨리지 마라.</p>
   </div>
 </div>
-<div class="topbar"><h1>우완좌완 야구 매니저</h1><span>안산 4부리그</span><button class="snd" id="helpbtn" aria-label="도움말">?</button><button class="snd" id="sndbtn" aria-label="소리 켜기/끄기">🔊</button><b class="ver" id="appver"></b></div>
+<div class="topbar"><h1 id="mainbtn" title="메인화면">우완좌완 야구 매니저</h1><span>안산 4부리그</span><button class="snd" id="helpbtn" aria-label="도움말">?</button><button class="snd" id="sndbtn" aria-label="소리 켜기/끄기">🔊</button><b class="ver" id="appver"></b></div>
 <div id="view"></div>
 <div id="sheet">
   <div id="sheet-bg"></div>
@@ -7101,8 +7116,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.58.0';
-const APP_VERSION_NOTE = '세이브 슬롯 — 여러 판을 따로 굴린다';
+const APP_VERSION = '2.59.0';
+const APP_VERSION_NOTE = '메인화면이 생겼다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7123,6 +7138,13 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.59.0', t:'메인화면', items:[
+    '메인화면이 따로 생겼다. 이안·지우가 나오고 「이어서 하기 · 세이브 슬롯 · 설정 · 이건 무슨 게임인가」가 한 화면에 있다',
+    '위쪽 「우완좌완 야구 매니저」 를 누르면 어디서든 메인화면으로 돌아온다',
+    '판이 하나라도 있으면 켤 때 메인화면부터 열린다. 「이어서 하기」에 지금 몇 번 슬롯에서 누구로 몇 승 몇 패인지가 적혀 있다',
+    '새 판은 이제 세이브 슬롯에서 시작한다 — 빈 칸의 「새로 시작」을 누르면 감독 모드냐 선수 모드냐부터 고른다',
+    '설정 속에 있던 모드 선택을 밖으로 뺐다. 거기 있으면 아무도 못 찾는다',
+  ]},
   {v:'2.58.0', t:'세이브 슬롯', items:[
     '세이브 슬롯이 네 칸 생겼다. 슬롯마다 완전히 따로 굴러가는 판이다 — 감독 모드 시즌을 그대로 두고 다른 슬롯에서 선수를 키울 수 있다',
     '더보기 → 세이브 슬롯 에서 들어간다. 슬롯 카드에 누구를 어느 자리로 어디까지 키웠는지가 적힌다',
@@ -11368,6 +11390,100 @@ function hsRoster(year, seed){
   return out;
 }
 
+/* ---------- 고교 경기 엔진 ----------
+   고교야구는 어른 리그와 맛이 다르다. 알루미늄 배트라 맞으면 넘어가고,
+   제구가 안 잡혀서 삼진도 볼넷도 많고, 수비가 흔들려서 실책이 잦다.
+   그래서 점수가 크게 난다 — 13:11 같은 게 나온다.
+   본편으로 넘어오면 확 조용해지는 게 느껴져야 한다.                  */
+const HS_TEND={k:1.30, bb:1.28, sb:1.05, babip:1.06, pow:1.55, err:1.42};
+const HS_INN=5;                       // 짧게 — 다섯 이닝
+
+/* 실존 인물의 고등학교 시절 능력치.
+   지금 능력치는 2026년, 즉 스물예닐곱의 값이다. 고등학생이 그걸 그대로
+   가지고 있을 리 없다. 학년을 올라가며 지금의 68% → 82% 로 붙는다.
+   나머지는 사회인야구를 하며 붙은 것으로 친다.                       */
+function hsScale(grade){ return 0.62+grade*0.068; }
+/* 내 선수는 훨씬 낮게 시작한다 — 밑바닥에서 올라오는 게 이 모드다.
+   [요청] "기본 시작할때는 스탯을 좀 낮게 측정해야겠지? 밑바닥부터 하는 거니깐" */
+const HS_ME_START=0.45;
+
+function hsAdjust(p, grade, isMe, meBoost){
+  const q={...p};
+  const k=isMe ? (HS_ME_START+(meBoost||0)) : hsScale(grade);
+  ['con','pow','eye','spd','def','arm'].forEach(x=>{
+    if(q[x]!=null) q[x]=Math.max(6,Math.round(q[x]*k));
+  });
+  if(q.pitch){
+    q.pitch={...q.pitch};
+    ['stf','ctl','sta'].forEach(x=>{ if(q.pitch[x]!=null) q.pitch[x]=Math.max(8,Math.round(q.pitch[x]*k)); });
+  }
+  ['stf','ctl','sta'].forEach(x=>{ if(q[x]!=null) q[x]=Math.max(8,Math.round(q[x]*k)); });
+  return q;
+}
+/* 그 해 그 학교 팀을 만든다. 실존 인물은 학년에 맞춰 능력치를 낮추고
+   나머지는 부원으로 채운다. 내 선수만 따로 손본다.                   */
+function hsTeamOf(school, year, seed, meId, meBoost){
+  const R=hsRoster(year, seed);
+  const raw=R[school]||[];
+  const players=raw.map(p=>{
+    const isMe=(p.id===meId);
+    const q=hsAdjust(p, p.grade||1, isMe, meBoost);
+    q.pos = q.pos || [POS9[0]];
+    return q;
+  });
+  /* 투수 — pitch 가 있는 실존 인물 + stf 를 가진 부원 */
+  const pitchers=[];
+  players.forEach(p=>{
+    if(p.pitch) pitchers.push({id:p.id,name:p.name,stf:p.pitch.stf,ctl:p.pitch.ctl,sta:p.pitch.sta,playerId:p.id});
+    else if(p.npc && p.stf) pitchers.push({id:p.id,name:p.name,stf:p.stf,ctl:p.ctl,sta:p.sta});
+  });
+  pitchers.sort((a,b)=>(b.stf*0.6+b.ctl*0.4)-(a.stf*0.6+a.ctl*0.4));
+  const S=HS_SCHOOLS[school];
+  return finalizeTeam({id:'hs_'+school, name:S.name, ops:0.80, avg:.290,
+    tend:{...HS_TEND}, players, pitchers:pitchers.slice(0,4), isUser:false});
+}
+/* 내가 뛰는 학교 / 상대 학교 */
+function hsMySchool(){ return hsSchoolOf(ST.playerId||MYID)||'gunpo'; }
+function hsFoe(){ return hsMySchool()==='gunpo'?'heung':'gunpo'; }
+
+/* 라인업 — 내 자리는 내가 정한 포지션으로 못 박는다.
+   [요청] "고교때도 그 포지션으로 뛰고"                                */
+function hsLineup(team, meId, benchMe){
+  const line=aiLineup(team);
+  if(!meId) return line;
+  const pos=myPos();
+  const mine=line.findIndex(x=>x.id===meId);
+  if(benchMe){
+    /* 오늘은 벤치 — 라인업에서 빼고 다른 사람으로 채운다 */
+    if(mine>=0){
+      const sub=team.players.find(p=>p.id!==meId && !line.some(x=>x.id===p.id));
+      if(sub) line[mine]={id:sub.id,pos:line[mine].pos};
+      else line.splice(mine,1);
+    }
+    return line;
+  }
+  if(!pos||pos==='P') return line;
+  if(mine<0){
+    /* 라인업에 없으면 제일 약한 사람을 밀어내고 들어간다 */
+    line[line.length-1]={id:meId,pos};
+  } else {
+    /* 내가 원하는 자리를 쓰던 사람과 바꾼다 */
+    const holder=line.findIndex(x=>x.pos===pos);
+    if(holder>=0 && holder!==mine){ line[holder].pos=line[mine].pos; }
+    line[mine].pos=pos;
+  }
+  return line;
+}
+function hsRotation(team, meId){
+  const rot=aiRotation(team).map(p=>p.id);
+  if(meId && (ST.role==='pit'||ST.role==='two')){
+    const i=rot.indexOf(meId);
+    if(i>0){ rot.splice(i,1); rot.unshift(meId); }
+    else if(i<0) rot.unshift(meId);
+  }
+  return rot;
+}
+
 /* ================= 메인화면 · 모드 =================
    [요청] "감독모드랑 이거 선택할 수 있는 메인화면이 생겨야겠네
            거기엔 이안님 지우님 넣고"
@@ -11391,7 +11507,68 @@ const PLAY_MODES=[
 function isPlayerMode(){ return !!(ST && ST.mode==='player'); }
 function modeDef(id){ return PLAY_MODES.find(m=>m.id===(id||(ST&&ST.mode)||'mgr'))||PLAY_MODES[0]; }
 
-/* 메인화면 윗부분 — 이안·지우와 모드 두 개.
+/* ---------- 메인화면 ----------
+   [요청] "설정에서 말고 메인화면을 아예 따로 만드는게 좋을 것 같은데
+           지금 사람들 모를듯. 설정에서 모드 선택을 누르는것보다
+           세이브 슬롯에서 누르는게 더 효율적인 것 같은데"
+
+   맞는 말이다. 설정 안에 넣으면 아무도 못 찾는다.
+   화면을 따로 파고, 새 판은 **슬롯에서** 시작하게 한다.
+     메인화면 → 세이브 슬롯 → (빈 칸) 새로 시작 → 모드 → 선수 → 자리
+   위 타이틀을 누르면 어디서든 여기로 돌아온다.                       */
+function renderStart(){
+  const c=$('#view'); c.innerHTML='';
+  const gw=el('div','mode-guide');
+  const pics=el('div','mg-pics');
+  [GUIDES.ian,GUIDES.jiwoo].forEach(g=>{
+    const im=document.createElement('img'); im.src=g.img; im.alt=g.name; pics.appendChild(im);
+  });
+  gw.appendChild(pics);
+  c.appendChild(gw);
+
+  const has=!!(ST && ST.schedule);
+  if(has){
+    const st=(ST.stand&&ST.stand['wwzw'])||{w:0,l:0,t:0};
+    const who=(ST.mode==='player')
+      ? nameOf(ST.playerId||MYID)+' · '+(ST.role==='pit'?'투수'
+          :(ST.role==='two'?'투수·타자':(ST.myPos?POSNAMES[ST.myPos]:'타자')))
+      : '감독 모드';
+    const b=el('button','startbig');
+    b.innerHTML='<span class="sb-i">'+(ST.mode==='player'?'\u{26BE}':'\u{1F9E2}')+'</span>'+
+      '<span class="sb-t">이어서 하기</span>'+
+      '<span class="sb-s">'+CURSLOT+'번 슬롯 · '+who+' · '+
+      (ST.seasonNo||1)+'년차 '+st.w+'승 '+st.l+'패</span>';
+    b.onclick=()=>go('home');
+    c.appendChild(b);
+  }
+
+  const row=(icon,title,sub,fn)=>{
+    const b=el('button','startrow');
+    b.innerHTML='<span class="sr-i">'+icon+'</span><span class="sr-l">'+
+      '<b>'+title+'</b><i>'+sub+'</i></span>';
+    b.onclick=fn; c.appendChild(b);
+  };
+  row('\u{1F4C1}', has?'세이브 슬롯':'새로 시작',
+      has?'다른 선수를 키우거나 다른 판을 이어서 한다':'감독으로 할지 선수로 할지 고른다',
+      ()=>go('slots'));
+  row('\u{2699}', '설정', '소리 · 타석 시작 · 자동 교체 · 세이브 코드', ()=>go('more'));
+  row('\u{2753}', '이건 무슨 게임인가', '규칙과 화면 설명', ()=>{ ST.tutStep=0; go('tutorial'); });
+
+  c.appendChild(el('div','mc-cred',
+    '안내를 맡은 하츠투하츠 이안·지우는 팬이라서 넣었습니다. 상업적 목적이 없습니다.'));
+}
+
+/* ---------- 모드 고르기 (새 판을 시작할 때만) ---------- */
+function renderMode(){
+  const c=$('#view'); c.innerHTML='';
+  const head=el('div','card');
+  head.innerHTML='<div class="card-h">어떻게 할까</div>'+
+    '<p class="muted">'+CURSLOT+'번 슬롯에 새 판을 만든다. 나중에 바꿀 수도 있다.</p>';
+  c.appendChild(head);
+  paintStart(c, ()=>go('pick'));
+}
+
+/* 모드 카드 두 개 — 메인화면과 새 판 시작에서 같이 쓴다.
    [처음엔 따로 화면을 팠다가 합쳤다] 새로 시작하는 사람한테
    "모드 고르기" → "선수 고르기" 로 탭을 두 번 시킬 이유가 없었다.
    한 화면에서 **어떻게 · 누구로** 를 같이 고른다.                    */
@@ -11675,7 +11852,7 @@ function renderSlots(){
         btns.appendChild(del);
       } else {
         const nw=el('button','btn sm primary','새로 시작');
-        nw.onclick=async()=>{ await slotNew(i); go('pick'); };
+        nw.onclick=async()=>{ await slotNew(i); go('mode'); };
         btns.appendChild(nw);
       }
       row.appendChild(btns);
@@ -11687,6 +11864,9 @@ function renderSlots(){
   note.innerHTML='<b>1번 슬롯은 원래 쓰던 세이브 그대로다.</b> '+
     '옮기지 않았으니 여태 한 건 아무것도 안 바뀐다.';
   c.appendChild(note);
+  const back=el('button','btn','← 메인화면');
+  back.onclick=()=>go('start');
+  c.appendChild(back);
 }
 
 /* ---------- 홈 ---------- */
@@ -23465,6 +23645,11 @@ function renderMore(){
     '경기 화면의 「투수 교체」 버튼은 언제든 그대로 쓸 수 있다.'));
   c.appendChild(ac2);
 
+  /* 메인화면으로 — 위 타이틀을 눌러도 되지만 그건 모를 수 있다 */
+  const mn=el('button','btn','← 메인화면');
+  mn.onclick=()=>go('start');
+  c.appendChild(mn);
+
   /* [요청] "세이브 같은것도 만들어놓고 다른 선수 키울 수 있거나" */
   const sl=el('div','card');
   sl.appendChild(el('div','card-h','세이브 슬롯'));
@@ -23780,7 +23965,7 @@ const VIEWS={home:renderHome,squad:renderSquad,lineup:renderLineup,kakao:renderK
   game:renderGame,train:renderTrain,scout:renderScout,stand:renderStand,stats:renderStats,
   records:renderRecords,pick:renderPick,more:renderMore,meet:renderMeet,recruit:renderRecruit,
   tutorial:renderTutorial,player:renderPlayer,hall:renderHall,whatif:renderWhatIf,
-  role:renderRole,slots:renderSlots};
+  role:renderRole,slots:renderSlots,start:renderStart,mode:renderMode};
 function go(v){
   clearInterval(playTimer);
   curView=v;
@@ -24238,6 +24423,9 @@ async function boot(){
   paintSndBtn();
   const sb=$('#sndbtn'); if(sb) sb.onclick=(e)=>{ e.stopPropagation(); toggleSound(); };
   const hb=$('#helpbtn'); if(hb) hb.onclick=(e)=>{ e.stopPropagation(); openHelp(curView); };
+  /* 위 타이틀 = 메인화면. 어디서든 한 번에 돌아온다 */
+  const mb=$('#mainbtn');
+  if(mb){ mb.style.cursor='pointer'; mb.onclick=(e)=>{ e.stopPropagation(); go('start'); }; }
   /* 첫 탭에서 실패해도 다음 탭에서 다시 시도한다.
      열린 게 확인되면 그때 리스너를 뗀다. */
   const armEvents=['pointerdown','touchend','click','keydown'];
@@ -24261,12 +24449,17 @@ async function boot(){
   $('#loading').style.display='none';
   /* 지금 슬롯이 비었는데 다른 슬롯에 판이 있으면 슬롯부터 보여준다.
      아무 데도 없으면 여태처럼 바로 선수 고르기로 간다. */
-  if(saved) go('home');
+  /* [요청] "메인화면을 아예 따로 만드는게 좋을 것 같은데 지금 사람들 모를듯"
+     판이 하나라도 있으면 **메인화면부터** 연다. 거기에 이어서·슬롯·설정이
+     다 있으니 설정 속을 뒤질 일이 없다.
+     아무 데도 판이 없는 첫 실행은 바로 선수 고르기로 간다 —
+     빈 메뉴를 먼저 보여줄 이유가 없다. */
+  if(saved) go('start');
   else {
     let other=false;
     for(let i=1;i<=SLOT_N;i++){ if(i===CURSLOT) continue;
       if(await slotInfo(i)){ other=true; break; } }
-    go(other?'slots':'pick');
+    go(other?'start':'pick');
   }
   if(!saved) ST.tutPending=true;      // 선수 고르고 나면 튜토리얼로 보낸다
   // 재접속 안내 — 저장이 살아 있다는 걸 눈으로 확인시켜 준다
