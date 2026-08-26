@@ -1556,6 +1556,57 @@ table.hl-tbl td.hl-o{color:#c98a80}
 .lu-n{flex:1;color:var(--tx);font-weight:700}
 .lu-ro.me .lu-n{color:var(--gold)}
 .lu-p{font-size:11px;color:var(--dim)}
+/* 지난 경기 목록 — 눌러서 다시 편다 */
+.hs-past{display:flex;align-items:center;gap:8px;width:100%;text-align:left;
+  padding:9px 10px;margin-top:6px;border-radius:9px;color:var(--ink);
+  background:var(--panel2);border:1px solid var(--line)}
+.hs-past.w{border-left:3px solid #3fa564}
+.hs-past.l{border-left:3px solid #8a5a52}
+.hp-y{font-size:10.5px;color:var(--dim);width:34px}
+.hp-k{flex:1;font-size:12px;color:var(--tx);font-weight:700;min-width:0}
+.hp-s{font-size:12px;font-weight:800;color:var(--tx)}
+.hp-r{font-size:11px;font-weight:800;width:18px;text-align:right;color:var(--dim)}
+.hs-past.w .hp-r{color:#8fe0ac}
+.hs-past.l .hp-r{color:#e0a08f}
+/* 고등학교 프롤로그 */
+.hs-yr{font-size:11px;color:var(--gold);font-weight:800;letter-spacing:.04em}
+.hs-kind{font-size:11.5px;color:var(--dim);margin-top:-2px}
+.hs-b{font-size:13px;line-height:1.75;color:var(--ink);margin-top:10px;
+  padding-top:10px;border-top:1px solid var(--line)}
+.hs-prog{display:flex;gap:6px;justify-content:center;margin:12px 0}
+.hs-prog i{flex:1;max-width:46px;text-align:center;font-style:normal;font-size:11px;
+  font-weight:800;padding:5px 0;border-radius:7px;background:var(--panel2);
+  color:var(--dim);border:1px solid var(--line)}
+.hs-prog i.on{border-color:var(--gold);color:var(--gold)}
+.hs-prog i.w{background:rgba(63,165,100,.18);color:#8fe0ac;border-color:#3fa564}
+.hs-prog i.l{background:rgba(224,138,112,.15);color:#e0a08f;border-color:#8a5a52}
+.hs-prog i.t{color:var(--dim)}
+.hs-score{display:flex;align-items:baseline;justify-content:center;gap:9px;
+  margin:12px 0 4px;font-size:22px;font-weight:900;color:var(--tx)}
+.hs-score i{font-style:normal;font-size:14px;color:var(--dim)}
+.hs-score.w b:first-child{color:#8fe0ac}
+.hs-score.l b:last-child{color:#e0a08f}
+.hs-after{font-size:12.5px;line-height:1.7;color:var(--dim);text-align:center;
+  padding-top:9px;border-top:1px solid var(--line);margin-top:9px}
+.hs-my{font-size:13px;color:var(--tx);font-weight:700;padding:5px 0}
+.hs-mo{font-size:12px;color:var(--dim);padding:6px 0;
+  border-top:1px solid rgba(255,255,255,.05)}
+.hs-mo em{font-style:normal;color:var(--gold);font-weight:800}
+.hs-mo.big em{color:#ffd15c}
+.hs-mo b{color:var(--tx)}
+.hs-sum{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:10px 0}
+.hs-sum i{font-style:normal;background:var(--panel2);border-radius:8px;padding:8px 3px;text-align:center}
+.hs-sum b{display:block;font-size:15px;font-weight:900;color:var(--tx)}
+.hs-sum u{display:block;text-decoration:none;font-size:9.5px;color:var(--dim);margin-top:2px}
+.hs-bars{margin-top:8px}
+.hb{display:flex;align-items:center;gap:8px;padding:3px 0}
+.hb-n{width:34px;font-size:11px;color:var(--dim)}
+.hb-t{flex:1;height:7px;background:#0d1015;border-radius:4px;overflow:hidden}
+.hb-t s{display:block;height:100%;text-decoration:none;
+  background:linear-gradient(90deg,#3fa564,#7fd6a5)}
+.hb-v{width:24px;text-align:right;font-size:11px;font-weight:800;color:var(--tx)}
+.card.hsgrad{border-color:var(--gold);
+  background:linear-gradient(180deg,rgba(201,162,39,.08),var(--panel))}
 /* 메인화면 — 이어서 / 슬롯 / 설정 */
 .startbig{display:block;width:100%;text-align:left;padding:15px 16px;margin-bottom:10px;
   border-radius:13px;color:var(--ink);
@@ -7116,8 +7167,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.59.0';
-const APP_VERSION_NOTE = '메인화면이 생겼다';
+const APP_VERSION = '2.60.0';
+const APP_VERSION_NOTE = '고등학교 3년 · 지난 경기 다시 보기';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7138,6 +7189,17 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.60.0', t:'고등학교 3년 · 지난 경기 다시 보기', items:[
+    '선수 모드는 이제 고등학교부터 시작한다. 3년 동안 여섯 경기를 치르고, 그 성적이 그대로 시작 능력치가 된다',
+    '군포고 대 흥진고. 로스터를 세어보니 열두 명이 군포고고 김선호·김상훈만 흥진고였다. 실제 출생년도도 1999년생 일곱, 2000년생 일곱으로 딱 갈린다',
+    '그래서 3년이 누구로 시작하느냐에 따라 다르다. 1999년생이면 고1 때 동갑 일곱만 있고, 2000년생이면 고3 때 형들이 이미 졸업하고 없다. 김선호·김상훈으로 시작하면 군포고 열둘이 전부 상대편이다',
+    '라이벌전은 매년 한 번씩 세 번. 나머지 경기는 산본고·용호고·수리고·부곡중앙고와 붙는다',
+    '고교야구는 어른 리그와 맛이 다르다. 알루미늄 배트라 장타가 잦고 삼진도 볼넷도 실책도 많다. 점수가 크게 난다',
+    '졸업하면 능력치가 정해지는데 잘해도 실제 능력치의 89% 다. 거기까지 가는 게 본편이고, 그 위로도 계속 오른다',
+    '6경기에서 제일 큰 장면이 「그때 그 장면」으로 저장된다',
+    '에필로그는 지어낸 게 아니다. 군포고 애들끼리 오랜만에 야구하자고 모였고, 흥진고 둘은 김인규를 통해 들어왔다',
+    '지난 경기를 다시 볼 수 있다. 고등학교도, 감독 모드도. 홈 화면 「최근 경기」에서 들어가면 그날 라인스코어와 타격·투수 박스스코어가 그대로 나온다',
+  ]},
   {v:'2.59.0', t:'메인화면', items:[
     '메인화면이 따로 생겼다. 이안·지우가 나오고 「이어서 하기 · 세이브 슬롯 · 설정 · 이건 무슨 게임인가」가 한 화면에 있다',
     '위쪽 「우완좌완 야구 매니저」 를 누르면 어디서든 메인화면으로 돌아온다',
@@ -11355,7 +11417,9 @@ const HS_GIV=['민준','서준','도윤','예준','시우','하준','지호','�
 function hsMakePlayer(rng, grade, tag){
   const nm=HS_SUR[(rng()*HS_SUR.length)|0]+HS_GIV[(rng()*HS_GIV.length)|0];
   /* 학년이 올라갈수록 조금 낫다 */
-  const base=26+grade*7;
+  /* [손봄] 26+grade*7 이면 고3 부원이 47 이라 실존 인물(성인의 82%)한테
+     일방적으로 밀렸다. 부원도 야구부다 — 올린다. */
+  const base=34+grade*7;
   const sp=(w)=>Math.max(8,Math.min(88, Math.round(base+(rng()*2-1)*w)));
   return {
     id:tag, name:nm, grade,
@@ -11390,12 +11454,142 @@ function hsRoster(year, seed){
   return out;
 }
 
+/* ================= 지난 경기 기록 =================
+   [요청] "이전 경기 결과랑 경기 내용 볼 수 있게 · 예전 경기 선택할 수
+           있게" · "감독모드에도 예전 경기 선택할 수 있게"
+
+   여태 끝난 경기는 점수만 남았다(schedule[i].result). 누가 몇 개 쳤는지,
+   몇 회에 몇 점을 냈는지는 결과 화면을 닫는 순간 사라졌다.
+
+   [용량] 세이브가 이미 55KB 다. 박스스코어를 통째로 넣으면 배가 된다.
+   그래서 **0이 아닌 사람만, 배열로** 저장한다. 키 이름이 빠지는 것만으로
+   절반이 준다. 상대 팀 개인 기록은 안 남긴다 — 우리 팀 것만 본다.
+   최근 30경기까지만 들고 있는다(정규 22 + 플레이오프).              */
+const GLOG_MAX=30;
+const GLOG_B=['pa','ab','h','d2','d3','hr','bb','hbp','k','rbi','r','sb','cs','e'];
+const GLOG_P=['outs','h','r','er','bb','k','hbp','np'];
+function glogPush(sch,res,usSide,thSide,uIds,gRot){
+  try{
+    if(!ST.gameLog) ST.gameLog=[];
+    const b=[], p=[];
+    (uIds||[]).forEach(id=>{
+      const x=res.box[id]; if(!x||!x.pa) return;
+      b.push([id].concat(GLOG_B.map(k=>x[k]||0)));
+    });
+    (gRot||[]).forEach(id=>{
+      const x=res.pbox[id]; if(!x||!x.bf) return;
+      p.push([id].concat(GLOG_P.map(k=>x[k]||0)));
+    });
+    ST.gameLog.push({
+      r:sch.round, opp:sch.opp, po:sch.po||null, home:!!sch.homeGame,
+      y:ST.year||2026, s:ST.seasonNo||1,
+      us:usSide.runs, them:thSide.runs,
+      h:usSide.hits||0, e:usSide.errs||0,
+      th:thSide.hits||0, te:thSide.errs||0,
+      line:(usSide.line||[]).slice(), fline:(thSide.line||[]).slice(),
+      b, p, wp:res.wp||null, lp:res.lp||null,
+    });
+    if(ST.gameLog.length>GLOG_MAX) ST.gameLog=ST.gameLog.slice(-GLOG_MAX);
+  }catch(e){ /* 기록이 안 남아도 경기는 진행돼야 한다 */ }
+}
+function glogRow(a, keys){
+  const o={}; keys.forEach((k,i)=>o[k]=a[i+1]||0); return o;
+}
+/* ---------- 지난 경기 화면 ---------- */
+let glogView=null;
+function renderGlog(){
+  const c=$('#view'); c.innerHTML='';
+  const L=(ST.gameLog||[]).slice().reverse();
+  if(glogView!=null && L[glogView]){
+    const g=L[glogView];
+    const opp=TBYID[g.opp]||{name:g.opp};
+    const won=g.us>g.them, tie=g.us===g.them;
+    const head=el('div','card');
+    head.appendChild(el('div','card-h',
+      (g.po?('플레이오프 '+(g.po==='final'?'결승':'준결승')):(g.r+'차전'))+
+      ' · '+(g.home?'홈':'원정')));
+    const sc=el('div','hs-score'+(won?' w':(tie?'':' l')));
+    sc.innerHTML='<b>우완좌완 '+g.us+'</b><i>:</i><b>'+g.them+' '+opp.name+'</b>';
+    head.appendChild(sc);
+    const nI=Math.max((g.line||[]).length,(g.fline||[]).length);
+    let h='<tr><th></th>'; for(let i=0;i<nI;i++)h+='<th>'+(i+1)+'</th>';
+    h+='<th class="rr">R</th><th>H</th><th>E</th></tr>';
+    const row=(nm,arr,tot,hh,ee)=>{ let x='<tr><td class="tn">'+nm+'</td>';
+      for(let i=0;i<nI;i++){const v=arr&&arr[i];x+='<td>'+(v==null?'-':v)+'</td>';}
+      return x+'<td class="rr">'+tot+'</td><td>'+hh+'</td><td>'+ee+'</td></tr>'; };
+    const ls=el('div','linescore');
+    ls.innerHTML='<table>'+h+
+      row(g.home?opp.name:'우완좌완', g.home?g.fline:g.line, g.home?g.them:g.us,
+          g.home?g.th:g.h, g.home?g.te:g.e)+
+      row(g.home?'우완좌완':opp.name, g.home?g.line:g.fline, g.home?g.us:g.them,
+          g.home?g.h:g.th, g.home?g.e:g.te)+'</table>';
+    head.appendChild(ls);
+    c.appendChild(head);
+
+    const bc=el('div','card');
+    bc.appendChild(el('div','card-h','타격'));
+    const bt=el('table','box');
+    bt.innerHTML='<tr><th>타자</th><th>타수</th><th>안타</th><th>타점</th>'+
+      '<th>득점</th><th>사사구</th><th>삼진</th></tr>';
+    (g.b||[]).forEach(a=>{
+      const o=glogRow(a,GLOG_B), tr=el('tr');
+      tr.innerHTML='<td class="nm">'+nmLink(a[0],nameOf(a[0]))+'</td>'+
+        '<td>'+o.ab+'</td><td>'+o.h+'</td><td>'+o.rbi+'</td>'+
+        '<td>'+o.r+'</td><td>'+(o.bb+o.hbp)+'</td><td>'+o.k+'</td>';
+      bt.appendChild(tr);
+    });
+    bc.appendChild(bt); wireNames(bc); c.appendChild(bc);
+
+    const pc=el('div','card');
+    pc.appendChild(el('div','card-h','투수'));
+    const pt=el('table','box');
+    pt.innerHTML='<tr><th>투수</th><th>이닝</th><th>투구</th><th>피안타</th>'+
+      '<th>실점</th><th>자책</th><th>사사구</th><th>삼진</th></tr>';
+    (g.p||[]).forEach(a=>{
+      const o=glogRow(a,GLOG_P), tr=el('tr');
+      const dec=a[0]===g.wp?'<span class="subtag">승</span>'
+              :(a[0]===g.lp?'<span class="subtag">패</span>':'');
+      tr.innerHTML='<td class="nm">'+nmLink(a[0],nameOf(a[0]))+dec+'</td>'+
+        '<td>'+ipStr({outs:o.outs})+'</td><td>'+o.np+'</td><td>'+o.h+'</td>'+
+        '<td>'+o.r+'</td><td>'+o.er+'</td><td>'+(o.bb+o.hbp)+'</td><td>'+o.k+'</td>';
+      pt.appendChild(tr);
+    });
+    pc.appendChild(pt); wireNames(pc); c.appendChild(pc);
+
+    const bk=el('button','btn primary','← 목록으로');
+    bk.onclick=()=>{ glogView=null; renderGlog(); };
+    c.appendChild(bk);
+    return;
+  }
+  glogView=null;
+  const head=el('div','card');
+  head.innerHTML='<div class="card-h">지난 경기</div>'+
+    '<p class="muted">눌러서 그날 박스스코어를 다시 편다. 최근 '+GLOG_MAX+'경기까지 남는다.</p>';
+  c.appendChild(head);
+  if(!L.length){ c.appendChild(el('p','muted','아직 치른 경기가 없다.')); return; }
+  const card=el('div','card');
+  L.forEach((g,k)=>{
+    const opp=TBYID[g.opp]||{name:g.opp};
+    const won=g.us>g.them, tie=g.us===g.them;
+    const row=el('button','hs-past'+(won?' w':(tie?'':' l')));
+    row.innerHTML='<span class="hp-y">'+(g.po?'PO':(g.r+'차'))+'</span>'+
+      '<span class="hp-k">'+opp.name+'</span>'+
+      '<span class="hp-s">'+g.us+':'+g.them+'</span>'+
+      '<span class="hp-r">'+(tie?'무':(won?'승':'패'))+'</span>';
+    row.onclick=()=>{ glogView=k; renderGlog(); };
+    card.appendChild(row);
+  });
+  c.appendChild(card);
+}
+
 /* ---------- 고교 경기 엔진 ----------
    고교야구는 어른 리그와 맛이 다르다. 알루미늄 배트라 맞으면 넘어가고,
    제구가 안 잡혀서 삼진도 볼넷도 많고, 수비가 흔들려서 실책이 잦다.
    그래서 점수가 크게 난다 — 13:11 같은 게 나온다.
    본편으로 넘어오면 확 조용해지는 게 느껴져야 한다.                  */
-const HS_TEND={k:1.30, bb:1.28, sb:1.05, babip:1.06, pow:1.55, err:1.42};
+/* [손봄] 처음엔 pow 1.55 · err 1.42 로 놨더니 30:6 같은 점수가 나왔다.
+   고교야구 맛은 살리되 야구는 야구여야 한다. 눌렀다. */
+const HS_TEND={k:1.20, bb:1.15, sb:1.05, babip:1.00, pow:1.28, err:1.22};
 const HS_INN=5;                       // 짧게 — 다섯 이닝
 
 /* 실존 인물의 고등학교 시절 능력치.
@@ -11405,7 +11599,9 @@ const HS_INN=5;                       // 짧게 — 다섯 이닝
 function hsScale(grade){ return 0.62+grade*0.068; }
 /* 내 선수는 훨씬 낮게 시작한다 — 밑바닥에서 올라오는 게 이 모드다.
    [요청] "기본 시작할때는 스탯을 좀 낮게 측정해야겠지? 밑바닥부터 하는 거니깐" */
-const HS_ME_START=0.45;
+/* [손봄] 0.45 로 놨더니 고교 투수(부원 55 안팎)를 3년 내내 못 쳤다.
+   12타수 2안타로 끝나면 밑바닥이 아니라 그냥 재미가 없다. */
+const HS_ME_START=0.54;
 
 function hsAdjust(p, grade, isMe, meBoost){
   const q={...p};
@@ -11448,21 +11644,17 @@ function hsFoe(){ return hsMySchool()==='gunpo'?'heung':'gunpo'; }
 
 /* 라인업 — 내 자리는 내가 정한 포지션으로 못 박는다.
    [요청] "고교때도 그 포지션으로 뛰고"                                */
-function hsLineup(team, meId, benchMe){
+function hsLineup(team, meId, lastOrder){
   const line=aiLineup(team);
   if(!meId) return line;
   const pos=myPos();
-  const mine=line.findIndex(x=>x.id===meId);
-  if(benchMe){
-    /* 오늘은 벤치 — 라인업에서 빼고 다른 사람으로 채운다 */
-    if(mine>=0){
-      const sub=team.players.find(p=>p.id!==meId && !line.some(x=>x.id===p.id));
-      if(sub) line[mine]={id:sub.id,pos:line[mine].pos};
-      else line.splice(mine,1);
+  let mine=line.findIndex(x=>x.id===meId);
+  if(!pos||pos==='P'){
+    if(lastOrder&&mine>=0&&mine<line.length-1){
+      const row=line.splice(mine,1)[0]; line.push(row);
     }
     return line;
   }
-  if(!pos||pos==='P') return line;
   if(mine<0){
     /* 라인업에 없으면 제일 약한 사람을 밀어내고 들어간다 */
     line[line.length-1]={id:meId,pos};
@@ -11472,10 +11664,17 @@ function hsLineup(team, meId, benchMe){
     if(holder>=0 && holder!==mine){ line[holder].pos=line[mine].pos; }
     line[mine].pos=pos;
   }
+  /* [고1 첫 경기] 9번. 제일 아래에서 시작한다 */
+  if(lastOrder){
+    mine=line.findIndex(x=>x.id===meId);
+    if(mine>=0&&mine<line.length-1){ const row=line.splice(mine,1)[0]; line.push(row); }
+  }
   return line;
 }
 function hsRotation(team, meId){
-  const rot=aiRotation(team).map(p=>p.id);
+  /* [함정] aiRotation 은 이미 id 배열을 준다. .map(p=>p.id) 를 한 번 더
+     걸면 전부 undefined 가 된다 — 로테이션이 통째로 비어버린다. */
+  const rot=aiRotation(team).slice();
   if(meId && (ST.role==='pit'||ST.role==='two')){
     const i=rot.indexOf(meId);
     if(i>0){ rot.splice(i,1); rot.unshift(meId); }
@@ -11506,6 +11705,550 @@ const PLAY_MODES=[
 ];
 function isPlayerMode(){ return !!(ST && ST.mode==='player'); }
 function modeDef(id){ return PLAY_MODES.find(m=>m.id===(id||(ST&&ST.mode)||'mgr'))||PLAY_MODES[0]; }
+
+/* ---------- 고교 시나리오 ----------
+   [요청] "고등학교때부터 시작된 인연이니깐 스토리를 만들자"
+
+   6경기. 학년마다 두 경기고, 그중 한 번은 반드시 **라이벌전**이다.
+   군포고 열둘과 흥진고 둘이 3년 내내 세 번 붙는다.
+
+   대사는 사람을 이름으로 박지 않고 **자리로** 적는다({cap} {ace} {rival}).
+   누구로 시작하느냐에 따라 그 자리에 앉는 사람이 달라지기 때문이다.
+     · 1999년생으로 시작하면 고1 때는 동갑 일곱뿐이고 동생들이 아직 없다
+     · 2000년생으로 시작하면 고3 때 형들이 이미 졸업하고 없다
+   같은 6경기인데 전혀 다른 3년이 된다.
+
+   [실화] 마지막 에필로그는 지어낸 게 아니다.
+   "군포고 애들은 오랜만에 야구해볼까 하면서 초대 온 거고,
+    나랑 김상훈은 김인규한테 초대받았다"
+   김인규·김선호·김상훈은 셋 다 2000년생 동갑이라 고1·고2·고3을
+   같은 학년으로 세 번 맞붙는다. 그 셋이 서로를 제일 잘 안다.        */
+/* [요청] "다른 고등학교들도 추가해서 하자. 흥진고 군포고만 붙으면
+           재미없으니깐. 이건 그냥 고등학교팀에 선수는 그냥 랜덤이름" */
+const HS_OTHERS=['산본고','용호고','수리고','부곡중앙고'];
+const HS_STORY=[
+  {y:1, when:'4월', kind:'연습경기', rival:false, last:true,
+   t:'첫 경기',
+   b:'입단하고 처음 나가는 경기다. 이름도 아직 다 못 외웠다.\n'+
+     '9번. 제일 아래다. 여기서 뭘 보여줘야 다음 경기에 이름이 올라간다.',
+   say:[['{cap}','9번부터 시작하는 거다. 치면 올려준다']],
+   w:'첫 경기부터 이겼다. 더그아웃이 시끄럽다.',
+   l:'졌다. 그래도 다들 별말 없다. 아직 4월이다.'},
+
+  {y:1, when:'9월', kind:'지역대회 1회전', rival:true, bench:false,
+   t:'{foe}라는 학교',
+   b:'대회 1회전 상대가 {foe}다.\n'+
+     '아직 저쪽에 아는 얼굴은 없다. 그냥 학교 이름 하나가 미워지는 날이다.',
+   say:[['{cap}','저기는 매년 붙는다. 오늘 눌러놓자']],
+   w:'이겼다. {foe} 애들이 한참 안 일어났다.',
+   l:'졌다. 1회전에서 끝났다. 버스에서 아무도 말을 안 했다.'},
+
+  {y:2, when:'5월', kind:'주말리그', rival:false, bench:false,
+   t:'자리 싸움',
+   b:'2학년이다. 이제 벤치에 앉으면 그건 내 탓이다.\n'+
+     '{cap}{은는} 잘하는 사람을 쓴다. 그게 전부다.',
+   say:[['{cap}','올해는 이름 순으로 안 낸다'],
+        ['{ace}','나 던지는 날은 좀 편하게 해줘라']],
+   w:'이겼다. 다음 주도 이대로 간다.',
+   l:'졌다. {cap}{이가} 라인업을 다시 짜겠다고 했다.'},
+
+  {y:2, when:'8월', kind:'지역대회 8강', rival:true, bench:false,
+   t:'저쪽 얘들',
+   b:'{foe}. 두 번째다.\n'+
+     '저쪽 더그아웃에 낯익은 얼굴이 앉아 있다 — {rival}.\n'+
+     '지금은 그냥 잘 치는 애 하나일 뿐이다. 10년 뒤에 같은 팀이 될 줄은 모른다.',
+   say:[['{cap}','{rival}한테는 승부하지 마라'],
+        ['{ace}','한 번 붙어보고 싶은데']],
+   w:'이겼다. {rival}{이가} 마지막까지 헬멧을 안 벗었다.',
+   l:'졌다. {rival}한테 당했다. 이건 오래 간다.'},
+
+  {y:3, when:'4월', kind:'개막전', rival:false, bench:false,
+   t:'마지막 시즌',
+   b:'{senior}\n'+
+     '올해가 마지막이다. 대회는 딱 한 번 남았다.',
+   say:[['{cap}','올해는 진짜 끝까지 가보자']],
+   w:'이겼다. 시작은 나쁘지 않다.',
+   l:'졌다. 마지막 해 첫 경기부터 이러면 곤란하다.'},
+
+  {y:3, when:'10월', kind:'지역대회 결승', rival:true, bench:false,
+   t:'마지막 경기',
+   b:'결승이다. 상대는 {foe}.\n'+
+     '세 번째이자 마지막이다. 고등학교에서 야구하는 건 오늘이 끝이다.',
+   say:[['{cap}','오늘 지면 진짜 끝이다'],
+        ['{rival}','또 만났네']],
+   w:'이겼다. 마지막 경기를 이기고 끝냈다.',
+   l:'졌다. 마지막 경기였다. 한참 그라운드에 앉아 있었다.'},
+];
+/* 대사·문장에 들어가는 자리를 실제 사람으로 바꾼다 */
+function hsCast(year){
+  const me=ST.playerId||MYID;
+  const mine=hsMySchool(), foe=hsFoe();
+  const R=hsRoster(year, ST.seed||1);
+  /* [함정] 실존 인물만 놓고 뽑으면 흥진고는 김선호·김상훈 둘뿐이라
+     나를 뺀 한 명이 주장도 하고 에이스도 하고 다 한다.
+     대사가 전부 한 사람 입에서 나왔다. 부원도 후보에 넣는다. */
+  const all=(R[mine]||[]).filter(p=>p.id!==me);
+  const ours=all.filter(p=>p.real);
+  const theirs=(R[foe]||[]).filter(p=>p.real);
+  const top=(a,f)=>a.slice().sort((x,y)=>f(y)-f(x))[0]||null;
+  const maxG=Math.max.apply(null, all.map(q=>q.grade||1).concat([1]));
+  const seniors=all.filter(p=>(p.grade||1)===maxG);
+  const cap=all.find(p=>p.id==='lg')
+         || top(seniors.filter(p=>p.real), p=>(META[p.id]&&META[p.id].loyal)||50)
+         || seniors[0] || all[0];
+  const ace=top(all.filter(p=>p.pitch), p=>p.pitch.stf+p.pitch.ctl)
+         || top(all.filter(p=>p.npc&&p.stf), p=>p.stf+p.ctl)
+         || cap;
+  /* 라이벌 — **동갑을 먼저 본다.** 3년을 같은 학년으로 세 번 붙는 사람이
+     제일 오래 남는다. 김인규·김선호·김상훈이 실제로 그 관계다.      */
+  const myBorn=(META[me]&&META[me].born)||2000;
+  const same=theirs.filter(p=>(META[p.id]&&META[p.id].born)===myBorn);
+  const rival=top(same.length?same:theirs, p=>p.con+p.pow+p.eye) || null;
+  return {
+    me:nameOf(me),
+    cap:cap?cap.name:'주장',
+    ace:ace?ace.name:'에이스',
+    rival:rival?rival.name:HS_SCHOOLS[foe].name+' 4번',
+    foe:HS_SCHOOLS[foe].name,
+    ourSchool:HS_SCHOOLS[mine].name,
+  };
+}
+/* 고3 첫 경기 문장은 학번에 따라 갈린다 —
+   형 학번이면 후배가 보고 있고, 동생 학번이면 형들이 없다. */
+function hsSeniorLine(year){
+  const me=ST.playerId||MYID;
+  const mine=hsMySchool();
+  const R=hsRoster(year, ST.seed||1);
+  const ours=(R[mine]||[]).filter(p=>p.real&&p.id!==me);
+  const older=ours.some(p=>(p.grade||1)>3);
+  const sameGrade=ours.filter(p=>(p.grade||1)===3).length;
+  if((META[me]&&META[me].born)===1999)
+    return '더그아웃이 조용하다. 이제 위에 아무도 없다.';
+  return sameGrade>0
+    ? '형들이 졸업했다. 남은 건 동갑 '+sameGrade+'명뿐이다.'
+    : '형들이 졸업했다. 더그아웃이 텅 비었다.';
+}
+/* 이름을 토큰으로 끼워 넣으면 **조사가 안 맞는다.**
+   "김상훈 는", "송승민 가" 가 그대로 나왔다. 받침을 보고 고른다. */
+const HS_JOSA={ '은는':['은','는'], '이가':['이','가'], '을를':['을','를'],
+                '과와':['과','와'], '아야':['아','야'], '이에':['이','에'] };
+function hsJong(ch){
+  const c=String(ch||'').charCodeAt(0);
+  if(isNaN(c)||c<0xAC00||c>0xD7A3) return false;
+  return ((c-0xAC00)%28)!==0;
+}
+function hsText(s, cast, year){
+  return String(s||'')
+    .replace(/\{senior\}/g, hsSeniorLine(year))
+    .replace(/\{(\w+)\}/g, (m,k)=>cast[k]!=null?cast[k]:m)
+    .replace(/(\S)\s*\{(은는|이가|을를|과와|아야|이에)\}/g,
+      (m,ch,k)=>ch+HS_JOSA[k][hsJong(ch)?0:1]);
+}
+
+/* ---------- 고교 진행 ---------- */
+function hsSlot(){
+  if(!ST.hs) ST.hs={i:0, done:false, res:[], bat:blankBat(), pit:blankPit(),
+                    moments:[], pending:null};
+  if(!ST.hs.bat) ST.hs.bat=blankBat();
+  if(!ST.hs.pit) ST.hs.pit=blankPit();
+  if(!ST.hs.moments) ST.hs.moments=[];
+  if(!ST.hs.res) ST.hs.res=[];
+  return ST.hs;
+}
+function hsActive(){ return !!(isPlayerMode() && ST && ST.hs && !ST.hs.done); }
+function hsYearAt(i){
+  const ys=hsYearsFor(ST.playerId||MYID);
+  return ys[(HS_STORY[i]||HS_STORY[0]).y-1];
+}
+/* 라이벌이 아닌 날의 상대 — 그냥 동네 학교다. 전부 부원으로 채운다. */
+function hsOtherTeam(name, year, seed){
+  const rng=makeRng((seed*104729+year)>>>0);
+  const players=[]; const pitchers=[];
+  for(let i=0;i<11;i++){
+    const p=hsMakePlayer(rng, 1+((rng()*3)|0), 'oth_'+i);
+    p.pos=[POS9[i%9]];
+    players.push(p);
+    if(i<4) pitchers.push({id:p.id,name:p.name,stf:p.stf,ctl:p.ctl,sta:p.sta});
+  }
+  return finalizeTeam({id:'hs_oth', name:name, ops:0.76, avg:.280,
+    tend:{...HS_TEND}, players, pitchers, isUser:false});
+}
+/* 오늘 제일 큰 장면 하나 — 10년 뒤 단톡방에 나올 문장이다 */
+function hsMoment(b, q, year, s, won){
+  const w=[];
+  if(b){
+    if(b.hr)  w.push([100+b.hr*10, b.hr>1?b.hr+'홈런':'홈런']);
+    if(b.d3)  w.push([70, '3루타']);
+    if(b.h>=3)w.push([80, b.h+'안타']);
+    if(b.d2>=2)w.push([60, '2루타 '+b.d2+'개']);
+    if(b.rbi>=3)w.push([75, b.rbi+'타점']);
+    if(b.sb>=2)w.push([50, b.sb+'도루']);
+    if(b.ab>=3&&b.h===0) w.push([30, b.ab+'타수 무안타']);
+    if(b.k>=3) w.push([28, '삼진 '+b.k+'개']);
+  }
+  if(q&&q.bf){
+    const ip=Math.floor(q.outs/3);
+    if(q.k>=7) w.push([95, q.k+'탈삼진']);
+    if(q.outs>=12&&q.er<=1) w.push([90, ip+'이닝 '+q.er+'자책']);
+    if(q.r>=7) w.push([32, ip+'이닝 '+q.r+'실점']);
+    if(q.bb>=5) w.push([26, '볼넷 '+q.bb+'개']);
+  }
+  if(!w.length) return null;
+  w.sort((a,b2)=>b2[0]-a[0]);
+  return {year, kind:s.kind, foe:s.rival, big:w[0][0]>=60, text:w[0][1], won:!!won};
+}
+/* 한 경기 돌린다 */
+function hsPlay(){
+  const H=hsSlot(); const s=HS_STORY[H.i]; if(!s) return null;
+  const me=ST.playerId||MYID;
+  const year=hsYearAt(H.i);
+  const base=(ST.seed||1);
+  const rng=makeRng((base*31+H.i*7717+year)>>>0);
+  const mine=hsMySchool();
+  /* 3년 동안 조금씩 는다 — 경기를 치를수록 시작 배율이 올라간다 */
+  const us=hsTeamOf(mine, year, base, me, H.i*0.035);
+  const foe = s.rival
+    ? hsTeamOf(hsFoe(), year, base, null, 0)
+    : hsOtherTeam(HS_OTHERS[H.i%HS_OTHERS.length], year, base+H.i);
+  const uLine=hsLineup(us, me, !!s.last);
+  const uRot =hsRotation(us, (ST.role==='pit'||ST.role==='two') ? me : null);
+  const fLine=aiLineup(foe), fRot=aiRotation(foe);
+  /* 홈·원정은 그냥 번갈아 — 우리가 홈이면 뒤에 친다 */
+  const homeUs=(H.i%2===0);
+  const res=simGame(homeUs?us:foe, homeUs?foe:us, {
+    rng, innings:HS_INN,
+    awayLineup:homeUs?fLine:uLine, awayRotation:homeUs?fRot:uRot,
+    homeLineup:homeUs?uLine:fLine, homeRotation:homeUs?uRot:fRot,
+  });
+  const usSide=homeUs?res.home:res.away, thSide=homeUs?res.away:res.home;
+  const won=usSide.runs>thSide.runs, tie=usSide.runs===thSide.runs;
+  /* 내 기록 */
+  const b=res.box[me]||null, q=res.pbox[me]||null;
+  if(b) ['pa','ab','h','d2','d3','hr','bb','hbp','k','rbi','r','sb','cs','e']
+    .forEach(k=>H.bat[k]+=b[k]||0);
+  if(b&&b.pa) H.bat.g++;
+  if(q&&q.bf){ ['outs','h','r','er','bb','k','hbp','sbA'].forEach(k=>H.pit[k]+=q[k]||0);
+    H.pit.g++; }
+  const mo=hsMoment(b,q,year,s,won);
+  if(mo) H.moments.push(mo);
+  H.pending={ i:H.i, year, us:usSide.runs, them:thSide.runs, won, tie,
+    foe:s.rival?HS_SCHOOLS[hsFoe()].name:foe.name,
+    bat:b?{...b}:null, pit:(q&&q.bf)?{...q}:null, mo,
+    line:(usSide.line||[]).slice(), fline:(thSide.line||[]).slice() };
+  /* [요청] "이전 경기 결과랑 경기 내용 볼 수 있게 · 예전 경기 선택할 수 있게"
+     그래서 결과를 통째로 남긴다. 나중에 다시 펴 보려면 이게 있어야 한다. */
+  H.res.push({...H.pending});
+  return H.pending;
+}
+/* ---------- 졸업 ---------- */
+function hsLin(v,lo,hi){ return Math.max(0,Math.min(1,(v-lo)/(hi-lo))); }
+/* 6경기 성적 → 시작 능력치 배율.
+   못해도 0.58, 잘하면 0.98 까지. 실제 2026 능력치가 1.00 이라
+   **졸업하면 아직 완성형이 아니다.** 거기까지 가는 게 본편이다.     */
+function hsGrades(){
+  const H=hsSlot(), b=H.bat, q=H.pit;
+  const avg = b.ab? b.h/b.ab : 0;
+  const slg = b.ab? (b.h+b.d2+b.d3*2+b.hr*3)/b.ab : 0;
+  const obp = b.pa? (b.h+b.bb+b.hbp)/b.pa : 0;
+  const bbr = b.pa? (b.bb+b.hbp)/b.pa : 0;
+  const ip  = q.outs/3;
+  const k9  = ip? q.k/ip : 0;
+  const bb9 = ip? q.bb/ip : 9;
+  const era = ip? q.er*7/ip : 9;
+  const g   = {};
+  /* 18타석짜리 표본이다. 성인 리그 기준을 그대로 쓰면 너무 가혹하다 */
+  g.con = hsLin(avg, 0.120, 0.380);
+  g.pow = hsLin(slg, 0.150, 0.700);
+  g.eye = hsLin(bbr, 0.030, 0.220)*0.6 + hsLin(obp-avg, 0.020, 0.160)*0.4;
+  g.spd = hsLin(b.sb, 0, 5)*0.7 + hsLin(b.d3, 0, 2)*0.3;   // 6경기에 8도루는 과하다
+  g.def = hsLin(b.g, 0, 6)*0.6 + (1-hsLin(b.e, 0, 5))*0.4;
+  g.arm = g.def*0.7 + g.pow*0.3;
+  g.stf = ip? (hsLin(k9, 0.6, 2.4)*0.7 + (1-hsLin(era, 1.5, 9))*0.3) : 0;
+  g.ctl = ip? ((1-hsLin(bb9, 0.4, 3.2))*0.7 + (1-hsLin(era, 1.5, 9))*0.3) : 0;
+  g.sta = ip? hsLin(ip, 3, 22) : 0;
+  return g;
+}
+/* 졸업 — 그 성적으로 시작 능력치를 못 박는다 */
+function hsGraduate(){
+  const H=hsSlot(), me=ST.playerId||MYID;
+  const g=hsGrades();
+  const p=TBYID['wwzw'].players.find(x=>x.id===me);
+  if(!p){ H.done=true; return null; }
+  /* [요청] "기본 시작할때는 스탯을 좀 낮게" — 잘해도 성인의 89% 다.
+     졸업은 완성이 아니라 시작이다. 100%(=실제 2026 능력치)까지 가는 게
+     본편이고, 그 위로도 계속 간다(한계 없음).
+
+     [손봄] 처음엔 성적만 보고 0.48~0.85 로 갈랐는데, 6경기 18타석으로
+     능력치를 정하니 **운이 실력보다 크게 먹혔다.** 한 경기 잘 치면 확
+     오르고 못 치면 확 떨어졌다. 그래서 출전(경험)을 섞고 성적 몫을
+     줄인다 — 3년 꼬박 뛴 것 자체가 절반이다.                        */
+  const exp=hsLin((H.bat.g||0)+(H.pit.g||0), 0, HS_STORY.length);
+  const K=(v)=>0.55+0.10*exp+0.24*Math.max(0,Math.min(1,v));
+  const out={};
+  ['con','pow','eye','spd','def','arm'].forEach(k=>{
+    if(p[k]==null) return;
+    out[k]=Math.max(8, Math.round(p[k]*K(g[k])));
+  });
+  /* 투수로 뛰었으면 투구 능력치도. 안 뛰었으면 손대지 않는다 */
+  if(H.pit.outs>0 && p.pitch){
+    out.pitch={};
+    ['stf','ctl','sta'].forEach(k=>{
+      out.pitch[k]=Math.max(10, Math.round(p.pitch[k]*K(g[k])));
+    });
+  }
+  ST.hsRatings=out;
+  H.done=true;
+  applyHsStart();
+  return out;
+}
+/* 졸업 능력치를 로스터에 얹는다.
+   [주의] 로스터는 세이브에 없다 — index.html 상수에서 매번 새로 만들어진다.
+   그래서 불러올 때마다 다시 얹어야 한다. applyLeftPlayers 와 같은 이유다. */
+function applyHsStart(){
+  if(!ST||!ST.hsRatings) return 0;
+  const me=ST.playerId||MYID;
+  const us=TBYID['wwzw']; if(!us) return 0;
+  const p=us.players.find(x=>x.id===me); if(!p) return 0;
+  const R=ST.hsRatings;
+  ['con','pow','eye','spd','def','arm'].forEach(k=>{ if(R[k]!=null) p[k]=R[k]; });
+  if(R.pitch&&p.pitch){
+    ['stf','ctl','sta'].forEach(k=>{ if(R.pitch[k]!=null) p.pitch[k]=R.pitch[k]; });
+    const q=us.pitchers.find(x=>x.id===me);
+    if(q){ q.stf=p.pitch.stf; q.ctl=p.pitch.ctl; q.sta=p.pitch.sta; }
+  }
+  finalizeTeam(us);
+  if(typeof buildPitcherPool==='function') buildPitcherPool();
+  if(ST.ca) ST.ca[me]=calcCA(p);
+  return 1;
+}
+
+/* ---------- 고교 화면 ---------- */
+function hsStatLine(b,q){
+  const out=[];
+  if(b&&b.pa){
+    let t=b.ab+'타수 '+b.h+'안타';
+    if(b.hr)t+=' · '+b.hr+'홈런';
+    else if(b.d3)t+=' · 3루타';
+    else if(b.d2)t+=' · 2루타 '+b.d2;
+    if(b.rbi)t+=' · '+b.rbi+'타점';
+    if(b.bb+b.hbp)t+=' · '+(b.bb+b.hbp)+'사사구';
+    if(b.k)t+=' · 삼진 '+b.k;
+    if(b.sb)t+=' · 도루 '+b.sb;
+    out.push(t);
+  }
+  if(q&&q.bf) out.push(ipStr(q)+'이닝 '+q.h+'피안타 '+q.r+'실점 '+q.k+'탈삼진');
+  return out;
+}
+/* 경기 결과 한 장. 방금 친 것도, 지난 것도 이걸로 그린다.
+   [요청] "이전 경기 결과랑 경기 내용 볼 수 있게 · 예전 경기 선택할 수 있게" */
+function hsPaintResult(c, P){
+  const s=HS_STORY[P.i]||HS_STORY[0];
+  const cast=hsCast(P.year);
+  const card=el('div','card');
+  card.appendChild(el('div','card-h',P.year+'년 · '+s.when+' · '+s.kind));
+  const sc=el('div','hs-score'+(P.won?' w':(P.tie?'':' l')));
+  sc.innerHTML='<b>'+cast.ourSchool+' '+P.us+'</b><i>:</i><b>'+P.them+' '+P.foe+'</b>';
+  card.appendChild(sc);
+  /* 이닝별 — 어떻게 이겼는지 보이게 */
+  if(P.line&&P.line.length){
+    const nI=Math.max(P.line.length,(P.fline||[]).length);
+    let h='<tr><th></th>'; for(let i=0;i<nI;i++)h+='<th>'+(i+1)+'</th>';
+    h+='<th class="rr">R</th></tr>';
+    const row=(nm,arr,tot)=>{ let x='<tr><td class="tn">'+nm+'</td>';
+      for(let i=0;i<nI;i++){const v=arr&&arr[i];x+='<td>'+(v==null?'-':v)+'</td>';}
+      return x+'<td class="rr">'+tot+'</td></tr>'; };
+    const ls=el('div','linescore');
+    ls.innerHTML='<table>'+h+row(cast.ourSchool,P.line,P.us)+row(P.foe,P.fline,P.them)+'</table>';
+    card.appendChild(ls);
+  }
+  card.appendChild(el('div','hs-after',
+    hsText(P.tie?'비겼다.':(P.won?s.w:s.l), cast, P.year)));
+  c.appendChild(card);
+
+  const mine=el('div','card');
+  mine.appendChild(el('div','card-h','내 기록'));
+  const lines=hsStatLine(P.bat,P.pit);
+  if(!lines.length) mine.appendChild(el('p','muted','기록이 없다.'));
+  else lines.forEach(t=>mine.appendChild(el('div','hs-my',t)));
+  if(P.mo) mine.appendChild(el('div','hs-mo'+(P.mo.big?' big':''),
+    '기억에 남는 것 — '+P.mo.text));
+  c.appendChild(mine);
+}
+/* 지난 경기 목록 — 눌러서 다시 편다 */
+function hsPastList(c){
+  const H=hsSlot();
+  if(!H.res.length) return;
+  const card=el('div','card');
+  card.appendChild(el('div','card-h','지난 경기'));
+  H.res.forEach((r,k)=>{
+    const st=HS_STORY[r.i]||HS_STORY[0];
+    const row=el('button','hs-past'+(r.won?' w':(r.tie?'':' l')));
+    row.innerHTML='<span class="hp-y">'+r.year+'</span>'+
+      '<span class="hp-k">'+st.kind+'</span>'+
+      '<span class="hp-s">'+r.us+':'+r.them+'</span>'+
+      '<span class="hp-r">'+(r.tie?'무':(r.won?'승':'패'))+'</span>';
+    row.onclick=()=>{ H.view=k; renderHS(); };
+    card.appendChild(row);
+  });
+  c.appendChild(card);
+}
+function renderHS(){
+  const c=$('#view'); c.innerHTML='';
+  const H=hsSlot();
+  const me=ST.playerId||MYID;
+
+  /* ---- 지난 경기 펴보기 (졸업 뒤에도 된다) ---- */
+  if(H.view!=null && H.res[H.view]){
+    hsPaintResult(c, H.res[H.view]);
+    const bk=el('button','btn primary','← 돌아가기');
+    bk.onclick=()=>{ H.view=null; renderHS(); };
+    c.appendChild(bk);
+    return;
+  }
+  H.view=null;
+
+  /* ---- 졸업 ---- */
+  if(H.done){
+    const card=el('div','card hsgrad');
+    card.appendChild(el('div','card-h','졸업'));
+    const b=H.bat,q=H.pit;
+    const rows=[['타율', b.ab?fmt3(b.h/b.ab):'-'], ['안타', b.h+''], ['홈런', b.hr+''],
+                ['타점', b.rbi+''], ['도루', b.sb+'']];
+    if(q.outs) rows.push(['이닝', ipStr(q)],
+                         ['방어율', (q.er*7/(q.outs/3)).toFixed(2)],
+                         ['탈삼진', q.k+'']);
+    const g=el('div','hs-sum');
+    g.innerHTML=rows.map(r=>'<i><b>'+r[1]+'</b><u>'+r[0]+'</u></i>').join('');
+    card.appendChild(g);
+    const p=TBYID['wwzw'].players.find(x=>x.id===me);
+    if(p&&ST.hsRatings){
+      const R=ST.hsRatings;
+      const KN={con:'컨택',pow:'파워',eye:'선구',spd:'주루',def:'수비',arm:'어깨'};
+      const bars=el('div','hs-bars');
+      Object.keys(KN).forEach(k=>{
+        if(R[k]==null) return;
+        const row=el('div','hb');
+        row.innerHTML='<span class="hb-n">'+KN[k]+'</span>'+
+          '<span class="hb-t"><s style="width:'+Math.min(100,R[k])+'%"></s></span>'+
+          '<span class="hb-v">'+R[k]+'</span>';
+        bars.appendChild(row);
+      });
+      card.appendChild(bars);
+      card.appendChild(el('p','muted',
+        '이게 시작 능력치다. 여기가 끝이 아니라 시작이다 — '+
+        '경기에 나가고 훈련한 만큼 계속 오른다. 한계는 없다.'));
+    }
+    c.appendChild(card);
+
+    if(H.moments.length){
+      const mc=el('div','card');
+      mc.appendChild(el('div','card-h','고등학교 때 그 장면'));
+      mc.appendChild(el('p','muted','10년 뒤 단톡방에서 이 얘기가 나온다.'));
+      H.moments.slice().reverse().slice(0,5).forEach(m=>{
+        const r=el('div','hs-mo'+(m.big?' big':''));
+        r.innerHTML='<b>'+m.year+'</b> '+m.kind+' — <em>'+m.text+'</em>';
+        mc.appendChild(r);
+      });
+      c.appendChild(mc);
+    }
+
+    /* 에필로그 — 실제로 어떻게 한 팀이 됐나 */
+    const ep=el('div','card');
+    ep.appendChild(el('div','card-h','그리고 몇 년 뒤'));
+    const room=el('div','kakao');
+    hsEpilogue().forEach(m=>{
+      const mine2=isMe(m.who);
+      const p2=TBYID['wwzw'].players.find(x=>x.id===m.who);
+      const wdiv=el('div','kmsg'+(mine2?' mine':''));
+      wdiv.innerHTML=(mine2?'':'<div class="kname">'+(p2?p2.name:m.who)+'</div>')+
+        '<div class="kbub">'+String(m.text).replace(/\n/g,'<br>')+'</div>';
+      room.appendChild(wdiv);
+    });
+    ep.appendChild(room);
+    c.appendChild(ep);
+
+    const go2=el('button','btn primary','우완좌완으로');
+    go2.onclick=async()=>{ await saveGame(true); go('home'); toast('여기서부터 진짜다'); };
+    c.appendChild(go2);
+    hsPastList(c);
+    return;
+  }
+
+  /* ---- 방금 친 경기 ---- */
+  if(H.pending){
+    hsPaintResult(c, H.pending);
+    const nx=el('button','btn primary', H.i>=HS_STORY.length-1?'졸업':'다음 경기');
+    nx.onclick=async()=>{
+      H.pending=null; H.i++;
+      if(H.i>=HS_STORY.length) hsGraduate();
+      await saveGame(true); renderHS();
+    };
+    c.appendChild(nx);
+    hsPastList(c);
+    return;
+  }
+
+  /* ---- 경기 전 ---- */
+  const s=HS_STORY[H.i];
+  const year=hsYearAt(H.i);
+  const cast=hsCast(year);
+  const head=el('div','card');
+  head.innerHTML='<div class="hs-yr">'+year+'년 · 고'+s.y+' · '+s.when+'</div>'+
+    '<div class="card-h">'+hsText(s.t,cast,year)+'</div>'+
+    '<div class="hs-kind">'+cast.ourSchool+' · '+s.kind+'</div>'+
+    '<div class="hs-b">'+hsText(s.b,cast,year).replace(/\n/g,'<br>')+'</div>';
+  c.appendChild(head);
+
+  if(s.say&&s.say.length){
+    const room=el('div','kakao');
+    s.say.forEach(([who,t])=>{
+      const nm=hsText(who,cast,year);
+      const wdiv=el('div','kmsg');
+      wdiv.innerHTML='<div class="kname">'+nm+'</div><div class="kbub">'+hsText(t,cast,year)+'</div>';
+      room.appendChild(wdiv);
+    });
+    c.appendChild(room);
+  }
+
+  const prog=el('div','hs-prog');
+  prog.innerHTML=HS_STORY.map((x,k)=>{
+    const r=H.res.find(z=>z.i===k);
+    return '<i class="'+(k===H.i?'on':'')+(r?(r.won?' w':(r.us===r.them?' t':' l')):'')+'">'+
+      (r?(r.won?'승':(r.us===r.them?'무':'패')):(k+1))+'</i>';
+  }).join('');
+  c.appendChild(prog);
+
+  const b=el('button','btn primary','경기 시작');
+  b.onclick=async()=>{ hsPlay(); await saveGame(true); renderHS(); };
+  c.appendChild(b);
+  hsPastList(c);
+}
+/* 에필로그 — [실화] 군포고 애들끼리 "오랜만에 야구할까" 하고 모였고,
+   흥진고 둘은 김인규를 통해 들어왔다. 지어낸 게 아니다.            */
+function hsEpilogue(){
+  const me=ST.playerId||MYID;
+  const heung=(me==='ksh'||me==='ksn');
+  const out=[
+    {who:'lg', text:'야 우리 오랜만에 야구 한번 해볼까'},
+    {who:'jms', text:'ㅇㅇ 콜'},
+    {who:'ujh', text:'나도'},
+    {who:'swm', text:'팀 만들 거면 사람 더 있어야 되는데'},
+    {who:'kig', text:'나 아는 애들 있음'},
+    {who:'kig', text:'고등학교 때 우리랑 계속 붙었던 흥진고 걔네'},
+    {who:'lg', text:'아 걔네'},
+  ];
+  if(heung){
+    out.push({who:'kig', text:'@'+nameOf(me)+' 야 야구할래'});
+    out.push({who:me, text:say(me,'ㅇㅇ 언제','네 언제 하나요'), mood:'happy'});
+  } else {
+    out.push({who:'kig', text:'불러올게'});
+    out.push({who:'ksh', text:say('ksh','오랜만이네요','오랜만입니다')});
+  }
+  out.push({who:'lg', text:'그럼 팀 이름 정하자'});
+  out.push({who:'swm', text:'우완좌완'});
+  out.push({who:'lg', text:'ㅇㅋ'});
+  return out;
+}
 
 /* ---------- 메인화면 ----------
    [요청] "설정에서 말고 메인화면을 아예 따로 만드는게 좋을 것 같은데
@@ -11725,8 +12468,9 @@ function renderRole(){
   ok.onclick=async()=>{
     await saveGame(true);
     const lbl=roleDef().name+(myPos()&&myPos()!=='P'?' · '+POSNAMES[myPos()]:'');
-    if(!ST.tutDone){ ST.tutStep=0; go('tutorial'); }
-    else go('home');
+    /* [요청] "고교때도 그 포지션으로 뛰고" — 자리를 정했으면 고등학교부터다 */
+    hsSlot();
+    go('hs');
     toast(lbl+' 로 시작한다');
   };
   c.appendChild(ok);
@@ -11792,6 +12536,7 @@ async function slotLoad(i){
   TEAMS=buildAllTeams(); TBYID={}; TEAMS.forEach(t=>TBYID[t.id]=t); buildPitcherPool();
   ST=d; normalizeState(); applyLeftPlayers();
   MYID=ST.playerId||'ksh';
+  applyHsStart();
   return true;
 }
 async function slotNew(i){
@@ -12515,6 +13260,12 @@ function renderHome(){
   const recent=ST.schedule.filter(s=>s.played).slice(-5).reverse();
   if(recent.length){
     const rc=el('div','card'); rc.appendChild(el('div','card-h','최근 경기'));
+    /* [요청] "예전 경기 선택할 수 있게" — 여기가 제일 자연스러운 문이다 */
+    if((ST.gameLog||[]).length){
+      const more=el('button','btn sm','지난 경기 다시 보기');
+      more.onclick=()=>{ glogView=null; go('glog'); };
+      rc.appendChild(more);
+    }
     recent.forEach(s=>{
       const w=s.result.us>s.result.them, t=s.result.us===s.result.them;
       const row=el('div','res-row');
@@ -21267,6 +22018,8 @@ function commitGame(res,usSide,thSide,uSlots){
   }
 
   ST.canParty = won;
+  /* [요청] "이전 경기 결과랑 경기 내용 볼 수 있게" */
+  glogPush(sch,res,usSide,thSide,uIds,gRot);
   /* [요청] "단톡방 자랑카드도 만들고"
      여기서 만들어 세이브에 넣어둔다. 화면에서 그때그때 만들면 새로고침하면
      사라지고, 무엇보다 pickFresh 로 뽑은 마지막 줄이 화면을 그릴 때마다
@@ -23965,7 +24718,8 @@ const VIEWS={home:renderHome,squad:renderSquad,lineup:renderLineup,kakao:renderK
   game:renderGame,train:renderTrain,scout:renderScout,stand:renderStand,stats:renderStats,
   records:renderRecords,pick:renderPick,more:renderMore,meet:renderMeet,recruit:renderRecruit,
   tutorial:renderTutorial,player:renderPlayer,hall:renderHall,whatif:renderWhatIf,
-  role:renderRole,slots:renderSlots,start:renderStart,mode:renderMode};
+  role:renderRole,slots:renderSlots,start:renderStart,mode:renderMode,hs:renderHS,
+  glog:renderGlog};
 function go(v){
   clearInterval(playTimer);
   curView=v;
@@ -24403,6 +25157,7 @@ async function boot(){
   }
 
   MYID=ST.playerId||'ksh';
+  applyHsStart();          // 졸업 능력치는 로스터에 없다 — 매번 다시 얹는다
   checkVersion();
   ptSavedAt=(ST.playSec||0);
   startPlayClock();
@@ -24454,7 +25209,9 @@ async function boot(){
      다 있으니 설정 속을 뒤질 일이 없다.
      아무 데도 판이 없는 첫 실행은 바로 선수 고르기로 간다 —
      빈 메뉴를 먼저 보여줄 이유가 없다. */
-  if(saved) go('start');
+  /* 고등학교를 하다 말았으면 거기부터 이어서 */
+  if(saved && hsActive()) go('hs');
+  else if(saved) go('start');
   else {
     let other=false;
     for(let i=1;i<=SLOT_N;i++){ if(i===CURSLOT) continue;
