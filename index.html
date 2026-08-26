@@ -1556,6 +1556,20 @@ table.hl-tbl td.hl-o{color:#c98a80}
 .lu-n{flex:1;color:var(--tx);font-weight:700}
 .lu-ro.me .lu-n{color:var(--gold)}
 .lu-p{font-size:11px;color:var(--dim)}
+/* 세이브 슬롯 — 슬롯마다 따로 굴러가는 판 */
+.slots{margin-top:2px}
+.slotc{display:flex;align-items:center;gap:9px;padding:11px 12px;margin-bottom:8px;
+  background:var(--panel);border:1px solid var(--line);border-radius:11px}
+.slotc.cur{border-color:var(--gold);background:rgba(201,162,39,.09)}
+.slotc.empty{border-style:dashed;opacity:.8}
+.sl-l{flex:1;min-width:0}
+.sl-t{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.sl-i{font-size:15px;line-height:1}
+.sl-t b{font-size:13.5px;font-weight:900;color:var(--tx)}
+.sl-t em{font-style:normal;font-size:9.5px;color:var(--gold);font-weight:800}
+.sl-s{font-size:11px;color:var(--dim);margin-top:3px}
+.sl-r{display:flex;gap:5px;flex-shrink:0}
+.sl-r .btn.sm{padding:7px 10px;font-size:11px;margin:0}
 /* 어느 자리로 뛸 것인가 — 선수 모드 시작 */
 .rolecard{display:block;width:100%;text-align:left;background:var(--panel);
   border:1px solid var(--line);border-radius:13px;padding:13px 14px;margin-bottom:10px;color:var(--ink)}
@@ -7087,8 +7101,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.57.0';
-const APP_VERSION_NOTE = '어느 자리로 뛸지 내가 정한다';
+const APP_VERSION = '2.58.0';
+const APP_VERSION_NOTE = '세이브 슬롯 — 여러 판을 따로 굴린다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7109,6 +7123,14 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.58.0', t:'세이브 슬롯', items:[
+    '세이브 슬롯이 네 칸 생겼다. 슬롯마다 완전히 따로 굴러가는 판이다 — 감독 모드 시즌을 그대로 두고 다른 슬롯에서 선수를 키울 수 있다',
+    '더보기 → 세이브 슬롯 에서 들어간다. 슬롯 카드에 누구를 어느 자리로 어디까지 키웠는지가 적힌다',
+    '여태는 세이브가 하나뿐이라 새로 시작하면 진행 중인 판이 그대로 덮였다. 육성은 여러 번 하는 게 전부라 이게 없으면 다른 포지션을 시험해 볼 수가 없다',
+    '1번 슬롯은 원래 쓰던 세이브를 그대로 쓴다. 옮기지 않았으니 여태 한 건 아무것도 안 바뀐다',
+    '슬롯을 바꿀 때는 지금 판을 먼저 저장하고 옮긴다. 저장 안 누르고 옮겨도 안 날아간다',
+    '자동 저장과 백업도 슬롯마다 따로 들어간다',
+  ]},
   {v:'2.57.0', t:'선수 모드 — 어느 자리로 뛸지 정한다', items:[
     '선수 모드로 시작하면 선수를 고른 다음 「어느 자리로 뛸 건가」를 정한다. 타자 · 투수 · 투수 겸 타자 셋 중 하나다',
     '타자를 고르면 수비 위치까지 고른다. 포수부터 우익수까지 여덟 자리 전부 고를 수 있다 — 막는 자리는 없다',
@@ -10970,10 +10992,10 @@ async function saveGame(silent){
   try{
     // 직전에 저장돼 있던 내용을 백업 슬롯으로 옮긴다
     try{
-      const prev=await STORE.get('wwzw_v5',false);
-      if(prev&&prev.value) await STORE.set('wwzw_v5_bak',prev.value,false);
+      const prev=await STORE.get(slotKey(CURSLOT),false);
+      if(prev&&prev.value) await STORE.set(slotBakKey(CURSLOT),prev.value,false);
     }catch(e){/* 백업 실패는 본 저장을 막지 않는다 */}
-    await STORE.set('wwzw_v5',serializeState(),false);
+    await STORE.set(slotKey(CURSLOT),serializeState(),false);
     lastSaveAt=Date.now(); lastSaveOk=true;
     if(!silent)toast('저장 완료');
   }catch(e){
@@ -10983,7 +11005,7 @@ async function saveGame(silent){
 }
 async function loadGame(){
   try{
-    const r=await STORE.get('wwzw_v5',false);
+    const r=await STORE.get(slotKey(CURSLOT),false);
     if(r&&r.value){
       const d=JSON.parse(r.value);
       if(d&&d.v===5) return d;
@@ -10994,7 +11016,7 @@ async function loadGame(){
 /* 본 세이브가 깨졌을 때 쓰는 백업 슬롯 */
 async function loadBackup(){
   try{
-    const r=await STORE.get('wwzw_v5_bak',false);
+    const r=await STORE.get(slotBakKey(CURSLOT),false);
     if(!r||!r.value)return null;
     const d=JSON.parse(r.value);
     return (d&&d.v===5)?d:null;
@@ -11532,6 +11554,139 @@ function renderRole(){
   };
   c.appendChild(ok);
   if(ok.disabled) c.appendChild(el('p','muted','자리를 정해야 시작할 수 있다.'));
+}
+
+/* ================= 세이브 슬롯 =================
+   [요청] "세이브 같은것도 만들어놓고 다른 선수 키울 수 있거나
+           자기자신 다른 포지션으로 키우거나도 정하고"
+
+   육성은 여러 번 하는 게 전부다 — 다른 선수로, 다른 포지션으로.
+   그런데 여태 세이브가 키 하나뿐이라, 새로 시작하면 진행 중인 판이
+   그대로 덮였다. 감독 모드로 한 시즌 굴리는 중에 선수 모드를 눌러보면
+   그게 날아간다는 뜻이다.
+
+   [호환] 1번 슬롯은 **옛 키를 그대로 쓴다.** 옮기지 않는다 —
+   옮기다 잘못되면 여태 한 게 통째로 날아간다. 2번부터만 새 키다.
+   백업 슬롯도 같은 규칙으로 하나씩 따로 둔다.                       */
+const SLOT_N=4;
+const SLOT_CUR_KEY='wwzw_slot';
+let CURSLOT=1;
+function slotKey(i){    return i<=1 ? 'wwzw_v5'     : 'wwzw_v5_s'+i; }
+function slotBakKey(i){ return i<=1 ? 'wwzw_v5_bak' : 'wwzw_v5_s'+i+'_bak'; }
+
+/* 슬롯 한 칸 요약 — 카드에 뭘 적을지 정하려고 세이브를 살짝 들춘다.
+   통째로 normalizeState 를 돌리지 않는다. 그건 지금 판을 건드린다. */
+async function slotInfo(i){
+  try{
+    const r=await STORE.get(slotKey(i),false);
+    if(!r||!r.value) return null;
+    const d=JSON.parse(r.value);
+    if(!d||d.v!==5) return null;
+    const st=(d.stand&&d.stand['wwzw'])||{w:0,l:0,t:0,g:0};
+    const b=(d.bat&&d.playerId)?d.bat[d.playerId]:null;
+    return {
+      i, mode:d.mode==='player'?'player':'mgr',
+      who:d.playerId||null, role:d.role||null, pos:d.myPos||null,
+      season:d.seasonNo||1, round:d.round||0,
+      w:st.w||0, l:st.l||0, t:st.t||0, g:st.g||0,
+      avg:(b&&b.ab)?b.h/b.ab:null,
+      bytes:r.value.length,
+    };
+  }catch(e){ return null; }
+}
+function slotLabel(s){
+  if(!s) return '비어 있음';
+  if(s.mode!=='player') return '감독 모드';
+  const nm=s.who?nameOf(s.who):'?';
+  const rl=s.role==='pit'?'투수':(s.role==='two'?'투수·타자'
+    :(s.pos?POSNAMES[s.pos]:'타자'));
+  return nm+' · '+rl;
+}
+/* 슬롯을 바꾼다. **지금 판을 먼저 저장하고** 옮긴다. */
+async function slotSwitch(i){
+  if(ST) { try{ await saveGame(true); }catch(e){} }
+  CURSLOT=i;
+  try{ await STORE.set(SLOT_CUR_KEY,String(i),false); }catch(e){}
+}
+async function slotLoad(i){
+  await slotSwitch(i);
+  const d=await loadGame();
+  if(!d) return false;
+  TEAMS=buildAllTeams(); TBYID={}; TEAMS.forEach(t=>TBYID[t.id]=t); buildPitcherPool();
+  ST=d; normalizeState(); applyLeftPlayers();
+  MYID=ST.playerId||'ksh';
+  return true;
+}
+async function slotNew(i){
+  await slotSwitch(i);
+  TEAMS=buildAllTeams(); TBYID={}; TEAMS.forEach(t=>TBYID[t.id]=t); buildPitcherPool();
+  /* newSeason 은 지금 ST 에서 모드·자리 같은 설정을 물고 온다.
+     새 슬롯인데 앞 판 설정이 따라오면 안 된다 — 먼저 비운다. */
+  ST=null;
+  ST=newSeason(); ST.playerId=MYID;
+  ST.lineup=recommendLineup(); ST.rotation=recommendRotation();
+  await saveGame(true);
+}
+async function slotWipe(i){
+  try{ await STORE.set(slotKey(i),'',false); }catch(e){}
+  try{ await STORE.set(slotBakKey(i),'',false); }catch(e){}
+}
+
+function renderSlots(){
+  const c=$('#view'); c.innerHTML='';
+  const head=el('div','card');
+  head.innerHTML='<div class="card-h">세이브 슬롯</div>'+
+    '<p class="muted">슬롯마다 <b>따로 굴러가는 판</b>이다. '+
+    '감독 모드 시즌을 그대로 두고 다른 슬롯에서 선수를 키울 수 있다.<br>'+
+    '자동 저장은 <b>지금 슬롯</b>에만 들어간다.</p>';
+  c.appendChild(head);
+  const wrap=el('div','slots'); c.appendChild(wrap);
+  const paint=async()=>{
+    wrap.innerHTML='';
+    for(let i=1;i<=SLOT_N;i++){
+      const s=await slotInfo(i);
+      const row=el('div','slotc'+(i===CURSLOT?' cur':'')+(s?'':' empty'));
+      const sub=s
+        ? `${s.season}년차 · ${s.round}차전 · ${s.w}승 ${s.l}패`
+          +(s.t?` ${s.t}무`:'')+(s.avg!=null?` · 타율 ${fmt3(s.avg)}`:'')
+        : '아직 아무것도 없다';
+      row.innerHTML='<div class="sl-l">'+
+        '<div class="sl-t"><span class="sl-i">'+(s?(s.mode==='player'?'\u{26BE}':'\u{1F9E2}'):'\u{2795}')+'</span>'+
+        '<b>'+slotLabel(s)+'</b>'+(i===CURSLOT?'<em>지금 이 판</em>':'')+'</div>'+
+        '<div class="sl-s">'+sub+'</div></div>';
+      const btns=el('div','sl-r');
+      if(s){
+        if(i!==CURSLOT){
+          const go2=el('button','btn sm primary','이어서');
+          go2.onclick=async()=>{
+            if(await slotLoad(i)){ toast(`${i}번 슬롯 — ${slotLabel(s)}`); go('home'); }
+            else toast('불러오지 못했다');
+          };
+          btns.appendChild(go2);
+        }
+        const del=el('button','btn sm','지우기');
+        del.onclick=async()=>{
+          if(!confirm(`${i}번 슬롯을 지운다. 되돌릴 수 없다.`)) return;
+          await slotWipe(i);
+          if(i===CURSLOT){ ST=null; }
+          toast(`${i}번 슬롯을 지웠다`);
+          paint();
+        };
+        btns.appendChild(del);
+      } else {
+        const nw=el('button','btn sm primary','새로 시작');
+        nw.onclick=async()=>{ await slotNew(i); go('pick'); };
+        btns.appendChild(nw);
+      }
+      row.appendChild(btns);
+      wrap.appendChild(row);
+    }
+  };
+  paint();
+  const note=el('p','muted');
+  note.innerHTML='<b>1번 슬롯은 원래 쓰던 세이브 그대로다.</b> '+
+    '옮기지 않았으니 여태 한 건 아무것도 안 바뀐다.';
+  c.appendChild(note);
 }
 
 /* ---------- 홈 ---------- */
@@ -23310,6 +23465,17 @@ function renderMore(){
     '경기 화면의 「투수 교체」 버튼은 언제든 그대로 쓸 수 있다.'));
   c.appendChild(ac2);
 
+  /* [요청] "세이브 같은것도 만들어놓고 다른 선수 키울 수 있거나" */
+  const sl=el('div','card');
+  sl.appendChild(el('div','card-h','세이브 슬롯'));
+  sl.appendChild(el('p','muted',
+    '슬롯마다 따로 굴러가는 판이다. 지금 시즌을 그대로 두고 '+
+    '다른 슬롯에서 선수를 새로 키울 수 있다.'));
+  const slb=el('button','btn primary','슬롯 보기 · 새로 키우기');
+  slb.onclick=()=>go('slots');
+  sl.appendChild(slb);
+  c.appendChild(sl);
+
   // 세이브/로드
   const sv=el('div','card');
   sv.appendChild(el('div','card-h','세이브 · 로드'));
@@ -23614,7 +23780,7 @@ const VIEWS={home:renderHome,squad:renderSquad,lineup:renderLineup,kakao:renderK
   game:renderGame,train:renderTrain,scout:renderScout,stand:renderStand,stats:renderStats,
   records:renderRecords,pick:renderPick,more:renderMore,meet:renderMeet,recruit:renderRecruit,
   tutorial:renderTutorial,player:renderPlayer,hall:renderHall,whatif:renderWhatIf,
-  role:renderRole};
+  role:renderRole,slots:renderSlots};
 function go(v){
   clearInterval(playTimer);
   curView=v;
@@ -24034,6 +24200,12 @@ async function boot(){
   TEAMS=buildAllTeams();
   TEAMS.forEach(t=>TBYID[t.id]=t);
   buildPitcherPool();
+  /* 어느 슬롯을 보고 있었나 */
+  try{
+    const cs=await STORE.get(SLOT_CUR_KEY,false);
+    const k=cs&&cs.value?parseInt(cs.value,10):1;
+    if(k>=1&&k<=SLOT_N) CURSLOT=k;
+  }catch(e){}
   const saved=await loadGame();
   const us=TBYID['wwzw'];
   if(saved){
@@ -24087,7 +24259,15 @@ async function boot(){
   });
   try{ clearInterval(window.__ldTimer); }catch(e){}
   $('#loading').style.display='none';
-  go(saved?'home':'pick');
+  /* 지금 슬롯이 비었는데 다른 슬롯에 판이 있으면 슬롯부터 보여준다.
+     아무 데도 없으면 여태처럼 바로 선수 고르기로 간다. */
+  if(saved) go('home');
+  else {
+    let other=false;
+    for(let i=1;i<=SLOT_N;i++){ if(i===CURSLOT) continue;
+      if(await slotInfo(i)){ other=true; break; } }
+    go(other?'slots':'pick');
+  }
   if(!saved) ST.tutPending=true;      // 선수 고르고 나면 튜토리얼로 보낸다
   // 재접속 안내 — 저장이 살아 있다는 걸 눈으로 확인시켜 준다
   if(saved){
