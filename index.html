@@ -1584,6 +1584,10 @@ table.hl-tbl td.hl-o{color:#c98a80}
   background:linear-gradient(180deg,rgba(63,165,100,.13),var(--panel));
   border:1px solid #3fa564}
 .defbox .rb-bar>i{background:linear-gradient(90deg,#3fa564,#c9a227,#d2544a)}
+/* 주루 장면 — 하이라이트 그라운드를 그대로 쓴다 */
+.runstage{margin:8px 0;border-radius:10px;overflow:hidden;
+  border:1px solid var(--line);background:#2c5b28;line-height:0}
+.runcv{display:block;width:100%;height:auto;image-rendering:pixelated}
 /* 주루 — 공이 굴러가는 동안 고른다 */
 .runbox{margin-top:10px;padding:12px;border-radius:12px;
   background:linear-gradient(180deg,rgba(201,162,39,.14),var(--panel));
@@ -7319,8 +7323,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.66.0';
-const APP_VERSION_NOTE = '미트가 보인다 · 송구를 고른다';
+const APP_VERSION = '2.67.0';
+const APP_VERSION_NOTE = '타구를 보면서 돌지 말지 정한다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7341,6 +7345,13 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.67.0', t:'타구를 보면서 주루한다', items:[
+    '주루가 하이라이트 그라운드 안으로 들어갔다. 치면 타석 화면이 접히고 그라운드가 뜬다 — 공이 내가 친 방향으로 날아가고, 야수들이 서 있고, 내가 1루로 뛴다. 그걸 보면서 정한다',
+    '「한 베이스 더?」라는 말이 이상했다. 치자마자 묻는 건데 안타인지 아웃인지도 모르는 시점이라 기준이 없었다. 1루 코치가 실제로 하는 말은 하나다 — 「돌아? 서?」. 그래서 버튼도 「선다 / 돈다」다',
+    '타구 방향을 먼저 보여준다. 「좌중간 쪽으로 갔다」를 보고 정하는 거다. 결과는 아직 안 나왔지만 방향은 미리 알 수 있어서 화면에서 본 방향과 나중에 로그에 찍히는 방향이 어긋나지 않는다',
+    '판단 시간을 1.7초에서 2.8초로 늘렸다. 공이 날아가는 걸 보고 정하는 건데 1.7초는 볼 새가 없었다',
+    '주루사도 「2루에서 아웃 — 돌다가 잡혔다」로 적는다',
+  ]},
   {v:'2.66.0', t:'미트가 보인다 · 송구를 고른다', items:[
     '타석 존 위에 동그라미가 뜬다. 그게 내 배트가 닿는 범위다 — 컨택이 낮으면 작고, 노림수를 고르면 커진다. 여태 「±0.17초 · 존 1.55칸」 같은 숫자로만 보여줬는데 숫자는 읽어야 알고 원은 보면 안다',
     '컨택 87 송승민은 118%, 컨택 36 고등학생은 89% 다. 노림수를 맞히면 136%까지 커지고 틀리면 95%로 줄어든다',
@@ -10237,7 +10248,7 @@ LiveGame.prototype.stepPA = function(){
       }
     }
     /* [요청] 주루 — 늘리려다 죽었으면 그렇게 적어야 한다. 안타가 아웃이 된 거다 */
-    else if(res.runOut) events.push({text:`${bat.name} ${res.runOut==='1B'?'2루':'3루'}에서 아웃 — 한 베이스 더 가려다 잡혔다${bbTag(bb)}`,cls:'out'});
+    else if(res.runOut) events.push({text:`${bat.name} ${res.runOut==='1B'?'2루':'3루'}에서 아웃 — 돌다가 잡혔다${bbTag(bb)}`,cls:'out'});
     else events.push({text:`${bat.name} ${res.gb?'땅볼':'뜬공'} 아웃${bbTag(bb)}`,cls:'out'});
   }
   else{
@@ -18362,6 +18373,60 @@ function psFencePath(g, park, pad){
     if(a<=-PS_FOUL) g.moveTo(x,y); else g.lineTo(x,y);
   }
 }
+/* ================= 주루 장면 =================
+   [제보] "치고나서 타구 보고 주루를 할 수 있게해야지"
+          "원래 치고나서 하이라이트 나오듯이 하는 거 있잖아
+           거기서 주루플레이 할 수 있게해야지"
+
+   맞다. 별도 판단창이 뜨는 게 아니라 **공이 날아가는 걸 보면서** 정하는
+   거다. 그래서 하이라이트에 쓰는 그 그라운드(psField)를 그대로 쓴다.
+
+   [되는 이유] 결과는 아직 안 나왔지만 **방향은 이미 안다.**
+   battedBall 이 bbRng(seq) 라는 결과와 별개인 난수를 쓰기 때문이다.
+   그래서 진짜 타구와 같은 방향으로 공을 날려 보낼 수 있다. 거리는
+   아직 모르니 시간에 따라 뻗어 나가게 두고, 그 사이에 정하게 한다.
+   화면에서 본 방향과 나중에 로그에 찍히는 방향이 어긋나지 않는다.   */
+function runScene(host, ang, dur, park, onTick){
+  const cv=document.createElement('canvas');
+  cv.className='runcv';
+  cv.width=PSW*2; cv.height=PSH*2;
+  host.appendChild(cv);
+  const g=cv.getContext('2d');
+  const P=park||psPark();
+  const HX=160, HY=236;
+  const fence=psFenceR(P, ang);
+  const rad=psRad(ang);
+  const t0=Date.now();
+  let stop=false;
+  const draw=()=>{
+    if(stop) return;
+    const k=Math.min(1,(Date.now()-t0)/dur);
+    g.setTransform(2,0,0,2,0,0);
+    psField(g, P);
+    /* 야수 — 자리만 점으로 */
+    Object.keys(PS_POS).forEach(kk=>{
+      const p=psPosOf(kk,P);
+      g.fillStyle='#e9e4d8';
+      g.beginPath(); g.arc(p.x,p.y,3,0,Math.PI*2); g.fill();
+    });
+    /* 공 — 아는 방향으로 뻗어 나간다. 거리는 아직 모르니 시간이 정한다 */
+    const r=fence*(0.18+k*0.72);
+    const bx=HX+Math.cos(rad)*r, by=HY+Math.sin(rad)*r;
+    g.fillStyle='#fff';
+    g.beginPath(); g.arc(bx,by,4,0,Math.PI*2); g.fill();
+    g.strokeStyle='rgba(255,255,255,.35)'; g.lineWidth=1.5;
+    g.beginPath(); g.moveTo(HX,HY); g.lineTo(bx,by); g.stroke();
+    /* 나 — 홈에서 1루로 뛴다 */
+    const b1=PS_B[1];
+    const rx=HX+(b1.x-HX)*Math.min(1,k*1.15), ry=HY+(b1.y-HY)*Math.min(1,k*1.15);
+    g.fillStyle='#ffd15c';
+    g.beginPath(); g.arc(rx,ry,4.5,0,Math.PI*2); g.fill();
+    if(onTick) onTick(k);
+    if(k<1) requestAnimationFrame(draw);
+  };
+  draw();
+  return { stop:()=>{ stop=true; }, el:cv };
+}
 function psField(g, parkIn){
   const park=parkIn||psPark();
   const HX=160, HY=236;
@@ -21707,36 +21772,70 @@ function renderSwing(box, d){
      그래야 기록이 화면과 안 어긋난다.                              */
   const askRun=(pre,color,big,after)=>{
     if(done||resolved||!LIVE){ after(); return; }
-    const dur=1700;
+    /* [제보] "속도 좀 느리게 하던지해서" — 공이 날아가는 걸 보고
+       정하는 거라 1.7초는 볼 새가 없다. 2.8초면 타구를 눈으로 쫓고
+       나서 손이 간다. 그래도 늦게 정하면 그만큼 위험하다. */
+    const dur=2800;
+    /* [제보] "치고나서 한베이스 더간다가 뭐야"
+       맞는 말이다. 치자마자 물어보는데 **뭘 기준으로 한 베이스 더인지**
+       알 수가 없었다. 안타인지 아웃인지도 모르는 시점이다.
+
+       그 순간 1루 코치가 실제로 하는 말은 하나다 — "돌아? 서?"
+       그리고 그건 **타구를 보고** 정하는 거라, 어디로 갔는지를 먼저
+       보여줘야 한다. 방향은 battedAngle 로 미리 알 수 있다
+       (bbRng 가 결과와 별개라서 결과 전에 뽑아도 값이 같다).       */
+    const bats=(bat&&bat.bats)||'R';
+    const ang=battedAngle(LIVE.paSeq, bats);
+    const dirTxt=dirName(ang);
+    /* 타석 화면을 치우고 그라운드를 띄운다 — 공을 보면서 정해야 하니까 */
+    mv.style.display='none';
+    gauge.style.display='none';
+    acts.style.display='none';
+    auto.style.display='none';
+    aim.style.display='none';
     const box2=el('div','runbox');
-    box2.innerHTML='<div class="rb-t">'+pre+' — 한 베이스 더?</div>'+
-      '<div class="rb-bar"><i></i></div>'+
-      '<div class="rb-note">늦을수록 잡힌다</div>';
-    const bar=box2.querySelector('.rb-bar > i');
+    box2.innerHTML='<div class="rb-t">'+dirTxt+' 쪽으로 갔다</div>';
+    const stage=el('div','runstage');
+    box2.appendChild(stage);
+    box2.appendChild(Object.assign(el('div','rb-bar'),{innerHTML:'<i></i>'}));
+    box2.appendChild(el('div','rb-note','야수가 붙는다 — 늦게 정할수록 잡힌다'));
     const row=el('div','rb-row');
     const t0=Date.now();
-    let picked=false;
+    let picked=false, sc=null;
+    const bar=()=>box2.querySelector('.rb-bar > i');
     const pick=(go)=>{
       if(picked)return; picked=true;
-      clearInterval(tick);
+      if(sc) sc.stop();
       const risk=Math.max(0,Math.min(1,(Date.now()-t0)/dur));
       LIVE._stretch = go ? {go:true, risk} : null;
+      /* 화면을 되돌린다 — 결과는 이제 엔진이 낸다 */
+      mv.style.display=''; gauge.style.display='';
+      acts.style.display=''; auto.style.display=''; aim.style.display='';
       try{ box2.parentNode&&box2.parentNode.removeChild(box2); }catch(e){}
       after();
     };
-    const b1=el('button','rb-b stay','멈춘다');
+    const b1=el('button','rb-b stay','선다');
     b1.onclick=()=>pick(false);
-    const b2=el('button','rb-b go','한 베이스 더 ▸');
+    const b2=el('button','rb-b go','돈다 ▸');
     b2.onclick=()=>pick(true);
     row.appendChild(b1); row.appendChild(b2);
     box2.appendChild(row);
     w.appendChild(box2);
-    const tick=setInterval(()=>{
-      const k=Math.min(1,(Date.now()-t0)/dur);
-      if(bar) bar.style.width=(k*100).toFixed(0)+'%';
-      if(k>=1){ pick(false); }          // 안 고르면 안전하게
-    },40);
-    box2._stop=()=>{ clearInterval(tick); };
+    try{
+      sc=runScene(stage, ang, dur, LIVE.park, (k)=>{
+        const b=bar(); if(b) b.style.width=(k*100).toFixed(0)+'%';
+        if(k>=1) pick(false);           // 안 고르면 선다
+      });
+    }catch(e){
+      /* 캔버스가 안 되는 환경(테스트 등)에서는 막대만으로 진행한다 */
+      const iv=setInterval(()=>{
+        const k=Math.min(1,(Date.now()-t0)/dur);
+        const b=bar(); if(b) b.style.width=(k*100).toFixed(0)+'%';
+        if(k>=1){ clearInterval(iv); pick(false); }
+      },40);
+      sc={stop:()=>clearInterval(iv)};
+    }
+    box2._stop=()=>{ if(sc)sc.stop(); };
   };
   const endPA=(label,color,big)=>{
     if(resolved)return; resolved=true; done=true; phase='over';
@@ -25385,8 +25484,8 @@ function renderMore(){
   /* 주루 — 치고 나서 한 베이스 더 갈지 물어볼까
      [요청] "베이스 어디까지 갈건지 정하게 해서 주루플레이도" */
   const rn=el('p','muted');
-  rn.innerHTML='<br><b>주루</b> — 잘 맞은 타구를 친 뒤에 '+
-    '<b>한 베이스 더 갈지</b> 물어본다. 늦게 고를수록 잡힌다.';
+  rn.innerHTML='<br><b>주루</b> — 잘 맞은 타구를 치면 타구 방향을 보여주고 '+
+    '<b>1루를 돌지 말지</b> 물어본다. 늦게 정할수록 잡힌다.';
   pl.appendChild(rn);
   const rnRow=el('div','btn-row');
   [[true,'물어본다'],[false,'안 물어본다']].forEach(([v,lab])=>{
@@ -25397,7 +25496,7 @@ function renderMore(){
   });
   pl.appendChild(rnRow);
   pl.appendChild(el('div','set-note', (ST.runAsk!==false)
-    ? '1루타를 2루타로 늘릴 수 있다. 대신 잡히면 아웃이다.'
+    ? '돌면 1루타가 2루타가 될 수 있다. 대신 잡히면 아웃이다.'
     : '안 물어본다. 친 대로 간다.'));
 
   /* 2D 경기 장면 — 중요한 장면을 그라운드 그림으로 보여준다 */
