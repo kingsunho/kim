@@ -48,24 +48,58 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
     if(!document.getElementById('decision')){var b=document.createElement('div');
       b.id='decision';document.body.appendChild(b);} })()`);
 
-  console.log('\n[수비 — 타구를 보면서]');
+  /* 주루 판단용 — 우리가 공격 중이고 내가 1루에 나가 있다 */
+  const setup2=()=>ev(`(function(){
+    ST.mode='player'; ST.playerId='ksh'; ST.defAsk=true;
+    ST.weekDone=true; ST.announced=true; ST.lineupDirty=false; ST.absent={}; ST.events=[];
+    LIVE=makeLive(); LIVE.manual=true; LIVE.myId='ksh';
+    var g=0; while(!LIVE.off().isUser && g++<300){ if(LIVE.pending)LIVE.applyDecision('change'); LIVE.step(); }
+    LIVE.bases=['ksh',null,null]; LIVE.outs=0;
+    if(!document.getElementById('decision')){var b=document.createElement('div');
+      b.id='decision';document.body.appendChild(b);} })()`);
+
+  console.log('\n[수비 — 직접 조종]');
   setup();
   ev("showDecision({kind:'defplay', ang:-18, pos:'SS'})"); await wait(150);
   T(!!d.querySelector('#decision .runstage'), '그라운드가 뜬다');
   T(/으로 온다/.test(txt('#decision .rb-t')), '타구 방향을 먼저 알려준다 :: '+txt('#decision .rb-t'));
-  T(btns().join('/')==='안전하게/달려든다 ▸', '버튼 :: '+btns().join(' / '));
-  T(ev("renderDefPlay.toString().indexOf('moundView')<0"), '마운드 그림은 안 쓴다');
+  T(btns().length===0, '「안전하게 / 달려든다」 버튼이 없어졌다 — 손으로 쫓아간다');
+  T(/끌어라/.test(txt('#decision .rb-note')), '끌어서 조종하라고 알려준다 :: '+txt('#decision .rb-note'));
+  T(ev("typeof defChaseScene==='function'"), '타구를 쫓아가는 캔버스가 있다');
+  T(ev("/pointermove/.test(defChaseScene.toString())&&/o\\.speed\\*dt/.test(defChaseScene.toString())"),
+    '손가락 쪽으로 능력치만큼 뛴다');
+  T(ev("/def:q:/.test(renderDefPlay.toString())&&/dp\\.q!=null/.test(LiveGame.prototype.consumePlayMods.toString())"),
+    '공에 붙은 정도가 그대로 확률로 간다');
+  T(ev("(function(){var u=battedU(7);var r=bbRng(7);r();r();r();return Math.abs(u-r())<1e-12;})()"),
+    '비거리 난수를 결과 전에 미리 안다 (화면과 로그가 안 어긋난다)');
 
   console.log('\n[송구 — 주자를 보면서]');
-  d.querySelector('#decision .rb-b.go').click(); await wait(250);
-  T(!!d.querySelector('#decision .runstage'), '2단계에도 그라운드가 뜬다');
-  T(/어디로 던지나/.test(txt('#decision .rb-t')), '제목 :: '+txt('#decision .rb-t'));
-  T(btns().join('/')==='1루로 — 하나만/2루로 — 병살 ▸', '버튼 :: '+btns().join(' / '));
-  T(/1루 주자/.test(txt('#decision .rb-note')), '주자 주루를 알려준다');
-  [...d.querySelectorAll('#decision .rb-b')].find(b=>/2루로/.test(b.textContent)).click();
-  await wait(1600);
-  T(!d.querySelector('#decision.on'), '고르면 판단창이 닫힌다');
+  await wait(2200);
+  T(!/으로 온다/.test(txt('#decision .rb-t')), '1막이 끝나면 결과로 넘어간다 :: '+txt('#decision .rb-t'));
+  const tb=[...d.querySelectorAll('#decision .rb-b')].find(b=>/2루로/.test(b.textContent));
+  if(tb){
+    T(true, '잡았으면 어디로 던질지 고른다');
+    tb.click(); await wait(1800);
+  } else {
+    T(true, '빠졌으면 송구가 없다 — 그대로 진행된다');
+    await wait(1800);
+  }
   T(ev("LIVE && LIVE.log.length>0"), '타석이 실제로 진행됐다 :: '+ev("(LIVE.log.slice(-1)[0]||{}).text"));
+
+  console.log('\n[주루 — 리드와 견제]');
+  setup2();
+  await wait(700);                 // 앞 장면의 뒷정리 타이머가 다 끝난 뒤에
+  ev("showDecision({kind:'lead'})"); await wait(150);
+  T(!!d.querySelector('#decision .runstage'), '1루 그라운드가 뜬다');
+  T(/리드를 얼마나/.test(txt('#decision .rb-t')), '제목 :: '+txt('#decision .rb-t'));
+  T(btns().join('/')==='안 뛴다/뛴다 ▸', '버튼 :: '+btns().join(' / '));
+  T(ev("typeof leadScene==='function'&&/pointermove/.test(leadScene.toString())"),
+    '끌어서 리드를 벌린다');
+  T(ev("typeof LiveGame.prototype.runPickoff==='function'"), '견제사 판정이 엔진에 있다');
+  T(ev("/run:go/.test(LiveGame.prototype.applyDecision.toString())"), '도루 지시가 엔진까지 간다');
+  [...d.querySelectorAll('#decision .rb-b')].find(b=>/뛴다 ▸/.test(b.textContent)).click();
+  await wait(900);
+  T(!d.querySelector('#decision.on'), '고르면 판단창이 닫힌다');
 
   console.log('\n[송구가 엔진까지 간다]');
   T(ev("LiveGame.prototype.applyDecision.toString().indexOf(\"choice==='at:lead'\")>0"),
@@ -116,8 +150,10 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
     '인플레이 타구는 물어보지 않아도 2막을 탄다');
   T(ev("/if\\(!play\\)\\{ setTimeout\\(doneCb/.test(renderSwing.toString())"),
     '삼진·볼넷은 탄 공이 없으니 그냥 닫는다');
-  T(ev("/play\\.type==='OUT'\\?1900:2400/.test(renderSwing.toString())"),
-    '아웃은 짧게 · 살아 나간 건 끝까지');
+  T(ev("/const flyMs=Math\\.round\\(1250\\+Math\\.min\\(140,m\\)\\*22\\)/.test(renderSwing.toString())"),
+    '체공 시간이 비거리를 따라간다 — 땅볼은 짧게 · 큰 타구는 길게');
+  T(ev("/dist:play\\.dist/.test(renderSwing.toString())"),
+    '1막이 진짜 비거리로 날아간다 — 「저 멀리 갔는데 땅볼아웃」 이 안 나온다');
   T(ev("/hideBat\\(\\)/.test(renderSwing.toString())&&/showBat\\(\\)/.test(renderSwing.toString())"),
     '타석 화면을 치우고 되돌리는 걸 한 군데로 모았다');
 
@@ -130,10 +166,16 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
     '뜬공에 잡히면 귀루한다');
   T(ev("/0\\.34-risk\\*0\\.12/.test(groundScene.toString())"),
     '늦게 정하면 야수가 먼저 잡는다');
-  T(ev("/replay\\(play, 2400, [^,]+, \\{risk\\}\\)/.test(renderSwing.toString())"),
+  T(ev("/sc\\.replay\\(play, rMs, fin, \\{risk\\}\\)/.test(renderSwing.toString())"),
     '1막에서 누른 시점이 2막으로 넘어간다');
-  T(ev("/한 베이스 더/.test(renderSwing.toString())"),
-    '버튼이 몇 베이스인지 말한다');
+  T(ev("/else if\\(!offer\\)\\{ picked=true; act2\\(0\\); \\}/.test(renderSwing.toString())"),
+    '고를 게 없으면 1막을 건너뛴다 — 같은 타구를 두 번 안 날린다');
+  T(ev("/'선다 — '\\+nb\\[0\\]/.test(renderSwing.toString())&&/'돈다 — '\\+nb\\[1\\]/.test(renderSwing.toString())"),
+    '버튼이 몇 루인지 말한다 (1루→2루 · 2루→3루)');
+  T(ev("/stretchAsk/.test(stretchRun.toString())"),
+    '결과를 먼저 정하고 나서 묻는다 — 「돈다」가 도박이 아니다');
+  T(ev("(function(){var r=stretchRun('1B',{stretch:{go:true,risk:1}},{spd:10},{_slotDef:80},function(){return 0.99;});return r.type==='1B'&&r.runOut==='1B';})()"),
+    '늘리려다 죽어도 안타는 남는다 (1루타 + 주루사)');
 
   console.log('\n[실제로 쳐보고 창이 닫히는지]');
   /* jsdom 에는 캔버스가 없다 — groundScene 이 던진다. 그때도 2막이
