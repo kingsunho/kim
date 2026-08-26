@@ -934,6 +934,16 @@ table.stand td.nm{text-align:left;font-weight:700;font-size:12px}
 /* 존 크기는 실제 치수에서 나온다 — 폭 43cm : 높이 56cm (1 : 1.3).
    화면 폭의 10% (=48px) 로 잡으면 타자 어깨너비의 1.4배쯤 된다.
    [버그 이력] 예전엔 존이 96px 이라 타자(62px)보다 컸다. 말이 안 됐다. */
+/* 미트 — 내 배트가 닿는 범위. 존 한가운데에 겹쳐 놓는다.
+   [참고] 마구마구가 미트를 눈에 보이게 해서 능력치를 손에 잡히게 했다.
+   숫자는 읽어야 알고 원은 보면 안다. */
+.mitt{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  border-radius:50%;border:2px dashed rgba(127,214,165,.55);
+  background:radial-gradient(circle,rgba(127,214,165,.10),rgba(127,214,165,0) 70%);
+  pointer-events:none;display:none;box-sizing:border-box}
+.mitt.wide{border-color:rgba(255,209,92,.62)}
+.mitt.tight{border-color:rgba(224,138,112,.60)}
+.bw-m{display:block;font-style:normal;font-size:10px;color:var(--dim);opacity:.8;margin-top:3px}
 .szone{position:absolute;left:50%;top:80%;transform:translate(-50%,-50%);
   width:10%;padding-top:12.9%;border:2px solid rgba(255,255,255,.5);border-radius:2px}
 .szone i{position:absolute;background:rgba(255,255,255,.16)}
@@ -7309,8 +7319,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.65.0';
-const APP_VERSION_NOTE = '이번 주에 뭘 할까 — 하나만';
+const APP_VERSION = '2.66.0';
+const APP_VERSION_NOTE = '미트가 보인다 · 송구를 고른다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7331,6 +7341,13 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.66.0', t:'미트가 보인다 · 송구를 고른다', items:[
+    '타석 존 위에 동그라미가 뜬다. 그게 내 배트가 닿는 범위다 — 컨택이 낮으면 작고, 노림수를 고르면 커진다. 여태 「±0.17초 · 존 1.55칸」 같은 숫자로만 보여줬는데 숫자는 읽어야 알고 원은 보면 안다',
+    '컨택 87 송승민은 118%, 컨택 36 고등학생은 89% 다. 노림수를 맞히면 136%까지 커지고 틀리면 95%로 줄어든다',
+    '수비에서 잡은 뒤 어디로 던질지 고른다. 1루 주자가 있고 2아웃 전이면 「1루로 — 하나만」과 「2루로 — 병살」이 뜬다',
+    '2루로 던지면 병살이 4%에서 24%로 뛴다. 대신 1루로 던지면 병살은 아예 없다 — 하나를 확실히 잡는 거다. 어깨가 좋을수록 2루로 던질 만하다',
+    '조작 참고는 인게임만 가져왔다. 미트와 송구 대상 선택이 그것이다',
+  ]},
   {v:'2.65.0', t:'선수 훈련 — 이번 주에 하나만', items:[
     '선수 모드 훈련 화면이 통째로 달라졌다. 누구를 키울지 어떤 종목을 시킬지는 감독이 정하는 거고, 선수는 「이번 주에 내가 뭘 할까」를 하나만 고른다',
     '타격 · 공 보는 연습 · 수비 · 러닝 · 투구(투수만) · 팀 훈련 참석 · 쉰다. 하나뿐이라 고르는 게 곧 어떤 선수가 되느냐다',
@@ -9599,6 +9616,34 @@ function npStr(pl){
   const n=(pl&&pl.np)||0;
   return n? n+'구' : '';
 }
+/* 미트 — **내 배트가 커버하는 범위**를 존 위에 원으로 그린다.
+   [참고] 마구마구가 미트/커서를 눈에 보이게 해서 능력치를 손에 잡히게 했다.
+   우리는 여태 "±0.17초 · 존 1.55칸" 같은 숫자로만 보여줬다. 숫자는
+   읽어야 알고, 원은 보면 안다. 컨택이 낮으면 원이 작고, 노림수를 맞히면
+   커진다 — 고른 게 화면에서 바로 변한다.
+
+   [주의] lw 는 **존 칸 단위**다. 칸 간격은 존 폭의 0.303 이라
+   cellOf 가 쓰는 값과 같이 맞춰야 한다. 안 맞으면 보이는 원과
+   실제 판정이 따로 논다.                                          */
+function paintMitt(mound, bat, pit, guess, show){
+  if(!mound) return;
+  const m=mound.querySelector('#mitt'); if(!m) return;
+  if(!show){ m.style.display='none'; return; }
+  const W=batWindows(bat, pit, guess);
+  const zs=mound.querySelector('#szone');
+  if(!zs){ m.style.display='none'; return; }
+  /* 존 폭의 0.303 이 한 칸 — cellOf 와 같은 식이다.
+     지름 = 허용 오차(칸) × 2 × 칸 폭. 존 폭을 100 으로 놓고 잰다.
+     [함정] 처음엔 미트를 마운드 밑에 뒀다가 % 기준이 마운드 폭이 돼서
+     원이 존보다 열 배 크게 나왔다. 존 안에 넣어야 % 가 맞는다.
+     높이는 padding-top 으로 준다 — % 가 부모 **폭** 기준이라 그래야 원이다. */
+  const pct=Math.round(Math.max(25, Math.min(260, W.lw*0.303*2*100))*10)/10;
+  m.style.display='block';
+  m.style.width=pct+'%';
+  m.style.height='0';
+  m.style.paddingTop=pct+'%';
+  m.className='mitt'+(W.lw>=1.7?' wide':(W.lw<=1.15?' tight':''));
+}
 /* 타이밍 품질(0~1) → 타격 보정 */
 function swingMods(q){
   /* [제보] "정타 쳐도 볼넷 헛스윙 삼진은 뭔데"
@@ -10160,11 +10205,21 @@ LiveGame.prototype.stepPA = function(){
     bl.ab++;pl.outs++;this.outs++;
     const dpB = def.isUser ? (typeof dpBonus==='function'?dpBonus(def.slots).bonus:0) : 0;
     // 번트 앤 런은 굴러가면 주자가 걸릴 위험이 조금 더 크다
-    const dpRisk = 0.030 + dpB + ((off.isUser&&this._buntRun)?0.050:0)
+    let dpRisk = 0.030 + dpB + ((off.isUser&&this._buntRun)?0.050:0)
       + ((mm && mm.traits.includes('똥차'))?0.045:0);   // 똥차는 1루에서 못 산다
+    /* 내가 2루로 던지기로 했나. 어깨가 좋을수록 병살이 는다.
+       1루로 던지기로 했으면 병살은 애초에 없다 — 하나만 잡는다. */
+    const ta=this._throwAt; this._throwAt=null;
+    if(ta==='lead'){
+      const meId=this.myId||(typeof ST!=='undefined'&&ST?ST.playerId:null);
+      const fp=meId?def.team.players.find(x=>x.id===meId):null;
+      dpRisk += 0.20 + (((fp?fp.arm:45)-45)*0.0040) + (((fp?fp.def:45)-45)*0.0030);
+    } else if(ta==='first'){
+      dpRisk = 0;
+    }
     if(res.gb&&this.bases[0]&&this.outs<3&&rng()<dpRisk){this.bases[0]=null;pl.outs++;this.outs++;
       this.dpCount=(this.dpCount||0)+1;
-      events.push({text:`${bat.name} 병살타${bbTag(bb)}`,cls:'out'});
+      events.push({text:`${bat.name} 병살타`+(ta==='lead'?' — 2루로 던져 둘 다 잡았다':'')+bbTag(bb),cls:'out'});
       this.hl('dp',off,bat.name,'');}
     else if(this.bases[2]&&this.outs<3&&!res.gb&&rng()<0.30){
       // 홈보살 특성 보유 외야수가 있으면 잡아낸다
@@ -10542,6 +10597,15 @@ LiveGame.prototype.applyDecision = function(choice){
   if(choice==='thr:go' || choice==='thr:hold'){
     this._lastDefPA=this.paSeq;
     this._catchThrow=(choice==='thr:go')?'go':'hold';
+    return;
+  }
+  /* 야수 송구 — 잡고 나서 어디로 던지나.
+     [요청] "수비할때 막 송구도 버튼 누르면 할 수 있게 해야하는데"
+     [참고] 마구마구가 수비에서 송구 대상을 고르게 한다. 그 조각만 가져온다.
+     땅볼에 1루 주자가 있으면 그게 야수의 진짜 판단이다 —
+     2루로 던져 병살을 노리느냐, 1루로 던져 하나를 확실히 잡느냐.   */
+  if(choice==='at:lead' || choice==='at:first'){
+    this._throwAt=(choice==='at:lead')?'lead':'first';
     return;
   }
 
@@ -21069,7 +21133,7 @@ function moundView(opts){
   m.innerHTML=`<canvas class="mv-cv" width="${MVW*MVS}" height="${MVH*MVS}"></canvas>
     <div class="mv-board" id="mvboard"></div>
     <div class="mv-top" id="mvtop"></div>
-    <div class="szone" id="szone"><i class="v1"></i><i class="v2"></i><i class="h1"></i><i class="h2"></i></div>
+    <div class="szone" id="szone"><i class="v1"></i><i class="v2"></i><i class="h1"></i><i class="h2"></i><b class="mitt" id="mitt"></b></div>
     <div class="mitt" id="mitt"></div><div class="mitt-tag">포수</div>
     <div class="lbl">${o.label||''}</div>
     <div class="cnt" id="cnt"><b>0</b>-<b>0</b></div>
@@ -21554,7 +21618,8 @@ function renderSwing(box, d){
       if(k==='break'&&!hasBreak) return;
       const b=el('button',aimSel===k?'on':'',n);
       b.disabled=lock||done||resolved;
-      b.onclick=()=>{ if(done||resolved||phase==='pitch')return; aimSel=k; drawAim(); drawHead(); };
+      b.onclick=()=>{ if(done||resolved||phase==='pitch')return; aimSel=k; drawAim(); drawHead();
+        paintMitt(mv,bat,myP,(aimSel==='none')?'none':'hit',true); };
       row.appendChild(b);
     });
     aim.appendChild(row);
@@ -21592,7 +21657,8 @@ function renderSwing(box, d){
         <div class="bi-r">컨택 ${Math.round(bat.con)} · 파워 ${Math.round(bat.pow)} · 선구 ${Math.round(bat.eye)}</div>
         <div class="bi-t">오늘 ${today}</div></div>`:''}
       <div class="bwin">노림수 맞히면 <b>${sec(W.tw)}</b>${aimSel==='none'?'':`
-        · 틀리면 <b style="color:#e08a70">${sec(Wm.tw)}</b>`}</div>
+        · 틀리면 <b style="color:#e08a70">${sec(Wm.tw)}</b>`}
+        <i class="bw-m">존 위 동그라미가 내 배트가 닿는 범위다</i></div>
       <div class="pl-sub">${(ST&&ST.batReady)!=='auto'&&phase==='ready'?'<b style="color:#ffd15c">준비되면 [준비 됐다 ▶] 를 눌러라. 그때 던진다.</b><br>':''}<b>공이 올 때 [스윙] 을 눌러라.</b>
         존 밖 공은 참는 게 낫다 — [지켜본다]. 4볼이면 볼넷, 3스트라이크면 삼진.<br>
         <span style="color:#6f7c8c">자리까지 노리고 싶으면 야구장에서 공이 올 자리를 직접 눌러도 된다.</span></div>`;
@@ -21721,6 +21787,7 @@ function renderSwing(box, d){
     if(done||resolved||!LIVE)return;      // 경기가 이미 치워졌으면 판정할 것도 없다
     if(anim)anim.stop();
     phase='judge'; take.disabled=true; swingB.disabled=true; drawAim();
+    paintMitt(mv,bat,myP,'none',false);
     let kind, pre, col, q=null, msg='';
 
     if(!tap){
@@ -21867,6 +21934,7 @@ function renderSwing(box, d){
     ? '공이 올 때 [스윙] — 존 밖이면 [지켜본다]'
     : '천천히 골라라. [준비 됐다 ▶] 를 눌러야 공이 온다';
   drawAim(); paint();
+  paintMitt(mv,bat,myP,(aimSel==='none')?'none':'hit',true);
   ready(3);                     // 바로 '투구 준비 · 3' 이 뜨게. 빈 화면을 안 보여준다
   box._cleanup=()=>{ done=true; resolved=true; if(anim)anim.stop();
     const rb=w.querySelector('.runbox'); if(rb&&rb._stop) rb._stop(); };
@@ -21913,11 +21981,36 @@ function renderDefPlay(box, d){
   const pick=(bold)=>{
     if(picked)return; picked=true;
     clearInterval(tick);
+    /* 잡고 나면 어디로 던질지가 남는다. 1루 주자가 있고 2아웃 전이면
+       그게 야수의 진짜 판단이다 — 병살을 노리느냐, 하나를 확실히 잡느냐. */
+    if(LIVE.bases[0] && LIVE.outs<2){
+      LIVE.applyDecision(bold?'def:bold':'def:safe');
+      moundResult(mv, bold?'달려든다':'안전하게', bold?'#ffd15c':'#7fc48f');
+      askThrow(box, mv, w);
+      return;
+    }
     /* [주의] applyDecision 을 여기서 부르면 안 된다 — playThenClose 가
        한 번 더 부른다. 두 번 부르면 def:skip 처럼 선택이 지워진다.
        choice 를 넘겨서 **한 번만** 적용되게 한다.                  */
     playThenClose(box, mv, bold?'def:bold':'def:safe',
       bold?'달려든다':'안전하게', bold?'#ffd15c':'#7fc48f');
+  };
+  /* 2단계 — 송구. 잡았다고 치고 어디로 던질지 고른다 */
+  const askThrow=(bx, mound, wrap)=>{
+    const old=wrap.querySelector('.defbox'); if(old) old.remove();
+    const t=el('div','defbox');
+    const rn=LIVE.off().team.players.find(x=>x.id===LIVE.bases[0]);
+    t.innerHTML='<div class="rb-t">어디로 던지나</div>'+
+      '<div class="rb-note">1루 주자 '+(rn?rn.name+' (주루 '+Math.round(rn.spd)+')':'')+
+      ' · 2루로 던지면 둘 다 잡을 수도, 둘 다 살릴 수도 있다</div>';
+    const r2=el('div','rb-row');
+    const t1=el('button','rb-b stay','1루로 — 하나만');
+    t1.onclick=()=>playThenClose(bx, mound, 'at:first', '1루', '#7fc48f');
+    const t2=el('button','rb-b go','2루로 — 병살 ▸');
+    t2.onclick=()=>playThenClose(bx, mound, 'at:lead', '2루!', '#ffd15c');
+    r2.appendChild(t1); r2.appendChild(t2);
+    t.appendChild(r2);
+    wrap.appendChild(t);
   };
   const b1=el('button','rb-b stay','안전하게');
   b1.onclick=()=>pick(false);
