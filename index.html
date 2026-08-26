@@ -1534,6 +1534,14 @@ table.hl-tbl td.hl-o{color:#c98a80}
 .np-cell i{display:block;font-style:normal;font-size:10px;opacity:.85;margin-top:2px}
 .np-cell em{display:block;font-style:normal;font-size:9.5px;color:var(--gold);
   opacity:.9;margin-top:1px}
+/* 단톡방 자랑 카드 — 붙여넣기용 생 텍스트.
+   [요청] "단톡방 자랑카드도 만들고"
+   pre-wrap 이라 줄바꿈이 그대로 보인다. 카톡 말풍선에서 보일 모양 그대로. */
+.card.bragc{border-color:#3f4a3c;background:linear-gradient(180deg,rgba(127,196,143,.07),var(--panel))}
+.brag-t{white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.62;
+  color:var(--tx);background:#1a1f27;border:1px solid var(--line);border-radius:9px;
+  padding:11px 12px;margin:2px 0 9px;
+  font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif}
 /* 안 끝나는 결과 화면 — 쫓는 기록 세 줄 + 다음 걸음 한 번에.
    [요청] "한번 시작하면 헤어나올 수 없게 만들고 싶다" */
 .card.chase{border-color:#3a4553;background:linear-gradient(180deg,rgba(201,162,39,.06),var(--panel))}
@@ -7021,8 +7029,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.54.0';
-const APP_VERSION_NOTE = '타석은 내가 준비되면 · 경기가 끝나도 안 끝난다';
+const APP_VERSION = '2.55.0';
+const APP_VERSION_NOTE = '경기 끝나면 단톡방에 올릴 게 나온다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7043,6 +7051,16 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.55.0', t:'단톡방 자랑 카드', items:[
+    '경기가 끝나면 단톡방에 그대로 붙여넣을 글이 자동으로 만들어진다. 점수 · 오늘 잘한 타자 둘 · 던진 사람 · 진기록 · 시즌 성적 · 링크까지 한 덩어리로',
+    '「복사」 한 번이면 끝이다. 카톡 공유가 되는 폰이면 「카톡으로 보내기」도 뜬다',
+    '마크다운을 안 쓴다. 카톡은 굵게도 표도 모른다 — 이모지와 줄바꿈만 쓴다. 줄 길이도 말풍선에서 안 접히게 잡았다',
+    '망한 등판은 이름이 안 올라간다. 실존 인물 이름으로 진짜 단톡방에 나가는 글이라, 「누구 7이닝 23실점」 이 공개적으로 박히면 자랑 카드가 아니라 공개 처형이다. 잘 던진 날만 적는다',
+    '타자 줄도 안타든 타점이든 뭔가 한 사람만 올라간다. 통산 삼진 마일스톤도 자랑에서는 뺐다 — 기록실에는 그대로 남는다',
+    '마무리 한 줄은 이겼을 때와 졌을 때가 다르고, 같은 말이 연달아 안 나온다',
+    '만들어질 때 저장돼서 새로고침해도 그대로 있다',
+    '「투스트나 쓰리볼에서 맞았는데 삼진·볼넷이 나오면 안 되지」 — 2스트라이크는 v2.50.0 에 못 박았는데 3볼은 재본 적이 없었다. 3볼·풀카운트까지 각각 6000번씩, 실제 경기 경로로도 400타석 돌려서 볼넷 0 · 삼진 0 을 확인했다',
+  ]},
   {v:'2.54.0', t:'타석은 내가 준비되면 · 안 끝나는 결과 화면', items:[
     '타석에 들어가도 공이 바로 안 온다. 「준비 됐다 ▶」 를 눌러야 그때 던진다. 예전엔 3·2·1 을 세고 알아서 던져서, 노림수 고르고 상대 배분 보고 존에서 자리 잡는 걸 3초 안에 다 해야 했다',
     '「너무 바쁘고 정신없다」는 제보에서 나왔다. 타석에서 제일 중요한 건 언제 붙을지를 내가 정하는 것이다. 이제 하루 종일 생각해도 된다',
@@ -15320,6 +15338,165 @@ function doMeet(kind){
   saveGame(true); renderMeet(); toast(tip);
 }
 
+/* ================= 단톡방 자랑 카드 =================
+   [요청] "단톡방 자랑카드도 만들고"
+
+   이 게임의 진짜 무기는 **선수 열네 명이 실존 인물이고 다들 단톡방에 있다**
+   는 것이다. 슬롯머신을 붙이는 것보다, 경기 끝나고 "이건 캡처해야 한다"
+   싶은 한 줄이 나오고 그걸 진짜 단톡방에 던지면 애들이 반응하고,
+   그 반응 때문에 다시 켜는 게 훨씬 세다.
+
+   그래서 **붙여넣기 좋은 생 텍스트**로 만든다. 카톡은 마크다운을 모른다 —
+   굵게도 표도 안 먹는다. 이모지와 줄바꿈만 쓴다.
+   폭도 좁게 잡는다. 카톡 말풍선에서 줄이 접히면 모양이 무너진다.       */
+const BRAG_WIN=[
+  '오늘 이건 캡처해둬야 한다',
+  '다음 주에도 이대로만',
+  '오늘 잘 싸웠다',
+  '이런 날도 있어야지',
+  '뒤풀이 가자',
+  '오늘은 내가 쏜다',
+];
+const BRAG_LOSE=[
+  '다음 주에 갚는다',
+  '오늘은 여기까지',
+  '질 때도 있는 거다',
+  '내용은 나쁘지 않았다',
+  '다음 주가 진짜다',
+];
+const BRAG_TIE=['무승부. 애매하다','비겼다. 다음 주에 보자'];
+
+/* 그날 제일 잘한 타자 순으로. 안타도 타점도 없으면 자랑할 게 없다. */
+function bragBatScore(b){
+  if(!b||!b.pa) return -1;
+  const s1=(b.h||0)-(b.d2||0)-(b.d3||0)-(b.hr||0);
+  return s1*2 + (b.d2||0)*3 + (b.d3||0)*4.5 + (b.hr||0)*6
+       + (b.rbi||0)*1.6 + (b.r||0)*0.6 + (b.sb||0)*1.2 + (b.bb||0)*0.5;
+}
+function bragBatLine(id,b){
+  const bits=[`${b.ab}타수 ${b.h}안타`];
+  if(b.hr) bits.push(`${b.hr}홈런`);
+  else if(b.d3) bits.push('3루타');
+  else if(b.d2) bits.push('2루타');
+  if(b.rbi) bits.push(`${b.rbi}타점`);
+  if(!b.rbi && b.r) bits.push(`${b.r}득점`);
+  if(!b.h && b.bb) return `${nameOf(id)} ${b.bb}볼넷`;
+  return `${nameOf(id)} ${bits.join(' ')}`;
+}
+function bragPitLine(pid,l,isWin){
+  const bits=[`${ipStr(l)}이닝`, `${l.r}실점`];
+  if(l.k) bits.push(`${l.k}K`);
+  const w=(ST.pit&&ST.pit[pid]&&ST.pit[pid].w)||0;
+  return `${nameOf(pid)} ${bits.join(' ')}`+(isWin&&w?` (시즌 ${w}승)`:'');
+}
+/* 연승·연패 — teamStreak 은 일정에서 센다. 이 시점엔 오늘 경기가 이미 들어가 있다. */
+function buildBrag(res, usSide, thSide, gRot, uIds, feats, miles, sch){
+  const won=usSide.runs>thSide.runs, tie=usSide.runs===thSide.runs;
+  const st=(ST.stand&&ST.stand['wwzw'])||{w:0,l:0,t:0};
+  const park=(PARKS.find(p=>p.id===ST.park)||PARKS[0]||{}).name||'';
+  const L=[];
+
+  L.push(`⚾ 우완좌완 ${usSide.runs} : ${thSide.runs} ${thSide.team.name}`);
+  const sk=teamStreak();
+  const tail=[`${sch.round}차전`];
+  if(park) tail.push(park);
+  tail.push(tie?'무':(won?'승':'패'));
+  if(sk.n>=2) tail.push(sk.kind==='w'?`${sk.n}연승`:`${sk.n}연패`);
+  if(res.mercy) tail.push('콜드');
+  L.push(tail.join(' · '));
+  L.push('');
+
+  /* 오늘 제일 잘한 타자 둘 */
+  const bats=uIds.map(id=>({id,b:res.box[id],s:bragBatScore(res.box[id])}))
+    .filter(x=>x.s>0).sort((a,b)=>b.s-a.s).slice(0,2);
+  bats.forEach(x=>L.push('🔥 '+bragBatLine(x.id,x.b)));
+
+  /* 오늘 던진 사람 — 승리투수가 우리면 그 사람, 아니면 제일 많이 던진 사람.
+
+     [주의] 이 카드는 **실존 인물 이름으로 진짜 단톡방에 올라간다.**
+     타자 줄은 안타·타점이 있는 사람만 올라가는데(bragBatScore>0),
+     투수만 무조건 올리면 "김준희 7이닝 23실점" 같은 게 이름 박혀서
+     공개적으로 나간다. 자랑 카드가 아니라 공개 처형이다.
+     잘 던진 날만 적는다. 아니면 그 줄은 통째로 뺀다.               */
+  const mine=(gRot||[]).filter(pid=>{const l=res.pbox[pid]; return l&&l.bf;});
+  let pid=null;
+  if(res.wp && mine.indexOf(res.wp)>=0) pid=res.wp;
+  else if(mine.length) pid=mine.slice().sort((a,b)=>
+    (res.pbox[b].outs||0)-(res.pbox[a].outs||0))[0];
+  if(pid){
+    const l=res.pbox[pid];
+    const good = res.wp===pid || (l.r||0)<=4 || ((l.k||0)>=8 && (l.r||0)<=6);
+    if(good) L.push('🥎 '+bragPitLine(pid,l,res.wp===pid));
+  }
+
+  /* 진기록·통산 마일스톤 — 있으면 이게 제일 자랑거리다 */
+  const big=[];
+  (feats||[]).slice(0,2).forEach(f=>big.push(
+    `${f.kind}${f.pid?' — '+nameOf(f.pid):''}${f.detail?' ('+f.detail+')':''}`));
+  /* 통산 마일스톤에는 타자 **삼진**도 들어 있다 ("통산 1번째 삼진").
+     쌓이는 기록이니 기록실에는 남아야 하지만 자랑 카드에 올릴 것은 아니다. */
+  (miles||[]).filter(m=>m.scope!=='team' && m.label!=='삼진')
+    .slice(0,2-big.length).forEach(m=>big.push(m.text));
+  if(big.length){ L.push(''); big.forEach(t=>L.push('🏆 '+t)); }
+
+  L.push('');
+  L.push(`${st.w}승 ${st.l}패${st.t?` ${st.t}무`:''} · 리그 ${leagueRank('wwzw')}위`);
+  const line=pickFresh(tie?BRAG_TIE:(won?BRAG_WIN:BRAG_LOSE), 'BRAG');
+  if(line) L.push(line);
+
+  /* 링크는 실제로 열려 있는 주소를 쓴다 — 어디에 올려도 맞는다 */
+  let url='';
+  try{ url=String(location.href).split('?')[0].split('#')[0]; }catch(e){}
+  L.push('');
+  L.push('⚾ 우완좌완 야구 매니저');
+  if(url && !/^file:/.test(url)) L.push(url);
+  return L.join('\n');
+}
+
+/* 붙여넣기용 복사. copySave 와 같은 방식이다 — execCommand 가 제일 잘 먹고,
+   막히면 clipboard API 로 넘어간다.                                    */
+function copyBrag(txt){
+  const ta=document.createElement('textarea');
+  ta.value=txt; ta.style.position='fixed'; ta.style.left='-9999px';
+  document.body.appendChild(ta); ta.select();
+  let ok=false;
+  try{ ok=document.execCommand('copy'); }catch(e){}
+  document.body.removeChild(ta);
+  if(ok){ toast('복사했다 — 단톡방에 붙여넣어라'); return true; }
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(txt).then(()=>toast('복사했다 — 단톡방에 붙여넣어라'),
+      ()=>toast('복사가 막혔다 — 길게 눌러서 직접 복사해라'));
+    return true;
+  }
+  toast('복사가 막혔다 — 길게 눌러서 직접 복사해라');
+  return false;
+}
+/* 카톡으로 바로 — 되는 기기에서만 버튼이 뜬다 */
+async function shareBrag(txt){
+  try{ await navigator.share({title:'우완좌완', text:txt}); }
+  catch(e){ /* 취소는 조용히 */ }
+}
+function bragCard(){
+  const txt=ST.brag;
+  if(!txt) return null;
+  const card=el('div','card bragc');
+  card.appendChild(el('div','card-h','단톡방에 올릴 것'));
+  const pre=el('div','brag-t'); pre.textContent=txt;
+  card.appendChild(pre);
+  const row=el('div','btn-row');
+  const cb=el('button','btn primary','📋 복사');
+  cb.onclick=()=>copyBrag(txt);
+  row.appendChild(cb);
+  if(typeof navigator!=='undefined' && navigator.share){
+    const sb=el('button','btn','카톡으로 보내기');
+    sb.onclick=()=>shareBrag(txt);
+    row.appendChild(sb);
+  }
+  card.appendChild(row);
+  card.appendChild(el('div','ch-sub','생 텍스트라 어디에 붙여넣어도 모양이 안 깨진다'));
+  return card;
+}
+
 /* ================= 안 끝나는 결과 화면 =================
    [요청] "한번 시작하면 헤어나올 수 없게, 화장실 가서라도 하고 싶게"
 
@@ -15588,6 +15765,8 @@ function renderKakao(){
      이미 올려놨기 때문에 schedule[ST.round] 는 **다음 경기**고 played 는
      false 다. 경기 후인지는 kakaoPost 가 찼는지로 안다.               */
   if(phase==='post' || played){
+    const bc=bragCard();
+    if(bc) c.appendChild(bc);
     const cc=chaseCard();
     if(cc) c.appendChild(cc);
     const g=el('button','btn'+(cc?'':' primary'),'홈으로'); g.onclick=()=>go('home');
@@ -20254,6 +20433,12 @@ function commitGame(res,usSide,thSide,uSlots){
   }
 
   ST.canParty = won;
+  /* [요청] "단톡방 자랑카드도 만들고"
+     여기서 만들어 세이브에 넣어둔다. 화면에서 그때그때 만들면 새로고침하면
+     사라지고, 무엇보다 pickFresh 로 뽑은 마지막 줄이 화면을 그릴 때마다
+     바뀐다 — 자랑거리가 볼 때마다 달라지면 자랑이 아니다.            */
+  try{ ST.brag=buildBrag(res,usSide,thSide,gRot,uIds,feats,miles,sch); }
+  catch(e){ ST.brag=null; }
   ST.kakaoPost = buildKakaoPost(ST,res,usSide,thSide,uUniq,miles);
   featMsgs.forEach(m=>ST.kakaoPost.push(m));
   applyGojin(ST,res.gojin).forEach(m=>ST.kakaoPost.push(m));

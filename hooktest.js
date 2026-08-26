@@ -168,6 +168,128 @@ const play=n=>ev(`(function(){ var g=0;
     return !d.querySelector('#view .card.chase') && '안 뜬다';
   });
 
+  /* ================================================================ */
+  console.log('\n[단톡방에 올릴 자랑 카드]');
+  T('경기가 끝나면 자랑 카드가 만들어진다', ()=>{
+    const t=ev("ST.brag");
+    return typeof t==='string' && t.length>20 && `${t.split('\n').length}줄 · ${t.length}자`;
+  });
+  T('맨 윗줄이 점수다', ()=>{
+    const first=ev("ST.brag").split('\n')[0];
+    return /^⚾ 우완좌완 \d+ : \d+ ./.test(first) && first;
+  });
+  T('몇 차전인지 · 이겼는지 적힌다', ()=>{
+    const l=ev("ST.brag").split('\n')[1];
+    return /\d+차전/.test(l) && /(승|패|무)/.test(l) && l;
+  });
+  T('시즌 성적과 순위로 닫는다', ()=>{
+    const t=ev("ST.brag");
+    return /\d+승 \d+패.*리그 \d+위/.test(t) && t.match(/\d+승 \d+패[^\n]*/)[0];
+  });
+  T('링크가 붙는다 — 이게 있어야 남이 눌러본다', ()=>{
+    const t=ev("ST.brag");
+    return /https?:\/\//.test(t) && t.split('\n').filter(x=>/https?:/.test(x))[0];
+  });
+  T('마크다운을 안 쓴다 — 카톡은 그걸 모른다', ()=>{
+    const t=ev("ST.brag");
+    return !/[*_#|]|<[a-z]/i.test(t) && '이모지와 줄바꿈만';
+  });
+  T('줄이 너무 길지 않다 — 말풍선에서 접히면 모양이 깨진다', ()=>{
+    const ls=ev("ST.brag").split('\n').filter(x=>!/https?:/.test(x));
+    const max=ls.reduce((a,x)=>Math.max(a,x.length),0);
+    return max<=34 && `제일 긴 줄 ${max}자`;
+  });
+
+  console.log('\n[실존 인물 이름으로 나가는 글이다]');
+  /* 타자 줄은 안타·타점이 있는 사람만 올라간다. 투수만 무조건 올리면
+     "누구 7이닝 23실점" 이 이름 박혀서 공개적으로 나간다.            */
+  const B=ev(`(function(){
+    const out=[];
+    for(let i=0;i<24;i++){
+      if(!ST.schedule[ST.round]||ST.schedule[ST.round].played) break;
+      runWeek(); ST.weekDone=true; ST.announced=true; ST.lineupDirty=false;
+      ST.events=[]; ST.absent={};
+      ST.lineup=recommendLineup(); applyDHRule(); sanitizeRotation();
+      const L=makeLive(); L.rng=makeRng(i*613+7);
+      let k=0; while(!L.over&&k++<3000){ L.pending=null; L.step(); }
+      L.finish();
+      const nx=ST.schedule[ST.round], r=L.result;
+      const us=nx.homeGame?r.home:r.away, th=nx.homeGame?r.away:r.home;
+      LIVE=L; commitGame(r,us,th,us.slots);
+      if(ST.brag) out.push(ST.brag);
+    }
+    return out;
+  })()`);
+  T('여러 경기를 돌려도 매번 만들어진다', ()=>B.length>=6 && `${B.length}경기`);
+  T('망한 등판은 이름이 안 올라간다', ()=>{
+    /* 🥎 줄에 적힌 실점이 5 이상인데 승리투수도 아니고 8K 도 아니면 실패 */
+    const bad=[];
+    B.forEach(t=>{
+      const l=t.split('\n').find(x=>/^🥎/.test(x)); if(!l) return;
+      const r=(l.match(/(\d+)실점/)||[])[1];
+      const k=(l.match(/(\d+)K/)||[])[1];
+      const win=/시즌 \d+승/.test(l);
+      if(r!=null && Number(r)>=5 && !win && !(Number(k||0)>=8)) bad.push(l);
+    });
+    return bad.length===0 && `${B.filter(t=>/^🥎/m.test(t)).length}경기에 투수 줄 · 망한 등판 0`;
+  });
+  T('타자 줄은 뭔가 한 사람만 올라간다', ()=>{
+    const bad=[];
+    B.forEach(t=>t.split('\n').filter(x=>/^🔥/.test(x)).forEach(l=>{
+      if(/0안타/.test(l) && !/볼넷/.test(l)) bad.push(l);
+    }));
+    return bad.length===0 || '!'+bad[0];
+  });
+  T('타자 삼진은 자랑에 안 올린다', ()=>{
+    const bad=B.filter(t=>/🏆[^\n]*번째 삼진/.test(t));
+    return bad.length===0 && '통산 삼진 마일스톤 제외됨';
+  });
+  T('같은 마무리 멘트가 계속 반복되지 않는다', ()=>{
+    const last=B.map(t=>{
+      const ls=t.split('\n').filter(Boolean);
+      const i=ls.findIndex(x=>/\d+승 \d+패/.test(x));
+      return (i>=0&&ls[i+1]&&!/우완좌완 야구|https?:/.test(ls[i+1]))?ls[i+1]:null;
+    }).filter(Boolean);
+    return new Set(last).size>=3 && `${last.length}번 중 ${new Set(last).size}종`;
+  });
+
+  console.log('\n[화면]');
+  w.go('kakao'); await wait(200);
+  T('단톡방에 자랑 카드가 붙는다', ()=>{
+    const c=d.querySelector('#view .card.bragc');
+    return !!c && c.querySelector('.card-h').textContent;
+  });
+  T('화면에 뜬 글이 저장된 것과 같다', ()=>{
+    const c=d.querySelector('#view .card.bragc .brag-t');
+    return c && c.textContent===ev("ST.brag") && '같다';
+  });
+  T('복사 버튼이 있다', ()=>{
+    const b=[...d.querySelectorAll('#view .card.bragc .btn')].find(x=>/복사/.test(x.textContent));
+    return b && b.textContent.trim();
+  });
+  T('복사를 눌러도 안 터진다', ()=>{
+    const before=jsErr.length;
+    [...d.querySelectorAll('#view .card.bragc .btn')].find(x=>/복사/.test(x.textContent)).click();
+    return jsErr.length===before && '깨끗';
+  });
+  T('자랑 카드가 진행 중 카드보다 위에 있다', ()=>{
+    const a=d.querySelector('#view .card.bragc'), b2=d.querySelector('#view .card.chase');
+    if(!a||!b2) return false;
+    return (a.compareDocumentPosition(b2)&w.Node.DOCUMENT_POSITION_FOLLOWING)>0 && '자랑 → 진행 중';
+  });
+  T('새로고침해도 안 사라진다 — 세이브에 들어간다', ()=>{
+    const t=ev("ST.brag");
+    ev("saveGame(true);");
+    /* serializeState 는 **문자열**을 준다. 한 번 더 stringify 하면 안 된다. */
+    const round=ev("(JSON.parse(serializeState()).brag||null)");
+    return round===t && '세이브 왕복 후에도 같다';
+  });
+  T('경기 전에는 자랑 카드가 없다', ()=>{
+    ev("ST.kakaoPost=[];");
+    w.go('kakao');
+    return !d.querySelector('#view .card.bragc') && '안 뜬다';
+  });
+
   console.log('\n[숫자를 지어내지 않는다]');
   play(6);
   T('연속 안타 경기가 실제로 세어진다', ()=>{

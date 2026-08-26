@@ -54,6 +54,59 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
     const inplay=['1B','2B','3B','HR','OUT','E'].filter(k=>R.cnt[k]>0);
     return inplay.length>=5 && inplay.join(' ');
   });
+  /* [제보] "투스트나 쓰리볼에서 스윙해서 맞았는데 삼진이나 볼넷이 나오면 안 되지"
+     2스트라이크는 v2.50.0 에 못 박았는데 **3볼은 따로 재본 적이 없었다.**
+     simPA 는 볼카운트를 모른다 — 그래서 2스트라이크에서 삼진이 0이면
+     3볼에서 볼넷도 0이어야 맞다. 맞는지 실제로 돌려서 확인한다.
+     그리고 볼카운트로 결론이 나는 경로(_forceRes)도 같이 본다.
+     컨택은 카운트를 안 건드려야 한다 — 건드리면 4볼이 찍힐 수 있다.   */
+  const R3=ev(`(function(){
+    const T2=buildAllTeams(); const us=T2.find(t=>t.id==='wwzw'); const opp=T2[1];
+    const bat=us.players[0], pit=opp.pitchers[0];
+    const rng=makeRng(31337);
+    const counts=[[3,0],[3,1],[3,2],[0,2],[2,2]];
+    const cnt={}, forced=[];
+    const N=6000;
+    counts.forEach(function(c){
+      const fake={_contact:false,_contactQ:null,_contactType:null,_swingQ:null,_pitchHit:null,
+        _paPitches:0, _forceRes:null,
+        _c:{b:c[0],s:c[1]}, count:function(){return this._c},
+        consumePlayMods:LiveGame.prototype.consumePlayMods,
+        pitchResult:LiveGame.prototype.pitchResult,
+        curPitcher:function(){return pit}};
+      for(let i=0;i<N;i++){
+        fake._c={b:c[0],s:c[1]}; fake._forceRes=null;
+        fake.pitchResult('contact',0.62,'ff');       // 배트에 맞았다
+        /* 컨택이 카운트를 건드리면 안 된다 */
+        if(fake._c.b!==c[0]||fake._c.s!==c[1]) forced.push('카운트변함 '+c.join('-'));
+        if(fake._forceRes) forced.push('_forceRes '+c.join('-')+' '+fake._forceRes.type);
+        const mods=fake.consumePlayMods({isUser:true},{isUser:false});
+        const r=simPA(bat,pit,us,opp,rng,{bat:'normal'},70,null,mods);
+        const k=c.join('-')+':'+r.type;
+        cnt[k]=(cnt[k]||0)+1;
+      }
+    });
+    return {cnt,N,forced:forced.slice(0,3),counts:counts.map(function(c){return c.join('-')})};
+  })()`);
+  T('3볼에서 맞히면 볼넷이 안 나온다', ()=>{
+    const bad=R3.counts.filter(c=>/^3-/.test(c)).reduce((a,c)=>a+(R3.cnt[c+':BB']||0),0);
+    return bad===0 && `3볼 3종 x ${R3.N}번 · 볼넷 0`;
+  });
+  T('3볼 2스트라이크(풀카운트)에서 맞히면 볼넷도 삼진도 없다', ()=>{
+    const bb=R3.cnt['3-2:BB']||0, k=R3.cnt['3-2:K']||0;
+    return bb===0&&k===0 && `${R3.N}번 중 볼넷 0 · 삼진 0`;
+  });
+  T('2스트라이크에서 맞히면 삼진이 안 나온다', ()=>{
+    const k=(R3.cnt['0-2:K']||0)+(R3.cnt['2-2:K']||0)+(R3.cnt['3-2:K']||0);
+    return k===0 && `2스트라이크 3종 x ${R3.N}번 · 삼진 0`;
+  });
+  T('맞히는 것 자체는 볼카운트를 안 건드린다', ()=>
+    R3.forced.length===0 || '!'+R3.forced.join(', '));
+  T('어느 카운트든 인플레이 결과는 정상적으로 갈린다', ()=>{
+    const kinds=['1B','2B','3B','HR','OUT','E'].filter(k=>(R3.cnt['3-2:'+k]||0)>0);
+    return kinds.length>=5 && '풀카운트에서도 '+kinds.join(' ');
+  });
+
   /* clamp 하한이 다시 살아나면 여기가 빨간불이 된다 */
   T('inPlay 플래그가 확률이 아니라 못이다', ()=>{
     const src=ev("String(simPA)");
@@ -89,6 +142,79 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
     const m=ev(`(function(){const rng=makeRng(2);let lo=99;
       for(let i=0;i<5000;i++)lo=Math.min(lo,pitchesForPA('BB',rng));return lo})()`);
     return m>=4 && `최소 ${m}구`;
+  });
+
+  /* 위는 simPA 를 직접 부른 것이다. 실제 경기에서는
+       judge → pitchResult('contact') → endPA → applyDecision('playskip')
+       → decDone → runLive → LIVE.step() → simPA
+     순서로 간다. 중간에 하나라도 _contact 를 흘리면 도로 삼진이 나온다.
+     그 사슬을 통째로 돌려서 확인한다.                                */
+  console.log('\n[실제 경기 경로로 3볼·2스트라이크에서 맞혀본다]');
+  const CH=ev(`(function(){
+    const out={};
+    const bad=[];
+    [[3,0],[3,2],[0,2]].forEach(function(c){
+      for(let i=0;i<200;i++){
+        LIVE=makeLive(); LIVE.manual=true;
+        /* [함정] makeLive 의 시드는 고정이다. 안 흔들면 200번이 전부
+           **똑같은 타석**이 되고, 결과가 죄다 1B 하나로 나온다.
+           그러면 "볼넷 0" 이 통과해도 아무것도 증명 못 한다.       */
+        LIVE.rng=makeRng(i*7919+13);
+        /* 우리가 공격할 때까지 굴린다 */
+        let g=0; while(!LIVE.over && !LIVE.off().isUser && g++<400){
+          if(LIVE.pending)LIVE.applyDecision('none'); LIVE.step(); }
+        if(LIVE.over) continue;
+        LIVE.cntPA=LIVE.paSeq; LIVE.cnt={b:c[0],s:c[1]};
+        const r=LIVE.pitchResult('contact', 0.62, 'ff');   // 배트에 맞았다
+        if(!r||r.end!=='contact') { bad.push('pitchResult '+c.join('-')); continue; }
+        LIVE.applyDecision('playskip');
+        /* [주의] lastPlay 는 '볼 만한 장면' 만 남는다 — 그걸 읽으면 옛 타석이
+           그대로 잡혀서 죄다 1B 로 보인다. 박스스코어 증분으로 읽어야 확실하다. */
+        const bat=LIVE.batter();
+        const b0=Object.assign({}, LIVE.box[bat.id]||{});
+        LIVE.step();
+        const b1=LIVE.box[bat.id]||{};
+        const d=function(k){ return (b1[k]||0)-(b0[k]||0); };
+        let kind;
+        if(d('k')>0)        kind='K';
+        else if(d('bb')>0)  kind='BB';
+        else if(d('hbp')>0) kind='HBP';
+        else if(d('hr')>0)  kind='HR';
+        else if(d('d3')>0)  kind='3B';
+        else if(d('d2')>0)  kind='2B';
+        else if(d('h')>0)   kind='1B';
+        else if(d('ab')>0)  kind='OUT';
+        else                kind='?';        // 그 타석이 안 끝났다(주자 사건 등)
+        if(kind==='?') continue;
+        const k=c.join('-')+':'+kind;
+        out[k]=(out[k]||0)+1;
+      }
+    });
+    return {out,bad:bad.slice(0,3)};
+  })()`);
+  T('실제 경로에서도 3볼에 맞히면 볼넷이 안 나온다', ()=>{
+    const keys=Object.keys(CH.out).filter(k=>/^3-/.test(k));
+    const bb=keys.filter(k=>/:(BB|IBB)$/.test(k)).reduce((a,k)=>a+CH.out[k],0);
+    const tot=keys.reduce((a,k)=>a+CH.out[k],0);
+    return bb===0 && tot>0 && `${tot}타석 · 볼넷 0`;
+  });
+  T('실제 경로에서도 2스트라이크에 맞히면 삼진이 안 나온다', ()=>{
+    const keys=Object.keys(CH.out).filter(k=>/-2:/.test(k));
+    const kk=keys.filter(k=>/:K$/.test(k)).reduce((a,k)=>a+CH.out[k],0);
+    const tot=keys.reduce((a,k)=>a+CH.out[k],0);
+    return kk===0 && tot>0 && `${tot}타석 · 삼진 0`;
+  });
+  T('나온 결과가 전부 인플레이다 — 종류도 제대로 갈린다', ()=>{
+    const kinds=[...new Set(Object.keys(CH.out).map(k=>k.split(':')[1]))];
+    const bad=kinds.filter(k=>k==='K'||k==='BB'||k==='HBP');
+    return bad.length===0 && CH.bad.length===0 && kinds.length>=3 && kinds.sort().join(' ');
+  });
+  /* 화면이 '맞혔다' 고 말해놓고 로그에는 삼진이 찍히면 그게 제일 나쁘다.
+     judge 가 삼진으로 보내는 건 q<0.18, 즉 **헛스윙** 일 때뿐이어야 한다. */
+  T('화면이 삼진이라 부르는 건 헛스윙일 때뿐이다', ()=>{
+    const src=ev("String(renderSwing)");
+    return /if\(q<0\.18\)\{ kind='strike'; pre='헛스윙'/.test(src)
+      && /else \{ kind='contact';/.test(src) && '헛스윙만 스트라이크로 간다';
   });
 
   console.log('\n[손으로 친 타석은 진짜 개수를 센다]');
