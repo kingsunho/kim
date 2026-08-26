@@ -7323,8 +7323,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.67.0';
-const APP_VERSION_NOTE = '타구를 보면서 돌지 말지 정한다';
+const APP_VERSION = '2.68.0';
+const APP_VERSION_NOTE = '수비도 송구도 그라운드 위에서 정한다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7345,6 +7345,14 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.68.0', t:'수비도 송구도 그라운드 위에서 정한다', items:[
+    '남아 있던 판단창을 전부 그라운드로 옮겼다. 「텍스트로 다 하는 건 게임이 아니다」는 말이 맞다. 버튼 두 개만 뜨면 그건 메뉴지 경기가 아니다',
+    '수비 — 타구가 내 자리로 오는 걸 보면서 정한다. 그라운드에 야수 아홉이 서 있고 내 자리는 금색으로 표시된다. 공이 진짜 타구 방향으로 뻗어 나가고, 그 사이에 「안전하게 / 달려든다」를 고른다',
+    '판단 시간을 1.5초에서 2.6초로 늘렸다. 공이 오는 걸 보고 정하는 건데 1.5초는 볼 새가 없었다',
+    '송구 — 잡고 나면 2단계가 뜬다. 1루 주자가 있고 2아웃 전이면 주자가 2루로 뛰는 걸 보면서 「1루로 — 하나만 / 2루로 — 병살」을 고른다. 2루로 던지면 어깨가 좋을수록 병살이 늘고, 1루로 던지면 병살은 없지만 하나는 확실하다',
+    '포수 도루 저지도 그라운드로 왔다. 주자가 1루에서 2루로 뛰는 걸 보면서 던질지 참을지 정한다',
+    '주루 · 수비 · 송구 · 도루저지 네 장면이 같은 그라운드를 쓴다. 하이라이트에서 보던 그 그림 그대로다',
+  ]},
   {v:'2.67.0', t:'타구를 보면서 주루한다', items:[
     '주루가 하이라이트 그라운드 안으로 들어갔다. 치면 타석 화면이 접히고 그라운드가 뜬다 — 공이 내가 친 방향으로 날아가고, 야수들이 서 있고, 내가 1루로 뛴다. 그걸 보면서 정한다',
     '「한 베이스 더?」라는 말이 이상했다. 치자마자 묻는 건데 안타인지 아웃인지도 모르는 시점이라 기준이 없었다. 1루 코치가 실제로 하는 말은 하나다 — 「돌아? 서?」. 그래서 버튼도 「선다 / 돈다」다',
@@ -18386,42 +18394,75 @@ function psFencePath(g, park, pad){
    그래서 진짜 타구와 같은 방향으로 공을 날려 보낼 수 있다. 거리는
    아직 모르니 시간에 따라 뻗어 나가게 두고, 그 사이에 정하게 한다.
    화면에서 본 방향과 나중에 로그에 찍히는 방향이 어긋나지 않는다.   */
-function runScene(host, ang, dur, park, onTick){
+/* 판단은 전부 이 그라운드 위에서 한다.
+   [제보] "그라운드로 옮겨야지 텍스트로 다하는건 게임이 아님"
+   맞는 말이다. 버튼 두 개만 뜨면 그건 메뉴지 경기가 아니다.
+   주루·수비·송구·도루저지 네 가지가 같은 화면을 쓴다.
+
+     bat    친 공이 날아가고 내가 1루로 뛴다        (돌까 설까)
+     field  타구가 내 자리로 온다                   (안전하게 · 달려든다)
+     throw  잡았다. 주자가 뛴다                     (1루 · 2루)
+     steal  주자가 스타트를 끊었다                  (던진다 · 참는다)
+
+   결과는 아직 안 나왔지만 **방향은 이미 안다**(bbRng 가 결과와 별개다).
+   그래서 화면에 그린 방향과 나중에 로그에 찍히는 방향이 안 어긋난다.  */
+function groundScene(host, o){
+  o=o||{};
   const cv=document.createElement('canvas');
   cv.className='runcv';
   cv.width=PSW*2; cv.height=PSH*2;
   host.appendChild(cv);
   const g=cv.getContext('2d');
-  const P=park||psPark();
+  const P=o.park||psPark();
+  const mode=o.mode||'bat';
+  const dur=o.dur||2800;
   const HX=160, HY=236;
+  const ang=(o.ang!=null)?o.ang:0;
   const fence=psFenceR(P, ang);
   const rad=psRad(ang);
+  const mine=o.myPos||null;
   const t0=Date.now();
   let stop=false;
+  const dot=(x,y,r,c)=>{ g.fillStyle=c; g.beginPath(); g.arc(x,y,r,0,Math.PI*2); g.fill(); };
   const draw=()=>{
     if(stop) return;
     const k=Math.min(1,(Date.now()-t0)/dur);
     g.setTransform(2,0,0,2,0,0);
     psField(g, P);
-    /* 야수 — 자리만 점으로 */
+    /* 야수 — 내 자리는 금색으로 크게 */
     Object.keys(PS_POS).forEach(kk=>{
       const p=psPosOf(kk,P);
-      g.fillStyle='#e9e4d8';
-      g.beginPath(); g.arc(p.x,p.y,3,0,Math.PI*2); g.fill();
+      if(kk===mine){
+        g.strokeStyle='rgba(255,209,92,.55)'; g.lineWidth=1.5;
+        g.beginPath(); g.arc(p.x,p.y,9,0,Math.PI*2); g.stroke();
+        dot(p.x,p.y,5,'#ffd15c');
+      } else dot(p.x,p.y,3,'#e9e4d8');
     });
-    /* 공 — 아는 방향으로 뻗어 나간다. 거리는 아직 모르니 시간이 정한다 */
-    const r=fence*(0.18+k*0.72);
-    const bx=HX+Math.cos(rad)*r, by=HY+Math.sin(rad)*r;
-    g.fillStyle='#fff';
-    g.beginPath(); g.arc(bx,by,4,0,Math.PI*2); g.fill();
-    g.strokeStyle='rgba(255,255,255,.35)'; g.lineWidth=1.5;
-    g.beginPath(); g.moveTo(HX,HY); g.lineTo(bx,by); g.stroke();
-    /* 나 — 홈에서 1루로 뛴다 */
-    const b1=PS_B[1];
-    const rx=HX+(b1.x-HX)*Math.min(1,k*1.15), ry=HY+(b1.y-HY)*Math.min(1,k*1.15);
-    g.fillStyle='#ffd15c';
-    g.beginPath(); g.arc(rx,ry,4.5,0,Math.PI*2); g.fill();
-    if(onTick) onTick(k);
+    if(mode==='bat' || mode==='field'){
+      /* 공이 그 방향으로 뻗어 나간다 */
+      const r=fence*(0.18+k*0.72);
+      const bx=HX+Math.cos(rad)*r, by=HY+Math.sin(rad)*r;
+      g.strokeStyle='rgba(255,255,255,.35)'; g.lineWidth=1.5;
+      g.beginPath(); g.moveTo(HX,HY); g.lineTo(bx,by); g.stroke();
+      dot(bx,by,4,'#fff');
+      if(mode==='bat'){
+        const b1=PS_B[1];
+        dot(HX+(b1.x-HX)*Math.min(1,k*1.15), HY+(b1.y-HY)*Math.min(1,k*1.15), 4.5, '#ffd15c');
+      }
+    } else if(mode==='throw'){
+      /* 공은 내 손에 있다. 주자가 뛰고 타자도 1루로 뛴다 */
+      const me=mine?psPosOf(mine,P):{x:HX,y:HY-60};
+      dot(me.x,me.y,4,'#fff');
+      const b1=PS_B[1], b2=PS_B[2];
+      dot(b1.x+(b2.x-b1.x)*k, b1.y+(b2.y-b1.y)*k, 4.5, '#e08a70');       // 1루 주자 → 2루
+      dot(HX+(b1.x-HX)*Math.min(1,k*0.95), HY+(b1.y-HY)*Math.min(1,k*0.95), 4.5, '#e08a70');
+    } else if(mode==='steal'){
+      /* 주자가 1루에서 2루로. 공은 아직 포수한테 */
+      dot(HX,HY+8,4,'#fff');
+      const b1=PS_B[1], b2=PS_B[2];
+      dot(b1.x+(b2.x-b1.x)*k, b1.y+(b2.y-b1.y)*k, 4.5, '#e08a70');
+    }
+    if(o.onTick) o.onTick(k);
     if(k<1) requestAnimationFrame(draw);
   };
   draw();
@@ -21532,13 +21573,20 @@ function playThenClose(box, mv, choice, preText, preColor){
     }
     const evs=LIVE.log.slice(before).filter(l=>l.t==='play');
     const r=paResultText(evs);
-    if(r){
+    /* [수비·송구] 마운드 그림 없이 부를 수 있다. 그쪽은 그라운드를 쓴다 —
+       mv 가 없으면 결과 글자는 건너뛰고 창만 닫는다. */
+    if(r && mv){
       moundResult(mv, r.label, r.color, r.big);
       if(r.big) mv.classList.add('impact');
       const sub=mv.querySelector('.lbl');
       if(sub) sub.innerHTML=`<b>${r.raw}</b>`;
+    } else if(r && box){
+      /* 그라운드 판단창에서는 상자 위에 결과를 크게 띄운다 */
+      const t=box.querySelector('.rb-t');
+      if(t){ t.textContent=r.raw||r.label; t.style.color=r.color||''; }
     }
-    setTimeout(()=>{ mv.classList.remove('impact'); decDone(box); }, r?(r.big?1150:850):260);
+    setTimeout(()=>{ if(mv) mv.classList.remove('impact'); decDone(box); },
+      r?(r.big?1150:850):260);
   };
   setTimeout(go, preText?520:0);
 }
@@ -21822,10 +21870,11 @@ function renderSwing(box, d){
     box2.appendChild(row);
     w.appendChild(box2);
     try{
-      sc=runScene(stage, ang, dur, LIVE.park, (k)=>{
-        const b=bar(); if(b) b.style.width=(k*100).toFixed(0)+'%';
-        if(k>=1) pick(false);           // 안 고르면 선다
-      });
+      sc=groundScene(stage, {mode:'bat', ang, dur, park:LIVE.park,
+        onTick:(k)=>{
+          const b=bar(); if(b) b.style.width=(k*100).toFixed(0)+'%';
+          if(k>=1) pick(false);         // 안 고르면 선다
+        }});
     }catch(e){
       /* 캔버스가 안 되는 환경(테스트 등)에서는 막대만으로 진행한다 */
       const iv=setInterval(()=>{
@@ -22064,52 +22113,79 @@ function renderDefPlay(box, d){
        '<div class="bi-r">수비 '+Math.round(p.def)+' · 어깨 '+Math.round(p.arm)+'</div></div>':'');
   w.appendChild(head);
 
-  const mv=moundView({pitLeft:false, batLeft:!!(bat&&bat.bats==='L'), usDef:true});
-  w.appendChild(mv);
-
-  const box2=el('div','defbox');
+  /* [제보] "그라운드로 옮겨야지 텍스트로 다하는건 게임이 아님"
+     타구가 내 쪽으로 오는 걸 **보면서** 정한다. 버튼만 두 개 뜨면
+     그건 메뉴지 경기가 아니다.                                       */
   const hard=defHard(pos);
-  box2.innerHTML='<div class="rb-t">타구가 '+dir+'으로 온다</div>'+
-    '<div class="rb-bar"><i></i></div>'+
-    '<div class="rb-note">과감하면 잡을 확률도 놓칠 확률도 같이 오른다'+
-      (hard>=1.2?' · <b style="color:#ffd15c">센터 라인이라 더 빡세다</b>':'')+'</div>';
+  const box2=el('div','defbox');
+  box2.innerHTML='<div class="rb-t">타구가 '+dir+'으로 온다</div>';
+  const stage=el('div','runstage');
+  box2.appendChild(stage);
+  box2.appendChild(Object.assign(el('div','rb-bar'),{innerHTML:'<i></i>'}));
+  box2.appendChild(Object.assign(el('div','rb-note'),{innerHTML:
+    '과감하면 잡을 확률도 놓칠 확률도 같이 오른다'+
+    (hard>=1.2?' · <b style="color:#ffd15c">센터 라인이라 더 빡세다</b>':'')}));
   const bar=box2.querySelector('.rb-bar > i');
   const row=el('div','rb-row');
-  let picked=false;
-  const dur=1500, t0=Date.now();
+  let picked=false, sc=null;
+  const dur=2600, t0=Date.now();
+  const mv=null;                       // 마운드 그림은 안 쓴다
   const pick=(bold)=>{
     if(picked)return; picked=true;
-    clearInterval(tick);
+    /* [버그] 여기 clearInterval(tick) 이 있었다. tick 은 그라운드로 옮기면서
+       없앤 변수라 예외가 났고, 「달려든다」를 눌러도 송구로 안 넘어갔다. */
     /* 잡고 나면 어디로 던질지가 남는다. 1루 주자가 있고 2아웃 전이면
        그게 야수의 진짜 판단이다 — 병살을 노리느냐, 하나를 확실히 잡느냐. */
+    if(sc) sc.stop();
     if(LIVE.bases[0] && LIVE.outs<2){
       LIVE.applyDecision(bold?'def:bold':'def:safe');
-      moundResult(mv, bold?'달려든다':'안전하게', bold?'#ffd15c':'#7fc48f');
       askThrow(box, mv, w);
       return;
     }
     /* [주의] applyDecision 을 여기서 부르면 안 된다 — playThenClose 가
        한 번 더 부른다. 두 번 부르면 def:skip 처럼 선택이 지워진다.
        choice 를 넘겨서 **한 번만** 적용되게 한다.                  */
-    playThenClose(box, mv, bold?'def:bold':'def:safe',
-      bold?'달려든다':'안전하게', bold?'#ffd15c':'#7fc48f');
+    playThenClose(box, null, bold?'def:bold':'def:safe', null, null);
   };
-  /* 2단계 — 송구. 잡았다고 치고 어디로 던질지 고른다 */
+  /* 2단계 — 송구. 잡았다. 주자가 뛰는 걸 보면서 어디로 던질지 고른다 */
   const askThrow=(bx, mound, wrap)=>{
     const old=wrap.querySelector('.defbox'); if(old) old.remove();
     const t=el('div','defbox');
     const rn=LIVE.off().team.players.find(x=>x.id===LIVE.bases[0]);
-    t.innerHTML='<div class="rb-t">어디로 던지나</div>'+
-      '<div class="rb-note">1루 주자 '+(rn?rn.name+' (주루 '+Math.round(rn.spd)+')':'')+
-      ' · 2루로 던지면 둘 다 잡을 수도, 둘 다 살릴 수도 있다</div>';
+    t.innerHTML='<div class="rb-t">잡았다 — 어디로 던지나</div>';
+    const st2=el('div','runstage'); t.appendChild(st2);
+    t.appendChild(Object.assign(el('div','rb-bar'),{innerHTML:'<i></i>'}));
+    t.appendChild(el('div','rb-note',
+      '1루 주자 '+(rn?rn.name+' (주루 '+Math.round(rn.spd)+')':'')+
+      ' · 2루로 던지면 둘 다 잡을 수도, 둘 다 살릴 수도 있다'));
     const r2=el('div','rb-row');
+    let done2=false, sc2=null;
+    const fire=(where)=>{
+      if(done2)return; done2=true; if(sc2)sc2.stop();
+      playThenClose(bx, null, where, null, null);
+    };
     const t1=el('button','rb-b stay','1루로 — 하나만');
-    t1.onclick=()=>playThenClose(bx, mound, 'at:first', '1루', '#7fc48f');
+    t1.onclick=()=>fire('at:first');
     const t2=el('button','rb-b go','2루로 — 병살 ▸');
-    t2.onclick=()=>playThenClose(bx, mound, 'at:lead', '2루!', '#ffd15c');
+    t2.onclick=()=>fire('at:lead');
     r2.appendChild(t1); r2.appendChild(t2);
     t.appendChild(r2);
     wrap.appendChild(t);
+    const b2=t.querySelector('.rb-bar > i');
+    try{
+      sc2=groundScene(st2, {mode:'throw', ang:d.ang, dur:2400, park:LIVE.park, myPos:pos,
+        onTick:(k)=>{ if(b2) b2.style.width=(k*100).toFixed(0)+'%';
+          if(k>=1) fire('at:first'); }});      // 안 고르면 1루로
+    }catch(e){
+      /* 캔버스가 없는 환경(테스트 등) — 막대만 돌리고 시간이 다 되면 1루로 */
+      const t2s=Date.now();
+      const iv=setInterval(()=>{
+        const k=Math.min(1,(Date.now()-t2s)/2400);
+        if(b2) b2.style.width=(k*100).toFixed(0)+'%';
+        if(k>=1){ clearInterval(iv); fire('at:first'); }
+      },40);
+      sc2={stop:()=>clearInterval(iv)};
+    }
   };
   const b1=el('button','rb-b stay','안전하게');
   b1.onclick=()=>pick(false);
@@ -22119,17 +22195,24 @@ function renderDefPlay(box, d){
   box2.appendChild(row);
   w.appendChild(box2);
   const skip=el('button','pl-skip','알아서 하게 둔다');
-  skip.onclick=()=>{ if(picked)return; picked=true; clearInterval(tick);
+  skip.onclick=()=>{ if(picked)return; picked=true; if(sc) sc.stop();
     LIVE.applyDecision('def:skip'); decDone(box); };
   w.appendChild(skip);
   box.appendChild(w);
 
-  const tick=setInterval(()=>{
-    const k=Math.min(1,(Date.now()-t0)/dur);
-    if(bar) bar.style.width=(k*100).toFixed(0)+'%';
-    if(k>=1) pick(false);                 // 안 고르면 안전하게
-  },40);
-  box._cleanup=()=>{ picked=true; clearInterval(tick); };
+  try{
+    sc=groundScene(stage, {mode:'field', ang:d.ang, dur, park:LIVE.park, myPos:pos,
+      onTick:(k)=>{ if(bar) bar.style.width=(k*100).toFixed(0)+'%';
+        if(k>=1) pick(false); }});                 // 안 고르면 안전하게
+  }catch(e){
+    const iv=setInterval(()=>{
+      const k=Math.min(1,(Date.now()-t0)/dur);
+      if(bar) bar.style.width=(k*100).toFixed(0)+'%';
+      if(k>=1){ clearInterval(iv); pick(false); }
+    },40);
+    sc={stop:()=>clearInterval(iv)};
+  }
+  box._cleanup=()=>{ picked=true; if(sc)sc.stop(); };
 }
 
 /* 포수 — 뛰면 던진다.
@@ -22150,17 +22233,41 @@ function renderThrow(box, d){
     (c?'<div class="bat-info"><div class="bi-top"><b>'+c.name+'</b><em>포수</em></div>'+
        '<div class="bi-r">어깨 '+Math.round(c.arm)+' · 수비 '+Math.round(c.def)+'</div></div>':'');
   w.appendChild(head);
+  /* 마운드 그림은 안 쓴다 — 도루는 그라운드로 봐야 한다 */
   const box2=el('div','defbox');
-  box2.innerHTML='<div class="rb-t">뛰면 던질 건가</div>'+
-    '<div class="rb-note">던지면 잡을 확률이 오른다 · 빠뜨리면 3루까지 준다</div>';
+  box2.innerHTML='<div class="rb-t">뛴다 — 던질 건가</div>';
+  const stage=el('div','runstage'); box2.appendChild(stage);
+  box2.appendChild(Object.assign(el('div','rb-bar'),{innerHTML:'<i></i>'}));
+  box2.appendChild(el('div','rb-note','던지면 잡을 확률이 오른다 · 빠뜨리면 3루까지 준다'));
   const row=el('div','rb-row');
+  let done2=false, sc=null;
+  const fire=(go)=>{
+    if(done2)return; done2=true; if(sc)sc.stop();
+    LIVE.applyDecision(go?'thr:go':'thr:hold'); decDone(box);
+  };
   const b1=el('button','rb-b stay','안 던진다');
-  b1.onclick=()=>{ LIVE.applyDecision('thr:hold'); decDone(box); };
+  b1.onclick=()=>fire(false);
   const b2=el('button','rb-b go','던진다 ▸');
-  b2.onclick=()=>{ LIVE.applyDecision('thr:go'); decDone(box); };
+  b2.onclick=()=>fire(true);
   row.appendChild(b1); row.appendChild(b2);
   box2.appendChild(row);
   w.appendChild(box2);
+  const bar=box2.querySelector('.rb-bar > i');
+  try{
+    sc=groundScene(stage, {mode:'steal', ang:0, dur:2200, park:LIVE.park, myPos:'C',
+      onTick:(k)=>{ if(bar) bar.style.width=(k*100).toFixed(0)+'%';
+        if(k>=1) fire(false); }});             // 안 고르면 안 던진다
+  }catch(e){
+    /* 캔버스가 없으면 막대만 — 그래도 시간은 흘러야 한다 */
+    const t0=Date.now();
+    const iv=setInterval(()=>{
+      const k=Math.min(1,(Date.now()-t0)/2200);
+      if(bar) bar.style.width=(k*100).toFixed(0)+'%';
+      if(k>=1){ clearInterval(iv); fire(false); }
+    },40);
+    sc={stop:()=>clearInterval(iv)};
+  }
+  box._cleanup=()=>{ done2=true; if(sc)sc.stop(); };
   const skip=el('button','pl-skip','알아서 하게 둔다');
   skip.onclick=()=>{ LIVE.applyDecision('def:skip'); decDone(box); };
   w.appendChild(skip);
