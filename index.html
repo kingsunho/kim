@@ -1556,6 +1556,20 @@ table.hl-tbl td.hl-o{color:#c98a80}
 .lu-n{flex:1;color:var(--tx);font-weight:700}
 .lu-ro.me .lu-n{color:var(--gold)}
 .lu-p{font-size:11px;color:var(--dim)}
+/* 주루 — 공이 굴러가는 동안 고른다 */
+.runbox{margin-top:10px;padding:12px;border-radius:12px;
+  background:linear-gradient(180deg,rgba(201,162,39,.14),var(--panel));
+  border:1px solid var(--gold)}
+.rb-t{font-size:14px;font-weight:900;color:var(--tx);text-align:center}
+.rb-bar{height:7px;background:#0d1015;border-radius:4px;overflow:hidden;margin:9px 0 5px}
+.rb-bar>i{display:block;height:100%;width:0%;
+  background:linear-gradient(90deg,#3fa564,#c9a227,#d2544a)}
+.rb-note{font-size:10.5px;color:var(--dim);text-align:center;margin-bottom:9px}
+.rb-row{display:flex;gap:8px}
+.rb-b{flex:1;padding:14px 6px;border-radius:10px;font-size:14px;font-weight:800;
+  border:1px solid var(--line);color:var(--ink)}
+.rb-b.stay{background:var(--panel2)}
+.rb-b.go{background:linear-gradient(180deg,#2f8f4e,#1f6f3a);border-color:#3fa564;color:#fff}
 /* 고교 — 타석 하나하나 */
 .hs-sub2{font-size:10.5px;font-weight:800;color:var(--dim);margin:10px 0 3px;
   padding-top:8px;border-top:1px solid var(--line)}
@@ -2324,10 +2338,37 @@ function simPA(bat,pit,offTeam,defTeam,rng,tac,cond,park,mods){
       const chance=clamp(LG.ITP_BASE*(0.5+fast)*sloppy*Math.sqrt(park.d3||1), 0, 0.34);
       if(rng()<chance) return {type:'HR', itp:true};
     }
-    return {type:'3B'};
+    return stretchRun('3B', mods, bat, defTeam, rng);
   }
-  if(rr<phr+p3+p2) return {type:'2B'};
-  return {type:'1B'};
+  if(rr<phr+p3+p2) return stretchRun('2B', mods, bat, defTeam, rng);
+  return stretchRun('1B', mods, bat, defTeam, rng);
+}
+/* ================= 주루 =================
+   [요청] "치고나서 애니메이션 그거 나오잖아 그거 속도조절해서
+           베이스 어디까지 갈건지 정하게 해서 주루플레이도 해야하고"
+
+   **안타 종류가 정해진 뒤에** 얹는다. 그래야 기록이 안 어긋난다 —
+   v2.51.0 에서 정한 "비거리는 결과와 절대 안 어긋난다" 와 같은 원칙이다.
+   1루타를 2루타로 늘리거나, 늘리려다 죽는다. 없는 안타를 만들지 않는다.
+
+   판정에 들어가는 것
+     · 내 주루(spd)          빠르면 된다
+     · 상대 수비(_slotDef)    어깨가 좋으면 잡힌다
+     · **얼마나 빨리 정했나**  늦게 결정할수록 야수가 공에 가까워져 있다
+   3루타는 더 갈 데가 없다(홈은 따로 판정한다) — 그대로 둔다.        */
+function stretchRun(hit, mods, bat, defTeam, rng){
+  const st=mods&&mods.stretch;
+  if(!st||!st.go||hit==='3B') return {type:hit};
+  const spd=(bat&&bat.spd)||40;
+  const dv=(defTeam&&defTeam._slotDef!=null)?defTeam._slotDef
+          :((defTeam&&defTeam.mean&&defTeam.mean.def)||46);
+  const late=Math.max(0,Math.min(1,st.risk||0));
+  let p = 0.46 + (spd-45)*0.011 - (dv-46)*0.009 - late*0.40;
+  if(hit==='2B') p-=0.16;                    // 2루에서 3루는 훨씬 어렵다
+  p=Math.max(0.05,Math.min(0.90,p));
+  if(rng()<p) return {type: hit==='1B'?'2B':'3B', stretched:true};
+  /* 늘리려다 죽었다. 타수는 먹고 안타는 없다 — 주루사다. */
+  return {type:'OUT', gb:false, runOut:hit};
 }
 
 /* ================= 승리·패전투수 =================
@@ -2551,6 +2592,7 @@ function simGame(home,away,opts){
             log.push({t:'play',inning:inn,half,text:`${bat.name} 병살타${bbTag(bb)}`,cls:'out'});}
           else if(bases[2]&&outs<3&&!res.gb&&rng()<0.30){score(bases[2],true);bl.rbi++;bases[2]=null;
             log.push({t:'play',inning:inn,half,text:`${bat.name} 희생플라이 · 1점${bbTag(bb)}`,cls:'score'});}
+          else if(res.runOut) log.push({t:'play',inning:inn,half,text:`${bat.name} ${res.runOut==='1B'?'2루':'3루'}에서 아웃${bbTag(bb)}`,cls:'out'});
           else log.push({t:'play',inning:inn,half,text:`${bat.name} ${res.gb?'땅볼':'뜬공'} 아웃${bbTag(bb)}`,cls:'out'});}
         else{
           bl.ab++;bl.h++;pl.h++;off.hits++;
@@ -7204,8 +7246,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.62.0';
-const APP_VERSION_NOTE = '고등학교 경기를 직접 친다';
+const APP_VERSION = '2.63.0';
+const APP_VERSION_NOTE = '치고 나서 한 베이스 더 갈지 정한다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7226,6 +7268,15 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.63.0', t:'주루 — 한 베이스 더', items:[
+    '잘 맞은 타구를 치면 공이 굴러가는 동안 「한 베이스 더?」를 물어본다. 막대가 차는 게 야수가 공에 다가가는 시간이다 — 늦게 고를수록 잡힌다',
+    '1루타를 2루타로, 2루타를 3루타로 늘릴 수 있다. 실패하면 아웃이다 — 기록에도 「2루에서 아웃」으로 남는다',
+    '판정에는 내 주루, 상대 수비, 그리고 얼마나 빨리 정했는지가 들어간다. 발 빠른 사람이 바로 정하면 81%, 느린 사람이 늦게 정하면 5%다',
+    '없는 안타를 만들지 않는다. 엔진이 안타 종류를 정한 다음에 얹는 거라 기록과 화면이 안 어긋난다',
+    '감독 모드에서도 직접 플레이 중이면 똑같이 물어본다',
+    '더보기 → 주루 에서 끌 수 있다',
+    '용량 기준을 4MB / gzip 1.5MB 로 올렸다. 파일 크기는 첫 다운로드에만 걸리고 인게임 성능과는 무관하다',
+  ]},
   {v:'2.62.0', t:'고등학교 경기를 직접 친다', items:[
     '고등학교 경기를 자동으로 돌리는 게 아니라 직접 친다. 본편 타석 화면 그대로 — 노림수 고르고, 「준비 됐다」 누르고, 공 보고 스윙한다',
     '내 타석에서만 멈춘다. 나머지 타석은 즉시 굴러간다. 여섯 경기를 다 손으로 치면 프롤로그가 아니라 시즌이 된다',
@@ -9582,10 +9633,13 @@ LiveGame.prototype.consumePlayMods = function(off, def){
        대신 변화구는 애초에 맞히기가 어렵다(코스 쪽에서 이미 반영된다). */
     const ct=CONTACT_BY_PITCH[this._contactType||'ff'];
     if(ct){ out.pow*=ct.pow; out.babip*=ct.babip; }
+    /* 주루 — 치고 나서 고른 것. 안타 종류가 정해진 뒤에 얹힌다 */
+    if(this._stretch){ out.stretch=this._stretch; this._stretch=null; }
     this._contact=false; this._contactQ=null; this._contactType=null;
     this._swingQ=null; this._pitchHit=null;
     return out;
   }
+  this._stretch=null;                 // 안 쳤으면 주루 선택도 버린다
   if(this._swingQ!=null && off.isUser){
     out={...(out||{}), ...swingMods(this._swingQ)};
   }
@@ -9977,6 +10031,8 @@ LiveGame.prototype.stepPA = function(){
         events.push({text:`${bat.name} 희생플라이 · 1점${bbTag(bb)}`,cls:'score'});
       }
     }
+    /* [요청] 주루 — 늘리려다 죽었으면 그렇게 적어야 한다. 안타가 아웃이 된 거다 */
+    else if(res.runOut) events.push({text:`${bat.name} ${res.runOut==='1B'?'2루':'3루'}에서 아웃 — 한 베이스 더 가려다 잡혔다${bbTag(bb)}`,cls:'out'});
     else events.push({text:`${bat.name} ${res.gb?'땅볼':'뜬공'} 아웃${bbTag(bb)}`,cls:'out'});
   }
   else{
@@ -21400,6 +21456,50 @@ function renderSwing(box, d){
     m.classList.remove('on'); void m.offsetWidth; m.classList.add('on');
   };
 
+  /* ---- 주루 ----
+     [요청] "치고나서 애니메이션 그거 나오잖아 그거 속도조절해서
+             베이스 어디까지 갈건지 정하게 해서 주루플레이도 해야하고"
+
+     맞은 순간 공은 아직 굴러가는 중이다. 그 사이에 정한다.
+     막대가 차는 동안이 야수가 공에 다가가는 시간이다 —
+     **늦게 고를수록 아웃 확률이 오른다.** 안 고르면 그냥 멈춘다.
+
+     결과는 엔진이 낸다. 여기서 정하는 건 "시도할 것인가" 뿐이고,
+     성공/실패 판정은 stretchRun 이 주력·상대 수비·늦은 정도로 한다.
+     그래야 기록이 화면과 안 어긋난다.                              */
+  const askRun=(pre,color,big,after)=>{
+    if(done||resolved||!LIVE){ after(); return; }
+    const dur=1700;
+    const box2=el('div','runbox');
+    box2.innerHTML='<div class="rb-t">'+pre+' — 한 베이스 더?</div>'+
+      '<div class="rb-bar"><i></i></div>'+
+      '<div class="rb-note">늦을수록 잡힌다</div>';
+    const bar=box2.querySelector('.rb-bar > i');
+    const row=el('div','rb-row');
+    const t0=Date.now();
+    let picked=false;
+    const pick=(go)=>{
+      if(picked)return; picked=true;
+      clearInterval(tick);
+      const risk=Math.max(0,Math.min(1,(Date.now()-t0)/dur));
+      LIVE._stretch = go ? {go:true, risk} : null;
+      try{ box2.parentNode&&box2.parentNode.removeChild(box2); }catch(e){}
+      after();
+    };
+    const b1=el('button','rb-b stay','멈춘다');
+    b1.onclick=()=>pick(false);
+    const b2=el('button','rb-b go','한 베이스 더 ▸');
+    b2.onclick=()=>pick(true);
+    row.appendChild(b1); row.appendChild(b2);
+    box2.appendChild(row);
+    w.appendChild(box2);
+    const tick=setInterval(()=>{
+      const k=Math.min(1,(Date.now()-t0)/dur);
+      if(bar) bar.style.width=(k*100).toFixed(0)+'%';
+      if(k>=1){ pick(false); }          // 안 고르면 안전하게
+    },40);
+    box2._stop=()=>{ clearInterval(tick); };
+  };
   const endPA=(label,color,big)=>{
     if(resolved)return; resolved=true; done=true; phase='over';
     if(anim)anim.stop();
@@ -21509,6 +21609,12 @@ function renderSwing(box, d){
     }
     if(r.end==='BB'){ endPA('볼넷','#7fc48f',false); return; }
     if(r.end==='K'){  endPA('삼진 아웃','#e08a70',false); return; }
+    /* 배트에 맞았으면 주루를 물어본다. 잘 맞았을 때만 — 빗맞은 타구로
+       한 베이스 더 갈 일은 없다. 설정에서 끌 수 있다. */
+    if(kind==='contact' && q>=0.42 && (ST&&ST.runAsk!==false)){
+      askRun(pre, col, q>=0.75, ()=>endPA(pre,col,q>=0.75));
+      return;
+    }
     endPA(pre,col,q>=0.75);                     // 인플레이 — 결과는 엔진이 낸다
   };
 
@@ -21590,7 +21696,8 @@ function renderSwing(box, d){
     : '천천히 골라라. [준비 됐다 ▶] 를 눌러야 공이 온다';
   drawAim(); paint();
   ready(3);                     // 바로 '투구 준비 · 3' 이 뜨게. 빈 화면을 안 보여준다
-  box._cleanup=()=>{ done=true; resolved=true; if(anim)anim.stop(); };
+  box._cleanup=()=>{ done=true; resolved=true; if(anim)anim.stop();
+    const rb=w.querySelector('.runbox'); if(rb&&rb._stop) rb._stop(); };
 }
 
 /* 투구 — 카운트를 보고 구종·코스를 고른다. 타자가 참거나 휘두른다. */
@@ -24774,6 +24881,24 @@ function renderMore(){
     ? '타석에 서면 공이 안 온다. 노림수를 고르고 「준비 됐다 ▶」 를 눌러야 던진다. 급할 것 없다.'
     : '타석에 서면 3·2·1 을 세고 알아서 던진다. 「안 기다리고 바로」 로 건너뛸 수 있다.'));
 
+  /* 주루 — 치고 나서 한 베이스 더 갈지 물어볼까
+     [요청] "베이스 어디까지 갈건지 정하게 해서 주루플레이도" */
+  const rn=el('p','muted');
+  rn.innerHTML='<br><b>주루</b> — 잘 맞은 타구를 친 뒤에 '+
+    '<b>한 베이스 더 갈지</b> 물어본다. 늦게 고를수록 잡힌다.';
+  pl.appendChild(rn);
+  const rnRow=el('div','btn-row');
+  [[true,'물어본다'],[false,'안 물어본다']].forEach(([v,lab])=>{
+    const b=el('button','btn'+(((ST.runAsk!==false)===v)?' primary':''),lab);
+    b.onclick=()=>{ ST.runAsk=v; saveGame(true); renderMore();
+      toast(v?'치고 나면 물어본다':'주루는 알아서 한다'); };
+    rnRow.appendChild(b);
+  });
+  pl.appendChild(rnRow);
+  pl.appendChild(el('div','set-note', (ST.runAsk!==false)
+    ? '1루타를 2루타로 늘릴 수 있다. 대신 잡히면 아웃이다.'
+    : '안 물어본다. 친 대로 간다.'));
+
   /* 2D 경기 장면 — 중요한 장면을 그라운드 그림으로 보여준다 */
   const sn=el('p','muted');
   sn.innerHTML='<br><b>경기 장면</b> — 직접 지휘 중에 홈런·득점·병살 같은 장면을 '+
@@ -25299,6 +25424,7 @@ function normalizeState(){
   /* [v2.54.0] 타석 시작 방식. 옛 세이브는 '내가 누르면' 으로 들어온다 —
      예전 자동 리듬이 정신없다는 제보에서 나온 기본값이라 그쪽이 맞다. */
   if(ST.batReady!=='auto'&&ST.batReady!=='me')ST.batReady='me';
+  if(typeof ST.runAsk!=='boolean')ST.runAsk=true;   // [v2.63.0] 주루 물어보기
   if(!ST.names)ST.names={};
   us.players.forEach(p=>{ ST.names[p.id]=p.name; });
   if(!ST.lgPit)ST.lgPit={};

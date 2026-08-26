@@ -88,7 +88,15 @@ const zlib=require('zlib');
 const raw=fs.statSync('index.html').size;
 const gz=zlib.gzipSync(Buffer.from(s,'utf8'),{level:9}).length;
 console.log(`  ${(raw/1048576).toFixed(3)} MB · gzip ${(gz/1048576).toFixed(3)} MB`);
-T('2MB 아래', ()=>raw<2*1048576 ? `${(raw/1048576).toFixed(2)} MB` : '!너무 크다');
+/* [결정] "2mb넘으면 뭐어때 인게임에만 지장안가면 된다"
+   맞는 말이다 — 파일 크기는 **첫 다운로드**에만 걸리고 인게임 성능과는
+   무관하다. 한 번 받으면 브라우저 캐시에 남는다.
+   대신 진짜 비용은 있다: 업데이트할 때마다 팀원들이 그만큼 다시 받는다.
+   gzip 기준을 같이 본다 — 실제로 망을 타는 건 그쪽이다.
+   4MB(gzip 1.5MB)를 새 선으로 잡는다. LTE 에서 3~4초쯤이다.       */
+T('4MB 아래', ()=>raw<4*1048576 ? `${(raw/1048576).toFixed(2)} MB` : '!너무 크다');
+T('gzip 1.5MB 아래 — 실제로 망을 타는 건 이쪽이다',
+  ()=>gz<1.5*1048576 ? `gzip ${(gz/1048576).toFixed(2)} MB` : '!느린 망에서 체감된다');
 
 console.log(bad.length?`\n❌ ${bad.length}건`:'\n✅ 이상 없음');
 process.exit(bad.length?1:0);
