@@ -11216,6 +11216,98 @@ function renderPick(){
   c.appendChild(go2);
 }
 
+/* ================= 고등학교 =================
+   [요청] "고등학교때부터 시작된 인연이니깐 스토리를 만들자.
+           군포고에서 시작. 1·2·3학년 짧게 경기해서 잘하면 기본 스탯이
+           좋게 시작. 김선호 김상훈은 유이하게 흥진고라서 상대팀"
+
+   로스터 META 를 세어보니 사용자 말이 정확했다.
+     군포고 12명 — 1999년생 7 (송승민 이건 정민수 유지효 우진혁 권혁준 이민혁)
+                   2000년생 5 (김인규 김한규 김준희 김선우 이승민)
+     흥진고  2명 — 2000년생   (김선호 김상훈)
+   출생년도가 7:7 로 갈린다. 그게 그대로 **형 학번 / 동생 학번**이다.
+
+        2017      2018      2019
+   1999생  고2   →   고3   →   졸업
+   2000생  고1   →   고2   →   고3
+
+   그래서 2000년생으로 시작하면 고3 때 형들이 없다. 그때 처음 내가 중심이 된다.
+   김선호·김상훈으로 시작하면 군포고 열둘이 전부 상대편이다.            */
+/* 고1 = 태어난 해 + 16. 그래서 3년이 **누구로 시작하냐에 따라 다르다.**
+     1999년생 → 2015 2016 2017
+     2000년생 → 2016 2017 2018
+   1999년생으로 시작하면 고1 때는 동갑 일곱만 있고 동생들이 아직 없다.
+   2000년생으로 시작하면 고3(2018) 때 형들이 이미 졸업하고 없다.
+   같은 3년인데 전혀 다른 3년이 된다 — 이게 이 프롤로그의 뼈대다.    */
+function hsYearsFor(pid){
+  const b=(META[pid]&&META[pid].born)||2000;
+  return [b+16, b+17, b+18];
+}
+const HS_SCHOOLS={
+  gunpo:{id:'gunpo', name:'군포고', short:'군포', cap:'#2f5fb0'},
+  heung:{id:'heung', name:'흥진고', short:'흥진', cap:'#b23a34'},
+};
+/* 실존 인물이 어느 학교 몇 학번인지 — META 의 school·born 에서 그대로 온다 */
+function hsSchoolOf(pid){
+  const m=META[pid]; if(!m) return null;
+  return /흥진/.test(m.school||'') ? 'heung' : 'gunpo';
+}
+function hsGradeOf(pid, year){
+  const m=META[pid]; if(!m||!m.born) return 0;
+  /* 1999년생은 2017년에 고2, 2000년생은 고1 */
+  const g=year-m.born-15;
+  return (g>=1&&g<=3)?g:0;
+}
+
+/* 채워 넣을 부원들. **흔한 이름으로 간다** — 실존 인물 옆에 튀는 이름을
+   두면 붕 뜬다. 실제 로스터와 겹치는 이름(선우·승민·준희…)은 뺐다. */
+const HS_SUR=['김','이','박','최','정','강','조','윤','장','임','한','오','서','신','권','황','안','송','전','홍'];
+const HS_GIV=['민준','서준','도윤','예준','시우','하준','지호','준서','현우','지훈','건우',
+              '우진','연우','유준','정우','승현','시윤','준혁','도현','지환','시후','은우',
+              '진우','현준','동현','태윤','민재','규민','준영','성민','재윤','성훈','재원',
+              '태현','민혁','수현','영준','기현','상우','태민'];
+
+/* 고등학생 능력치 — 어른 리그 기준보다 전체적으로 낮고 편차가 크다.
+   [고교야구 맛] 잘 치는 애는 진짜 잘 치고 못 치는 애는 배트에 안 맞는다.
+   대신 **알루미늄 배트**라 맞으면 넘어간다 — 파워를 후하게 준다.      */
+function hsMakePlayer(rng, grade, tag){
+  const nm=HS_SUR[(rng()*HS_SUR.length)|0]+HS_GIV[(rng()*HS_GIV.length)|0];
+  /* 학년이 올라갈수록 조금 낫다 */
+  const base=26+grade*7;
+  const sp=(w)=>Math.max(8,Math.min(88, Math.round(base+(rng()*2-1)*w)));
+  return {
+    id:tag, name:nm, grade,
+    bats:rng()<0.22?'L':'R',
+    con:sp(20), pow:sp(24), eye:sp(16), spd:sp(20), def:sp(18), arm:sp(18),
+    stf:sp(20), ctl:sp(18), sta:sp(16),
+    npc:true,
+  };
+}
+/* 그 해 두 학교 명단. 실존 인물을 학년에 맞춰 넣고 나머지는 채운다.
+   한 학교 9명은 있어야 경기가 된다 — 흥진고는 실존이 둘뿐이라 많이 채운다. */
+function hsRoster(year, seed){
+  const rng=makeRng((seed*7919 + year*131)>>>0);
+  const out={gunpo:[], heung:[]};
+  Object.keys(META).forEach(pid=>{
+    const g=hsGradeOf(pid, year); if(!g) return;
+    const sc=hsSchoolOf(pid); if(!sc) return;
+    const p=TBYID['wwzw'].players.find(x=>x.id===pid)
+         || TBYID['wwzw'].pitchers.find(x=>x.id===pid);
+    if(!p) return;
+    out[sc].push({...p, grade:g, real:true});
+  });
+  /* 모자라는 자리는 부원으로 채운다 */
+  ['gunpo','heung'].forEach(sc=>{
+    let k=0;
+    while(out[sc].length<11){
+      const g=1+((rng()*3)|0);
+      out[sc].push(hsMakePlayer(rng, g, sc+'_'+year+'_'+(k++)));
+    }
+    out[sc].sort((a,b)=>b.grade-a.grade);
+  });
+  return out;
+}
+
 /* ================= 메인화면 · 모드 =================
    [요청] "감독모드랑 이거 선택할 수 있는 메인화면이 생겨야겠네
            거기엔 이안님 지우님 넣고"
