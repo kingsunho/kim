@@ -76,4 +76,6 @@ console.log('\uc8fc\ub8e8 2\ub9c9 \ud504\ub808\uc784 (10% \u00b7 32% \u00b7 55% 
 strip('1b',  {type:'1B', gb:false, ang:-14, dist:52}, -14, null);
 strip('2b',  {type:'2B', stretched:true, ang:28, dist:74}, 28, null);
 strip('out', {type:'OUT', gb:false, runOut:'1B', ang:-30, dist:61}, -30, null);
+strip('fly', {type:'OUT', gb:false, ang:12, dist:70}, 12, null);       // 뜬공 — 귀루
+strip('gb',  {type:'OUT', gb:true,  ang:-40, dist:24}, -40, null);     // 땅볼 — 1루 송구
 strip('hr',  {type:'HR', ang:6, dist:118}, 6, null);

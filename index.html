@@ -2832,6 +2832,53 @@ function mercNo(m){
   }
   return null;
 }
+/* ================= 감독은 누구인가 =================
+   [제보] "이건이 언해피 뜨고 팀 나갔는데 ? 뜨면서 또 짜야되네 하면서
+           나갔음에도 남아있다고 하네"
+   [요청] "만약 나가면 감독인 사람은 다른 사람에게 물려주는 걸로 해서
+           업데이트하면 ? 안 뜨게 해야할듯"
+
+   단톡 공지·잔소리가 전부 'lg'(이건)로 **박혀 있었다**. 이건이 팀을
+   나가면 로스터에 없는 사람이 말을 하는 셈이라, 단톡 렌더러가 이름을
+   못 찾고 **'?'** 로 찍었다. 사회인야구에서 감독이 나가면 다음 사람이
+   맡는다. 그게 자연스럽고, 그러면 '?' 도 안 뜬다.
+
+   순서: ① 이미 물려받은 사람(ST.coachPid) ② traits 의 '감독'
+         ③ '코치' ④ '리더' ⑤ 지도 능력·충성도·출석 점수순.
+   **로스터에 있는 사람만** 본다. 선수 모드에서 내가 뽑히면 넘긴다 —
+   선수 모드는 감독이 남이어야 성립한다(bossId 와 같은 이유).      */
+function coachScore(id){
+  const m=META[id]||{}; const tr=m.traits||[];
+  let s=0;
+  if(tr.indexOf('감독')>=0)s+=200;
+  if(tr.indexOf('코치')>=0)s+=40;
+  if(tr.indexOf('리더')>=0)s+=30;
+  const c=m.coach||{};
+  s+=Math.max(0,c.all||0,c.inf||0,c.out||0,c.bat||0)*0.3;
+  s+=(m.loyal!=null?m.loyal:60)/4;
+  s+=(m.attend!=null?m.attend:0.6)*20;
+  return s;
+}
+function coachId(){
+  const us=(typeof TBYID!=='undefined')&&TBYID['wwzw'];
+  if(!us||!us.players||!us.players.length) return 'lg';
+  const S=(typeof ST!=='undefined')?ST:null;
+  const meNo=(S&&S.mode==='player')?(S.playerId||MYID):null;
+  const ok=id=>!!id && id!==meNo && !isMerc(id) && us.players.some(p=>p.id===id);
+  if(S&&ok(S.coachPid)) return S.coachPid;
+  const cand=us.players.map(p=>p.id).filter(ok);
+  if(!cand.length) return (S&&S.coachPid)||'lg';
+  cand.sort((a,b)=>coachScore(b)-coachScore(a)||(a<b?-1:1));
+  if(S) S.coachPid=cand[0];
+  return cand[0];
+}
+/* 감독이 바뀌었나 — 바뀌었으면 새 감독 id 를, 아니면 null */
+function passCoach(prevId){
+  const S=(typeof ST!=='undefined')?ST:null;
+  if(S && S.coachPid===prevId) S.coachPid=null;    // 다시 뽑게 한다
+  const next=coachId();
+  return (next && next!==prevId) ? next : null;
+}
 /* 등번호 표기 — 없으면 빈 문자열 */
 function jerseyNo(pid){
   const p=TBYID['wwzw'].players.find(x=>x.id===pid);
@@ -3586,7 +3633,7 @@ function bdayCard(){
         ST.morale[p.id]=Math.min(100,(ST.morale[p.id]||70)+3); n++;
       });
       ST.kakao=ST.kakao||[];
-      ST.kakao.push({who:'lg',type:'notice',
+      ST.kakao.push({who:coachId(),type:'notice',
         text:`🎂 오늘 ${ids.map(nameOf).join(', ')} 생일\n사기 +14 · 컨디션 +6 · 나머지 ${n}명 사기 +3`});
       bdayChat(ST.kakao, ids);
       log.forEach(m=>ST.kakao.push(m));
@@ -3869,11 +3916,12 @@ function recordFeats(ST, feats){
       season:ST.seasonNo||1, year:ST.year||2026, first, icon:info.icon, rare:info.rare};
     ST.feats.push(rec);
     const who=f.pid?`${nameOf(f.pid)} `:'';
-    msgs.push({who:'lg',type:'record',
+    msgs.push({who:coachId(),type:'record',
       text:`${info.icon} ${first?'구단 최초 — ':''}${f.kind}
 ${who}${f.detail}`});
     /* 축하 — 본인이 아닌 사람이 한다 */
-    const cheer = f.pid==='lg' ? 'swm' : 'lg';
+    const co=coachId();
+    const cheer = (f.pid===co) ? (co==='swm'?'lg':'swm') : co;
     if(TBYID['wwzw'].players.some(x=>x.id===cheer)){
       const c=pickFresh(FEAT_CHEER,'FEAT_CHEER');
       msgs.push({who:cheer, text:f.pid?sayTo(cheer,f.pid,c[0],c[1]):say(cheer,c[0],c[1]), mood:'happy'});
@@ -4608,7 +4656,7 @@ function tickUltimatum(ST){
       if(ST.ultimatum[p.id]==null){
         ST.ultimatum[p.id]=3;
         msgs.push({who:p.id,text:sayTo(p.id,ST.playerId||MYID,...pickFresh(ULTIMATUM,'ULTIMATUM')),mood:'angry'});
-        msgs.push({who:'lg',type:'notice',
+        msgs.push({who:coachId(),type:'notice',
           text:`${p.name} 최후통첩 — 3경기 안에 못 풀면 팀을 나간다`});
       } else {
         ST.ultimatum[p.id]--;
@@ -4617,12 +4665,12 @@ function tickUltimatum(ST){
           msgs.push(...leaveTeam(ST,p.id));
           return;
         }
-        msgs.push({who:'lg',type:'notice',
+        msgs.push({who:coachId(),type:'notice',
           text:`${p.name} 남은 기회 ${ST.ultimatum[p.id]}경기`});
       }
     } else if(ST.ultimatum[p.id]!=null && lv<=2){
       delete ST.ultimatum[p.id];
-      msgs.push({who:'lg',type:'notice',text:`${p.name} 이탈 얘기는 일단 들어갔다`});
+      msgs.push({who:coachId(),type:'notice',text:`${p.name} 이탈 얘기는 일단 들어갔다`});
     }
   });
   return msgs;
@@ -4635,6 +4683,7 @@ function leaveTeam(ST, pid){
   const msgs=[];
   const i=us.players.findIndex(p=>p.id===pid);
   if(i<0)return msgs;
+  const wasCoach=(coachId()===pid);      // 나가기 전에 물어봐야 안다
   const m=META[pid]||{friends:[]};
   const gone=us.players[i];        // 상대 팀에 꽂으려면 원본이 필요하다
   us.players.splice(i,1);
@@ -4662,15 +4711,29 @@ function leaveTeam(ST, pid){
   ST.leftPlayers.push(rec);
   if(placeExile(rec,gone) && TBYID[to]) finalizeTeam(TBYID[to]);   // 곧바로 상대 로스터에
   const toName=to?(TBYID[to]?TBYID[to].name:''):'';
-  msgs.push({who:'lg',type:'notice',
+  msgs.push({who:coachId(),type:'notice',
     text:`${nm} 팀 이탈\n로스터 ${us.players.length}명`
       +(toName?`\n${toName} 로 갔다고 한다 — 리그에서 다시 만난다`:'')
       +`\n전원 사기 하락 · 친했던 선수는 더 크게 흔들린다`});
   if(toName){
-    msgs.push({who:'lg',
+    msgs.push({who:coachId(),
       text:say(ST.playerId||MYID,
         `${nm} 그새 ${toName} 갔단다. 우리랑 붙는 날 두고 보자`,
         `${nm} 씨가 벌써 ${toName} 로 갔답니다. 우리랑 붙는 날이 있겠죠`),mood:'angry'});
+  }
+  /* [요청] "만약 나가면 감독인 사람은 다른 사람에게 물려주는 걸로 해서
+             업데이트하면 ? 안 뜨게 해야할듯"
+     감독이 나갔는데 감독 자리를 비워두면, 로스터에 없는 사람이 계속
+     공지를 띄우고 단톡 이름 자리에 '?' 가 찍힌다. 다음 사람이 맡는다.  */
+  if(wasCoach){
+    const nc=passCoach(pid);
+    if(nc){
+      msgs.push({who:nc,type:'notice',
+        text:`감독 인수인계 — ${nm} → ${nameOf(nc)}\n오늘부터 라인업은 ${nameOf(nc)}이(가) 짠다`});
+      msgs.push({who:nc,text:sayTo(nc,ST.playerId||MYID,
+        '일단 내가 맡는다. 팀은 굴러가야 되니까',
+        '일단 제가 맡겠습니다. 팀은 굴러가야 하니까요'),mood:'flat'});
+    }
   }
   return msgs;
 }
@@ -4944,7 +5007,7 @@ function buildKakaoPre(ST){
   const opp=TBYID[ST.schedule[ST.round].opp];
   const wx=WEATHERS.find(w=>w.id===ST.weather)||WEATHERS[0];
 
-  msgs.push({who:'lg',type:'notice',text:
+  msgs.push({who:coachId(),type:'notice',text:
     `${opp.name}전 · ${park.name} · ${wx.name}\n\n`+
     ST.lineup.map((s,i)=>{
       const n=jerseyNo(s.id);
@@ -4953,11 +5016,11 @@ function buildKakaoPre(ST){
     `\n선발 ${nameOf((gameRotation()||[])[0]||ST.rotation[0])}`});
 
   if(ST.gearLevel===2){
-    uniqPush(msgs,{who:'lg',text:'미안하다 포수 장비 내 차에 있는데 오늘 못 간다',mood:'sad'});
+    uniqPush(msgs,{who:coachId(),text:'미안하다 포수 장비 내 차에 있는데 오늘 못 간다',mood:'sad'});
     const c=ST.lineup.find(s=>s.pos==='C');
     if(c)uniqPush(msgs,{who:c.id,text:say(c.id,'장비 없이 어떻게 앉냐','장비 없이 어떻게 앉나요...'),mood:'angry'});
   } else if(ST.gearLevel===1){
-    uniqPush(msgs,{who:'lg',text:'레그가드 빼먹었다 미안',mood:'sad'});
+    uniqPush(msgs,{who:coachId(),text:'레그가드 빼먹었다 미안',mood:'sad'});
   }
   if(ST.mittMissing)uniqPush(msgs,{who:'yjh',text:'미트 또 두고 왔다 ㅋㅋ 글러브로 볼게',mood:'flat'});
 
@@ -4979,7 +5042,7 @@ function buildKakaoPre(ST){
   if(bdIds.length){
     bdIds.forEach(id=>{
       const age=bdayAge(id);
-      msgs.push({who:'lg',type:'notice',text:`🎂 오늘 ${nameOf(id)} 생일${age?` (${age}세)`:''}`});
+      msgs.push({who:coachId(),type:'notice',text:`🎂 오늘 ${nameOf(id)} 생일${age?` (${age}세)`:''}`});
     });
     bdayChat(msgs, bdIds);
     bdIds.forEach(id=>{
@@ -5028,8 +5091,8 @@ function buildKakaoPre(ST){
   }
 
   const avail=us.players.filter(p=>isAvailable(p.id)).length;
-  if(avail===9)uniqPush(msgs,{who:'lg',text:'딱 9명이다. 아무도 빠지지 마라',mood:'flat'});
-  else if(avail<9)uniqPush(msgs,{who:'lg',text:`${avail}명밖에 안 된다. 이대로면 몰수패다`,mood:'angry'});
+  if(avail===9)uniqPush(msgs,{who:coachId(),text:'딱 9명이다. 아무도 빠지지 마라',mood:'flat'});
+  else if(avail<9)uniqPush(msgs,{who:coachId(),text:`${avail}명밖에 안 된다. 이대로면 몰수패다`,mood:'angry'});
 
   const cp2=ST.carpool||resolveCarpool(ST);
   cp2.rides.forEach(r=>{
@@ -5125,7 +5188,7 @@ function buildKakaoPre(ST){
   if(ST.justDischarged){
     uniqPush(msgs,{who:'sjm',text:'전역했습니다. 다시 잘 부탁드립니다',mood:'happy'});
     uniqPush(msgs,{who:'swm',text:'왔냐 ㅋㅋ 이제 좀 쉬겠네',mood:'happy'});
-    uniqPush(msgs,{who:'lg',text:'정민이 돌아왔다. 마운드 숨통 트인다',mood:'happy'});
+    uniqPush(msgs,{who:coachId(),text:'정민이 돌아왔다. 마운드 숨통 트인다',mood:'happy'});
     ST.justDischarged=false;
   }
   if(ST.calendar&&(ST.calendar.holiday==='광복절'||ST.calendar.holiday==='현충일')&&isAvailable('ksw')){
@@ -5203,8 +5266,8 @@ function buildKakaoPre(ST){
     });
 
     /* 감독은 확률적으로만 개입 */
-    if(rng()<0.45&&isAvailable('lg')){
-      uniqPush(msgs,{who:'lg',text:pickOne([
+    if(rng()<0.45&&isAvailable(coachId())){
+      uniqPush(msgs,{who:coachId(),text:pickOne([
         '둘 다 그만해라. 한 번만 더 하면 둘 다 뺀다',
         '경기 앞두고 뭐 하는 거냐 진짜',
         '오늘 둘이 따로 앉아라'],rng),mood:'angry'});
@@ -5287,7 +5350,7 @@ function buildKakaoPre(ST){
   });
   if(ST.dropouts.length){
     const remain=us.players.filter(x=>isAvailable(x.id)).length;
-    uniqPush(msgs,{who:'lg',text:pickOne([
+    uniqPush(msgs,{who:coachId(),text:pickOne([
       '아 진짜 라인업 다시 짜야겠네',
       '발표하자마자 이러면 어떡하냐',
       '이럴 거면 미리 좀 말해주지',
@@ -5367,7 +5430,7 @@ function buildKakaoPre(ST){
     const w5=someone(null);
     if(w5) uniqPush(msgs,{who:w5,text:say(w5,...pickFresh(PRE_FIRST,'PRE_FIRST',rng)),mood:'happy'});
   } else if(total-done.length===1 && !((ST.schedule[ST.round]||{}).po)){
-    uniqPush(msgs,{who:'lg',text:say('lg',...pickFresh(PRE_FINAL,'PRE_FINAL',rng)),mood:'flat'});
+    uniqPush(msgs,{who:coachId(),text:say(coachId(),...pickFresh(PRE_FINAL,'PRE_FINAL',rng)),mood:'flat'});
   }
 
   /* 5) 회식에서 레슨 얘기가 나왔으면 이어서 */
@@ -6370,14 +6433,14 @@ function buildKakaoPost(ST,res,usSide,thSide,uSlots,milestones){
   const rng=Math.random;
   const won=usSide.runs>thSide.runs, tie=usSide.runs===thSide.runs;
 
-  msgs.push({who:'lg',type:'notice',
+  msgs.push({who:coachId(),type:'notice',
     text:`${won?'승':(tie?'무':'패')} ${usSide.runs} : ${thSide.runs}\n고생했다`});
 
   (milestones||[]).slice(0,4).forEach(m=>{
-    msgs.push({who:'lg',type:'record',text:`📋 ${m.text}`});
+    msgs.push({who:coachId(),type:'record',text:`📋 ${m.text}`});
     /* 50호·100호는 따로 크게 다룬다 */
     if(m.pid&&(m.mark===50||m.mark===100||m.mark===150||m.mark===200)){
-      msgs.push({who:'lg',type:'record',
+      msgs.push({who:coachId(),type:'record',
         text:`🎉 ${nameOf(m.pid)} ${m.mark}${m.label==='삼진'?'번째 삼진':`호 ${m.label}`} 달성`});
       const crowd=us.players.filter(p=>p.id!==m.pid&&isAvailable(p.id));
       if(crowd.length){
@@ -6583,7 +6646,7 @@ function doAfterParty(ST){
   if(joined.length>=2){
     const avail=joined.filter(id=>isAvailable(id));
     const pick2=(ex)=>{ const c=avail.filter(x=>x!==ex); return c.length?pickOne(c):null; };
-    const host=avail.find(id=>id==='lg')||avail[0];
+    const host=avail.find(id=>id===coachId())||avail[0];
     if(host) msgs.unshift({who:host,text:say(host,...pickFresh(PARTY_OPEN,'PARTY_OPEN')),mood:'happy'});
 
     /* 장면 2~3개 */
@@ -6604,7 +6667,7 @@ function doAfterParty(ST){
         const more=avail.filter(id=>META[id]&&META[id].drink>=2);
         more.forEach(id=>{ ST.cond[id]=Math.max(18,(ST.cond[id]||70)-7);
           ST.morale[id]=Math.min(100,(ST.morale[id]||70)+4); });
-        if(more.length) msgs.push({who:'lg',type:'notice',
+        if(more.length) msgs.push({who:coachId(),type:'notice',
           text:`2차까지 갔다 — ${more.length}명 컨디션 −7 · 사기 +4`});
       }
       else if(sc.k==='coach'){ ST.lessonTalk=true; }
@@ -6679,8 +6742,9 @@ function doLesson(ST, pid){
 function bossId(){
   const us=TBYID['wwzw'];
   const me=ST.playerId||'ksh';
-  const order=['lg','swm','khj','kig'];
-  return order.find(id=>id!==me&&us.players.some(p=>p.id===id))||null;
+  /* 지금 감독이 먼저다 — 이건이 나가고 다른 사람이 물려받았을 수 있다 */
+  const order=[coachId(),'lg','swm','khj','kig'];
+  return order.find(id=>id&&id!==me&&us.players.some(p=>p.id===id))||null;
 }
 const BOSS_GOOD=[
   ['요즘 너 진짜 잘한다','요즘 진짜 잘하시네요'],
@@ -7335,8 +7399,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.69.0';
-const APP_VERSION_NOTE = '돌고 나서 어떻게 됐는지 끝까지 본다';
+const APP_VERSION = '2.70.0';
+const APP_VERSION_NOTE = '모든 타구를 끝까지 본다 · 감독은 물려받는다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7357,6 +7421,18 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.70.0', t:'모든 타구를 끝까지 본다 · 감독은 물려받는다', items:[
+    '「어떤 타구도 주루 플레이가 나와야 한다」 — 맞는 말이다. 지난 판에는 잘 맞은 타구만 그라운드가 나오고, 빗맞은 타구는 「2루타」 글자만 뜨고 화면이 꺼졌다. 이제 배트에 맞은 공은 전부 그라운드에서 끝까지 간다. 땅볼로 잡히든 뜬공이든 실책이든 다 보인다',
+    '고를 게 있는 타구는 예전처럼 「돈다 / 선다」를 묻고, 고를 게 없는 타구는 묻지 않고 그냥 보여준다. 아웃은 짧게, 살아 나간 건 베이스를 다 도는 것까지',
+    '무슨 일이 벌어졌는지 마디마다 적는다. 「잡았다」 → 「2루로 송구」 → 「아웃 — 돌다 잡혔다」. 송구가 날아가는 동안에는 받는 베이스에 동그라미가 켜지고, 공을 잡은 야수는 테두리가 굵어진다. 어디로 가는 공인지, 지금 누구 손에 있는지가 보인다',
+    '늦게 정할수록 야수가 공에 먼저 붙어 있는 게 화면에 그대로 나온다. 1막에서 내가 누른 시점이 2막의 「잡았다」 순간을 당긴다. 왜 잡혔는지가 보인다',
+    '뜬공에 그대로 잡히면 돌다 말고 돌아온다 — 귀루다. 예전엔 뜬공이든 땅볼이든 똑같이 1루로 달렸다',
+    '「선다 / 돈다」 버튼에 몇 베이스인지를 적었다. 엔진이 늘려주는 건 한 베이스다(1루타→2루타 · 2루타→3루타). 화면이 기록보다 크게 말하지 않게 딱 그만큼만 약속한다',
+    '이건이 팀을 나갔는데 단톡방에 「?」 가 뜨면서 계속 말을 하고 있었다. 공지·잔소리하는 사람이 이건으로 박혀 있어서, 로스터에 없는 사람 이름을 못 찾은 것이다',
+    '이제 감독이 팀을 나가면 다음 사람이 물려받는다. 「감독 인수인계 — 이건 → 권혁준」 이 단톡에 뜨고, 그 뒤로는 새 감독이 라인업을 짜고 공지를 올린다. 순서는 코치 → 리더 → 지도 능력·충성도·출석순이다',
+    '면담에서 「보낸다」로 내보낸 선수가 새로고침하면 되살아나 있었다. 로스터는 저장되는 게 아니라 매번 원본에서 새로 만들어지는데, 이 경로만 이탈 명단에 안 남기고 있었다. 이제 최후통첩으로 나가는 것과 같은 길을 탄다 — 이탈 기록도 남고, 다른 팀으로 가서 우리와 다시 붙는다',
+    '단톡방에서 이름을 못 찾으면 「?」 대신 이름 장부를 뒤진다. 팀을 나간 사람이 남긴 말도 이름이 그대로 남는다',
+  ]},
   {v:'2.69.0', t:'돌고 나서 어떻게 됐는지 끝까지 본다', items:[
     '「돈다」를 누르면 화면이 그냥 꺼졌다. 내가 누른 게 뭘 했는지 볼 수가 없었다. 이제 그라운드가 그대로 남아서 2막이 이어진다 — 야수가 공을 쫓아가 잡고, 송구가 베이스로 날아오고, 내가 베이스를 돌고, 「2루까지 갔다!」 나 「아웃 — 돌다 잡혔다」 가 크게 뜬다',
     '연출이 결과를 만드는 게 아니다. 결과는 엔진이 먼저 정하고 화면은 그걸 재생만 한다. 그래서 화면에서 본 것과 기록에 남는 것이 어긋날 수가 없다',
@@ -8358,7 +8434,7 @@ function collectDues(need){
      메웠다고 했으면 들어와야 한다.                                */
   ST.budget+=total+cut;
   ST.duesCount=(ST.duesCount||0)+1;
-  const msgs=[{who:'lg',type:'notice',
+  const msgs=[{who:coachId(),type:'notice',
     text:`회비 ${per}만원씩 걷습니다 (${n}명 · ${total}만원)`
       +(cut>0?`\n선수단 가치가 높아 ${cut}만원은 초청·스폰서로 메웠다 (-${(relief*100).toFixed(0)}%)`:'')
       +`\n${pickOne(DUES_LEAD)}`}];
@@ -8378,7 +8454,7 @@ function collectDues(need){
     // 세 번째부터는 돈 얘기가 불씨로 쌓인다
     if((ST.duesCount||0)>=3) addSpark(ST,p.id,'회비',1);
   });
-  msgs.push({who:'lg',type:'notice',
+  msgs.push({who:coachId(),type:'notice',
     text:`전원 사기 -${drop} · 걷은 돈 ${total}만원`+(cut>0?` (+스폰서 ${cut}만원)`:'')
       +((ST.duesCount||0)>=3?'\n또 걷었다. 슬슬 눈치가 보인다':'')});
   return {per,n,total,drop,msgs,cut};
@@ -8659,7 +8735,8 @@ function runMiniAwards(ST){
   };
   /* 감독상은 감독(이건)만 받는다. 구간 팀 성적이 5할 이상이면 준다.
      나머지 선수의 몫은 '팀 공헌상'으로 따로 뺐다. */
-  const mgrP=us.players.find(p=>META[p.id]&&(META[p.id].traits||[]).includes('감독'));
+  /* [제보] 이건이 나가면 감독상을 줄 사람이 없어졌다. 지금 감독을 본다. */
+  const mgrP=us.players.find(p=>p.id===coachId());
   const stNow=ST.stand['wwzw']||{w:0,l:0,t:0};
   const rec0=(snap&&snap.rec)||{w:0,l:0,t:0};
   const gw=(stNow.w||0)-(rec0.w||0), gl=(stNow.l||0)-(rec0.l||0), gt=(stNow.t||0)-(rec0.t||0);
@@ -8715,12 +8792,12 @@ function runMiniAwards(ST){
   won.forEach(x=>{ if(x.ours==null) x.ours=isOurs(x.pid); });   // 빠뜨린 게 있어도 새지 않게
   const theirs=won.filter(x=>!x.ours);
   if(theirs.length){
-    msgs.push({who:'lg',type:'record',
+    msgs.push({who:coachId(),type:'record',
       text:`📋 ${at}경기 구간 시상 발표\n`+theirs.map(x=>
         `${MINI_LABELS[x.kind]||'수상'} — ${x.name} (${x.team}) ${x.value}`).join('\n')});
     /* 우리가 하나도 못 받았으면 감독이 한마디 한다 */
-    if(!won.some(x=>x.ours) && us.players.some(x=>x.id==='lg')){
-      msgs.push({who:'lg', text:sayTo('lg',meId,...pickFresh(AWARD_NONE,'AWARD_NONE')), mood:'flat'});
+    if(!won.some(x=>x.ours) && us.players.some(x=>x.id===coachId())){
+      msgs.push({who:coachId(), text:sayTo(coachId(),meId,...pickFresh(AWARD_NONE,'AWARD_NONE')), mood:'flat'});
     }
   }
 
@@ -8736,11 +8813,12 @@ function runMiniAwards(ST){
     const coTxt=(w.coWith&&w.coWith.length)
       ? `\n${w.coWith.map(id=>nmOf(id)+(isOurs(id)?'':`(${teamOf(id)})`)).join(', ')}와(과) 공동 수상` : '';
     const scope = (w.kind==='mgr'||w.kind==='team') ? '팀' : '리그';
-    msgs.push({who:'lg',type:'notice',
+    msgs.push({who:coachId(),type:'notice',
       text:`${at}경기 구간 시상 — ${label}${scope==='리그'?' (리그 전체 1위)':''}\n`+
         `${nameOf(w.pid)} · ${w.value}${coTxt}\n사기 +7 · 몸값 상승`});
     /* 축하 — 이건이 하고, 이건이 받으면 송승민이 한다. 우리 선수한테만. */
-    const cheerer = (w.pid==='lg') ? 'swm' : 'lg';
+    const co2=coachId();
+    const cheerer = (w.pid===co2) ? (co2==='swm'?'lg':'swm') : co2;
     if(us.players.some(x=>x.id===cheerer)){
       const c=pickFresh(AWARD_CHEER,'AWARD_CHEER');
       msgs.push({who:cheerer, text:sayTo(cheerer, w.pid, c[0], c[1]), mood:'happy'});
@@ -8750,7 +8828,7 @@ function runMiniAwards(ST){
       const other=TEAMS.filter(t=>t.id!=='wwzw');
       const t=pickOne(other);
       const l2=pickFresh(AWARD_OPP,'AWARD_OPP');
-      msgs.push({who:'lg',type:'record',text:`${t.name}에서 단톡방에 연락이 왔다\n"${l2[0]}"`});
+      msgs.push({who:coachId(),type:'record',text:`${t.name}에서 단톡방에 연락이 왔다\n"${l2[0]}"`});
     }
   });
 
@@ -8762,10 +8840,10 @@ function runMiniAwards(ST){
     const others=TEAMS.filter(t=>t.id!=='wwzw');
     if(Math.random()<0.5){
       const t=pickOne(others);
-      msgs.push({who:'lg',type:'record',
+      msgs.push({who:coachId(),type:'record',
         text:`${t.name} 감독\n"${nameOf(a.pid)} 선수, ${pickFresh(OPP_PRAISE,'OPP_PRAISE')}"`});
     }
-    msgs.push({who:'lg',type:'notice',text:`${nameOf(a.pid)} 리그 수상 — 전원 사기 +3`});
+    msgs.push({who:coachId(),type:'notice',text:`${nameOf(a.pid)} 리그 수상 — 전원 사기 +3`});
   });
 
   /* 내가 받았으면 대답을 골라야 한다 */
@@ -8787,7 +8865,7 @@ function answerAward(k){
     ST.morale[p.id]=Math.max(10,Math.min(100,(ST.morale[p.id]||70)+r.mor));
     if(ST.bond)ST.bond[p.id]=Math.max(0,Math.min(100,(ST.bond[p.id]||50)+(r.bond||0)));
   });
-  ST.kakao.push({who:'lg',type:'notice',text:`${r.d}`});
+  ST.kakao.push({who:coachId(),type:'notice',text:`${r.d}`});
   ST.awardReply=null;
   saveGame(true);
 }
@@ -9145,7 +9223,7 @@ function applyGojin(ST, gj){
       ST.cond[p.id]=Math.max(20,(ST.cond[p.id]||70)-6);
       ST.morale[p.id]=Math.min(100,(ST.morale[p.id]||70)+8);
     });
-    msgs.push({who:'lg',type:'notice',
+    msgs.push({who:coachId(),type:'notice',
       text:'벤치클리어링\n양 팀 컨디션 -6 · 우리 팀 사기 +8'});
     const line=pickFresh(GOJIN_CLEAR_MSG,'GOJIN_CLEAR_MSG');
     if(us.players.some(p=>p.id===line[0]))
@@ -9294,7 +9372,7 @@ function applyFriction(ST, fr){
   const us=TBYID['wwzw'];
   if(fr.hbp){
     us.players.forEach(p=>ST.morale[p.id]=Math.min(100,(ST.morale[p.id]||70)+5));
-    msgs.push({who:'lg',type:'notice',text:'사구로 벤치가 뭉쳤다\n전원 사기 +5'});
+    msgs.push({who:coachId(),type:'notice',text:'사구로 벤치가 뭉쳤다\n전원 사기 +5'});
     const spk=speakers(ST,null,2,Math.random);
     spk.forEach(p=>msgs.push({who:p.id,
       text:line(p.id,ST.playerId,
@@ -9307,7 +9385,7 @@ function applyFriction(ST, fr){
       ST.cond[p.id]=Math.max(20,(ST.cond[p.id]||70)-5);
       ST.morale[p.id]=Math.min(100,(ST.morale[p.id]||70)+9);
     });
-    msgs.push({who:'lg',type:'notice',text:'벤치클리어링\n전원 컨디션 -5 · 사기 +9'});
+    msgs.push({who:coachId(),type:'notice',text:'벤치클리어링\n전원 컨디션 -5 · 사기 +9'});
     if(fr.by&&us.players.some(p=>p.id===fr.by)){
       msgs.push({who:fr.by,text:say(fr.by,'나는 잘못한 거 없다','저는 잘못한 거 없습니다'),mood:'angry'});
       const spk=speakers(ST,fr.by,2,Math.random);
@@ -9326,7 +9404,7 @@ function applyFriction(ST, fr){
   }
   if(fr.up){
     us.players.forEach(p=>ST.morale[p.id]=Math.min(100,(ST.morale[p.id]||70)+4));
-    msgs.push({who:'lg',type:'notice',text:'경기 중 분위기를 탔다\n전원 사기 +4'});
+    msgs.push({who:coachId(),type:'notice',text:'경기 중 분위기를 탔다\n전원 사기 +4'});
   }
   return msgs;
 }
@@ -11240,6 +11318,8 @@ function newSeason(){
     unhappy:{}, spark:{}, career:{}, teamCareer:null, milestones:[], firsts:{}, weather:'clear',
     playoff:null, form:{}, hall:[], awardBonus:{}, awardSnap:null, awardReply:null,
     ultimatum:{}, broken:{}, leftPlayers:carriedLeft, noCar:{},
+    /* 감독은 시즌이 바뀌어도 그대로 간다 — 물려받았으면 계속 그 사람이다 */
+    coachPid:(typeof ST!=='undefined'&&ST&&ST.coachPid)?ST.coachPid:null,
     playMode:(typeof ST!=='undefined'&&ST&&ST.playMode)?ST.playMode:PLAY_KEY,
     playBat:(typeof ST!=='undefined'&&ST&&ST.playBat)?ST.playBat:PLAY_KEY,
     playPit:(typeof ST!=='undefined'&&ST&&ST.playPit)?ST.playPit:PLAY_KEY,
@@ -12098,7 +12178,7 @@ const PLAY_MODES=[
    desc:'여태 하던 그 게임이다. 타순·로테이션·훈련·영입을 전부 내가 정한다.'},
   {id:'player', icon:'\u{26BE}', name:'선수 모드',
    line:'나는 선수 한 명이다',
-   desc:'라인업은 이건 감독이 짠다. 오늘 내가 나가는지도 발표를 봐야 안다. '+
+   desc:'라인업은 감독이 짠다(처음엔 이건이다). 오늘 내가 나가는지도 발표를 봐야 안다. '+
         '못 치면 타순이 내려가고, 더 못 치면 빠진다. 자리는 쳐서 되찾는다.'},
 ];
 function isPlayerMode(){ return !!(ST && ST.mode==='player'); }
@@ -12825,13 +12905,13 @@ function hsEpilogue(){
   const me=ST.playerId||MYID;
   const heung=(me==='ksh'||me==='ksn');
   const out=[
-    {who:'lg', text:'야 우리 오랜만에 야구 한번 해볼까'},
+    {who:coachId(), text:'야 우리 오랜만에 야구 한번 해볼까'},
     {who:'jms', text:'ㅇㅇ 콜'},
     {who:'ujh', text:'나도'},
     {who:'swm', text:'팀 만들 거면 사람 더 있어야 되는데'},
     {who:'kig', text:'나 아는 애들 있음'},
     {who:'kig', text:'고등학교 때 우리랑 계속 붙었던 흥진고 걔네'},
-    {who:'lg', text:'아 걔네'},
+    {who:coachId(), text:'아 걔네'},
   ];
   if(heung){
     out.push({who:'kig', text:'@'+nameOf(me)+' 야 야구할래'});
@@ -12840,9 +12920,9 @@ function hsEpilogue(){
     out.push({who:'kig', text:'불러올게'});
     out.push({who:'ksh', text:say('ksh','오랜만이네요','오랜만입니다')});
   }
-  out.push({who:'lg', text:'그럼 팀 이름 정하자'});
+  out.push({who:coachId(), text:'그럼 팀 이름 정하자'});
   out.push({who:'swm', text:'우완좌완'});
-  out.push({who:'lg', text:'ㅇㅋ'});
+  out.push({who:coachId(), text:'ㅇㅋ'});
   return out;
 }
 
@@ -13624,7 +13704,7 @@ function renderHome(){
         if(g.eff.gear)ST.gearLevel=0;
         TBYID['wwzw'].players.forEach(p=>ST.morale[p.id]=Math.min(100,(ST.morale[p.id]||70)+5));
         ST.kakao=ST.kakao||[];
-        ST.kakao.push({who:'lg',type:'notice',
+        ST.kakao.push({who:coachId(),type:'notice',
           text:`${g.name} ${nl>1?'강화':'구매'} — ${cost}만원\n${gearLabel(g.id)} 등급\n전원 사기 +5`});
         saveGame(true); go('home'); toast(`${g.name} ${gearLabel(g.id)}`);
       };
@@ -13661,7 +13741,7 @@ function renderHome(){
       b.onclick=()=>{
         ST.budget-=LEAGUE_FEE; ST.feeDue=false;
         ST.kakao=ST.kakao||[];
-        ST.kakao.push({who:'lg',type:'notice',
+        ST.kakao.push({who:coachId(),type:'notice',
           text:`다음 시즌 리그 가입비 ${LEAGUE_FEE}만원 납부 완료\n남은 운영비 ${ST.budget.toFixed(0)}만원`});
         saveGame(true); go('home'); toast('가입비 납부 완료');
       };
@@ -13764,16 +13844,16 @@ function renderHome(){
           ST.budget-=20; ST.unhappy[pid].level=Math.max(0,ST.unhappy[pid].level-2);
           ST.morale[pid]=Math.min(100,ST.morale[pid]+14); toast('회식으로 달랬다'); }
         else {
-          const us2=TBYID['wwzw'];
-          const i=us2.players.findIndex(p=>p.id===pid);
-          if(i>=0)us2.players.splice(i,1);
-          ST.lineup=ST.lineup.filter(s=>s.id!==pid);
-          if(ST.lineup.length<9)ST.lineup=recommendLineup();
-          ST.rotation=ST.rotation.filter(x=>x!==pid);
-          if(!ST.rotation.length)ST.rotation=recommendRotation();
-          finalizeTeam(us2); buildPitcherPool();
-          us2.players.forEach(p=>ST.morale[p.id]=Math.max(10,ST.morale[p.id]-6));
-          toast(`${nameOf(pid)} 이적`);
+          /* [버그 이력] "이건이 팀 나갔는데 나갔음에도 남아있다"
+             여기서 로스터만 splice 하고 ST.leftPlayers 에 안 남겼다.
+             로스터는 매 부팅마다 WWZW 상수에서 통째로 새로 만들어지니
+             **새로고침 한 번에 나간 사람이 되살아났다.**
+             이탈은 한 곳으로 모은다 — leaveTeam 이 이탈 기록·상대 팀
+             합류·감독 승계까지 다 한다.                              */
+          const nm2=nameOf(pid);
+          const ms=leaveTeam(ST,pid);
+          if(Array.isArray(ST.kakao)) ms.forEach(m=>ST.kakao.push(m));
+          toast(`${nm2} 이적`);
         }
         ST.transferReq=null; saveGame(true); go('home');
       };
@@ -14075,7 +14155,7 @@ function hireMerc(id){
     ST.morale[p.id]=Math.max(10,(ST.morale[p.id]||70)-3);
   });
   ST.kakao=ST.kakao||[];
-  ST.kakao.push({who:'lg',type:'notice',
+  ST.kakao.push({who:coachId(),type:'notice',
     text:`용병 ${m.name} 섭외 — ${m.fee}만원 지출\n전원 사기 -3`});
   ST.kakao.push({who:pickOne(['lg','swm','kig']),
     text:pickOne(['또 용병이냐...','9명은 좀 채우자 진짜','내년엔 사람 좀 늘리자',
@@ -14164,7 +14244,7 @@ function begForPlayer(){
   const p=cands[0];
   ST.begAsked[p.id]=true;
   ST.kakao=ST.kakao||[];
-  ST.kakao.push({who:'lg',type:'notice',text:`${p.name}, 오늘 진짜 안 되겠나. 9명이 안 된다`});
+  ST.kakao.push({who:coachId(),type:'notice',text:`${p.name}, 오늘 진짜 안 되겠나. 9명이 안 된다`});
   if(Math.random()<0.20){
     delete ST.absent[p.id];
     ST.morale[p.id]=Math.max(10,(ST.morale[p.id]||70)-6);
@@ -14455,7 +14535,7 @@ function advancePlayoff(won, tie, myRuns, oppRuns){
     if(!advance){
       po.place='공동 3위'; po.prize=PO_PRIZE.third; po.done=true;
       ST.budget+=po.prize;
-      msgs.push({who:'lg',type:'notice',
+      msgs.push({who:coachId(),type:'notice',
         text:`플레이오프 준결승 탈락 — 공동 3위\n상금 ${PO_PRIZE.third}만원 입금`});
       ST.seasonOver=true; ST.feeDue=true;
       return msgs;
@@ -14468,7 +14548,7 @@ function advancePlayoff(won, tie, myRuns, oppRuns){
     po.stage='final';
     ST.schedule.push({round:ST.schedule.length+1, opp:other.winner, homeGame:seedOf('wwzw')<seedOf(other.winner),
       played:false, result:null, park:'singil', po:'final'});
-    msgs.push({who:'lg',type:'notice',
+    msgs.push({who:coachId(),type:'notice',
       text:`준결승 통과 — 결승 진출\n상대는 ${poName(other.winner)}. 이기면 50만원, 져도 30만원`});
     TBYID['wwzw'].players.forEach(p=>ST.morale[p.id]=Math.min(100,(ST.morale[p.id]||70)+12));
     return msgs;
@@ -14480,9 +14560,9 @@ function advancePlayoff(won, tie, myRuns, oppRuns){
     po.done=true;
     if(advance){ po.place='우승'; po.prize=PO_PRIZE.win;
       TBYID['wwzw'].players.forEach(p=>ST.morale[p.id]=100);
-      msgs.push({who:'lg',type:'notice',text:`단원리그 C 우승\n상금 ${PO_PRIZE.win}만원 입금`});
+      msgs.push({who:coachId(),type:'notice',text:`단원리그 C 우승\n상금 ${PO_PRIZE.win}만원 입금`});
     } else { po.place='준우승'; po.prize=PO_PRIZE.runner;
-      msgs.push({who:'lg',type:'notice',text:`준우승\n상금 ${PO_PRIZE.runner}만원 입금`});
+      msgs.push({who:coachId(),type:'notice',text:`준우승\n상금 ${PO_PRIZE.runner}만원 입금`});
     }
     ST.budget+=po.prize;
     ST.seasonOver=true; ST.feeDue=true;
@@ -16306,7 +16386,7 @@ function renderLineupLocked(){
   head.appendChild(el('div','park-mini',
     ((ST.calendar&&ST.calendar.label)||'')+' · '+park.name));
   const cw=el('div','coach-row');
-  cw.innerHTML='<span>감독</span><b>'+nameOf('lg')+'</b><i>타순은 감독이 정한다</i>';
+  cw.innerHTML='<span>감독</span><b>'+nameOf(coachId())+'</b><i>타순은 감독이 정한다</i>';
   head.appendChild(cw);
   c.appendChild(head);
 
@@ -16428,7 +16508,7 @@ function renderLineup(){
       ST.lineupDirty=false;
       ST.announced=true;          // 수정본을 올렸으니 발표한 것으로 친다
       ST.kakao=ST.kakao||[];
-      ST.kakao.push({who:'lg',type:'notice',
+      ST.kakao.push({who:coachId(),type:'notice',
         text:'라인업 수정\n\n'+ST.lineup.map((s2,i)=>{
           const n=jerseyNo(s2.id);
           return `${i+1}. ${n!=null?n+' ':''}${nameOf(s2.id)} (${POSNAMES[s2.pos]})`;
@@ -18050,7 +18130,10 @@ function renderKakao(){
   const room=el('div','kakao');
   all.forEach(m=>{
     const p=TBYID['wwzw'].players.find(x=>x.id===m.who);
-    const nm=p?p.name:'?';
+    /* [버그 이력] 로스터에 없으면 그냥 '?' 였다. 팀을 나간 사람이 남긴
+       말이나, 화자가 하드코딩된 옛 세이브가 전부 '?' 로 찍혔다.
+       nameOf 는 WWZW 상수·ST.names 까지 뒤지니 이름이 남는다.      */
+    const nm=p?p.name:nameOf(m.who);
     const mine=isMe(m.who);
     const w=el('div','kmsg'+(mine?' mine':'')+(m.type==='notice'?' notice':'')+(m.type==='record'?' record':''));
     w.innerHTML=`${(mine||m.type==='notice'||m.type==='record')?''
@@ -18075,8 +18158,8 @@ function renderKakao(){
           ST.budget-=PARTY_COST;
           (phase==='pre'?ST.kakao:ST.kakaoPost).push(mine);
           const r=doAfterParty(ST);
-          ST.kakaoPost.push({who:'lg',type:'notice',text:`회식비 ${PARTY_COST}만원 지출 · 남은 운영비 ${ST.budget.toFixed(0)}만원`});
-          ST.kakaoPost.push({who:'lg',text:`${r.joined.length}명 모였다. 오늘 잘했다`,mood:'happy'});
+          ST.kakaoPost.push({who:coachId(),type:'notice',text:`회식비 ${PARTY_COST}만원 지출 · 남은 운영비 ${ST.budget.toFixed(0)}만원`});
+          ST.kakaoPost.push({who:coachId(),text:`${r.joined.length}명 모였다. 오늘 잘했다`,mood:'happy'});
           (r.msgs||[]).forEach(m=>ST.kakaoPost.push(m));
           ST.sentPost=true;
           saveGame(true); renderKakao(); toast('회식 · 사기↑ 컨디션↓');
@@ -18514,7 +18597,7 @@ function groundScene(host, o){
 
      [되는 이유] 결과는 엔진이 이미 정했다(_lastPlay). 연출은 그걸
      **재생만** 한다. 그림이 결과를 만드는 게 아니라서 로그와 어긋날 수 없다. */
-  const replay=(res, ms, onDone)=>{
+  const replay=(res, ms, onDone, opt)=>{
     stop=true;
     if(!res){ if(onDone)onDone(); return; }
     const dur2=ms||2400;
@@ -18538,21 +18621,62 @@ function groundScene(host, o){
     const seg=(t,a1,b1)=>Math.max(0,Math.min(1,(t-a1)/(b1-a1)));
     const t2=Date.now();
     let stop2=false, told=false;
+    /* ---- 장면의 마디 ----
+       [제보] "어디 베이스로 갈건지 귀루할건지 수비가 언제 잡아서
+               송구하는지 송구했는지 그런것 정도는 만들 수 있다고 보는데"
+
+       맞는 말이다. 점 하나가 왔다 갔다 하면 무슨 일이 벌어진 건지 모른다.
+       야구는 마디로 끊긴다 — **잡았다 → 던졌다 → 세이프/아웃.**
+       그 세 순간에 자막을 박고 색을 갈라준다. 송구는 어느 베이스로
+       가는지까지 적는다.
+
+       늦게 고를수록 야수가 공에 먼저 붙어 있다(risk). 1막에서 내가
+       누른 시점이 여기 **잡는 순간**으로 그대로 넘어온다. 그래야
+       "늦게 정해서 잡혔구나" 가 화면에서 보인다.                     */
+    const risk=Math.max(0,Math.min(1,(opt&&opt.risk)||0));
+    const K_CATCH=Math.max(0.18, 0.34-risk*0.12);   // 야수가 공에 닿는 순간
+    const K_THROW=Math.min(0.70, K_CATCH+0.19);     // 공이 손을 떠나는 순간
+    const K_END=0.86;                                // 베이스에 닿는 순간
+    /* 뜬공을 그대로 잡혔으면 송구가 없다. 돌다 말고 돌아온다 — 그게 귀루다. */
+    const flyOut=(res.type==='OUT' && !res.gb && !res.runOut);
+    const bname=(endB>=4)?'홈':(endB+'루');
     /* 판정 문구 — 내가 뭘 했는지가 한눈에 보여야 한다.
        돌아서 성공했으면 그걸 말해주고, 돌다 죽었으면 그것도 말해준다. */
     const label = HR ? '홈런!'
       : res.type==='E' ? '실책 — 살았다'
-      : res.type==='OUT' ? (res.runOut ? '아웃 — 돌다 잡혔다' : '아웃')
+      : res.type==='OUT' ? (res.runOut ? '아웃 — 돌다 잡혔다'
+                            : (flyOut ? '아웃 — 뜬공' : '아웃 — '+bname+'에서'))
       : res.stretched ? endB+'루까지 갔다!'
       : (endB===1?'안타':endB+'루타');
     const lcol=HR?'#ffd15c':(safe?(res.stretched?'#ffd15c':'#7fc48f'):'#e08a70');
+    /* 지금 무슨 마디인가 — 없으면 자막을 안 띄운다 */
+    const beat=(k)=>{
+      if(HR) return k<0.55?{t:'넘어간다',c:'#e9e4d8'}:null;
+      if(k<K_CATCH) return null;
+      if(flyOut) return {t:'잡혔다 — 귀루',c:'#e08a70'};
+      if(k<K_THROW) return {t:'잡았다',c:'#e9e4d8'};
+      return {t:bname+'로 송구',c:'#ffd15c'};
+    };
+    /* 담장 위 빈 곳에 판을 깔고 글씨를 박는다 — 주자와 베이스를 안 가린다 */
+    const plate=(txt,col,fs)=>{
+      const h2=fs+13, w2=Math.max(84, txt.length*(fs*0.82)+30), x2=160-w2/2, y2=14;
+      g.fillStyle='rgba(9,12,16,.78)';
+      g.beginPath();
+      if(g.roundRect) g.roundRect(x2,y2,w2,h2,9); else g.rect(x2,y2,w2,h2);
+      g.fill();
+      g.strokeStyle=col; g.lineWidth=1.6; g.stroke();
+      g.font='900 '+fs+'px system-ui,-apple-system,sans-serif';
+      g.textAlign='center'; g.textBaseline='middle';
+      g.fillStyle=col; g.fillText(txt, 160, y2+h2/2+1);
+      g.textBaseline='alphabetic'; g.textAlign='left';
+    };
     const draw2=()=>{
       if(stop2) return;
       const k=Math.min(1,(Date.now()-t2)/dur2);
       g.setTransform(2,0,0,2,0,0);
       psField(g, P);
       /* 공 — 홈에서 낙구점까지, 그다음 송구로 베이스까지 */
-      const kc=seg(k,0,0.34), kt=seg(k,0.55,0.86);
+      const kc=seg(k,0,K_CATCH), kt=flyOut?0:seg(k,K_THROW,K_END);
       const bp = HR ? lerp({x:HX,y:HY}, {x:HX+Math.cos(rad2)*fence*1.25,
                                          y:HY+Math.sin(rad2)*fence*1.25}, Math.min(1,k*1.4))
                     : (kt>0 ? lerp(land, tgt, kt) : lerp({x:HX,y:HY}, land, kc));
@@ -18560,6 +18684,11 @@ function groundScene(host, o){
       g.beginPath(); g.moveTo(HX,HY); g.lineTo(land.x,land.y); g.stroke();
       if(kt>0){ g.strokeStyle='rgba(255,209,92,.55)';
         g.beginPath(); g.moveTo(land.x,land.y); g.lineTo(bp.x,bp.y); g.stroke(); }
+      /* 송구가 날아가는 동안 받는 베이스를 표시한다 — 어디로 가는 공인지 */
+      if(kt>0 && kt<1 && endB<4){
+        g.strokeStyle='rgba(255,209,92,.75)'; g.lineWidth=2;
+        g.beginPath(); g.arc(tgt.x,tgt.y,9,0,Math.PI*2); g.stroke();
+      }
       /* 야수 — 공 쫓는 사람만 움직인다 */
       Object.keys(PS_POS).forEach(kk=>{
         if(kk===fk && !HR) return;
@@ -18568,28 +18697,23 @@ function groundScene(host, o){
       });
       if(!HR){
         const cp=lerp(fp, land, Math.min(1,kc*1.05));
-        g.strokeStyle='rgba(233,228,216,.5)'; g.lineWidth=1;
-        g.beginPath(); g.arc(cp.x,cp.y,7,0,Math.PI*2); g.stroke();
+        /* 잡은 다음에는 테두리를 굵게 — 공이 이 사람 손에 있다는 표시 */
+        const held=(k>=K_CATCH);
+        g.strokeStyle=held?'rgba(255,209,92,.85)':'rgba(233,228,216,.5)';
+        g.lineWidth=held?2:1;
+        g.beginPath(); g.arc(cp.x,cp.y,held?8:7,0,Math.PI*2); g.stroke();
         dot(cp.x,cp.y,4.5,'#e9e4d8');
       }
       dot(bp.x,bp.y,4,'#fff');
-      /* 나 — 베이스를 돈다. 공과 거의 같이 도착한다 */
-      const rp=runAt(endB*Math.min(1,k/0.86));
+      /* 나 — 베이스를 돈다. 공과 거의 같이 도착한다.
+         뜬공에 잡혔으면 가다 말고 되돌아온다(귀루). */
+      const rp = flyOut
+        ? runAt(0.78*(k<K_CATCH ? k/K_CATCH : Math.max(0,1-seg(k,K_CATCH,0.92))))
+        : runAt(endB*Math.min(1,k/K_END));
       dot(rp.x,rp.y,5,'#ffd15c');
-      /* 판정 — 작게 흘려 쓰면 안 보인다. 판을 깔고 크게 박는다. */
-      if(k>=0.84){
-        const w2=Math.max(84, label.length*17+30), h2=34;
-        const x2=160-w2/2, y2=14;      // 담장 위 빈 곳 — 주자와 베이스를 안 가린다
-        g.fillStyle='rgba(9,12,16,.78)';
-        g.beginPath();
-        if(g.roundRect) g.roundRect(x2,y2,w2,h2,9); else g.rect(x2,y2,w2,h2);
-        g.fill();
-        g.strokeStyle=lcol; g.lineWidth=1.6; g.stroke();
-        g.font='900 21px system-ui,-apple-system,sans-serif';
-        g.textAlign='center'; g.textBaseline='middle';
-        g.fillStyle=lcol; g.fillText(label, 160, y2+h2/2+1);
-        g.textBaseline='alphabetic'; g.textAlign='left';
-      }
+      /* 자막 — 마디마다 작게, 판정은 크게 */
+      if(k>=0.84) plate(label, lcol, 21);
+      else { const bt=beat(k); if(bt) plate(bt.t, bt.c, 15); }
       if(k<1) requestAnimationFrame(draw2);
       else if(!told){ told=true; if(onDone) onDone(); }
     };
@@ -21956,6 +22080,53 @@ function renderSwing(box, d){
      결과는 엔진이 낸다. 여기서 정하는 건 "시도할 것인가" 뿐이고,
      성공/실패 판정은 stretchRun 이 주력·상대 수비·늦은 정도로 한다.
      그래야 기록이 화면과 안 어긋난다.                              */
+  /* 타석 화면을 치우고/되돌리는 것 — 1막(askRun)과 2막(showRun)이 같이 쓴다 */
+  const hideBat=()=>{ mv.style.display='none'; gauge.style.display='none';
+    acts.style.display='none'; auto.style.display='none'; aim.style.display='none'; };
+  const showBat=()=>{ mv.style.display=''; gauge.style.display='';
+    acts.style.display=''; auto.style.display=''; aim.style.display=''; };
+
+  /* ---- 고를 게 없는 타구도 끝까지 보여준다 ----
+     [제보] "어떤 타구도 치면 주루 플레이 할 수 있게 나와야함 뭐 아웃이든
+             뭐든 땅볼 잡히든 뭐든 (…) 가끔 2루타 이상 치면 2루타 하면서
+             그 애니메이션 안 나오고 이건 야구가 아니야"
+
+     맞는 말이다. 빗맞은 타구라 「돌아? 서?」 를 안 물어본 것뿐인데,
+     안 물어봤다고 화면까지 꺼버리면 그건 그냥 글자다. 고를 게 없어도
+     **공이 가고 야수가 잡고 내가 베이스를 밟는 것**은 다 보여준다.
+     결과는 이미 나와 있다(LIVE._lastPlay) — 여기서는 재생만 한다.
+
+     삼진·볼넷은 탄 공이 없어서 _lastPlay 가 null 이다. 그때는
+     예전처럼 결과 글자만 잠깐 두고 닫는다.                          */
+  const showRun=(r, evs, doneCb)=>{
+    const play=(LIVE&&LIVE._lastPlay)||null;
+    if(!play){ setTimeout(doneCb, r?(r.big?1150:850):260); return; }
+    hideBat();
+    const box2=el('div','runbox');
+    box2.innerHTML='<div class="rb-t"></div>';
+    const t=box2.querySelector('.rb-t');
+    if(t){ t.textContent=(r&&(r.raw||r.label))||dirName(play.ang)+' 쪽으로 갔다';
+      if(r&&r.color)t.style.color=r.color; }
+    const stage=el('div','runstage');
+    box2.appendChild(stage);
+    box2.appendChild(el('div','rb-note',
+      play.gb?'땅볼 — 1루까지 뛴다':'타구를 끝까지 본다'));
+    w.appendChild(box2);
+    let sc2=null, ended=false;
+    const fin=()=>{
+      if(ended)return; ended=true;
+      showBat();
+      try{ box2.parentNode&&box2.parentNode.removeChild(box2); }catch(e){}
+      doneCb();
+    };
+    try{ sc2=groundScene(stage,{mode:'bat', ang:play.ang, dur:400, park:LIVE.park}); }
+    catch(e){ sc2=null; }
+    if(!sc2||!sc2.replay){ setTimeout(fin, 420); return; }
+    box2._stop=()=>{ if(sc2)sc2.stop(); };
+    /* 아웃은 볼 게 적다 — 짧게. 살아 나간 건 베이스를 도는 걸 다 본다. */
+    sc2.replay(play, play.type==='OUT'?1900:2400, fin);
+  };
+
   const askRun=(pre,color,big,after)=>{
     if(done||resolved||!LIVE){ after(); return; }
     /* [제보] "속도 좀 느리게 하던지해서" — 공이 날아가는 걸 보고
@@ -21974,25 +22145,20 @@ function renderSwing(box, d){
     const ang=battedAngle(LIVE.paSeq, bats);
     const dirTxt=dirName(ang);
     /* 타석 화면을 치우고 그라운드를 띄운다 — 공을 보면서 정해야 하니까 */
-    mv.style.display='none';
-    gauge.style.display='none';
-    acts.style.display='none';
-    auto.style.display='none';
-    aim.style.display='none';
+    hideBat();
     const box2=el('div','runbox');
     box2.innerHTML='<div class="rb-t">'+dirTxt+' 쪽으로 갔다</div>';
     const stage=el('div','runstage');
     box2.appendChild(stage);
     box2.appendChild(Object.assign(el('div','rb-bar'),{innerHTML:'<i></i>'}));
-    box2.appendChild(el('div','rb-note','야수가 붙는다 — 늦게 정할수록 잡힌다'));
+    box2.appendChild(el('div','rb-note','야수가 붙는다 — 늦게 정할수록 먼저 잡힌다'));
     const row=el('div','rb-row');
     const t0=Date.now();
     let picked=false, sc=null;
     const bar=()=>box2.querySelector('.rb-bar > i');
     /* 타석 화면을 되돌린다. 2막까지 다 보여준 다음에 부른다. */
     const restore=()=>{
-      mv.style.display=''; gauge.style.display='';
-      acts.style.display=''; auto.style.display=''; aim.style.display='';
+      showBat();
       try{ box2.parentNode&&box2.parentNode.removeChild(box2); }catch(e){}
     };
     const pick=(go)=>{
@@ -22006,7 +22172,7 @@ function renderSwing(box, d){
          결과는 엔진이 정하고(hold 로 받는다) 화면은 그걸 재생만 한다. */
       const t=box2.querySelector('.rb-t');
       const nt=box2.querySelector('.rb-note');
-      if(t) t.textContent = go ? '돈다 — 1루를 돌았다' : '선다';
+      if(t) t.textContent = go ? '돌았다 — 다음 베이스로' : '섰다 — 한 베이스';
       if(nt) nt.textContent = '…';
       const b=bar(); if(b) b.style.width='100%';
       b1.disabled=true; b2.disabled=true;
@@ -22018,13 +22184,18 @@ function renderSwing(box, d){
           ? '돌았다 — 여기서 갈렸다'
           : '섰다 — 무리하지 않았다';
         if(!sc || !sc.replay || !play){ restore(); done(); return; }
-        sc.replay(play, 2400, ()=>{ restore(); done(); });
+        /* 늦게 정한 만큼 야수가 공에 먼저 붙어 있는 게 보여야 한다 */
+        sc.replay(play, 2400, ()=>{ restore(); done(); }, {risk});
       };
       after(hold);
     };
-    const b1=el('button','rb-b stay','선다');
+    /* [제보] "어디 베이스로 갈건지 귀루할건지"
+       엔진이 늘려주는 건 한 베이스다(1루타→2루타 / 2루타→3루타).
+       그러니 버튼도 딱 그만큼만 약속한다 — 화면이 기록보다 크게
+       말하면 그때부터 거짓말이 된다.                              */
+    const b1=el('button','rb-b stay','선다 — 한 베이스');
     b1.onclick=()=>pick(false);
-    const b2=el('button','rb-b go','돈다 ▸');
+    const b2=el('button','rb-b go','돈다 — 한 베이스 더 ▸');
     b2.onclick=()=>pick(true);
     row.appendChild(b1); row.appendChild(b2);
     box2.appendChild(row);
@@ -22162,7 +22333,11 @@ function renderSwing(box, d){
       askRun(pre, col, q>=0.75, (hold)=>endPA(pre,col,q>=0.75,hold));
       return;
     }
-    endPA(pre,col,q>=0.75);                     // 인플레이 — 결과는 엔진이 낸다
+    /* [제보] "어떤 타구도 (…) 그 애니메이션 안 나오고 이건 야구가 아니야"
+       「돌아? 서?」 를 안 물어본 타구도 2막은 똑같이 보여준다.
+       showRun 이 _lastPlay 를 보고 스스로 판단한다 — 탄 공이 없으면
+       예전처럼 글자만 두고 닫힌다.                                  */
+    endPA(pre,col,q>=0.75,showRun);             // 인플레이 — 결과는 엔진이 낸다
   };
 
   /* ---- 입력 ----
@@ -23220,7 +23395,7 @@ function commitGame(res,usSide,thSide,uSlots){
       effect:`${inj.games}경기 결장`});
     if(iv.why==='물통'){
       ST.kakaoPost=ST.kakaoPost||[];
-      ST.kakaoPost.push({who:'lg',type:'notice',
+      ST.kakaoPost.push({who:coachId(),type:'notice',
         text:`${nameOf(iv.id)} ${inj.name} — ${inj.games}경기 결장\n물통 차다 그랬다`});
       const wit=TBYID['wwzw'].players.find(p=>p.id!==iv.id&&isAvailable(p.id));
       if(wit) ST.kakaoPost.push({who:wit.id,
@@ -23342,7 +23517,7 @@ function commitGame(res,usSide,thSide,uSlots){
      (경기가 끝나고 한 주가 정산될 때다) */
   applyMyTrain();
   const mn=releaseMercs(false);       // 용병은 그날로 끝이다
-  if(mn)ST.kakaoPost.push({who:'lg',type:'notice',text:`용병 ${mn}명 오늘까지. 다음 주엔 사람 좀 채우자`});
+  if(mn)ST.kakaoPost.push({who:coachId(),type:'notice',text:`용병 ${mn}명 오늘까지. 다음 주엔 사람 좀 채우자`});
   gearWearTick().forEach(m=>ST.kakaoPost.push(m));   // 장비는 쓸수록 닳는다
   updateForm(ST,res,uUniq).forEach(m=>ST.kakaoPost.push(m));   // 슬럼프·뜨거운 감각
   // 내 선수가 실제로 뛰었으면 성장 투자로 쌓인다
@@ -26078,7 +26253,7 @@ function renderMore(){
       ST.budget-=cost; gearBuy(g.id);
       if(g.eff.gear)ST.gearLevel=0;
       ST.kakao=ST.kakao||[];
-      ST.kakao.push({who:'lg',type:'notice',text:`${g.name} — ${gearLabel(g.id)} 등급 (${cost}만원)`});
+      ST.kakao.push({who:coachId(),type:'notice',text:`${g.name} — ${gearLabel(g.id)} 등급 (${cost}만원)`});
       saveGame(true); go('more'); toast(`${g.name} ${gearLabel(g.id)}`);
     };
     row.appendChild(b);
@@ -26267,6 +26442,10 @@ function exiledOn(teamId){
 function normalizeState(){
   const us=TBYID['wwzw'];
   applyLeftPlayers();        // 나간 사람은 계속 나가 있어야 한다
+  /* 감독이 로스터에 없으면(나갔거나 옛 세이브) 자리를 비운다 —
+     coachId() 가 다음 사람을 뽑아서 다시 채운다. 안 그러면 단톡
+     이름 자리에 '?' 가 찍힌다. */
+  if(ST.coachPid && !us.players.some(p=>p.id===ST.coachPid)) ST.coachPid=null;
   /* 전역 복귀한 송정민은 WWZW 상수에 없다. 매번 다시 올려준다 —
      안 그러면 새로고침 한 번에 로스터에서 사라진다. */
   if(ST.discharged) addDischarged(ST);

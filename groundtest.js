@@ -109,6 +109,79 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
   T(!!d.querySelector('#homebtn'), '\ud5e4\ub354\uc5d0 \uba54\uc778\ud654\uba74 \ubc84\ud2bc\uc774 \uc788\ub2e4');
   T(ev("/HS_OK/.test(go.toString())"), '\uace0\uad50 \ud504\ub864\ub85c\uadf8 \uc911\uc5d0\ub3c4 \uba54\uc778\ud654\uba74\uc740 \uc5f4\ub9b0\ub2e4');
 
+  console.log('\n[어떤 타구든 끝까지 본다]');
+  T(ev("/const showRun=/.test(renderSwing.toString())"),
+    '고를 게 없는 타구용 2막(showRun)이 있다');
+  T(ev("/endPA\\(pre,col,q>=0\\.75,showRun\\)/.test(renderSwing.toString())"),
+    '인플레이 타구는 물어보지 않아도 2막을 탄다');
+  T(ev("/if\\(!play\\)\\{ setTimeout\\(doneCb/.test(renderSwing.toString())"),
+    '삼진·볼넷은 탄 공이 없으니 그냥 닫는다');
+  T(ev("/play\\.type==='OUT'\\?1900:2400/.test(renderSwing.toString())"),
+    '아웃은 짧게 · 살아 나간 건 끝까지');
+  T(ev("/hideBat\\(\\)/.test(renderSwing.toString())&&/showBat\\(\\)/.test(renderSwing.toString())"),
+    '타석 화면을 치우고 되돌리는 걸 한 군데로 모았다');
+
+  console.log('\n[장면의 마디 — 잡았다 · 송구 · 판정]');
+  T(ev("/const K_CATCH=/.test(groundScene.toString())&&/const K_THROW=/.test(groundScene.toString())"),
+    '잡는 순간과 던지는 순간이 따로 있다');
+  T(ev("/잡았다/.test(groundScene.toString())&&/로 송구/.test(groundScene.toString())"),
+    '마디마다 자막이 붙는다');
+  T(ev("/const flyOut=/.test(groundScene.toString())&&/귀루/.test(groundScene.toString())"),
+    '뜬공에 잡히면 귀루한다');
+  T(ev("/0\\.34-risk\\*0\\.12/.test(groundScene.toString())"),
+    '늦게 정하면 야수가 먼저 잡는다');
+  T(ev("/replay\\(play, 2400, [^,]+, \\{risk\\}\\)/.test(renderSwing.toString())"),
+    '1막에서 누른 시점이 2막으로 넘어간다');
+  T(ev("/한 베이스 더/.test(renderSwing.toString())"),
+    '버튼이 몇 베이스인지 말한다');
+
+  console.log('\n[실제로 쳐보고 창이 닫히는지]');
+  /* jsdom 에는 캔버스가 없다 — groundScene 이 던진다. 그때도 2막이
+     타석 화면을 되돌리고 창을 닫아야 한다. 안 그러면 경기가 멈춘다. */
+  const openBat=()=>ev(`(function(){
+    ST.runAsk=false;                       // 안 물어보는 쪽 — showRun 경로
+    runWeek(); ST.weekDone=true; ST.announced=true; ST.lineupDirty=false;
+    ST.absent={}; ST.events=[];
+    LIVE=makeLive(); LIVE.manual=true; LIVE.round=ST.round;
+    if(!document.getElementById('decision')){var b=document.createElement('div');
+      b.id='decision';document.body.appendChild(b);}
+    var g=0; while(!LIVE.off().isUser && g++<400){ if(LIVE.pending)LIVE.applyDecision('none'); LIVE.step(); }
+    showDecision({kind:'swing',label:'타석'});
+    LIVE.pitchResult=function(){return {end:'IP'};};   // 무조건 인플레이
+    return LIVE.off().isUser; })()`);
+  T(openBat()===true, '타석 화면이 열린다');
+  const goB=d.querySelector('#decision .aim-go'); if(goB) goB.click();
+  const swB=d.querySelector('#decision .pl-swing');
+  T(!!swB, '스윙 버튼이 있다');
+  if(swB) swB.click();
+  await wait(1600);
+  T(ev("!!(LIVE&&'_lastPlay' in LIVE)"), '엔진이 타구 결과를 남겼다');
+  T(ev("!!(LIVE&&LIVE.lastDecPA!=null)"), '2막이 끝나고 창이 실제로 닫혔다(decDone)');
+  T(!d.querySelector('#decision .runbox'), '2막이 끝나면 그라운드를 치운다');
+  T(!d.querySelector('#decision .pl-wrap') ||
+    ev("(function(){var m=document.querySelector('#decision .mound');"+
+       "return !m||m.style.display!=='none';})()"),
+    '타석 화면이 되돌아온다 (안 숨은 채로 안 남는다)');
+  T(jsErr.length===0, '2막을 타도 예외가 없다'+(jsErr.length?' :: '+jsErr[0]:''));
+
+  console.log('\n[감독 승계]');
+  T(ev("typeof coachId==='function' && coachId()==='lg'"), '처음 감독은 이건이다');
+  T(ev("(function(){var ms=leaveTeam(ST,'lg');"+
+       "var t=ms.map(function(m){return m.text}).join(' | ');"+
+       "return /인수인계/.test(t) ? (t.match(/감독 인수인계[^|]*/)||[''])[0].split('\\n')[0] : '!'+t.slice(0,80);})()"),
+    '감독이 나가면 인수인계 공지가 뜬다');
+  T(ev("coachId()!=='lg' && TBYID['wwzw'].players.some(function(p){return p.id===coachId()})"),
+    '새 감독은 로스터에 있는 사람이다 :: '+ev("nameOf(coachId())"));
+  T(ev("ST.leftPlayers.some(function(r){return r.pid==='lg'})"),
+    '이탈 명단에 남는다 — 새로고침해도 안 돌아온다');
+  T(ev("(function(){var r=ST.leftPlayers.find(function(x){return x.pid==='lg'});"+
+       "return (r&&r.to&&TBYID[r.to]&&TBYID[r.to].players.some(function(p){return p.id==='lg'}))"+
+       "? TBYID[r.to].name+' 로 갔다' : '!상대 팀에 안 들어갔다';})()"),
+    '나간 감독은 다른 팀으로 간다');
+  T(ev("nameOf('lg')==='이건'"), "로스터에 없어도 이름은 '?' 가 아니다");
+  T(ev("/nameOf\\(m\\.who\\)/.test(renderKakao.toString())"),
+    "단톡 렌더러가 '?' 대신 이름 장부를 본다");
+
   console.log('\n[마운드 없이도 창이 닫힌다]');
   T(ev("playThenClose.toString().indexOf('r && mv')>0"),
     'playThenClose 가 mv 없이 불려도 안 터진다');
