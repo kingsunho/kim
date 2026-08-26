@@ -1556,6 +1556,17 @@ table.hl-tbl td.hl-o{color:#c98a80}
 .lu-n{flex:1;color:var(--tx);font-weight:700}
 .lu-ro.me .lu-n{color:var(--gold)}
 .lu-p{font-size:11px;color:var(--dim)}
+/* 선수 모드 훈련 — 이번 주에 하나만 */
+.trncard{display:block;width:100%;text-align:left;background:var(--panel);
+  border:1px solid var(--line);border-radius:12px;padding:12px 13px;margin-bottom:8px;color:var(--ink)}
+.trncard.on{border-color:var(--gold);background:rgba(201,162,39,.10)}
+.tn-top{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+.tn-i{font-size:17px;line-height:1}
+.tn-n{font-size:14px;font-weight:900;color:var(--tx)}
+.tn-s{font-size:10.5px;color:var(--gold);font-weight:700}
+.tn-d{font-size:11.5px;color:var(--dim);line-height:1.6;margin-top:5px}
+.tn-d b{color:#ffd15c}
+.tn-c{font-size:10px;color:var(--dim);opacity:.75;margin-top:4px;text-align:right}
 .pg-h{display:block;font-size:9px;margin-top:3px;font-weight:800;color:#ffd15c}
 .pg-h.e{color:#7fd6a5}
 /* 수비 — 타구가 내 자리로 온다 */
@@ -7298,8 +7309,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.64.0';
-const APP_VERSION_NOTE = '수비 — 타구가 내 자리로 온다';
+const APP_VERSION = '2.65.0';
+const APP_VERSION_NOTE = '이번 주에 뭘 할까 — 하나만';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7320,6 +7331,14 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.65.0', t:'선수 훈련 — 이번 주에 하나만', items:[
+    '선수 모드 훈련 화면이 통째로 달라졌다. 누구를 키울지 어떤 종목을 시킬지는 감독이 정하는 거고, 선수는 「이번 주에 내가 뭘 할까」를 하나만 고른다',
+    '타격 · 공 보는 연습 · 수비 · 러닝 · 투구(투수만) · 팀 훈련 참석 · 쉰다. 하나뿐이라 고르는 게 곧 어떤 선수가 되느냐다',
+    '「팀 훈련 참석」이 제일 사회인야구답다. 골고루 조금 오르고 무엇보다 감독 눈에 든다 — 라인업이 감독 손에 있는 모드라 그게 진짜 값이다',
+    '이도류는 한 번에 오르는 폭이 절반이다. 그게 이도류의 값이다',
+    '훈련마다 컨디션이 깎인다. 「쉰다」는 +12',
+    '감독 모드 훈련 화면은 하나도 안 바뀐다',
+  ]},
   {v:'2.64.0', t:'수비 — 타구가 내 자리로 온다', items:[
     '선수 모드에서 내가 지키는 자리로 타구가 오면 「안전하게 / 달려든다」를 고른다. 경기당 서너 번 온다',
     '과감하게 붙으면 잡을 확률도 놓칠 확률도 같이 오른다. 수비·어깨가 좋을수록 덜 흘린다 — 그게 수비다',
@@ -13112,13 +13131,15 @@ function pmGoalBars(){
   const box=el('div','pm-bars');
   Object.keys(KN).forEach(k=>{
     if(now[k]==null||real[k]==null) return;
-    const pct=Math.min(140, now[k]/Math.max(1,real[k])*100);
-    const over=now[k]>real[k];
+    /* 훈련이 0.1 씩 붙어서 내부값에는 소수가 남는다. 화면엔 정수만 */
+    const cur=Math.round(now[k]);
+    const pct=Math.min(140, cur/Math.max(1,real[k])*100);
+    const over=cur>real[k];
     const row=el('div','pmb'+(over?' over':''));
     row.innerHTML='<span class="pmb-n">'+KN[k]+'</span>'+
       '<span class="pmb-t"><s style="width:'+Math.min(100,pct)+'%"></s>'+
       '<u style="left:'+Math.min(100,100/Math.max(1,pct)*100>100?100:100)+'%"></u></span>'+
-      '<span class="pmb-v">'+now[k]+'<i>/'+real[k]+'</i></span>';
+      '<span class="pmb-v">'+cur+'<i>/'+real[k]+'</i></span>';
     box.appendChild(row);
   });
   return box;
@@ -22858,6 +22879,9 @@ function commitGame(res,usSide,thSide,uSlots){
   rollBossTalk();                    // 내 성적을 보고 감독이 부를지 판정
   if(!sch.po) simOtherGames(sch.opp);   // 플레이오프는 네 팀만 뛴다
   applyTraining();
+  /* 선수 모드 — 이번 주에 내가 고른 것 하나. 팀 훈련과 같은 자리에서 적용한다
+     (경기가 끝나고 한 주가 정산될 때다) */
+  applyMyTrain();
   const mn=releaseMercs(false);       // 용병은 그날로 끝이다
   if(mn)ST.kakaoPost.push({who:'lg',type:'notice',text:`용병 ${mn}명 오늘까지. 다음 주엔 사람 좀 채우자`});
   gearWearTick().forEach(m=>ST.kakaoPost.push(m));   // 장비는 쓸수록 닳는다
@@ -23258,7 +23282,117 @@ function applyTraining(){
   finalizeTeam(us);
   ST.trainLog=gains.slice(0,7);
 }
+/* ================= 선수 모드 훈련 — 이번 주에 하나만 =================
+   [제보] "훈련은 한번에 하나가 맞고"
+
+   감독 훈련 화면은 팀 전체를 굴리는 화면이다 — 누구를 키울지, 어떤 종목을
+   시킬지, 코치를 누구로 붙일지. 선수가 그걸 정하지 않는다.
+   선수는 **이번 주에 자기가 뭘 할지** 하나만 고른다. 그게 전부다.
+   하나뿐이라 고르는 게 곧 어떤 선수가 되느냐다.
+
+   [팀 훈련 참석] 이게 제일 사회인야구답다. 나가면 골고루 조금 오르고
+   **감독 눈에 든다** — 라인업이 감독 손에 있는 모드라 그게 진짜 값이다.  */
+const PM_TRAIN=[
+  {id:'bat',  icon:'\u{1F3CF}', name:'타격 훈련', sub:'컨택 · 파워',
+   g:{con:1.0,pow:0.8}, cond:-6,
+   d:'배팅장에 간다. 제일 확실하게 느는 대신 몸이 축난다.'},
+  {id:'eye',  icon:'\u{1F441}', name:'공 보는 연습', sub:'선구',
+   g:{eye:1.5}, cond:-3,
+   d:'공을 오래 본다. 티는 안 나는데 볼넷이 늘어난다.'},
+  {id:'def',  icon:'\u{1F9E4}', name:'수비 훈련', sub:'수비 · 어깨',
+   g:{def:1.1,arm:0.7}, cond:-5,
+   d:'펑고를 받는다. 센터 라인이면 이걸 안 하면 안 된다.'},
+  {id:'run',  icon:'\u{1F3C3}', name:'러닝', sub:'주루',
+   g:{spd:1.4}, cond:-5,
+   d:'뛴다. 발은 가장 늦게 늘고 가장 먼저 빠진다.'},
+  {id:'pit',  icon:'\u{26BE}', name:'투구 훈련', sub:'구위 · 제구 · 체력', pit:true,
+   g:{stf:0.9,ctl:1.0,sta:0.8}, cond:-7,
+   d:'불펜에서 던진다. 어깨를 쓰는 만큼 회복이 느리다.'},
+  {id:'team', icon:'\u{1F465}', name:'팀 훈련 참석', sub:'골고루 + 감독 눈에 든다',
+   g:{con:0.35,pow:0.25,eye:0.3,spd:0.3,def:0.4,arm:0.25}, cond:-4, team:true,
+   d:'감독이 부른 훈련에 나간다. 조금씩 오르고, 무엇보다 **라인업에 이름이 남는다.**'},
+  {id:'rest', icon:'\u{1F634}', name:'쉰다', sub:'컨디션 회복',
+   g:{}, cond:+12,
+   d:'이번 주는 안 나간다. 몸을 만든다.'},
+];
+function pmTrainDef(id){ return PM_TRAIN.find(x=>x.id===(id||(ST&&ST.myTrain)))||null; }
+/* 주간 처리 때 한 번 적용한다 */
+function applyMyTrain(){
+  if(!isPlayerMode()) return null;
+  const t=pmTrainDef(ST.myTrain); if(!t) return null;
+  const me=ST.playerId||MYID;
+  const p=TBYID['wwzw'].players.find(x=>x.id===me);
+  if(!p) return null;
+  ST.cond[me]=Math.max(20,Math.min(100,(ST.cond[me]||70)+t.cond));
+  if(t.team){
+    /* 나간 것으로 친다 — 감독이 보고 있다 */
+    if(!ST.trainAttend) ST.trainAttend=[];
+    if(ST.trainAttend.indexOf(me)<0) ST.trainAttend.push(me);
+    ST.morale[me]=Math.min(100,(ST.morale[me]||70)+4);
+    ST.bond&&(ST.bond[me]=Math.min(100,(ST.bond[me]||50)+3));
+  }
+  /* 이도류는 두 몫을 나눠 쓴다 — 그게 이도류의 값이다 */
+  const half=isTwoWay()?0.55:1;
+  const KN={con:'컨택',pow:'파워',eye:'선구',spd:'주루',def:'수비',arm:'어깨',
+            stf:'구위',ctl:'제구',sta:'체력'};
+  const got=[];
+  Object.keys(t.g||{}).forEach(k=>{
+    const amt=t.g[k]*half;
+    if(k==='stf'||k==='ctl'||k==='sta'){
+      if(!p.pitch) return;
+      const before=p.pitch[k];
+      p.pitch[k]=Math.min(99, p.pitch[k]+amt);
+      if(Math.floor(p.pitch[k])>Math.floor(before)) got.push(KN[k]+' +'+(Math.floor(p.pitch[k])-Math.floor(before)));
+    } else {
+      if(p[k]==null) return;
+      const before=p[k];
+      p[k]=Math.min(99, p[k]+amt);
+      if(Math.floor(p[k])>Math.floor(before)) got.push(KN[k]+' +'+(Math.floor(p[k])-Math.floor(before)));
+    }
+  });
+  /* 정수로 굳힌다 — 소수점이 화면에 새면 지저분하다 */
+  ['con','pow','eye','spd','def','arm'].forEach(k=>{ if(p[k]!=null) p[k]=Math.round(p[k]*10)/10; });
+  if(p.pitch) ['stf','ctl','sta'].forEach(k=>{ p.pitch[k]=Math.round(p.pitch[k]*10)/10; });
+  finalizeTeam(TBYID['wwzw']);
+  if(typeof buildPitcherPool==='function') buildPitcherPool();
+  ST.myTrainLog = got.length? (t.name+' — '+got.join(' · ')) : (t.name+' — 아직 티가 안 난다');
+  return ST.myTrainLog;
+}
+function renderTrainPlayer(){
+  const c=$('#view'); c.innerHTML='';
+  const me=ST.playerId||MYID;
+  const head=el('div','card');
+  head.innerHTML='<div class="card-h">이번 주에 뭘 할까</div>'+
+    '<p class="muted"><b>하나만 고른다.</b> 그게 어떤 선수가 되느냐를 정한다.<br>'+
+    (isTwoWay()?'투수 겸 타자라 한 번에 오르는 폭이 절반이다. 그게 이도류의 값이다.<br>':'')+
+    '주간을 시작하면 그대로 적용된다.</p>';
+  c.appendChild(head);
+  if(ST.myTrainLog){
+    const lg=el('div','card');
+    lg.innerHTML='<div class="card-h">지난주</div><div class="pm-line">'+ST.myTrainLog+'</div>';
+    c.appendChild(lg);
+  }
+  const canPit=(ST.role==='pit'||ST.role==='two');
+  PM_TRAIN.forEach(t=>{
+    if(t.pit && !canPit) return;
+    const b=el('button','trncard'+(ST.myTrain===t.id?' on':''));
+    b.innerHTML='<div class="tn-top"><span class="tn-i">'+t.icon+'</span>'+
+      '<span class="tn-n">'+t.name+'</span><span class="tn-s">'+t.sub+'</span></div>'+
+      '<div class="tn-d">'+t.d.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')+'</div>'+
+      '<div class="tn-c">컨디션 '+(t.cond>0?'+':'')+t.cond+'</div>';
+    b.onclick=()=>{ ST.myTrain=t.id; saveGame(true); renderTrainPlayer();
+      toast(t.name); };
+    c.appendChild(b);
+  });
+  const step=nextStepInfo();
+  if(step){
+    const g=el('button','btn primary ch-go',step.label);
+    g.onclick=step.run; c.appendChild(g);
+  }
+}
 function renderTrain(){
+  /* [제보] "훈련은 한번에 하나가 맞고" — 선수는 자기 것만 고른다 */
+  if(isPlayerMode()) return renderTrainPlayer();
   const c=$('#view'); c.innerHTML='';
   const us=TBYID['wwzw'];
   const att=trainAttendList();
@@ -25700,6 +25834,8 @@ function normalizeState(){
   if(ST.batReady!=='auto'&&ST.batReady!=='me')ST.batReady='me';
   if(typeof ST.runAsk!=='boolean')ST.runAsk=true;   // [v2.63.0] 주루 물어보기
   if(typeof ST.defAsk!=='boolean')ST.defAsk=true;   // [v2.64.0] 수비 물어보기
+  if(ST.myTrain && !PM_TRAIN.some(x=>x.id===ST.myTrain)) ST.myTrain=null;
+  if(!ST.myTrain) ST.myTrain='team';                // [v2.65.0] 기본은 팀 훈련
   if(!ST.names)ST.names={};
   us.players.forEach(p=>{ ST.names[p.id]=p.name; });
   if(!ST.lgPit)ST.lgPit={};
