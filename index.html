@@ -1556,6 +1556,43 @@ table.hl-tbl td.hl-o{color:#c98a80}
 .lu-n{flex:1;color:var(--tx);font-weight:700}
 .lu-ro.me .lu-n{color:var(--gold)}
 .lu-p{font-size:11px;color:var(--dim)}
+/* 고교 — 타석 하나하나 */
+.hs-sub2{font-size:10.5px;font-weight:800;color:var(--dim);margin:10px 0 3px;
+  padding-top:8px;border-top:1px solid var(--line)}
+.hs-pa{font-size:12.5px;color:var(--tx);padding:4px 0 4px 8px;
+  border-left:2px solid var(--line);margin-left:2px;line-height:1.5}
+.lu-g{font-style:normal;font-size:9.5px;color:var(--dim);margin-left:5px;font-weight:600}
+/* 고교 대화 — 카톡이 아니라 인물이 서서 말한다 */
+.hstalk{display:flex;gap:12px;align-items:stretch;margin:12px 0;cursor:pointer;
+  background:linear-gradient(180deg,rgba(201,162,39,.07),var(--panel));
+  border:1px solid var(--line);border-radius:13px;padding:13px}
+.ht-face{width:86px;height:112px;flex-shrink:0;border-radius:10px;overflow:hidden;
+  background:#1a2029;border:1px solid var(--line)}
+.ht-face img,.ht-face svg{display:block;width:100%;height:100%;object-fit:cover}
+.ht-body{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
+.ht-nm{font-size:12px;font-weight:900;color:var(--gold);margin-bottom:6px}
+.ht-say{font-size:14px;line-height:1.65;color:var(--tx);word-break:break-word}
+.ht-more{font-size:10px;color:var(--dim);opacity:.7;margin-top:9px;text-align:right}
+/* 선수 모드 홈 — 팀 관리가 아니라 나 */
+.card.pmhero{border-color:var(--gold);
+  background:linear-gradient(180deg,rgba(201,162,39,.10),var(--panel))}
+.pm-top{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.pm-top b{font-size:20px;font-weight:900;color:var(--tx)}
+.pm-top span{font-size:11.5px;color:var(--gold);font-weight:700}
+.pm-line{font-size:12.5px;color:var(--dim);margin-top:6px;line-height:1.6}
+.pm-wait{font-size:13px;color:var(--dim);text-align:center;padding:14px 8px}
+.pm-next{font-size:11.5px;color:var(--dim);margin-top:9px;padding-top:9px;
+  border-top:1px solid var(--line);text-align:center}
+.pm-bars{margin-top:8px}
+.pmb{display:flex;align-items:center;gap:8px;padding:4px 0}
+.pmb-n{width:34px;font-size:11px;color:var(--dim);flex-shrink:0}
+.pmb-t{flex:1;height:8px;background:#0d1015;border-radius:4px;position:relative;overflow:hidden}
+.pmb-t s{display:block;height:100%;text-decoration:none;
+  background:linear-gradient(90deg,#3fa564,#7fd6a5)}
+.pmb.over .pmb-t s{background:linear-gradient(90deg,#c9a227,#ffd15c)}
+.pmb-v{width:52px;text-align:right;font-size:11.5px;font-weight:800;color:var(--tx);flex-shrink:0}
+.pmb-v i{font-style:normal;font-size:10px;color:var(--dim);font-weight:600}
+.pmb.over .pmb-v{color:#ffd15c}
 /* 지난 경기 목록 — 눌러서 다시 편다 */
 .hs-past{display:flex;align-items:center;gap:8px;width:100%;text-align:left;
   padding:9px 10px;margin-top:6px;border-radius:9px;color:var(--ink);
@@ -7167,8 +7204,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.60.0';
-const APP_VERSION_NOTE = '고등학교 3년 · 지난 경기 다시 보기';
+const APP_VERSION = '2.61.0';
+const APP_VERSION_NOTE = '선수 모드가 선수의 화면이 됐다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7189,6 +7226,17 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.61.0', t:'선수 모드가 선수의 화면이 됐다', items:[
+    '선수 모드 홈이 팀 관리가 아니라 나를 보여준다. 내 성적, 오늘 몇 번인지, 그리고 「실제 나까지」',
+    '「실제 나까지」는 오른쪽 숫자가 그 사람의 2026시즌 실측 능력치다. 거기까지 가면 실물과 같아지고 넘어서면 실제보다 잘하는 게 된다. 한계는 없다',
+    '스카우트·영입·면담은 선수 모드에서 안 뜬다. 선수가 팀에 사람을 영입할 일이 없다. 감독이 하는 일은 감독이 한다',
+    '고등학교를 하는 중에는 아래 탭이 통째로 사라진다. 홈을 눌러도 우완좌완이 안 나온다 — 아직 우완좌완이 아니다',
+    '고등학교 경기 전에 오늘 타순이 나온다. 내가 몇 번 어디인지, 누가 선발인지',
+    '경기가 끝나면 내 타석이 하나씩 나온다. 「김선호 볼넷」 「김선호 땅볼 아웃 (중앙 35m)」 — 점수만 보면 경기를 한 게 아니다',
+    '고등학교 대화가 단톡방 말풍선에서 인물이 서서 말하는 화면으로 바뀌었다. 사진이 있는 사람은 사진, 없으면 찰흙 인형이 선다',
+    '튜토리얼이 모드별로 갈렸다. 선수 모드로 시작하면 라인업 짜는 법 대신 「너는 감독이 아니다」부터 나온다',
+    '내가 원하는 포지션을 골랐는데 유격수가 둘이 되던 것도 고쳤다',
+  ]},
   {v:'2.60.0', t:'고등학교 3년 · 지난 경기 다시 보기', items:[
     '선수 모드는 이제 고등학교부터 시작한다. 3년 동안 여섯 경기를 치르고, 그 성적이 그대로 시작 능력치가 된다',
     '군포고 대 흥진고. 로스터를 세어보니 열두 명이 군포고고 김선호·김상훈만 흥진고였다. 실제 출생년도도 1999년생 일곱, 2000년생 일곱으로 딱 갈린다',
@@ -11656,8 +11704,15 @@ function hsLineup(team, meId, lastOrder){
     return line;
   }
   if(mine<0){
-    /* 라인업에 없으면 제일 약한 사람을 밀어내고 들어간다 */
-    line[line.length-1]={id:meId,pos};
+    /* 라인업에 없으면 제일 약한 사람을 밀어내고 들어간다.
+       [버그] 그냥 밀어넣기만 했더니 **유격수가 둘**이 됐다. 원래 그 자리를
+       쓰던 사람에게 내가 뺏은 자리를 넘겨줘야 한다. 고1 때 능력치가 낮아
+       AI 라인업에 못 들면 매번 이 길로 온다 — 실제로 그렇게 나왔다. */
+    const last=line.length-1;
+    const oldPos=line[last].pos;
+    const holder=line.findIndex(x=>x.pos===pos);
+    if(holder>=0 && holder!==last) line[holder].pos=oldPos;
+    line[last]={id:meId,pos};
   } else {
     /* 내가 원하는 자리를 쓰던 사람과 바꾼다 */
     const holder=line.findIndex(x=>x.pos===pos);
@@ -11780,6 +11835,10 @@ const HS_STORY=[
    l:'졌다. 마지막 경기였다. 한참 그라운드에 앉아 있었다.'},
 ];
 /* 대사·문장에 들어가는 자리를 실제 사람으로 바꾼다 */
+/* [제보] "여긴 카톡이 아니라 대충 그림으로 나와서 대화하는 방식으로
+           가야될듯" — 고등학교인데 단톡방 말풍선이 나오면 이상하다.
+   그래서 cast 에 **이름과 함께 id 도** 담는다. 아바타를 그리려면
+   누구인지 알아야 하고, 이름만으로는 부원을 못 찾는다.            */
 function hsCast(year){
   const me=ST.playerId||MYID;
   const mine=hsMySchool(), foe=hsFoe();
@@ -11796,8 +11855,12 @@ function hsCast(year){
   const cap=all.find(p=>p.id==='lg')
          || top(seniors.filter(p=>p.real), p=>(META[p.id]&&META[p.id].loyal)||50)
          || seniors[0] || all[0];
-  const ace=top(all.filter(p=>p.pitch), p=>p.pitch.stf+p.pitch.ctl)
-         || top(all.filter(p=>p.npc&&p.stf), p=>p.stf+p.ctl)
+  /* [손봄] 주장과 에이스가 같은 사람이면 대사가 혼자 주고받는 꼴이 된다.
+     흥진고처럼 실존 인물이 적은 학교에서 실제로 그랬다. 주장은 뺀다. */
+  const notCap=all.filter(p=>!cap||p.id!==cap.id);
+  const ace=top(notCap.filter(p=>p.pitch), p=>p.pitch.stf+p.pitch.ctl)
+         || top(notCap.filter(p=>p.npc&&p.stf), p=>p.stf+p.ctl)
+         || top(all.filter(p=>p.pitch), p=>p.pitch.stf+p.pitch.ctl)
          || cap;
   /* 라이벌 — **동갑을 먼저 본다.** 3년을 같은 학년으로 세 번 붙는 사람이
      제일 오래 남는다. 김인규·김선호·김상훈이 실제로 그 관계다.      */
@@ -11811,6 +11874,9 @@ function hsCast(year){
     rival:rival?rival.name:HS_SCHOOLS[foe].name+' 4번',
     foe:HS_SCHOOLS[foe].name,
     ourSchool:HS_SCHOOLS[mine].name,
+    /* 아바타용 — 누가 말하는지 */
+    _id:{ me, cap:cap?cap.id:me, ace:ace?ace.id:me,
+          rival:rival?rival.id:('hsr_'+foe) },
   };
 }
 /* 고3 첫 경기 문장은 학번에 따라 갈린다 —
@@ -11897,24 +11963,35 @@ function hsMoment(b, q, year, s, won){
   w.sort((a,b2)=>b2[0]-a[0]);
   return {year, kind:s.kind, foe:s.rival, big:w[0][0]>=60, text:w[0][1], won:!!won};
 }
+/* 오늘 경기를 짓는다 — **미리보기와 실제가 같은 라인업을 쓰게** 한 군데서.
+   [제보] "고등학교때 라인업은 왜 안나오냐"
+   경기 전에 오늘 타순을 보여주려면 여기서 만든 걸 그대로 써야 한다. */
+function hsBuild(i){
+  const s=HS_STORY[i]; if(!s) return null;
+  const me=ST.playerId||MYID;
+  const year=hsYearAt(i);
+  const base=(ST.seed||1);
+  const mine=hsMySchool();
+  const us=hsTeamOf(mine, year, base, me, i*0.035);
+  const foe = s.rival
+    ? hsTeamOf(hsFoe(), year, base, null, 0)
+    : hsOtherTeam(HS_OTHERS[i%HS_OTHERS.length], year, base+i);
+  return {
+    s, me, year, us, foe,
+    uLine:hsLineup(us, me, !!s.last),
+    uRot :hsRotation(us, (ST.role==='pit'||ST.role==='two') ? me : null),
+    fLine:aiLineup(foe), fRot:aiRotation(foe),
+    homeUs:(i%2===0),
+    rng:makeRng((base*31+i*7717+year)>>>0),
+  };
+}
 /* 한 경기 돌린다 */
 function hsPlay(){
   const H=hsSlot(); const s=HS_STORY[H.i]; if(!s) return null;
-  const me=ST.playerId||MYID;
-  const year=hsYearAt(H.i);
-  const base=(ST.seed||1);
-  const rng=makeRng((base*31+H.i*7717+year)>>>0);
-  const mine=hsMySchool();
-  /* 3년 동안 조금씩 는다 — 경기를 치를수록 시작 배율이 올라간다 */
-  const us=hsTeamOf(mine, year, base, me, H.i*0.035);
-  const foe = s.rival
-    ? hsTeamOf(hsFoe(), year, base, null, 0)
-    : hsOtherTeam(HS_OTHERS[H.i%HS_OTHERS.length], year, base+H.i);
-  const uLine=hsLineup(us, me, !!s.last);
-  const uRot =hsRotation(us, (ST.role==='pit'||ST.role==='two') ? me : null);
-  const fLine=aiLineup(foe), fRot=aiRotation(foe);
-  /* 홈·원정은 그냥 번갈아 — 우리가 홈이면 뒤에 친다 */
-  const homeUs=(H.i%2===0);
+  const B=hsBuild(H.i); if(!B) return null;
+  const me=B.me, year=B.year, us=B.us, foe=B.foe;
+  const uLine=B.uLine, uRot=B.uRot, fLine=B.fLine, fRot=B.fRot;
+  const homeUs=B.homeUs, rng=B.rng;
   const res=simGame(homeUs?us:foe, homeUs?foe:us, {
     rng, innings:HS_INN,
     awayLineup:homeUs?fLine:uLine, awayRotation:homeUs?fRot:uRot,
@@ -11934,7 +12011,15 @@ function hsPlay(){
   H.pending={ i:H.i, year, us:usSide.runs, them:thSide.runs, won, tie,
     foe:s.rival?HS_SCHOOLS[hsFoe()].name:foe.name,
     bat:b?{...b}:null, pit:(q&&q.bf)?{...q}:null, mo,
-    line:(usSide.line||[]).slice(), fline:(thSide.line||[]).slice() };
+    line:(usSide.line||[]).slice(), fline:(thSide.line||[]).slice(),
+    /* [제보] "고등학교때 지금 왜 결과만 나올까"
+       점수만 던져주면 경기를 한 게 아니다. **내 타석이 어떻게 됐는지**를
+       한 줄씩 남긴다. 로그에서 내 이름이 들어간 줄만 뽑는다. */
+    my:(res.log||[]).filter(x=>x&&x.text&&x.text.indexOf(nameOf(me))===0)
+        .map(x=>x.text).slice(0,12),
+    order:(function(){ const k=uLine.findIndex(x=>x.id===me);
+      return k<0?null:{ord:k+1,pos:uLine[k].pos}; })(),
+    uLine:uLine.map(x=>({id:x.id,pos:x.pos})) };
   /* [요청] "이전 경기 결과랑 경기 내용 볼 수 있게 · 예전 경기 선택할 수 있게"
      그래서 결과를 통째로 남긴다. 나중에 다시 펴 보려면 이게 있어야 한다. */
   H.res.push({...H.pending});
@@ -12066,13 +12151,52 @@ function hsPaintResult(c, P){
   c.appendChild(card);
 
   const mine=el('div','card');
-  mine.appendChild(el('div','card-h','내 기록'));
+  mine.appendChild(el('div','card-h','내 기록'+
+    (P.order?' — '+P.order.ord+'번 '+(POSNAMES[P.order.pos]||P.order.pos):'')));
   const lines=hsStatLine(P.bat,P.pit);
   if(!lines.length) mine.appendChild(el('p','muted','기록이 없다.'));
   else lines.forEach(t=>mine.appendChild(el('div','hs-my',t)));
+  /* 타석 하나하나 — 점수만 보면 경기를 한 게 아니다 */
+  if(P.my&&P.my.length){
+    mine.appendChild(el('div','hs-sub2','타석'));
+    P.my.forEach(t=>mine.appendChild(el('div','hs-pa',t)));
+  }
   if(P.mo) mine.appendChild(el('div','hs-mo'+(P.mo.big?' big':''),
     '기억에 남는 것 — '+P.mo.text));
   c.appendChild(mine);
+}
+/* 대화 한 장면. 카톡 말풍선이 아니라 **인물이 서서 말하는 화면**이다.
+   [제보] "여긴 카톡이 아니라 대충 그림으로 나와서 대화하는 방식"
+   사진이 있는 사람은 사진, 없으면 찰흙 인형이 선다(avatarHTML).
+   화면을 누르면 다음 사람으로 넘어간다.                             */
+function hsTalkScene(c, s, cast, year, onDone){
+  const H=hsSlot();
+  const list=(s.say||[]);
+  const at=Math.max(0, Math.min(list.length-1, H.sayAt||0));
+  const row=list[at];
+  if(!row){ onDone&&onDone(); return; }
+  const who=hsText(row[0],cast,year);
+  /* 토큰이면 그 자리의 id 를, 아니면 이름으로 찾는다 */
+  let pid=null;
+  const tok=String(row[0]).match(/^\{(\w+)\}$/);
+  if(tok&&cast._id&&cast._id[tok[1]]) pid=cast._id[tok[1]];
+  if(!pid){ const p=TBYID['wwzw'].players.find(x=>x.name===who); if(p)pid=p.id; }
+  if(!pid) pid='hs_'+who;
+
+  const box=el('div','hstalk');
+  box.innerHTML='<div class="ht-face">'+avatarHTML(pid)+'</div>'+
+    '<div class="ht-body"><div class="ht-nm">'+who+'</div>'+
+    '<div class="ht-say">'+hsText(row[1],cast,year)+'</div>'+
+    '<div class="ht-more">'+(at<list.length-1?'탭하면 다음':'탭하면 넘어간다')+'</div></div>';
+  box.onclick=()=>{
+    H.sayAt=at+1;
+    if(H.sayAt>=list.length){ H.sayAt=list.length; }
+    renderHS();
+  };
+  c.appendChild(box);
+  const skip=el('button','btn sm','건너뛰기');
+  skip.onclick=()=>{ H.sayAt=list.length; renderHS(); };
+  c.appendChild(skip);
 }
 /* 지난 경기 목록 — 눌러서 다시 편다 */
 function hsPastList(c){
@@ -12153,8 +12277,11 @@ function renderHS(){
     }
 
     /* 에필로그 — 실제로 어떻게 한 팀이 됐나 */
+    /* 에필로그는 몇 년 뒤 단톡방이 맞다 — 그때는 진짜 카톡이다.
+       고등학교 장면만 인물이 서서 말한다. */
     const ep=el('div','card');
     ep.appendChild(el('div','card-h','그리고 몇 년 뒤'));
+    ep.appendChild(el('p','muted','우완좌완 단톡방이 생겼다.'));
     const room=el('div','kakao');
     hsEpilogue().forEach(m=>{
       const mine2=isMe(m.who);
@@ -12199,15 +12326,41 @@ function renderHS(){
     '<div class="hs-b">'+hsText(s.b,cast,year).replace(/\n/g,'<br>')+'</div>';
   c.appendChild(head);
 
-  if(s.say&&s.say.length){
-    const room=el('div','kakao');
-    s.say.forEach(([who,t])=>{
-      const nm=hsText(who,cast,year);
-      const wdiv=el('div','kmsg');
-      wdiv.innerHTML='<div class="kname">'+nm+'</div><div class="kbub">'+hsText(t,cast,year)+'</div>';
-      room.appendChild(wdiv);
+  /* 대사가 남았으면 대화 장면부터. 다 넘기면 경기 버튼이 나온다 */
+  if(s.say&&s.say.length&&(H.sayAt||0)<s.say.length){
+    hsTalkScene(c, s, cast, year);
+    return;
+  }
+
+  /* [제보] "고등학교때 라인업은 왜 안나오냐" — 오늘 내가 몇 번인지부터 */
+  const B=hsBuild(H.i);
+  if(B){
+    const me2=B.me;
+    const k=B.uLine.findIndex(x=>x.id===me2);
+    const my=el('div','mystatus '+(k>=0?'in':'out'));
+    my.innerHTML=(k>=0
+      ? '<div class="ms-big">'+(k+1)+'번 · '+(POSNAMES[B.uLine[k].pos]||B.uLine[k].pos)+'</div>'+
+        '<div class="ms-sub">오늘 이렇게 나간다</div>'
+      : '<div class="ms-big">벤치</div><div class="ms-sub">오늘은 선발이 아니다</div>');
+    c.appendChild(my);
+
+    const lu=el('div','card');
+    lu.appendChild(el('div','card-h', cast.ourSchool+' 오늘 타순'));
+    const sp=el('div','starter-row');
+    sp.innerHTML='<span>오늘 선발 투수</span><b>'+
+      ((function(){ const pid=B.uRot&&B.uRot[0];
+        const p=pid?B.us.pitchers.find(x=>x.id===pid):null; return p?p.name:'—'; })())+'</b>';
+    lu.appendChild(sp);
+    B.uLine.forEach((sl,idx)=>{
+      const p=B.us.players.find(x=>x.id===sl.id);
+      const row=el('div','lu-ro'+(sl.id===me2?' me':''));
+      row.innerHTML='<span class="lu-o">'+(idx+1)+'</span>'+
+        '<span class="lu-n">'+(p?p.name:sl.id)+
+        (p&&p.grade?'<i class="lu-g">'+p.grade+'학년</i>':'')+'</span>'+
+        '<span class="lu-p">'+(POSNAMES[sl.pos]||sl.pos)+'</span>';
+      lu.appendChild(row);
     });
-    c.appendChild(room);
+    c.appendChild(lu);
   }
 
   const prog=el('div','hs-prog');
@@ -12219,7 +12372,7 @@ function renderHS(){
   c.appendChild(prog);
 
   const b=el('button','btn primary','경기 시작');
-  b.onclick=async()=>{ hsPlay(); await saveGame(true); renderHS(); };
+  b.onclick=async()=>{ hsPlay(); H.sayAt=0; await saveGame(true); renderHS(); };
   c.appendChild(b);
   hsPastList(c);
 }
@@ -12468,9 +12621,12 @@ function renderRole(){
   ok.onclick=async()=>{
     await saveGame(true);
     const lbl=roleDef().name+(myPos()&&myPos()!=='P'?' · '+POSNAMES[myPos()]:'');
-    /* [요청] "고교때도 그 포지션으로 뛰고" — 자리를 정했으면 고등학교부터다 */
+    /* [요청] "고교때도 그 포지션으로 뛰고" — 자리를 정했으면 고등학교부터다.
+       [제보] "선수모드로 시작하는데 튜토리얼은 감독모드로 나온다"
+       안내를 먼저 보고(선수 모드용으로 갈렸다) 고등학교로 간다. */
     hsSlot();
-    go('hs');
+    if(!ST.tutDone){ ST.tutStep=0; ST.tutPending='hs'; go('tutorial'); }
+    else go('hs');
     toast(lbl+' 로 시작한다');
   };
   c.appendChild(ok);
@@ -12614,8 +12770,144 @@ function renderSlots(){
   c.appendChild(back);
 }
 
+/* ================= 선수 모드는 선수의 화면이다 =================
+   [제보] "지금 선수모드인데도 감독모드랑 너무 섞여서
+           그냥 감독모드 그자체인 느낌"
+
+   맞는 말이다. 여태 잠긴 건 라인업 하나뿐이었고 스카우트·영입·회의가
+   전부 열려 있었다. **선수가 왜 팀에 사람을 영입하나.**
+   감독이 하는 일은 감독이 하게 두고, 화면도 내 것만 남긴다.
+
+   막는 게 아니라 **자리를 바꾸는 것**이다 — 홈 화면이 팀 관리 대신
+   "오늘 내가 나가나 / 나는 얼마나 컸나" 를 보여준다.               */
+const PM_BLOCK={
+  scout:  ['상대 분석', '분석은 감독과 분석가가 한다. 경기 전에 알려줄 거다.'],
+  recruit:['선수 영입', '사람 데려오는 건 감독 일이다.'],
+  meet:   ['면담',      '면담은 감독이 부른다. 부르면 그때 간다.'],
+};
+/* 내 능력치가 '실제 나' 에 얼마나 다가갔나.
+   WWZW 상수의 값이 2026시즌 실측이다 — 그게 목표선이다.
+   넘어서면 '실제보다 잘한다' 가 된다. 한계는 없다.                 */
+function pmGoalBars(){
+  const me=ST.playerId||MYID;
+  const now=TBYID['wwzw'].players.find(x=>x.id===me);
+  const real=WWZW.find(x=>x.id===me);
+  if(!now||!real) return null;
+  const KN={con:'컨택',pow:'파워',eye:'선구',spd:'주루',def:'수비',arm:'어깨'};
+  const box=el('div','pm-bars');
+  Object.keys(KN).forEach(k=>{
+    if(now[k]==null||real[k]==null) return;
+    const pct=Math.min(140, now[k]/Math.max(1,real[k])*100);
+    const over=now[k]>real[k];
+    const row=el('div','pmb'+(over?' over':''));
+    row.innerHTML='<span class="pmb-n">'+KN[k]+'</span>'+
+      '<span class="pmb-t"><s style="width:'+Math.min(100,pct)+'%"></s>'+
+      '<u style="left:'+Math.min(100,100/Math.max(1,pct)*100>100?100:100)+'%"></u></span>'+
+      '<span class="pmb-v">'+now[k]+'<i>/'+real[k]+'</i></span>';
+    box.appendChild(row);
+  });
+  return box;
+}
+function renderHomePlayer(){
+  const c=$('#view'); c.innerHTML='';
+  const me=ST.playerId||MYID;
+  const p=TBYID['wwzw'].players.find(x=>x.id===me);
+  const st=ST.stand['wwzw']||{w:0,l:0,t:0};
+  const b=ST.bat[me]||blankBat(), q=ST.pit[me]||blankPit();
+
+  /* 나 */
+  const hero=el('div','card pmhero');
+  const role=ST.role==='pit'?'투수':(ST.role==='two'?'투수 겸 타자'
+    :(ST.myPos?POSNAMES[ST.myPos]:'타자'));
+  hero.innerHTML='<div class="pm-top"><b>'+(p?p.name:'?')+'</b>'+
+    '<span>'+role+' · '+(ST.seasonNo||1)+'년차</span></div>'+
+    '<div class="pm-line">'+
+      (b.pa? ('타율 '+(b.ab?fmt3(b.h/b.ab):'-')+' · '+b.h+'안타 · '+b.hr+'홈런 · '+b.rbi+'타점')
+           : '아직 타석에 안 섰다')+
+    '</div>'+
+    (q.outs? '<div class="pm-line">'+ipStr(q)+'이닝 · 방어율 '+
+       (q.outs?(q.er*7/(q.outs/3)).toFixed(2):'-')+' · '+q.k+'탈삼진</div>' : '');
+  c.appendChild(hero);
+
+  const bars=pmGoalBars();
+  if(bars){
+    const bc=el('div','card');
+    bc.appendChild(el('div','card-h','실제 나까지'));
+    bc.appendChild(el('p','muted',
+      '오른쪽 숫자가 <b>2026시즌 실측</b>이다. 거기까지 가면 실물과 같아지고, '+
+      '넘어서면 실제보다 잘하는 게 된다. 한계는 없다.'));
+    bc.appendChild(bars);
+    c.appendChild(bc);
+  }
+
+  /* 오늘 */
+  const nx=ST.schedule[ST.round];
+  if(nx && !nx.played){
+    const opp=TBYID[nx.opp];
+    const today=el('div','card');
+    today.appendChild(el('div','card-h','오늘'));
+    if(!ST.weekDone){
+      today.appendChild(el('div','pm-wait','아직 이번 주가 시작 안 됐다'));
+    } else if(!ST.announced){
+      today.appendChild(el('div','pm-wait','라인업 발표 전이다. 내가 나가는지 아직 모른다'));
+    } else {
+      const spot=lineupSpotOf(me);
+      const box=el('div','mystatus '+(spot?'in':'out'));
+      const why=coachNoteFor(me);
+      box.innerHTML=spot
+        ? '<div class="ms-big">'+spot.ord+'번 · '+(POSNAMES[spot.pos]||spot.pos)+'</div>'+
+          '<div class="ms-sub">오늘 나간다</div>'+(why?'<div class="ms-why">'+why+'</div>':'')
+        : '<div class="ms-big">'+(isAvailable(me)?'벤치':'결장')+'</div>'+
+          '<div class="ms-sub">'+(isAvailable(me)?'오늘 선발에서 빠졌다':'오늘은 나갈 수 없다')+'</div>'+
+          (why?'<div class="ms-why">'+why+'</div>':'');
+      today.appendChild(box);
+    }
+    if(opp) today.appendChild(el('div','pm-next',
+      nx.round+'차전 · '+opp.name+' · '+(nx.homeGame?'홈':'원정')));
+    c.appendChild(today);
+  }
+
+  /* 다음 걸음 — 감독 모드의 그 판단을 그대로 쓴다 */
+  const step=nextStepInfo();
+  if(step){
+    const go2=el('button','btn primary ch-go',step.label);
+    go2.onclick=step.run;
+    c.appendChild(go2);
+    if(step.sub) c.appendChild(Object.assign(el('div','ch-sub'),{textContent:step.sub}));
+  }
+
+  /* 팀 */
+  const tc=el('div','card');
+  tc.innerHTML='<div class="card-h">팀</div>'+
+    '<div class="pm-line">'+st.w+'승 '+st.l+'패'+(st.t?' '+st.t+'무':'')+
+    ' · 리그 '+leagueRank('wwzw')+'위</div>';
+  c.appendChild(tc);
+
+  /* 최근 경기 */
+  const recent=ST.schedule.filter(x=>x.played).slice(-5).reverse();
+  if(recent.length){
+    const rc=el('div','card'); rc.appendChild(el('div','card-h','최근 경기'));
+    if((ST.gameLog||[]).length){
+      const more=el('button','btn sm','지난 경기 다시 보기');
+      more.onclick=()=>{ glogView=null; go('glog'); };
+      rc.appendChild(more);
+    }
+    recent.forEach(x=>{
+      const w2=x.result.us>x.result.them, t2=x.result.us===x.result.them;
+      const row=el('div','res-row');
+      row.innerHTML='<span class="badge '+(t2?'t':(w2?'w':'l'))+'">'+(t2?'무':(w2?'승':'패'))+'</span>'+
+        '<span class="res-opp">'+TBYID[x.opp].name+'</span>'+
+        '<span class="res-score">'+x.result.us+' : '+x.result.them+'</span>';
+      rc.appendChild(row);
+    });
+    c.appendChild(rc);
+  }
+}
+
 /* ---------- 홈 ---------- */
 function renderHome(){
+  /* [제보] "선수모드인데도 감독모드랑 너무 섞여서 감독모드 그 자체" */
+  if(isPlayerMode() && ST && ST.schedule) return renderHomePlayer();
   const c=$('#view'); c.innerHTML='';
   const st=ST.stand['wwzw'];
   const played=ST.schedule.filter(s=>s.played).length;
@@ -16408,7 +16700,49 @@ const GUIDES={
    나머지는 (1) 화면에 처음 들어갈 때 한 줄 팁으로, (2) 위쪽 ? 버튼으로 본다.
    내용은 하나도 안 버렸다 — 보여주는 순서만 바꿨다.                    */
 const TUT_CORE=[0,1,3,4,12];        // 무슨 게임 · 한 주 · 공짜진루 · 사람 관리 · 내 선수
-function tutList(){ return TUT_CORE.map(k=>TUTORIAL[k]).filter(Boolean); }
+/* [제보] "선수모드로 시작하는데 튜토리얼은 감독모드로 나오는 문제도 있다"
+   맞다. 라인업 짜는 법, 사람 관리, 회비 얘기를 선수한테 하면 안 된다.
+   선수 모드는 안내가 통째로 달라야 한다.                            */
+const TUT_PLAYER=[
+ {who:'jiwoo', say:'선수 모드를 고르셨네요! 여긴 좀 달라요.',
+  t:'너는 감독이 아니다',
+  b:`선수 모드에서는 <b>라인업을 안 짠다.</b> 감독은 <b>이건</b> 이다.<br><br>
+     오늘 내가 나가는지도 <b>발표를 봐야 안다.</b> 못 치면 타순이 내려가고,
+     더 못 치면 빠진다. 자리는 <b class="tut-g">쳐서 되찾는 것</b>이다.<br><br>
+     여태 하던 감독 모드는 그대로 있다 — 세이브 슬롯에서 따로 굴리면 된다.`},
+ {who:'ian', say:'먼저 고등학교부터 해요.',
+  t:'고등학교 3년',
+  b:`시작은 <b>고등학교</b>다. 3년 동안 여섯 경기를 치른다.<br><br>
+     <b class="tut-g">그 성적이 그대로 시작 능력치가 된다.</b> 잘하면 좋은 몸으로
+     사회인야구를 시작하고, 못하면 밑바닥에서 올라와야 한다.<br><br>
+     군포고와 흥진고는 실제 출신고다. 김선호·김상훈만 흥진고라
+     그 둘로 시작하면 나머지 열둘이 전부 상대편이다.`},
+ {who:'jiwoo', say:'능력치에 목표선이 있어요.',
+  t:'실제 나까지',
+  b:`홈 화면에 <b>「실제 나까지」</b> 가 있어요.<br><br>
+     오른쪽 숫자는 그 사람의 <b>2026시즌 실측 능력치</b>예요. 거기까지 가면
+     실물과 같아지고, <b class="tut-g">넘어서면 실제보다 잘하는 게</b> 돼요.<br><br>
+     한계는 없어요. 경기에 나가고 훈련한 만큼 계속 올라요.`},
+ {who:'ian', say:'타석은 천천히 하세요.',
+  t:'타석은 내가 준비되면',
+  b:`타석에 들어가도 공이 바로 안 와요. <b>「준비 됐다 ▶」</b> 를 눌러야
+     그때 던져요.<br><br>
+     노림수(빠른공/변화구)를 고르고, 상대 배분을 보고, 자리를 잡고 —
+     <b class="tut-g">다 하고 나서 눌러도 돼요.</b> 급할 것 없어요.<br><br>
+     공이 오면 <b>[스윙]</b>, 존 밖이면 <b>[지켜본다]</b>.`},
+ {who:'jiwoo', say:'마지막으로 하나만.',
+  t:'경기가 끝나도 안 끝난다',
+  b:`경기가 끝나면 단톡방에 <b>「진행 중」</b> 이 떠요 —
+     연속 안타 몇 경기째인지, 통산 몇 호까지 몇 개 남았는지.<br><br>
+     그 밑에 <b>다음으로 바로 가는 버튼</b>이 있어요. 그거 하나만 누르면 돼요.<br><br>
+     그리고 <b class="tut-g">단톡방에 올릴 글</b>도 자동으로 만들어져요. 복사해서 진짜
+     단톡방에 붙여넣으면 돼요.`},
+];
+function tutList(){
+  /* 선수 모드면 선수 안내를 보여준다 */
+  if(typeof isPlayerMode==='function' && isPlayerMode()) return TUT_PLAYER;
+  return TUT_CORE.map(k=>TUTORIAL[k]).filter(Boolean);
+}
 const TUTORIAL=[
  {who:'ian', say:'안녕! 이 게임이 뭔지부터 알려줄게요.',
   t:'이게 무슨 게임이냐',
@@ -16739,12 +17073,16 @@ function renderTutorial(){
     row.appendChild(nx);
   } else {
     const done=el('button','btn primary','시작한다');
-    done.onclick=()=>{ST.tutDone=true;ST.tutStep=0;saveGame(true);go('home');toast('설정에서 다시 볼 수 있다');};
+    done.onclick=()=>{ST.tutDone=true;ST.tutStep=0;
+      const to=ST.tutPending; ST.tutPending=null;
+      saveGame(true); go(to||'home'); toast('설정에서 다시 볼 수 있다');};
     row.appendChild(done);
   }
   c.appendChild(row);
   const skip=el('button','btn',`${i+1} / ${LIST.length} · 건너뛴다`);
-  skip.onclick=()=>{ST.tutDone=true;ST.tutStep=0;saveGame(true);go('home');};
+  skip.onclick=()=>{ST.tutDone=true;ST.tutStep=0;
+    const to=ST.tutPending; ST.tutPending=null;
+    saveGame(true); go(to||'home');};
   c.appendChild(skip);
   c.appendChild(el('p','muted',
     '자세한 건 위쪽 ? 를 누르면 언제든 볼 수 있다. 화면마다 처음 들어가면 한 줄씩 알려준다.'));
@@ -24720,11 +25058,35 @@ const VIEWS={home:renderHome,squad:renderSquad,lineup:renderLineup,kakao:renderK
   tutorial:renderTutorial,player:renderPlayer,hall:renderHall,whatif:renderWhatIf,
   role:renderRole,slots:renderSlots,start:renderStart,mode:renderMode,hs:renderHS,
   glog:renderGlog};
+/* 선수 모드면 감독 전용 탭을 아예 안 보이게 한다.
+   눌러도 막히긴 하지만, 있는데 안 되는 것보다 없는 게 낫다. */
+function paintTabs(){
+  /* [제보] "선수모드인데 밑에 홈이랑 이런거 누르면 그냥 우완좌완 그게
+             나와버리고" — 고등학교를 하는 중인데 본편 탭이 떠 있었다.
+     프롤로그는 딴 세상이다. 탭바를 통째로 감춘다. */
+  const bar=document.querySelector('.tabbar');
+  if(bar) bar.style.display = (typeof hsActive==='function'&&hsActive()) ? 'none' : '';
+  const hide=isPlayerMode();
+  $$('.tab').forEach(b=>{
+    const v=b.dataset.v;
+    b.style.display=(hide&&PM_BLOCK[v])?'none':'';
+  });
+}
 function go(v){
+  /* 고등학교를 하는 중에는 본편 화면으로 못 샌다. 아직 우완좌완이 아니다. */
+  if(typeof hsActive==='function' && hsActive() && v!=='hs' && v!=='tutorial' && v!=='more'){
+    v='hs';
+  }
+  /* 선수 모드에서 감독 일은 못 한다 — 안내하고 홈으로 돌린다 */
+  if(v && PM_BLOCK[v] && isPlayerMode()){
+    toast(PM_BLOCK[v][0]+' — '+PM_BLOCK[v][1]);
+    v='home';
+  }
   clearInterval(playTimer);
   curView=v;
   /* 경기 화면에서는 BGM 을 뒤로 물린다. 중계 소리에 안 묻히게. */
   try{ BGM.duck(v==='game'?0.32:1); }catch(e){}
+  paintTabs();
   $$('.tab').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   window.scrollTo(0,0);
   (VIEWS[v]||renderHome)();
@@ -25165,6 +25527,7 @@ async function boot(){
   document.addEventListener('visibilitychange',()=>{ if(document.hidden&&ST)saveGame(true); });
   window.addEventListener('pagehide',()=>{ if(ST)saveGame(true); });
   $$('.tab').forEach(b=>b.onclick=()=>go(b.dataset.v));
+  paintTabs();
   $('#sheet-close').onclick=closeSheet;
   $('#sheet-bg').onclick=closeSheet;
   /* 선수 이름 클릭 — #view 에 한 번만 걸어두면 어느 화면이든 동작한다.
