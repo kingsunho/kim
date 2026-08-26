@@ -4798,6 +4798,104 @@ function addDischarged(ST){
   finalizeTeam(us); buildPitcherPool();
   return true;
 }
+/* ================= 영입 선수 복구 =================
+   [제보] "영입한 선수가 내년되면 없어져"
+
+   전역 복귀(송정민)와 **똑같은 사고**가 영입 선수한테도 있었다.
+   선수 능력치는 세이브에 안 들어간다 — 매번 상수에서 로스터를 새로 만든다.
+   그런데 영입 선수(new_ 접두사)는 그 상수에 없다.
+
+   여태 유일한 흔적이 ST.bat 의 'new_xxx' 키 하나였다. normalizeState 가
+   그걸 보고 로스터에 되살렸다. 그래서 새로고침까지는 버텼다.
+   문제는 새 시즌이다.
+
+     시즌 종료 → buildAllTeams()      로스터가 상수로 되돌아간다 (영입 선수 없음)
+              → newSeason()          bat 을 **그 로스터로** 새로 만든다
+              → ST.bat 의 new_ 키가 사라진다 = 마지막 흔적이 지워진다
+              → normalizeState 가 되살릴 근거가 없다. 영영 없어진다.
+
+   돈 주고 데려온 사람이 한 해 만에 증발한 거다.
+   그래서 영입 사실 자체를 세이브에 남긴다(ST.signedIds). 기록이 아니라
+   **명단**이라야 시즌을 넘어간다 — 이탈 명단(leftPlayers)과 같은 취급이다.
+
+   같이 고친 것 두 가지 —
+     · 원 소속팀에서 안 빠졌다. 새로고침하면 데려온 사람이 그 팀과 우리 팀
+       양쪽 로스터에 동시에 서 있었다. 그 팀과 붙으면 자기가 자기랑 붙는다.
+     · pitch 를 안 챙겼다. 투수를 영입해도 새로고침 한 번에 야수가 됐다.
+   [주의] 여러 번 불러도 안전해야 한다 — normalizeState 가 매번 부른다. */
+function addSignedPlayers(S){
+  S=S||ST;
+  if(!Array.isArray(S.signedIds)) S.signedIds=[];
+  const us=TBYID['wwzw'];
+  let n=0;
+  S.signedIds.forEach(rec=>{
+    if(!rec||!rec.nid||!rec.pid) return;
+    /* 영입했다가 나중에 팀을 나간 사람은 다시 올리지 않는다.
+       이탈 명단은 영입 아이디(new_xxx)로 적힌다 — 그게 로스터 아이디다. */
+    if((S.leftPlayers||[]).some(r=>r&&r.pid===rec.nid)) return;
+    const from=TBYID[rec.from]||null;
+    /* 능력치는 명단에 같이 적어둔 것을 쓴다.
+       [주의] 상대 팀 투수는 t.players 에 없다 — t.pitchers 에 따로 있고,
+       스카우트 화면이 접촉할 때 야수 모양으로 즉석에서 만들어 넘긴다.
+       그래서 원본을 팀에서 찾는 방법으로는 **투수 영입이 영영 안 살아난다.** */
+    const src=rec.src || (from&&from.players.find(p=>p.id===rec.pid)) || srcFromPitchers(from,rec.pid)
+           || TEAMS.reduce((a,t)=>a||t.players.find(p=>p.id===rec.pid)||srcFromPitchers(t,rec.pid),null);
+    /* 원 소속팀에서 뺀다. 로스터가 상수에서 다시 만들어지면 원래 팀에
+       도로 서 있으니, 데려온 사람은 매번 다시 빼줘야 한다. */
+    if(from){
+      const i=from.players.findIndex(p=>p.id===rec.pid);
+      let cut=false;
+      if(i>=0){ from.players.splice(i,1); cut=true; }
+      if(from.pitchers&&from.pitchers.some(x=>x.id===rec.pid)){
+        from.pitchers=from.pitchers.filter(x=>x.id!==rec.pid); cut=true;
+      }
+      if(cut) finalizeTeam(from);
+    }
+    if(us.players.some(p=>p.id===rec.nid)) return;
+    if(!src) return;
+    const np={id:rec.nid,name:src.name,bats:src.bats||'R',con:src.con,pow:src.pow,eye:src.eye,
+      spd:src.spd,def:src.def,arm:src.arm,pos:(src.pos||['RF']).slice(),
+      pitch:src.pitch?{...src.pitch}:null, real:null};
+    us.players.push(np);
+    META[rec.nid]=META[rec.nid]||makeSignedMeta(rec.nid, src, from||{name:rec.fromName||'타팀'});
+    S.bat[rec.nid]=S.bat[rec.nid]||blankBat();
+    S.lgBat[rec.nid]=S.lgBat[rec.nid]||blankBat();
+    S.pit[rec.nid]=S.pit[rec.nid]||blankPit();
+    if(S.cond[rec.nid]==null)S.cond[rec.nid]=72;
+    if(S.morale[rec.nid]==null)S.morale[rec.nid]=74;
+    if(S.injury[rec.nid]===undefined)S.injury[rec.nid]=null;
+    if(S.ca[rec.nid]==null)S.ca[rec.nid]=calcCA(np);
+    if(S.caStart&&S.caStart[rec.nid]==null)S.caStart[rec.nid]=S.ca[rec.nid];
+    if(S.rest&&S.rest[rec.nid]==null)S.rest[rec.nid]=3;
+    if(S.bond&&S.bond[rec.nid]==null)S.bond[rec.nid]=48;
+    n++;
+  });
+  if(n){ finalizeTeam(us); buildPitcherPool(); }
+  return n;
+}
+/* 상대 팀 투수를 야수 모양으로. 스카우트 화면이 접촉할 때 만드는 것과 같은 모양이다 */
+function srcFromPitchers(team, pid){
+  const q=team&&(team.pitchers||[]).find(x=>x.id===pid);
+  if(!q) return null;
+  return {id:q.id,name:q.name,bats:'R',con:30,pow:25,eye:35,spd:40,def:40,arm:60,
+          pos:['P'],pitch:{stf:q.stf,ctl:q.ctl,sta:q.sta}};
+}
+/* 옛 세이브에는 명단이 없다. 남아 있는 유일한 흔적(ST.bat 의 new_ 키)에서
+   한 번만 만들어 준다. 그 흔적마저 없는 세이브는 이미 잃어버린 거라
+   되살릴 방법이 없다 — 앞으로는 안 잃어버린다. */
+function migrateSignedIds(S){
+  if(Array.isArray(S.signedIds)) return;
+  S.signedIds=[];
+  Object.keys(S.bat||{}).forEach(id=>{
+    if(id.indexOf('new_')!==0) return;
+    const pid=id.slice(4);
+    const t=TEAMS.find(x=>x.id!=='wwzw'&&
+      (x.players.some(p=>p.id===pid)||(x.pitchers||[]).some(p=>p.id===pid)));
+    S.signedIds.push({nid:id, pid, from:t?t.id:null, fromName:t?t.name:'타팀',
+                      name:(S.names&&S.names[id])||null});
+  });
+}
+
 /* ================= 전역 복귀 ================= */
 function checkDischarge(ST){
   // 3년차(3시즌째) 개막에 송정민 전역
@@ -7399,8 +7497,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.70.0';
-const APP_VERSION_NOTE = '모든 타구를 끝까지 본다 · 감독은 물려받는다';
+const APP_VERSION = '2.71.0';
+const APP_VERSION_NOTE = '영입한 선수가 내년에도 우리 팀에 있다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7421,6 +7519,14 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.71.0', t:'영입한 선수가 내년에도 우리 팀에 있다', items:[
+    '[제보] "영입한 선수가 내년되면 없어져" — 진짜였다. 돈 주고 데려온 사람이 새 시즌 개막에 통째로 사라졌다',
+    '선수 능력치는 세이브에 안 들어간다. 매번 상수에서 로스터를 새로 만드는데 영입 선수는 그 상수에 없다. 여태 유일한 흔적이 시즌 기록(타격 성적) 칸 하나였는데, 새 시즌이 그 기록을 새 로스터 기준으로 다시 만들면서 마지막 흔적까지 지워졌다',
+    '이제 영입 사실 자체를 명단으로 남긴다. 팀을 나간 사람 명단과 같은 취급이라 시즌을 몇 번 넘겨도 안 없어진다. 한 해 동안 훈련해서 올린 능력치도 같이 넘어간다',
+    '영입한 선수가 원 소속팀에도 그대로 남아 있던 것 — 새로고침하면 한 사람이 두 팀 로스터에 동시에 서 있었다. 그 팀과 붙으면 자기가 자기랑 붙는 판이었다',
+    '투수를 영입해도 새로고침 한 번에 야수가 되던 것 — 투구 능력치를 안 챙기고 있었다',
+    '영입 선수의 던지는 손이 새로고침할 때마다 좌투 우투로 바뀌던 것. 설 수 있는 자리까지 같이 뒤집혀서 라인업이 흔들렸다',
+  ]},
   {v:'2.70.0', t:'모든 타구를 끝까지 본다 · 감독은 물려받는다', items:[
     '「어떤 타구도 주루 플레이가 나와야 한다」 — 맞는 말이다. 지난 판에는 잘 맞은 타구만 그라운드가 나오고, 빗맞은 타구는 「2루타」 글자만 뜨고 화면이 꺼졌다. 이제 배트에 맞은 공은 전부 그라운드에서 끝까지 간다. 땅볼로 잡히든 뜬공이든 실책이든 다 보인다',
     '고를 게 있는 타구는 예전처럼 「돈다 / 선다」를 묻고, 고를 게 없는 타구는 묻지 않고 그냥 보여준다. 아웃은 짧게, 살아 나간 건 베이스를 다 도는 것까지',
@@ -11284,6 +11390,9 @@ function newSeason(){
   /* 이탈 명단은 시즌이 바뀌어도 그대로 간다. 나간 사람은 안 돌아온다. */
   const carriedLeft=(typeof ST!=='undefined'&&ST&&Array.isArray(ST.leftPlayers))
     ? ST.leftPlayers.slice() : [];
+  /* 영입 명단도 시즌을 넘어간다. 데려온 사람은 내년에도 우리 팀이다. */
+  const carriedSigned=(typeof ST!=='undefined'&&ST&&Array.isArray(ST.signedIds))
+    ? ST.signedIds.slice() : [];
   carriedLeft.forEach(rec=>{
     const pid=rec&&rec.pid; if(!pid)return;
     const u=TBYID['wwzw'];
@@ -11317,7 +11426,7 @@ function newSeason(){
     useDH:true, park:'benamul', gearLevel:0, feud:null, pendingAbsent:{},
     unhappy:{}, spark:{}, career:{}, teamCareer:null, milestones:[], firsts:{}, weather:'clear',
     playoff:null, form:{}, hall:[], awardBonus:{}, awardSnap:null, awardReply:null,
-    ultimatum:{}, broken:{}, leftPlayers:carriedLeft, noCar:{},
+    ultimatum:{}, broken:{}, leftPlayers:carriedLeft, signedIds:carriedSigned, noCar:{},
     /* 감독은 시즌이 바뀌어도 그대로 간다 — 물려받았으면 계속 그 사람이다 */
     coachPid:(typeof ST!=='undefined'&&ST&&ST.coachPid)?ST.coachPid:null,
     playMode:(typeof ST!=='undefined'&&ST&&ST.playMode)?ST.playMode:PLAY_KEY,
@@ -13978,6 +14087,10 @@ function renderHome(){
       /* 전역 복귀자는 WWZW 상수에 없어서 방금 만든 로스터에 빠져 있다.
          능력치를 이월하기 **전에** 먼저 올려야 한 해 동안 훈련한 게 안 날아간다. */
       if(ST.discharged) addDischarged(ST);
+      /* 영입해 온 사람도 방금 만든 로스터에 빠져 있다. 전역 복귀와 같은 이유다.
+         [제보] "영입한 선수가 내년되면 없어져"
+         능력치를 이월하기 **전에** 올려야 한 해 훈련한 게 안 날아간다. */
+      addSignedPlayers(ST);
       // 능력치 이월
       TBYID['wwzw'].players.forEach(p=>{ const r=keep.ratings[p.id]; if(r)Object.assign(p,r); });
       finalizeTeam(TBYID['wwzw']); buildPitcherPool();
@@ -24510,6 +24623,17 @@ function signPlayer(src, fromTeam){
   finalizeTeam(fromTeam);
   finalizeTeam(us); buildPitcherPool();
   ST.signed.push(src.name);
+  /* 영입 사실을 명단에 남긴다. 이게 없으면 새 시즌에 통째로 사라진다 —
+     로스터는 매번 상수에서 다시 만들어지고, 시즌 기록(ST.bat)은
+     그 로스터를 보고 새로 만들어지기 때문이다. */
+  if(!Array.isArray(ST.signedIds))ST.signedIds=[];
+  if(!ST.signedIds.some(r=>r&&r.nid===nid))
+    ST.signedIds.push({nid, pid:src.id, from:fromTeam.id, fromName:fromTeam.name, name:src.name,
+      /* 능력치를 같이 적어둔다. 상대 팀 투수는 t.players 에 없어서
+         나중에 원본을 다시 찾을 방법이 없기 때문이다. */
+      src:{id:src.id,name:src.name,bats:src.bats,con:src.con,pow:src.pow,eye:src.eye,
+           spd:src.spd,def:src.def,arm:src.arm,pos:(src.pos||['RF']).slice(),
+           pitch:src.pitch?{...src.pitch}:null}});
 }
 
 /* 영입 선수의 인적 정보. 예전에는 pos·speech·throws 가 없어서
@@ -24522,8 +24646,13 @@ function makeSignedMeta(nid, src, fromTeam){
   (src.pos||[]).forEach((k,i)=>{ if(pos[k]!==undefined) pos[k]=i===0?56:48; });
   if(src.pitch){ pos.P=Math.max(pos.P, 52); }
   else pos.P=Math.max(20, Math.min(38, Math.round(src.arm*0.5)));
-  // 좌투면 내야 안쪽은 못 선다
-  const throws = src.pitch&&src.bats==='L' ? 'L' : (src.bats==='L'&&Math.random()<0.3?'L':'R');
+  /* 좌투면 내야 안쪽은 못 선다.
+     [버그] 던지는 손을 Math.random() 으로 뽑았다. META 는 세이브에 안 들어가고
+     불러올 때마다 다시 만들어지니, **새로고침할 때마다 좌투 우투가 바뀌었다.**
+     설 수 있는 자리(LEFTY_BLOCKED)까지 같이 뒤집혀서 라인업이 흔들렸다.
+     아이디에서 뽑으면 몇 번을 다시 만들어도 같은 손이 나온다. */
+  let h=0; for(let i=0;i<nid.length;i++) h=(h*31+nid.charCodeAt(i))>>>0;
+  const throws = src.pitch&&src.bats==='L' ? 'L' : (src.bats==='L'&&(h%100)<30?'L':'R');
   if(throws==='L') LEFTY_BLOCKED.forEach(k=>pos[k]=0);
   return {
     born:1999, speech:'jon', throws, car:false, school:'-', drink:2,
@@ -26297,7 +26426,11 @@ function renderMore(){
   const b2=el('button','btn danger','시즌 초기화');
   b2.onclick=async()=>{if(confirm('시즌 기록이 전부 사라진다. 진행할까?')){
     TEAMS=buildAllTeams();TBYID={};TEAMS.forEach(t=>TBYID[t.id]=t);buildPitcherPool();
-    ST=newSeason();ST.lineup=recommendLineup();ST.rotation=recommendRotation();
+    ST=newSeason();
+    /* 이건 새 시즌이 아니라 **판을 처음부터**다. 돈도 기록도 다 돌아가니
+       영입 명단도 같이 비운다 — 안 그러면 공짜로 데려온 사람만 남는다. */
+    ST.signedIds=[];
+    ST.lineup=recommendLineup();ST.rotation=recommendRotation();
     await saveGame(true);go('home');toast('새 시즌');}};
   r.appendChild(b1);r.appendChild(b2); card.appendChild(r);
   c.appendChild(card);
@@ -26449,18 +26582,10 @@ function normalizeState(){
   /* 전역 복귀한 송정민은 WWZW 상수에 없다. 매번 다시 올려준다 —
      안 그러면 새로고침 한 번에 로스터에서 사라진다. */
   if(ST.discharged) addDischarged(ST);
-  Object.keys(ST.bat||{}).forEach(id=>{
-    if(id.startsWith('new_')&&!us.players.some(p=>p.id===id)){
-      const srcId=id.slice(4);
-      const src=TEAMS.flatMap(t=>t.players).find(p=>p.id===srcId);
-      if(src){
-        const np={id,name:src.name,bats:src.bats,con:src.con,pow:src.pow,eye:src.eye,
-          spd:src.spd,def:src.def,arm:src.arm,pos:src.pos.slice(),pitch:null,real:null};
-        us.players.push(np);
-        META[id]=makeSignedMeta(id, src, {name:'타팀'});
-      }
-    }
-  });
+  /* 영입해 온 사람도 상수에 없다 — 매번 다시 올린다.
+     [제보] "영입한 선수가 내년되면 없어져" */
+  migrateSignedIds(ST);
+  addSignedPlayers(ST);
   finalizeTeam(us);
   buildPitcherPool();
   /* 이름 장부 — 나중에 팀을 나가도 기록에 이름이 남게 한다.
