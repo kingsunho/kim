@@ -91,7 +91,9 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
     '비거리 난수를 결과 전에 미리 안다 (화면과 로그가 안 어긋난다)');
 
   console.log('\n[송구 — 주자를 보면서]');
-  await wait(2200);
+  /* [v2.85.0] 수비 비행 시간을 늘렸다 — 내야 2.3~2.9초 · 외야 3.1~4.0초.
+     "수비 지금 속도면 너무 빡세다" 제보에서 나온 값이라 여기도 같이 늘린다. */
+  await wait(3800);
   T(!/으로 온다/.test(txt('#decision .rb-t')), '1막이 끝나면 결과로 넘어간다 :: '+txt('#decision .rb-t'));
   const tb=[...d.querySelectorAll('#decision .rb-b')].find(b=>/2루로/.test(b.textContent));
   if(tb){

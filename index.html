@@ -2471,7 +2471,9 @@ function simPA(bat,pit,offTeam,defTeam,rng,tac,cond,park,mods){
      그래서 **내가 직접 조작한 플레이만** 결과를 정하게 한다.
      딱 잡았으면 아웃이고, 손이 안 닿았으면 안타다. 그 사이는 확률.
      경기당 네댓 번뿐이라 리그 지표는 안 흔들린다.               */
-  if(mods.defForce==='out') return {type:'OUT', gb: rng()<0.62};
+  /* 화면에서 본 타구 종류가 그대로 기록된다 — 내야면 땅볼, 외야면 뜬공 */
+  const gbOf=(dflt)=> (mods.defGb==null ? (rng()<dflt) : !!mods.defGb);
+  if(mods.defForce==='out') return {type:'OUT', gb: gbOf(0.62)};
   if(mods.defForce==='hit'){
     const eR=clamp(LG.ERR_PER_BIP*2.2*(mods.err||1), 0.02, 0.35);
     return rng()<eR ? {type:'E'} : {type:'1B'};
@@ -2485,7 +2487,7 @@ function simPA(bat,pit,offTeam,defTeam,rng,tac,cond,park,mods){
 
   const babip = clamp(LG.BABIP * offTeam.tend.babip * fBip * pBip * dFactor * tBip * park.babip
                       * (mods.babip||1), 0.15, 0.75);
-  if(rng()>=babip) return {type:'OUT', gb: rng()<0.56};
+  if(rng()>=babip) return {type:'OUT', gb: gbOf(0.56)};
 
   const pw = offTeam.tend.pow * fPow * tPow * (mods.pow||1);
   /* [제보] "홈런형타자도 나올 수 있게 만들긴 해야함"
@@ -2502,12 +2504,15 @@ function simPA(bat,pit,offTeam,defTeam,rng,tac,cond,park,mods){
       phr=LG.HR*Math.pow(pw,hrExp)*park.hr;
   const tot=p2+p3+phr;
   if(tot>0.85){const s=0.85/tot;p2*=s;p3*=s;phr*=s;}
+  /* 내 자리로 온 타구는 여기까지다 — defMax 위쪽은 아래로 내려 앉힌다 */
+  if(mods.defMax==='2B'){ p2+=p3+phr; p3=0; phr=0; }
+  else if(mods.defMax==='3B'){ p3+=phr; phr=0; }
   const rr=rng();
   if(rr<phr) return {type:'HR'};
   if(rr<phr+p3){
     /* 3루타 타구 — 발이 빠르고 상대 외야가 어리바리하면 그대로 홈까지 돈다.
        기록지에는 홈런으로 남지만 담장은 안 넘었다.                    */
-    if(spdE>=LG.ITP_MIN_SPD){
+    if(spdE>=LG.ITP_MIN_SPD && !mods.defMax){
       const fast=(spdE-LG.ITP_MIN_SPD)/20;                 // 주력이 빠를수록
       const sloppy=Math.exp(-((defTeam._slotDef!=null?defTeam._slotDef:defTeam.mean.def)-46)*0.020);
       const chance=clamp(LG.ITP_BASE*(0.5+fast)*sloppy*Math.sqrt(park.d3||1), 0, 0.34);
@@ -7763,8 +7768,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.84.0';
-const APP_VERSION_NOTE = '고등학교는 전원 20에서 시작한다';
+const APP_VERSION = '2.85.0';
+const APP_VERSION_NOTE = '슬라이더가 제 쪽으로 휜다 · 수비한 타구가 그대로 기록된다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7785,6 +7790,16 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.85.0', t:'슬라이더가 제 쪽으로 휜다 · 수비한 타구가 그대로 기록된다', items:[
+    '[제보] "슬라이더가 반대로 휘는 치명적 버그 · 우완 투수 좌완 투수 슬라이더가 서로 반대" — 진짜였다. 정확히는 좌타석일 때만 좌우가 통째로 뒤집혀 있었다',
+    '화면은 포수 뒤에 고정된 카메라다. 우타는 3루쪽(화면 왼쪽), 좌타는 1루쪽(화면 오른쪽)에 선다. 그러니까 좌타에게는 화면 오른쪽이 몸쪽이다. 그런데 코스도 변화량도 「화면 왼쪽이 몸쪽」으로 고정돼 있었다',
+    '그래서 좌타석에서는 좌투 슬라이더가 몸쪽으로 파고들고 우투 슬라이더가 바깥으로 흘러 나갔다. 둘 다 실제와 정반대다. 글씨는 「바깥으로 흘러 나간다」로 맞게 나오는데 그림이 반대라 더 헷갈렸다. 몸에 맞는 공도 반대쪽에서 날아왔다',
+    '이제 그리는 순간에만 타자가 실제로 선 쪽으로 뒤집는다. 판정 로직은 한 글자도 안 건드렸다 — 보이는 대로 판정이 나오는 건 그대로다',
+    '[제보] "수비해서 1루 던졌는데 삼진이라 나오고" — 수비 창은 다시 그려지면(투수 교체·화면 갱신) 조용히 닫힌다. 그러면 아무 선택도 안 남아서 그 타석이 삼진이나 볼넷으로 끝날 수 있었다. 이제 화면에 타구를 보여준 이상 그 타석은 무조건 인플레이로 끝난다',
+    '[제보] "내가 잡은 땅볼은 안 나왔다" — 아웃의 땅볼/뜬공을 그 자리에서 새로 굴리고 있었다. 그래서 내야에서 잡은 타구가 35% 확률로 「뜬공 아웃 (중앙 102m)」으로 적혔다. 비거리까지 그 플래그를 따라가서 장면과 기록이 통째로 어긋났다. 이제 내야 자리로 온 건 땅볼, 외야로 뜬 건 뜬공으로 그대로 남는다',
+    '[제보] "수비해서 송구 했는데 3루타" — 내 글러브 앞까지 온 타구가 3루타나 그라운드 홈런이 되던 것. 내야는 2루타까지, 외야는 3루타까지로 막았다',
+    '[제보] "수비 지금 속도면 너무 빡세다" — 내야 타구가 1.3초 만에 지나갔다. 조이스틱을 잡고 방향을 읽고 쫓아가기까지 손이 그 안에 안 들어온다. 내야 2.3~2.9초 · 외야 3.1~4.0초로 늘렸고, 닿는 거리와 발도 조금 얹었다',
+  ]},
   {v:'2.84.0', t:'고등학교는 전원 20에서 시작한다', items:[
     '[요청] "선수모드 키울때는 그 별같은게 없이 동등하게 그냥 고딩때 순수 타격실력 투구 실력으로 기본 20으로" — 그렇게 바꿨다',
     '여태 고교 능력치는 전부 어른 능력치에 곱한 값이었다. 송승민으로 시작하면 고1 컨택이 47, 이민혁으로 시작하면 6. 같은 고1인데 여덟 배 차이였고 3년을 어떻게 보내든 그 격차는 그대로 갔다. 누구를 고르냐가 곧 실력이었다',
@@ -10003,6 +10018,7 @@ function LiveGame(cfg){
      예전에는 지시를 고르고 나면 타석을 진행하기도 전에 같은 상황을 다시 검사해서
      판단창이 곧바로 또 떴다. 유저 입장에서는 "골라도 안 넘어간다"로 보였다.  */
   this.paSeq = 0;         // 완료된 타석 수
+  this._defShown = -1;    // 수비 화면을 띄운 타석 — 그 타석은 인플레이로 끝난다
   this.lastDecPA = -1;    // 마지막으로 판단을 물어본 타석
   this.timeouts = 5;      // 공격 작전 지시 가능 횟수
   this.defTimeouts = 3;   // 수비 판단(고의4구·시프트) 가능 횟수
@@ -10496,6 +10512,26 @@ LiveGame.prototype.consumePlayMods = function(off, def){
   }
   /* 수비 — 내가 지키는 자리로 타구가 올 때 고른 것.
      과감: 잡으면 호수비, 놓치면 실책. 안전: 무난하게 간다. */
+  /* 화면이 내 자리로 오는 타구를 보여줬으면 그 타석은 인플레이다.
+     답을 했든(=_defPlay) 창이 도중에 닫혔든 상관없다.
+     [제보] "수비하라고 준비해서 가고 있었는데 삼진 나오거나" */
+  const shown=(this._defShown===this.paSeq) && def.isUser;
+  if(shown){
+    this._defShown=-1;
+    const mp=(typeof myPos==='function')?myPos():null;
+    /* 내야 자리로 굴러온 공은 땅볼이고 외야로 뜬 공은 뜬공이다.
+       [제보] "내가 잡은 땅볼은 안 나왔다"
+       여태 아웃의 땅볼/뜬공을 그 자리에서 새로 굴렸다. 그래서 내야에서
+       잡은 타구가 35% 확률로 「뜬공 아웃 (중앙 102m)」 으로 적혔다.
+       비거리까지 그 플래그를 따라가니 장면과 기록이 통째로 어긋났다. */
+    out={...(out||{}), inPlay:true,
+         defGb: (typeof DEF_INFIELD!=='undefined' && mp) ? (DEF_INFIELD.indexOf(mp)>=0) : null,
+         /* 내 글러브 앞까지 온 타구가 3루타나 그라운드 홈런이 될 수는 없다.
+            [제보] "수비해서 송구 했는데 3루타" — 내야는 2루타까지,
+            외야는 3루타까지. 담장을 넘는 일은 없다. */
+         defMax: (typeof DEF_INFIELD!=='undefined' && mp && DEF_INFIELD.indexOf(mp)>=0)
+                 ? '2B' : '3B'};
+  }
   if(this._defPlay && def.isUser){
     const dp=this._defPlay; this._defPlay=null;
     const me=this.myId||(typeof ST!=='undefined'&&ST?ST.playerId:null);
@@ -10911,7 +10947,16 @@ LiveGame.prototype.detectDecision = function(){
       if(onField){
         const b=this.batter();
         const ang=battedAngle(this.paSeq, (b&&b.bats)||'R');
-        if(defZoneHit(pos, ang)) return {kind:'defplay', ang, pos};
+        if(defZoneHit(pos, ang)){
+          /* [제보] "수비해서 1루 던졌는데 삼진이라 나오고"
+             여태는 **답을 했을 때만** 인플레이로 못 박았다. 그런데 이 창은
+             다시 그려지면(투수 교체·화면 갱신) box._cleanup 이 조용히
+             죽인다 — 그러면 아무 선택도 안 남고 그 타석은 삼진으로도
+             끝날 수 있었다. 화면에 타구를 보여준 이상 그 타석은
+             **인플레이로 끝나야 한다.** 보여준 것과 기록이 어긋나면 안 된다. */
+          this._defShown=this.paSeq;
+          return {kind:'defplay', ang, pos};
+        }
       }
     }
   }
@@ -25366,7 +25411,22 @@ function throwBall(mound, type, opts){
   const cxv=(o.cx==null?1:o.cx), cyv=(o.cy==null?1:o.cy);
   /* 0.303 — 세 칸(0,1,2)은 존 안(±0.303)에 들어가고
      빠진 공(-1,3)은 존 밖(±0.606 > 반폭 0.5)으로 나간다.               */
-  const tx=zx+(cxv-1)*(zw*0.303);
+  /* [제보] "슬라이더가 반대로 휘는 치명적 버그 · 우완 좌완 슬라이더가 서로 반대"
+
+     화면은 **포수 뒤에 고정된 카메라**다(mvPaint 참고).
+       우타는 3루쪽 = 화면 왼쪽에 선다  → 몸쪽이 왼쪽
+       좌타는 1루쪽 = 화면 오른쪽에 선다 → 몸쪽이 **오른쪽**
+     그런데 코스(cx)도 변화량(bx)도 "화면 왼쪽이 몸쪽" 으로 고정돼 있었다.
+     그래서 **좌타석일 때만 좌우가 통째로 뒤집혀 보였다** —
+       좌투가 좌타에게 던진 슬라이더가 몸쪽으로 파고들고
+       우투가 좌타에게 던진 슬라이더가 바깥으로 흘러 나갔다.
+     둘 다 실제와 정반대다. 글씨는 "바깥으로 흘러 나간다" 로 맞게 나오는데
+     그림이 반대라 더 헷갈렸다. 몸에 맞는 공도 반대쪽에서 날아왔다.
+
+     cx(0 몸쪽 · 2 바깥)와 변화량은 그대로 두고 **그리는 순간에만**
+     타자가 실제로 선 쪽으로 뒤집는다. 판정은 한 글자도 안 건드린다. */
+  const side=(mound&&mound._mv&&mound._mv.batLeft)?-1:1;
+  const tx=zx+(cxv-1)*(zw*0.303)*side;
   const ty=zy+(cyv-1)*(zh*0.303);
   /* [제보] "포수 글러브 모양은 왜 거기 고정인건지 모르겠다"
      미트는 공 받는 자리로 움직여야 한다. 도착 지점으로 미리 붙여둔다. */
@@ -25387,7 +25447,7 @@ function throwBall(mound, type, opts){
      이제 변화량만큼 '어긋난 곳을 겨냥해서 던지고' 막판에 휘어서 목표로
      들어온다. 도착점은 언제나 미트 자리이고, 보이는 대로 판정이 나온다.  */
   const hand=(o.hand===-1?-1:1);
-  const bkx=(T.bx/100)*W*hand, bky=(T.by/100)*H;
+  const bkx=(T.bx/100)*W*hand*side, bky=(T.by/100)*H;
   const ax=tx-bkx, ay=ty-bky;          // 겉보기 조준점 (여기서 시작해 목표로 휜다)
   /* exact 를 주면 넘긴 시간 그대로 쓴다 — 타석 화면은 구속(km/h)에서
      비행시간을 직접 계산해서 넘기므로 구종 보정을 두 번 먹으면 안 된다. */
@@ -26378,9 +26438,14 @@ function renderDefPlay(box, d){
   const u=battedU(LIVE.paSeq);
   const fenceM=(typeof fenceAt==='function')?fenceAt(park,d.ang):100;
   const mDraw = inf ? (12+u*30) : (fenceM*(0.42+u*0.46));
-  const flyMs = Math.round((inf?1100:1650)+mDraw*(inf?14:9));
-  const REACH = 13+dv*0.20;
-  const SPEED = 42+sv*0.62+dv*0.30;
+  const flyMs = Math.round((inf?2000:2600)+mDraw*(inf?22:13));
+  /* [제보] "수비 지금 속도면 너무 빡세다"
+     내야는 타구가 1.3~1.7초 만에 지나갔다. 조이스틱을 잡고 방향을 읽고
+     쫓아가기까지 손이 그 안에 안 들어온다 — 준비 버튼을 눌러도 마찬가지다.
+     비행 시간을 내야 2.3~2.9초 · 외야 3.1~4.0초로 늘리고,
+     닿는 거리와 발도 조금 얹는다. 잡히면 아웃이라 시간이 곧 난이도다. */
+  const REACH = 16+dv*0.22;
+  const SPEED = 50+sv*0.66+dv*0.34;
 
   /* 판정이 나면 같은 캔버스 위에 결과를 재생한다 — 새 창을 안 띄운다 */
   const finish=(q, where, tq)=>{
