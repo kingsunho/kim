@@ -1930,6 +1930,8 @@ td.dimc{color:var(--dm);text-align:left}
 .pc-att{font-size:10.5px;color:var(--clay);margin-top:4px}
 .pk-star{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px}
 .pk-pot{font-size:10px;color:var(--dim);display:flex;align-items:center;gap:4px}
+/* 선수 모드에서 별 자리에 들어가는 한 줄. 별을 빼고 빈 칸으로 두면 어색하다 */
+.pk-even{font-size:10px;color:var(--dim);letter-spacing:-.2px}
 .pk-role{font-size:10.5px;color:#a9b4c2;margin-top:5px}
 .gdate{font-size:11.5px;color:var(--gold);margin:4px 0 6px;font-weight:600}
 .daterow{display:flex;align-items:center;gap:8px;margin:7px 0 2px;flex-wrap:wrap}
@@ -7761,8 +7763,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.83.0';
-const APP_VERSION_NOTE = '홈런은 홈런처럼 · 투수를 골랐으면 투수다';
+const APP_VERSION = '2.84.0';
+const APP_VERSION_NOTE = '고등학교는 전원 20에서 시작한다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7783,6 +7785,17 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.84.0', t:'고등학교는 전원 20에서 시작한다', items:[
+    '[요청] "선수모드 키울때는 그 별같은게 없이 동등하게 그냥 고딩때 순수 타격실력 투구 실력으로 기본 20으로" — 그렇게 바꿨다',
+    '여태 고교 능력치는 전부 어른 능력치에 곱한 값이었다. 송승민으로 시작하면 고1 컨택이 47, 이민혁으로 시작하면 6. 같은 고1인데 여덟 배 차이였고 3년을 어떻게 보내든 그 격차는 그대로 갔다. 누구를 고르냐가 곧 실력이었다',
+    '이제 누구로 시작하든 고1 능력치가 전부 20이다. 별도 잠재도 안 본다. 졸업 능력치는 3년 동안 실제로 친 것과 던진 것으로만 정해진다 — 못 친 3년은 31, 잘 친 3년은 56쯤에서 졸업한다',
+    '내 선수만 20으로 내리면 3년 내내 못 친다. 그래서 고교 리그 전체를 같은 눈금으로 내렸다 — 학년이 기준선이다(고1 32 · 고2 37 · 고3 42). 실존 동급생은 그 기준선 위에 개인차를 눌러서 얹는다. 송승민이 여전히 제일 잘 던지되 어른 능력치를 짊어지고 서 있지는 않는다',
+    '성적 눈금을 112판 실측으로 다시 잡았다. 예전 눈금은 도루 0~5개, 실책 0~5개, 방어율 1.5~9를 보고 있었는데 실제로는 도루 0~3, 실책 0~2, 방어율 5.5~13.5가 나온다. 그래서 주루는 뭘 해도 안 오르고 수비는 뭘 해도 만점이었고, 투수는 잘 던지든 못 던지든 졸업 능력치가 같았다',
+    '투수로 시작해도 한 이닝을 못 던지는 판이 있었다 — 구위 순으로 넷만 남기는 투수 명단에서 밑바닥 능력치인 내가 잘렸다. 투수로 시작했으면 마운드 자리는 있다',
+    '야수를 골라도 투수로 시작할 수 있다. 어차피 전부 20에서 시작하니 원래 투수였는지는 안 본다. 예전엔 서른 아웃을 던지고도 졸업 구위가 0으로 나왔다',
+    '선수 모드 선택 화면에서 별을 없앴다. 누구를 골라도 출발이 같으니 보여줄 이유가 없다',
+    '선수 모드에서 내가 키우는 선수는 잠재(별) 상한을 안 받는다. 졸업 화면이 「한계는 없다」고 약속해놓고 실제로는 별에 막혀 훈련이 헛일이 되던 것 — 말과 코드가 달랐다',
+  ]},
   {v:'2.83.0', t:'홈런은 홈런처럼 · 투수를 골랐으면 투수다', items:[
     '[요청] "이거 홈런칠때 임팩트 있었나? 없다면 넣어주고" — 없었다. 공이 날아가고 배너에 「홈런!」 한 줄이 전부라 안타랑 그림이 똑같았다. **세 번 때린다** — 맞는 순간 화면이 흔들리고 하얗게 튀고, **담장을 넘는 순간** 금색으로 번쩍하면서 담장 너머로 불빛이 퍼지고, 도는 동안 「홈런!」과 **비거리**가 크게 남는다. 공에는 꼬리가 붙어서 눈으로 따라갈 수 있다',
     '비거리는 엔진이 이미 계산해 둔 그 숫자다 — 중계 로그와 화면이 어긋나지 않는다. 사회인야구 담장 기준 97~129m 사이다',
@@ -13156,7 +13169,10 @@ function renderPick(){
   if(!ST || (ST.round===0 && !ST.weekDone)) paintStart(c, ()=>renderPick());
   const head=el('div','card');
   head.innerHTML=`<div class="card-h">누구로 플레이할까</div>
-    <p class="muted">고른 선수 시점으로 단톡방이 보인다. 나중에 설정에서 바꿀 수 있다.</p>`;
+    <p class="muted">고른 선수 시점으로 단톡방이 보인다. 나중에 설정에서 바꿀 수 있다.${
+      isPlayerMode()
+      ? '<br><b>능력치는 안 물려받는다.</b> 누구를 고르든 고등학교 1학년 '+HS_BASE+'에서 똑같이 시작한다 — 3년을 어떻게 보내냐가 시작 능력치가 된다.'
+      : ''}</p>`;
   c.appendChild(head);
   const us=TBYID['wwzw'];
   const posLabel=p=>{
@@ -13174,7 +13190,9 @@ function renderPick(){
     const b=el('button','pickcard'+(MYID===p.id?' on':''));
     b.innerHTML=`<div class="pk-top"><span class="pk-nm">${p.name}</span>
       <span class="pk-age">${posLabel(p)}</span></div>
-      <div class="pk-star">${starHTML(effCA(p.id))}<span class="pk-pot">잠재 ${starHTML(effPA(p.id),true)}</span></div>
+      ${isPlayerMode()
+        ? `<div class="pk-star"><span class="pk-even">고등학교부터 · 전원 같은 자리에서</span></div>`
+        : `<div class="pk-star">${starHTML(effCA(p.id))}<span class="pk-pot">잠재 ${starHTML(effPA(p.id),true)}</span></div>`}
       ${roleLabel(p)?`<div class="pk-role">${roleLabel(p)}</div>`:''}`;
     b.onclick=async()=>{
       MYID=p.id;
@@ -13259,13 +13277,15 @@ function hsMakePlayer(rng, grade, tag){
   /* 학년이 올라갈수록 조금 낫다 */
   /* [손봄] 26+grade*7 이면 고3 부원이 47 이라 실존 인물(성인의 82%)한테
      일방적으로 밀렸다. 부원도 야구부다 — 올린다. */
-  const base=34+grade*7;
+  /* [주의] 여기서 나온 값이 최종값이다. hsAdjust 는 npc 를 그냥 통과시킨다 —
+     예전엔 여기서 만든 값에 배율을 한 번 더 곱했다(41 → 28). */
+  const base=hsBaseOf(grade);
   const sp=(w)=>Math.max(8,Math.min(88, Math.round(base+(rng()*2-1)*w)));
   return {
     id:tag, name:nm, grade,
     bats:rng()<0.22?'L':'R',
-    con:sp(20), pow:sp(24), eye:sp(16), spd:sp(20), def:sp(18), arm:sp(18),
-    stf:sp(20), ctl:sp(18), sta:sp(16),
+    con:sp(12), pow:sp(15), eye:sp(10), spd:sp(12), def:sp(11), arm:sp(11),
+    stf:sp(12), ctl:sp(11), sta:sp(10),
     npc:true,
   };
 }
@@ -14129,24 +14149,55 @@ const HS_INN=5;                       // 짧게 — 다섯 이닝
    지금 능력치는 2026년, 즉 스물예닐곱의 값이다. 고등학생이 그걸 그대로
    가지고 있을 리 없다. 학년을 올라가며 지금의 68% → 82% 로 붙는다.
    나머지는 사회인야구를 하며 붙은 것으로 친다.                       */
-function hsScale(grade){ return 0.62+grade*0.068; }
-/* 내 선수는 훨씬 낮게 시작한다 — 밑바닥에서 올라오는 게 이 모드다.
-   [요청] "기본 시작할때는 스탯을 좀 낮게 측정해야겠지? 밑바닥부터 하는 거니깐" */
-/* [손봄] 0.45 로 놨더니 고교 투수(부원 55 안팎)를 3년 내내 못 쳤다.
-   12타수 2안타로 끝나면 밑바닥이 아니라 그냥 재미가 없다. */
-const HS_ME_START=0.54;
+/* ================= 고교 능력치 눈금 =================
+   [요청] "선수모드 키울때는 그 별같은게 없이 동등하게
+           그냥 고딩때 순수 타격실력 투구 실력으로 기본 20으로 해놓고"
 
+   여태 고교 능력치는 전부 **어른 능력치에 곱한 값**이었다.
+   내 선수도 p[k] * 0.54 였다. 그래서 —
+     송승민으로 시작 → 고1 컨택 47
+     이민혁으로 시작 → 고1 컨택  6
+   같은 고1인데 여덟 배 차이가 났다. 누구를 고르냐가 곧 실력이었고,
+   3년을 어떻게 보내든 그 격차는 그대로 갔다. 그건 키우는 게 아니다.
+
+   이제 **내 선수는 누구로 시작하든 전 능력치 20** 이다.
+   별도 잠재도 안 본다. 3년 동안 실제로 친 것과 던진 것만 졸업치가 된다.
+
+   [주의] 내 선수만 20으로 내리면 3년 내내 못 친다 — 예전에 0.45 로
+   내렸다가 12타수 2안타로 끝난 적이 있다(부원 투수가 45였다).
+   그래서 고교 리그 전체를 같은 눈금으로 내린다. 학년이 곧 기준선이다.
+   실존 동급생은 그 기준선에 개인차를 **눌러서** 얹는다. 송승민이 여전히
+   제일 잘 던지되, 어른 능력치를 그대로 짊어지고 서 있지는 않게.       */
+const HS_BASE=20;            // **내 선수의 시작.** 누구로 시작하든 이 값이다
+const HS_ME_UP=1.4;          // 경기를 치를수록 조금씩 오른다
+const HS_LG_BASE=32;         // 고1 리그 기준선 — 내 시작보다 조금 위다
+const HS_GRADE_UP=5;         // 학년당
+const HS_REAL_SPREAD=0.30;   // 실존 인물 개인차를 얼마나 남기나
+const HS_ADULT_MID=44;       // 우완좌완 성인 능력치 한가운데쯤
+function hsBaseOf(grade){
+  return HS_LG_BASE+(Math.max(1,Math.min(3,grade))-1)*HS_GRADE_UP;
+}
 function hsAdjust(p, grade, isMe, meBoost){
   const q={...p};
-  const k=isMe ? (HS_ME_START+(meBoost||0)) : hsScale(grade);
+  /* 부원은 이미 고교 눈금으로 만들어졌다 — 두 번 누르면 안 된다 */
+  if(q.npc) return q;
+  const B=hsBaseOf(grade);
+  /* 내 선수는 능력치를 안 물려받는다. 누구로 시작하든 같은 자리다. */
+  const me=Math.round(HS_BASE+(meBoost||0));
+  const conv=(v)=> isMe ? me
+    : Math.max(8, Math.round(B+(v-HS_ADULT_MID)*HS_REAL_SPREAD));
   ['con','pow','eye','spd','def','arm'].forEach(x=>{
-    if(q[x]!=null) q[x]=Math.max(6,Math.round(q[x]*k));
+    if(q[x]!=null) q[x]=conv(q[x]);
   });
+  /* 야수를 골랐는데 투수로 시작하겠다고 했으면 마운드 능력치를 만들어 준다.
+     어차피 전부 20 에서 시작한다 — 원래 투수였는지는 안 본다. */
+  if(isMe && !q.pitch && (ST.role==='pit'||ST.role==='two'))
+    q.pitch={stf:me, ctl:me, sta:me};
   if(q.pitch){
     q.pitch={...q.pitch};
-    ['stf','ctl','sta'].forEach(x=>{ if(q.pitch[x]!=null) q.pitch[x]=Math.max(8,Math.round(q.pitch[x]*k)); });
+    ['stf','ctl','sta'].forEach(x=>{ if(q.pitch[x]!=null) q.pitch[x]=conv(q.pitch[x]); });
   }
-  ['stf','ctl','sta'].forEach(x=>{ if(q[x]!=null) q[x]=Math.max(8,Math.round(q[x]*k)); });
+  ['stf','ctl','sta'].forEach(x=>{ if(q[x]!=null) q[x]=conv(q[x]); });
   return q;
 }
 /* 그 해 그 학교 팀을 만든다. 실존 인물은 학년에 맞춰 능력치를 낮추고
@@ -14167,9 +14218,17 @@ function hsTeamOf(school, year, seed, meId, meBoost){
     else if(p.npc && p.stf) pitchers.push({id:p.id,name:p.name,stf:p.stf,ctl:p.ctl,sta:p.sta});
   });
   pitchers.sort((a,b)=>(b.stf*0.6+b.ctl*0.4)-(a.stf*0.6+a.ctl*0.4));
+  let pick=pitchers.slice(0,4);
+  /* [버그] 투수로 시작했는데 한 이닝도 못 던지는 판이 나왔다.
+     구위 순으로 넷만 남기는데 내 선수는 20에서 시작하니 **잘렸다.**
+     로테이션에 나를 올려놔도 그 아이디가 투수진에 없으면 무효다.
+     투수로 시작했으면 마운드 자리는 있다 — 못 던져도 서 봐야 는다. */
+  const meP=meId && (ST.role==='pit'||ST.role==='two')
+    ? pitchers.find(q=>q.id===meId) : null;
+  if(meP && !pick.some(q=>q.id===meId)) pick=[meP].concat(pick.slice(0,3));
   const S=HS_SCHOOLS[school];
   return finalizeTeam({id:'hs_'+school, name:S.name, ops:0.80, avg:.290,
-    tend:{...HS_TEND}, players, pitchers:pitchers.slice(0,4), isUser:false});
+    tend:{...HS_TEND}, players, pitchers:pick, isUser:false});
 }
 /* 내가 뛰는 학교 / 상대 학교 */
 function hsMySchool(){ return hsSchoolOf(ST.playerId||MYID)||'gunpo'; }
@@ -14899,7 +14958,7 @@ function hsBuild(i){
   const year=hsYearAt(i);
   const base=(ST.seed||1);
   const mine=hsMySchool();
-  const us=hsTeamOf(mine, year, base, me, i*0.035);
+  const us=hsTeamOf(mine, year, base, me, i*HS_ME_UP);
   const foe = s.rival
     ? hsTeamOf(hsFoe(), year, base, null, 0)
     : hsOtherTeam(HS_OTHERS[i%HS_OTHERS.length], year, base+i);
@@ -15062,6 +15121,9 @@ function hsLiveEnd(){
 }
 /* ---------- 졸업 ---------- */
 function hsLin(v,lo,hi){ return Math.max(0,Math.min(1,(v-lo)/(hi-lo))); }
+/* 졸업치 = HS_BASE + 나간 만큼 + 잘한 만큼. 어른 능력치는 안 본다. */
+const HS_GRAD_PLAY=10;      // 3년 꼬박 뛰기만 해도
+const HS_GRAD_PERF=26;      // 성적으로 채울 수 있는 몫
 /* 6경기 성적 → 시작 능력치 배율.
    못해도 0.58, 잘하면 0.98 까지. 실제 2026 능력치가 1.00 이라
    **졸업하면 아직 완성형이 아니다.** 거기까지 가는 게 본편이다.     */
@@ -15076,16 +15138,28 @@ function hsGrades(){
   const bb9 = ip? q.bb/ip : 9;
   const era = ip? q.er*7/ip : 9;
   const g   = {};
-  /* 18타석짜리 표본이다. 성인 리그 기준을 그대로 쓰면 너무 가혹하다 */
-  g.con = hsLin(avg, 0.120, 0.380);
-  g.pow = hsLin(slg, 0.150, 0.700);
-  g.eye = hsLin(bbr, 0.030, 0.220)*0.6 + hsLin(obp-avg, 0.020, 0.160)*0.4;
-  g.spd = hsLin(b.sb, 0, 5)*0.7 + hsLin(b.d3, 0, 2)*0.3;   // 6경기에 8도루는 과하다
-  g.def = hsLin(b.g, 0, 6)*0.6 + (1-hsLin(b.e, 0, 5))*0.4;
-  g.arm = g.def*0.7 + g.pow*0.3;
-  g.stf = ip? (hsLin(k9, 0.6, 2.4)*0.7 + (1-hsLin(era, 1.5, 9))*0.3) : 0;
-  g.ctl = ip? ((1-hsLin(bb9, 0.4, 3.2))*0.7 + (1-hsLin(era, 1.5, 9))*0.3) : 0;
-  g.sta = ip? hsLin(ip, 3, 22) : 0;
+  /* 작은 표본이다. 성인 리그 기준을 그대로 쓰면 너무 가혹하다.
+
+     [손봄] 눈금이 옛 환경(내 컨택 6~47 · 부원 45) 기준이었다.
+     리그를 20 눈금으로 내리고 나서 112판 실측하니 —
+       타율 .167~.438 · 장타 .211~.579 · 볼넷율 .095~.292
+       실책 0~2 · 도루 0~3 · 3루타 0~1
+       K/이닝 .86~1.36 · BB/이닝 .86~1.69 · ERA 5.5~13.5 · 이닝 13~15
+     그런데 눈금은 도루 0~5, 실책 0~5, ERA 1.5~9 를 보고 있었다. 그래서
+     **주루는 뭘 해도 안 오르고 수비는 뭘 해도 만점**이었고, 투수는 잘
+     던지든 못 던지든 졸업치가 같았다. 졸업치가 절대값이 된 지금은
+     그게 그대로 티가 난다. 실측 분포에 맞춰 다시 잡는다.             */
+  g.con = hsLin(avg, 0.170, 0.440);
+  g.pow = hsLin(slg, 0.210, 0.590);
+  g.eye = hsLin(bbr, 0.095, 0.300)*0.6 + hsLin(obp-avg, 0.080, 0.200)*0.4;
+  g.spd = hsLin(b.sb, 0, 3)*0.7 + hsLin(b.d3, 0, 1)*0.3;
+  /* 수비는 고교 기록으로 잴 게 실책밖에 없다. 전 경기 출전은 기본이라
+     그것만으로 만점을 주면 아무나 수비 만렙으로 졸업한다 — 상한 0.80. */
+  g.def = hsLin(b.g, 0, hsGamesCount())*0.35 + (1-hsLin(b.e, 0, 3))*0.45;
+  g.arm = g.def*0.6 + g.pow*0.4;
+  g.stf = ip? (hsLin(k9, 0.85, 1.40)*0.7 + (1-hsLin(era, 5.5, 13.5))*0.3) : 0;
+  g.ctl = ip? ((1-hsLin(bb9, 0.85, 1.70))*0.7 + (1-hsLin(era, 5.5, 13.5))*0.3) : 0;
+  g.sta = ip? hsLin(ip, 4, 15) : 0;
   return g;
 }
 /* 졸업 — 그 성적으로 시작 능력치를 못 박는다 */
@@ -15103,20 +15177,31 @@ function hsGraduate(){
      오르고 못 치면 확 떨어졌다. 그래서 출전(경험)을 섞고 성적 몫을
      줄인다 — 3년 꼬박 뛴 것 자체가 절반이다.                        */
   const exp=hsLin((H.bat.g||0)+(H.pit.g||0), 0, hsGamesCount());
-  const K=(v)=>0.55+0.10*exp+0.24*Math.max(0,Math.min(1,v));
+  /* [요청] "그 별같은게 없이 동등하게 ... 기본 20으로"
+     예전에는 졸업치가 어른 능력치에 곱한 값이었다(성인의 55~89%).
+     송승민으로 시작하면 컨택 48로, 이민혁으로 시작하면 7로 졸업했다.
+     3년을 똑같이 보내도 그랬다. 고른 사람이 곧 결과였다.
+     이제 **20에서 출발해서 3년으로 번 만큼만 오른다.**
+       그냥 다 나가기만 해도  +10   (3년 꼬박 뛴 것 자체가 실력이다)
+       성적으로              +26   (다 채우면 팀 평균 위 · 최상위는 아니다)
+     졸업은 완성이 아니라 시작이다 — 본편에서 계속 오른다. */
+  const K=(v)=>HS_BASE + HS_GRAD_PLAY*exp + HS_GRAD_PERF*Math.max(0,Math.min(1,v));
   /* 3년 동안 고른 것들 — 웨이트장에 살았으면 파워가, 영상만 봤으면 선구가 붙는다.
      크게 안 갈린다. 한 판 더 하고 싶어질 정도만.                     */
   const EF=H.eff||{};
   const out={};
   ['con','pow','eye','spd','def','arm'].forEach(k=>{
     if(p[k]==null) return;
-    out[k]=Math.max(8, Math.round(p[k]*K(g[k])) + Math.min(9,(EF[k]||0)));
+    out[k]=Math.round(K(g[k])) + Math.min(9,(EF[k]||0));
   });
-  /* 투수로 뛰었으면 투구 능력치도. 안 뛰었으면 손대지 않는다 */
-  if(H.pit.outs>0 && p.pitch){
+  /* 투수로 뛰었으면 투구 능력치도. 안 뛰었으면 손대지 않는다.
+     [주의] 어른 로스터에 pitch 가 있는지는 안 본다 — 야수를 골라도
+     투수로 시작할 수 있고, 그러면 고교에서 실제로 던졌다.
+     예전엔 여기서 걸러져서 서른 아웃을 던지고도 졸업 구위가 0이었다. */
+  if(H.pit.outs>0){
     out.pitch={};
     ['stf','ctl','sta'].forEach(k=>{
-      out.pitch[k]=Math.max(10, Math.round(p.pitch[k]*K(g[k])) + Math.min(9,(EF[k]||0)));
+      out.pitch[k]=Math.round(K(g[k])) + Math.min(9,(EF[k]||0));
     });
   }
   ST.hsRatings=out;
@@ -15206,10 +15291,16 @@ function applyHsStart(){
   const p=us.players.find(x=>x.id===me); if(!p) return 0;
   const R=ST.hsRatings;
   ['con','pow','eye','spd','def','arm'].forEach(k=>{ if(R[k]!=null) p[k]=R[k]; });
-  if(R.pitch&&p.pitch){
+  if(R.pitch){
+    /* 야수를 골랐는데 고교에서 투수로 뛰었으면 마운드에 올려준다.
+       어른 로스터에는 pitch 가 없으니 여기서 만들어야 한다. */
+    if(!p.pitch) p.pitch={stf:R.pitch.stf,ctl:R.pitch.ctl,sta:R.pitch.sta};
     ['stf','ctl','sta'].forEach(k=>{ if(R.pitch[k]!=null) p.pitch[k]=R.pitch[k]; });
-    const q=us.pitchers.find(x=>x.id===me);
-    if(q){ q.stf=p.pitch.stf; q.ctl=p.pitch.ctl; q.sta=p.pitch.sta; }
+    let q=us.pitchers.find(x=>x.id===me);
+    if(!q){ q={id:me,name:p.name,stf:0,ctl:0,sta:0,playerId:me}; us.pitchers.push(q); }
+    q.stf=p.pitch.stf; q.ctl=p.pitch.ctl; q.sta=p.pitch.sta;
+    if(ST.pit&&!ST.pit[me])ST.pit[me]=blankPit();
+    if(ST.rest&&ST.rest[me]==null)ST.rest[me]=3;
   }
   finalizeTeam(us);
   if(typeof buildPitcherPool==='function') buildPitcherPool();
@@ -15423,8 +15514,9 @@ function renderHS(){
       });
       card.appendChild(bars);
       card.appendChild(el('p','muted',
-        '이게 시작 능력치다. 여기가 끝이 아니라 시작이다 — '+
-        '경기에 나가고 훈련한 만큼 계속 오른다. 한계는 없다.'));
+        '고1 때 전부 '+HS_BASE+'에서 시작했다. 여기까지가 3년으로 번 것이다. '+
+        '누구로 시작했든 출발은 같았다 — 이 숫자는 순전히 네가 친 것과 던진 것이다. '+
+        '여기가 끝이 아니라 시작이다. 경기에 나가고 훈련한 만큼 계속 오른다. 한계는 없다.'));
     }
     c.appendChild(card);
 
@@ -28283,7 +28375,14 @@ function applyTraining(){
     }
 
     let g=rate*(0.35+Math.random()*0.85);
-    if(!pitOnly) g=Math.min(pa-ca, g);                  // 야수 능력치는 잠재가 벽이다
+    /* 야수 능력치는 잠재가 벽이다 — **선수 모드의 내 선수만 빼고.**
+       [요청] "그 별같은게 없이 동등하게"
+       고교 졸업 화면이 "한계는 없다"고 약속한다. 그런데 실제로는 잠재(별)에
+       막혀서 어느 순간부터 훈련이 통째로 헛일이 됐다. 말과 코드가 달랐다.
+       내가 붙잡고 키우는 선수 하나는 별을 안 본다. */
+    const noCap=(typeof isPlayerMode==='function' && isPlayerMode()
+                 && pid===(ST.playerId||MYID));
+    if(!pitOnly && !noCap) g=Math.min(pa-ca, g);
     if(g<=0)return;
 
     let label=null, shown=g;
