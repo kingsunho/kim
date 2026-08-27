@@ -7673,8 +7673,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.74.0';
-const APP_VERSION_NOTE = '치자마자 끝까지 한 판 · 도는 버튼과 돌아가는 버튼';
+const APP_VERSION = '2.75.0';
+const APP_VERSION_NOTE = '도루는 발과 눈치 둘 다 · 감독님께 면담 요청';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7695,6 +7695,15 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.75.0', t:'도루는 발과 눈치 둘 다 · 감독님께 면담 요청', items:[
+    '[요청] "도루는 단순 주력이랑 도루iq 이런 스탯 두개가 있어야되고 같이 잘올려야지" — 맞는 말이다. 발만 빠르다고 도루가 되는 게 아니다. 「주루 센스」 를 새 칸으로 넣었다. 도루를 시도하는 것도, 성공하는 것도, 견제에 안 걸리는 것도 발과 눈치를 같이 본다. 발만 올리면 뛰다가 잡힌다',
+    '기존 열넷과 상대 23팀에는 이 칸이 없다. 없는 실측을 지어내면 그건 거짓말이라 있는 걸로 짐작한다 — 선구가 공을 보는 눈이고 수비가 상황 판단이다. 내 선수만 「주루 센스」 훈련으로 따로 올릴 수 있고, 홈 화면에 발과 나란히 보인다',
+    '[요청] "그 도루할때는 포수 수비랑 송구 스탯이 좋아야겠지?" — 어깨만 보고 있었다. 받아서 빼는 손(수비)도 도루 저지의 절반이다. 이제 둘 다 본다',
+    '[요청] "벤치로 빠지면 감독님한테 면담요청해서 잘치면 주전 경기 조금 보장 실패시 감독 호감 완전 마이너스" — 감독 모드에는 원래 면담이 있었다(내가 선수를 부른다). 선수 모드는 그 반대다 — 내가 감독을 찾아간다',
+    '조건을 걸고 온다. 「딱 한 경기만」(안타 하나) · 「세 경기만」(타율 2할5푼) · 「수비로라도」(두 경기 무실책). 지키면 3~6경기 주전이 보장되고, 못 지키면 1~3경기 벤치에 감독 호감이 바닥을 친다. 조건 없이 인사만 하고 나올 수도 있다',
+    '이 약속이 실제로 라인업을 바꾼다. 보장 중이면 감독이 무조건 선발로 쓰고, 약속을 깼으면 그 경기 수만큼 안 쓴다. 안 나온 경기는 약속에서 안 센다 — 감독이 안 쓴 걸 내 탓으로 돌리면 안 된다',
+    '아무 때나 찾아갈 수 있는 게 아니다. 주에 한 번, 그것도 오늘 선발에서 빠졌거나 타율이 2할4푼 아래일 때만. 잘 나가는 사람이 찾아가면 감독이 웃는다',
+  ]},
   {v:'2.74.0', t:'치자마자 끝까지 한 판 · 도는 버튼과 돌아가는 버튼', items:[
     '[제보] "그냥 치자마자부터 공이랑 수비 실시간으로 하는게 어려워? 어려우면 말해죠" — 안 어렵다. 이제 그렇게 한다. 「1막 보여주고 → 물어보고 → 2막 재생」 을 없앴다. 배트에 맞는 순간부터 판정이 뜰 때까지 **화면이 한 번도 안 끊긴다.** 공이 날아가고, 야수가 쫓아가 잡고, 베이스로 던지고, 그 사이 나는 계속 뛰고 있다',
     '[제보] "그 돈다 선다가 아니라 도는버튼이랑 귀루 버튼이있어서 주루플레이 적극적으로 할 수 있게해야지 약간 마구마구처럼" — 「선다 / 돈다」 를 없애고 「▸ 더 간다」 「◂ 돌아간다」 두 개로 바꿨다. 뛰는 중에 아무 때나 누른다. **송구가 손을 떠나는 순간** 내가 베이스를 지나쳐 있으면 그게 「돈다」다. 묻는 창이 없다 — 몸으로 정한다. 일찍 마음먹을수록 안전하고, 송구 직전에 튀어나가면 위험하다',
@@ -9814,6 +9823,9 @@ function LiveGame(cfg){
     const c = s.slots.find(x=>x.pos==='C');
     const cp = c ? team.players.find(p=>p.id===c.id) : null;
     s.cArm = (cp ? cp.arm : 45) - (isUser?(cfg.gearPenalty||0):0);
+    /* [요청] "그 도루할때는 포수 수비랑 송구 스탯이 좋아야겠지?"
+       어깨만 보고 있었다. 받아서 빼는 손(수비)도 도루 저지의 절반이다. */
+    s.cDef = (cp ? cp.def : 45) - (isUser?(cfg.gearPenalty||0):0);
     s.slots.forEach(sl=>{ this.box[sl.id]=this.box[sl.id]||newBoxL(); });
     s.rot.forEach(pid=>{ this.pbox[pid]=this.pbox[pid]||newPitL(); });
     /* 그날 타석에 선 사람 전원. slots 는 교체되면 덮어써지기 때문에
@@ -10386,7 +10398,9 @@ LiveGame.prototype.runPickoff = function(back){
   const lead=(this._runPlan&&this._runPlan.lead!=null)?this._runPlan.lead:1;
   /* 제때 돌아왔으면 거의 산다. 늦었으면 리드가 클수록 죽는다 */
   let p = back ? (0.03+lead*0.04) : (0.30+lead*0.24);
-  p = Math.max(0.02, Math.min(0.92, p-(rn.spd-45)*0.004));
+  /* 발이 빠르면 돌아오고, 눈치가 있으면 애초에 안 걸린다 */
+  p = Math.max(0.02, Math.min(0.92,
+        p-(rn.spd-45)*0.004-(stealIQ(rn)-45)*0.0045));
   if(this.rng()<p){
     this.bases[0]=null; this.outs++;
     const pit=this.curPitcher(this.def()), pl=this.pbox[pit.id];
@@ -10819,6 +10833,10 @@ LiveGame.prototype.stepPA = function(){
       /* 똥차 — 발이 느려서 애초에 스타트를 끊지 않는다 */
       const rmm=(typeof META!=='undefined')?META[rn.id]:null;
       if(rmm && rmm.traits.includes('똥차')) runMul*=0.35;
+      /* [요청] "도루는 단순 주력이랑 도루iq 이런 스탯 두개가 있어야되고"
+         눈치가 있어야 스타트를 끊는다. 발만 빠르면 뛰다가 잡힌다. */
+      const rIQ=stealIQ(rn);
+      runMul *= Math.exp((rIQ-45)*0.011);
       /* 내가 1루에 있고 직접 정했으면 그 지시가 확률을 대신한다 */
       const plan=this._runPlan; this._runPlan=null;
       let leadB=0;
@@ -10833,7 +10851,12 @@ LiveGame.prototype.stepPA = function(){
       if(rng()<att){
         /* 슬라이딩 — 발목이 제일 많이 간다 */
         if(rn.id===(this.myId||(ST&&ST.playerId))) this.rollMyInjury('슬라이딩', 1.4);
-        let su=clamp(LG.SB_SUCCESS+leadB+(rn.spd-LG.SB_SU_MID)*0.0030-(def.cArm-46)*0.0060,0.45,0.99);
+        /* 발(spd) 과 눈치(sIQ) 를 같이 본다. 막는 쪽은 포수 어깨와 수비다 */
+        let su=clamp(LG.SB_SUCCESS+leadB
+                     +(rn.spd-LG.SB_SU_MID)*0.0030
+                     +(rIQ-46)*0.0034
+                     -(def.cArm-46)*0.0060
+                     -((def.cDef!=null?def.cDef:46)-46)*0.0026, 0.45, 0.99);
         /* 포수가 던지기로 했나. 던지면 잡을 확률이 오르는 대신
            빠뜨리면 한 베이스를 더 준다. 안 던지면 그냥 보낸다.      */
         const ct=this._catchThrow; this._catchThrow=null;
@@ -12267,11 +12290,185 @@ function optimizePositions(){
   syncStarter();
 }
 
+/* ================= 주루 센스 =================
+   [요청] "도루는 단순 주력이랑 도루iq 이런 스탯 두개가 있어야되고
+           같이 잘올려야지"
+
+   맞는 말이다. 발만 빠르다고 도루가 되는 게 아니다. 투수 버릇을 읽고
+   스타트를 끊는 게 반이다. 발은 spd, 그 눈치가 sIQ 다.
+
+   [기존 선수] 열넷과 상대 23팀에는 이 값이 없다. 새 칸을 만들어서
+   실측 능력치를 지어내면 그건 거짓말이다. 그래서 **있는 걸로 짐작한다** —
+   선구(eye)가 공을 보는 눈이고 수비(def)가 상황 판단이다. 그 둘을 섞는다.
+   내 선수만 훈련으로 따로 올릴 수 있고(sIQ), 그 값은 장부에 남는다.  */
+function stealIQ(p){
+  if(!p) return 45;
+  if(p.sIQ!=null) return p.sIQ;
+  return p.eye*0.55 + p.def*0.30 + p.spd*0.15;
+}
+function stealIQOf(pid){
+  const p=(TBYID['wwzw'].players||[]).find(x=>x.id===pid);
+  return p?stealIQ(p):45;
+}
+
+/* ================= 감독님, 한 번만 =================
+   [요청] "벤치로 빠지면 감독님한테 면담요청해서 잘치면 주전 경기 조금
+           보장 실패시 감독 호감 완전 마이너스 이런거 넣으면 될듯"
+
+   감독 모드에는 원래 면담이 있다 — 내가 선수를 부른다.
+   선수 모드는 그 반대다. **내가 감독을 찾아간다.**
+   조건을 받아오고, 지키면 몇 경기 주전이 보장되고, 못 지키면 호감이
+   바닥을 친다. 벤치에 앉아서 기다리기만 하는 게 아니라, 걸 수 있다.
+
+   아무 때나 되는 게 아니다 — 주에 한 번, 그것도 오늘 선발에서 빠졌거나
+   최근 성적이 나쁠 때만. 잘 나가는 사람이 찾아가면 감독이 웃는다.   */
+const MY_DEALS=[
+  {id:'one', t:'딱 한 경기만 기회를 주세요',
+   ask:'그 경기에서 안타 하나', games:1, need:{h:1, ab:2},
+   guar:3, bench:1, bond:-9,
+   line:'한 경기다. 안타 하나만 쳐와라. 그거면 된다',
+   fail:'한 경기 줬는데 그거였다. 당분간은 내 눈에 띄지 마라'},
+  {id:'three', t:'세 경기만 써주시면 증명하겠습니다',
+   ask:'세 경기 합쳐 타율 2할5푼', games:3, need:{avg:0.250, ab:6},
+   guar:6, bench:3, bond:-18,
+   line:'좋다. 세 경기 준다. 2할5푼은 쳐라. 못 치면 그때는 내 말 들어야 한다',
+   fail:'세 경기를 통째로 줬다. 이제 할 말 없지'},
+  {id:'glove', t:'수비로라도 나가고 싶습니다',
+   ask:'두 경기 실책 없이', games:2, need:{e:0, ab:1},
+   guar:4, bench:1, bond:-7,
+   line:'그래, 방망이가 안 되면 글러브라도 봐야지. 두 경기 본다',
+   fail:'글러브도 안 되면 뭘 보고 쓰냐'},
+];
+function myDealDef(id){ return MY_DEALS.find(x=>x.id===id)||null; }
+/* 지금 면담을 요청할 만한가 */
+/* 감독을 찾아간다. 고르면 조건이 걸리고, 그 조건이 라인업을 바꾼다. */
+function openMyMeet(){
+  const ck=canAskMeet();
+  if(!ck.ok){ toast(ck.why); return; }
+  const body=$('#sheet-body'); if(!body) return;
+  const cid=(typeof coachId==='function')?coachId():null;
+  $('#sheet-title').textContent='감독 면담';
+  body.innerHTML='';
+  const me=ST.playerId||MYID;
+  const b=(ST.bat&&ST.bat[me])||null;
+  body.appendChild(el('div','sheet-note',
+    (cid?nameOf(cid):'감독')+' 을(를) 찾아갔다. '+
+    (ck.benched?'오늘 선발에서 빠졌다. ':'')+
+    (b&&b.ab?`올해 ${b.ab}타수 ${b.h}안타 (${fmt3(b.h/b.ab)}). `:'')+
+    '무슨 말을 할까 — 조건을 걸면 지켜야 한다.'));
+  MY_DEALS.forEach(D=>{
+    const r=el('button','pick-row');
+    r.innerHTML=`<div class="pk-l"><div class="pk-name">${D.t}</div>
+      <div class="pk-note">조건 — <b>${D.ask}</b><br>
+        지키면 ${D.guar}경기 주전 보장 · 못 지키면 ${D.bench}경기 벤치 + 감독 호감 하락</div></div>`;
+    r.onclick=()=>{
+      makeMyDeal(D.id); closeSheet(); saveGame(true);
+      toast(D.line.length>40?D.line.slice(0,40)+'…':D.line);
+      renderHomePlayer();
+    };
+    body.appendChild(r);
+  });
+  const soft=el('button','pick-row');
+  soft.innerHTML='<div class="pk-l"><div class="pk-name">그냥 열심히 하겠습니다</div>'+
+    '<div class="pk-note">조건 없이 인사만 하고 나온다. 호감이 조금 오른다</div></div>';
+  soft.onclick=()=>{
+    ST.myMeetRound=ST.round;
+    if(ST.bond) ST.bond[me]=Math.min(100,(ST.bond[me]||50)+4);
+    ST.morale[me]=Math.min(100,(ST.morale[me]||70)+3);
+    closeSheet(); saveGame(true); toast('"그래, 준비하고 있어라"'); renderHomePlayer();
+  };
+  body.appendChild(soft);
+  const no=el('button','pick-row');
+  no.innerHTML='<div class="pk-l"><div class="pk-name">그냥 나온다</div>'+
+    '<div class="pk-note">아무 말도 안 했다</div></div>';
+  no.onclick=()=>closeSheet();
+  body.appendChild(no);
+  $('#sheet').classList.add('open');
+}
+function canAskMeet(){
+  if(typeof ST==='undefined'||!ST||!isPlayerMode()) return {ok:false,why:'선수 모드에서만 된다'};
+  if(ST.myDeal) return {ok:false,why:'이미 약속한 게 있다'};
+  if((ST.myMeetRound||-1)===ST.round) return {ok:false,why:'이번 주에는 이미 찾아갔다'};
+  if((ST.myBenched||0)>0) return {ok:false,why:'지금은 감독이 안 만나준다'};
+  const me=ST.playerId||MYID;
+  const b=ST.bat&&ST.bat[me];
+  const benched=!!(ST.announced && !lineupSpotOf(me));
+  const bad=!!(b && b.ab>=8 && (b.h/b.ab)<0.240);
+  if(!benched && !bad) return {ok:false,why:'지금은 잘 나가고 있다. 찾아갈 이유가 없다'};
+  return {ok:true, benched, bad};
+}
+/* 약속을 건다 */
+function makeMyDeal(id){
+  const D=myDealDef(id); if(!D||!ST) return null;
+  ST.myDeal={id:D.id, left:D.games, ab:0, h:0, e:0, g:0};
+  ST.myMeetRound=ST.round;
+  ST.myGuarantee=Math.max(ST.myGuarantee||0, D.games);   // 그 경기 수는 일단 써준다
+  const cid=(typeof coachId==='function')?coachId():null;
+  ST.kakao=ST.kakao||[];
+  ST.kakao.push({who:cid||'lg', type:'notice',
+    text:`${nameOf(ST.playerId||MYID)} — ${D.games}경기 기회를 준다\n조건: ${D.ask}`});
+  return ST.myDeal;
+}
+/* 경기가 끝날 때마다 채점한다. commitGame 이 부른다. */
+function checkMyDeal(res){
+  if(!ST||!isPlayerMode()) return [];
+  const msgs=[];
+  const me=ST.playerId||MYID;
+  if((ST.myGuarantee||0)>0) ST.myGuarantee--;
+  if((ST.myBenched||0)>0)   ST.myBenched--;
+  const d=ST.myDeal; if(!d) return msgs;
+  const D=myDealDef(d.id); if(!D){ ST.myDeal=null; return msgs; }
+  const b=(res&&res.box)?res.box[me]:null;
+  /* 안 나온 경기는 안 센다 — 감독이 안 쓴 걸 내 탓으로 돌리면 안 된다 */
+  if(!b || !b.pa) return msgs;
+  d.g++; d.ab+=b.ab||0; d.h+=b.h||0; d.e+=b.e||0;
+  d.left--;
+  if(d.left>0) return msgs;
+
+  const need=D.need;
+  let kept=true;
+  if(need.ab!=null && d.ab<need.ab) kept=false;
+  if(need.h!=null && d.h<need.h) kept=false;
+  if(need.e!=null && d.e>need.e) kept=false;
+  if(need.avg!=null && (d.ab?d.h/d.ab:0)<need.avg) kept=false;
+  const cid=(typeof coachId==='function')?coachId():null;
+  const line=`${d.ab}타수 ${d.h}안타${d.e?` · 실책 ${d.e}`:''}`;
+  if(kept){
+    ST.myGuarantee=Math.max(ST.myGuarantee||0, D.guar);
+    ST.morale[me]=Math.min(100,(ST.morale[me]||70)+14);
+    if(ST.bond) ST.bond[me]=Math.min(100,(ST.bond[me]||50)+10);
+    msgs.push({who:cid||'lg', type:'notice',
+      text:`${nameOf(me)} 약속 지켰다 — ${line}\n${D.guar}경기 주전으로 간다`});
+    msgs.push({who:me, text:say(me,'감사합니다 더 잘하겠습니다','감사합니다. 더 잘하겠습니다'),mood:'happy'});
+  } else {
+    ST.myBenched=Math.max(ST.myBenched||0, D.bench);
+    ST.myGuarantee=0;
+    ST.morale[me]=Math.max(10,(ST.morale[me]||70)-18);
+    if(ST.bond) ST.bond[me]=Math.max(0,(ST.bond[me]||50)+D.bond);
+    ST.myDealFail=(ST.myDealFail||0)+1;
+    msgs.push({who:cid||'lg', type:'notice',
+      text:`${nameOf(me)} — ${line}\n${D.fail}`});
+    msgs.push({who:me, text:say(me,'...','...'),mood:'sad'});
+  }
+  ST.myDeal=null;
+  return msgs;
+}
+/* 감독이 라인업을 짤 때 나를 어떻게 보나 — 면담 결과가 여기로 들어온다 */
+function myLineupBias(pid){
+  if(typeof ST==='undefined'||!ST||!isPlayerMode()) return 0;
+  if(pid!==(ST.playerId||MYID)) return 0;
+  if((ST.myBenched||0)>0) return -9000;      // 약속을 못 지켰다 — 당분간 벤치
+  if((ST.myGuarantee||0)>0) return  9000;    // 주전 보장
+  return 0;
+}
+
 function recommendLineup(){
   const t=TBYID['wwzw'];
   const pool=t.players.filter(p=>isAvailable(p.id));
   const use=pool.length>=9?pool:t.players;
-  const sc=p=>p.con*1.1+p.pow*0.9+p.eye*0.7+p.spd*0.5+(ST&&ST.cond?(ST.cond[p.id]-70)*0.25:0);
+  const sc=p=>p.con*1.1+p.pow*0.9+p.eye*0.7+p.spd*0.5
+    +(ST&&ST.cond?(ST.cond[p.id]-70)*0.25:0)
+    +myLineupBias(p.id);        // 감독과 한 약속이 여기서 갈린다
   const sorted=use.slice().sort((a,b)=>sc(b)-sc(a));
   const used=new Set(); const slots=[];
   /* [버그 이력] 예전에는 로스터의 pos 배열만 보고, 없으면 남는 자리에 아무나
@@ -13674,19 +13871,20 @@ function myRatingsSave(){
   const p=TBYID['wwzw'].players.find(x=>x.id===me);
   if(!p) return null;
   const R={};
-  ['con','pow','eye','spd','def','arm'].forEach(k=>{ if(p[k]!=null) R[k]=p[k]; });
+  ['con','pow','eye','spd','def','arm','sIQ'].forEach(k=>{ if(p[k]!=null) R[k]=p[k]; });
   if(p.pitch){ R.pitch={};
     ['stf','ctl','sta'].forEach(k=>{ if(p.pitch[k]!=null) R.pitch[k]=p.pitch[k]; }); }
   ST.myRatings=R;
   return R;
 }
+/* 주루 센스는 로스터에 없는 칸이라 장부가 유일한 집이다 */
 function applyMyRatings(){
   if(typeof ST==='undefined'||!ST||!ST.myRatings) return 0;
   const me=ST.playerId||MYID;
   const us=TBYID['wwzw']; if(!us) return 0;
   const mp=us.players.find(x=>x.id===me); if(!mp) return 0;
   const R=ST.myRatings;
-  ['con','pow','eye','spd','def','arm'].forEach(k=>{ if(R[k]!=null) mp[k]=R[k]; });
+  ['con','pow','eye','spd','def','arm','sIQ'].forEach(k=>{ if(R[k]!=null) mp[k]=R[k]; });
   if(R.pitch&&mp.pitch){
     ['stf','ctl','sta'].forEach(k=>{ if(R.pitch[k]!=null) mp.pitch[k]=R.pitch[k]; });
     const mq=us.pitchers.find(x=>x.id===me);
@@ -14583,6 +14781,24 @@ function renderHomePlayer(){
         : (L<0.80
           ? '<b>밀어내는 힘이 몸통보다 앞선다.</b> 전력질주·큰 스윙에서 다치기 시작한다. 수비·어깨·컨택을 올려라.'
           : '<b class="bd-bad">유리몸이다.</b> 파워·주루만 올려놨다. 몸이 그 힘을 못 받는다 — 수비·어깨·컨택 훈련이 급하다.'))));
+    /* [요청] "도루는 단순 주력이랑 도루iq 이런 스탯 두개가 있어야되고" —
+       두 개를 나란히 보여줘야 같이 올릴 생각을 한다 */
+    const iq=stealIQ(p);
+    const rrow=el('div','bdbar');
+    rrow.innerHTML='<span class="bd-v" style="min-width:62px;text-align:left">발</span>'+
+      '<span class="bd-t"><s style="width:'+Math.round(Math.min(100,p.spd))+'%;background:#2f8f4e"></s></span>'+
+      '<span class="bd-v">'+Math.round(p.spd)+'</span>';
+    bc0.appendChild(rrow);
+    const irow=el('div','bdbar');
+    irow.innerHTML='<span class="bd-v" style="min-width:62px;text-align:left">주루 센스</span>'+
+      '<span class="bd-t"><s style="width:'+Math.round(Math.min(100,iq))+'%;background:#c9a227"></s></span>'+
+      '<span class="bd-v">'+Math.round(iq)+(p.sIQ!=null?'':' (짐작)')+'</span>';
+    bc0.appendChild(irow);
+    bc0.appendChild(el('p','muted', (p.spd-iq>12)
+      ? '<b class="bd-low">발만 빠르다.</b> 눈치가 없으면 뛰다가 잡힌다 — 「주루 센스」 훈련이 필요하다.'
+      : (iq-p.spd>12
+        ? '눈치는 있는데 발이 안 따라온다. 「러닝」 을 섞어라.'
+        : '발과 눈치가 같이 간다. 도루가 된다.')));
     const inj=ST.injury&&ST.injury[me];
     if(inj) bc0.appendChild(Object.assign(el('div','warn'),
       {innerHTML:'<b>'+inj.name+'</b> — '+inj.games+'경기 결장'+
@@ -14632,6 +14848,37 @@ function renderHomePlayer(){
     if(opp) today.appendChild(el('div','pm-next',
       nx.round+'차전 · '+opp.name+' · '+(nx.homeGame?'홈':'원정')));
     c.appendChild(today);
+  }
+
+  /* ---- 감독님, 한 번만 ----
+     [요청] "벤치로 빠지면 감독님한테 면담요청해서 잘치면 주전 경기 조금
+             보장 실패시 감독 호감 완전 마이너스" */
+  {
+    const dl=ST.myDeal?myDealDef(ST.myDeal.id):null;
+    if(dl){
+      const dc=el('div','card');
+      dc.appendChild(el('div','card-h','감독과 한 약속'));
+      const dd=ST.myDeal;
+      dc.appendChild(Object.assign(el('div','mystatus in'),{innerHTML:
+        '<div class="ms-big">'+dl.ask+'</div>'+
+        '<div class="ms-sub">남은 '+dd.left+'경기 · 지금까지 '+dd.ab+'타수 '+dd.h+'안타'+
+        (dd.e?' · 실책 '+dd.e:'')+'</div>'+
+        '<div class="ms-why">지키면 '+dl.guar+'경기 주전 · 못 지키면 '+dl.bench+'경기 벤치</div>'}));
+      c.appendChild(dc);
+    } else if((ST.myGuarantee||0)>0){
+      c.appendChild(Object.assign(el('div','warn'),{innerHTML:
+        '<b>주전 보장 '+ST.myGuarantee+'경기</b> — 감독이 약속을 지키고 있다'}));
+    } else if((ST.myBenched||0)>0){
+      c.appendChild(Object.assign(el('div','warn'),{innerHTML:
+        '<b>벤치 '+ST.myBenched+'경기</b> — 약속을 못 지켰다. 감독이 안 쓴다'}));
+    } else {
+      const ck=canAskMeet();
+      const mb=el('button','btn'+(ck.ok?' primary':''),
+        ck.ok?'감독님께 면담 요청 ▸':'면담 요청 — '+ck.why);
+      mb.disabled=!ck.ok;
+      mb.onclick=()=>openMyMeet();
+      c.appendChild(mb);
+    }
   }
 
   /* 다음 걸음 — 감독 모드의 그 판단을 그대로 쓴다 */
@@ -25534,6 +25781,8 @@ function commitGame(res,usSide,thSide,uSlots){
   const starters = (ST.gameStarters&&ST.gameStarters.length)?ST.gameStarters
     :uAll.filter(u=>u.starter).map(u=>u.id);
   const promiseMsgs = checkPromises(ST, starters, uIds, absentIds);
+  /* 감독과 한 약속 — 지켰나 못 지켰나 */
+  const dealMsgs = checkMyDeal(res);
   const dpCount = res.dpCount||0;
   const miles = accrueCareer(ST,res,uUniq,won,tie,dpCount);
   /* 진기록 — 사이클링 히트·노히트노런 같은 것들. 나오면 영구 보관한다. */
@@ -25577,6 +25826,7 @@ function commitGame(res,usSide,thSide,uSlots){
   applyGojin(ST,res.gojin).forEach(m=>ST.kakaoPost.push(m));
   applyFriction(ST,res.friction).forEach(m=>ST.kakaoPost.push(m));
   promiseMsgs.forEach(m=>ST.kakaoPost.push(m));
+  dealMsgs.forEach(m=>ST.kakaoPost.push(m));       // 감독과 한 약속의 결말
   unhMsgs.forEach(m=>ST.kakaoPost.push(m));
   ST.sentPost=false;
   ST.partyDone = !won;
@@ -26010,6 +26260,10 @@ const PM_TRAIN=[
   {id:'run',  icon:'\u{1F3C3}', name:'러닝', sub:'주루',
    g:{spd:1.4}, cond:-5,
    d:'뛴다. 발은 가장 늦게 늘고 가장 먼저 빠진다.'},
+  {id:'steal',icon:'\u{1F4A8}', name:'주루 센스', sub:'주루 센스 · 주루',
+   g:{sIQ:1.5,spd:0.4}, cond:-4,
+   d:'투수 버릇을 본다. 스타트 끊는 연습을 한다.<br>'+
+     '**발만 빠르면 뛰다가 잡힌다** — 도루는 이 둘이 같이 올라야 된다.'},
   {id:'pit',  icon:'\u{26BE}', name:'투구 훈련', sub:'구위 · 제구 · 체력', pit:true,
    g:{stf:0.9,ctl:1.0,sta:0.8}, cond:-7,
    d:'불펜에서 던진다. 어깨를 쓰는 만큼 회복이 느리다.'},
@@ -26043,8 +26297,10 @@ function applyMyTrain(){
   /* 이도류는 두 몫을 나눠 쓴다 — 그게 이도류의 값이다 */
   const half=isTwoWay()?0.55:1;
   const KN={con:'컨택',pow:'파워',eye:'선구',spd:'주루',def:'수비',arm:'어깨',
-            stf:'구위',ctl:'제구',sta:'체력'};
+            sIQ:'주루 센스', stf:'구위',ctl:'제구',sta:'체력'};
   const got=[];
+  /* 주루 센스는 원래 로스터에 없는 칸이다 — 처음 훈련하면 지금 값에서 시작한다 */
+  if(t.g && t.g.sIQ!=null && p.sIQ==null) p.sIQ=Math.round(stealIQ(p)*10)/10;
   Object.keys(t.g||{}).forEach(k=>{
     const amt=t.g[k]*half;
     if(k==='stf'||k==='ctl'||k==='sta'){
@@ -26060,7 +26316,7 @@ function applyMyTrain(){
     }
   });
   /* 정수로 굳힌다 — 소수점이 화면에 새면 지저분하다 */
-  ['con','pow','eye','spd','def','arm'].forEach(k=>{ if(p[k]!=null) p[k]=Math.round(p[k]*10)/10; });
+  ['con','pow','eye','spd','def','arm','sIQ'].forEach(k=>{ if(p[k]!=null) p[k]=Math.round(p[k]*10)/10; });
   if(p.pitch) ['stf','ctl','sta'].forEach(k=>{ p.pitch[k]=Math.round(p.pitch[k]*10)/10; });
   finalizeTeam(TBYID['wwzw']);
   if(typeof buildPitcherPool==='function') buildPitcherPool();
@@ -28633,6 +28889,10 @@ function normalizeState(){
   if(['off','key','all'].indexOf(ST.defMode)<0) ST.defMode=(ST.defAsk===false)?'off':'all';
   if(['off','key','all'].indexOf(ST.runMode)<0) ST.runMode=(ST.runAsk===false)?'off':'all';
   if(ST.injMode!=='off') ST.injMode='on';           // [v2.73.0] 부상 (선수 모드)
+  /* [v2.75.0] 감독과 한 약속 · 주전 보장 · 벤치 */
+  if(typeof ST.myGuarantee!=='number')ST.myGuarantee=0;
+  if(typeof ST.myBenched!=='number')ST.myBenched=0;
+  if(ST.myDeal===undefined)ST.myDeal=null;
   if(ST.myTrain && !PM_TRAIN.some(x=>x.id===ST.myTrain)) ST.myTrain=null;
   if(!ST.myTrain) ST.myTrain='team';                // [v2.65.0] 기본은 팀 훈련
   if(!ST.names)ST.names={};

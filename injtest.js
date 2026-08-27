@@ -179,6 +179,88 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   const raw=eb("(function(){var q=JSON.parse("+JSON.stringify(code)+"); delete q.myRatings; ST=q; normalizeState(); return ST.myRatings? '만들었다':'없다';})()");
   T('옛 세이브는 장부를 지금 값으로 만들어 준다', ()=>raw==='만들었다'?raw:'!'+raw);
 
+  console.log('\n[도루는 발과 눈치 둘 다]');
+  T('주루 센스가 스탯으로 있다', ()=>ev(`(function(){
+    var a=stealIQ({eye:70,def:60,spd:50});
+    var b=stealIQ({eye:30,def:30,spd:50});
+    var c=stealIQ({eye:30,def:30,spd:50,sIQ:88});
+    return (a>b && c===88) ? '선구·수비로 짐작 '+a.toFixed(1)+' vs '+b.toFixed(1)+' · 직접 올리면 '+c
+      : '!'+[a,b,c].join(',');
+  })()`));
+  T('도루 성공에 발과 눈치가 같이 들어간다', ()=>ev(
+    "/rIQ-46\\)\\*0\\.0034/.test(LiveGame.prototype.stepPA.toString()) && /rn\\.spd-LG\\.SB_SU_MID/.test(LiveGame.prototype.stepPA.toString())"));
+  T('눈치가 있어야 스타트를 끊는다', ()=>ev(
+    "/runMul \\*= Math\\.exp\\(\\(rIQ-45\\)\\*0\\.011\\)/.test(LiveGame.prototype.stepPA.toString())"));
+  T('포수는 어깨만이 아니라 수비도 본다', ()=>ev(
+    "/s\\.cDef = /.test(LiveGame.toString()) && /def\\.cDef/.test(LiveGame.prototype.stepPA.toString())"));
+  T('견제도 눈치가 막아준다', ()=>ev(
+    "/stealIQ\\(rn\\)-45\\)\\*0\\.0045/.test(LiveGame.prototype.runPickoff.toString())"));
+  T('훈련으로 주루 센스를 올린다', ()=>ev(`(function(){
+    ST.mode='player'; ST.playerId='ksh';
+    var p=TBYID['wwzw'].players.find(function(x){return x.id==='ksh';});
+    delete p.sIQ;
+    var before=stealIQ(p);
+    ST.myTrain='steal'; applyMyTrain();
+    return (p.sIQ>before && ST.myRatings && ST.myRatings.sIQ===p.sIQ)
+      ? before.toFixed(1)+' → '+p.sIQ+' (장부에도 적혔다)' : '!'+before+'/'+p.sIQ;
+  })()`));
+
+  console.log('\n[감독님, 한 번만]');
+  T('잘 나갈 때는 찾아갈 이유가 없다', ()=>ev(`(function(){
+    ST.myDeal=null; ST.myBenched=0; ST.myMeetRound=-1;
+    ST.announced=false;
+    ST.bat['ksh']={...blankBat(), pa:20, ab:20, h:8};
+    var c=canAskMeet();
+    return !c.ok ? c.why : '!열려 있다';
+  })()`));
+  T('벤치이거나 못 치면 찾아갈 수 있다', ()=>ev(`(function(){
+    ST.bat['ksh']={...blankBat(), pa:20, ab:20, h:2};
+    var c=canAskMeet();
+    return c.ok ? '열린다' : '!'+c.why;
+  })()`));
+  T('약속을 걸면 그 경기 수만큼 주전이 보장된다', ()=>ev(`(function(){
+    ST.kakao=[]; ST.round=3;
+    var d=makeMyDeal('three');
+    return (d && d.left===3 && ST.myGuarantee>=3 && ST.myMeetRound===3)
+      ? '3경기 · 보장 '+ST.myGuarantee : '!'+JSON.stringify(d);
+  })()`));
+  T('약속이 있으면 그 주에 또 못 찾아간다', ()=>ev("canAskMeet().ok===false"));
+  T('지키면 주전이 늘고 호감이 오른다', ()=>ev(`(function(){
+    ST.myDeal={id:'three',left:1,ab:6,h:2,e:0,g:2};   // 마지막 경기만 남았다
+    ST.morale['ksh']=60; ST.bond=ST.bond||{}; ST.bond['ksh']=50;
+    var res={box:{ksh:{...blankBat(), pa:3, ab:3, h:1}}};
+    var msgs=checkMyDeal(res);
+    return (!ST.myDeal && ST.myGuarantee>=6 && ST.morale['ksh']>60 && msgs.length)
+      ? '보장 '+ST.myGuarantee+'경기 · 사기 '+ST.morale['ksh'] : '!'+JSON.stringify([ST.myGuarantee,ST.morale['ksh']]);
+  })()`));
+  T('못 지키면 벤치로 가고 호감이 바닥난다', ()=>ev(`(function(){
+    ST.myGuarantee=0; ST.myBenched=0;
+    ST.myDeal={id:'three',left:1,ab:6,h:0,e:0,g:2};
+    ST.morale['ksh']=70; ST.bond['ksh']=50;
+    var res={box:{ksh:{...blankBat(), pa:3, ab:3, h:0}}};
+    checkMyDeal(res);
+    return (!ST.myDeal && ST.myBenched>=3 && ST.morale['ksh']<70 && ST.bond['ksh']<50)
+      ? '벤치 '+ST.myBenched+'경기 · 호감 '+ST.bond['ksh'] : '!'+JSON.stringify([ST.myBenched,ST.bond['ksh']]);
+  })()`));
+  T('안 나온 경기는 약속에서 안 센다', ()=>ev(`(function(){
+    ST.myDeal={id:'one',left:1,ab:0,h:0,e:0,g:0};
+    checkMyDeal({box:{}});
+    return (ST.myDeal && ST.myDeal.left===1) ? '그대로 남는다' : '!'+JSON.stringify(ST.myDeal);
+  })()`));
+  T('약속 결과가 라인업까지 간다', ()=>ev(`(function(){
+    ST.myDeal=null;
+    ST.myBenched=0; ST.myGuarantee=5;
+    var up=myLineupBias('ksh');
+    ST.myGuarantee=0; ST.myBenched=3;
+    var down=myLineupBias('ksh');
+    ST.myBenched=0;
+    var other=myLineupBias('swm');
+    return (up>1000 && down<-1000 && other===0) ? '보장 +'+up+' / 벤치 '+down
+      : '!'+[up,down,other].join(',');
+  })()`));
+  T('감독이 라인업 짤 때 실제로 그걸 본다', ()=>ev(
+    "/myLineupBias\\(p\\.id\\)/.test(recommendLineup.toString())"));
+
   console.log('\n[예외]');
   T('콘솔 예외 없음', ()=>errs.length?('!'+errs.slice(0,2).join(' / ')):'깨끗');
   console.log(errs.length?`\n❌ ${errs.length}개 실패`:'\n✅ 이상 없음');
