@@ -7768,8 +7768,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.85.0';
-const APP_VERSION_NOTE = '슬라이더가 제 쪽으로 휜다 · 수비한 타구가 그대로 기록된다';
+const APP_VERSION = '2.85.1';
+const APP_VERSION_NOTE = '수비한 자리를 장면이 뜬 순간에 붙잡아 둔다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7790,6 +7790,10 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.85.1', t:'수비한 자리를 장면이 뜬 순간에 붙잡아 둔다', items:[
+    '[제보] "3루에서 땅볼잡고 2루 던졌는데 좌측 73미터 아웃임" — 바로 앞 판(2.85.0)에서 고친 그 버그다. 내야에서 잡은 공에 외야 뜬공 비거리가 붙던 것. 다시 재보니 3루 13~40m · 유격 14~42m 로 정상이다',
+    '같은 부류로 하나가 더 남아 있어서 같이 막았다. 결과를 적을 때 내 수비 위치를 다시 읽고 있었는데, 그 사이에 자리가 바뀌거나 교체가 있으면 3루에서 잡은 공이 외야 뜬공으로 적힐 수 있었다. 이제 장면이 뜬 순간의 자리를 그대로 들고 간다',
+  ]},
   {v:'2.85.0', t:'슬라이더가 제 쪽으로 휜다 · 수비한 타구가 그대로 기록된다', items:[
     '[제보] "슬라이더가 반대로 휘는 치명적 버그 · 우완 투수 좌완 투수 슬라이더가 서로 반대" — 진짜였다. 정확히는 좌타석일 때만 좌우가 통째로 뒤집혀 있었다',
     '화면은 포수 뒤에 고정된 카메라다. 우타는 3루쪽(화면 왼쪽), 좌타는 1루쪽(화면 오른쪽)에 선다. 그러니까 좌타에게는 화면 오른쪽이 몸쪽이다. 그런데 코스도 변화량도 「화면 왼쪽이 몸쪽」으로 고정돼 있었다',
@@ -10019,6 +10023,7 @@ function LiveGame(cfg){
      판단창이 곧바로 또 떴다. 유저 입장에서는 "골라도 안 넘어간다"로 보였다.  */
   this.paSeq = 0;         // 완료된 타석 수
   this._defShown = -1;    // 수비 화면을 띄운 타석 — 그 타석은 인플레이로 끝난다
+  this._defShownPos = null;  // 그때 내가 서 있던 자리 (기록이 그 자리를 따라간다)
   this.lastDecPA = -1;    // 마지막으로 판단을 물어본 타석
   this.timeouts = 5;      // 공격 작전 지시 가능 횟수
   this.defTimeouts = 3;   // 수비 판단(고의4구·시프트) 가능 횟수
@@ -10518,7 +10523,8 @@ LiveGame.prototype.consumePlayMods = function(off, def){
   const shown=(this._defShown===this.paSeq) && def.isUser;
   if(shown){
     this._defShown=-1;
-    const mp=(typeof myPos==='function')?myPos():null;
+    const mp=this._defShownPos||((typeof myPos==='function')?myPos():null);
+    this._defShownPos=null;
     /* 내야 자리로 굴러온 공은 땅볼이고 외야로 뜬 공은 뜬공이다.
        [제보] "내가 잡은 땅볼은 안 나왔다"
        여태 아웃의 땅볼/뜬공을 그 자리에서 새로 굴렸다. 그래서 내야에서
@@ -10955,6 +10961,11 @@ LiveGame.prototype.detectDecision = function(){
              끝날 수 있었다. 화면에 타구를 보여준 이상 그 타석은
              **인플레이로 끝나야 한다.** 보여준 것과 기록이 어긋나면 안 된다. */
           this._defShown=this.paSeq;
+          /* 자리를 **장면이 뜬 순간에** 붙잡아 둔다. 결과를 적을 때
+             myPos() 를 다시 읽으면, 그 사이에 수비 위치가 바뀌거나
+             교체가 있으면 3루에서 잡은 공이 외야 뜬공으로 적힌다.
+             [제보] "3루에서 땅볼잡고 2루 던졌는데 좌측 73미터 아웃임" */
+          this._defShownPos=pos;
           return {kind:'defplay', ang, pos};
         }
       }

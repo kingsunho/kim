@@ -98,6 +98,46 @@ setTimeout(async()=>{
   T('선택이 안 남아도 볼넷은 안 나온다', ()=>C.bb===0);
   T('선택이 안 남아도 뜬공으로 안 적힌다', ()=>C.fly===0);
 
+  console.log('\n[비거리가 자리를 따라가나]');
+  /* [제보] "3루에서 땅볼잡고 2루 던졌는데 좌측 73미터 아웃임"
+     내야에서 잡은 공에 외야 뜬공 비거리가 붙던 것. */
+  const dist=(pos)=>JSON.parse(ev(`(function(){
+    ST.mode='player'; ST.role='bat'; ST.myPos=${JSON.stringify(pos)}; ST.defMode='all';
+    ST.hs={i:0,done:true,res:[],bat:blankBat(),pit:blankPit(),moments:[],pending:null};
+    ST.lineup=recommendLineup(); optimizePositions();
+    const me=ST.playerId||MYID;
+    const s0=ST.lineup.find(x=>x.id===me); if(s0)s0.pos=${JSON.stringify(pos)};
+    const out=[];
+    for(let g=0; g<25; g++){
+      ST.seed=(g*7919+13)>>>0;
+      LIVE=makeLive(); LIVE.manual=true;
+      let guard=0;
+      while(!LIVE.over && guard++<400){
+        const dec=LIVE.pending||LIVE.detectDecision();
+        if(dec && dec.kind==='defplay'){
+          LIVE.applyDecision('def:q:0.95');
+          const r=LIVE.step();
+          const txt=((r&&r.events)||[]).map(x=>x.text).join(' | ');
+          const m=txt.match(/\\((\\S+)\\s+(\\d+)m\\)/);
+          if(m) out.push(+m[2]);
+          continue;
+        }
+        if(dec){ LIVE.applyDecision(dec.kind==='swing'?'playskip':'def:skip'); continue; }
+        LIVE.step();
+      }
+    }
+    return JSON.stringify(out);
+  })()`));
+  const d3=dist('3B'), dss=dist('SS'), dlf=dist('LF');
+  const mx=a=>a.length?Math.max(...a):0;
+  console.log('   3루 '+Math.min(...d3)+'~'+mx(d3)+'m · 유격 '+Math.min(...dss)+'~'+mx(dss)+'m · 좌익 '+Math.min(...dlf)+'~'+mx(dlf)+'m');
+  T('3루에서 잡은 타구는 50m 를 안 넘는다', ()=>d3.length>20 && mx(d3)<=50);
+  T('유격에서 잡은 타구도 50m 를 안 넘는다', ()=>dss.length>20 && mx(dss)<=50);
+  T('외야는 그대로 멀리 간다', ()=>dlf.length>20 && mx(dlf)>60);
+  T('자리를 장면 시점에 붙잡아 둔다', ()=>
+    /_defShownPos/.test(ev("LiveGame.prototype.detectDecision.toString()")) &&
+    /_defShownPos/.test(ev("LiveGame.prototype.consumePlayMods.toString()")));
+
   console.log('\n[수비 판단 시간]');
   const src=ev("renderDefPlay.toString()");
   const m=src.match(/flyMs\s*=\s*Math\.round\(\(inf\?(\d+):(\d+)\)\+mDraw\*\(inf\?(\d+):(\d+)\)\)/);
