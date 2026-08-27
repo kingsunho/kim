@@ -215,8 +215,12 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
     "/if\\(t>=T_THROW\\) decide\\(\\)/.test(livePlay.toString()) && /onDecide/.test(livePlay.toString())"));
   T('일찍 마음먹을수록 안전하다', ()=>ev(
     "/1-seg\\(goAt!=null\\?goAt:T_THROW, 0, T_THROW\\)/.test(livePlay.toString())"));
+  /* [2.83.0] 「2루까지 간다 누르면 순간이동」 을 고치면서 이 계산이
+     여러 줄로 늘어났다. 붙어 있는 글자를 재는 게 아니라 뜻을 잰다. */
   T('결과와 안 어긋난다 — 주자 속도를 결과에 맞춘다', ()=>ev(
-    "/if\\(play\\.gb && isOut\\) runMs = Math\\.max/.test(livePlay.toString()) && /!isOut && !HR\\) runMs = Math\\.min/.test(livePlay.toString())"));
+    "/if\\(play\\.gb && isOut\\) runMs = Math\\.max/.test(livePlay.toString()) && /!isOut && !HR\\)[\\s\\S]{0,120}runMs = Math\\.min/.test(livePlay.toString())"));
+  T('한 베이스 더 가는 구간이 순간이동이 아니다', ()=>ev(
+    "/T_THROW-160\\)\\/Math\\.max\\(1,base\\)/.test(livePlay.toString()) && /Math\\.max\\(420,\\(endT-tBase\\)\\)/.test(livePlay.toString())"));
   T('도는 버튼 · 돌아가는 버튼이 수비 송구와 같은 베이스 버튼이다', ()=>ev(
     "renderSwing.toString().indexOf('sc[fn]')>0 && renderSwing.toString().indexOf('baserow')>0"));
 

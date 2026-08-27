@@ -198,8 +198,12 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
     '베이스를 누르라고 먼저 알려준다');
   T(ev("/if\\(play\\.gb && isOut\\) runMs = Math\\.max/.test(livePlay.toString())"),
     '주자 속도를 결과에 맞춘다 — 아웃인데 먼저 닿아 보이면 안 된다');
-  T(ev("/else if\\(!isOut && !HR\\) runMs = Math\\.min/.test(livePlay.toString())"),
+  /* [2.83.0] 이 줄이 여러 줄로 늘어났다 — 베이스 수로 나누는 계산이 붙었다.
+     문자열을 통째로 재지 말고 '무엇을 하는지'를 잰다. */
+  T(ev("/else if\\(!isOut && !HR\\)[\\s\\S]{0,120}runMs = Math\\.min/.test(livePlay.toString())"),
     '안타면 내가 송구보다 먼저 닿는다');
+  T(ev("/T_THROW-160\\)\\/Math\\.max\\(1,base\\)/.test(livePlay.toString())"),
+    '2루타는 두 베이스를 가야 하니 시간을 베이스 수로 나눈다');
   T(ev("/베이스로 돌아간다/.test(groundScene.toString())&&!/귀루/.test(livePlay.toString())"),
     '「귀루」 라는 말을 안 쓴다');
 

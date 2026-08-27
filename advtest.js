@@ -89,9 +89,35 @@ setTimeout(async()=>{
     T('홈에 면담 카드', ()=>/에게서 카톡/.test(d.getElementById('view').textContent));
     const opts=[...d.querySelectorAll('#view .bossopt')];
     T('선택지 3개', ()=>d.querySelectorAll('#view .bossopt').length===3);
+    /* [2.83.0] 사기는 100 이 천장이다. 시즌을 잘 보내고 오면 이미 꽉 차 있어서
+       「더 열심히 하겠다(+6)」 를 눌러도 숫자가 안 움직인다 — 그동안 이게
+       '상시 실패' 로 보였다. 천장에서 밀어보는 게 아니라 **오를 자리를 두고** 잰다. */
+    ev("ST.morale[ST.playerId]=70;");
     const m0=ev("ST.morale[ST.playerId]");
     opts[0].click(); await new Promise(r=>setTimeout(r,50));
-    T('사기 변동', ()=>ev("ST.morale[ST.playerId]")!==m0);
+    T('사기 변동', ()=>{
+      const m1=ev("ST.morale[ST.playerId]");
+      return m1!==m0 ? `${m0} → ${m1}` : `!${m0} 그대로`;
+    });
+    T('꽉 찬 사기에는 거짓말을 안 한다', ()=>{
+      const txt=ev(`(function(){
+        ST.morale[ST.playerId]=100;
+        var B=ST.bossTalk; if(!B) return '면담없음';
+        var keepN=ST.bossTalkCount, keepAt=ST.bossTalkAt, keepLog=B.log.slice();
+        B.step=0; B.log=B.log.slice(0,2);
+        go('home');
+        var o=document.querySelectorAll('#view .bossopt');
+        if(!o.length) return '선택지없음';
+        o[0].click();
+        var last=(ST.bossTalk&&ST.bossTalk.log||[]).slice(-1)[0];
+        var out=last?last.text:'로그없음';
+        /* 두 번 눌렀으니 카운터를 되돌려 놓는다 — 다음 검사가 이걸 본다 */
+        ST.bossTalkCount=keepN; ST.bossTalkAt=keepAt;
+        if(ST.bossTalk){ ST.bossTalk.log=keepLog; ST.bossTalk.step=1; }
+        return out;
+      })()`);
+      return /더 오를 데가 없다/.test(txt) ? '「더 오를 데가 없다」' : '!'+txt;
+    });
     T('감독 답변 추가', ()=>ev("ST.bossTalk.log.length")>=5);
     console.log('   ', ev("ST.bossTalk.log.slice(-3).map(m=>m.text.replace(/\\n/g,' / ')).join(' | ')"));
     T('카운터 증가', ()=>ev("ST.bossTalkCount")===1);

@@ -7761,8 +7761,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.82.0';
-const APP_VERSION_NOTE = '스물네 팀 선수단을 다 뜯어본다 · 포지션 훈련이 드디어 먹는다';
+const APP_VERSION = '2.83.0';
+const APP_VERSION_NOTE = '홈런은 홈런처럼 · 투수를 골랐으면 투수다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7783,6 +7783,22 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.83.0', t:'홈런은 홈런처럼 · 투수를 골랐으면 투수다', items:[
+    '[요청] "이거 홈런칠때 임팩트 있었나? 없다면 넣어주고" — 없었다. 공이 날아가고 배너에 「홈런!」 한 줄이 전부라 안타랑 그림이 똑같았다. **세 번 때린다** — 맞는 순간 화면이 흔들리고 하얗게 튀고, **담장을 넘는 순간** 금색으로 번쩍하면서 담장 너머로 불빛이 퍼지고, 도는 동안 「홈런!」과 **비거리**가 크게 남는다. 공에는 꼬리가 붙어서 눈으로 따라갈 수 있다',
+    '비거리는 엔진이 이미 계산해 둔 그 숫자다 — 중계 로그와 화면이 어긋나지 않는다. 사회인야구 담장 기준 97~129m 사이다',
+    '다시 보기 화면에도 같은 걸 얹었다. 남의 타석도 지나가는 화면이라 조금 얌전하게. 그라운드 홈런은 담장 연출을 안 한다 — 안 넘어갔으니까',
+    '[제보·큰 것] "투수만 골라도 타자 시키는건 좀 이상하다 투수만 골랐을때는 확실하게 투수로 기회 계속 졸업전부터 받아야 투수 육성이 되지" — 맞는 말이다. **투수를 고르면 고교 전 경기 선발**이고 타순에도 「투수」로 적힌다. 여태는 로테이션에만 올려놓고 타순에는 유격수라고 적혀 있어서 투수를 안 시켜주는 것처럼 보였다',
+    '[제보·큰 것] "포수랑 투수 이도류 모드 플레이하는데 (…) 투수 안시켜주고 포수 수비도 없는데" — **이도류는 한 경기 걸러 던진다.** 같은 날 포수를 보면서 던질 수는 없으니 던지는 날과 앉는 날을 갈랐다. 던지는 날은 마운드, 안 던지는 날은 포수다',
+    '[버그] 고교 팀에서 내 능력치가 제일 높으면 **타자를 골랐는데도 선발 투수로 나가고 있었다.** 상대 로테이션을 짜는 함수가 능력치 순으로 나를 1번에 올려놓았기 때문이다. 안 던지는 날은 로테이션에서 뺀다',
+    '[버그] **고등학교에는 수비가 아예 없었다.** 그 자리에서 나온 판단을 전부 버리고 있어서, 내 자리로 타구가 와도 도루를 당해도 화면 한 번 안 뜨고 지나갔다. 이제 고교에서도 내 수비를 내가 한다. 포수는 타구가 아니라 **도루 저지**가 일이라 그것도 같이 받는다 (2군도 마찬가지)',
+    '[제보] "치고나서 2루까지 간다 3루까지 간다 이거 뭐 누르면 갑자기 순간이동 하냐" — 진짜였다. 주자 속도는 **한 베이스에 걸리는 시간**인데 2루타면 두 베이스를 가야 한다. 그걸 안 나눠서 마지막 한 베이스가 0.2초로 눌려 있었다. 이제 베이스 수로 나눠 맞추고, 한 베이스 더 갈 때는 송구도 더 멀리 날아간다 — 마지막 구간이 **뛰는 그림**이 된다',
+    '투수를 골랐는데 타율이 낮다고 2군에 넉 주를 보내던 것도 고쳤다. 졸업할 때 투수는 투구 성적으로 잰다',
+    '[제보·큰 것] "변화구 유인구로 공을 빼는데 존 밖으로 공이 잘나갔는데 안타 맞을 확률이 너무 높다" — 맞는 말이었다. **배트에 맞기만 하면 어디에 던졌든 똑같은 타구**가 됐다. 한가운데 몰린 실투나, 발끝까지 쫓아나가 억지로 갖다 댄 유인구나 결과가 같았다는 뜻이다. 그러면 유인구를 던질 이유가 없다',
+    '이제 **맞은 자리에 따라 갈린다.** 존 밖 공을 건드리면 **58%가 파울**이고, 인플레이가 돼도 빗맞은 타구다. 구석은 34%, 한가운데는 22%가 파울이다',
+    '타구 품질이 결과에 제대로 들어가게 곡선도 다시 그렸다. 이 리그는 인플레이 타구의 절반이 안타로 빠지는 리그(BABIP .449)라, 품질 배수가 1 근처면 **뭘 쳐도 안타**가 된다. 실제로 재보니 겨우 갖다 댄 공이 타율 .522 였다. 이제 **빗맞으면 .20, 제대로 맞히면 .70** 이다. 잘 맞은 쪽 균형은 안 건드렸다',
+    '빗맞은 타구는 담장까지 안 간다 — 장타는 제대로 맞혀야 나온다',
+    '감독 면담에서 「사기 +6」 이라고 적어놓고 아무 일도 안 일어나던 것을 고쳤다. 사기가 이미 100 이면 「더 오를 데가 없다」 고 말해준다. 실제로 변한 만큼만 적는다',
+  ]},
   {v:'2.82.0', t:'스물네 팀 선수단을 다 뜯어본다 · 포지션 훈련이 드디어 먹는다', items:[
     '[요청] "1군 2군 뎁스나 라인업도 볼 수 있게 해줘야겠는데 뭐 다른팀이든 우리팀이든" — **선수단 둘러보기**가 생겼다. 더보기에서 들어가거나, **순위표에서 팀 이름을 누르면** 바로 그 팀 선수단으로 간다',
     '팀을 고르고 **1군 / 2군**, **뎁스 / 라인업 / 명단** 을 골라 본다. 우리 팀이 맨 앞이고 나머지는 순위 순이다',
@@ -10424,8 +10440,25 @@ LiveGame.prototype.consumePlayMods = function(off, def){
        (다른 경로에서 참고한다) 실제 차단은 simPA 의 inPlay 가 한다. */
     out={k:0.0008, bb:0.0008, hbp:0.0008, inPlay:true};
     const q=this._contactQ==null?0.6:this._contactQ;
-    out.babip=1+(q-0.5)*0.30;
-    out.pow=1+Math.max(0,q-0.7)*0.75;
+    /* [제보] "변화구 유인구로 공을 빼는데 존 밖으로 공이 잘나갔는데
+               안타 맞을 확률이 너무 높다"
+
+       두 가지가 겹쳐 있었다.
+         ① 배트에 맞기만 하면 **어디에 던졌든 품질 0.55** 였다 (위쪽에서 고침)
+         ② 품질이 결과에 거의 영향을 안 줬다 — 이 줄이다
+
+       옛 식은 `1+(q-0.5)*0.30` 이라 q 가 0.2 든 0.8 든 BABIP 배수가
+       0.91~1.09 사이였다. 이 리그는 인플레이 타구의 절반이 안타로
+       빠지는 리그(BABIP .449)라, **배수가 1 근처면 뭘 쳐도 안타**다.
+       실제로 재보니 발끝까지 쫓아나가 갖다 댄 공이 타율 .522 였다.
+
+       잘 맞은 쪽(q>=0.5)은 지금 균형이 맞으니 건드리지 않는다.
+       **못 맞은 쪽만** 제대로 떨어뜨린다 — 거듭제곱이라 아래로 갈수록 급하다.
+         q 0.16 → 0.22배 · 0.24 → 0.31배 · 0.36 → 0.58배 · 0.50 → 1.00배   */
+    out.babip = q<0.5 ? Math.max(0.22, Math.pow(q/0.5, 1.6))
+                      : 1+(q-0.5)*0.30;
+    /* 빗맞으면 담장까지 안 간다. 장타는 제대로 맞혀야 나온다. */
+    out.pow=(1+Math.max(0,q-0.7)*0.75) * (q<0.45 ? (0.40+q*1.05) : 1);
     /* [요청] "변화구 던지면 쳤을 때랑 직구 던지면 쳤을 때랑 뭔가 있어야
        더 머리를 쓰면서 플레이할 듯"
        직구는 맞으면 잘 뻗는다 — 속도가 그대로 반사된다.
@@ -13914,11 +13947,14 @@ function farmRunLive(){
         return;
       }
     }
-    /* 2군에서도 내 수비는 내가 한다 — 여기가 적응하는 자리다 */
+    /* 2군에서도 내 수비는 내가 한다 — 여기가 적응하는 자리다.
+       포수면 타구가 아니라 도루 저지(throw)가 내 일이다. */
     if(!off.isUser && LIVE.def().isUser && LIVE.paSeq!==LIVE._lastDefPA
        && askModeOf('def')!=='off'){
       const dd=LIVE.detectDecision();
-      if(dd && dd.kind==='defplay'){ flushLog(); updateLiveUI(); showDecision(dd); return; }
+      if(dd && (dd.kind==='defplay'||dd.kind==='throw')){
+        flushLog(); updateLiveUI(); showDecision(dd); return;
+      }
     }
     if(LIVE.pending) LIVE.applyDecision('change');
     LIVE.step();
@@ -14141,12 +14177,59 @@ function hsFoe(){ return hsMySchool()==='gunpo'?'heung':'gunpo'; }
 
 /* 라인업 — 내 자리는 내가 정한 포지션으로 못 박는다.
    [요청] "고교때도 그 포지션으로 뛰고"                                */
-function hsLineup(team, meId, lastOrder){
+/* 오늘 내가 던지나.
+   [요청] "투수만 골랐을때는 확실하게 투수로 기회 계속 졸업전부터 받아야"
+   투수 전업이면 **전 경기 선발**이다. 이도류는 번갈아 나간다 —
+   같은 날 포수를 보면서 던질 수는 없으니, 던지는 날과 안는 날을 가른다.
+   (첫 경기부터 마운드에 세운다. 고1 첫 경기가 데뷔전이어야 말이 된다) */
+function hsIPitch(i){
+  if(ST.role==='pit') return true;
+  if(ST.role!=='two') return false;
+  /* [주의] i 는 이야기 인덱스지 경기 번호가 아니다(입부·마지막날은 경기가 없다).
+     홀짝을 그대로 쓰면 여섯 경기 중 한 번만 던지는 일이 생긴다.
+     **몇 번째 경기냐**로 세서 한 경기 걸러 던진다. */
+  const st=hsStory(); let n=0;
+  for(let k=0;k<st.length && k<i;k++) if(!st[k].noGame) n++;
+  return (n%2)===0;
+}
+function hsLineup(team, meId, lastOrder, posWant){
   const line=aiLineup(team);
   if(!meId) return line;
-  const pos=myPos();
+  const pos=(posWant!==undefined?posWant:myPos());
   let mine=line.findIndex(x=>x.id===meId);
-  if(!pos||pos==='P'){
+  /* [제보] "투수만 골라도 타자 시키는건 좀 이상하다 투수만 골랐을때는
+             확실하게 투수로 기회 계속 졸업전부터 받아야 투수 육성이 되지"
+
+     맞는 말이다. 투수를 고르면 hsRotation 이 나를 매 경기 선발로 올려놓는데,
+     **타순에는 유격수라고 적혀 있었다.** 자리가 'P' 면 그냥 AI 라인업을
+     그대로 돌려주고 있었기 때문이다(위의 옛 코드). 던지는 사람이 화면에는
+     야수로 뜨니 "투수를 안 시켜준다"로 보인다.
+     이제 타순에서도 투수 자리를 잡는다 — 원래 그 자리를 쓰던 사람이나
+     지명타자가 내가 비운 야수 자리를 이어받는다.                    */
+  if(pos==='P'){
+    if(mine<0){
+      const last=line.length-1;
+      const oldPos=line[last].pos;
+      line[last]={id:meId, pos:'P'};
+      mine=last;
+      const dh=line.findIndex((x,i)=>i!==mine && x.pos==='DH');
+      if(dh>=0 && oldPos!=='DH' && oldPos!=='P') line[dh].pos=oldPos;
+    } else {
+      const oldPos=line[mine].pos;
+      const holder=line.findIndex((x,i)=>i!==mine && x.pos==='P');
+      if(holder>=0) line[holder].pos=oldPos;
+      else {
+        const dh=line.findIndex((x,i)=>i!==mine && x.pos==='DH');
+        if(dh>=0 && oldPos!=='DH') line[dh].pos=oldPos;
+      }
+      line[mine].pos='P';
+    }
+    if(lastOrder&&mine>=0&&mine<line.length-1){
+      const row=line.splice(mine,1)[0]; line.push(row);
+    }
+    return line;
+  }
+  if(!pos){
     if(lastOrder&&mine>=0&&mine<line.length-1){
       const row=line.splice(mine,1)[0]; line.push(row);
     }
@@ -14175,7 +14258,7 @@ function hsLineup(team, meId, lastOrder){
   }
   return line;
 }
-function hsRotation(team, meId){
+function hsRotation(team, meId, offId){
   /* [함정] aiRotation 은 이미 id 배열을 준다. .map(p=>p.id) 를 한 번 더
      걸면 전부 undefined 가 된다 — 로테이션이 통째로 비어버린다. */
   const rot=aiRotation(team).slice();
@@ -14183,6 +14266,16 @@ function hsRotation(team, meId){
     const i=rot.indexOf(meId);
     if(i>0){ rot.splice(i,1); rot.unshift(meId); }
     else if(i<0) rot.unshift(meId);
+    return rot;
+  }
+  /* [버그] 고교 팀에서 내 능력치가 제일 높으면 aiRotation 이 나를 그냥
+     1선발로 올려버렸다. **타자를 골랐는데 선발 투수로 나갔고**, 이도류가
+     포수를 보는 날에도 마운드에 서 있었다(포수가 던질 수는 없다).
+     오늘 안 던지기로 한 날은 로테이션에서 뺀다. */
+  if(offId){
+    const j=rot.indexOf(offId);
+    if(j>=0) rot.splice(j,1);
+    if(!rot.length) rot.push(offId);      // 던질 사람이 나뿐이면 어쩔 수 없다
   }
   return rot;
 }
@@ -14812,8 +14905,9 @@ function hsBuild(i){
     : hsOtherTeam(HS_OTHERS[i%HS_OTHERS.length], year, base+i);
   return {
     s, me, year, us, foe,
-    uLine:hsLineup(us, me, !!s.last),
-    uRot :hsRotation(us, (ST.role==='pit'||ST.role==='two') ? me : null),
+    iPitch:hsIPitch(i),
+    uLine:hsLineup(us, me, !!s.last, hsIPitch(i) ? 'P' : (ST.myPos||myPos())),
+    uRot :hsRotation(us, hsIPitch(i)?me:null, hsIPitch(i)?null:me),
     fLine:aiLineup(foe), fRot:aiRotation(foe),
     homeUs:(i%2===0),
     rng:makeRng((base*31+i*7717+year)>>>0),
@@ -14936,6 +15030,19 @@ function hsRunLive(){
         return;
       }
     }
+    /* [제보] "포수랑 투수 이도류 모드 플레이하는데 (…) 포수 수비도 없는데"
+       고교에는 수비 분기가 아예 없었다. 여기서 나온 판단을 전부
+       applyDecision('change') 로 버리고 있었으니, 내 자리로 타구가 와도
+       도루를 당해도 화면 한 번 안 뜨고 지나갔다.
+       [주의] 포수는 타구가 안 온다(defZoneHit 가 C 를 막는다).
+       포수의 수비는 **도루 저지(throw)** 다 — 그것도 같이 받는다.  */
+    if(!off.isUser && LIVE.def().isUser && LIVE.paSeq!==LIVE._lastDefPA
+       && askModeOf('def')!=='off'){
+      const dd=LIVE.detectDecision();
+      if(dd && (dd.kind==='defplay'||dd.kind==='throw')){
+        flushLog(); updateLiveUI(); showDecision(dd); return;
+      }
+    }
     if(LIVE.pending) LIVE.applyDecision('change');
     LIVE.step();
   }
@@ -15021,8 +15128,15 @@ function hsGraduate(){
      **고교 성적만큼 2군을 짧게 지난다.** 3년을 잘 보냈으면 곧바로
      1군이고, 못했으면 넉 주를 2군에서 친다. 그 사이에 조작이 손에 붙는다. */
   {
-    const gAvg=(['con','pow','eye','spd','def','arm']
-      .map(k=>g[k]||0).reduce((a,b2)=>a+b2,0))/6;
+    /* [주의] 투수를 고른 사람을 타격 성적으로 재면 안 된다.
+       투수는 타율이 낮은 게 당연한데 그걸로 2군에 넉 주를 보내면
+       "투수를 골랐더니 벌을 받는다" 가 된다. 역할에 맞는 칸을 본다. */
+    const avgOf=(ks)=>ks.map(k=>g[k]||0).reduce((a,b2)=>a+b2,0)/ks.length;
+    const batAvg=avgOf(['con','pow','eye','spd','def','arm']);
+    const pitAvg=avgOf(['stf','ctl','sta']);
+    const gAvg = ST.role==='pit' ? pitAvg
+               : ST.role==='two' ? Math.max(batAvg, (batAvg+pitAvg)/2)
+               : batAvg;
     const wk = gAvg>=0.62 ? 0 : (gAvg>=0.42 ? 2 : 4);
     ST.notices=ST.notices||[];
     if(wk>0){
@@ -16439,10 +16553,18 @@ function renderHome(){
           if(k==='humble'){dm=6;db=8;}
           else if(k==='fight'){dm=B.tier==='bad'?-6:10;db=B.tier==='bad'?-4:6;}
           else {dm=-4;db=-6;}
-          ST.morale[me]=Math.max(10,Math.min(100,(ST.morale[me]||70)+dm));
+          /* [주의] 사기는 10~100 이다. 이미 100 인 사람에게 「사기 +6」 이라고
+             적어놓고 아무 일도 안 일어나면 그건 거짓말이다. **실제로 변한 만큼**
+             적는다. 꽉 찼으면 꽉 찼다고 말해준다. */
+          const m0=(ST.morale[me]==null?70:ST.morale[me]);
+          ST.morale[me]=Math.max(10,Math.min(100,m0+dm));
+          const dmReal=ST.morale[me]-m0;
           if(ST.bond)bondAdd(B.boss,db);
           B.log.push({who:B.boss,type:'notice',
-            text:`내 사기 ${dm>=0?'+':''}${dm} · ${nameOf(B.boss)}와의 우정 ${db>=0?'+':''}${db}`});
+            text:(dmReal===0
+                  ? (dm>0?'사기가 더 오를 데가 없다':(dm<0?'사기가 더 내려갈 데가 없다':'사기 그대로'))
+                  : `내 사기 ${dmReal>=0?'+':''}${dmReal}`)
+                 +` · ${nameOf(B.boss)}와의 우정 ${db>=0?'+':''}${db}`});
           B.step=1;
           ST.bossTalkCount=(ST.bossTalkCount||0)+1;
           ST.bossTalkAt=ST.schedule.filter(x=>x.played).length;
@@ -21771,6 +21893,16 @@ function livePlay(host, o){
   const HR=(play.type==='HR');
   const isOut=(play.type==='OUT');
   const flyOut=(isOut && !play.gb);
+  /* 비거리 — 담장을 넘긴 거리다. 화면에 숫자로 박아준다.
+     [요청] "이거 홈런칠때 임팩트 있었나? 없다면 넣어주고"
+     여태 홈런은 공이 날아가고 배너에 '홈런!' 한 줄이 뜨는 게 전부였다.
+     안타랑 그림이 똑같으면 홈런이 홈런 같지가 않다.
+
+     [주의] 여기서 새로 지어내면 안 된다. play.dist(=m) 가 **이미 엔진이
+     계산한 진짜 비거리**다(battedDist: 담장+1+u×13m). 따로 식을 만들었더니
+     189m 짜리 홈런이 나왔다 — 사회인야구에 그런 타구는 없다.
+     다시보기 화면(psPlay)도 같은 값을 쓴다. 두 화면 숫자가 어긋나면 안 된다. */
+  const hrDist = HR ? Math.round(m) : 0;
   /* 엔진이 보장하는 베이스 — 여기까지는 무조건 세이프다 */
   const base = HR?4 : (play.type==='3B')?3 : (play.type==='2B')?2 : isOut?0 : 1;
   /* [제보] "땅볼치면 그냥 안뛰고"
@@ -21789,7 +21921,10 @@ function livePlay(host, o){
   const T_LAND  = Math.round(1100 + Math.min(150,m)*13.5);
   const T_CATCH = T_LAND + (play.gb?260:0);
   const T_THROW = T_CATCH + 720;      // 잡고 · 보고 · 던진다 — 여기가 정하는 창이다
-  const THROW_MS= 460;
+  /* 한 베이스 더 노리면 송구도 더 먼 데로 간다. 공이 그만큼 오래 날아야
+     마지막 한 베이스를 **뛰는 그림**이 나온다 — 0.2초짜리 순간이동이 아니라. */
+  const THROW_BASE=460, THROW_GO=820;
+  let THROW_MS = THROW_BASE;
   /* 주자 — 한 베이스에 얼마나 걸리나. 발이 빠르면 짧다 */
   let runMs = Math.round(2150 - ((o.spd||45)-45)*10);
   runMs = Math.max(1600, Math.min(2500, runMs));
@@ -21797,7 +21932,15 @@ function livePlay(host, o){
      · 땅볼 아웃이면 송구가 먼저 닿아야 한다
      · 안타면 내가 먼저 닿아야 한다                                 */
   if(play.gb && isOut) runMs = Math.max(runMs, T_THROW+THROW_MS+240);
-  else if(!isOut && !HR) runMs = Math.min(runMs, Math.max(700, T_THROW-160));
+  /* [제보] "2루까지 간다 3루까지 간다 이거 뭐 누르면 갑자기 순간이동 하냐"
+     진짜였다. runMs 는 **한 베이스에 걸리는 시간**인데, 2루타면 두 베이스를
+     가야 하니 실제 도착은 runMs×2 다. 그런데 송구 창(T_THROW)에 맞추는
+     계산에서 그걸 안 나눴다. 2루타면 내가 2루에 닿는 시각(4300ms)이
+     송구가 끝나는 시각(2940ms)보다 **뒤**라, 마지막 한 베이스 구간이
+     max(220, 음수) = 220ms 로 눌렸다 — 0.2초 만에 3루로 순간이동했다.
+     베이스 수로 나눠서 **내가 딴 베이스에 딱 송구 직전에 닿게** 맞춘다. */
+  else if(!isOut && !HR)
+    runMs = Math.min(runMs, Math.max(620, (T_THROW-160)/Math.max(1,base)));
 
   /* ---- 조종 ---- */
   let intent='auto';           // auto | go | back
@@ -21854,7 +21997,8 @@ function livePlay(host, o){
       if(t<=tBase) return Math.min(base, raw);
       const arrive=T_THROW+THROW_MS;
       const endT = decided ? (decided.ok ? arrive-150 : arrive+360) : (tBase+runMs);
-      return base + Math.min(1, (t-tBase)/Math.max(220,(endT-tBase)));
+      /* 최소 0.42초는 뛰어야 뛰는 것처럼 보인다 */
+      return base + Math.min(1, (t-tBase)/Math.max(420,(endT-tBase)));
     }
     const cap = Math.max(runTo, base);
     return Math.min(cap, raw);
@@ -21870,9 +22014,9 @@ function livePlay(host, o){
       ? Math.max(0, Math.min(1, 1-seg(goAt!=null?goAt:T_THROW, 0, T_THROW)))
       : 0;
     decided = (o.onDecide ? o.onDecide(went, risk) : null) || {go:went, ok:!went};
-    if(decided.go && decided.ok) tgtBase=base+1;
-    else if(decided.go)          tgtBase=base+1;
-    else                          tgtBase=Math.max(1, base);
+    if(decided.go) tgtBase=base+1;
+    else           tgtBase=Math.max(1, base);
+    THROW_MS = decided.go ? THROW_GO : THROW_BASE;
   };
 
   /* 최종 판정 문구 */
@@ -21911,6 +22055,43 @@ function livePlay(host, o){
   };
   const man=(x,y,u,run,flip)=>psMan(g,x,y+7,u,run?(1+((Date.now()/100|0)%2)):0,flip,false);
 
+  /* ---- 홈런 임팩트 ----
+     [요청] "홈런칠때 임팩트 있었나? 없다면 넣어주고"
+     세 번 때린다.
+       ① 맞는 순간      — 화면이 흔들리고 하얗게 튄다 (0.34초)
+       ② 담장을 넘을 때 — 금색으로 번쩍, 「넘어갔다」, 담장 위 불빛
+       ③ 도는 동안      — 비거리와 「홈런」이 크게 남는다
+     담장을 넘는 시각은 공 궤적에서 역산한다. 공은 fence×1.28 까지
+     t/(T_LAND×1.25) 로 날아가니, 담장(=1.0)에 닿는 건 그 78% 지점이다. */
+  const T_OVER = HR ? Math.round(T_LAND*1.25*(1/1.28)) : 0;
+  const hrShake=(t)=>{
+    if(!HR) return 0;
+    if(t<340)  return (1-t/340)*4.2;                       // 배트 임팩트
+    if(t>=T_OVER && t<T_OVER+420) return (1-(t-T_OVER)/420)*3.0;   // 담장을 넘는다
+    return 0;
+  };
+  const hrFlash=(t)=>{
+    if(!HR) return null;
+    if(t<260) return ['255,252,238', (1-t/260)*0.42];
+    if(t>=T_OVER && t<T_OVER+340) return ['255,209,92', (1-(t-T_OVER)/340)*0.36];
+    return null;
+  };
+  /* 담장 너머 불빛 — 넘어간 자리에서 퍼진다 */
+  const hrSpark=(t)=>{
+    if(!HR || t<T_OVER || t>T_OVER+900) return;
+    const k=(t-T_OVER)/900;
+    const cx=HX+Math.cos(rad)*fence*1.04, cy=HY+Math.sin(rad)*fence*1.04;
+    for(let i=0;i<9;i++){
+      const a=rad+(i-4)*0.26, r=14+k*54+((i*37)%11);
+      const x=cx+Math.cos(a)*r, y=cy+Math.sin(a)*r*0.62;
+      g.fillStyle='rgba(255,'+(190+((i*13)%50))+',110,'+((1-k)*0.75).toFixed(2)+')';
+      g.beginPath(); g.arc(x,y,Math.max(0.8,2.4-k*1.8),0,Math.PI*2); g.fill();
+    }
+    g.strokeStyle='rgba(255,209,92,'+((1-k)*0.5).toFixed(2)+')';
+    g.lineWidth=2;
+    g.beginPath(); g.arc(cx,cy,10+k*60,0,Math.PI*2); g.stroke();
+  };
+
   const T_END=()=>HR ? (trotMs*4+600)
     : Math.max(T_THROW+THROW_MS+620, runMs*Math.max(1,Math.max(tgtBase,runTo))+460);
 
@@ -21918,7 +22099,9 @@ function livePlay(host, o){
     if(stop) return;
     const t=now();
     if(t>=T_THROW) decide();
-    g.setTransform(2,0,0,2,0,0);
+    const sh=hrShake(t);
+    const sx=sh?(Math.sin(t/26)*sh):0, sy=sh?(Math.cos(t/19)*sh*0.7):0;
+    g.setTransform(2,0,0,2,sx*2,sy*2);
     psField(g,P);
 
     /* 야수 — 타구 쪽 사람만 뛴다 */
@@ -21964,7 +22147,19 @@ function livePlay(host, o){
         g.beginPath(); g.arc(tg.x,tg.y,9,0,Math.PI*2); g.stroke();
       }
     }
+    /* 홈런은 공에 꼬리를 붙인다 — 그냥 점이 날아가면 안타랑 똑같다 */
+    if(HR && t<T_OVER+300){
+      const k0=Math.min(1,t/(T_LAND*1.25));
+      const far={x:HX+Math.cos(rad)*fence*1.28, y:HY+Math.sin(rad)*fence*1.28};
+      for(let i=1;i<=7;i++){
+        const kk=Math.max(0,k0-i*0.035);
+        const q=lerp({x:HX,y:HY},far,kk);
+        g.fillStyle='rgba(255,209,92,'+((0.36-i*0.045).toFixed(2))+')';
+        g.beginPath(); g.arc(q.x,q.y,3.4-i*0.32,0,Math.PI*2); g.fill();
+      }
+    }
     psBall(g,bp.x,bp.y,(!HR&&t<T_LAND&&m>40)?Math.sin(seg(t,0,T_LAND)*Math.PI)*11:0);
+    hrSpark(t);
 
     /* 나 */
     const rk=runPos(t);
@@ -22001,6 +22196,30 @@ function livePlay(host, o){
     const fin=(t>=T_END()-620);
     if(fin){ const v=verdict(); plate(v[0], v[1], 20); }
     else { const b=beat(t); if(b) plate(b[0], b[1], 15); }
+
+    /* 홈런 — 넘어가는 순간부터 크게 박는다 */
+    if(HR && t>=T_OVER){
+      const k=Math.min(1,(t-T_OVER)/300);
+      const big=Math.round(22+k*12);
+      g.save();
+      g.font='900 '+big+'px system-ui,-apple-system,sans-serif';
+      g.textAlign='center'; g.textBaseline='middle';
+      g.lineWidth=4; g.strokeStyle='rgba(9,12,16,.9)';
+      g.strokeText('홈런!', 160, 118);
+      g.fillStyle='#ffd15c'; g.fillText('홈런!', 160, 118);
+      g.font='900 12px system-ui,-apple-system,sans-serif';
+      g.strokeStyle='rgba(9,12,16,.9)'; g.lineWidth=3;
+      const sub=(play.itp?'그라운드 홈런 · ':'비거리 ')+hrDist+'m';
+      g.strokeText(sub, 160, 140); g.fillStyle='#e9e4d8'; g.fillText(sub, 160, 140);
+      g.textBaseline='alphabetic'; g.textAlign='left';
+      g.restore();
+    }
+    /* 번쩍 — 제일 위에 덮는다 */
+    const fl=hrFlash(t);
+    if(fl && fl[1]>0.01){
+      g.fillStyle='rgba('+fl[0]+','+fl[1].toFixed(3)+')';
+      g.fillRect(-6,-6,PSW+12,PSH+12);
+    }
 
     if(o.onTick) o.onTick(t, T_END(), rk, decided);
     if(t<T_END()) requestAnimationFrame(draw);
@@ -22296,9 +22515,22 @@ function psPlay(d, done, opt){
     if(now>=TOTAL){ finish(); return; }
     raf=requestAnimationFrame(frame);
   };
+  /* 홈런 임팩트 — 다시 보기 화면에도 같은 걸 얹는다.
+     [요청] "홈런칠때 임팩트 있었나? 없다면 넣어주고"
+     여기는 남의 타석도 지나가는 화면이라 선수 모드 타석보다는 얌전하게,
+     맞는 순간 한 번 · 담장을 넘는 순간 한 번만 흔든다.            */
+  const psHR = (K==='HR' && !d.itp);
+  const T_OVER2 = psHR && T.fly ? Math.round(T.fly[0]+(T.fly[1]-T.fly[0])*0.78) : 0;
   function draw(now){
-    g.setTransform(PSS,0,0,PSS,0,0);        // 논리 좌표(320x264) 로 그린다
-    g.clearRect(0,0,PSW,PSH);
+    let shx=0, shy=0;
+    if(psHR){
+      let a=0;
+      if(now<300) a=(1-now/300)*3.4;
+      else if(now>=T_OVER2 && now<T_OVER2+380) a=(1-(now-T_OVER2)/380)*2.4;
+      if(a){ shx=Math.sin(now/25)*a; shy=Math.cos(now/18)*a*0.7; }
+    }
+    g.setTransform(PSS,0,0,PSS,shx*PSS,shy*PSS);   // 논리 좌표(320x264) 로 그린다
+    g.clearRect(-8,-8,PSW+16,PSH+16);
     psField(g);
     const fr=(Math.floor(now/110)%2)?1:2;
 
@@ -22365,7 +22597,34 @@ function psPlay(d, done, opt){
         g.beginPath(); g.arc(150,236,15,-Math.PI*0.9+ks*2.2,-Math.PI*0.2+ks*2.2); g.stroke();
       }
     }
+    if(psHR && T.fly && now<T_OVER2+280){
+      /* 공에 꼬리 — 홈런은 눈으로 따라갈 수 있어야 한다 */
+      const k0=seg(T.fly,now)||0;
+      for(let i=1;i<=6;i++){
+        const kk=Math.max(0,k0-i*0.04);
+        const q={x:lerp(160,sc.land.x,kk), y:lerp(232,sc.land.y,kk)};
+        g.fillStyle='rgba(255,209,92,'+((0.32-i*0.048).toFixed(2))+')';
+        g.beginPath(); g.arc(q.x,q.y,3.2-i*0.34,0,Math.PI*2); g.fill();
+      }
+    }
     if(bp) psBall(g,bp.x,bp.y,bz);
+    if(psHR){
+      /* 담장 너머 불빛 + 번쩍 */
+      if(now>=T_OVER2 && now<T_OVER2+820){
+        const k=(now-T_OVER2)/820;
+        const cx=sc.land.x, cy=sc.land.y;
+        for(let i=0;i<8;i++){
+          const a=(i/8)*Math.PI*2, r=12+k*48;
+          g.fillStyle='rgba(255,'+(196+((i*11)%46))+',110,'+((1-k)*0.7).toFixed(2)+')';
+          g.beginPath(); g.arc(cx+Math.cos(a)*r, cy+Math.sin(a)*r*0.6,
+                               Math.max(0.8,2.2-k*1.6),0,Math.PI*2); g.fill();
+        }
+      }
+      let fa=0, fc='255,252,238';
+      if(now<230) fa=(1-now/230)*0.34;
+      else if(now>=T_OVER2 && now<T_OVER2+300){ fa=(1-(now-T_OVER2)/300)*0.30; fc='255,209,92'; }
+      if(fa>0.01){ g.fillStyle='rgba('+fc+','+fa.toFixed(3)+')'; g.fillRect(-8,-8,PSW+16,PSH+16); }
+    }
 
     /* 배너 */
     if(now>=T.hold[0]-260 && !ban.textContent){
@@ -26874,7 +27133,7 @@ function renderPitch(box, d){
              - (cnt.b>=3?0.20:(cnt.b>=2?0.09:0));      // 볼카운트가 유리하면 참는다
         }
         const swung = LIVE.rng() < Math.max(0.05,Math.min(0.92,sw));
-        let kind, pre, col;
+        let kind, pre, col, cq=0.55;
         if(!swung){
           /* [요청] "실제 심판 판정이 오락가락한 것처럼 그것도 넣자.
              볼인데 스트라이크라고 하고 스트라이크인데 볼이라고 해서
@@ -26903,10 +27162,33 @@ function renderPitch(box, d){
           }
         } else {
           const hitP=Math.max(0.18,Math.min(0.86,0.42+(con-40)*0.006-(out?0.20:0)-(corner&&ok?0.10:0)));
-          if(LIVE.rng()<hitP){ kind='contact'; pre='맞았다'; col='#e08a70'; }
+          if(LIVE.rng()<hitP){
+            /* [제보] "변화구 유인구로 공을 빼는데 존 밖으로 공이 잘나갔는데
+                       안타 맞을 확률이 너무 높다"
+
+               맞는 말이었다. 배트에 맞기만 하면 **어디에 던졌든 품질 0.55**
+               짜리 인플레이 타구가 됐다. 한가운데 몰린 실투나, 발끝까지
+               쫓아나가서 억지로 갖다 댄 유인구나 결과가 똑같았다는 뜻이다.
+               유인구를 던질 이유가 없어진다.
+
+               실제로는 존 밖 공을 건드리면 **대부분 파울이거나 빗맞는다.**
+               어디에 던졌는지로 세 갈래로 나눈다 —
+                 존 밖   : 파울 58% · 나머지도 빗맞은 타구(품질 0.16~0.36)
+                 구석    : 파울 34% · 품질 0.34~0.60
+                 한가운데: 파울 22% · 품질 0.44~0.74                   */
+            const weak = out ? 0 : ((corner&&ok) ? 1 : 2);
+            const foulP = [0.58, 0.34, 0.22][weak];
+            if(LIVE.rng()<foulP){ kind='foul'; pre='파울'; col='#e2c05a'; }
+            else {
+              cq = [0.16,0.34,0.44][weak] + LIVE.rng()*[0.20,0.26,0.30][weak];
+              kind='contact';
+              pre = cq<0.34 ? '빗맞았다' : (cq<0.58 ? '맞았다' : '제대로 맞았다');
+              col = cq<0.34 ? '#c9a227' : '#e08a70';
+            }
+          }
           else { kind='strike'; pre='헛스윙!'; col='#7fc48f'; }
         }
-        const res=LIVE.pitchResult(kind, kind==='contact'?0.55:null, type);
+        const res=LIVE.pitchResult(kind, kind==='contact'?cq:null, type);
         draw();
         if(!res){
           moundResult(mv,pre,col);
