@@ -61,6 +61,12 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
   console.log('\n[수비 — 직접 조종]');
   setup();
   ev("showDecision({kind:'defplay', ang:-18, pos:'SS'})"); await wait(150);
+  T([...d.querySelectorAll('#decision .lead-b span')].some(x=>/준비 됐다/.test(x.textContent)),
+    '수비도 준비 턴이 있다 — 누를 때까지 공이 안 온다');
+  T(ev("renderDefPlay.toString().indexOf('scrollIntoView')>0 && renderDefPlay.toString().indexOf('plLock(true)')>0"),
+    '화면 안으로 끌어오고 공이 오는 동안 스크롤을 잠근다');
+  T(ev("defScene.toString().indexOf('groundScene')<0"),
+    '결과를 새 캔버스로 다시 그리지 않는다 (「화면이 초기화」 가 안 난다)');
   T(!!d.querySelector('#decision .runstage'), '그라운드가 뜬다');
   T(/으로 온다/.test(txt('#decision .rb-t')), '타구 방향을 먼저 알려준다 :: '+txt('#decision .rb-t'));
   T(btns().length===0, '「안전하게 / 달려든다」 버튼이 없어졌다 — 손으로 쫓아간다');

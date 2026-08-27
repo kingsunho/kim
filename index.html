@@ -7704,8 +7704,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.79.1';
-const APP_VERSION_NOTE = '주루도 베이스를 눌러서 — 수비랑 같은 손놀림';
+const APP_VERSION = '2.79.2';
+const APP_VERSION_NOTE = '수비에 준비 턴 · 결과가 화면을 초기화하던 것';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7726,6 +7726,11 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.79.2', t:'수비에 준비 턴 · 결과가 화면을 초기화하던 것', items:[
+    '[제보] "수비도 언제쯤 준비하는 턴좀 줘라 아이폰으로 하는데 수비 장면 뜰때 순간 스크롤 내려가서 뭐야 하다가 못잡았다" — 맞는 말이다. 타석에는 「준비 됐다 ▶」 가 있는데 수비에는 없어서, 화면이 뜨자마자 공이 날아왔다. 스크롤이 아직 움직이는 중이면 그대로 놓친다. **이제 내가 누를 때까지 공이 안 온다.** 화면도 가운데로 끌어오고, 공이 오는 동안에는 스크롤을 잠근다',
+    '[제보] "갑자기 화면이 초기화되더니 송구하는 장면이 나오는데 연결해서 하라니깐" — 이것도 진짜였다. 결과를 **새 캔버스로 처음부터 다시 그리고 있었다.** 방금 다 본 장면을 또 트니 초기화된 것처럼 보였다. 이제 같은 캔버스에 판정만 얹는다 — 화면이 안 바뀐다',
+    '[제보] "주루플레이는 또 안나오네 잘 안타 쳤는데도" — 「돌까 설까」와 「리드·도루」는 다른 설정인데, 옛 세이브를 옮길 때 하나가 다른 하나를 껐다. 「돌까 설까」를 꺼둔 사람은 리드·도루까지 통째로 안 떴다. 서로 안 건드리게 갈랐다',
+  ]},
   {v:'2.79.1', t:'주루도 베이스를 눌러서 — 수비랑 같은 손놀림', items:[
     '수비를 조이스틱·베이스 탭으로 바꿨는데 타격 쪽만 아래 버튼이라 손놀림이 따로 놀았다. 공을 보다가 버튼을 찾느라 눈이 두 군데를 오간다. **주루도 그라운드의 베이스를 직접 누른다** — 다음 베이스를 누르면 더 가고, 방금 밟은 베이스를 누르면 돌아온다',
     '누를 수 있는 베이스에 원이 뜬다. 「▸ 2루」 처럼 어디로 가는 건지 적혀 있고, 누르면 「가는 중」 으로 바뀐다. 돌아가기로 하면 밟은 베이스에 「돌아간다」 가 붙는다. 송구가 손을 떠나면 원이 사라진다 — 그때부터는 이미 결정이 났다',
@@ -25316,7 +25321,7 @@ function renderDefPlay(box, d){
   w.appendChild(head);
 
   const box2=el('div','defbox');
-  box2.innerHTML='<div class="rb-t">'+dir+'으로 온다 — 쫓아가라</div>';
+  box2.innerHTML='<div class="rb-t">'+dir+'으로 온다</div>';
   const stage=el('div','runstage');
   box2.appendChild(stage);
   const note=el('div','rb-note');
@@ -25324,11 +25329,24 @@ function renderDefPlay(box, d){
   box2.appendChild(note);
   w.appendChild(box2);
   let picked=false, sc=null;
-  const skip=el('button','pl-skip','알아서 하게 둔다');
+  /* [제보] "수비도 언제쯤 준비하는 턴좀 줘라 아이폰으로 하는데 수비 장면
+             뜰때 순간 스크롤 내려가서 뭐야 하다가 못잡았다"
+     맞는 말이다. 타석에는 「준비 됐다 ▶」 가 있는데 수비에는 없었다.
+     화면이 뜨자마자 공이 날아오니, 스크롤이 아직 움직이는 중이면
+     그대로 놓친다. **내가 누를 때까지 공이 안 온다.**            */
+  const goRow=el('div','lead-grid');
+  const goB=el('button','lead-b run');
+  goB.innerHTML='<span>준비 됐다 ▶</span><i>누르면 타구가 온다 — 천천히 해라</i>';
+  goRow.appendChild(goB);
+  const skip=el('button','lead-b stay');
+  skip.innerHTML='<span>알아서 하게 둔다</span><i>이 타구는 자동으로 처리한다</i>';
   skip.onclick=()=>{ if(picked)return; picked=true; if(sc)sc.stop();
-    LIVE.applyDecision('def:skip'); decDone(box); };
-  w.appendChild(skip);
+    plLock(false); LIVE.applyDecision('def:skip'); decDone(box); };
+  goRow.appendChild(skip);
+  box2.appendChild(goRow);
   box.appendChild(w);
+  /* 화면 안으로 끌어오고, 공이 오는 동안에는 스크롤을 잠근다 */
+  setTimeout(()=>{ try{ box.scrollIntoView({block:'center',behavior:'smooth'}); }catch(e){} },30);
 
   const dv=p?p.def:45, sv=p?p.spd:45, av=p?p.arm:45;
   const park=LIVE.park;
@@ -25344,17 +25362,26 @@ function renderDefPlay(box, d){
     if(picked)return; picked=true;
     LIVE.applyDecision('def:q:'+q.toFixed(3));
     if(tq!=null) LIVE._throwQ=tq;
+    plLock(false);
     if(LIVE._badCall && LIVE._badCall.kind==='play') showArgue(note, null);
     playThenClose(box, null, where||'def:none', null, null, (r,evs,fin)=>{
       const play=(LIVE&&LIVE._lastPlay)||null;
-      if(!play){ setTimeout(fin,300); return; }
       const t=box2.querySelector('.rb-t');
       if(t && r){ t.textContent=r.raw||r.label; t.style.color=r.color||''; }
-      if(sc && sc.showResult){ sc.showResult(play, ()=>setTimeout(fin,500)); return; }
-      setTimeout(fin, 500);
+      /* [제보] "갑자기 화면이 초기화되더니 송구하는 장면이 나오는데
+                 연결해서 하라니깐"
+         맞는 말이다. 결과를 **새 캔버스로 다시 그리고 있었다.** 방금 다
+         본 장면을 처음부터 또 트니 초기화된 것처럼 보였다.
+         이제 같은 캔버스에 판정만 얹는다 — 화면이 안 바뀐다.       */
+      if(sc && sc.verdict){ sc.verdict(r, ()=>setTimeout(fin,420)); return; }
+      setTimeout(fin, 480);
     });
   };
 
+  const start=()=>{
+  goRow.style.display='none';
+  plLock(true);
+  const t0b=box2.querySelector('.rb-t'); if(t0b) t0b.textContent=dir+'으로 온다 — 쫓아가라';
   try{
     sc=defScene(stage, {park, ang:d.ang, m:mDraw, pos, flyMs,
       reach:REACH, speed:SPEED, arm:av,
@@ -25374,7 +25401,13 @@ function renderDefPlay(box, d){
     },40);
     sc={stop:()=>clearInterval(iv)};
   }
-  box._cleanup=()=>{ picked=true; if(sc)sc.stop(); };
+  };
+  goB.onclick=start;
+  goB.addEventListener('pointerdown',(ev)=>{ if(ev&&ev.preventDefault)ev.preventDefault(); start(); });
+  /* 캔버스를 못 쓰는 환경(테스트)에서는 기다리지 않는다 */
+  if(!(typeof document!=='undefined' && document.createElement('canvas').getContext
+       && document.createElement('canvas').getContext('2d'))) start();
+  box._cleanup=()=>{ picked=true; plLock(false); if(sc)sc.stop(); };
 }
 
 /* ================= 수비 한 판 =================
@@ -25642,21 +25675,25 @@ function defScene(host, o){
       plate(near<o.reach?'붙었다'
             :(stick?(mLeft+'m 남았다'):'화면에 손가락을 대고 밀어라'),
             near<o.reach?'#7fc48f':(stick?'#e9e4d8':'#ffd15c'), 14);
+    } else if(phase==='result' && verdictTxt){
+      plate(verdictTxt, verdictCol, 19);
     }
     requestAnimationFrame(draw);
   };
   draw();
-  /* 결과를 같은 캔버스에서 재생한다 — 새 창이 안 뜬다 */
-  const showResult=(play, done)=>{
-    stop=true;
-    let s2=null;
-    try{ s2=groundScene(host,{mode:'bat', ang:play.ang, dist:play.dist,
-      dur:1, park:P, myPos:o.pos, bu:PS_UNI.them, du:PS_UNI.us}); }catch(e){ s2=null; }
-    if(!s2||!s2.replay){ if(done)done(); return; }
-    try{ cv.style.display='none'; }catch(e){}
-    s2.replay(play, 2000, done, {risk:1-q, at:{ball:1, chase:1, run:0.85}});
+  /* 판정을 **같은 캔버스에** 얹는다. 새로 그리지 않는다 —
+     방금 다 본 장면을 처음부터 또 틀면 그게 초기화로 읽힌다.    */
+  let verdictTxt=null, verdictCol=null, verdictAt=0;
+  const verdict=(r, done)=>{
+    verdictTxt=(r&&(r.raw||r.label))||'—';
+    verdictCol=(r&&r.color)||'#e9e4d8';
+    verdictAt=Date.now()-t0;
+    phase='result';
+    setTimeout(()=>{ if(done)done(); }, 1200);
   };
-  return { stop:()=>{ stop=true; }, el:cv, showResult };
+  return { stop:()=>{ stop=true; }, el:cv,
+    verdictInfo:()=>verdictTxt,
+    verdict };
 }
 
 /* 포수 — 뛰면 던진다.
@@ -29981,7 +30018,11 @@ function normalizeState(){
   if(typeof ST.defAsk!=='boolean')ST.defAsk=true;   // [v2.64.0] 수비 물어보기
   /* [v2.72.0] 수비·주루를 얼마나 직접 할지 — off / key / all */
   if(['off','key','all'].indexOf(ST.defMode)<0) ST.defMode=(ST.defAsk===false)?'off':'all';
-  if(['off','key','all'].indexOf(ST.runMode)<0) ST.runMode=(ST.runAsk===false)?'off':'all';
+  /* [제보] "주루플레이는 또 안나오네 잘 안타 쳤는데도"
+     「돌까 설까」(runAsk)와 「리드·도루」(runMode)는 **다른 설정**인데
+     옛 세이브를 옮길 때 하나가 다른 하나를 껐다. 「돌까 설까」를 꺼둔
+     사람은 리드·도루까지 통째로 안 떴다. 서로 안 건드리게 갈랐다. */
+  if(['off','key','all'].indexOf(ST.runMode)<0) ST.runMode='all';
   if(ST.injMode!=='off') ST.injMode='on';           // [v2.73.0] 부상 (선수 모드)
   /* [v2.75.0] 감독과 한 약속 · 주전 보장 · 벤치 */
   if(typeof ST.myGuarantee!=='number')ST.myGuarantee=0;
