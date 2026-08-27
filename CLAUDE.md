@@ -38,7 +38,14 @@ node soaktest.js           # 풀 시즌을 실제 UI 경로로 완주
 `nametest` `mgrtest` `kakaotest` `careertest` `compattest` `smoketest` …).
 
 **확률 기반이라 가끔 실패하는 것** — 실패하면 3회 재실행해서 판단한다:
-`advtest.js` `traintest2.js` `wltest.js` `recruittest.js`
+`advtest.js` `wltest.js` `recruittest.js` `dectest2.js`
+
+3회 다 **같은 항목**이 실패하면 그건 간헐이 아니라 진짜 고장이다.
+`traintest2.js` 는 여기 적혀 있다는 이유로 스물다섯 판 동안 넘어갔는데,
+알고 보니 `posFit` 이 두 번 선언돼서 **포지션 훈련이 통째로 죽어 있었다**
+(TESTS.md 「같은 이름으로 함수를 두 번 쓰면 뒤엣것이 이긴다」).
+되돌리기 전에 `git stash` 로 HEAD 기준선부터 재라 — 원래 깨져 있던 것과
+내가 깨뜨린 것을 가르는 데 2분이면 된다.
 
 **구버전 테스트(현재 깨져 있음)** — v1.5.1 의 라인업 발표 게이트를 안 타서 실패한다:
 `finaltest.js` `hltest.js` `fintest.js`
@@ -77,5 +84,9 @@ node soaktest.js           # 풀 시즌을 실제 UI 경로로 완주
   `compattest.js` 가 구버전 세이브 로드를 검사한다.
 - **CSS 클래스 이름 충돌** — 스타일시트가 길어서 같은 이름을 두 번 쓰기 쉽다.
   `lintcheck.js` 가 중복 셀렉터를 잡는다.
+- **함수 이름 충돌** — 파일이 3만 줄이라 같은 이름으로 함수를 두 번 쓰기도 쉽다.
+  선언은 **뒤엣것이 앞엣것을 덮는다.** `lintcheck.js` 는 CSS·id 만 보고 이건 못 잡는다.
+  새 함수를 쓰기 전에 `grep -n "^function 이름" index.html` 로 세라.
+  `posFit` 이 두 번 선언돼서 포지션 훈련이 스물다섯 판 동안 죽어 있었다.
 - **jsdom 한계** — 테스트 환경은 CSS 특이도를 무시하고 소스 순서만 본다.
   특이도로 이기는 스타일은 테스트로 검증이 안 되니, 이름을 갈라라.

@@ -252,6 +252,86 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   T('롤오버 코드가 실제로 그 순서를 탄다', ()=>ev(
     "renderHome.toString().indexOf('applyFarm()')>0"));
 
+  console.log('\n[2군에서 시작한다]');
+  T('고교를 못 보내면 2군에서 시작한다', ()=>ev(`(function(){
+    ST.mode='player'; ST.playerId='ksh'; ST.role='bat'; ST.myPos='C';
+    ST.myRatings=null; ST.myRatingsOK=false; ST.myFarm=0; ST.myGuarantee=0;
+    ST.hs={i:0,done:false,res:[],bat:blankBat(),pit:blankPit(),moments:[],
+           pending:null,eff:{},picks:[],picked:{}};
+    ST.hs.bat.g=7; ST.hs.bat.pa=22; ST.hs.bat.ab=20; ST.hs.bat.h=2;   // 1할
+    hsGraduate();
+    return ST.myFarm>0 ? ST.myFarm+'주 2군' : '!바로 1군이다';
+  })()`));
+  T('고교를 잘 보내면 바로 1군이다', ()=>ev(`(function(){
+    ST.myRatings=null; ST.myRatingsOK=false; ST.myFarm=0; ST.myGuarantee=0;
+    ST.hs={i:0,done:false,res:[],bat:blankBat(),pit:blankPit(),moments:[],
+           pending:null,eff:{},picks:[],picked:{}};
+    ST.hs.bat.g=7; ST.hs.bat.pa=30; ST.hs.bat.ab=26; ST.hs.bat.h=11;  // 4할2푼
+    ST.hs.bat.d2=4; ST.hs.bat.hr=3; ST.hs.bat.bb=4; ST.hs.bat.sb=4; ST.hs.bat.d3=2;
+    hsGraduate();
+    return (ST.myFarm===0 && ST.myGuarantee>=3) ? '바로 1군 · 주전 보장 '+ST.myGuarantee
+      : '!'+ST.myFarm+'주 2군';
+  })()`));
+  T('2군 팀이 아홉을 채운다', ()=>ev(`(function(){
+    ST.farm=[]; farmFill(9); ST.myFarm=3; ST.farmMe={g:0,ab:0,h:0};
+    var t=farmOurTeam();
+    return (t.players.length>=10 && t.pitchers.length>=1)
+      ? t.players.length+'명 · 투수 '+t.pitchers.length+'명' : '!'+t.players.length;
+  })()`));
+  T('2군에서도 내가 고른 자리에 선다', ()=>ev(`(function(){
+    var B=farmBuild();
+    var m=B.uLine.find(function(x){return x.id==='ksh';});
+    return (m && m.pos===ST.myPos) ? '내 자리 '+m.pos : '!'+(m?m.pos:'라인업에 없다');
+  })()`));
+  T('2군 투수도 능력치가 있다 (undefined 면 경기가 안 끝난다)', ()=>ev(`(function(){
+    var B=farmBuild();
+    var bad=[];
+    [B.us,B.foe].forEach(function(t){
+      (t.pitchers||[]).forEach(function(q){
+        if(q.stf==null||q.ctl==null||q.sta==null) bad.push(t.name+'/'+q.name); });
+    });
+    return bad.length? '!'+bad.slice(0,3).join(',') : '양 팀 투수 전부 정상';
+  })()`));
+  T('2군 경기가 실제로 끝까지 돈다', ()=>ev(`(function(){
+    var B=farmBuild();
+    var T2={bat:'normal',run:'normal',hook:'normal'};
+    var L=new LiveGame({
+      away:B.homeUs?B.foe:B.us, home:B.homeUs?B.us:B.foe,
+      awayLineup:B.homeUs?B.fLine:B.uLine, homeLineup:B.homeUs?B.uLine:B.fLine,
+      awayRotation:B.homeUs?B.fRot:B.uRot, homeRotation:B.homeUs?B.uRot:B.fRot,
+      awayTactics:T2, homeTactics:T2, awayCond:{}, homeCond:{},
+      userIsHome:B.homeUs, myId:B.me, rng:B.rng, innings:7,
+      park:{hr:0.9,d2:1,d3:1,err:1.2,babip:1}});
+    L.manual=false;
+    var n=0; while(!L.over && n++<3000){ if(L.pending)L.applyDecision('change'); L.step(); }
+    return L.over ? (n+'타석에 끝났다 · '+L.away.runs+':'+L.home.runs) : '!안 끝났다('+n+')';
+  })()`));
+
+  console.log('\n[훈련 코인]');
+  T('경기 성적이 코인이 된다', ()=>ev(`(function(){
+    var good=coinsForGame({box:{ksh:{...blankBat(), pa:4,ab:4,h:3,d2:1,hr:1,rbi:3}}}, true, false);
+    var bad =coinsForGame({box:{ksh:{...blankBat(), pa:4,ab:4,h:0,e:1}}}, false, false);
+    return (good.n>bad.n && good.n>=10 && bad.n<0)
+      ? '3안타 홈런 승리 +'+good.n+' vs 무안타 실책 패배 '+bad.n : '!'+good.n+'/'+bad.n;
+  })()`));
+  T('훈련이 코인을 쓴다', ()=>ev(`(function(){
+    ST.coin=10; ST.myTrain='bat'; ST.myFarm=0;
+    var before=ST.coin;
+    applyMyTrain();
+    return (ST.coin===before-trainCost(pmTrainDef('bat')))
+      ? before+' → '+ST.coin : '!'+before+'→'+ST.coin;
+  })()`));
+  T('코인이 모자라면 못 한다', ()=>ev(`(function(){
+    ST.coin=1; ST.myTrain='bat';
+    var p=TBYID['wwzw'].players.find(function(x){return x.id==='ksh';});
+    var before=p.pow;
+    applyMyTrain();
+    return (p.pow===before && /모자라/.test(ST.myTrainLog||''))
+      ? ST.myTrainLog : '!'+ST.myTrainLog;
+  })()`));
+  T('쉬는 건 공짜다', ()=>ev("trainCost(pmTrainDef('rest'))===0"));
+  T('0 밑으로는 안 내려간다', ()=>ev("(function(){ST.coin=1;coinAdd(-99);return ST.coin===0;})()"));
+
   console.log('\n[화면]');
   T('선수단 화면에 2군이 뜬다', ()=>ev(`(function(){
     go('squad');

@@ -1,5 +1,5 @@
 /* 정적 점검 — 커밋 전에 항상 돌린다
-   1) 정의 없이 호출되는 함수  2) 중복 CSS 셀렉터  3) 객체 중복 키
+   1) 정의 없이 호출되는 함수  2) 함수 이름 중복  3) 중복 CSS 셀렉터  4) 객체 중복 키
    4) 안 쓰는 함수(참고용)      5) 파싱 오류                         */
 const fs=require('fs');
 const s=fs.readFileSync('index.html','utf8');
@@ -55,6 +55,22 @@ const missing=[...called].filter(n=>!isDefined(n));
 const defined=new Set([...js.matchAll(/function\s+(\w+)\s*\(/g)].map(m=>m[1]));
 T('전부 선언돼 있다', ()=>missing.length===0 ? `호출 ${called.size}종 · 함수 ${defined.size}개`
   : '!'+missing.join(', '));
+
+/* [버그 이력 2.82.0] posFit 이 두 번 선언돼 있었다. 함수 선언은 뒤엣것이
+   앞엣것을 덮는다 — 진짜(훈련값·좌투 금지를 보는) posFit 이 스물다섯 판 동안
+   한 번도 안 불렸고, 포지션 훈련이 통째로 죽어 있었다.
+   3만 줄짜리 한 파일이라 같은 이름을 두 번 쓰기가 너무 쉽다. 여기서 잡는다.
+   [주의] 최상위 선언만 본다 — 함수 안에 지역 헬퍼로 같은 이름을 쓰는 건
+   흔하고 안전하다. 줄 맨 앞에서 시작하는 것만 센다.                 */
+console.log('\n[함수 이름 중복 — 뒤엣것이 앞엣것을 덮는다]');
+const topDecl={};
+for(const m of jsAll.matchAll(/^function\s+(\w+)\s*\(/gm)){
+  (topDecl[m[1]]=topDecl[m[1]]||[]).push(m.index);
+}
+const dupFn=Object.keys(topDecl).filter(n=>topDecl[n].length>1);
+T('같은 이름이 두 번 선언되지 않았다', ()=>dupFn.length===0
+  ? `최상위 함수 ${Object.keys(topDecl).length}개`
+  : '!'+dupFn.map(n=>`${n} × ${topDecl[n].length}`).join(', '));
 
 console.log('\n[CSS 중복 셀렉터]');
 const css=s.match(/<style>([\s\S]*?)<\/style>/)[1];

@@ -35,8 +35,13 @@ setTimeout(async()=>{
     return ![...opp.options].some(o=>o.value==='wwzw') ? '우완좌완 제외됨' : false;
   });
   T('돌리기 전에 어떤 라인업으로 도는지 보여준다', ()=>{
-    const lu=d.querySelector('.wi-lu');
-    return (lu && /선발/.test(lu.textContent) && lu.textContent.length>40) ? '라인업 요약 있음' : false;
+    /* [2.82.0] 예전엔 .wi-lu 한 줄짜리 요약이었다. 지금은 그 자리에서
+       타순·수비·투수 순서를 직접 짠다 — 요약보다 이쪽이 낫다. */
+    const rows=[...d.querySelectorAll('#view .lp-row')];
+    const sp=d.querySelector('#view .wi-pr.sp');
+    if(rows.length!==9) return '!타순 '+rows.length+'줄';
+    if(!sp||!/선발/.test(sp.textContent)) return '!선발이 안 보인다';
+    return `타순 9줄 · ${sp.textContent.replace(/\s+/g,' ').trim().slice(0,24)}`;
   });
 
   console.log('[돌려보기]');
@@ -50,7 +55,7 @@ setTimeout(async()=>{
   T('라인스코어가 이닝별로 나온다', ()=>{
     const rows=[...d.querySelectorAll('.wl-r')];
     if(rows.length!==3) return '줄 '+rows.length+'개';
-    const cells=rows[1].querySelectorAll('i u').length;
+    const cells=rows[1].querySelectorAll('u').length;
     // 콜드게임이면 7이닝을 못 채운다. 4이닝 미만이면 뭔가 잘못된 것.
     return cells>=4 ? (cells+'이닝'+(cells<7?' (콜드게임)':'')) : false;
   });

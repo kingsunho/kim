@@ -267,7 +267,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   })()`));
   T('약속 결과가 라인업까지 간다', ()=>ev(`(function(){
     ST.myDeal=null;
-    ST.myBenched=0; ST.myGuarantee=5;
+    ST.myBenched=0; ST.myFarm=0; ST.myGuarantee=5;
     var up=myLineupBias('ksh');
     ST.myGuarantee=0; ST.myBenched=3;
     var down=myLineupBias('ksh');

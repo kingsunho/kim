@@ -120,11 +120,17 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
     return ev("LIVE.mgr.left")===before-1 ? `${before} → ${ev("LIVE.mgr.left")}` : '!안 줄었다';
   });
   T('항의 결과가 심판 성향에 남는다', ()=>{
-    ev("LIVE._umpBias=0; LIVE.mgr.left=20;");
-    const outs=[];
-    for(let i=0;i<40;i++){ ev("LIVE._badCall={truth:'strike',called:'ball',pa:LIVE.paSeq}; doArgue(false,null,null);"); }
-    const b=ev("LIVE._umpBias");
-    return (typeof b==='number'&&b!==0) ? `40번 항의 후 성향 ${b>0?'+':''}${b}` : '!안 변한다';
+    // [플래키 이력] 성향은 +1/-1 로 걷는다. 40번 뒤 값이 우연히 0 으로 돌아오는 경우가
+    // 여덟 번에 한 번쯤 있어서 '마지막 값이 0 이 아니다' 로 재면 가끔 실패했다.
+    // 걷는 도중에 한 번이라도 움직였는지를 본다.
+    ev("LIVE._umpBias=0; LIVE.mgr.left=40;");
+    let moved=0, last=0;
+    for(let i=0;i<40;i++){
+      ev("LIVE._badCall={truth:'strike',called:'ball',pa:LIVE.paSeq}; doArgue(false,null,null);");
+      const cur=ev("LIVE._umpBias");
+      if(cur!==last){ moved++; last=cur; }
+    }
+    return (typeof last==='number'&&moved>0) ? `40번 항의 중 ${moved}번 움직였다 (끝 ${last>0?'+':''}${last})` : '!안 변한다';
   });
   T('심판이 우리 쪽이면 유리한 오심이 는다', ()=>{
     const f=(bias)=>{ let n=0; for(let i=0;i<4000;i++){

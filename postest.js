@@ -82,6 +82,51 @@ setTimeout(async()=>{
     return legal()===''||legal();
   });
 
+  console.log('[선수 모드 — 내가 고른 자리 (2.82.0)]');
+  /* [제보] "분명 원하는 포지션을 눌렀는데 왜 실제 그냥 포지션으로 가는건지"
+     라인업은 recommendLineup → optimizePositions → applyDHRule → fixLineupPositions
+     넷이 줄줄이 돈다. 앞의 하나만 고쳐놨더니 뒤에서 다시 밀려났다.        */
+  T('여덟 자리 다 내가 고른 대로 선다', ()=>{
+    const bad=[];
+    ['C','1B','2B','3B','SS','LF','CF','RF'].forEach(pos=>{
+      const got=ev(`(function(){
+        ST.mode='player'; ST.role='bat'; ST.myPos='${pos}';
+        ST.myBenched=0; ST.myFarm=0;
+        ST.lineup=recommendLineup(); optimizePositions(); applyDHRule(); sanitizeRotation();
+        var me=ST.playerId||MYID;
+        var sl=(ST.lineup||[]).find(function(x){return x.id===me;});
+        return sl?sl.pos:'없음';
+      })()`);
+      if(got!==pos) bad.push(pos+'→'+got);
+    });
+    return bad.length? '!'+bad.join(' ') : '여덟 자리 전부';
+  });
+  T('내 자리를 박아도 라인업은 멀쩡하다', ()=>{
+    ev("ST.mode='player'; ST.role='bat'; ST.myPos='C'; ST.myBenched=0; ST.myFarm=0;"+
+       "ST.lineup=recommendLineup(); optimizePositions(); applyDHRule();");
+    const poss=ev("ST.lineup.map(function(x){return x.pos;})");
+    if(poss.length!==9) return '!'+poss.length+'명';
+    if(new Set(poss).size!==9) return '!자리 중복 '+poss.join(',');
+    return legal()===''||legal();
+  });
+  T('벤치로 밀리면 자리를 안 박는다', ()=>{
+    ev("ST.myBenched=2; ST.myPos='C';");
+    return ev("pinnedPos()")===null ? '벤치면 핀 없음' : '!'+ev("pinnedPos()");
+  });
+  T('2군에 있으면 자리를 안 박는다', ()=>{
+    ev("ST.myBenched=0; ST.myFarm=3;");
+    return ev("pinnedPos()")===null ? '2군이면 핀 없음' : '!'+ev("pinnedPos()");
+  });
+  T('오늘 내가 선발이면 마운드가 먼저다', ()=>{
+    ev("ST.myFarm=0; ST.role='two'; ST.myPos='CF'; ST.useDH=false;"+
+       "ST.rotation=[ST.playerId||MYID].concat((ST.rotation||[]).filter(x=>x!==(ST.playerId||MYID)));");
+    return ev("pinnedPos()")===null ? '마운드 우선' : '!'+ev("pinnedPos()");
+  });
+  T('감독 모드는 자리를 안 박는다', ()=>{
+    ev("ST.mode='mgr'; ST.role='bat'; ST.myPos='C'; ST.rotation=ST.rotation.slice(1).concat(ST.rotation[0]);");
+    return ev("pinnedPos()")===null ? '감독 모드는 핀 없음' : '!'+ev("pinnedPos()");
+  });
+
   console.log(errs.length?`\n❌ ${errs.length}건`:'\n✅ 이상 없음');
   process.exit(errs.length?1:0);
 },400);
