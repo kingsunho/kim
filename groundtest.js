@@ -58,9 +58,30 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
     if(!document.getElementById('decision')){var b=document.createElement('div');
       b.id='decision';document.body.appendChild(b);} })()`);
 
+  /* [v2.86.0] "수비 주루플레이가 너무 불친절해 한번 할때 설명 해줘야될듯
+     포지션 마다" — 자리마다 처음 한 번 설명이 깔린다. 「알겠다」 를
+     눌러야 그때 판단창이 시작된다. 두 번째부터는 안 뜬다. */
+  const passHelp=async()=>{
+    const b=[...d.querySelectorAll('#decision .rb-b')].find(x=>/알겠다/.test(x.textContent));
+    if(b){ b.click(); await wait(150); return true; }
+    return false;
+  };
+
+  console.log('\n[처음 한 번 설명]');
+  setup();
+  ev("ST.helpSeen={}");
+  ev("showDecision({kind:'defplay', ang:-18, pos:'SS'})"); await wait(150);
+  T(!!d.querySelector('#decision .help-b'), '내야 수비를 처음 보면 설명이 뜬다');
+  T(/조이스틱/.test(txt('#decision .help-b')), '무엇을 누르라는 건지 적혀 있다');
+  T(await passHelp(), '「알겠다」 를 누르면 넘어간다');
+  T(!d.querySelector('#decision .help-b'), '설명이 사라지고 판단창이 시작된다');
+  T(ev("ST.helpSeen && ST.helpSeen['def:IF']===1"), '한 번 읽은 건 세이브에 남는다');
+  await wait(3800);
+
   console.log('\n[수비 — 직접 조종]');
   setup();
   ev("showDecision({kind:'defplay', ang:-18, pos:'SS'})"); await wait(150);
+  T(!d.querySelector('#decision .help-b'), '두 번째부터는 설명이 안 뜬다');
   T([...d.querySelectorAll('#decision .lead-b span')].some(x=>/준비 됐다/.test(x.textContent)),
     '수비도 준비 턴이 있다 — 누를 때까지 공이 안 온다');
   T(ev("renderDefPlay.toString().indexOf('scrollIntoView')>0 && renderDefPlay.toString().indexOf('plLock(true)')>0"),
@@ -109,6 +130,7 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
   setup2();
   await wait(300);                 // 옛 뒷정리가 새 판단창을 못 지운다(decDone 토큰)
   ev("showDecision({kind:'lead'})"); await wait(150);
+  await passHelp();                // 주루도 처음 한 번은 설명이 깔린다
   T(!!d.querySelector('#decision .runstage'), '1루 그라운드가 뜬다');
   T(/리드를 얼마나/.test(txt('#decision .rb-t')), '제목 :: '+txt('#decision .rb-t'));
   T([...d.querySelectorAll('#decision .lead-b span')].map(x=>x.textContent).join('/')
@@ -128,7 +150,9 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
   [...d.querySelectorAll('#decision .lead-b')].find(b=>/크게 나간다/.test(b.textContent)).click();
   await wait(60);
   [...d.querySelectorAll('#decision .lead-b')].find(b=>/▸ 뛴다/.test(b.textContent)).click();
-  await wait(900);
+  /* [v2.86.0] 「뛴다」 는 그 자리에서 도루까지 굴리고 결과를 1.3초 보여준다.
+     예전(0.68초)보다 오래 열려 있는다 — "도루 하고 있는 장면도 안나오고" */
+  await wait(2200);
   T(!d.querySelector('#decision.on'), '고르면 판단창이 닫힌다');
 
   console.log('\n[송구가 엔진까지 간다]');
@@ -140,6 +164,7 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
   console.log('\n[포수 도루 저지]');
   setup(); ev("ST.myPos='C'");
   ev("showDecision({kind:'throw', what:'sb'})"); await wait(150);
+  await passHelp();                // 포수도 처음 한 번은 설명이 깔린다
   T(!!d.querySelector('#decision .runstage'), '그라운드가 뜬다');
   T(/던질 건가/.test(txt('#decision .rb-t')), '제목 :: '+txt('#decision .rb-t'));
   T(btns().join('/')==='안 던진다/던진다 ▸', '버튼 :: '+btns().join(' / '));
