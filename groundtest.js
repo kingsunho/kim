@@ -166,10 +166,14 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
     '뜬공에 잡히면 귀루한다');
   T(ev("/0\\.34-risk\\*0\\.12/.test(groundScene.toString())"),
     '늦게 정하면 야수가 먼저 잡는다');
-  T(ev("/sc\\.replay\\(play, rMs, fin, \\{risk\\}\\)/.test(renderSwing.toString())"),
-    '1막에서 누른 시점이 2막으로 넘어간다');
-  T(ev("/else if\\(!offer\\)\\{ picked=true; act2\\(0\\); \\}/.test(renderSwing.toString())"),
+  T(ev("/sc\\.replay\\(play, Math\\.round\\(rMs\\*\\(0\\.55/.test(renderSwing.toString())&&/\\{risk, at\\}/.test(renderSwing.toString())"),
+    '1막에서 누른 시점과 **어디까지 갔는지**가 2막으로 넘어간다');
+  T(ev("/if\\(!offer && !picked\\)\\{ picked=true; act2\\(0\\); \\}/.test(renderSwing.toString())"),
     '고를 게 없으면 1막을 건너뛴다 — 같은 타구를 두 번 안 날린다');
+  T(ev("/bFrom\\+\\(1-bFrom\\)\\*kc/.test(groundScene.toString())"),
+    '2막이 공을 홈에서 다시 안 날린다 — 「돈다」가 초기화가 아니다');
+  T(ev("/rFrom\\+\\(endB-rFrom\\)/.test(groundScene.toString())"),
+    '주자도 가 있던 자리에서 이어 달린다');
   T(ev("/'선다 — '\\+nb\\[0\\]/.test(renderSwing.toString())&&/'돈다 — '\\+nb\\[1\\]/.test(renderSwing.toString())"),
     '버튼이 몇 루인지 말한다 (1루→2루 · 2루→3루)');
   T(ev("/stretchAsk/.test(stretchRun.toString())"),

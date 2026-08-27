@@ -137,6 +137,87 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   T('뛰기로 하면 도루를 시도한다', ()=>ev(
     "/plan\\.go\\) runMul=999/.test(LiveGame.prototype.stepPA.toString())"));
 
+  console.log('\n[선수 모드는 감독 지휘창이 안 뜬다]');
+  T('작전·수비 판단이 선수 모드에서는 막힌다', ()=>ev(`(function(){
+    ST.mode='player'; ST.playerId='ksh';
+    LIVE=makeLive(); LIVE.manual=true; LIVE.myId='ksh';
+    LIVE.playAsk=function(){return false;};       // 내 것은 이미 다 걸렀다고 치고
+    var mgr=0, g=0;
+    while(!LIVE.over && g++<2000){
+      var dd=LIVE.pending||LIVE.detectDecision();
+      if(dd){
+        if(dd.kind==='situation'||dd.kind==='defense'||dd.kind==='pitcherChange') mgr++;
+        LIVE.applyDecision('none'); LIVE.lastDecPA=LIVE.paSeq; continue;
+      }
+      LIVE.step();
+    }
+    return mgr===0 ? '한 번도 안 떴다' : '!'+mgr+'번 떴다';
+  })()`));
+  T('감독 모드에서는 그대로 뜬다', ()=>ev(`(function(){
+    ST.mode='mgr';
+    LIVE=makeLive(); LIVE.manual=true;
+    var mgr=0, g=0;
+    while(!LIVE.over && g++<2000){
+      var dd=LIVE.pending||LIVE.detectDecision();
+      if(dd){
+        if(dd.kind==='situation'||dd.kind==='defense'||dd.kind==='pitcherChange') mgr++;
+        LIVE.applyDecision('none'); LIVE.lastDecPA=LIVE.paSeq; continue;
+      }
+      LIVE.step();
+    }
+    ST.mode='player';
+    return mgr>0 ? mgr+'번 떴다' : '!한 번도 안 떴다';
+  })()`));
+  T('선수 모드면 투수 교체도 감독이 한다', ()=>ev(
+    "/isPlayerMode\\(\\)\\)/.test(LiveGame.prototype.checkPitcherChange.toString())"));
+
+  console.log('\n[감독 모드 — 원하는 투수를 올린다]');
+  T('올릴 수 있는 사람만 준다 (이미 던진 사람은 빠진다)', ()=>ev(`(function(){
+    ST.mode='mgr';
+    LIVE=makeLive(); LIVE.manual=true;
+    var s=LIVE.userSide();
+    var pool=LIVE.availPitchers(s);
+    var cur=LIVE.curPitcher(s);
+    var bad=pool.filter(function(p){ return p.id===cur.id || s.rot.indexOf(p.id)<=s.pIdx; });
+    return (pool.length>0 && !bad.length)
+      ? pool.length+'명 · 지금 던지는 사람과 이미 내려간 사람은 빠졌다' : '!'+JSON.stringify(bad.map(function(x){return x.name;}));
+  })()`));
+  T('순서를 건너뛰고 원하는 사람을 올린다', ()=>ev(`(function(){
+    var s=LIVE.userSide();
+    var pool=LIVE.availPitchers(s);
+    if(pool.length<2) return '!벤치가 얕다';
+    var want=pool[pool.length-1];               // 제일 뒤 순번을 지목한다
+    var ok=LIVE.userPitcherChange(want.id);
+    return (ok && LIVE.curPitcher(s).id===want.id)
+      ? want.name+'을(를) 바로 올렸다' : '!'+ok+'/'+LIVE.curPitcher(s).name;
+  })()`));
+  T('건너뛴 사람은 나중에 다시 올릴 수 있다', ()=>ev(`(function(){
+    var s=LIVE.userSide();
+    var pool=LIVE.availPitchers(s);
+    return pool.length>0 ? '아직 '+pool.length+'명 남아 있다' : '!한 명도 안 남았다';
+  })()`));
+  T('내려간 투수는 다시 못 올라간다', ()=>ev(`(function(){
+    var s=LIVE.userSide();
+    var down=s.rot[0];
+    return LIVE.userPitcherChange(down)===false ? '거절했다' : '!올라갔다';
+  })()`));
+  T('없는 사람을 지목하면 거절한다', ()=>ev(
+    "LIVE.userPitcherChange('없는사람')===false"));
+  T('화면에서 골라 올리는 길이 있다', ()=>ev(
+    "typeof openPchangeSheet==='function' && /pchange:/.test(openPchangeSheet.toString())"));
+  T('엔진이 pchange:<id> 를 받는다', ()=>ev(
+    "/choice\\.indexOf\\('pchange:'\\)===0/.test(LiveGame.prototype.applyDecision.toString())"));
+
+  console.log('\n[「돈다」가 초기화가 아니다]');
+  T('2막이 1막에서 간 만큼을 이어받는다', ()=>ev(
+    "/const A=\\(opt&&opt\\.at\\)/.test(groundScene.toString())"));
+  T('공을 홈에서 다시 안 날린다', ()=>ev(
+    "/bFrom\\+\\(1-bFrom\\)\\*kc/.test(groundScene.toString())"));
+  T('야수도 주자도 있던 자리에서 이어 간다', ()=>ev(
+    "/cFrom\\+\\(1-cFrom\\)/.test(groundScene.toString())&&/rFrom\\+\\(endB-rFrom\\)/.test(groundScene.toString())"));
+  T('남은 비행만큼만 시간을 준다', ()=>ev(
+    "/\\(0\\.34-risk\\*0\\.12\\)\\*\\(1-bFrom\\)/.test(groundScene.toString())"));
+
   console.log('\n[오심에 따진다]');
   T('접전 오심 판정이 엔진에 있다', ()=>ev("typeof LiveGame.prototype.maybeBadCall==='function'"));
   T('아웃/세이프 오심도 항의 줄에 뜬다', ()=>ev("/bc\\.kind==='play'/.test(showArgue.toString())"));

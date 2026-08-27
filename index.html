@@ -324,6 +324,9 @@ button{font-family:inherit;cursor:pointer}
 .pick-row.cur{background:rgba(201,162,39,.10)}
 .pick-row.used{opacity:.45}
 .pk-name{font-size:14px;font-weight:700}
+/* 투수 교체 목록 — 로테이션 다음 순서인 사람에게 표를 붙인다 */
+.pk-name .pk-tag{margin-left:6px;font-style:normal;font-size:10px;font-weight:800;
+  color:#c9a227;border:1px solid #6b5a1e;border-radius:5px;padding:1px 5px}
 .pk-note{font-size:10.5px;color:var(--dim);margin-top:2px;max-width:190px}
 .pk-r{text-align:right;flex:none}
 .pk-rate{font-size:10.5px;color:#6f7986}
@@ -7649,8 +7652,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.72.0';
-const APP_VERSION_NOTE = '수비는 내가 뛴다 · 돌까 설까는 타구를 다 보고 정한다';
+const APP_VERSION = '2.72.1';
+const APP_VERSION_NOTE = '「돈다」가 공을 되감던 것 · 선수 모드에 감독창이 뜨던 것';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7671,6 +7674,12 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.72.1', t:'「돈다」가 공을 되감던 것 · 선수 모드에 감독창이 뜨던 것', items:[
+    '[제보] "돈다 누르는 순간 공 초기화 되면서 타구가 빠르게 가서 잡히던데 돈다 버튼이 뭔가 초기화같음" — 진짜였다. 1막에서 공이 이미 외야까지 날아가 있는데 2막이 그걸 무시하고 홈플레이트에서 다시 날렸다. 그것도 남은 시간에 맞춰 빠르게. 이제 공도, 쫓는 야수도, 1루로 뛰는 나도 전부 **1막이 끝난 그 자리에서 이어 간다.** 되감기가 없다',
+    '고를 게 없는 타구는 1막을 아예 건너뛴다. 예전엔 조건을 잘못 달아서 같은 타구를 두 번 날리고 3초를 멍하니 기다렸다',
+    '[제보] "자꾸 내선수만 플레이해야하는데 같은팀 공격할때 감독 지휘하는게 뜸 선수모드는 무조건 직접플레이만 하게 냅둬야할 것같고" — 맞는 말이다. 선수 모드에서는 작전 지시·수비 판단·고의4구·투수 교체가 이제 안 뜬다. 내 타석, 내 수비, 내 주루만 나온다. 그건 감독이 하는 일이다',
+    '[요청] "경기 중에 원하는 투수 교체를 가져가고 싶은 상황이 있다" (감독 모드) — 로테이션 다음 사람만 올라가던 걸 고쳤다. 이제 **올릴 수 있는 사람 전원**이 뜨고 그중에 고른다. 좌완인지, 오늘 얼마나 던졌는지, 구위·제구·체력, 며칠 쉬었는지까지 같이 보여준다. 건너뛴 사람은 뒤로 밀릴 뿐 사라지지 않아서 나중에 올릴 수 있다',
+  ]},
   {v:'2.72.0', t:'수비는 내가 뛴다 · 돌까 설까는 타구를 다 보고 정한다', items:[
     '[제보] "돈다 고르고 타구 결과가 나오니깐 이건 그냥 도박이네" · "분명 공은 저 멀리가는데 돈다 누르면 갑자기 땅볼아웃" — 맞는 말이었다. 순서를 통째로 뒤집었다. 이제 엔진이 타구를 **먼저** 끝까지 굴려서 안타 종류·방향·비거리를 정하고, 화면이 그 진짜 타구를 날린다. 20m 땅볼은 내야에서 멈추고 110m 타구는 담장까지 간다. 「돌아? 서?」는 그걸 다 보고 나서 묻는다',
     '[제보] "2루 가서 아웃 되었으면 그냥 안타인데 아웃으로 되네 3루 가다가 죽으면 2루타 이듯이" — 야구 기록 규칙 그대로 고쳤다. 늘리려다 죽어도 **안전하게 밟은 베이스까지는 안타로 남는다.** 1루타 + 주루사다. 예전엔 통째로 아웃이라 타율이 부당하게 깎였다',
@@ -9849,7 +9858,9 @@ LiveGame.prototype.checkPitcherChange = function(s){
   if((l.outs>=lim||l.bb+l.hbp>=bbLim||l.r>=rLim) && this.hasNextPitcher(s)){
     /* 유저 팀이면 교체 여부를 물어본다.
        [설정] 매번 묻는 게 성가시면 설정에서 끌 수 있다 — 그러면 알아서 바꾼다.  */
-    const ask=!(ST&&ST.subCfg&&ST.subCfg.pitchAsk===false);
+    /* 선수 모드면 투수 교체도 감독이 한다 — 나한테 물어볼 일이 아니다 */
+    const ask=!(ST&&ST.subCfg&&ST.subCfg.pitchAsk===false)
+      && !(typeof isPlayerMode==='function' && isPlayerMode());
     if(s.isUser && ask){
       this.pending={kind:'pitcherChange', side:s, from:p.name, to:this.curPitcherNext(s)};
       return true;
@@ -10407,6 +10418,16 @@ LiveGame.prototype.detectDecision = function(){
     const meR=this.myId||(ST&&ST.playerId);
     if(meR && this.bases[0]===meR) return {kind:'lead'};
   }
+
+  /* [제보] "자꾸 내선수만 플레이해야하는데 같은팀 공격할때 감독 지휘하는게 뜸
+             직접지휘그거 있잖아 선수모드는 무조건 직접플레이만 하게 냅둬야할 것같고"
+
+     맞는 말이다. 선수 모드는 **내가 선수 한 명**이다. 남의 타석에 작전을
+     지시하고 투수를 바꾸고 고의4구를 고르는 건 감독이 하는 일이다.
+     여기까지 오는 판단은 전부 감독 것이니 선수 모드에서는 여기서 끊는다.
+     내 타석(swing) · 내 마운드(pitch) · 내 수비(defplay·throw) ·
+     내 주루(lead) 는 위에서 이미 다 걸렀다.                        */
+  if(typeof isPlayerMode==='function' && isPlayerMode()) return null;
 
   /* 우리가 수비 중일 때의 판단 지점 — 투수 교체·고의4구·시프트 */
   if(!off.isUser && this.def().isUser){
@@ -11241,6 +11262,13 @@ LiveGame.prototype.applyDecision = function(choice){
     if(!this.userPitcherChange()) this.log.push({t:'sub',text:'바꿀 투수가 없다'});
     return;
   }
+  /* [요청] "경기 중에 원하는 투수 교체를 가져가고 싶은 상황이 있다"
+     pchange:송승민id — 로테이션 순서를 건너뛰고 그 사람을 바로 올린다 */
+  if(typeof choice==='string' && choice.indexOf('pchange:')===0){
+    const pid=choice.slice(8);
+    if(!this.userPitcherChange(pid)) this.log.push({t:'sub',text:'그 투수는 지금 못 올린다'});
+    return;
+  }
   if(choice==='ibb'){ this.defTimeouts=Math.max(0,this.defTimeouts-1); this.intentionalWalk(); return; }
   if(choice==='shift'){ this.defTimeouts=Math.max(0,this.defTimeouts-1); this.setShift(true); return; }
   if(choice==='unshift'){ this.setShift(false); return; }
@@ -11407,8 +11435,58 @@ LiveGame.prototype._pitcherSubs = function(s, outId, inId){
 };
 
 /* 유저가 직접 투수를 바꾼다 */
-LiveGame.prototype.userPitcherChange = function(){
+/* 지금 올릴 수 있는 투수 전원.
+   [요청] "경기 중에 원하는 투수 교체를 가져가고 싶은 상황이 있다"
+   맞는 말이다. 로테이션 순서대로만 올라가면 그건 자동 진행이지 지휘가 아니다.
+   왼손 타자가 줄줄이 나오는 이닝에 좌완을 올리고 싶을 수도 있고,
+   다음 주 선발을 아껴두고 싶을 수도 있다.
+
+   못 올리는 사람은 빼고 준다 — 이미 경기에서 빠진 사람(gone),
+   오늘 결장·부상(isAvailable), 지금 던지고 있는 사람.               */
+LiveGame.prototype.availPitchers = function(s){
+  s=s||this.userSide();
+  const cur=this.curPitcher(s);
+  const out=[];
+  /* [주의] pIdx 뒤쪽만 본다. 앞쪽은 **이미 던지고 내려간 사람**이라
+     야구 규칙상 마운드에 다시 못 선다. peekNextPitcher 가 지키는 것과
+     같은 선이다 — 여기만 뚫으면 그 규칙이 무너진다.                */
+  for(let i=(s.pIdx||0)+1; i<(s.rot||[]).length; i++){
+    const pid=s.rot[i];
+    if(cur && pid===cur.id) continue;
+    if(this.gone && this.gone[pid]) continue;
+    if(s.isUser && typeof isAvailable==='function' && !isAvailable(pid)) continue;
+    const p=s.team.pitchers.find(x=>x.id===pid);
+    if(p) out.push(p);
+  }
+  return out;
+};
+/* pid 를 주면 그 사람으로, 안 주면 예전처럼 로테이션 다음 사람으로 */
+LiveGame.prototype.userPitcherChange = function(pid){
   const s=this.userSide();
+  if(pid){
+    const ok=this.availPitchers(s).some(x=>x.id===pid);
+    if(!ok) return false;
+    const outId0=this.curPitcher(s).id, old0=this.curPitcher(s).name;
+    /* [주의] pIdx 는 로테이션 배열의 자리다. 뒤에서 앞으로 당겨오면
+       그 사이 사람들이 통째로 건너뛰어진다 — 그게 맞다. 안 쓴 거니까.
+       다만 **건너뛴 사람이 나중에 다시 못 올라오면 안 된다.**
+       peekNextPitcher 가 gone 만 보고 pIdx 뒤쪽만 훑기 때문에,
+       건너뛴 사람을 배열 뒤로 옮겨서 순서를 살려둔다.               */
+    const i=s.rot.indexOf(pid);
+    if(i>s.pIdx+1){
+      /* 건너뛴 사람들은 배열 뒤로 옮긴다 — 안 쓴 사람이니 순서는 살려둔다.
+         (peekNextPitcher 가 pIdx 뒤쪽만 훑기 때문에 앞에 두면 영영 못 나온다) */
+      const skipped=s.rot.slice(s.pIdx+1, i);
+      s.rot=s.rot.slice(0,s.pIdx+1).concat([pid], s.rot.slice(i+1), skipped);
+    }
+    s.pIdx=s.rot.indexOf(pid);
+    const inId0=this.curPitcher(s).id, now0=this.curPitcher(s).name;
+    this.applyPitcherSubs(s,outId0,inId0);
+    this.log.push({t:'sub',text: this.off().isUser
+      ? `투수 교체 예고 · ${old0} → ${now0} (다음 수비부터)`
+      : `투수 교체 · ${old0} → ${now0}`});
+    return true;
+  }
   if(!this.hasNextPitcher(s)) return false;
   const outId=this.curPitcher(s).id, old=this.curPitcher(s).name;
   this.advancePitcher(s);
@@ -19525,7 +19603,24 @@ function groundScene(host, o){
        누른 시점이 여기 **잡는 순간**으로 그대로 넘어온다. 그래야
        "늦게 정해서 잡혔구나" 가 화면에서 보인다.                     */
     const risk=Math.max(0,Math.min(1,(opt&&opt.risk)||0));
-    const K_CATCH=Math.max(0.18, 0.34-risk*0.12);   // 야수가 공에 닿는 순간
+    /* [제보] "돈다 누르는 순간 공 초기화 되면서 타구가 빠르게 가서 잡히던데
+               돈다 버튼이 뭔가 초기화같음"
+
+       진짜였다. 1막에서 공이 이미 외야까지 날아가 있는데, 2막이 그걸 무시하고
+       **홈플레이트에서 다시** 날렸다. 그것도 남은 시간에 맞춰 빠르게.
+       그러니 누르는 순간 공이 홈으로 되감기고 순식간에 잡히는 것처럼 보였다.
+
+       이제 1막이 어디까지 갔는지(opt.at)를 받아서 **거기서 이어 간다.**
+       공도, 쫓는 야수도, 1루로 뛰는 나도 전부 그 자리에서 출발한다.
+         at.ball  공이 낙구점까지 간 정도 (0~1)
+         at.chase 야수가 공에 붙은 정도
+         at.run   내가 1루까지 간 정도                              */
+    const A=(opt&&opt.at)||null;
+    const bFrom=A?Math.max(0,Math.min(1,A.ball||0)):0;
+    const cFrom=A?Math.max(0,Math.min(1,A.chase||0)):0;
+    const rFrom=A?Math.max(0,Math.min(1,A.run||0)):0;
+    /* 남은 비행만큼만 시간을 준다 — 이미 다 날아갔으면 바로 잡는다 */
+    const K_CATCH=Math.max(0.08, (0.34-risk*0.12)*(1-bFrom));
     const K_THROW=Math.min(0.70, K_CATCH+0.19);     // 공이 손을 떠나는 순간
     const K_END=0.86;                                // 베이스에 닿는 순간
     /* 뜬공을 그대로 잡혔으면 송구가 없다. 돌다 말고 돌아온다 — 그게 귀루다. */
@@ -19570,7 +19665,8 @@ function groundScene(host, o){
       const kc=seg(k,0,K_CATCH), kt=flyOut?0:seg(k,K_THROW,K_END);
       const bp = HR ? lerp({x:HX,y:HY}, {x:HX+Math.cos(rad2)*fence*1.25,
                                          y:HY+Math.sin(rad2)*fence*1.25}, Math.min(1,k*1.4))
-                    : (kt>0 ? lerp(land, tgt, kt) : lerp({x:HX,y:HY}, land, kc));
+                    : (kt>0 ? lerp(land, tgt, kt)
+                            : lerp({x:HX,y:HY}, land, bFrom+(1-bFrom)*kc));
       g.strokeStyle='rgba(255,255,255,.30)'; g.lineWidth=1.5;
       g.beginPath(); g.moveTo(HX,HY); g.lineTo(land.x,land.y); g.stroke();
       if(kt>0){ g.strokeStyle='rgba(255,209,92,.55)';
@@ -19589,7 +19685,7 @@ function groundScene(host, o){
         man(p.x,p.y,DU,false,p.x<HX,false);
       });
       if(!HR){
-        const cp=lerp(fp, land, Math.min(1,kc*1.05));
+        const cp=lerp(fp, land, cFrom+(1-cFrom)*Math.min(1,kc*1.05));
         /* 잡은 다음에는 테두리를 굵게 — 공이 이 사람 손에 있다는 표시 */
         const held=(k>=K_CATCH);
         if(held){ g.strokeStyle='rgba(255,209,92,.85)'; g.lineWidth=2;
@@ -19599,9 +19695,11 @@ function groundScene(host, o){
       psBall(g,bp.x,bp.y,(!HR&&kt<=0&&res.dist>40)?Math.sin(kc*Math.PI)*9:0);
       /* 나 — 베이스를 돈다. 공과 거의 같이 도착한다.
          뜬공에 잡혔으면 가다 말고 되돌아온다(귀루). */
+      /* 나 — 1막에서 가 있던 자리(rFrom)에서 이어 달린다.
+         뜬공에 잡혔으면 그 자리에서 되돌아온다(귀루).              */
       const rk = flyOut
-        ? 0.78*(k<K_CATCH ? k/K_CATCH : Math.max(0,1-seg(k,K_CATCH,0.92)))
-        : endB*Math.min(1,k/K_END);
+        ? rFrom*(k<K_CATCH ? 1 : Math.max(0,1-seg(k,K_CATCH,0.92)))
+        : rFrom+(endB-rFrom)*Math.min(1,k/K_END);
       const rp=runAt(rk);
       man(rp.x,rp.y,BU,k<0.95,rk>=1&&rk<3,false);
       /* 자막 — 마디마다 작게, 판정은 크게 */
@@ -20837,16 +20935,70 @@ function pchangeBtn(box){
   const l=LIVE.pbox[cur.id]||{};
   const b=el('button','decb wide alt');
   const st=pitState(cur.id);
-  b.innerHTML=`<b>투수 교체 → ${nxt}</b>`+
+  const pool=LIVE.availPitchers(s);
+  b.innerHTML=`<b>투수 교체 — 골라서 올린다</b>`+
     `<span>${cur.name} · ${todayPit(cur.id)}`+
-    `${st.t?` <i class="pst ${st.cls}">${st.t}</i>`:''}<br>작전 횟수 안 씀</span>`;
-  b.onclick=()=>{
-    const outN=cur.name, outI=cur.id, hadDH=s.slots.some(x=>x.pos==='DH');
-    LIVE.applyDecision('pchange');
-    toast(pchangeToast(s,outN,hadDH,outI));
-    decDone(box);
-  };
+    `${st.t?` <i class="pst ${st.cls}">${st.t}</i>`:''}<br>`+
+    `벤치 ${pool.length}명 · 다음 순서는 ${nxt} · 작전 횟수 안 씀</span>`;
+  b.onclick=()=>openPchangeSheet(box);
   return b;
+}
+
+/* 누구를 올릴지 고른다.
+   [요청] "경기 중에 원하는 투수 교체를 가져가고 싶은 상황이 있다"
+   로테이션 다음 사람만 올라가면 그건 자동 진행이지 지휘가 아니다.
+   왼손 타자가 줄줄이 나오는 이닝에 좌완을 올릴 수 있어야 하고,
+   다음 주 선발은 아껴둘 수 있어야 한다.
+
+   그래서 **오늘 올릴 수 있는 사람 전원**을 보여준다. 각자 오늘 얼마나
+   던졌는지 · 구위/제구/체력 · 던지는 손 · 쉰 날까지 같이 깔아준다.
+   그거 없이 이름만 보고 고르라고 하면 그것도 지휘가 아니다.        */
+function openPchangeSheet(box){
+  const s=LIVE.userSide();
+  const cur=LIVE.curPitcher(s);
+  const pool=LIVE.availPitchers(s);
+  const body=$('#sheet-body'); if(!body) return;
+  $('#sheet-title').textContent='투수 교체';
+  body.innerHTML='';
+  const nxtId=LIVE.peekNextPitcher(s);
+  body.appendChild(el('div','sheet-note',
+    `${LIVE.inning}회 · 지금 ${cur.name} (${todayPit(cur.id)}). `+
+    (LIVE.off().isUser?'공격 중이라 다음 수비부터 올라간다. ':'')+
+    '작전 횟수는 안 쓴다.'));
+  if(!pool.length){
+    body.appendChild(el('div','sheet-note','올릴 수 있는 투수가 없다.'));
+    $('#sheet').classList.add('open');
+    return;
+  }
+  pool.forEach(p=>{
+    const l=LIVE.pbox[p.id]||{};
+    const st=pitState(p.id);
+    const thrown=(l.bf||0)>0;
+    const rest=(typeof ST!=='undefined'&&ST&&ST.rest)?(ST.rest[p.id]||0):null;
+    const r=el('button','pick-row');
+    r.innerHTML=`<div class="pk-l">
+        <div class="pk-name">${p.name}${(typeof handTag==='function')?handTag(p):''}`+
+        `${p.id===nxtId?'<i class="pk-tag">다음 순서</i>':''}</div>
+        <div class="pk-note">구위 ${Math.round(p.stf)} · 제구 ${Math.round(p.ctl)} · 체력 ${Math.round(p.sta)}`+
+        `${rest!=null?` · 쉰 날 ${rest}`:''}<br>`+
+        `${thrown?`오늘 ${todayPit(p.id)}`:'오늘 아직 안 던졌다'}`+
+        `${st.t?` <i class="pst ${st.cls}">${st.t}</i>`:''}</div>
+      </div>`;
+    r.onclick=()=>{
+      const outN=cur.name, outI=cur.id, hadDH=s.slots.some(x=>x.pos==='DH');
+      closeSheet();
+      LIVE.applyDecision('pchange:'+p.id);
+      toast(pchangeToast(s,outN,hadDH,outI));
+      decDone(box);
+    };
+    body.appendChild(r);
+  });
+  const cancel=el('button','pick-row');
+  cancel.innerHTML='<div class="pk-l"><div class="pk-name">그대로 간다</div>'+
+    '<div class="pk-note">교체하지 않는다</div></div>';
+  cancel.onclick=()=>closeSheet();
+  body.appendChild(cancel);
+  $('#sheet').classList.add('open');
 }
 
 /* 교체하고 나서 실제로 뭐가 바뀌었는지 한 줄로 알려준다.
@@ -23061,10 +23213,20 @@ function renderSwing(box, d){
     /* 고를 게 없는 타구는 1막을 안 탄다 — 2막(replay)에 타구가 통째로
        들어 있어서 두 번 날릴 이유가 없다. 그만큼 경기가 빨리 굴러간다. */
     const rMs=Math.max(1800, Math.round(flyMs*0.82)+(offer?1400:900));
+    /* 1막이 어디까지 갔는지 — groundScene 의 1막이 쓰는 식 그대로다.
+       공 k/0.66 · 나 k*1.15 · 쫓는 야수 (k-0.28)/0.62.
+       이걸 안 넘기면 2막이 공을 홈에서 다시 날린다(= 「돈다」가 초기화된다). */
+    const stageAt=()=>{
+      const k1=Math.max(0,Math.min(1,(Date.now()-t0)/dur1));
+      return { ball:Math.min(1,k1/0.66), run:Math.min(1,k1*1.15),
+               chase:Math.max(0,Math.min(1,(k1-0.28)/0.62)) };
+    };
     const act2=(risk)=>{
+      const at=stageAt();
       if(t && r){ t.textContent=r.raw||r.label; t.style.color=r.color||''; }
       if(!sc||!sc.replay){ setTimeout(fin, 420); return; }
-      sc.replay(play, rMs, fin, {risk});
+      /* 이미 날아간 만큼은 빼고 남은 것만 보여준다 — 그래야 안 끊긴다 */
+      sc.replay(play, Math.round(rMs*(0.55+0.45*(1-at.ball))), fin, {risk, at});
     };
     const pick=(go)=>{
       if(picked)return; picked=true;
@@ -23114,8 +23276,11 @@ function renderSwing(box, d){
       },40);
       sc={stop:()=>clearInterval(iv)};
     }
-    /* 물어볼 게 없으면 기다릴 것도 없다 — 바로 2막 */
-    else if(!offer){ picked=true; act2(0); }
+    /* 물어볼 게 없으면 기다릴 것도 없다 — 바로 2막.
+       [버그] 이걸 else-if 로 달아놔서 **캔버스가 없는 환경에서만** 1막을
+       끝까지 기다렸다. 78m 짜리 안타면 3초를 멍하니 있었다.
+       캔버스가 있든 없든 물어볼 게 없으면 안 기다린다.              */
+    if(!offer && !picked){ picked=true; act2(0); }
     box2._stop=()=>{ if(sc)sc.stop(); };
   };
 
@@ -23432,10 +23597,13 @@ function renderDefPlay(box, d){
     const play=(LIVE&&LIVE._lastPlay)||null;
     if(!play){ setTimeout(fin,300); return; }
     let s2=null;
+    /* dur:1 — 1막을 즉시 끝낸 상태로 세운다. 300 을 주면 첫 프레임에
+       공이 홈플레이트에 한 번 찍혔다가 튄다(= 되감기처럼 보인다).  */
     try{ s2=groundScene(stage,{mode:'bat', ang:play.ang, dist:play.dist,
-      dur:300, park:LIVE.park, myPos:pos, bu:PS_UNI.them, du:PS_UNI.us}); }catch(e){ s2=null; }
+      dur:1, park:LIVE.park, myPos:pos, bu:PS_UNI.them, du:PS_UNI.us}); }catch(e){ s2=null; }
     if(!s2||!s2.replay){ setTimeout(fin,400); return; }
-    s2.replay(play, 2200, fin, {risk:1-q});
+    /* 쫓아가는 장면(1막)이 이미 끝났다 — 공을 홈에서 다시 날리지 않는다 */
+    s2.replay(play, 2200, fin, {risk:1-q, at:{ball:1, chase:1, run:0.85}});
   };
 
   /* ---- 2막: 어디로 던지나 ---- */
