@@ -1629,6 +1629,29 @@ table.hl-tbl td.hl-o{color:#c98a80}
 /* 리드 고르는 칸 — 세로로 크게. 폰에서 한 손으로 누른다.
    [제보] "리드 나가는 시스템이 너무어려워" — 끌어서 미세 조절하는 건
    폰에서 할 짓이 아니었다. 숫자를 같이 깔아서 뭘 고르는지 보이게 한다. */
+/* 조이스틱 — 그라운드 밖에 둔다. [제보] "핸드폰 기준으론 내 캐릭터가
+   가려져서 안보여 뭐 밑에 조이스틱이나 동그런 조이스틱같은거 둬서" */
+.joywrap{display:flex;justify-content:center;margin:10px 0 2px}
+.joy{position:relative;width:112px;height:112px;border-radius:50%;
+  background:radial-gradient(circle,#1b222c 0%,#141a22 70%);
+  border:2px solid #2a323d;touch-action:none;
+  -webkit-tap-highlight-color:transparent;user-select:none}
+.joy .joy-k{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;
+  border-radius:50%;background:linear-gradient(180deg,#ffd15c,#c9a227);
+  box-shadow:0 2px 6px rgba(0,0,0,.5);transition:transform .04s linear}
+.joy .joy-t{position:absolute;left:0;right:0;bottom:-19px;text-align:center;
+  font-size:10.5px;color:#6f7c8c;text-decoration:none}
+/* 송구할 베이스 — 조이스틱 자리에 갈아 끼운다. 필드를 안 가린다 */
+.baserow{display:flex;gap:7px;margin:12px 0 2px}
+.base-b{flex:1;padding:13px 4px;border-radius:11px;background:var(--panel2);
+  border:1px solid #2a323d;color:#e2eaf5;touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent}
+.base-b span{display:block;font-size:15px;font-weight:900}
+.base-b i{display:block;font-style:normal;font-size:10px;color:#8b95a3;margin-top:2px}
+.base-b.hot{border-color:#c9a227;background:#232b36}
+.base-b.hot i{color:#c9a227}
+.base-b:active{transform:scale(.97)}
+.base-b:disabled{opacity:.45}
 .lead-grid{display:flex;flex-direction:column;gap:7px;margin-top:9px}
 .lead-b{display:block;width:100%;text-align:left;padding:12px 13px;border-radius:11px;
   background:var(--panel2);border:1px solid #2a323d;color:#e2eaf5;
@@ -2423,6 +2446,23 @@ function simPA(bat,pit,offTeam,defTeam,rng,tac,cond,park,mods){
   r-=bbR;
   if(r<hbpR) return {type:'HBP'};
 
+  /* [제보] "2루수 기준 중앙으로 온다 눌렀는데 눌러서 잡았는데 갑자기 뭐 2루타?"
+            "약간 결과는 정해져있고 주루플레이로 내가 할 수 있는게 없는 것 같은 기분"
+
+     맞는 말이다. 여태 원칙은 「결과를 정하지 않고 확률만 민다」 였다.
+     감독 모드에서는 그게 맞다 — 열넷을 굴리는데 내 손끝이 리그를
+     흔들면 안 된다. 그런데 **선수 모드에서는 그 원칙이 사람을 무력하게
+     만든다.** 내가 분명히 잡았는데 2루타가 나오면 조작이 장식이 된다.
+
+     그래서 **내가 직접 조작한 플레이만** 결과를 정하게 한다.
+     딱 잡았으면 아웃이고, 손이 안 닿았으면 안타다. 그 사이는 확률.
+     경기당 네댓 번뿐이라 리그 지표는 안 흔들린다.               */
+  if(mods.defForce==='out') return {type:'OUT', gb: rng()<0.62};
+  if(mods.defForce==='hit'){
+    const eR=clamp(LG.ERR_PER_BIP*2.2*(mods.err||1), 0.02, 0.35);
+    return rng()<eR ? {type:'E'} : {type:'1B'};
+  }
+
   /* 수비 — 과감하게 달려들면 잡을 확률도 놓칠 확률도 같이 오른다.
      사용자가 고를 때만 걸린다(mods.err/mods.babip 는 기본이 1). */
   const errR = clamp(LG.ERR_PER_BIP * defTeam.tend.err * dFactor * park.err
@@ -2484,9 +2524,14 @@ function stretchOdds(hit, bat, defTeam, late){
   const dv=(defTeam&&defTeam._slotDef!=null)?defTeam._slotDef
           :((defTeam&&defTeam.mean&&defTeam.mean.def)||46);
   const L=Math.max(0,Math.min(1,late||0));
-  let p = 0.46 + (spd-45)*0.011 - (dv-46)*0.009 - L*0.40;
+  /* [제보] "결과는 정해져있고 주루플레이로 내가 할 수 있는게 없는 것 같은 기분"
+     맞는 말이었다. 제일 좋은 타이밍에 눌러도 46% 였다 — 절반도 안 되니
+     내가 뭘 하든 상관없는 것처럼 느껴진다.
+     **언제 정했는지가 크게 갈리게** 한다. 야수가 공에 닿기 전에
+     마음먹으면 대부분 산다. 송구 직전에 튀어나가면 대부분 죽는다.  */
+  let p = 0.74 + (spd-45)*0.011 - (dv-46)*0.009 - L*0.66;
   if(hit==='2B') p-=0.16;                    // 2루에서 3루는 훨씬 어렵다
-  return Math.max(0.05,Math.min(0.90,p));
+  return Math.max(0.05,Math.min(0.94,p));
 }
 function stretchRun(hit, mods, bat, defTeam, rng){
   const st=mods&&mods.stretch;
@@ -7704,8 +7749,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.79.2';
-const APP_VERSION_NOTE = '수비에 준비 턴 · 결과가 화면을 초기화하던 것';
+const APP_VERSION = '2.80.0';
+const APP_VERSION_NOTE = '내가 잡으면 아웃이다 · 조이스틱은 필드 밖으로 · 고교 3년이 판마다 다르다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7726,6 +7771,17 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.80.0', t:'내가 잡으면 아웃이다 · 조이스틱은 필드 밖으로 · 고교 3년이 판마다 다르다', items:[
+    '[제보] "2루수 기준 중앙으로 온다 눌렀는데 눌러서 잡았는데 갑자기 뭐 2루타? 뭐냐 이건" · "약간 결과는 정해져있고 주루플레이로 내가 할 수 있는게 없는 것 같은 기분" — 맞는 말이다. 여태 원칙은 「결과를 정하지 않고 확률만 민다」 였는데, 그게 **선수 모드에서는 사람을 무력하게 만든다.** 이제 내가 직접 조작한 플레이는 **내 손이 결과를 정한다** — 딱 잡으면 아웃, 손이 안 닿으면 안타다. 그 사이만 확률이다. 감독 모드는 예전 그대로다',
+    '[제보] "수비하라고 준비해서 가고 있었는데 삼진 나오거나" — 화면이 타구를 보여줬으면 타구가 나와야 한다. 수비 장면이 뜬 타석에서는 삼진·볼넷이 안 나온다',
+    '[제보] "핸드폰 기준으론 내 캐릭터가 가려져서 안보여 뭐 밑에 조이스틱이나 동그런 조이스틱같은거 둬서" — 필드 위에 손가락을 올리면 그 손가락이 정확히 내 야수를 가린다. **조이스틱을 그라운드 밖으로 뺐다.** 화면 아래 동그란 패드다. 내 야수 위에는 화살표를 달아서 어디 있는지 한눈에 보인다',
+    '[요청] "수비할때도 그 베이스 버튼두어서 송가 바로 가능하게" · "도루할때나 귀루할때도 (…) 베이스 그려놓고 누르면" — 잡고 나면 조이스틱 자리가 **베이스 버튼**으로 바뀐다. 주루도 같은 베이스 버튼으로 맞췄다. 그라운드를 직접 눌러도 되지만, 손가락이 필드를 안 가리는 쪽이 기본이다',
+    '[제보] "1루 뛰는속도 너프해야할듯 (…) 뭐만하면 안타임 송구가 개빡셈" — 주자가 2.1초에 한 베이스였다. 실제(4.3초)의 두 배다. 3초로 늘리고 송구 정확도 원이 줄어드는 시간도 같이 늘렸다',
+    '[제보] "결과는 정해져있고 주루플레이로 내가 할 수 있는게 없는" — 한 베이스 더 가는 것도 제일 좋은 타이밍에 눌러야 46% 였다. 절반도 안 되니 뭘 하든 상관없게 느껴진다. **언제 정했는지가 크게 갈리게** 했다 — 야수가 공에 닿기 전에 마음먹으면 대부분 살고, 송구 직전에 튀어나가면 대부분 죽는다',
+    '[제보] "고교때 스토리는 고정이냐 뭐 경우의수가 없냐? 뭐 기기마다 다똑같은 멘트 똑같은 결과야" — **판마다 다른 3년이 된다.** 경기 일곱 개는 뼈대라 고정이고, 그 사이에 끼는 이야기 장면을 학년마다 후보 대여섯 개 중 둘씩 뽑는다. 두발 검사, 원정 버스 맨 뒷자리, 부러진 배트, 감독 교체, 비 오는 날 부실, 후배가 나보다 잘 친다, 스카우트, 마지막 합숙, 등번호 물려주기 — 새 장면 아홉 개를 넣었다. 대사도 여러 줄 중에 하나가 나온다',
+    '[제보] "선수모드에서 왜 내가 스스로 결장하는데 경기는 구경하냐 감독이 라인업에 안넣으면 몰라도" — 맞는 말이다. 개인 사정으로 안 나간 날은 구장에 없다. 이제 결과만 나중에 본다. 부상·2군도 마찬가지다',
+    '[제보] "라인업 안넣으면 이유 나오게 하고" — 최근 성적만 나열하던 걸, **왜 뺐는지**를 앞에 못 박는다. 「최근 12타수 무안타 — 그래서 뺐다」 처럼',
+  ]},
   {v:'2.79.2', t:'수비에 준비 턴 · 결과가 화면을 초기화하던 것', items:[
     '[제보] "수비도 언제쯤 준비하는 턴좀 줘라 아이폰으로 하는데 수비 장면 뜰때 순간 스크롤 내려가서 뭐야 하다가 못잡았다" — 맞는 말이다. 타석에는 「준비 됐다 ▶」 가 있는데 수비에는 없어서, 화면이 뜨자마자 공이 날아왔다. 스크롤이 아직 움직이는 중이면 그대로 놓친다. **이제 내가 누를 때까지 공이 안 온다.** 화면도 가운데로 끌어오고, 공이 오는 동안에는 스크롤을 잠근다',
     '[제보] "갑자기 화면이 초기화되더니 송구하는 장면이 나오는데 연결해서 하라니깐" — 이것도 진짜였다. 결과를 **새 캔버스로 처음부터 다시 그리고 있었다.** 방금 다 본 장면을 또 트니 초기화된 것처럼 보였다. 이제 같은 캔버스에 판정만 얹는다 — 화면이 안 바뀐다',
@@ -10365,15 +10421,18 @@ LiveGame.prototype.consumePlayMods = function(off, def){
     /* 센터 라인은 더 빡세다 — 놓칠 위험도, 막았을 때 값어치도 같이 크다 */
     const hd=defHard((typeof myPos==='function')?myPos():null);
     if(dp.q!=null){
-      /* [제보] "수비는 좀 혁신으로 바꾸자 (…) 내가 직접 조종을 해야지"
-         손으로 쫓아가서 공에 얼마나 붙었나가 그대로 확률이 된다.
-         잘 붙으면 안타가 줄고(호수비) 놓치면 실책이 는다.
-         타석의 스윙과 같은 방식이다 — 결과를 정하지 않고 확률만 민다. */
+      /* 손으로 쫓아가서 공에 얼마나 붙었나가 결과를 정한다.
+         [제보] "잡았는데 갑자기 뭐 2루타? 뭐냐 이건"
+         **딱 잡았으면 아웃이고 손이 안 닿았으면 안타다.** 그 사이만 확률.
+         그리고 화면이 타구를 보여줬으면 **삼진·볼넷은 나올 수 없다** —
+         [제보] "수비하라고 준비해서 가고 있었는데 삼진 나오거나".      */
       const gq=(dp.q-0.5)*2;                          // -1(헛손질) ~ +1(정확히)
       const skill=(dv-45)*0.006+(av-45)*0.002;
-      out={...(out||{}),
+      out={...(out||{}), inPlay:true,
         babip:((out&&out.babip)||1)*Math.max(0.45,Math.min(1.45,1-(gq*0.34+skill)*hd)),
         err:((out&&out.err)||1)*Math.max(0.32,Math.min(2.2,1-(gq*0.55+skill*2)*hd))};
+      if(dp.q>=0.84) out.defForce='out';
+      else if(dp.q<=0.40) out.defForce='hit';
     } else if(dp.bold){
       /* 잘하는 수비수는 과감해도 덜 흘린다 */
       const good=(dv-45)*0.010+(av-45)*0.004;
@@ -13932,8 +13991,7 @@ const HS_OTHERS=['산본고','용호고','수리고','부곡중앙고'];
      say    대사 [누가, 뭐라고]
      pick   고르는 것 {q, opts:[{t,r,eff,mood}]}
      w / l  이기고 진 뒤에 붙는 한 줄                                */
-const HS_STORY=[
-  /* ---------------- 고1 ---------------- */
+const HS_CORE=[
   {y:1, when:'3월', kind:'입부', noGame:true,
    t:'야구부에 들어간 날',
    b:'운동장 구석에 컨테이너 하나. 그게 부실이다.\n'+
@@ -13960,23 +14018,6 @@ const HS_STORY=[
    w:'첫 경기부터 이겼다. 더그아웃이 시끄럽다.',
    l:'졌다. 그래도 다들 별말 없다. 아직 4월이다.'},
 
-  {y:1, when:'7월', kind:'여름 훈련', noGame:true,
-   t:'운동장이 녹는다',
-   b:'체감온도 37도. 아스팔트에서 아지랑이가 올라온다.\n'+
-     '{cap}{이가} "오늘은 살살 하자" 고 했는데 그게 펑고 200개였다.\n'+
-     '{ace}{은는} 세 번째 세트에서 배트를 짚고 서 있었다.',
-   say:[['{ace}','형 이거 살살 하는 거 맞아요?'],
-        ['{cap}','어 살살이야'],
-        ['{ace}','...']],
-   pick:{q:'그날 나는',
-     opts:[
-       {t:'끝까지 받았다', r:'다음 날 못 걸었다. 대신 {cap}{이가} 등을 두드렸다.',
-        eff:{def:2,spd:1}, mood:'good'},
-       {t:'중간에 토했다', r:'창피했는데 아무도 안 웃었다. 다들 해봤으니까.',
-        eff:{def:1}, mood:'ok'},
-       {t:'몰래 그늘에서 쉬었다', r:'아무도 못 봤다. 아마도.',
-        eff:{eye:1}, mood:'ok'}]}},
-
   {y:1, when:'9월', kind:'지역대회 1회전', rival:true, bench:false,
    t:'{foe}라는 학교',
    b:'대회 1회전 상대가 {foe}다.\n'+
@@ -13986,41 +14027,6 @@ const HS_STORY=[
    w:'이겼다. {foe} 애들이 한참 안 일어났다.',
    l:'졌다. 1회전에서 끝났다. 버스에서 아무도 말을 안 했다.'},
 
-  {y:1, when:'12월', kind:'겨울', noGame:true,
-   t:'웨이트장 열쇠',
-   b:'시즌이 끝났다. 할 게 없다.\n'+
-     '{cap}{이가} 웨이트장 열쇠를 복사해서 하나 줬다.\n'+
-     '"쓰든지 말든지" 라고 했는데 그게 무슨 뜻인지는 안다.',
-   say:[['{cap}','겨울에 갈리는 거다. 시즌엔 안 늘어'],
-        ['{ace}','저는 살부터 찌울래요']],
-   pick:{q:'겨울 내내',
-     opts:[
-       {t:'웨이트장에 살았다', r:'3월에 배트가 가벼워져 있었다.',
-        eff:{pow:3}, mood:'good'},
-       {t:'매일 러닝을 했다', r:'1루까지 반 발짝 빨라졌다.',
-        eff:{spd:3}, mood:'good'},
-       {t:'영상만 죽어라 봤다', r:'공이 조금 느리게 보이기 시작했다.',
-        eff:{eye:2,con:1}, mood:'good'},
-       {t:'그냥 놀았다', r:'재미있었다. 3월에 후회했다.',
-        eff:{}, mood:'bad'}]}},
-
-  /* ---------------- 고2 ---------------- */
-  {y:2, when:'3월', kind:'신입생', noGame:true,
-   t:'후배가 들어왔다',
-   b:'작년의 나처럼 생긴 애들이 컨테이너 앞에 줄을 섰다.\n'+
-     '{cap}{이가} 나를 부르더니 "네가 좀 봐라" 고 했다.\n'+
-     '내가 뭘 안다고.',
-   say:[['{cap}','너도 이제 위에 있는 거다'],
-        ['{ace}','작년에 공 줍던 애가 벌써']],
-   pick:{q:'후배들한테',
-     opts:[
-       {t:'내가 배운 걸 그대로 가르쳤다', r:'설명하다 보니 내가 더 이해했다.',
-        eff:{con:2,eye:1}, mood:'good'},
-       {t:'말 대신 그냥 같이 뛰었다', r:'애들이 따라 뛰었다. 그게 더 빨랐다.',
-        eff:{spd:2,def:1}, mood:'good'},
-       {t:'엄하게 굴었다', r:'애들이 무서워한다. 실수는 줄었다.',
-        eff:{def:2}, mood:'ok'}]}},
-
   {y:2, when:'5월', kind:'주말리그', rival:false, bench:false,
    t:'자리 싸움',
    b:'2학년이다. 이제 벤치에 앉으면 그건 내 탓이다.\n'+
@@ -14029,23 +14035,6 @@ const HS_STORY=[
         ['{ace}','나 던지는 날은 좀 편하게 해줘라']],
    w:'이겼다. 다음 주도 이대로 간다.',
    l:'졌다. {cap}{이가} 라인업을 다시 짜겠다고 했다.'},
-
-  {y:2, when:'6월', kind:'야자 탈출', noGame:true,
-   t:'배팅장 가는 길',
-   b:'야간자율학습. 창밖은 아직 밝다.\n'+
-     '{ace}{이가} 뒷문으로 턱짓을 했다. 저 표정은 배팅장이다.\n'+
-     '담임이 순찰 도는 시간표를 이미 외우고 있는 놈이다.',
-   say:[['{ace}','140 짜리 있대'],
-        ['{ace}','한 게임만 하고 오자'],
-        ['{cap}','...나도 가자']],
-   pick:{q:'그래서',
-     opts:[
-       {t:'셋이서 문을 넘었다', r:'140을 열 번 헛쳤다. 열한 번째에 맞았다. 그 소리를 아직 기억한다.',
-        eff:{con:2,pow:1}, mood:'good'},
-       {t:'혼자 남아서 공부했다', r:'성적이 올랐다. 셋은 다음 날 걸려서 운동장을 돌았다.',
-        eff:{eye:2}, mood:'ok'},
-       {t:'가긴 갔는데 망을 봤다', r:'아무 일도 안 일어났다. 세 시간을 서 있었다.',
-        eff:{def:1,eye:1}, mood:'ok'}]}},
 
   {y:2, when:'8월', kind:'지역대회 8강', rival:true, bench:false,
    t:'저쪽 얘들',
@@ -14058,39 +14047,6 @@ const HS_STORY=[
    w:'이겼다. {rival}{이가} 마지막까지 헬멧을 안 벗었다.',
    l:'졌다. {rival}한테 당했다. 이건 오래 간다.'},
 
-  {y:2, when:'10월', kind:'부상', noGame:true,
-   t:'손목이 안 돌아간다',
-   b:'슬라이딩하다 손목이 꺾였다. 병원에서 4주라고 했다.\n'+
-     '4주면 시즌이 끝난다.\n'+
-     '{cap}{이가} 병원 앞에서 삼각김밥 두 개를 사 왔다.',
-   say:[['{cap}','야구는 길다'],
-        ['{cap}','지금 무리하면 스무 살에 못 해'],
-        ['{ace}','형 그거 참치 제 건데요']],
-   pick:{q:'4주 동안',
-     opts:[
-       {t:'시키는 대로 쉬었다', r:'복귀했을 때 손목이 멀쩡했다. 그게 컸다.',
-        eff:{con:2,def:1}, mood:'good'},
-       {t:'한 손으로 티배팅을 했다', r:'반대쪽 손이 늘었다. 의사는 화냈다.',
-        eff:{pow:2}, mood:'ok'},
-       {t:'상대 팀 영상만 봤다', r:'{rival}{이가} 초구를 절대 안 친다는 걸 알아냈다.',
-        eff:{eye:3}, mood:'good'}]}},
-
-  /* ---------------- 고3 ---------------- */
-  {y:3, when:'2월', kind:'주장', noGame:true,
-   t:'누가 완장을 차나',
-   b:'{senior}\n'+
-     '감독이 3학년들을 불러 세웠다. 완장이 하나 남았다.',
-   say:[['{cap}','난 이제 아니야. 너희 중에 하나다'],
-        ['{ace}','저는 던지느라 바빠요']],
-   pick:{q:'나는',
-     opts:[
-       {t:'하겠다고 했다', r:'그날부터 제일 먼저 나와서 그물을 쳤다.',
-        eff:{def:2,eye:2}, mood:'good'},
-       {t:'다른 애를 밀었다', r:'그 애가 잘했다. 나는 치는 데만 집중했다.',
-        eff:{con:2,pow:1}, mood:'good'},
-       {t:'아무 말도 안 했다', r:'결국 제비뽑기로 정했다. 내가 뽑혔다.',
-        eff:{eye:1}, mood:'ok'}]}},
-
   {y:3, when:'4월', kind:'개막전', rival:false, bench:false,
    t:'마지막 시즌',
    b:'올해가 마지막이다. 대회는 딱 한 번 남았다.\n'+
@@ -14099,24 +14055,6 @@ const HS_STORY=[
         ['{ace}','어깨 아직 살아 있어요']],
    w:'이겼다. 시작은 나쁘지 않다.',
    l:'졌다. 마지막 해 첫 경기부터 이러면 곤란하다.'},
-
-  {y:3, when:'6월', kind:'진로 상담', noGame:true,
-   t:'그래서 뭐 할 건데',
-   b:'교무실. 담임이 종이 한 장을 밀어놓는다.\n'+
-     '"야구는 계속할 거냐" 는 질문에 답이 안 나온다.\n'+
-     '프로는 아니다. 그건 이미 안다. 그런데 그만둔다는 말도 안 나온다.',
-   say:[['{cap}','나는 그냥 취업할 건데'],
-        ['{cap}','근데 야구는 계속할 거야'],
-        ['{ace}','그게 되나요?'],
-        ['{cap}','사회인야구 있잖아']],
-   pick:{q:'종이에 뭐라고 썼나',
-     opts:[
-       {t:'"계속할 겁니다"', r:'담임이 웃었다. 비웃는 웃음은 아니었다.',
-        eff:{con:1,pow:1,eye:1}, mood:'good'},
-       {t:'"모르겠습니다"', r:'솔직한 게 나았다. 담임도 모르는 눈치였다.',
-        eff:{eye:2}, mood:'ok'},
-       {t:'"체육 쪽으로요"', r:'그럴듯했다. 사실 아무 계획도 없었다.',
-        eff:{spd:1,def:1}, mood:'ok'}]}},
 
   {y:3, when:'8월', kind:'주말리그 최종전', rival:false, bench:false,
    t:'남은 경기 수를 센다',
@@ -14155,8 +14093,316 @@ const HS_STORY=[
        {t:'아무것도 안 챙겼다', r:'다 두고 나왔다. 그게 더 나았다.',
         eff:{spd:2}, mood:'ok'}]}},
 ];
+
+/* ---------------- 판마다 달라지는 이야기 장면 ----------------
+   [제보] "고교때 스토리는 고정이냐 뭐 경우의수가 없냐?
+           뭐 기기마다 다똑같은 멘트 똑같은 결과야"
+
+   맞는 말이다. 같은 3년을 두 번 하면 그건 한 번 한 거다.
+   **경기 일곱 개는 뼈대라 고정**이고(그래야 학년이 흘러간다),
+   그 사이에 끼는 이야기 장면은 **학년마다 후보 대여섯 개 중에 둘**을
+   시드로 뽑는다. 입부하는 날과 컨테이너 문 잠그는 날만 고정이다 —
+   시작과 끝은 있어야 한다.
+
+   대사도 여러 줄 중에 하나가 나온다(배열로 두면 hsLine 이 뽑는다).
+   시드는 세이브의 seed + 선수 id 라서, **같은 판은 새로고침해도 같고
+   새로 시작하면 다른 3년**이 된다.                                */
+const HS_POOL={
+1:[
+  {y:1, mo:7, when:'7월', kind:'여름 훈련', noGame:true,
+   t:'운동장이 녹는다',
+   b:'체감온도 37도. 아스팔트에서 아지랑이가 올라온다.\n'+
+     '{cap}{이가} "오늘은 살살 하자" 고 했는데 그게 펑고 200개였다.\n'+
+     '{ace}{은는} 세 번째 세트에서 배트를 짚고 서 있었다.',
+   say:[['{ace}',['형 이거 살살 하는 거 맞아요?','이게 살살이면 빡세게는 뭐예요']],
+        ['{cap}',['어 살살이야','너 방금 뭐라 그랬냐']],
+        ['{ace}',['...','아무것도 아닙니다']]],
+   pick:{q:'그날 나는',
+     opts:[
+       {t:'끝까지 받았다', r:'다음 날 못 걸었다. 대신 {cap}{이가} 등을 두드렸다.',
+        eff:{def:2,spd:1}, mood:'good'},
+       {t:'중간에 토했다', r:'창피했는데 아무도 안 웃었다. 다들 해봤으니까.',
+        eff:{def:1}, mood:'ok'},
+       {t:'몰래 그늘에서 쉬었다', r:'아무도 못 봤다. 아마도.',
+        eff:{eye:1}, mood:'ok'}]}},
+
+  {y:1, mo:12, when:'12월', kind:'겨울', noGame:true,
+   t:'웨이트장 열쇠',
+   b:'시즌이 끝났다. 할 게 없다.\n'+
+     '{cap}{이가} 웨이트장 열쇠를 복사해서 하나 줬다.\n'+
+     '"쓰든지 말든지" 라고 했는데 그게 무슨 뜻인지는 안다.',
+   say:[['{cap}',['겨울에 갈리는 거다. 시즌엔 안 늘어','3월에 티가 난다 이게']],
+        ['{ace}',['저는 살부터 찌울래요','저는 일단 쉬겠습니다']]],
+   pick:{q:'겨울 내내',
+     opts:[
+       {t:'웨이트장에 살았다', r:'3월에 배트가 가벼워져 있었다.',
+        eff:{pow:3}, mood:'good'},
+       {t:'매일 러닝을 했다', r:'1루까지 반 발짝 빨라졌다.',
+        eff:{spd:3}, mood:'good'},
+       {t:'영상만 죽어라 봤다', r:'공이 조금 느리게 보이기 시작했다.',
+        eff:{eye:2,con:1}, mood:'good'},
+       {t:'그냥 놀았다', r:'재미있었다. 3월에 후회했다.',
+        eff:{}, mood:'bad'}]}},
+
+  {y:1, mo:5, when:'5월', kind:'두발 검사', noGame:true,
+   t:'머리를 밀었다',
+   b:'학생부에서 야구부 전원을 불렀다.\n'+
+     '"운동부가 왜 이렇게 길어" 한 마디에 열두 명이 줄을 섰다.\n'+
+     '{ace}{은는} 앞머리를 붙잡고 끝까지 버텼다.',
+   say:[['{ace}',['이건 인권 문제입니다','저는 이 머리로 3년을 버텼습니다']],
+        ['{cap}',['빨리 앉아라','너 그거 앞머리 아니고 그냥 긴 거다']]],
+   pick:{q:'거울을 보고',
+     opts:[
+       {t:'생각보다 괜찮은데?', r:'그날 이후로 계속 짧게 다녔다. 편했다.',
+        eff:{spd:1,def:1}, mood:'good'},
+       {t:'모자를 하루 종일 안 벗었다', r:'모자가 몸의 일부가 됐다. 햇빛에 강해졌다.',
+        eff:{eye:2}, mood:'ok'},
+       {t:'{ace} 사진을 찍어뒀다', r:'10년 뒤 단톡방에 올라간다.',
+        eff:{con:1}, mood:'good'}]}},
+
+  {y:1, mo:6, when:'6월', kind:'원정 버스', noGame:true,
+   t:'버스 맨 뒷자리',
+   b:'원정 가는 버스. 뒷자리 다섯 칸은 3학년 자리다.\n'+
+     '1학년은 기사님 뒤. 커브 돌 때마다 몸이 통째로 쏠린다.\n'+
+     '{cap}{이가} 뒤에서 김밥을 하나 던져줬다.',
+   say:[['{cap}',['먹어라 도착하면 바로 뛴다','앞에서 멀미하지 마라 진짜로']],
+        ['{ace}',['형 저도요','저 아까부터 손 들고 있었는데요']]],
+   pick:{q:'두 시간 동안',
+     opts:[
+       {t:'상대 팀 영상을 봤다', r:'그 팀 4번이 초구를 노린다는 걸 알아냈다.',
+        eff:{eye:2}, mood:'good'},
+       {t:'잤다', r:'도착했을 때 제일 멀쩡한 건 나였다.',
+        eff:{spd:1,def:1}, mood:'ok'},
+       {t:'멀미했다', r:'경기 전에 다 게워냈다. 그날 2안타를 쳤다. 왜인지는 모른다.',
+        eff:{con:2}, mood:'ok'}]}},
+
+  {y:1, mo:10, when:'10월', kind:'장비', noGame:true,
+   t:'배트가 부러졌다',
+   b:'연습 중에 배트가 손잡이에서 쪼개졌다.\n'+
+     '학교에서 사준 알루미늄 배트다. 남은 건 세 자루.\n'+
+     '{cap}{이가} 부실 구석에서 테이프를 꺼내 왔다.',
+   say:[['{cap}',['감아 쓰면 된다','내년 예산 나오면 사준댄다. 매년 그 소리다']],
+        ['{ace}',['그거 감아도 부러져요','작년에도 그러셨어요']]],
+   pick:{q:'그래서 나는',
+     opts:[
+       {t:'테이프를 감아서 계속 썼다', r:'손이 아팠다. 대신 배트 무게를 몸으로 익혔다.',
+        eff:{pow:2}, mood:'good'},
+       {t:'내 돈으로 하나 샀다', r:'용돈 두 달치였다. 그 배트로 첫 장타를 쳤다.',
+        eff:{pow:1,con:2}, mood:'good'},
+       {t:'남의 배트를 빌려 썼다', r:'그립이 안 맞았다. 대신 아무 배트나 쥐어도 치게 됐다.',
+        eff:{con:1,eye:1}, mood:'ok'}]}},
+],
+2:[
+  {y:2, mo:3, when:'3월', kind:'신입생', noGame:true,
+   t:'후배가 들어왔다',
+   b:'작년의 나처럼 생긴 애들이 컨테이너 앞에 줄을 섰다.\n'+
+     '{cap}{이가} 나를 부르더니 "네가 좀 봐라" 고 했다.\n'+
+     '내가 뭘 안다고.',
+   say:[['{cap}',['너도 이제 위에 있는 거다','작년에 네가 뭘 제일 답답해했냐']],
+        ['{ace}',['작년에 공 줍던 애가 벌써','쟤네 눈빛 봐라 우리 때랑 똑같다']]],
+   pick:{q:'후배들한테',
+     opts:[
+       {t:'내가 배운 걸 그대로 가르쳤다', r:'설명하다 보니 내가 더 이해했다.',
+        eff:{con:2,eye:1}, mood:'good'},
+       {t:'말 대신 그냥 같이 뛰었다', r:'애들이 따라 뛰었다. 그게 더 빨랐다.',
+        eff:{spd:2,def:1}, mood:'good'},
+       {t:'엄하게 굴었다', r:'애들이 무서워한다. 실수는 줄었다.',
+        eff:{def:2}, mood:'ok'}]}},
+
+  {y:2, mo:6, when:'6월', kind:'야자 탈출', noGame:true,
+   t:'배팅장 가는 길',
+   b:'야간자율학습. 창밖은 아직 밝다.\n'+
+     '{ace}{이가} 뒷문으로 턱짓을 했다. 저 표정은 배팅장이다.\n'+
+     '담임이 순찰 도는 시간표를 이미 외우고 있는 놈이다.',
+   say:[['{ace}',['140 짜리 있대','오늘 안 가면 후회한다']],
+        ['{ace}',['한 게임만 하고 오자','30분이면 돼요 진짜']],
+        ['{cap}',['...나도 가자','들키면 너희 둘이 뒤집어써라']]],
+   pick:{q:'그래서',
+     opts:[
+       {t:'셋이서 문을 넘었다', r:'140을 열 번 헛쳤다. 열한 번째에 맞았다. 그 소리를 아직 기억한다.',
+        eff:{con:2,pow:1}, mood:'good'},
+       {t:'혼자 남아서 공부했다', r:'성적이 올랐다. 셋은 다음 날 걸려서 운동장을 돌았다.',
+        eff:{eye:2}, mood:'ok'},
+       {t:'가긴 갔는데 망을 봤다', r:'아무 일도 안 일어났다. 세 시간을 서 있었다.',
+        eff:{def:1,eye:1}, mood:'ok'}]}},
+
+  {y:2, mo:10, when:'10월', kind:'부상', noGame:true,
+   t:'손목이 안 돌아간다',
+   b:'슬라이딩하다 손목이 꺾였다. 병원에서 4주라고 했다.\n'+
+     '4주면 시즌이 끝난다.\n'+
+     '{cap}{이가} 병원 앞에서 삼각김밥 두 개를 사 왔다.',
+   say:[['{cap}',['야구는 길다','지금 아프면 스무 살에 편하다']],
+        ['{cap}',['지금 무리하면 스무 살에 못 해','내 손목 봐라. 아직도 비 오면 쑤신다']],
+        ['{ace}',['형 그거 참치 제 건데요','두 개 다 형 거였어요?']]],
+   pick:{q:'4주 동안',
+     opts:[
+       {t:'시키는 대로 쉬었다', r:'복귀했을 때 손목이 멀쩡했다. 그게 컸다.',
+        eff:{con:2,def:1}, mood:'good'},
+       {t:'한 손으로 티배팅을 했다', r:'반대쪽 손이 늘었다. 의사는 화냈다.',
+        eff:{pow:2}, mood:'ok'},
+       {t:'상대 팀 영상만 봤다', r:'{rival}{이가} 초구를 절대 안 친다는 걸 알아냈다.',
+        eff:{eye:3}, mood:'good'}]}},
+
+  {y:2, mo:4, when:'4월', kind:'감독', noGame:true,
+   t:'감독이 바뀌었다',
+   b:'전 감독이 다른 학교로 갔다.\n'+
+     '새로 온 사람은 프로 2군 코치를 하다 왔다고 한다.\n'+
+     '첫날 훈련이 끝나고 열두 명이 다 누워 있었다.',
+   say:[['{cap}',['이 사람 진짜다','전 감독님이 천사였네']],
+        ['{ace}',['저 내일 안 나올래요','농담이에요 나올게요']]],
+   pick:{q:'새 감독이 나를 부르더니',
+     opts:[
+       {t:'"너 자세가 틀렸어" — 처음부터 다시 배웠다',
+        r:'두 달 동안 성적이 바닥이었다. 그 뒤로 계속 올라갔다.',
+        eff:{con:3}, mood:'good'},
+       {t:'"너는 발이 재산이야" — 주루만 팠다',
+        r:'도루가 늘었다. 방망이는 그대로였다.',
+        eff:{spd:3}, mood:'ok'},
+       {t:'"수비부터 해" — 펑고만 받았다',
+        r:'재미없었다. 그런데 3학년 때 그 자리가 내 자리가 됐다.',
+        eff:{def:2,arm:1}, mood:'good'}]}},
+
+  {y:2, mo:7, when:'7월', kind:'우천', noGame:true,
+   t:'비 오는 날 부실',
+   b:'아침부터 장대비다. 훈련이 취소됐는데 아무도 안 갔다.\n'+
+     '컨테이너 안에서 열두 명이 라면을 끓였다.\n'+
+     '{ace}{이가} 어디서 낡은 야구 만화를 가져왔다.',
+   say:[['{ace}',['이거 형들 세대 만화 아니에요?','근데 왜 재밌지']],
+        ['{cap}',['조용히 해라 그 장면이다','거기 주인공이 우리 감독이랑 똑같이 생겼다']]],
+   pick:{q:'그날 오후에',
+     opts:[
+       {t:'끝까지 만화를 읽었다', r:'별거 아닌 하루였는데 제일 오래 기억에 남았다.',
+        eff:{eye:1,con:1}, mood:'good'},
+       {t:'혼자 실내에서 스윙했다', r:'다들 웃었다. 그래도 400번 돌렸다.',
+        eff:{pow:2,con:1}, mood:'good'},
+       {t:'형들 얘기를 들었다', r:'졸업하고 뭐 할 건지 처음으로 생각해봤다.',
+        eff:{eye:2}, mood:'ok'}]}},
+
+  {y:2, mo:9, when:'9월', kind:'경쟁', noGame:true,
+   t:'후배가 나보다 잘 친다',
+   b:'1학년 하나가 청백전에서 3안타를 쳤다.\n'+
+     '내 자리다. 정확히 내가 서던 자리다.\n'+
+     '{cap}{이가} 아무 말도 안 했다. 그게 더 무서웠다.',
+   say:[['{cap}',['라인업은 내가 짠다','쟤가 잘한 거지 네가 못한 게 아니다']],
+        ['{ace}',['형 표정 왜 그래요','...알겠어요 아무 말 안 할게요']]],
+   pick:{q:'그날 밤에',
+     opts:[
+       {t:'혼자 남아서 500개를 쳤다', r:'손에 물집이 잡혔다. 다음 청백전에 4안타를 쳤다.',
+        eff:{con:3}, mood:'good'},
+       {t:'그 후배한테 뭘 바꿨는지 물어봤다', r:'배트를 짧게 쥐고 있었다. 나도 그렇게 했다.',
+        eff:{con:2,eye:1}, mood:'good'},
+       {t:'인정하고 수비를 팠다', r:'방망이는 밀렸다. 대신 글러브로 자리를 지켰다.',
+        eff:{def:3}, mood:'ok'}]}},
+],
+3:[
+  {y:3, mo:2, when:'2월', kind:'주장', noGame:true,
+   t:'누가 완장을 차나',
+   b:'{senior}\n'+
+     '감독이 3학년들을 불러 세웠다. 완장이 하나 남았다.',
+   say:[['{cap}',['난 이제 아니야. 너희 중에 하나다','내가 할 때는 진짜 힘들었다']],
+        ['{ace}',['저는 던지느라 바빠요','저 말고 아무나요']]],
+   pick:{q:'나는',
+     opts:[
+       {t:'하겠다고 했다', r:'그날부터 제일 먼저 나와서 그물을 쳤다.',
+        eff:{def:2,eye:2}, mood:'good'},
+       {t:'다른 애를 밀었다', r:'그 애가 잘했다. 나는 치는 데만 집중했다.',
+        eff:{con:2,pow:1}, mood:'good'},
+       {t:'아무 말도 안 했다', r:'결국 제비뽑기로 정했다. 내가 뽑혔다.',
+        eff:{eye:1}, mood:'ok'}]}},
+
+  {y:3, mo:6, when:'6월', kind:'진로 상담', noGame:true,
+   t:'그래서 뭐 할 건데',
+   b:'교무실. 담임이 종이 한 장을 밀어놓는다.\n'+
+     '"야구는 계속할 거냐" 는 질문에 답이 안 나온다.\n'+
+     '프로는 아니다. 그건 이미 안다. 그런데 그만둔다는 말도 안 나온다.',
+   say:[['{cap}',['나는 그냥 취업할 건데','우리 중에 프로 갈 놈 없는 거 다 알잖아']],
+        ['{cap}',['근데 야구는 계속할 거야','사회인야구 있잖아']],
+        ['{ace}',['그게 되나요?','저도 껴주세요 그럼']]],
+   pick:{q:'종이에 뭐라고 썼나',
+     opts:[
+       {t:'"계속할 겁니다"', r:'담임이 웃었다. 비웃는 웃음은 아니었다.',
+        eff:{con:1,pow:1,eye:1}, mood:'good'},
+       {t:'"모르겠습니다"', r:'솔직한 게 나았다. 담임도 모르는 눈치였다.',
+        eff:{eye:2}, mood:'ok'},
+       {t:'"체육 쪽으로요"', r:'그럴듯했다. 사실 아무 계획도 없었다.',
+        eff:{spd:1,def:1}, mood:'ok'}]}},
+
+  {y:3, mo:5, when:'5월', kind:'스카우트', noGame:true,
+   t:'스탠드에 낯선 사람',
+   b:'청백전인데 스탠드에 정장 입은 사람이 앉아 있다.\n'+
+     '누가 "대학 스카우트래" 라고 했다.\n'+
+     '그 말이 도는 순간 열두 명이 전부 이상해졌다.',
+   say:[['{ace}',['저 오늘 구속 나옵니다 진짜로','형 저 봐주고 계세요?']],
+        ['{cap}',['평소대로 해라','저 사람 우리 학교 학부형이라던데']]],
+   pick:{q:'나는',
+     opts:[
+       {t:'평소대로 했다', r:'그날 2안타. 스카우트는 다른 학교 애를 보러 온 거였다. 그래도 남은 건 있다.',
+        eff:{con:2,eye:1}, mood:'good'},
+       {t:'힘껏 돌렸다', r:'세 번 다 헛스윙. 배운 게 있다면 그것도 배움이다.',
+        eff:{pow:2}, mood:'ok'},
+       {t:'수비에서 몸을 던졌다', r:'유니폼이 다 까졌다. 감독이 그걸 봤다.',
+        eff:{def:2,arm:1}, mood:'good'}]}},
+
+  {y:3, mo:7, when:'7월', kind:'합숙', noGame:true,
+   t:'마지막 여름 합숙',
+   b:'학교 강당에서 일주일을 잤다.\n'+
+     '3학년한테는 마지막 합숙이다. 아무도 그 말을 안 하는데 다 안다.\n'+
+     '새벽 두 시에 {ace}{이가} 나가자고 했다. 편의점까지 20분.',
+   say:[['{ace}',['형 마지막이잖아요','한 번만 나가요 진짜']],
+        ['{cap}',['걸리면 끝이다','...가자']],
+        ['{ace}',['역시 형','제가 살게요 이번엔']]],
+   pick:{q:'그 새벽에',
+     opts:[
+       {t:'편의점 앞에 셋이 앉아 있었다', r:'무슨 얘기를 했는지는 기억이 안 난다. 앉아 있던 건 기억난다.',
+        eff:{eye:2,con:1}, mood:'good'},
+       {t:'안 가고 강당에 남았다', r:'혼자 스윙 300개. 다음 날 셋이 뻗어 있을 때 나만 멀쩡했다.',
+        eff:{pow:2,spd:1}, mood:'good'},
+       {t:'가다가 감독한테 걸렸다', r:'셋이 운동장을 돌았다. 새벽에 도는 운동장은 처음이었다.',
+        eff:{spd:3}, mood:'ok'}]}},
+
+  {y:3, mo:9, when:'9월', kind:'등번호', noGame:true,
+   t:'등번호를 물려준다',
+   b:'대회 전에 등번호를 다시 나눈다.\n'+
+     '내가 3년 달던 번호를 누가 물려받는지 정해야 한다.\n'+
+     '1학년 하나가 계속 그 번호를 쳐다보고 있었다.',
+   say:[['{cap}',['너 번호 누구 줄 거냐','나는 그냥 제일 열심히 하는 애 줬다']],
+        ['{ace}',['저는 제 번호 아무한테도 안 줄 건데요','영구결번이에요 그거']]],
+   pick:{q:'그 번호를',
+     opts:[
+       {t:'제일 열심히 하는 애한테 줬다', r:'그 애가 마지막 경기에 그 번호를 달고 뛰었다.',
+        eff:{eye:2,def:1}, mood:'good'},
+       {t:'제일 못하는 애한테 줬다', r:'"이거 달면 잘해야 돼" 라고 했다. 진짜로 늘었다.',
+        eff:{con:1,eye:2}, mood:'good'},
+       {t:'끝까지 안 줬다', r:'졸업하고도 그 번호는 비어 있었다. 그게 좋았다.',
+        eff:{pow:2}, mood:'ok'}]}},
+]};
+
+/* 3년을 조립한다. 경기는 고정, 이야기 장면은 시드로 뽑는다.
+   같은 판은 몇 번을 다시 켜도 같고, 새 판은 다른 3년이 된다.       */
+let _hsStoryCache=null, _hsStoryKey=null;
+function hsStory(){
+  const key=(ST?((ST.seed||0)+'/'+(ST.playerId||MYID)+'/'+(ST.seasonNo||1)):'x');
+  if(_hsStoryKey===key && _hsStoryCache) return _hsStoryCache;
+  const rng=makeRng(((ST&&ST.seed||1)*2654435761 + clayHash(ST&&ST.playerId||'ksh'))>>>0);
+  const out=[];
+  [1,2,3].forEach(y=>{
+    /* 그 학년의 경기와 고정 장면 */
+    const fixed=HS_CORE.filter(x=>x.y===y);
+    /* 후보에서 둘을 뽑는다 — 같은 걸 두 번 뽑지 않는다 */
+    const pool=(HS_POOL[y]||[]).slice();
+    const picked=[];
+    for(let n=0;n<2 && pool.length;n++){
+      picked.push(pool.splice((rng()*pool.length)|0,1)[0]);
+    }
+    /* 월 순서대로 섞는다. 경기에는 월이 없으니 when 에서 뽑는다 */
+    const moOf=(x)=>x.mo!=null?x.mo:(parseInt(String(x.when||'1월'),10)||1);
+    out.push(...fixed.concat(picked).sort((p,q)=>moOf(p)-moOf(q)));
+  });
+  _hsStoryCache=out; _hsStoryKey=key;
+  return out;
+}
 /* 실제로 치는 경기 수 — 졸업 능력치의 '출전' 몫이 이걸 기준으로 잰다 */
-const HS_GAMES=HS_STORY.filter(x=>!x.noGame).length;
+function hsGamesCount(){ return hsStory().filter(x=>!x.noGame).length; }
 
 /* 대사·문장에 들어가는 자리를 실제 사람으로 바꾼다 */
 /* [제보] "여긴 카톡이 아니라 대충 그림으로 나와서 대화하는 방식으로
@@ -14252,7 +14498,7 @@ function hsSlot(){
 function hsActive(){ return !!(isPlayerMode() && ST && ST.hs && !ST.hs.done); }
 function hsYearAt(i){
   const ys=hsYearsFor(ST.playerId||MYID);
-  return ys[(HS_STORY[i]||HS_STORY[0]).y-1];
+  return ys[(hsStory()[i]||hsStory()[0]).y-1];
 }
 /* 라이벌이 아닌 날의 상대 — 그냥 동네 학교다. 전부 부원으로 채운다. */
 function hsOtherTeam(name, year, seed){
@@ -14295,7 +14541,7 @@ function hsMoment(b, q, year, s, won){
    [제보] "고등학교때 라인업은 왜 안나오냐"
    경기 전에 오늘 타순을 보여주려면 여기서 만든 걸 그대로 써야 한다. */
 function hsBuild(i){
-  const s=HS_STORY[i]; if(!s||s.noGame) return null;
+  const s=hsStory()[i]; if(!s||s.noGame) return null;
   const me=ST.playerId||MYID;
   const year=hsYearAt(i);
   const base=(ST.seed||1);
@@ -14315,7 +14561,7 @@ function hsBuild(i){
 }
 /* 한 경기 돌린다 */
 function hsPlay(){
-  const H=hsSlot(); const s=HS_STORY[H.i]; if(!s||s.noGame) return null;
+  const H=hsSlot(); const s=hsStory()[H.i]; if(!s||s.noGame) return null;
   const B=hsBuild(H.i); if(!B) return null;
   const me=B.me, year=B.year, us=B.us, foe=B.foe;
   const uLine=B.uLine, uRot=B.uRot, fLine=B.fLine, fRot=B.fRot;
@@ -14489,7 +14735,7 @@ function hsGraduate(){
      능력치를 정하니 **운이 실력보다 크게 먹혔다.** 한 경기 잘 치면 확
      오르고 못 치면 확 떨어졌다. 그래서 출전(경험)을 섞고 성적 몫을
      줄인다 — 3년 꼬박 뛴 것 자체가 절반이다.                        */
-  const exp=hsLin((H.bat.g||0)+(H.pit.g||0), 0, HS_GAMES);
+  const exp=hsLin((H.bat.g||0)+(H.pit.g||0), 0, hsGamesCount());
   const K=(v)=>0.55+0.10*exp+0.24*Math.max(0,Math.min(1,v));
   /* 3년 동안 고른 것들 — 웨이트장에 살았으면 파워가, 영상만 봤으면 선구가 붙는다.
      크게 안 갈린다. 한 판 더 하고 싶어질 정도만.                     */
@@ -14595,7 +14841,7 @@ function hsStatLine(b,q){
 /* 경기 결과 한 장. 방금 친 것도, 지난 것도 이걸로 그린다.
    [요청] "이전 경기 결과랑 경기 내용 볼 수 있게 · 예전 경기 선택할 수 있게" */
 function hsPaintResult(c, P){
-  const s=HS_STORY[P.i]||HS_STORY[0];
+  const s=hsStory()[P.i]||hsStory()[0];
   const cast=hsCast(P.year);
   const card=el('div','card');
   card.appendChild(el('div','card-h',P.year+'년 · '+s.when+' · '+s.kind));
@@ -14637,6 +14883,17 @@ function hsPaintResult(c, P){
    [제보] "여긴 카톡이 아니라 대충 그림으로 나와서 대화하는 방식"
    사진이 있는 사람은 사진, 없으면 찰흙 인형이 선다(avatarHTML).
    화면을 누르면 다음 사람으로 넘어간다.                             */
+/* 같은 자리에서도 다른 말이 나온다.
+   [제보] "뭐 기기마다 다똑같은 멘트 똑같은 결과야"
+   대사를 배열로 두면 여기서 하나를 뽑는다. 시드가 같으면 같은 말이
+   나오니 새로고침해도 안 바뀐다 — 판이 달라야 말이 달라진다.     */
+function hsLine(v, key){
+  if(!Array.isArray(v)) return v;
+  if(!v.length) return '';
+  let h=0; const str=String(key||'')+'|'+((ST&&ST.seed)||1);
+  for(let i=0;i<str.length;i++) h=(h*31+str.charCodeAt(i))>>>0;
+  return v[h%v.length];
+}
 function hsTalkScene(c, s, cast, year, onDone){
   const H=hsSlot();
   const list=(s.say||[]);
@@ -14654,7 +14911,7 @@ function hsTalkScene(c, s, cast, year, onDone){
   const box=el('div','hstalk');
   box.innerHTML='<div class="ht-face">'+avatarHTML(pid)+'</div>'+
     '<div class="ht-body"><div class="ht-nm">'+who+'</div>'+
-    '<div class="ht-say">'+hsText(row[1],cast,year)+'</div>'+
+    '<div class="ht-say">'+hsText(hsLine(row[1], (s.t||'')+at),cast,year)+'</div>'+
     '<div class="ht-more">'+(at<list.length-1?'탭하면 다음':'탭하면 넘어간다')+'</div></div>';
   box.onclick=()=>{
     H.sayAt=at+1;
@@ -14706,7 +14963,7 @@ function hsPastList(c){
   const card=el('div','card');
   card.appendChild(el('div','card-h','지난 경기'));
   H.res.forEach((r,k)=>{
-    const st=HS_STORY[r.i]||HS_STORY[0];
+    const st=hsStory()[r.i]||hsStory()[0];
     const row=el('button','hs-past'+(r.won?' w':(r.tie?'':' l')));
     row.innerHTML='<span class="hp-y">'+r.year+'</span>'+
       '<span class="hp-k">'+st.kind+'</span>'+
@@ -14826,10 +15083,10 @@ function renderHS(){
   /* ---- 방금 친 경기 ---- */
   if(H.pending){
     hsPaintResult(c, H.pending);
-    const nx=el('button','btn primary', H.i>=HS_STORY.length-1?'졸업':'다음 경기');
+    const nx=el('button','btn primary', H.i>=hsStory().length-1?'졸업':'다음 경기');
     nx.onclick=async()=>{
       H.pending=null; H.i++;
-      if(H.i>=HS_STORY.length) hsGraduate();
+      if(H.i>=hsStory().length) hsGraduate();
       await saveGame(true); renderHS();
     };
     c.appendChild(nx);
@@ -14838,7 +15095,7 @@ function renderHS(){
   }
 
   /* ---- 경기 전 ---- */
-  const s=HS_STORY[H.i];
+  const s=hsStory()[H.i];
   const year=hsYearAt(H.i);
   const cast=hsCast(year);
   const head=el('div','card');
@@ -14864,17 +15121,17 @@ function renderHS(){
   /* 경기를 안 하는 장면 — 여기까지가 그날이다 */
   if(s.noGame){
     const prog0=el('div','hs-prog');
-    prog0.innerHTML=HS_STORY.map((x,k)=>{
+    prog0.innerHTML=hsStory().map((x,k)=>{
       const r=H.res.find(z=>z.i===k);
       return '<i class="'+(k===H.i?'on':'')+(x.noGame?' st':'')+
         (r?(r.won?' w':(r.us===r.them?' t':' l')):'')+'">'+
         (r?(r.won?'승':(r.us===r.them?'무':'패')):(x.noGame?'·':(k+1)))+'</i>';
     }).join('');
     c.appendChild(prog0);
-    const nx0=el('button','btn primary', H.i>=HS_STORY.length-1?'졸업':'다음 ▸');
+    const nx0=el('button','btn primary', H.i>=hsStory().length-1?'졸업':'다음 ▸');
     nx0.onclick=async()=>{
       H.sayAt=0; H.i++;
-      if(H.i>=HS_STORY.length) hsGraduate();
+      if(H.i>=hsStory().length) hsGraduate();
       await saveGame(true); renderHS();
     };
     c.appendChild(nx0);
@@ -14914,7 +15171,7 @@ function renderHS(){
   }
 
   const prog=el('div','hs-prog');
-  prog.innerHTML=HS_STORY.map((x,k)=>{
+  prog.innerHTML=hsStory().map((x,k)=>{
     const r=H.res.find(z=>z.i===k);
     return '<i class="'+(k===H.i?'on':'')+(x.noGame?' st':'')+
       (r?(r.won?' w':(r.us===r.them?' t':' l')):'')+'">'+
@@ -18650,17 +18907,31 @@ function lineupSpotOf(pid){
   return {ord:i+1, pos:ST.lineup[i].pos};
 }
 /* 감독이 나를 이렇게 쓴 이유 한 줄 — 최근 성적에서 되짚는다 */
+/* [제보] "라인업 안넣으면 이유 나오게 하고"
+   최근 성적만 나열하던 걸, **왜 뺐는지**를 앞에 못 박는다.
+   감독이 라인업을 짤 때 실제로 보는 것과 같은 순서다.           */
 function coachNoteFor(pid){
   const b=(ST.bat||{})[pid]||blankBat();
   const f=(ST.form||{})[pid]||{};
   const bits=[];
+  const inj=ST.injury&&ST.injury[pid];
+  const ab=ST.absent&&ST.absent[pid];
+  const me=ST&&(ST.playerId||MYID);
+  /* 왜 뺐는지 — 제일 앞에 */
+  if(inj) bits.push('부상 — '+inj.name+' '+inj.games+'경기');
+  else if(ab) bits.push('결장 — '+ab);
+  else if(pid===me && (ST.myFarm||0)>0) bits.push('2군 — 남은 '+ST.myFarm+'주');
+  else if(pid===me && (ST.myBenched||0)>0) bits.push('약속을 못 지켰다 — 남은 '+ST.myBenched+'경기');
+  else if(!(ST.lineup||[]).some(x=>x.id===pid)){
+    /* 라인업에 없다. 감독이 본 근거를 대준다 */
+    if((f.cold||0)>=6) bits.push('최근 '+f.cold+'타수 무안타 — 그래서 뺐다');
+    else if(b.ab>=10 && b.h/b.ab<0.200) bits.push('타율 '+fmt3(b.h/b.ab)+' — 그래서 뺐다');
+    else if((ST.cond&&ST.cond[pid]!=null&&ST.cond[pid]<50)) bits.push('컨디션 '+Math.round(ST.cond[pid])+' — 몸이 안 좋다');
+    else bits.push('오늘은 다른 사람을 쓴다 — 자리 경쟁에서 밀렸다');
+  } else if((ST.myGuarantee||0)>0 && pid===me) bits.push('주전 보장 '+ST.myGuarantee+'경기');
+  /* 그다음이 성적 */
   if(b.ab>=8) bits.push(fmt3(b.h/b.ab)+' ('+b.h+'/'+b.ab+')');
   if((f.hg||0)>=3) bits.push('연속 안타 '+f.hg+'경기');
-  else if((f.cold||0)>=6) bits.push('최근 '+f.cold+'타수 무안타');
-  const inj=ST.injury&&ST.injury[pid];
-  if(inj) bits.push(inj.name+' '+inj.games+'경기');
-  const ab=ST.absent&&ST.absent[pid];
-  if(ab) bits.push(ab);
   return bits.join(' · ');
 }
 function renderLineupLocked(){
@@ -21867,6 +22138,33 @@ function renderGame(){
     const kb=el('button','btn primary','단톡방으로'); kb.onclick=()=>go('kakao');
     c.appendChild(kb); return;
   }
+  /* [제보] "선수모드에서 왜 내가 스스로 결장하는데 경기는 구경하냐
+             감독이 라인업에 안넣으면 몰라도"
+     맞는 말이다. 내가 개인 사정으로 안 나간 날은 구장에 없다.
+     벤치에 앉아 있는 것과 아예 안 나온 것은 다르다.
+     결과만 나중에 단톡으로 본다.                                  */
+  if(isPlayerMode()){
+    const meG=ST.playerId||MYID;
+    const why=(ST.absent&&ST.absent[meG])||null;
+    const inj=(ST.injury&&ST.injury[meG])||null;
+    const farm=(ST.myFarm||0)>0;
+    if(why||inj||farm){
+      const card=el('div','card');
+      card.appendChild(el('div','card-h','오늘은 안 나간다'));
+      card.appendChild(Object.assign(el('div','mystatus out'),{innerHTML:
+        '<div class="ms-big">'+(farm?'2군':(inj?inj.name:'결장'))+'</div>'+
+        '<div class="ms-sub">'+(farm?('1군 경기에 못 나간다 · 남은 '+ST.myFarm+'주')
+          :(inj?(inj.games+'경기 결장'):('사유 — '+why)))+'</div>'+
+        '<div class="ms-why">구장에 안 갔다. 결과는 나중에 단톡으로 본다</div>'}));
+      c.appendChild(card);
+      const b=el('button','btn primary','결과만 본다 ▸');
+      b.onclick=()=>{ LIVE=makeLive(); LIVE.manual=false; LIVE.round=ST.round;
+        buildLiveStage(); runLive(); };
+      c.appendChild(b);
+      const hb=el('button','btn','홈으로'); hb.onclick=()=>go('home'); c.appendChild(hb);
+      return;
+    }
+  }
   if(ST.lineupDirty){
     c.appendChild(el('div','card','발표 뒤에 못 온다는 사람이 생겼다. 라인업을 다시 확정해야 한다.'));
     const lb=el('button','btn primary','라인업으로'); lb.onclick=()=>go('lineup');
@@ -24982,28 +25280,36 @@ function renderSwing(box, d){
       doneCb();
     };
     /* 도는 버튼 · 돌아가는 버튼. 마구마구처럼 그 자리에서 누른다 */
+    /* [요청] "도루할때나 귀루할때도 그 친다 버튼 사라지고 그쪽에 베이스
+               그려놓고 누르면 그쪽으로 달려가는 그림으로"
+       수비 송구와 같은 손놀림으로 맞춘다 — 필드 밖에 **베이스 버튼** 두 개.
+       그라운드를 직접 눌러도 되지만 손가락이 필드를 안 가리는 쪽이 기본이다. */
     const nb=offer ? ((offer.hit==='1B')?['1루','2루']:['2루','3루']) : null;
-    const bGo=el('button','rb-b go', offer?('▸ 더 간다 — '+nb[1]+'로'):'▸ 더 간다');
-    const bBack=el('button','rb-b stay','◂ 돌아간다');
-    /* 베이스를 직접 눌러도 되고 이 버튼을 눌러도 된다 — 같은 일을 한다 */
+    const bGo=el('button','base-b hot');
+    bGo.innerHTML=offer?('<span>▸ '+nb[1]+'</span><i>한 베이스 더</i>')
+                       :'<span>▸ 더</span><i>갈 데가 없다</i>';
+    const bBack=el('button','base-b');
+    bBack.innerHTML=offer?('<span>◂ '+nb[0]+'</span><i>돌아간다</i>')
+                         :'<span>◂ 돌아간다</span><i></i>';
     const press=(fn)=>(ev)=>{ if(ev&&ev.preventDefault)ev.preventDefault();
       if(sc&&sc[fn]) sc[fn](); paintRow(); };
     ['pointerdown','click'].forEach(e2=>{
       bGo.addEventListener(e2, press('go'));
       bBack.addEventListener(e2, press('back'));
     });
+    row.className='baserow';
     row.appendChild(bBack); row.appendChild(bGo);
     const paintRow=()=>{
       const d2=sc&&sc.decidedAt&&sc.decidedAt();
       if(d2){
         row.style.opacity='.4'; bGo.disabled=true; bBack.disabled=true;
-        bGo.textContent='이미 던졌다'; bBack.textContent='—';
+        bGo.innerHTML='<span>—</span><i>이미 던졌다</i>';
+        bBack.innerHTML='<span>—</span><i></i>';
         return;
       }
       if(!offer){ bGo.disabled=true; }
     };
-    if(!offer){ bGo.disabled=true;
-      bGo.textContent='▸ 더 간다 (갈 데가 없다)'; }
+    if(!offer){ bGo.disabled=true; }
     paintRow();
 
     try{
@@ -25325,10 +25631,50 @@ function renderDefPlay(box, d){
   const stage=el('div','runstage');
   box2.appendChild(stage);
   const note=el('div','rb-note');
-  note.innerHTML='<b>화면 아무 데나 손가락을 대고 미는 쪽으로</b> 내가 뛴다 — 뗐다 다시 대도 된다';
+  note.innerHTML='<b>아래 조이스틱으로 움직인다.</b> 잡으면 그 자리에서 베이스를 눌러 던진다';
   box2.appendChild(note);
+  /* 조이스틱은 그라운드 밖에 둔다 — 손가락이 내 야수를 가리면 안 된다 */
+  const joyWrap=el('div','joywrap');
+  const joy=el('div','joy');
+  joy.innerHTML='<i class="joy-k"></i><u class="joy-t">이동</u>';
+  joyWrap.appendChild(joy);
+  box2.appendChild(joyWrap);
+  /* [요청] "수비할때도 그 베이스 버튼두어서 송가 바로 가능하게"
+     잡고 나면 조이스틱 자리가 **베이스 버튼**으로 바뀐다.
+     그라운드를 눌러도 되지만, 손가락이 필드를 가리지 않는 쪽이 기본이다. */
+  const baseRow=el('div','baserow');
+  baseRow.style.display='none';
+  box2.appendChild(baseRow);
   w.appendChild(box2);
   let picked=false, sc=null;
+  /* ---- 조이스틱 입력 ---- */
+  {
+    const knob=joy.querySelector('.joy-k');
+    let on=false;
+    const R=44;
+    const setK=(dx,dy)=>{ if(knob) knob.style.transform='translate('+dx+'px,'+dy+'px)'; };
+    const move=(ev)=>{
+      if(!on) return;
+      if(ev&&ev.preventDefault)ev.preventDefault();
+      const r=joy.getBoundingClientRect();
+      const cx=r.left+r.width/2, cy=r.top+r.height/2;
+      const px=(typeof ev.clientX==='number'&&isFinite(ev.clientX))?ev.clientX:cx;
+      const py=(typeof ev.clientY==='number'&&isFinite(ev.clientY))?ev.clientY:cy;
+      let dx=px-cx, dy=py-cy;
+      const d=Math.hypot(dx,dy);
+      if(d>R){ dx=dx/d*R; dy=dy/d*R; }
+      setK(dx,dy);
+      if(sc&&sc.setDir) sc.setDir(dx/R, dy/R);
+    };
+    const up=()=>{ on=false; setK(0,0); if(sc&&sc.setDir) sc.setDir(0,0); };
+    joy.style.touchAction='none';
+    joy.addEventListener('pointerdown',(ev)=>{ on=true;
+      try{joy.setPointerCapture(ev.pointerId);}catch(e){} move(ev); });
+    joy.addEventListener('pointermove', move);
+    joy.addEventListener('pointerup', up);
+    joy.addEventListener('pointercancel', up);
+    joy.addEventListener('pointerleave', up);
+  }
   /* [제보] "수비도 언제쯤 준비하는 턴좀 줘라 아이폰으로 하는데 수비 장면
              뜰때 순간 스크롤 내려가서 뭐야 하다가 못잡았다"
      맞는 말이다. 타석에는 「준비 됐다 ▶」 가 있는데 수비에는 없었다.
@@ -25388,7 +25734,24 @@ function renderDefPlay(box, d){
       bases:(LIVE.bases||[null,null,null]).slice(),
       hasFirst:!!LIVE.bases[0], outs:LIVE.outs,
       onTick:(msg)=>{ if(note && msg) note.innerHTML=msg; },
-      onStick:()=>{},
+      onPhase:(ph, list)=>{
+        if(ph!=='throw') return;
+        joyWrap.style.display='none';
+        baseRow.style.display='';
+        baseRow.innerHTML='';
+        (list||[]).forEach(t=>{
+          const b=el('button','base-b'+(t.b===2&&LIVE.bases[0]?' hot':''));
+          b.innerHTML='<span>'+t.label+'</span>'+
+            (t.b===2&&LIVE.bases[0]?'<i>병살 노린다</i>':'<i>여기로 던진다</i>');
+          const fire=(ev)=>{ if(ev&&ev.preventDefault)ev.preventDefault();
+            if(sc&&sc.throwTo) sc.throwTo(t.b);
+            baseRow.querySelectorAll('button').forEach(x=>{x.disabled=true;});
+            baseRow.style.opacity='.4'; };
+          b.addEventListener('pointerdown', fire);
+          b.onclick=fire;
+          baseRow.appendChild(b);
+        });
+      },
       onTitle:(t2,col)=>{ const t=box2.querySelector('.rb-t');
         if(t){ t.textContent=t2; if(col) t.style.color=col; } },
       onDone:(q, where, tq)=>finish(q, where, tq)});
@@ -25450,8 +25813,12 @@ function defScene(host, o){
   runners.push({from:0, to:1, batter:true});          // 타자주자
   const runAt=(b)=>{ const i=Math.max(0,Math.min(3,Math.floor(b))), f=b-i;
     return {x:BP[i].x+(BP[i+1].x-BP[i].x)*f, y:BP[i].y+(BP[i+1].y-BP[i].y)*f}; };
-  /* 주자는 2.1초에 한 베이스 — 던질 곳을 고를 시간이 있어야 한다 */
-  const RUN_MS=2100;
+  /* [제보] "1루 뛰는속도 너프해야할듯 나도 그렇고 다른 타자도 그렇고
+             뭐만하면 안타임 송구가 개빡셈"
+     맞는 말이다. 2.1초에 한 베이스는 실제(4.3초)의 두 배다. 잡고 나서
+     베이스를 고르는 사이에 이미 도착해 있었다. 3초로 늘린다 —
+     송구 원이 줄어드는 시간(1.4초)과 견줘도 여유가 생긴다.       */
+  const RUN_MS=3000;
 
   let fx=home.x, fy=home.y, tx=home.x, ty=home.y;
   let best=9999, stop=false, phase='chase', caught=false;
@@ -25478,9 +25845,9 @@ function defScene(host, o){
   /* 늦게 던질수록 작아지는 원 — 이게 송구 정확도다.
      어깨가 좋을수록 처음부터 크게 시작한다(The Show 의 초록 구간). */
   const ringOf=(nowMs)=>{
-    const dt=Math.max(0,(nowMs-catchAt)/1400);
+    const dt=Math.max(0,(nowMs-catchAt)/1800);
     const base=9+ (o.arm-45)*0.10;
-    return Math.max(3.5, base*(1-dt*0.72));
+    return Math.max(3.5, base*(1-dt*0.70));
   };
   /* ---- 조작: 가상 조이스틱 ----
      [제보] "핸드폰 환경은 마우스가 없어서 힘들다니깐 모바일 마인크래프트처럼
@@ -25491,8 +25858,20 @@ function defScene(host, o){
      손가락이 화면을 가리니까 목표 지점을 정확히 찍을 수가 없다.
      마인크래프트 모바일처럼 **손가락을 댄 자리가 스틱의 중심**이 되고,
      거기서 미는 방향으로 움직인다. 어디를 눌러도 순간이동은 없다.  */
-  let stick=null;
-  const STICK_R=26;
+  const throwTo=(bnum)=>{
+    if(phase!=='throw') return;
+    const bestB=throwables().find(t=>t.b===bnum);
+    if(!bestB) return;
+    const now=Date.now()-t0;
+    tq=Math.max(0,Math.min(1,(ringOf(now)-3.5)/Math.max(1,(9+(o.arm-45)*0.10)-3.5)));
+    tgt=bestB; throwAt=now; phase='throw2';
+    if(o.onTitle) o.onTitle(bestB.label+'로 던졌다'+(tq>0.6?' — 좋은 송구':(tq<0.25?' — 늦었다':'')),'#ffd15c');
+    if(o.onTick) o.onTick('공이 '+bestB.label+'로 간다');
+    /* 2루 송구는 병살을 노린 것이다 — 엔진이 그렇게 받는다 */
+    const where=(bestB.b===2 && o.hasFirst)?'at:lead':'at:first';
+    setTimeout(()=>{ if(o.onDone) o.onDone(q, where, tq); }, 520);
+  };
+  /* 캔버스를 눌러도 되고 아래 버튼을 눌러도 된다 — 같은 일을 한다 */
   const tapBase=(ev)=>{
     if(phase!=='throw') return;
     if(ev&&ev.preventDefault)ev.preventDefault();
@@ -25503,41 +25882,19 @@ function defScene(host, o){
       const dd=Math.hypot(bp.x-pt.x, bp.y-pt.y);
       if(dd<bestD){ bestD=dd; bestB=t; }
     });
-    if(!bestB || bestD>34) return;                  // 베이스를 눌러야 던진다
-    const now=Date.now()-t0;
-    tq=Math.max(0,Math.min(1,(ringOf(now)-3.5)/Math.max(1,(9+(o.arm-45)*0.10)-3.5)));
-    tgt=bestB; throwAt=now; phase='throw2';
-    if(o.onTitle) o.onTitle(bestB.label+'로 던졌다'+(tq>0.6?' — 좋은 송구':(tq<0.25?' — 늦었다':'')),'#ffd15c');
-    if(o.onTick) o.onTick('공이 '+bestB.label+'로 간다');
-    /* 2루 송구는 병살을 노린 것이다 — 엔진이 그렇게 받는다 */
-    const where=(bestB.b===2 && o.hasFirst)?'at:lead':'at:first';
-    setTimeout(()=>{ if(o.onDone) o.onDone(q, where, tq); }, 520);
+    if(bestB && bestD<=34) throwTo(bestB.b);
   };
-  const onDown=(ev)=>{
-    if(phase==='throw'||phase==='throw2'){ tapBase(ev); return; }
-    if(phase!=='chase') return;
-    if(ev&&ev.preventDefault)ev.preventDefault();
-    const q2=toLocal(ev);
-    stick={ox:q2.x, oy:q2.y, dx:0, dy:0};
-    try{cv.setPointerCapture(ev.pointerId);}catch(e){}
-  };
-  const onMove=(ev)=>{
-    if(!stick||phase!=='chase') return;
-    if(!(ev.buttons||ev.pressure)) return;
-    if(ev&&ev.preventDefault)ev.preventDefault();
-    const q2=toLocal(ev);
-    let dx=q2.x-stick.ox, dy=q2.y-stick.oy;
-    const dd=Math.hypot(dx,dy);
-    if(dd>STICK_R){ dx=dx/dd*STICK_R; dy=dy/dd*STICK_R; }
-    stick.dx=dx; stick.dy=dy;
-  };
-  const onUp=()=>{ stick=null; };
+  /* [제보] "터치로 따라가라하니깐 핸드폰 기준으론 내 캐릭터가 가려져서 안보여
+             뭐 밑에 조이스틱이나 동그런 조이스틱같은거 둬서"
+     맞는 말이다. 필드 위에 손가락을 올리면 그 손가락이 정확히 내 야수를
+     가린다. **조이스틱을 그라운드 밖으로 뺐다** — 화면 아래 동그란 패드다.
+     그라운드는 눈으로만 보고, 손은 아래에 둔다.
+     캔버스 탭은 이제 **송구할 베이스를 고를 때만** 쓴다.          */
+  let dir={x:0,y:0};
   cv.style.touchAction='none';
-  cv.addEventListener('pointerdown', onDown);
-  cv.addEventListener('pointermove', onMove);
-  cv.addEventListener('pointerup', onUp);
-  cv.addEventListener('pointercancel', onUp);
-  cv.addEventListener('pointerleave', onUp);
+  cv.addEventListener('pointerdown',(ev)=>{
+    if(phase==='throw'||phase==='throw2') tapBase(ev);
+  });
 
   const ballAt=(now)=>{
     if(now<=o.flyMs){ const k=Math.min(1,now/o.flyMs);
@@ -25564,13 +25921,13 @@ function defScene(host, o){
     if(stop) return;
     const now=Date.now()-t0;
     const dt=Math.min(0.06,(Date.now()-last)/1000); last=Date.now();
-    /* 내 야수 — 스틱을 민 방향으로. 많이 밀수록 빠르다 */
-    if(phase==='chase' && stick){
-      const dd=Math.hypot(stick.dx,stick.dy);
-      if(dd>3){
-        const v=Math.min(1, dd/STICK_R);
-        fx+=stick.dx/dd*o.speed*v*dt;
-        fy+=stick.dy/dd*o.speed*v*dt;
+    /* 내 야수 — 아래 조이스틱을 민 방향으로. 많이 밀수록 빠르다 */
+    if(phase==='chase'){
+      const dd=Math.hypot(dir.x,dir.y);
+      if(dd>0.08){
+        const v=Math.min(1,dd);
+        fx+=dir.x/dd*o.speed*v*dt;
+        fy+=dir.y/dd*o.speed*v*dt;
       }
     }
     /* 그라운드 밖으로는 못 나간다 */
@@ -25585,13 +25942,15 @@ function defScene(host, o){
         q=Math.max(0.55, Math.min(1, 1-best/Math.max(1,o.reach*2.1)));
         caught=true; phase='throw'; catchAt=now;
         if(o.onTitle) o.onTitle(q>=0.86?'잡았다 — 호수비!':'잡았다','#7fc48f');
-        if(o.onTick) o.onTick('<b>베이스를 눌러라.</b> 늦을수록 송구가 나빠진다');
+        if(o.onTick) o.onTick('<b>어디로 던질까.</b> 늦을수록 송구가 나빠진다');
+        if(o.onPhase) o.onPhase('throw', throwables());
       } else if(now>=total){
         q=Math.max(0,Math.min(1,1-best/Math.max(1,o.reach*2.1)));
         caught=(q>=0.5);
         if(caught){ phase='throw'; catchAt=now;
           if(o.onTitle) o.onTitle('잡았다','#7fc48f');
-          if(o.onTick) o.onTick('<b>베이스를 눌러라.</b> 늦을수록 송구가 나빠진다');
+          if(o.onTick) o.onTick('<b>어디로 던질까.</b> 늦을수록 송구가 나빠진다');
+          if(o.onPhase) o.onPhase('throw', throwables());
         } else {
           phase='miss';
           if(o.onTitle) o.onTitle('빠졌다 — 손이 안 닿았다','#e08a70');
@@ -25601,7 +25960,7 @@ function defScene(host, o){
       }
     }
     /* 송구 단계에서 시간이 너무 흐르면 알아서 1루로 */
-    if(phase==='throw' && now-catchAt>1500){
+    if(phase==='throw' && now-catchAt>1900){
       tq=0.05; tgt={b:1,label:'1루'}; throwAt=now; phase='throw2';
       if(o.onTitle) o.onTitle('늦었다 — 1루로','#e08a70');
       setTimeout(()=>{ if(o.onDone) o.onDone(q,'at:first',tq); }, 480);
@@ -25645,15 +26004,13 @@ function defScene(host, o){
       g.lineWidth=(near<o.reach)?2.2:1.5;
       g.beginPath(); g.arc(fx,fy,o.reach,0,Math.PI*2); g.stroke();
     }
-    man(fx,fy,PS_UNI.us,phase==='chase'&&!!stick,fx<HX);
-    /* 조이스틱 — 손가락이 있는 곳에 그린다 */
-    if(phase==='chase' && stick){
-      g.strokeStyle='rgba(255,255,255,.28)'; g.lineWidth=2;
-      g.beginPath(); g.arc(stick.ox,stick.oy,STICK_R,0,Math.PI*2); g.stroke();
-      g.fillStyle='rgba(255,209,92,.55)';
-      g.beginPath(); g.arc(stick.ox+stick.dx, stick.oy+stick.dy, 9,0,Math.PI*2); g.fill();
-      g.strokeStyle='rgba(255,209,92,.9)'; g.lineWidth=1.5;
-      g.beginPath(); g.arc(stick.ox+stick.dx, stick.oy+stick.dy, 9,0,Math.PI*2); g.stroke();
+    const moving=(phase==='chase' && Math.hypot(dir.x,dir.y)>0.08);
+    man(fx,fy,PS_UNI.us,moving,fx<HX);
+    /* 내가 어디 있는지 한눈에 — 손가락이 안 가리니 표시를 크게 못 박는다 */
+    if(phase!=='result'){
+      g.strokeStyle='rgba(255,209,92,.9)'; g.lineWidth=2;
+      g.beginPath(); g.moveTo(fx,fy-20); g.lineTo(fx-4,fy-26); g.lineTo(fx+4,fy-26);
+      g.closePath(); g.stroke();
     }
     /* 송구 단계 — 베이스 위에 원. 늦을수록 작아진다(정확도 미터) */
     if(phase==='throw'){
@@ -25673,8 +26030,8 @@ function defScene(host, o){
     if(phase==='chase'){
       const mLeft=Math.round(near*PS_MPP);
       plate(near<o.reach?'붙었다'
-            :(stick?(mLeft+'m 남았다'):'화면에 손가락을 대고 밀어라'),
-            near<o.reach?'#7fc48f':(stick?'#e9e4d8':'#ffd15c'), 14);
+            :(moving?(mLeft+'m 남았다'):'아래 조이스틱을 밀어라'),
+            near<o.reach?'#7fc48f':(moving?'#e9e4d8':'#ffd15c'), 14);
     } else if(phase==='result' && verdictTxt){
       plate(verdictTxt, verdictCol, 19);
     }
@@ -25692,6 +26049,10 @@ function defScene(host, o){
     setTimeout(()=>{ if(done)done(); }, 1200);
   };
   return { stop:()=>{ stop=true; }, el:cv,
+    setDir:(x,y)=>{ dir={x:x||0,y:y||0}; },
+    throwTo,
+    ring:()=>ringOf(Date.now()-t0),
+    phase:()=>phase,
     verdictInfo:()=>verdictTxt,
     verdict };
 }

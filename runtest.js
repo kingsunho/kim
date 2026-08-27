@@ -217,8 +217,8 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
     "/1-seg\\(goAt!=null\\?goAt:T_THROW, 0, T_THROW\\)/.test(livePlay.toString())"));
   T('결과와 안 어긋난다 — 주자 속도를 결과에 맞춘다', ()=>ev(
     "/if\\(play\\.gb && isOut\\) runMs = Math\\.max/.test(livePlay.toString()) && /!isOut && !HR\\) runMs = Math\\.min/.test(livePlay.toString())"));
-  T('도는 버튼 · 돌아가는 버튼이 있다', ()=>ev(
-    "/sc\\[fn\\]/.test(renderSwing.toString()) && /'▸ 더 간다/.test(renderSwing.toString())"));
+  T('도는 버튼 · 돌아가는 버튼이 수비 송구와 같은 베이스 버튼이다', ()=>ev(
+    "renderSwing.toString().indexOf('sc[fn]')>0 && renderSwing.toString().indexOf('baserow')>0"));
 
   console.log('\n[판단창이 엉뚱한 타석에 도장을 안 찍는다]');
   T('판단창이 열린 타석에 도장을 찍는다', ()=>ev(
@@ -276,14 +276,33 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   T('선수 모드면 내가 따진다', ()=>ev("/내가 따진다/.test(showArgue.toString())"));
 
   console.log('\n[고교 스토리]');
-  T('장면이 열여섯 개다', ()=>ev("HS_STORY.length>=16 ? HS_STORY.length+'장면 · 경기 '+HS_GAMES+'번' : '!'+HS_STORY.length"));
+  T('3년이 열다섯 장면쯤 된다', ()=>ev("hsStory().length>=14 ? hsStory().length+'장면 · 경기 '+hsGamesCount()+'번' : '!'+hsStory().length"));
+  T('판마다 다른 3년이 된다 (시드를 바꾸면 장면이 달라진다)', ()=>ev(`(function(){
+    var keep=ST.seed;
+    var sig=function(){ _hsStoryKey=null; return hsStory().map(function(x){return x.t;}).join('|'); };
+    ST.seed=11111; var a=sig();
+    ST.seed=99999; var b=sig();
+    ST.seed=11111; var c=sig();
+    ST.seed=keep; _hsStoryKey=null;
+    return (a!==b && a===c) ? '시드가 다르면 다르고, 같으면 같다' : '!'+(a===b?'똑같다':'같은 시드인데 다르다');
+  })()`));
+  T('경기 일곱 개는 항상 있다 (뼈대는 고정)', ()=>ev(`(function(){
+    var keep=ST.seed, bad=[];
+    for(var i=0;i<8;i++){ ST.seed=1000+i*777; _hsStoryKey=null;
+      var g=hsStory().filter(function(x){return !x.noGame;}).length;
+      if(g!==7) bad.push(g); }
+    ST.seed=keep; _hsStoryKey=null;
+    return bad.length? '!'+bad.join(',') : '여덟 판 전부 경기 7개';
+  })()`));
+  T('후보 장면이 학년마다 넉넉하다', ()=>ev(
+    "[1,2,3].every(y=>(HS_POOL[y]||[]).length>=4) ? [1,2,3].map(y=>'고'+y+' '+HS_POOL[y].length+'개').join(' · ') : '!모자란다'"));
   T('경기가 아닌 장면이 절반쯤이다', ()=>ev(
-    "HS_STORY.filter(x=>x.noGame).length>=7 ? HS_STORY.filter(x=>x.noGame).length+'개' : '!'+HS_STORY.filter(x=>x.noGame).length"));
+    "hsStory().filter(x=>x.noGame).length>=7 ? hsStory().filter(x=>x.noGame).length+'개' : '!'+hsStory().filter(x=>x.noGame).length"));
   T('장면마다 고를 게 있다', ()=>ev(
-    "HS_STORY.filter(x=>x.pick).length>=8 ? HS_STORY.filter(x=>x.pick).length+'개' : '!'"));
+    "hsStory().filter(x=>x.pick).length>=8 ? hsStory().filter(x=>x.pick).length+'개' : '!'"));
   T('고른 것에 효과와 결과 한 줄이 다 있다', ()=>ev(`(function(){
     var bad=[];
-    HS_STORY.forEach(function(s,i){
+    hsStory().forEach(function(s,i){
       if(!s.pick) return;
       if(!s.pick.q||!s.pick.opts||s.pick.opts.length<2) bad.push(i+':틀');
       (s.pick.opts||[]).forEach(function(o){ if(!o.t||!o.r) bad.push(i+':빈칸'); });
@@ -291,7 +310,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
     return bad.length? '!'+bad.join(',') : '전부 채워져 있다';
   })()`));
   T('졸업 능력치에 고른 게 붙는다', ()=>ev("/EF\\[k\\]/.test(hsGraduate.toString())"));
-  T('출전 몫은 실제 경기 수로 잰다', ()=>ev("/HS_GAMES/.test(hsGraduate.toString())"));
+  T('출전 몫은 실제 경기 수로 잰다', ()=>ev("hsGraduate.toString().indexOf('hsGamesCount()')>0"));
 
   console.log('\n[사회인야구의 하루]');
   T('그날의 소소한 일이 열두 가지 있다', ()=>ev(

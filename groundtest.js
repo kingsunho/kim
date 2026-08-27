@@ -70,11 +70,17 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
   T(!!d.querySelector('#decision .runstage'), '그라운드가 뜬다');
   T(/으로 온다/.test(txt('#decision .rb-t')), '타구 방향을 먼저 알려준다 :: '+txt('#decision .rb-t'));
   T(btns().length===0, '「안전하게 / 달려든다」 버튼이 없어졌다 — 손으로 쫓아간다');
-  T(/손가락을 대고 미는/.test(txt('#decision .rb-note')),
-    '가상 조이스틱으로 조종하라고 알려준다 :: '+txt('#decision .rb-note'));
+  T(/조이스틱/.test(txt('#decision .rb-note')),
+    '조이스틱으로 움직이라고 알려준다 :: '+txt('#decision .rb-note'));
   T(ev("typeof defScene==='function'"), '수비 한 판 캔버스가 있다');
-  T(ev("defScene.toString().indexOf('STICK_R')>0 && defScene.toString().indexOf('o.speed*v*dt')>0"),
-    '누른 곳으로 순간이동이 아니라 미는 방향으로 뛴다 (마인크래프트식 조이스틱)');
+  T(!!d.querySelector('#decision .joy .joy-k'),
+    '조이스틱이 그라운드 **밖**에 있다 (손가락이 내 야수를 안 가린다)');
+  T(ev("defScene.toString().indexOf('setDir')>0 && defScene.toString().indexOf('o.speed*v*dt')>0"),
+    '조이스틱을 민 방향으로 뛴다');
+  T(ev("LiveGame.prototype.consumePlayMods.toString().indexOf(\"defForce='out'\")>0 && simPA.toString().indexOf(\"mods.defForce==='out'\")>0"),
+    '딱 잡으면 아웃, 손이 안 닿으면 안타 — 내 조작이 결과를 정한다');
+  T(ev("LiveGame.prototype.consumePlayMods.toString().indexOf('inPlay:true')>0"),
+    '수비 화면이 떴으면 삼진·볼넷이 안 나온다');
   T(ev("defScene.toString().indexOf(\"phase='throw'\")>0 && defScene.toString().indexOf('throwables')>0"),
     '같은 캔버스에서 베이스를 눌러 송구한다 (새 화면이 안 뜬다)');
   T(ev("defScene.toString().indexOf('runners.push')>0"),
@@ -182,8 +188,8 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
     '진짜 비거리로 날아간다 — 「저 멀리 갔는데 땅볼아웃」 이 안 나온다');
   T(ev("/if\\(t>=T_THROW\\) decide\\(\\)/.test(livePlay.toString())"),
     '송구가 손을 떠나는 순간에 「돌았는지」가 갈린다 (묻는 창이 없다)');
-  T(ev("/'▸ 더 간다/.test(renderSwing.toString())&&/'◂ 돌아간다'/.test(renderSwing.toString())"),
-    '도는 버튼과 돌아가는 버튼이 따로 있다');
+  T(ev("renderSwing.toString().indexOf('baserow')>0 && renderSwing.toString().indexOf('<span>\u25b8 ')>0"),
+    '주루 버튼도 수비 송구와 같은 베이스 버튼이다');
   T(ev("livePlay.toString().indexOf('pointerdown')>0 && livePlay.toString().indexOf('basePt(Math.min(4,base+1))')>0"),
     '수비처럼 그라운드의 베이스를 직접 눌러서 진루·귀루한다');
   T(ev("livePlay.toString().indexOf('가는 중')>0 && livePlay.toString().indexOf('돌아간다')>0"),
