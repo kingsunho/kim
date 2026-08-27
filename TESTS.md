@@ -226,11 +226,19 @@ bodyLoad(p) = (밀어내는 힘 − 받쳐주는 몸) / 34
 
 확률 기반 단정문이 들어 있어 간헐적으로 실패한다. **3회 재실행해서 판단한다.**
 
-`advtest` `traintest2` `wltest` `recruittest` `fintest` `awardtest` `mgrtest` `dectest2` `hltest` `subtest`
+`advtest` `traintest2` `wltest` `recruittest` `fintest` `awardtest` `mgrtest` `dectest2` `hltest` `subtest` `playtest`
 
 `dectest2` 의 '수비 판단창이 여러 번' 은 판단 발생이 확률이라 절반쯤 걸린다.
 `hltest` 의 '박스스코어 대조' 도 교체가 끼면 어긋나서 자주 걸린다.
 `subtest` 의 '지명타자 상태' 는 자동 교체가 확률이라 12회 중 3회쯤 걸린다.
+
+`playtest` 의 '정타 치고 볼넷·삼진 나는 일이 거의 없다 (실측)' 은
+`newGame()` 이 매번 새 시드를 뽑아서 **프로세스마다 값이 크게 튄다.**
+같은 프로세스 안에서는 항상 같은 값이 나온다(시드가 고정이라). 40경기로
+K% 를 재는데 임계값이 14% 라, 시드에 따라 3% 도 나오고 17% 도 나온다.
+**엔진이 바뀌었는지 확인하려면 이걸 보지 말고 `verify.js` 를 봐라** —
+거기는 시드를 직접 깔아서 3576경기를 돌리기 때문에 엔진이 그대로면
+소수점까지 똑같이 나온다.
 
 `advtest`(2건) `traintest2`(5건) `whatiftest`(2건) 은 **지금 HEAD 에서도
 그대로 실패한다.** 되돌리기 전에 기준선부터 재라 — 새로 깨진 게 아니다.

@@ -208,15 +208,67 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   T('엔진이 pchange:<id> 를 받는다', ()=>ev(
     "/choice\\.indexOf\\('pchange:'\\)===0/.test(LiveGame.prototype.applyDecision.toString())"));
 
-  console.log('\n[「돈다」가 초기화가 아니다]');
-  T('2막이 1막에서 간 만큼을 이어받는다', ()=>ev(
-    "/const A=\\(opt&&opt\\.at\\)/.test(groundScene.toString())"));
-  T('공을 홈에서 다시 안 날린다', ()=>ev(
-    "/bFrom\\+\\(1-bFrom\\)\\*kc/.test(groundScene.toString())"));
-  T('야수도 주자도 있던 자리에서 이어 간다', ()=>ev(
-    "/cFrom\\+\\(1-cFrom\\)/.test(groundScene.toString())&&/rFrom\\+\\(endB-rFrom\\)/.test(groundScene.toString())"));
-  T('남은 비행만큼만 시간을 준다', ()=>ev(
-    "/\\(0\\.34-risk\\*0\\.12\\)\\*\\(1-bFrom\\)/.test(groundScene.toString())"));
+  console.log('\n[치자마자 끝까지 한 판]');
+  T('타석에서 livePlay 한 판만 튼다', ()=>ev(
+    "typeof livePlay==='function' && /livePlay\\(stage/.test(renderSwing.toString())"));
+  T('묻는 창이 없다 — 송구 순간에 몸으로 갈린다', ()=>ev(
+    "/if\\(t>=T_THROW\\) decide\\(\\)/.test(livePlay.toString()) && /onDecide/.test(livePlay.toString())"));
+  T('일찍 마음먹을수록 안전하다', ()=>ev(
+    "/1-seg\\(goAt!=null\\?goAt:T_THROW, 0, T_THROW\\)/.test(livePlay.toString())"));
+  T('결과와 안 어긋난다 — 주자 속도를 결과에 맞춘다', ()=>ev(
+    "/if\\(play\\.gb && isOut\\) runMs = Math\\.max/.test(livePlay.toString()) && /!isOut && !HR\\) runMs = Math\\.min/.test(livePlay.toString())"));
+  T('도는 버튼 · 돌아가는 버튼이 있다', ()=>ev(
+    "/sc\\[fn\\]/.test(renderSwing.toString()) && /'▸ 더 간다/.test(renderSwing.toString())"));
+
+  console.log('\n[판단창이 엉뚱한 타석에 도장을 안 찍는다]');
+  T('판단창이 열린 타석에 도장을 찍는다', ()=>ev(
+    "/LIVE\\._decPA=LIVE\\.paSeq/.test(showDecision.toString()) && /LIVE\\._decPA!=null/.test(decDone.toString())"));
+  T('안타 치고 나간 다음 타석에 주루 판단이 살아 있다', ()=>ev(`(function(){
+    ST.mode='player'; ST.playerId='ksh'; ST.runMode='all';
+    LIVE=makeLive(); LIVE.manual=true; LIVE.myId='ksh';
+    var g=0; while(!LIVE.off().isUser && g++<300){ if(LIVE.pending)LIVE.applyDecision('none'); LIVE.step(); }
+    LIVE.bases=['ksh',null,null]; LIVE.outs=0;
+    /* 내 타석이 방금 끝난 상황 — 옛 코드는 여기서 paSeq 에 도장을 찍었다 */
+    LIVE._decPA=LIVE.paSeq-1;
+    var box={classList:{remove:function(){}},innerHTML:''};
+    LIVE.lastDecPA=(LIVE._decPA!=null)?LIVE._decPA:LIVE.paSeq;
+    var d1=LIVE.detectDecision();
+    return (d1&&d1.kind==='lead') ? '리드 판단이 뜬다' : '!'+JSON.stringify(d1);
+  })()`));
+
+  console.log('\n[내 자리로 공이 온다]');
+  T('어느 자리든 타석당 20% 는 온다', ()=>ev(`(function(){
+    var us=TBYID['wwzw'].players;
+    var L=us.filter(function(p){return p.bats==='L';}).length, N=us.length;
+    var worst=null;
+    ['3B','SS','2B','1B','LF','CF','RF'].forEach(function(pos){
+      var n=0;
+      for(var seq=0;seq<4000;seq++){
+        var bats=((seq%N)<L)?'L':'R';
+        if(defZoneHit(pos,battedAngle(seq,bats))) n++;
+      }
+      var pc=n/4000;
+      if(worst===null||pc<worst[1]) worst=[pos,pc];
+    });
+    return worst[1]>=0.18 ? '제일 적은 자리 '+worst[0]+' '+(worst[1]*100).toFixed(1)+'%'
+      : '!'+worst[0]+' '+(worst[1]*100).toFixed(1)+'%';
+  })()`));
+  T('자리 사이에 구멍이 없다', ()=>ev(`(function(){
+    var inf=['3B','SS','2B','1B'], out=['LF','CF','RF'];
+    var missI=0, missO=0;
+    for(var a=-49;a<=49;a+=0.5){
+      if(!inf.some(function(p){return defZoneHit(p,a);})) missI++;
+      if(!out.some(function(p){return defZoneHit(p,a);})) missO++;
+    }
+    return (missI===0&&missO===0) ? '내야·외야 다 메웠다' : '!내야'+missI+' 외야'+missO;
+  })()`));
+
+  console.log('\n[따지는 버튼은 손 밑에 있다]');
+  T('항의 줄이 누르던 자리 바로 밑에 붙는다', ()=>ev(
+    "/anchor\\.parentNode\\.insertBefore/.test(showArgue.toString())"));
+  T('타석은 스윙 버튼 밑', ()=>ev("/showArgue\\(acts,/.test(renderSwing.toString())"));
+  T('마운드는 존 밑', ()=>ev("/showArgue\\(wrap, draw\\)/.test(renderPitch.toString())"));
+  T('수비는 버튼 줄 밑', ()=>ev("/showArgue\\(row, null\\)/.test(renderDefPlay.toString())"));
 
   console.log('\n[오심에 따진다]');
   T('접전 오심 판정이 엔진에 있다', ()=>ev("typeof LiveGame.prototype.maybeBadCall==='function'"));

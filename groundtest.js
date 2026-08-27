@@ -150,36 +150,22 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
     '인플레이 타구는 물어보지 않아도 2막을 탄다');
   T(ev("/if\\(!play\\)\\{ setTimeout\\(doneCb/.test(renderSwing.toString())"),
     '삼진·볼넷은 탄 공이 없으니 그냥 닫는다');
-  T(ev("/const flyMs=Math\\.round\\(1250\\+Math\\.min\\(140,m\\)\\*22\\)/.test(renderSwing.toString())"),
+  T(ev("typeof livePlay==='function' && /livePlay\\(stage/.test(renderSwing.toString())"),
+    '치자마자 끝까지 한 판으로 간다 (1막·2막이 없다)');
+  T(ev("/const T_LAND  = Math\\.round\\(820 \\+ Math\\.min\\(150,m\\)\\*9\\.5\\)/.test(livePlay.toString())"),
     '체공 시간이 비거리를 따라간다 — 땅볼은 짧게 · 큰 타구는 길게');
-  T(ev("/dist:play\\.dist/.test(renderSwing.toString())"),
-    '1막이 진짜 비거리로 날아간다 — 「저 멀리 갔는데 땅볼아웃」 이 안 나온다');
-  T(ev("/hideBat\\(\\)/.test(renderSwing.toString())&&/showBat\\(\\)/.test(renderSwing.toString())"),
-    '타석 화면을 치우고 되돌리는 걸 한 군데로 모았다');
-
-  console.log('\n[장면의 마디 — 잡았다 · 송구 · 판정]');
-  T(ev("/const K_CATCH=/.test(groundScene.toString())&&/const K_THROW=/.test(groundScene.toString())"),
-    '잡는 순간과 던지는 순간이 따로 있다');
-  T(ev("/잡았다/.test(groundScene.toString())&&/로 송구/.test(groundScene.toString())"),
-    '마디마다 자막이 붙는다');
-  T(ev("/const flyOut=/.test(groundScene.toString())&&/귀루/.test(groundScene.toString())"),
-    '뜬공에 잡히면 귀루한다');
-  T(ev("/0\\.34-risk\\*0\\.12/.test(groundScene.toString())"),
-    '늦게 정하면 야수가 먼저 잡는다');
-  T(ev("/sc\\.replay\\(play, Math\\.round\\(rMs\\*\\(0\\.55/.test(renderSwing.toString())&&/\\{risk, at\\}/.test(renderSwing.toString())"),
-    '1막에서 누른 시점과 **어디까지 갔는지**가 2막으로 넘어간다');
-  T(ev("/if\\(!offer && !picked\\)\\{ picked=true; act2\\(0\\); \\}/.test(renderSwing.toString())"),
-    '고를 게 없으면 1막을 건너뛴다 — 같은 타구를 두 번 안 날린다');
-  T(ev("/bFrom\\+\\(1-bFrom\\)\\*kc/.test(groundScene.toString())"),
-    '2막이 공을 홈에서 다시 안 날린다 — 「돈다」가 초기화가 아니다');
-  T(ev("/rFrom\\+\\(endB-rFrom\\)/.test(groundScene.toString())"),
-    '주자도 가 있던 자리에서 이어 달린다');
-  T(ev("/'선다 — '\\+nb\\[0\\]/.test(renderSwing.toString())&&/'돈다 — '\\+nb\\[1\\]/.test(renderSwing.toString())"),
-    '버튼이 몇 루인지 말한다 (1루→2루 · 2루→3루)');
-  T(ev("/stretchAsk/.test(stretchRun.toString())"),
-    '결과를 먼저 정하고 나서 묻는다 — 「돈다」가 도박이 아니다');
-  T(ev("(function(){var r=stretchRun('1B',{stretch:{go:true,risk:1}},{spd:10},{_slotDef:80},function(){return 0.99;});return r.type==='1B'&&r.runOut==='1B';})()"),
-    '늘리려다 죽어도 안타는 남는다 (1루타 + 주루사)');
+  T(ev("/psMtoPx\\(m, P, play\\.ang/.test(livePlay.toString())"),
+    '진짜 비거리로 날아간다 — 「저 멀리 갔는데 땅볼아웃」 이 안 나온다');
+  T(ev("/if\\(t>=T_THROW\\) decide\\(\\)/.test(livePlay.toString())"),
+    '송구가 손을 떠나는 순간에 「돌았는지」가 갈린다 (묻는 창이 없다)');
+  T(ev("/'▸ 더 간다/.test(renderSwing.toString())&&/'◂ 돌아간다'/.test(renderSwing.toString())"),
+    '도는 버튼과 돌아가는 버튼이 따로 있다');
+  T(ev("/if\\(play\\.gb && isOut\\) runMs = Math\\.max/.test(livePlay.toString())"),
+    '주자 속도를 결과에 맞춘다 — 아웃인데 먼저 닿아 보이면 안 된다');
+  T(ev("/else if\\(!isOut && !HR\\) runMs = Math\\.min/.test(livePlay.toString())"),
+    '안타면 내가 송구보다 먼저 닿는다');
+  T(ev("/베이스로 돌아간다/.test(groundScene.toString())&&!/귀루/.test(livePlay.toString())"),
+    '「귀루」 라는 말을 안 쓴다');
 
   console.log('\n[실제로 쳐보고 창이 닫히는지]');
   /* jsdom 에는 캔버스가 없다 — groundScene 이 던진다. 그때도 2막이
