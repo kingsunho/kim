@@ -7704,8 +7704,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.79.0';
-const APP_VERSION_NOTE = '수비를 한 화면에서 · 조이스틱으로 움직인다';
+const APP_VERSION = '2.79.1';
+const APP_VERSION_NOTE = '주루도 베이스를 눌러서 — 수비랑 같은 손놀림';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7726,6 +7726,12 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.79.1', t:'주루도 베이스를 눌러서 — 수비랑 같은 손놀림', items:[
+    '수비를 조이스틱·베이스 탭으로 바꿨는데 타격 쪽만 아래 버튼이라 손놀림이 따로 놀았다. 공을 보다가 버튼을 찾느라 눈이 두 군데를 오간다. **주루도 그라운드의 베이스를 직접 누른다** — 다음 베이스를 누르면 더 가고, 방금 밟은 베이스를 누르면 돌아온다',
+    '누를 수 있는 베이스에 원이 뜬다. 「▸ 2루」 처럼 어디로 가는 건지 적혀 있고, 누르면 「가는 중」 으로 바뀐다. 돌아가기로 하면 밟은 베이스에 「돌아간다」 가 붙는다. 송구가 손을 떠나면 원이 사라진다 — 그때부터는 이미 결정이 났다',
+    '아래 버튼도 그대로 둔다. 둘 다 같은 일을 한다 — 베이스가 작아서 누르기 어려운 사람도 있다',
+    '[버그] 수비 연출이 길어지면서 **옛 뒷정리가 다음 판단창을 통째로 지우는** 일이 생겼다. 수비 한 판이 끝나기 전에 다음 타석의 리드 화면이 뜨면, 뒤늦게 도착한 타이머가 그 화면을 비워버렸다. 판단창마다 번호를 붙여서 자기 것만 닫게 했다',
+  ]},
   {v:'2.79.0', t:'수비를 한 화면에서 · 조이스틱으로 움직인다', items:[
     '[제보] "수비 내가 화면 하나로 하라했지" · "송구를 그 따라 간곳에서 해야하는데 밑에 새로운 애니메이션 또 뜨니깐 두 개 하기가 번거롭고 주자가 안보임" — 맞는 말이다. 쫓아가는 화면과 송구 화면이 따로 뜨면 그건 두 개의 게임이다. **한 화면에서 끝까지 간다.** 타구가 오고 → 쫓아가 잡고 → 그 자리에서 베이스를 눌러 던지고 → 결과까지 같은 캔버스에서 나온다',
     '[제보] "핸드폰 환경은 마우스가 없어서 힘들다니깐 모바일 마인크래프트처럼 수비 선수를 움직일 수 있게" · "터치로 안움직여서 그냥 아무곳 눌렀더니 외야 밖으로 순간이동해서" — 「누른 곳으로 간다」 는 마우스 조작이었다. 폰에서는 손가락이 화면을 가려서 목표 지점을 찍을 수가 없다. **가상 조이스틱**으로 바꿨다 — 화면 아무 데나 손가락을 대면 거기가 스틱 중심이고, 미는 쪽으로 뛴다. 많이 밀수록 빠르다. 순간이동은 없고 그라운드 밖으로도 안 나간다',
@@ -21202,6 +21208,18 @@ function livePlay(host, o){
   const BP=[{x:HX,y:HY}, PS_B[1], PS_B[2], PS_B[3], {x:HX,y:HY}];
   const runAt=(b)=>{ const i=Math.max(0,Math.min(3,Math.floor(b))), f=b-i;
     return {x:BP[i].x+(BP[i+1].x-BP[i].x)*f, y:BP[i].y+(BP[i+1].y-BP[i].y)*f}; };
+  const basePt=(b)=>BP[Math.max(0,Math.min(4,b))];
+  /* ---- 조작: 그라운드 위 베이스를 직접 누른다 ----
+     [요청] 수비를 한 화면 조이스틱·베이스 탭으로 바꿨으니 타격도 같아야 한다.
+     아래 버튼만 있으면 눈이 두 군데를 오간다 — 공을 보다가 버튼을 찾는다.
+     **다음 베이스를 누르면 더 가고, 방금 밟은 베이스를 누르면 돌아온다.**
+     버튼은 그대로 두되 같은 일을 한다(둘 다 되는 게 낫다).          */
+  const toLocal=(ev)=>{
+    const r=cv.getBoundingClientRect();
+    const sx=(typeof ev.clientX==='number'&&isFinite(ev.clientX))?ev.clientX:r.left+r.width/2;
+    const sy=(typeof ev.clientY==='number'&&isFinite(ev.clientY))?ev.clientY:r.top+r.height/2;
+    return {x:(sx-r.left)/Math.max(1,r.width)*PSW, y:(sy-r.top)/Math.max(1,r.height)*PSH};
+  };
   const lerp=(a,b,t)=>({x:a.x+(b.x-a.x)*t, y:a.y+(b.y-a.y)*t});
   const seg=(t,a,b)=>Math.max(0,Math.min(1,(t-a)/Math.max(1,(b-a))));
 
@@ -21349,11 +21367,31 @@ function livePlay(host, o){
     const rk=runPos(t);
     const rp=runAt(rk);
     man(rp.x,rp.y,BU,rk<4&&t<T_END()-300,rk>=1&&rk<3);
-    /* 지금 노리는 베이스에 동그라미 */
-    if(canGo && intent==='go' && !decided && rk<base+1){
-      const nb=PS_B[Math.min(3,base+1)];
-      g.strokeStyle='rgba(127,196,143,.8)'; g.lineWidth=2;
-      g.beginPath(); g.arc(nb.x,nb.y,9,0,Math.PI*2); g.stroke();
+    /* 누를 수 있는 베이스를 띄운다 — 수비의 송구 탭과 같은 그림.
+       송구가 손을 떠나면 사라진다(그때부터는 이미 결정이 났다). */
+    if(!decided && !HR && !flyOut){
+      const here=Math.max(0,Math.min(4,Math.floor(rk)));
+      const label=(b)=>(b>=4||b===0)?'홈':(b+'루');
+      if(canGo && rk<base+1){
+        const nb=basePt(Math.min(4,base+1));
+        const on=(intent==='go');
+        g.strokeStyle=on?'rgba(127,196,143,.95)':'rgba(255,255,255,.55)';
+        g.lineWidth=on?2.6:2;
+        g.beginPath(); g.arc(nb.x,nb.y,on?12:10,0,Math.PI*2); g.stroke();
+        g.font='900 10px system-ui,-apple-system,sans-serif'; g.textAlign='center';
+        g.fillStyle=on?'#7fc48f':'#e9e4d8';
+        g.fillText(on?'가는 중':('▸ '+label(base+1)), nb.x, nb.y-15);
+        g.textAlign='left';
+      }
+      if(here>0 || rk>0.15){
+        const bk=basePt(here);
+        const on=(intent==='back');
+        g.strokeStyle=on?'rgba(224,138,112,.95)':'rgba(255,255,255,.35)';
+        g.lineWidth=on?2.6:1.6;
+        g.beginPath(); g.arc(bk.x,bk.y,on?12:9,0,Math.PI*2); g.stroke();
+        if(on){ g.font='900 10px system-ui,-apple-system,sans-serif'; g.textAlign='center';
+          g.fillStyle='#e08a70'; g.fillText('돌아간다', bk.x, bk.y+20); g.textAlign='left'; }
+      }
     }
 
     /* 자막 */
@@ -21365,8 +21403,21 @@ function livePlay(host, o){
     if(t<T_END()) requestAnimationFrame(draw);
     else if(!ended){ ended=true; stop=true; if(o.onEnd) o.onEnd(decided); }
   };
+  /* 베이스를 누르면 몸이 반응한다 — 수비의 송구 탭과 같은 손놀림 */
+  cv.style.touchAction='none';
+  cv.addEventListener('pointerdown',(ev)=>{
+    if(decided||HR||flyOut) return;
+    if(ev&&ev.preventDefault)ev.preventDefault();
+    const pt=toLocal(ev);
+    const here=Math.max(0,Math.min(4,Math.floor(runPos(now()))));
+    const nx=basePt(Math.min(4,base+1)), bk=basePt(here);
+    const dN=Math.hypot(nx.x-pt.x, nx.y-pt.y);
+    const dB=Math.hypot(bk.x-pt.x, bk.y-pt.y);
+    if(canGo && dN<=30 && dN<=dB){ api.go(); if(o.onTap) o.onTap('go'); return; }
+    if(dB<=30){ api.back(); if(o.onTap) o.onTap('back'); }
+  });
   draw();
-  return {
+  const api={
     stop:()=>{ stop=true; },
     el:cv,
     /* 마구마구처럼 — 누르는 순간 몸이 반응한다 */
@@ -21382,6 +21433,7 @@ function livePlay(host, o){
     canGo:()=>canGo,
     decidedAt:()=>decided,
   };
+  return api;
 }
 
 function psField(g, parkIn){
@@ -22490,7 +22542,13 @@ function runLive(){
 }
 
 /* 판단창을 닫고 경기를 다시 굴린다 */
-function decDone(box){
+/* 판단창마다 번호를 붙인다. 늦게 도착한 뒷정리가 **다음 판단창을 지우면
+   안 된다.** 수비 한 판처럼 연출이 길어지면 그 사이에 다음 창이 열린다 —
+   그때 옛 타이머가 decDone 을 부르면 방금 뜬 화면이 통째로 지워졌다.
+   (테스트에서 「리드 화면이 안 뜬다」로 간헐 재현됐다. 실제로도 난다) */
+let DEC_TOKEN=0;
+function decDone(box, tok){
+  if(tok!=null && box && box._decTok!==tok) return;   // 이미 다음 판단창 것이다
   plLock(false);
   /* [제보] "안타쳐서 나갔는데 왜 주루플레이 하는게 안뜨고"
      진짜였다. 여기서 「이 타석은 물어봤다」 도장을 찍는데, 그 시점에는
@@ -24599,6 +24657,7 @@ function paResultText(events){
    주루 2막(야수가 쫓아가고 송구가 오고 세이프/아웃)이 이걸 쓴다. */
 function playThenClose(box, mv, choice, preText, preColor, hold){
   if(preText) moundResult(mv, preText, preColor);
+  const tok=box?box._decTok:null;      // 이 연출이 어느 판단창 것인지
   const go=()=>{
     LIVE.applyDecision(choice);
     const before=LIVE.log.length;
@@ -24626,10 +24685,10 @@ function playThenClose(box, mv, choice, preText, preColor, hold){
       if(t){ t.textContent=r.raw||r.label; t.style.color=r.color||''; }
     }
     if(hold){
-      try{ hold(r, evs, ()=>{ if(mv) mv.classList.remove('impact'); decDone(box); }); return; }
+      try{ hold(r, evs, ()=>{ if(mv) mv.classList.remove('impact'); decDone(box, tok); }); return; }
       catch(e){ /* 연출이 터져도 창은 닫혀야 한다 */ }
     }
-    setTimeout(()=>{ if(mv) mv.classList.remove('impact'); decDone(box); },
+    setTimeout(()=>{ if(mv) mv.classList.remove('impact'); decDone(box, tok); },
       r?(r.big?1150:850):260);
   };
   setTimeout(go, preText?520:0);
@@ -24901,7 +24960,7 @@ function renderSwing(box, d){
     box2.appendChild(stage);
     box2.appendChild(Object.assign(el('div','rb-bar'),{innerHTML:'<i></i>'}));
     const note=el('div','rb-note', offer
-      ? '뛰는 중이다 — 한 베이스 더 갈 거면 야수가 던지기 전에 눌러라'
+      ? '<b>그라운드의 베이스를 눌러라.</b> 다음 베이스 = 더 간다 · 밟은 베이스 = 돌아간다'
       : (play.type==='OUT'
         ? (play.gb?'땅볼 — 1루까지 뛴다':'뜬공 — 잡히면 베이스로 돌아간다')
         : '타구를 끝까지 본다'));
@@ -24921,6 +24980,7 @@ function renderSwing(box, d){
     const nb=offer ? ((offer.hit==='1B')?['1루','2루']:['2루','3루']) : null;
     const bGo=el('button','rb-b go', offer?('▸ 더 간다 — '+nb[1]+'로'):'▸ 더 간다');
     const bBack=el('button','rb-b stay','◂ 돌아간다');
+    /* 베이스를 직접 눌러도 되고 이 버튼을 눌러도 된다 — 같은 일을 한다 */
     const press=(fn)=>(ev)=>{ if(ev&&ev.preventDefault)ev.preventDefault();
       if(sc&&sc[fn]) sc[fn](); paintRow(); };
     ['pointerdown','click'].forEach(e2=>{
@@ -26191,6 +26251,7 @@ function showDecision(d){
   if(LIVE){ LIVE._openDec=d;         // 투수 교체 등으로 다시 그릴 때 쓴다
             LIVE._decPA=LIVE.paSeq; } // 이 판단은 이 타석 것이다 (decDone 이 쓴다)
   box.innerHTML=''; box.classList.add('on');
+  box._decTok=(++DEC_TOKEN);
   /* 타이밍을 재려면 공과 버튼이 같이 보여야 한다. 판단창을 화면 안으로 끌어온다. */
   if(d && (d.kind==='swing'||d.kind==='pitch')){
     setTimeout(()=>{ try{ box.scrollIntoView({block:'center',behavior:'smooth'}); }catch(e){} },30);

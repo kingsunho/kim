@@ -93,7 +93,7 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
 
   console.log('\n[주루 — 리드와 견제]');
   setup2();
-  await wait(700);                 // 앞 장면의 뒷정리 타이머가 다 끝난 뒤에
+  await wait(300);                 // 옛 뒷정리가 새 판단창을 못 지운다(decDone 토큰)
   ev("showDecision({kind:'lead'})"); await wait(150);
   T(!!d.querySelector('#decision .runstage'), '1루 그라운드가 뜬다');
   T(/리드를 얼마나/.test(txt('#decision .rb-t')), '제목 :: '+txt('#decision .rb-t'));
@@ -103,6 +103,8 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
       [...d.querySelectorAll('#decision .lead-b span')].map(x=>x.textContent).join(' / '));
   T(ev("typeof leadScene==='function' && /setLead/.test(leadScene.toString())"),
     '끌지 않고 버튼으로 고른다');
+  T(ev("decDone.toString().indexOf('box._decTok!==tok')>0 && showDecision.toString().indexOf('_decTok=')>0"),
+    '늦게 온 뒷정리가 다음 판단창을 못 지운다 (연출이 길어져도 안전하다)');
   T(/도루 성공 \d+% · 견제사 \d+%/.test(txt('#decision')),
     '각 칸에 실제 확률이 적혀 있다 (「이정도이다」 가 아니라 숫자)');
   T(ev("!/T\\b.*4200/.test(renderLead.toString()) && /8000/.test(renderLead.toString())"),
@@ -176,6 +178,12 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
     '송구가 손을 떠나는 순간에 「돌았는지」가 갈린다 (묻는 창이 없다)');
   T(ev("/'▸ 더 간다/.test(renderSwing.toString())&&/'◂ 돌아간다'/.test(renderSwing.toString())"),
     '도는 버튼과 돌아가는 버튼이 따로 있다');
+  T(ev("livePlay.toString().indexOf('pointerdown')>0 && livePlay.toString().indexOf('basePt(Math.min(4,base+1))')>0"),
+    '수비처럼 그라운드의 베이스를 직접 눌러서 진루·귀루한다');
+  T(ev("livePlay.toString().indexOf('가는 중')>0 && livePlay.toString().indexOf('돌아간다')>0"),
+    '누를 수 있는 베이스에 표시가 뜬다');
+  T(ev("renderSwing.toString().indexOf('베이스를 눌러라')>0"),
+    '베이스를 누르라고 먼저 알려준다');
   T(ev("/if\\(play\\.gb && isOut\\) runMs = Math\\.max/.test(livePlay.toString())"),
     '주자 속도를 결과에 맞춘다 — 아웃인데 먼저 닿아 보이면 안 된다');
   T(ev("/else if\\(!isOut && !HR\\) runMs = Math\\.min/.test(livePlay.toString())"),
