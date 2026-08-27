@@ -159,6 +159,72 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   });
   T('2군 명단도 남는다', ()=>eb("Array.isArray(ST.farm)&&ST.farm.length>=9")?'9명 이상':'!사라졌다');
 
+  console.log('\n[감독 모드에는 2군이 없다]');
+  T('감독 모드면 주간에 2군이 안 돈다', ()=>ev(
+    "runWeek.toString().indexOf('if(isPlayerMode()){')>0 && runWeek.toString().indexOf('farmWeek(rng)')>0"));
+  T('감독 모드면 2군 카드가 안 뜬다', ()=>ev(`(function(){
+    var keep=ST.mode; ST.mode='mgr';
+    var a=farmCard(), b=tradeCard();
+    ST.mode=keep;
+    return (a===null&&b===null) ? '둘 다 안 뜬다' : '!'+(a?'2군카드 ':'')+(b?'이적카드':'');
+  })()`));
+  T('선수 모드면 뜬다', ()=>ev(`(function(){
+    ST.mode='player'; ST.farm=[]; farmFill(9);
+    return farmCard()? '2군 카드 있다' : '!안 뜬다';
+  })()`));
+
+  console.log('\n[실존 선수도 2군에 간다]');
+  T('실존 선수도 강등 후보에 들어간다', ()=>ev(
+    "firstTeamWorst.toString().indexOf('return true;')>0 && firstTeamWorst.toString().indexOf('!!p.farm')<0"));
+  T('내리면 출전이 막힌다 (로스터는 안 건드린다)', ()=>ev(`(function(){
+    var us=TBYID['wwzw'];
+    var tgt=us.players.find(function(p){return p.id!=='ksh'&&!p.pitch&&!p.farm;});
+    var before=us.players.length;
+    farmDownReal(tgt.id, 2);
+    var still=us.players.some(function(p){return p.id===tgt.id;});
+    var avail=isAvailable(tgt.id);
+    return (still && !avail && us.players.length===before)
+      ? tgt.name+' — 로스터엔 그대로, 출전만 막힘' : '!'+still+'/'+avail;
+  })()`));
+  T('감독·투수·나는 안 내린다', ()=>ev(
+    "firstTeamWorst.toString().indexOf('p.id===coachId()')>0 && firstTeamWorst.toString().indexOf('if(p.pitch) return false')>0"));
+  T('2군에서 치면 돌아온다', ()=>ev(`(function(){
+    var pid=Object.keys(ST.farmReal)[0];
+    if(!pid) return '!내려간 사람이 없다';
+    ST.farmReal[pid]={weeks:1, g:2, ab:10, h:4};    // 4할
+    var ms=farmRealWeek(makeRng(4242));
+    return (!ST.farmReal[pid] && isAvailable(pid) && ms.some(function(m){return /복귀/.test(m.title);}))
+      ? nameOf(pid)+' 복귀' : '!'+JSON.stringify(ST.farmReal[pid])+'/'+ms.length;
+  })()`));
+  T('실존 선수는 진짜 못 칠 때만 내려간다', ()=>ev(
+    "farmWeek.toString().indexOf('worst.farm || bad')>0"));
+
+  console.log('\n[우리 팀에서도 사람이 나간다]');
+  T('벤치에서 밀린 사람이 이적 대상이다', ()=>ev(
+    "usTradeOut.toString().indexOf('(ST.lineup||[]).some')>0 && usTradeOut.toString().indexOf('p.id===me) return false')>0"));
+  T('나가면 이탈 명단에 남고 상대 팀으로 간다', ()=>ev(`(function(){
+    ST.leftPlayers=[]; ST.mode='player'; ST.playerId='ksh';
+    ST.lineup=[]; ST.unhappy=ST.unhappy||{};
+    var us=TBYID['wwzw'];
+    var tgt=us.players.find(function(p){return p.id!=='ksh'&&!p.pitch&&!isFarmed(p.id)&&p.id!==coachId();});
+    ST.unhappy[tgt.id]={level:4,streak:0}; ST.morale[tgt.id]=20;
+    var before=us.players.length;
+    var ms=usTradeOut(function(){return 0.0;});
+    if(!ms.length) return '!아무도 안 나갔다';
+    var rec=ST.leftPlayers[0];
+    var landed=rec&&TBYID[rec.to]&&TBYID[rec.to].players.some(function(p){return p.id===rec.pid;});
+    return (us.players.length===before-1 && rec && landed)
+      ? rec.name+' → '+TBYID[rec.to].name : '!'+us.players.length+'/'+before+'/'+JSON.stringify(rec);
+  })()`));
+  T('얇아지면 안 판다 (몰수패 방지)', ()=>ev(
+    "usTradeOut.toString().indexOf('us.players.length<=12')>0"));
+  T('감독 모드에서는 아무도 안 나간다', ()=>ev(`(function(){
+    var keep=ST.mode; ST.mode='mgr';
+    var n=usTradeOut(function(){return 0.0;}).length;
+    ST.mode=keep;
+    return n===0 ? '안 나간다' : '!'+n+'명 나갔다';
+  })()`));
+
   console.log('\n[시즌을 넘어간다]');
   T('콜업한 선수가 새 시즌에도 남는다', ()=>ev(`(function(){
     ST.farm=[]; farmFill(9);
