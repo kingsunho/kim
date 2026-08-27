@@ -152,8 +152,10 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
     '삼진·볼넷은 탄 공이 없으니 그냥 닫는다');
   T(ev("typeof livePlay==='function' && /livePlay\\(stage/.test(renderSwing.toString())"),
     '치자마자 끝까지 한 판으로 간다 (1막·2막이 없다)');
-  T(ev("/const T_LAND  = Math\\.round\\(820 \\+ Math\\.min\\(150,m\\)\\*9\\.5\\)/.test(livePlay.toString())"),
+  T(ev("/const T_LAND  = Math\\.round\\(1100 \\+ Math\\.min\\(150,m\\)\\*13\\.5\\)/.test(livePlay.toString())"),
     '체공 시간이 비거리를 따라간다 — 땅볼은 짧게 · 큰 타구는 길게');
+  T(ev("/const T_THROW = T_CATCH \\+ 720/.test(livePlay.toString())"),
+    '잡고 나서 던지기까지 0.72초 — 그 사이에 정한다 (예전엔 0.36초라 못 눌렀다)');
   T(ev("/psMtoPx\\(m, P, play\\.ang/.test(livePlay.toString())"),
     '진짜 비거리로 날아간다 — 「저 멀리 갔는데 땅볼아웃」 이 안 나온다');
   T(ev("/if\\(t>=T_THROW\\) decide\\(\\)/.test(livePlay.toString())"),

@@ -7673,8 +7673,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.75.0';
-const APP_VERSION_NOTE = '도루는 발과 눈치 둘 다 · 감독님께 면담 요청';
+const APP_VERSION = '2.76.0';
+const APP_VERSION_NOTE = '2군이 생겼다 · 수비가 안 뜨던 것 · 뜬공 아웃';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7695,6 +7695,18 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.76.0', t:'2군이 생겼다 · 수비가 안 뜨던 것 · 뜬공 아웃', items:[
+    '[제보] "수비랑 주루하는건 왜 안나오냐 자꾸" — 진짜 버그였고 원인은 하나였다. 내가 서는 자리를 「캐릭터 만들 때 고른 희망 자리」로만 보고 있었다. 그게 비어 있으면(역할만 고르고 자리를 안 골랐거나 옛 세이브) 항상 빈 값이라 **수비 판단이 한 번도 안 떴다.** 이제 ① 경기 중이면 지금 실제로 서 있는 자리 ② 오늘 라인업에 적힌 자리 ③ 희망 자리 순으로 본다. 재보니 경기당 0번에서 9번이 됐다',
+    '[제보] "뜬볼 아웃이 없네 저거" — 엔진에는 멀쩡히 나오고 있었다(아웃의 43%). 화면이 문제였다. 뜬공을 잡고 나서 **1루로 송구하는 그림**을 그려서 땅볼이랑 구분이 안 갔다. 뜬공을 잡으면 그걸로 끝이다 — 송구를 없애고 「뜬공 아웃」 「땅볼 아웃 — 1루에서」 로 갈라 적는다',
+    '[제보] "치고나서 주루 선택하는거가 너무 빨리 지나가" — 야수가 잡고 나서 던지기까지가 0.36초였다. 그 사이에 정하라는 건 무리다. 0.72초로 늘리고 타구 전체를 느긋하게 깔았다. 「잡았다 — 지금 정해라」 라고 알려주기도 한다',
+    '[제보] "이거 그냥 웬만하면 1루가있으면 세잎이네" — 작정하고 뛰는 도루가 91% 였다. 리그 평균(82%)보다 높았으니 거꾸로였다. 리드를 크게 벌린 채 스타트를 끊으면 포수한테 그대로 보인다 — 73% 로 내렸다. 리그 전체 성공률은 그대로다',
+    '[버그] 「실제 나까지」 가 고교 졸업하자마자 꽉 차 있던 것 — v2.73.0 에서 넣은 능력치 장부가 **졸업 능력치를 얹기 전에** 실측값을 떠 놓고 그걸 도로 얹고 있었다. 고등학교를 아무리 못해도 졸업하면 2026 실측 능력치가 그대로 붙었다. 장부는 실제로 값이 바뀔 때(훈련·부상)만 생기게 고쳤고, 잘못 박힌 장부는 알아서 버린다',
+    '[요청] "그냥 실제 나까지를 없애고 그냥 스탯으로만 나오게 해줘" — 목표선을 뺐다. 지금 내가 얼마인지만 보여준다. 투수면 구위·제구·체력도 같이 나온다',
+    '[요청] "2군 콜업 강등 만들자 그냥 가상선수진들 좀 늘리더라도 뎁스 두껍게 하자" — **2군이 생겼다.** 가상 선수 아홉 명이 2군에서 매주 경기를 하고 성적이 쌓인다. 1군에 자리가 나거나 2군에서 3할3푼을 치면 올라온다. 열에 하나쯤은 1군 주전급으로 태어난다 — 그래야 주전 경쟁이 된다',
+    '**내가 못 치면 내가 내려간다.** 14타수 이상에서 1할9푼 밑이면 2군행이다. 2주 동안 2군 경기를 뛰고, 2할8푼을 넘기면 올라온다 — 올라올 때 주전 3경기가 보장된다. 감독과 한 약속(주전 보장)이 있으면 안 내려간다',
+    '[요청] "사야팀들 다 뭐 몸값은 있으니깐 성적기준 그 사고 파고 지들끼리 알아하게" — 상대 23팀도 사람이 오간다. 아래 순위 팀이 팔고 위 순위 팀이 산다. 기준은 몸값과 순위다. 로스터가 얇은 팀은 안 판다. 선수단 화면에서 최근 이적을 볼 수 있다',
+    '[요청] "근데 너무자주 되지는 말고" — 콜업·강등은 3주, 이적은 4주 쿨다운이다. 22주를 돌려보니 콜업 3번 · 강등 1번 · 이적 서너 건이었다. 매주 사람이 바뀌면 그건 팀이 아니다',
+  ]},
   {v:'2.75.0', t:'도루는 발과 눈치 둘 다 · 감독님께 면담 요청', items:[
     '[요청] "도루는 단순 주력이랑 도루iq 이런 스탯 두개가 있어야되고 같이 잘올려야지" — 맞는 말이다. 발만 빠르다고 도루가 되는 게 아니다. 「주루 센스」 를 새 칸으로 넣었다. 도루를 시도하는 것도, 성공하는 것도, 견제에 안 걸리는 것도 발과 눈치를 같이 본다. 발만 올리면 뛰다가 잡힌다',
     '기존 열넷과 상대 23팀에는 이 칸이 없다. 없는 실측을 지어내면 그건 거짓말이라 있는 걸로 짐작한다 — 선구가 공을 보는 눈이고 수비가 상황 판단이다. 내 선수만 「주루 센스」 훈련으로 따로 올릴 수 있고, 홈 화면에 발과 나란히 보인다',
@@ -10812,6 +10824,10 @@ LiveGame.prototype.stepPA = function(){
   const off=this.off(), def=this.def();
   const pit=this.curPitcher(def), pl=this.pbox[pit.id];
   const slot=off.slots[off.order%9];
+  /* [방어] 타순에 빈칸이 있으면 여기서 통째로 죽는다(slot.id).
+     라인업을 아홉으로 못 채운 경로가 하나라도 남아 있으면 경기가 멈춘다.
+     그 자리를 건너뛰고 계속 굴린다 — 멈추는 것보다 낫다.            */
+  if(!slot){ off.order++; this.endHalf(); return {events:[], half:true}; }
   const bat=off.team.players.find(p=>p.id===slot.id);
   if(!bat){ this.endHalf(); return {events:[], half:true}; }
   /* [버그 이력] 타순에 들어왔는데 박스스코어 칸이 없으면 bl.pa++ 에서 죽는다.
@@ -10842,6 +10858,11 @@ LiveGame.prototype.stepPA = function(){
       let leadB=0;
       if(plan){
         leadB=((plan.lead==null?1:plan.lead)-1)*0.055;
+        /* [제보] "이거 그냥 웬만하면 1루가있으면 세잎이네"
+           작정하고 뛰면 상대도 안다. 리드를 크게 벌린 채로 스타트를
+           끊는 건 포수한테 그대로 보인다 — 그만큼 깎는다.
+           엔진이 알아서 고른 도루(상황이 맞을 때만 뛴다)보다 어렵다. */
+        if(plan.go) leadB-=0.26;
         if(plan.go) runMul=999;                   // 뛰기로 했다 — 무조건 시도
         else if(plan.lead>=2) runMul*=2.0;
         else if(plan.lead<=0) runMul=0;           // 베이스에 붙어 있는다
@@ -12134,6 +12155,8 @@ function condCls(v){return v>=70?'ok':v>=55?'mid':v>=40?'low':'bad';}
 function moraleLabel(v){return v>=85?'매우 높음':v>=70?'좋음':v>=55?'보통':v>=40?'불만':'매우 불만';}
 function isAvailable(pid){
   if(!ST) return true;
+  /* 2군에 내려가 있으면 1군 경기에 못 나간다 */
+  if((ST.myFarm||0)>0 && pid===(ST.playerId||MYID)) return false;
   if(ST.injury && ST.injury[pid]) return false;
   if(ST.absent && ST.absent[pid]) return false;
   return true;
@@ -12171,6 +12194,10 @@ function newSeason(){
   /* 이탈 명단은 시즌이 바뀌어도 그대로 간다. 나간 사람은 안 돌아온다. */
   const carriedLeft=(typeof ST!=='undefined'&&ST&&Array.isArray(ST.leftPlayers))
     ? ST.leftPlayers.slice() : [];
+  /* 2군은 시즌을 넘어간다 — 성적만 새로 센다 */
+  const carriedFarm=(typeof ST!=='undefined'&&ST&&Array.isArray(ST.farm))
+    ? ST.farm.map(x=>({...x, g:0,ab:0,h:0,d2:0,hr:0,rbi:0,bb:0,k:0,
+                       age:(x.age||26)+1})) : [];
   /* 영입 명단도 시즌을 넘어간다. 데려온 사람은 내년에도 우리 팀이다. */
   const carriedSigned=(typeof ST!=='undefined'&&ST&&Array.isArray(ST.signedIds))
     ? ST.signedIds.slice() : [];
@@ -12208,6 +12235,8 @@ function newSeason(){
     unhappy:{}, spark:{}, career:{}, teamCareer:null, milestones:[], firsts:{}, weather:'clear',
     playoff:null, form:{}, hall:[], awardBonus:{}, awardSnap:null, awardReply:null,
     ultimatum:{}, broken:{}, leftPlayers:carriedLeft, signedIds:carriedSigned, noCar:{},
+    farm:carriedFarm, myFarm:0, farmMe:null, farmMove:-99,
+    trades:[], tradeRound:-99,
     /* 감독은 시즌이 바뀌어도 그대로 간다 — 물려받았으면 계속 그 사람이다 */
     coachPid:(typeof ST!=='undefined'&&ST&&ST.coachPid)?ST.coachPid:null,
     playMode:(typeof ST!=='undefined'&&ST&&ST.playMode)?ST.playMode:PLAY_KEY,
@@ -12457,6 +12486,7 @@ function checkMyDeal(res){
 function myLineupBias(pid){
   if(typeof ST==='undefined'||!ST||!isPlayerMode()) return 0;
   if(pid!==(ST.playerId||MYID)) return 0;
+  if((ST.myFarm||0)>0) return -9000;         // 2군에 있다 — 1군 경기에 못 나간다
   if((ST.myBenched||0)>0) return -9000;      // 약속을 못 지켰다 — 당분간 벤치
   if((ST.myGuarantee||0)>0) return  9000;    // 주전 보장
   return 0;
@@ -12805,6 +12835,10 @@ function runWeek(){
     ST.morale[p.id]=Math.max(10,Math.min(100,ST.morale[p.id]+(ST.morale[p.id]<70?2:-1)));
   });
   ST.mittMissing=false; ST.scoutBlocked=false;
+  /* 2군 — 한 주가 돌면 2군도 경기를 하고, 가끔 사람이 오르내린다 */
+  farmWeek(rng).forEach(m=>ST.notices.push(m));
+  /* 리그도 사람이 오간다 — 4주에 한 번쯤 */
+  rollTrade(rng).forEach(m=>ST.notices.push(m));
   // 지난 경기 갈등으로 예고된 결장 반영
   const pend=ST.pendingAbsent||{};
   const evs=rollWeekEvents(ST,rng);
@@ -12987,6 +13021,383 @@ function hsRoster(year, seed){
     out[sc].sort((a,b)=>b.grade-a.grade);
   });
   return out;
+}
+
+/* ================= 2군 =================
+   [요청] "2군 콜업 강등 만들자 그냥 가상선수진들 좀 늘리더라도 뎁스
+           두껍게 하자 (…) 근데 너무자주 되지는 말고"
+
+   열넷으로 굴리면 주전 경쟁이 없다. 나가면 무조건 선발이고, 못 쳐도
+   뺄 사람이 없다. 그래서 **2군을 만든다.** 가상 선수들이고, 1군에서
+   누가 다치거나 오래 못 치면 올라온다. 내가 못 치면 내가 내려간다.
+
+   [로스터는 세이브에 없다] 이 저장소에서 세 번 사고 난 자리다.
+   그래서 2군 선수는 **능력치까지 통째로 ST.farm 에 산다.** 상수에 없다.
+   `up:true` 인 사람만 매 로드마다 1군 로스터에 다시 얹는다(applyFarm).
+
+   [너무 자주 되지 않게] 콜업·강등은 3주 쿨다운이 걸린다. 한 시즌에
+   서너 번이면 충분하다. 매주 사람이 바뀌면 그건 팀이 아니다.       */
+const FARM_SUR=['김','이','박','최','정','강','조','윤','장','임','한','오','서','신','권','황','안','송','전','홍','문','양','손','배','백'];
+const FARM_GIV=['민준','서준','도윤','예준','시우','하준','지호','준서','현우','지훈','건우',
+                '우진','연우','유준','정우','승현','시윤','준혁','도현','지환','시후','은우',
+                '진우','현준','동현','태윤','민재','규민','준영','성민','재윤','성훈','재원',
+                '태현','수현','영준','기현','상우','태민','종현','대호','병철','상엽','정후'];
+/* 2군 선수 한 명. 1군 평균보다 조금 아래에서 시작하고, 어린 만큼 큰다.
+   가끔 1군보다 나은 사람이 하나씩 섞인다 — 그래야 주전 경쟁이 된다. */
+function makeFarmPlayer(rng, tag){
+  const nm=FARM_SUR[(rng()*FARM_SUR.length)|0]+FARM_GIV[(rng()*FARM_GIV.length)|0];
+  /* 대부분 1군 하위권, 열에 하나쯤 주전급 */
+  const tier=rng();
+  const base = tier<0.10 ? 52 : (tier<0.35 ? 43 : 36);
+  const sp=(w)=>Math.max(10,Math.min(78, Math.round(base+(rng()*2-1)*w)));
+  const isP=rng()<0.28;
+  const POSP=['C','1B','2B','3B','SS','LF','CF','RF'];
+  const main=POSP[(rng()*POSP.length)|0];
+  const sub=POSP[(rng()*POSP.length)|0];
+  const p={
+    id:tag, name:nm, farm:true,
+    bats: rng()<0.20?'L':'R',
+    throws: rng()<0.12?'L':'R',
+    age: 20+((rng()*14)|0),
+    con:sp(13), pow:sp(15), eye:sp(11), spd:sp(14), def:sp(12), arm:sp(12),
+    pos: main===sub?[main]:[main,sub],
+    up:false, joined:0,
+    g:0, ab:0, h:0, d2:0, hr:0, rbi:0, bb:0, k:0,   // 2군 성적
+  };
+  if(isP) p.pitch={stf:sp(13), ctl:sp(12), sta:sp(11)};
+  return p;
+}
+function farmSlot(){
+  if(!ST) return [];
+  if(!Array.isArray(ST.farm)) ST.farm=[];
+  return ST.farm;
+}
+/* 시즌이 열릴 때 2군을 채운다. 이미 있으면 모자란 만큼만 */
+function farmFill(n){
+  const F=farmSlot();
+  const want=n||9;
+  const rng=makeRng(((ST.seed||1)*7717 + (ST.seasonNo||1)*104729 + F.length*31)>>>0);
+  let guard=0;
+  while(F.length<want && guard++<40){
+    const tag='fm_'+((ST.seasonNo||1))+'_'+F.length+'_'+((rng()*9000)|0);
+    if(F.some(x=>x.id===tag)) continue;
+    F.push(makeFarmPlayer(rng, tag));
+  }
+  return F.length;
+}
+/* 2군 선수의 META. 세이브에 안 들어가니 매번 다시 만든다 —
+   그래서 **아이디에서 결정적으로** 뽑아야 한다(영입 선수와 같은 함정). */
+function farmMeta(p){
+  const pos={};
+  ['C','1B','2B','3B','SS','LF','CF','RF','DH','P'].forEach(k=>pos[k]=20);
+  pos.DH=50;
+  (p.pos||[]).forEach((k,i)=>{ if(pos[k]!==undefined) pos[k]=i===0?58:46; });
+  if(p.pitch) pos.P=54;
+  if(p.throws==='L') LEFTY_BLOCKED.forEach(k=>pos[k]=0);
+  return {
+    born:2026-(p.age||26), speech:'jon', throws:p.throws||'R', car:false,
+    school:'-', drink:1, attend:0.80, loyal:60, pot:p.age<=24?6:3,
+    traits:['2군'], friends:[], rival:null, coach:{}, pos,
+    desc:'2군에서 올라왔다'
+  };
+}
+/* up:true 인 사람을 1군 로스터에 얹는다. 매 로드마다 돈다 — 멱등이어야 한다 */
+function applyFarm(){
+  if(!ST) return 0;
+  const F=farmSlot(); if(!F.length) return 0;
+  const us=TBYID['wwzw']; if(!us) return 0;
+  let n=0;
+  F.forEach(p=>{
+    if(!p||!p.up) return;
+    if((ST.leftPlayers||[]).some(r=>r&&r.pid===p.id)) return;   // 나간 사람은 안 올린다
+    if(us.players.some(q=>q.id===p.id)) return;                 // 이미 올라와 있다
+    const np={id:p.id, name:p.name, bats:p.bats||'R',
+      con:p.con, pow:p.pow, eye:p.eye, spd:p.spd, def:p.def, arm:p.arm,
+      pos:(p.pos||['RF']).slice(), pitch:p.pitch?{...p.pitch}:null,
+      sIQ:p.sIQ!=null?p.sIQ:null, real:null, farm:true};
+    if(np.sIQ==null) delete np.sIQ;
+    us.players.push(np);
+    META[p.id]=META[p.id]||farmMeta(p);
+    if(ST.names) ST.names[p.id]=p.name;
+    ST.bat[p.id]=ST.bat[p.id]||blankBat();
+    if(ST.lgBat) ST.lgBat[p.id]=ST.lgBat[p.id]||blankBat();
+    ST.pit[p.id]=ST.pit[p.id]||blankPit();
+    if(ST.cond[p.id]==null)ST.cond[p.id]=74;
+    if(ST.morale[p.id]==null)ST.morale[p.id]=72;
+    if(ST.injury[p.id]===undefined)ST.injury[p.id]=null;
+    if(ST.ca&&ST.ca[p.id]==null)ST.ca[p.id]=calcCA(np);
+    if(ST.rest&&ST.rest[p.id]==null)ST.rest[p.id]=3;
+    if(ST.bond&&ST.bond[p.id]==null)ST.bond[p.id]=45;
+    n++;
+  });
+  if(n){ finalizeTeam(us); buildPitcherPool(); }
+  return n;
+}
+/* 1군에서 내린다 — 로스터·라인업에서 빼고 2군 명단으로 돌린다 */
+function farmDown(pid){
+  const F=farmSlot();
+  const us=TBYID['wwzw'];
+  const rec=F.find(x=>x.id===pid);
+  /* [버그] 이 줄을 빠뜨렸었다. up 이 true 로 남아 있으면 로스터에서 빼도
+     다음 applyFarm() 이 곧바로 다시 올려버린다 — 내려가지가 않는다.
+     **먼저** 내리고 나서 로스터를 건드려야 한다.                    */
+  if(rec) rec.up=false;
+  const i=us.players.findIndex(q=>q.id===pid);
+  if(i>=0){ us.players.splice(i,1); }
+  if(ST.lineup) ST.lineup=ST.lineup.filter(x=>x.id!==pid);
+  if(ST.rotation) ST.rotation=ST.rotation.filter(x=>x!==pid);
+  /* [버그] 내려보낸 사람이 타순에 있으면 **여덟 명짜리 라인업**이 남았다.
+     그 상태로 경기에 들어가면 9번 타순이 빈칸이라 stepPA 가 그 자리에서
+     죽는다 — 6차전쯤에 경기가 통째로 안 굴러갔다.
+     빠진 자리는 곧바로 메운다. deleteLeave 가 하는 것과 같다.       */
+  if(ST.lineup && ST.lineup.length<9 && us.players.length>=9){
+    ST.lineup=recommendLineup();
+    if(typeof applyDHRule==='function') applyDHRule();
+  }
+  if(ST.rotation && !ST.rotation.length) ST.rotation=recommendRotation();
+  if(Array.isArray(ST.gameRotation)) ST.gameRotation=ST.gameRotation.filter(x=>x!==pid);
+  finalizeTeam(us); buildPitcherPool();
+  return !!rec;
+}
+/* 2군 한 주 — 경기를 뛰고 성적이 쌓인다. 여기서 잘하면 콜업 후보가 된다 */
+function farmPlayWeek(rng){
+  const F=farmSlot();
+  F.forEach(p=>{
+    if(p.up) return;
+    const ab=2+((rng()*3)|0);
+    /* 2군 투수는 약하다 — 1군 기준보다 잘 맞는다 */
+    const pr=Math.max(0.10, Math.min(0.62, 0.20+(p.con-40)*0.0065+(p.pow-40)*0.0020));
+    let h=0, hr=0, d2=0;
+    for(let i=0;i<ab;i++){
+      if(rng()<pr){ h++;
+        if(rng()<0.06+(p.pow-40)*0.003) hr++;
+        else if(rng()<0.20) d2++; }
+    }
+    p.g++; p.ab+=ab; p.h+=h; p.d2+=d2; p.hr+=hr;
+    p.rbi+=h?((rng()*2)|0):0;
+    if(rng()<0.10) p.bb++;
+    /* 어린 선수는 2군에서 큰다 — 이게 콜업의 근거가 된다 */
+    if((p.age||26)<=24 && rng()<0.22){
+      const k=['con','pow','eye','spd','def','arm'][(rng()*6)|0];
+      p[k]=Math.min(78, p[k]+1);
+    }
+  });
+}
+function farmAvg(p){ return p.ab? p.h/p.ab : 0; }
+/* 2군 선수의 '지금 값어치' — 콜업 순서를 정한다 */
+function farmScore(p){
+  const s=p.con*1.1+p.pow*0.9+p.eye*0.6+p.spd*0.5+p.def*0.6;
+  const form=(p.ab>=8)? (farmAvg(p)-0.250)*90 : 0;
+  return s+form;
+}
+/* 1군에서 제일 밀리는 사람 — 강등 후보 */
+function firstTeamWorst(){
+  const us=TBYID['wwzw'];
+  const me=ST.playerId||MYID;
+  const cand=us.players.filter(p=>{
+    if(p.id===me) return false;                       // 나는 따로 본다
+    if(ST.injury&&ST.injury[p.id]) return false;
+    if((ST.gameRotation||[]).includes(p.id)) return false;
+    if(p.pitch) return false;                         // 투수는 안 내린다 — 수가 모자란다
+    return !!p.farm;                                  // **올라온 2군 선수만 내린다**
+  });
+  if(!cand.length) return null;
+  const sc=p=>{
+    const b=ST.bat[p.id]||blankBat();
+    const form=(b.ab>=10)?(b.h/b.ab-0.250)*120:0;
+    return p.con*1.1+p.pow*0.9+p.eye*0.6+p.def*0.6+form;
+  };
+  return cand.slice().sort((a,b)=>sc(a)-sc(b))[0];
+}
+/* 주간 판단. runWeek 이 부른다.
+   [너무 자주 되지 않게] 3주 쿨다운 + 확률. 한 시즌에 서너 번이다.  */
+function farmWeek(rng){
+  if(!ST) return [];
+  const msgs=[];
+  farmFill(9);
+  farmPlayWeek(rng);
+  const me=ST.playerId||MYID;
+  const us=TBYID['wwzw'];
+  const cid=(typeof coachId==='function')?coachId():null;
+
+  /* 내가 2군에 있으면 — 올라갈 때가 됐나 */
+  if((ST.myFarm||0)>0){
+    ST.myFarm--;
+    const mine=ST.farmMe||{g:0,ab:0,h:0};
+    /* 2군 경기를 뛴다 */
+    const p=us.players.find(x=>x.id===me)
+         || {con:45,pow:45};
+    const ab=3+((rng()*2)|0);
+    let h=0;
+    const pr=Math.max(0.12,Math.min(0.65, 0.22+((p.con||45)-40)*0.0070));
+    for(let i=0;i<ab;i++) if(rng()<pr) h++;
+    mine.g++; mine.ab+=ab; mine.h+=h;
+    ST.farmMe=mine;
+    if(ST.myFarm<=0){
+      ST.myFarm=0;
+      const avg=mine.ab?mine.h/mine.ab:0;
+      const up=avg>=0.280;
+      ST.farmMe=null;
+      msgs.push({type:'farm', title: up?'1군 콜업':'1군 복귀',
+        body: (cid?nameOf(cid):'감독')+`: "`+
+          (up?`2군에서 ${mine.ab}타수 ${mine.h}안타. 올라와라"`
+             :`이제 됐다. 다시 해보자"`),
+        effect: up?'주전 보장 3경기':'1군 등록'});
+      if(up) ST.myGuarantee=Math.max(ST.myGuarantee||0, 3);
+    } else {
+      msgs.push({type:'farm', title:`2군 ${ST.myFarm+1}주차`,
+        body:`이번 주 ${ab}타수 ${h}안타 · 누적 ${mine.ab}타수 ${mine.h}안타`+
+          (mine.ab?` (${fmt3(mine.h/mine.ab)})`:''),
+        effect:`2할8푼을 넘기면 올라간다 · 남은 ${ST.myFarm}주`});
+    }
+    return msgs;
+  }
+
+  /* 쿨다운 — 너무 자주 사람이 바뀌면 그건 팀이 아니다 */
+  const cool=(ST.farmMove==null)?-99:ST.farmMove;
+  if(ST.round - cool < 3) return msgs;
+
+  /* 1군에 빈자리가 있나 — 부상·이탈로 아홉이 위태로우면 무조건 올린다 */
+  const healthy=us.players.filter(p=>isAvailable(p.id)).length;
+  const F=farmSlot();
+  const waiting=F.filter(p=>!p.up).sort((a,b)=>farmScore(b)-farmScore(a));
+  const best=waiting[0];
+
+  /* ---- 콜업 ---- */
+  let called=null;
+  if(best){
+    if(healthy<11) called=best;                                  // 사람이 모자란다
+    else if(farmAvg(best)>=0.330 && best.ab>=10 && rng()<0.55) called=best;  // 2군에서 불붙었다
+    else if(rng()<0.10) called=best;                             // 그냥 한번 보자
+  }
+  if(called){
+    called.up=true; called.joined=ST.round;
+    ST.farmMove=ST.round;
+    applyFarm();
+    msgs.push({type:'farm', title:`${called.name} 콜업`,
+      body:(cid?nameOf(cid):'감독')+`: "2군에서 ${called.ab}타수 ${called.h}안타 쳤다. 한번 보자"`,
+      effect:`로스터 ${us.players.length}명 — 자리 하나가 줄었다`});
+    /* 선수 모드면 내 자리를 위협하는지 짚어준다 */
+    if(isPlayerMode()){
+      const myP=(typeof myPos==='function')?myPos():null;
+      if(myP && (called.pos||[]).indexOf(myP)>=0)
+        msgs.push({type:'farm', title:'내 자리다',
+          body:`${called.name}이(가) ${POSNAMES[myP]||myP} 를 본다.`,
+          effect:'주전 경쟁 — 못 치면 내가 내려간다'});
+    }
+    return msgs;
+  }
+
+  /* ---- 강등 ---- 자리가 넘칠 때만 */
+  if(us.players.length>=13){
+    /* 선수 모드: 내가 제일 못 치면 내가 내려간다 */
+    if(isPlayerMode() && (ST.myGuarantee||0)<=0 && !(ST.injury&&ST.injury[me])){
+      const b=ST.bat[me]||blankBat();
+      if(b.ab>=14 && b.h/b.ab < 0.190 && rng()<0.45){
+        ST.myFarm=2; ST.farmMe={g:0,ab:0,h:0}; ST.farmMove=ST.round;
+        ST.morale[me]=Math.max(10,(ST.morale[me]||70)-16);
+        msgs.push({type:'farm', title:'2군행',
+          body:(cid?nameOf(cid):'감독')+`: "${fmt3(b.h/b.ab)} 다. 2군에서 좀 치고 와라"`,
+          effect:'2주간 1군 경기에 안 나간다 · 2할8푼을 넘기면 올라온다'});
+        return msgs;
+      }
+    }
+    const worst=firstTeamWorst();
+    if(worst && rng()<0.40){
+      const b=ST.bat[worst.id]||blankBat();
+      farmDown(worst.id);
+      ST.farmMove=ST.round;
+      msgs.push({type:'farm', title:`${worst.name} 2군행`,
+        body:(cid?nameOf(cid):'감독')+`: "${b.ab?`${b.ab}타수 ${b.h}안타`:'기회를 줬는데'} 다. 내려가서 다시 해라"`,
+        effect:`로스터 ${TBYID['wwzw'].players.length}명`});
+    }
+  }
+  return msgs;
+}
+
+/* ================= 리그 이적 시장 =================
+   [요청] "사야팀들 다 뭐 몸값은 있으니깐 성적기준 그 사고 파고 지들끼리
+           알아하게 근데 너무자주 되지는 말고"
+
+   상대 23팀도 사람이 오간다. 우리만 로스터가 고정이면 리그가 박제다.
+   기준은 **몸값(playerValue)과 성적**이다 — 잘하는데 약팀에 있는 사람이
+   센 팀으로 간다. 우리 팀 사람도 대상이 된다(주전에서 밀린 사람만).
+
+   [너무 자주 되지 않게] 4주 쿨다운. 한 시즌에 서너 건이면 충분하다.
+   매주 사람이 바뀌면 그건 리그가 아니라 시장이다.
+
+   [로스터는 세이브에 없다] ST.trades 에 적고 매 로드마다 다시 옮긴다.
+   원 소속팀에서 빼고 새 팀에 넣는 걸 **멱등하게** 해야 한다.        */
+function applyTrades(){
+  if(!ST || !Array.isArray(ST.trades) || !ST.trades.length) return 0;
+  let n=0; const touched={};
+  ST.trades.forEach(t=>{
+    if(!t||!t.pid||!t.to) return;
+    const to=TBYID[t.to]; if(!to) return;
+    if(to.players.some(p=>p.id===t.pid)) return;      // 이미 옮겨져 있다
+    /* 어느 팀에 서 있든 찾아서 뺀다 — 상수에서 다시 만들어지면 원래 팀에 있다 */
+    let src=null;
+    for(const tm of TEAMS){
+      const i=tm.players.findIndex(p=>p.id===t.pid);
+      if(i>=0){ src=tm.players[i]; tm.players.splice(i,1); touched[tm.id]=1; break; }
+    }
+    if(!src) return;
+    to.players.push(src);
+    if(src.pitch){
+      to.pitchers=to.pitchers||[];
+      if(!to.pitchers.some(q=>q.id===t.pid))
+        to.pitchers.push({id:src.id,name:src.name,stf:src.pitch.stf,
+          ctl:src.pitch.ctl,sta:src.pitch.sta});
+      TEAMS.forEach(tm=>{ if(tm.id!==t.to && tm.pitchers)
+        tm.pitchers=tm.pitchers.filter(q=>q.id!==t.pid); });
+    }
+    touched[t.to]=1; n++;
+  });
+  Object.keys(touched).forEach(k=>{ if(TBYID[k]) finalizeTeam(TBYID[k]); });
+  if(n && typeof buildPitcherPool==='function') buildPitcherPool();
+  return n;
+}
+/* 한 주에 한 번 굴린다. 대부분은 아무 일도 안 일어난다. */
+function rollTrade(rng){
+  if(!ST) return [];
+  if(!Array.isArray(ST.trades)) ST.trades=[];
+  const cool=(ST.tradeRound==null)?-99:ST.tradeRound;
+  if(ST.round - cool < 4) return [];
+  if(rng() > 0.28) return [];
+
+  /* 순위표에서 위아래를 가른다 — 아래 팀이 팔고 위 팀이 산다 */
+  const rank=TEAMS.filter(t=>t.id!=='wwzw').map(t=>{
+    const st=(ST.stand&&ST.stand[t.id])||{w:0,l:0};
+    const gp=(st.w||0)+(st.l||0);
+    return {t, wr: gp? st.w/gp : 0.5, gp};
+  }).sort((a,b)=>b.wr-a.wr);
+  if(rank.length<4) return [];
+  const buyers=rank.slice(0, Math.max(2,(rank.length*0.35)|0));
+  const sellers=rank.slice(-Math.max(2,(rank.length*0.35)|0));
+  const buyer=buyers[(rng()*buyers.length)|0];
+  const seller=sellers[(rng()*sellers.length)|0];
+  if(!buyer||!seller||buyer.t.id===seller.t.id) return [];
+
+  /* 파는 쪽에서 제일 값어치 높은 사람 — 몸값이 기준이다 */
+  const pool=seller.t.players.filter(p=>{
+    if((ST.trades||[]).some(x=>x.pid===p.id)) return false;   // 이번 시즌에 이미 옮겼다
+    if((ST.leftPlayers||[]).some(r=>r&&r.pid===p.id)) return false;
+    return true;
+  });
+  if(pool.length<10) return [];        // 로스터가 얇으면 안 판다
+  const val=p=>playerValue(p, META[p.id], (ST.lgBat&&ST.lgBat[p.id])||null);
+  const target=pool.slice().sort((a,b)=>val(b)-val(a))[0];
+  if(!target) return [];
+  if(buyer.t.players.length>=16) return [];
+
+  ST.trades.push({pid:target.id, from:seller.t.id, to:buyer.t.id,
+                  round:ST.round, season:ST.seasonNo||1,
+                  name:target.name, price:Math.round(val(target))});
+  ST.tradeRound=ST.round;
+  applyTrades();
+  return [{type:'trade', title:'리그 이적',
+    body:`${seller.t.name} ${target.name} → ${buyer.t.name}`,
+    effect:`몸값 ${Math.round(val(target))}만원 · ${seller.t.name}(${(seller.wr*100).toFixed(0)}%) 에서 ${buyer.t.name}(${(buyer.wr*100).toFixed(0)}%) 로`}];
 }
 
 /* ================= 지난 경기 기록 =================
@@ -14451,9 +14862,29 @@ const FIELD_POS=['C','1B','2B','3B','SS','LF','CF','RF'];
 function roleDef(id){ return PLAY_ROLES.find(r=>r.id===(id||(ST&&ST.role)))||null; }
 /* 이도류냐 — 훈련·직접 플레이가 두 몫이 되는 자리들이 이걸 본다 */
 function isTwoWay(){ return !!(ST && ST.role==='two'); }
-/* 내가 서는 자리. 투수면 'P' */
+/* 내가 서는 자리. 투수면 'P'
+   [제보] "수비랑 주루하는건 왜 안나오냐 자꾸"
+   찾아보니 여기였다. `ST.myPos` 는 캐릭터를 만들 때 고른 **희망 자리**지
+   오늘 감독이 나를 어디에 세웠는지가 아니다. 그게 비어 있으면
+   (역할만 고르고 자리를 안 골랐거나 옛 세이브) 항상 null 이 나왔고,
+   수비 판단은 `pos && DEF_ZONE[pos]` 를 보기 때문에 **한 번도 안 떴다.**
+
+   순서를 뒤집는다.
+     ① 경기 중이면 지금 **실제로 서 있는 자리** (교체로 바뀌었을 수 있다)
+     ② 아니면 오늘 라인업에 적힌 자리
+     ③ 그것도 없으면 내가 고른 희망 자리
+   지명타자면 'DH' 를 그대로 돌려준다 — 수비를 안 나가는 게 맞다.   */
 function myPos(){
   if(!ST) return null;
+  const me=ST.playerId||MYID;
+  if(typeof LIVE!=='undefined' && LIVE && LIVE.userSide){
+    try{
+      const sl=((LIVE.userSide().slots)||[]).find(x=>x.id===me);
+      if(sl && sl.pos) return sl.pos;
+    }catch(e){}
+  }
+  const sp=(typeof lineupSpotOf==='function')?lineupSpotOf(me):null;
+  if(sp && sp.pos) return sp.pos;
   if(ST.role==='pit') return 'P';
   return ST.myPos||null;
 }
@@ -14715,29 +15146,33 @@ const PM_BLOCK={
   recruit:['선수 영입', '사람 데려오는 건 감독 일이다.'],
   meet:   ['면담',      '면담은 감독이 부른다. 부르면 그때 간다.'],
 };
-/* 내 능력치가 '실제 나' 에 얼마나 다가갔나.
-   WWZW 상수의 값이 2026시즌 실측이다 — 그게 목표선이다.
-   넘어서면 '실제보다 잘한다' 가 된다. 한계는 없다.                 */
+/* 지금 내 능력치.
+   [제보] "이거뭐지 실제 나까지 고교 졸업하니깐 꽉차있는데 이게 뭐여
+           그냥 실제 나까지를 없애고 그냥 스탯으로만 나오게 해줘"
+
+   맞는 말이다. 목표선(2026 실측)을 옆에 두는 건 실측이 있는 열넷한테만
+   되는 얘기고, 화면에서는 「/ 55」 같은 숫자가 뭘 뜻하는지도 안 보였다.
+   게다가 장부 버그로 졸업하자마자 다 차 있었으니 아무 의미가 없었다.
+   그냥 **지금 내가 얼마인지**만 보여준다. 한계는 원래 없다.       */
 function pmGoalBars(){
   const me=ST.playerId||MYID;
   const now=TBYID['wwzw'].players.find(x=>x.id===me);
-  const real=WWZW.find(x=>x.id===me);
-  if(!now||!real) return null;
+  if(!now) return null;
   const KN={con:'컨택',pow:'파워',eye:'선구',spd:'주루',def:'수비',arm:'어깨'};
   const box=el('div','pm-bars');
-  Object.keys(KN).forEach(k=>{
-    if(now[k]==null||real[k]==null) return;
-    /* 훈련이 0.1 씩 붙어서 내부값에는 소수가 남는다. 화면엔 정수만 */
-    const cur=Math.round(now[k]);
-    const pct=Math.min(140, cur/Math.max(1,real[k])*100);
-    const over=cur>real[k];
-    const row=el('div','pmb'+(over?' over':''));
-    row.innerHTML='<span class="pmb-n">'+KN[k]+'</span>'+
-      '<span class="pmb-t"><s style="width:'+Math.min(100,pct)+'%"></s>'+
-      '<u style="left:'+Math.min(100,100/Math.max(1,pct)*100>100?100:100)+'%"></u></span>'+
-      '<span class="pmb-v">'+cur+'<i>/'+real[k]+'</i></span>';
+  const bar=(nm,v)=>{
+    const cur=Math.round(v);
+    const row=el('div','pmb'+(cur>=70?' over':''));
+    row.innerHTML='<span class="pmb-n">'+nm+'</span>'+
+      '<span class="pmb-t"><s style="width:'+Math.max(2,Math.min(100,cur))+'%"></s></span>'+
+      '<span class="pmb-v">'+cur+'</span>';
     box.appendChild(row);
-  });
+  };
+  Object.keys(KN).forEach(k=>{ if(now[k]!=null) bar(KN[k], now[k]); });
+  if(now.pitch){
+    const PN={stf:'구위',ctl:'제구',sta:'체력'};
+    Object.keys(PN).forEach(k=>{ if(now.pitch[k]!=null) bar(PN[k], now.pitch[k]); });
+  }
   return box;
 }
 function renderHomePlayer(){
@@ -14809,10 +15244,9 @@ function renderHomePlayer(){
   const bars=pmGoalBars();
   if(bars){
     const bc=el('div','card');
-    bc.appendChild(el('div','card-h','실제 나까지'));
+    bc.appendChild(el('div','card-h','능력치'));
     bc.appendChild(el('p','muted',
-      '오른쪽 숫자가 <b>2026시즌 실측</b>이다. 거기까지 가면 실물과 같아지고, '+
-      '넘어서면 실제보다 잘하는 게 된다. 한계는 없다.'));
+      '훈련한 만큼 오른다. <b>한계는 없다.</b> 다만 한쪽만 올리면 몸이 못 버틴다 — 아래 「몸」 을 같이 봐라.'));
     bc.appendChild(bars);
     c.appendChild(bc);
   }
@@ -14848,6 +15282,18 @@ function renderHomePlayer(){
     if(opp) today.appendChild(el('div','pm-next',
       nx.round+'차전 · '+opp.name+' · '+(nx.homeGame?'홈':'원정')));
     c.appendChild(today);
+  }
+
+  /* ---- 2군에 내려가 있다 ---- */
+  if((ST.myFarm||0)>0){
+    const fc=el('div','card');
+    fc.appendChild(el('div','card-h','2군'));
+    const mine=ST.farmMe||{g:0,ab:0,h:0};
+    fc.appendChild(Object.assign(el('div','mystatus out'),{innerHTML:
+      '<div class="ms-big">2군 — 남은 '+ST.myFarm+'주</div>'+
+      '<div class="ms-sub">'+(mine.ab?mine.ab+'타수 '+mine.h+'안타 ('+fmt3(mine.h/mine.ab)+')':'아직 안 뛰었다')+'</div>'+
+      '<div class="ms-why">2할8푼을 넘기면 올라간다</div>'}));
+    c.appendChild(fc);
   }
 
   /* ---- 감독님, 한 번만 ----
@@ -15460,8 +15906,20 @@ function renderHome(){
          [제보] "영입한 선수가 내년되면 없어져"
          능력치를 이월하기 **전에** 올려야 한 해 훈련한 게 안 날아간다. */
       addSignedPlayers(ST);
+      /* 2군에서 올라온 사람도 방금 만든 로스터에 빠져 있다.
+         능력치를 이월하기 **전에** 올려야 한 해 훈련한 게 안 날아간다.
+         (전역 복귀·영입과 똑같은 함정이다 — 이걸로 네 번째다)      */
+      applyFarm();
       // 능력치 이월
       TBYID['wwzw'].players.forEach(p=>{ const r=keep.ratings[p.id]; if(r)Object.assign(p,r); });
+      /* 올라와 있는 2군 선수는 **명단(ST.farm)이 원본**이다.
+         로스터 객체만 고치면 다음 로드에 applyFarm 이 옛 값으로 덮는다. */
+      (ST.farm||[]).forEach(f=>{
+        if(!f||!f.up) return;
+        const p=TBYID['wwzw'].players.find(x=>x.id===f.id); if(!p) return;
+        ['con','pow','eye','spd','def','arm'].forEach(k=>{ if(p[k]!=null) f[k]=p[k]; });
+        if(p.pitch&&f.pitch) ['stf','ctl','sta'].forEach(k=>{ if(p.pitch[k]!=null) f.pitch[k]=p.pitch[k]; });
+      });
       finalizeTeam(TBYID['wwzw']); buildPitcherPool();
       ST=newSeason();
       Object.assign(ST,{career:keep.career,teamCareer:keep.teamCareer,milestones:keep.milestones,
@@ -17441,6 +17899,42 @@ function renderPlayer(){
   c.appendChild(act);
 }
 
+/* 2군 명단 — 선수단 화면 아래에 붙는다.
+   누가 치고 올라오는 중인지 보여야 주전 경쟁이 실감난다. */
+function farmCard(){
+  const F=(ST&&Array.isArray(ST.farm))?ST.farm.filter(x=>x&&!x.up):[];
+  if(!F.length) return null;
+  const card=el('div','card');
+  card.appendChild(el('div','card-h','2군 ('+F.length+'명)'));
+  card.appendChild(el('p','muted',
+    '1군에 자리가 나거나 여기서 불붙으면 올라온다. <b>내 자리도 안전하지 않다.</b>'));
+  F.slice().sort((a,b)=>farmScore(b)-farmScore(a)).forEach(p=>{
+    const hot=(p.ab>=10 && farmAvg(p)>=0.330);
+    const row=el('div','lu-ro'+(hot?' me':''));
+    const pos=(p.pos||[]).map(x=>POSNAMES[x]||x).join('·');
+    row.innerHTML='<span class="lu-n">'+p.name+
+      '<i class="lu-g">'+(p.age||26)+'세 · '+pos+(p.pitch?' · 투수':'')+'</i></span>'+
+      '<span class="lu-p">'+(p.ab?(p.ab+'타수 '+p.h+'안타 '+fmt3(farmAvg(p))):'—')+
+      (hot?' 🔥':'')+'</span>';
+    card.appendChild(row);
+  });
+  return card;
+}
+/* 리그에서 최근에 오간 사람들 */
+function tradeCard(){
+  const T=(ST&&Array.isArray(ST.trades))?ST.trades.slice(-6).reverse():[];
+  if(!T.length) return null;
+  const card=el('div','card');
+  card.appendChild(el('div','card-h','리그 이적'));
+  T.forEach(t=>{
+    const row=el('div','res-row');
+    row.innerHTML='<span class="res-opp">'+(t.name||nameOf(t.pid))+'</span>'+
+      '<span class="res-score">'+((TBYID[t.from]||{}).name||'?')+' → '+
+        ((TBYID[t.to]||{}).name||'?')+'</span>';
+    card.appendChild(row);
+  });
+  return card;
+}
 function renderSquad(){
   const c=$('#view'); c.innerHTML='';
   const tabs=el('div','subtabs');
@@ -17567,6 +18061,8 @@ function renderSquad(){
     이 선수단은 리그비의 <b>${(total/fee*100).toFixed(0)}%</b> 수준이다.<br>
     가장 비싼 선수도 회식 몇 번 값이다. 사회인야구니까.</p>`;
   c.appendChild(sum);
+  const fc=farmCard(); if(fc) c.appendChild(fc);
+  const tc=tradeCard(); if(tc) c.appendChild(tc);
 }
 
 /* ---------- 라인업 ---------- */
@@ -18735,12 +19231,14 @@ const TUT_PLAYER=[
      사회인야구를 시작하고, 못하면 밑바닥에서 올라와야 한다.<br><br>
      군포고와 흥진고는 실제 출신고다. 김선호·김상훈만 흥진고라
      그 둘로 시작하면 나머지 열둘이 전부 상대편이다.`},
- {who:'jiwoo', say:'능력치에 목표선이 있어요.',
-  t:'실제 나까지',
-  b:`홈 화면에 <b>「실제 나까지」</b> 가 있어요.<br><br>
-     오른쪽 숫자는 그 사람의 <b>2026시즌 실측 능력치</b>예요. 거기까지 가면
-     실물과 같아지고, <b class="tut-g">넘어서면 실제보다 잘하는 게</b> 돼요.<br><br>
-     한계는 없어요. 경기에 나가고 훈련한 만큼 계속 올라요.`},
+ {who:'jiwoo', say:'능력치는 한쪽만 올리면 안 돼요.',
+  t:'능력치와 몸',
+  b:`홈 화면에 <b>「능력치」</b> 와 <b>「몸」</b> 이 있어요.<br><br>
+     훈련한 만큼 계속 올라요. <b class="tut-g">한계는 없어요.</b><br><br>
+     대신 <b>파워·주루만 올리면 몸이 그 힘을 못 받아요.</b> 그게 유리몸이에요 —
+     전력질주하다 햄스트링이 가고, 크게 돌리다 허리가 나가요.
+     컨택·수비·어깨를 같이 올려야 안 다쳐요.<br><br>
+     도루도 마찬가지예요. <b>발</b>과 <b>주루 센스</b> 둘 다 있어야 돼요.`},
  {who:'ian', say:'타석은 천천히 하세요.',
   t:'타석은 내가 준비되면',
   b:`타석에 들어가도 공이 바로 안 와요. <b>「준비 됐다 ▶」</b> 를 눌러야
@@ -20370,14 +20868,19 @@ function livePlay(host, o){
   const base = HR?4 : (play.type==='3B')?3 : (play.type==='2B')?2 : isOut?0 : 1;
   const canGo = !!o.offer;                       // 한 베이스 더 노릴 수 있나
 
-  /* ---- 시간표 ---- */
-  const T_LAND  = Math.round(820 + Math.min(150,m)*9.5);
-  const T_CATCH = T_LAND + (play.gb?200:0);
-  const T_THROW = T_CATCH + 360;
-  const THROW_MS= 400;
+  /* ---- 시간표 ----
+     [제보] "치고나서 주루 선택하는거가 너무 빨리 지나가"
+     맞다. 공이 어디로 갔는지 보고 나서 손이 갈 시간이 없었다.
+     특히 **야수가 잡고 나서 던지기까지**가 0.36초였다 — 그 사이에
+     정하라는 건 무리다. 실제로도 야수는 잡고, 보고, 던진다.
+     그 구간을 0.72초로 늘리고 전체를 느긋하게 깔았다.            */
+  const T_LAND  = Math.round(1100 + Math.min(150,m)*13.5);
+  const T_CATCH = T_LAND + (play.gb?260:0);
+  const T_THROW = T_CATCH + 720;      // 잡고 · 보고 · 던진다 — 여기가 정하는 창이다
+  const THROW_MS= 460;
   /* 주자 — 한 베이스에 얼마나 걸리나. 발이 빠르면 짧다 */
-  let runMs = Math.round(1520 - ((o.spd||45)-45)*7);
-  runMs = Math.max(1120, Math.min(1780, runMs));
+  let runMs = Math.round(2150 - ((o.spd||45)-45)*10);
+  runMs = Math.max(1600, Math.min(2500, runMs));
   /* 결과와 어긋나면 안 된다.
      · 땅볼 아웃이면 송구가 먼저 닿아야 한다
      · 안타면 내가 먼저 닿아야 한다                                 */
@@ -20402,8 +20905,9 @@ function livePlay(host, o){
   /* 「돌아간다」를 누른 순간의 자리 — 여기서부터 되돌아간다 */
   let backAt=null, backFrom=0, backTo=0;
   /* 지금 내가 몇 루까지 와 있나 */
+  const trotMs=Math.round(runMs*0.52);       // 홈런 트로트는 좀 가볍게 돈다
   const runPos=(t)=>{
-    if(HR) return Math.min(4, t/runMs);
+    if(HR) return Math.min(4, t/trotMs);
     if(flyOut){
       /* 뜬공 — 잡히는 걸 보고 베이스로 돌아온다 */
       const outk=Math.min(0.72, t/runMs);
@@ -20439,8 +20943,8 @@ function livePlay(host, o){
   /* 최종 판정 문구 */
   const verdict=()=>{
     if(HR) return ['홈런!','#ffd15c'];
-    if(flyOut) return ['아웃 — 잡혔다','#e08a70'];
-    if(isOut) return ['아웃 — 1루에서','#e08a70'];
+    if(flyOut) return ['뜬공 아웃','#e08a70'];
+    if(isOut) return ['땅볼 아웃 — 1루에서','#e08a70'];
     if(play.type==='E') return ['실책 — 살았다','#7fc48f'];
     if(decided && decided.go && decided.ok)
       return ['세이프! '+(base+1)+'루까지','#ffd15c'];
@@ -20452,8 +20956,9 @@ function livePlay(host, o){
   const beat=(t)=>{
     if(HR) return t<T_LAND?['넘어간다','#e9e4d8']:null;
     if(t<T_CATCH) return null;
-    if(flyOut) return ['잡혔다 — 베이스로 돌아간다','#e08a70'];
-    if(t<T_THROW) return ['잡았다','#e9e4d8'];
+    if(flyOut) return ['뜬공 — 그대로 잡혔다','#e08a70'];
+    if(t<T_THROW) return canGo&&intent!=='go'
+      ? ['잡았다 — 지금 정해라','#ffd15c'] : ['잡았다','#e9e4d8'];
     if(t<T_THROW+THROW_MS) return [(tgtBase>=4?'홈':tgtBase+'루')+'로 송구','#ffd15c'];
     return null;
   };
@@ -20471,8 +20976,8 @@ function livePlay(host, o){
   };
   const man=(x,y,u,run,flip)=>psMan(g,x,y+7,u,run?(1+((Date.now()/100|0)%2)):0,flip,false);
 
-  const T_END=()=>Math.max(T_THROW+THROW_MS+520, runMs*Math.max(1,tgtBase)+420,
-                           HR?runMs*4+500:0);
+  const T_END=()=>HR ? (trotMs*4+600)
+    : Math.max(T_THROW+THROW_MS+620, runMs*Math.max(1,tgtBase)+460);
 
   const draw=()=>{
     if(stop) return;
@@ -20502,7 +21007,12 @@ function livePlay(host, o){
     if(HR){
       bp=lerp({x:HX,y:HY},{x:HX+Math.cos(rad)*fence*1.28, y:HY+Math.sin(rad)*fence*1.28},
               Math.min(1,t/(T_LAND*1.25)));
-    } else if(t<T_THROW){
+    } else if(t<T_THROW || flyOut){
+      /* [제보] "뜬볼 아웃이 없네 저거"
+         엔진에는 멀쩡히 나오고 있었다(아웃의 43%). 화면이 문제였다 —
+         뜬공을 잡고 나서 **1루로 송구하는 그림**을 그렸다. 그러니
+         땅볼이랑 구분이 안 갔다. 뜬공을 잡으면 그걸로 끝이다.
+         공은 야수 손에 있고 송구는 없다.                            */
       bp=lerp({x:HX,y:HY}, land, seg(t,0,T_LAND));
     } else {
       const tg=(tgtBase>=4)?{x:HX,y:HY}:PS_B[Math.min(3,tgtBase)];
@@ -20510,7 +21020,7 @@ function livePlay(host, o){
     }
     g.strokeStyle='rgba(255,255,255,.28)'; g.lineWidth=1.5;
     g.beginPath(); g.moveTo(HX,HY); g.lineTo(land.x,land.y); g.stroke();
-    if(t>=T_THROW && !HR){
+    if(t>=T_THROW && !HR && !flyOut){
       const tg=(tgtBase>=4)?{x:HX,y:HY}:PS_B[Math.min(3,tgtBase)];
       g.strokeStyle='rgba(255,209,92,.55)';
       g.beginPath(); g.moveTo(land.x,land.y); g.lineTo(bp.x,bp.y); g.stroke();
@@ -21359,6 +21869,13 @@ function teamOdds(){
 }
 
 function makeLive(){
+  /* 라인업이 아홉이 아니면 경기가 안 굴러간다 — 들어가기 전에 막는다 */
+  if(!Array.isArray(ST.lineup) || ST.lineup.length!==9){
+    if(TBYID['wwzw'].players.filter(p=>isAvailable(p.id)).length>=9){
+      ST.lineup=recommendLineup();
+      if(typeof applyDHRule==='function') applyDHRule();
+    }
+  }
   sanitizeRotation();
   ST.gameRotation=gameRotation();     // 이번 경기 등판 순서 스냅샷
   /* 지명타자를 안 쓰면 타순의 투수 자리에 '실제로 던질 사람'이 앉아야 한다.
@@ -24055,8 +24572,10 @@ function renderSwing(box, d){
     box2.appendChild(stage);
     box2.appendChild(Object.assign(el('div','rb-bar'),{innerHTML:'<i></i>'}));
     const note=el('div','rb-note', offer
-      ? '뛰는 중이다 — 한 베이스 더 갈 거면 지금 눌러라'
-      : (play.gb?'땅볼 — 1루까지 뛴다':'타구를 끝까지 본다'));
+      ? '뛰는 중이다 — 한 베이스 더 갈 거면 야수가 던지기 전에 눌러라'
+      : (play.type==='OUT'
+        ? (play.gb?'땅볼 — 1루까지 뛴다':'뜬공 — 잡히면 베이스로 돌아간다')
+        : '타구를 끝까지 본다'));
     box2.appendChild(note);
     const row=el('div','rb-row');
     box2.appendChild(row);
@@ -28870,6 +29389,8 @@ function normalizeState(){
      [제보] "영입한 선수가 내년되면 없어져" */
   migrateSignedIds(ST);
   addSignedPlayers(ST);
+  applyFarm();               // 2군에서 올라온 사람도 상수에 없다 — 매번 다시 얹는다
+  applyTrades();             // 리그 이적도 상수에 없다 — 매번 다시 옮긴다
   finalizeTeam(us);
   buildPitcherPool();
   /* 이름 장부 — 나중에 팀을 나가도 기록에 이름이 남게 한다.
@@ -28893,6 +29414,13 @@ function normalizeState(){
   if(typeof ST.myGuarantee!=='number')ST.myGuarantee=0;
   if(typeof ST.myBenched!=='number')ST.myBenched=0;
   if(ST.myDeal===undefined)ST.myDeal=null;
+  /* [v2.76.0] 2군 */
+  if(!Array.isArray(ST.farm))ST.farm=[];
+  if(typeof ST.myFarm!=='number')ST.myFarm=0;
+  if(ST.farmMe===undefined)ST.farmMe=null;
+  if(typeof ST.farmMove!=='number')ST.farmMove=-99;
+  if(!Array.isArray(ST.trades))ST.trades=[];
+  if(typeof ST.tradeRound!=='number')ST.tradeRound=-99;
   if(ST.myTrain && !PM_TRAIN.some(x=>x.id===ST.myTrain)) ST.myTrain=null;
   if(!ST.myTrain) ST.myTrain='team';                // [v2.65.0] 기본은 팀 훈련
   if(!ST.names)ST.names={};
@@ -29058,12 +29586,26 @@ function normalizeState(){
   if(!ST.dropouts)ST.dropouts=[];
   if(ST.lineupDirty==null)ST.lineupDirty=false;
   if(typeof ST.umpBias!=='number')ST.umpBias=0;     // [v2.72.0] 오늘 심판의 존
-  /* [v2.73.0] 내 능력치 장부. 옛 세이브에는 없다 —
-     지금 로스터 값(졸업 능력치까지 얹힌 상태)으로 만들어 둔다.
-     여태 훈련으로 올린 건 이미 날아갔지만 여기서부터는 안 날아간다. */
-  if(ST.mode==='player' && !ST.myRatings){
-    try{ myRatingsSave(); }catch(e){}
+  /* [버그 2.73.0~2.75.0] 여기서 장부를 만들고 있었다. 그런데 부팅 순서가
+       normalizeState() → applyHsStart() → applyMyRatings()
+     라서, **졸업 능력치를 얹기 전의 실측값**을 장부에 떠 놓고
+     그 뒤에 그걸 도로 얹어버렸다. 고등학교를 아무리 못해도 졸업하자마자
+     2026 실측 능력치가 그대로 붙었다 — 「실제 나까지」 가 꽉 차 있던 게
+     그것 때문이다.
+     장부는 **실제로 값이 바뀔 때**(훈련·부상) 처음 생기면 된다.
+     그전까지는 applyHsStart 가 매번 졸업 능력치를 다시 얹어준다.   */
+  if(ST.mode==='player' && ST.myRatings && ST.hsRatings && !ST.myRatingsOK){
+    /* 그 버그로 실측값이 박힌 장부는 버린다 — 졸업 능력치로 되돌린다 */
+    const meFix=ST.playerId||MYID;
+    const realFix=(typeof WWZW!=='undefined')?WWZW.find(x=>x.id===meFix):null;
+    const R0=ST.myRatings, H0=ST.hsRatings;
+    const same=realFix && ['con','pow','eye','spd','def','arm']
+      .every(k=>R0[k]==null||realFix[k]==null||Math.abs(R0[k]-realFix[k])<0.001);
+    const grew=['con','pow','eye','spd','def','arm']
+      .some(k=>R0[k]!=null&&H0[k]!=null&&R0[k]>H0[k]+0.001);
+    if(same && !grew) ST.myRatings=null;
   }
+  if(ST.mode==='player') ST.myRatingsOK=true;
   if(typeof ST.ballLive!=='boolean')ST.ballLive=false;
   if(!ST.ultimatum)ST.ultimatum={};
   if(!ST.broken)ST.broken={};

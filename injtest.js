@@ -14,7 +14,10 @@ const mk=()=>{const v2=new VirtualConsole();v2.on('jsdomError',()=>{});
 const dom=new JSDOM(html,{runScripts:'dangerously',pretendToBeVisual:true,url:'https://x.test/',virtualConsole:vc});
 dom.window.scrollTo=()=>{};dom.window.confirm=()=>true;
 const w=dom.window,d=w.document,ev=s=>w.eval(s);
-const T=(n,f)=>{try{const r=f();const ok=!!r&&!(typeof r==='string'&&r[0]==='!');
+const T=(n,f)=>{try{const r=f();
+  if(r&&typeof r.then==='function'){ return r.then(v=>{
+    const ok=!!v&&!(typeof v==='string'&&v[0]==='!');
+    console.log((ok?'  ✅ ':'  ❌ ')+n+(typeof v==='string'?' :: '+v:''));if(!ok)errs.push(n); }); }const ok=!!r&&!(typeof r==='string'&&r[0]==='!');
   console.log((ok?'  ✅ ':'  ❌ ')+n+(typeof r==='string'?' :: '+r:''));if(!ok)errs.push(n);}
   catch(e){console.log('  ❌ '+n+' :: '+e.message);errs.push(n)}};
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
@@ -176,8 +179,23 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   const powB=eb("TBYID['wwzw'].players.find(x=>x.id==='ksh').pow");
   T('훈련·부상으로 바뀐 능력치가 새로고침을 넘어간다',
     ()=>Math.abs(powA-powB)<1e-9 ? `${powA} → ${powB}` : `!${powA} vs ${powB}`);
-  const raw=eb("(function(){var q=JSON.parse("+JSON.stringify(code)+"); delete q.myRatings; ST=q; normalizeState(); return ST.myRatings? '만들었다':'없다';})()");
-  T('옛 세이브는 장부를 지금 값으로 만들어 준다', ()=>raw==='만들었다'?raw:'!'+raw);
+  /* [버그 2.73.0~2.75.0] 예전에는 normalizeState 에서 장부를 만들었다.
+     그런데 부팅 순서가 normalizeState → applyHsStart → applyMyRatings 라,
+     **졸업 능력치를 얹기 전의 실측값**을 떠 놓고 그걸 도로 얹었다.
+     고등학교를 아무리 못해도 졸업하면 2026 실측이 그대로 붙었다.
+     이제 장부는 실제로 값이 바뀔 때(훈련·부상)만 생긴다.           */
+  const raw=eb("(function(){var q=JSON.parse("+JSON.stringify(code)+"); delete q.myRatings; ST=q; normalizeState(); return ST.myRatings? '만들었다':'안 만든다';})()");
+  T('옛 세이브에 장부를 함부로 만들지 않는다', ()=>raw==='안 만든다'?raw:'!'+raw);
+  T('고교를 못 치면 졸업 능력치가 낮게 남는다 (실측이 안 덮는다)', ()=>ev(`(function(){
+    ST.myRatings=null; ST.myRatingsOK=false;
+    ST.hs={i:0,done:false,res:[],bat:blankBat(),pit:blankPit(),moments:[],
+           pending:null,eff:{},picks:[],picked:{}};
+    ST.hs.bat.g=6; ST.hs.bat.pa=20; ST.hs.bat.ab=18; ST.hs.bat.h=2;
+    hsGraduate();
+    var real=WWZW.find(function(x){return x.id==='ksh';}).pow;
+    var now=TBYID['wwzw'].players.find(function(x){return x.id==='ksh';}).pow;
+    return now < real*0.85 ? ('졸업 '+now+' · 실측 '+real) : ('!'+now+'/'+real+' — 실측이 덮었다');
+  })()`));
 
   console.log('\n[도루는 발과 눈치 둘 다]');
   T('주루 센스가 스탯으로 있다', ()=>ev(`(function(){
