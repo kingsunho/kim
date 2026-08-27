@@ -1,0 +1,23 @@
+const {JSDOM,VirtualConsole}=require('jsdom');
+const html=require('fs').readFileSync('index.html','utf8');
+const mk=()=>{const vc=new VirtualConsole();vc.on('jsdomError',()=>{});
+  const dom=new JSDOM(html,{runScripts:'dangerously',pretendToBeVisual:true,url:'https://x.test/',virtualConsole:vc});
+  dom.window.scrollTo=()=>{};dom.window.confirm=()=>true;return dom;};
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+(async()=>{
+  const A=mk(); const wa=A.window, da=wa.document, ea=s=>wa.eval(s);
+  await wait(900);
+  da.querySelectorAll('.pickcard')[0].click(); await wait(80);
+  [...da.querySelectorAll('#view .btn')].find(b=>b.textContent==='이 선수로 시작').click();
+  await wait(400);
+  ea("ST.mode='player'; ST.playerId='ksh'; ST.role='bat'; ST.myTrain='bat';");
+  console.log('훈련 전 pow=', ea("TBYID['wwzw'].players.find(p=>p.id==='ksh').pow"));
+  ea("for(var i=0;i<8;i++) applyMyTrain();");
+  console.log('훈련 후 pow=', ea("TBYID['wwzw'].players.find(p=>p.id==='ksh').pow"), '장부=', ea("ST.myRatings&&ST.myRatings.pow"));
+  const code=ea("JSON.stringify(ST)"); A.window.close();
+  const B=mk(); const eb=s=>B.window.eval(s);
+  await wait(900);
+  eb("ST=JSON.parse("+JSON.stringify(code)+"); normalizeState(); applyHsStart(); applyMyRatings();");
+  console.log('새로고침 후 pow=', eb("TBYID['wwzw'].players.find(p=>p.id==='ksh').pow"));
+  process.exit(0);
+})();

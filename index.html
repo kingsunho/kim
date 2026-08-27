@@ -1698,6 +1698,14 @@ table.hl-tbl td.hl-o{color:#c98a80}
 .hs-pres span{display:block;font-size:12.5px;color:#9fb0c4;line-height:1.65}
 .hs-pres.good{border-left-color:#7fc48f}
 .hs-pres.bad{border-left-color:#e08a70}
+/* 몸 상태 — 균형이 무너지면 빨갛게 */
+.bd-ok{color:#7fc48f}.bd-mid{color:#c9a227}.bd-low{color:#e8a06c}.bd-bad{color:#e08a70}
+.bdbar{display:flex;align-items:center;gap:9px;margin:9px 0}
+.bdbar .bd-t{flex:1;height:9px;border-radius:5px;background:#161b22;overflow:hidden;
+  border:1px solid #2a323d}
+.bdbar .bd-t s{display:block;height:100%;text-decoration:none;
+  background:linear-gradient(90deg,#2f8f4e,#c9a227 55%,#e08a70)}
+.bdbar .bd-v{font-size:11.5px;font-weight:800;min-width:92px;text-align:right}
 .hs-prog i.st{opacity:.55}
 .hs-prog{display:flex;gap:5px;justify-content:center;margin:12px 0;flex-wrap:wrap}
 .hs-prog i{flex:1;max-width:46px;text-align:center;font-style:normal;font-size:11px;
@@ -7652,8 +7660,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.72.1';
-const APP_VERSION_NOTE = '「돈다」가 공을 되감던 것 · 선수 모드에 감독창이 뜨던 것';
+const APP_VERSION = '2.73.0';
+const APP_VERSION_NOTE = '몸이 안 받쳐주면 다친다 · 교체엔 이유가 있다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7674,6 +7682,17 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.73.0', t:'몸이 안 받쳐주면 다친다 · 교체엔 이유가 있다', items:[
+    '[버그] **선수 모드 훈련으로 올린 능력치가 새로고침하면 전부 사라지고 있었다.** 로스터는 세이브에 없다 — 매번 상수에서 새로 만들어지는데, 훈련은 그 로스터 객체에만 +1.0 을 더하고 끝냈다. 여덟 주를 훈련해서 파워 55 → 61 을 만들어도 탭을 닫았다 켜면 55 였다. 이제 바뀔 때마다 장부에 적고 불러올 때마다 다시 얹는다. 여태 날아간 건 못 되돌리지만 여기서부터는 안 날아간다',
+    '[요청] "부상도 넣자 선수모드에서만 그래서 스탯 올릴때 파워만 올리거나 그러면 수비나 유리몸 되는거지" — 넣었다. **밀어내는 힘**(파워·주루)이 **받쳐주는 몸**(컨택·수비·어깨)보다 크게 앞서면 그게 유리몸이다. 균형 잡힌 몸은 한 시즌에 한 번 다칠까 말까고, 파워만 찍어놓으면 서너 경기에 한 번씩 어딘가 나간다',
+    '무엇을 하다 다쳤는지가 부상을 정한다 — 전력질주면 햄스트링, 크게 돌린 스윙이면 허리·옆구리, 급한 송구면 어깨·팔꿈치, 슬라이딩이면 발목, 허둥지둥 쫓아가면 무릎. 열 종류다',
+    '회복하고 나서도 **그 자리가 깎인 채로** 돌아온다. 허리를 다치면 파워가, 어깨를 다치면 어깨가 남는다. 훈련으로 도로 올리면 된다 — 그게 이 모드의 리듬이다',
+    '홈 화면과 훈련 화면에 「몸」 칸이 생겼다. 지금 얼마나 치우쳤는지가 항상 보인다. 안 보이면 파워만 찍다가 어느 날 갑자기 다치는 게 된다. 「몸 만들기」 훈련도 새로 넣었다 — 능력치는 찔끔 오르는데 안 다치게 된다',
+    '[제보] "선수모드 중에 5경기 연속 안타였는데 2회 수비때 교체되서 한타석도 못서서 기록 깨진경우가 생겼대" — **한 타석도 못 서고는 안 뺀다.** 연속 안타가 걸려 있으면 오늘 안타를 칠 때까지 안 뺀다. 기록은 그렇게 깨지는 게 아니다',
+    '[제보] "교체를 하려면 납득 가능한 이유가 나오면 좋을듯 감독이 멘트 치고 넌 이래서 교체다 하면서 교체 당하는거지" — 맞는 말이다. 로그 한 줄로 「교체 · 김상훈 → 이승민」 이 지나가면 그건 통보지 야구가 아니다. 이제 감독이 앞에 서서 말한다 — 오늘 무안타라서인지, 점수가 벌어져서인지, 몸이 안 좋아 보여서인지, 후배도 한 타석은 서야 해서인지',
+    '다쳐서 빠질 때는 왜 그렇게 됐는지까지 같이 짚어준다. 그게 다음 주에 무슨 훈련을 할지 정하는 정보가 된다',
+    '설정에서 부상을 끌 수 있다. 끄면 능력치를 어떻게 올리든 상관없어진다',
+  ]},
   {v:'2.72.1', t:'「돈다」가 공을 되감던 것 · 선수 모드에 감독창이 뜨던 것', items:[
     '[제보] "돈다 누르는 순간 공 초기화 되면서 타구가 빠르게 가서 잡히던데 돈다 버튼이 뭔가 초기화같음" — 진짜였다. 1막에서 공이 이미 외야까지 날아가 있는데 2막이 그걸 무시하고 홈플레이트에서 다시 날렸다. 그것도 남은 시간에 맞춰 빠르게. 이제 공도, 쫓는 야수도, 1루로 뛰는 나도 전부 **1막이 끝난 그 자리에서 이어 간다.** 되감기가 없다',
     '고를 게 없는 타구는 1막을 아예 건너뛴다. 예전엔 조건을 잘못 달아서 같은 타구를 두 번 날리고 3초를 멍하니 기다렸다',
@@ -9757,6 +9776,7 @@ function LiveGame(cfg){
      그날 심판이 존을 어떻게 보는지가 미리 정해져 있다. 앞 경기를 본
      사람이 알려준 그 소문이 실제로 판정에 붙는다.                  */
   this._umpBias = cfg.umpBias||0;
+  this.myStreak = cfg.myStreak||0;   // 내 연속 안타 경기 수 (교체 보호에 쓴다)
   if(cfg.ballLive){                // 새 공 — 잘 뻗는다
     this.park={...this.park, d2:this.park.d2*1.10, d3:this.park.d3*1.08,
                hr:this.park.hr*1.10};
@@ -10299,6 +10319,8 @@ LiveGame.prototype.resolveStretch = function(go, risk){
     if(this._lastPlay) this._lastPlay.stretched=false;
     return {go:false, ok:true, type:of.hit};
   }
+  /* 전력질주 — 몸이 안 받쳐주면 여기서 간다 */
+  if(of.batId===(this.myId||(ST&&ST.playerId))) this.rollMyInjury('전력질주', 1.6);
   const ok = this.rng() < stretchOdds(of.hit, bat, of.defTeam, risk);
   if(this.bases[from]===of.batId) this.bases[from]=null;
   if(ok){
@@ -10360,9 +10382,238 @@ LiveGame.prototype.runPickoff = function(back){
   return {out:false, name:rn.name};
 };
 
+/* ================= 몸 — 편중되면 부러진다 =================
+   [요청] "부상도 넣자 선수모드에서만 그래서 스탯 올릴때 파워만 올리거나
+           그러면 수비나 유리몸 되는거지 약간 뭔말알? 더쇼 rtts 약간
+           선수 강화 느낌이지"
+
+   맞는 말이다. 파워만 올리면 그 힘을 받아줄 몸이 안 따라온다.
+   **밀어내는 힘**(파워·주루)이 **받쳐주는 몸**(컨택·수비·어깨)보다
+   크게 앞서면 그게 유리몸이다. 균형을 맞추면 거의 안 다친다.
+
+   여기가 이 모드의 값이다 — 파워만 찍는 게 제일 빠른데 제일 위험하다.
+   그래서 매주 무슨 훈련을 할지가 진짜 선택이 된다.
+
+   [선수 모드에서만 돈다.] 감독 모드는 예전 그대로 — 열넷을 굴리는데
+   내 몸 관리를 시키는 건 다른 게임이다.                            */
+function bodyLoad(p){
+  if(!p) return 0;
+  const push=(p.pow*1.15 + p.spd*0.85)/2;                 // 밀어내는 힘
+  const hold=(p.con*0.90 + p.def*0.95 + p.arm*0.75)/2.6;  // 받쳐주는 몸
+  return Math.max(0, Math.min(1.4, (push-hold)/34));
+}
+function bodyLabel(v){
+  return v<0.18 ? ['균형 잡힌 몸','ok']
+       : v<0.45 ? ['조금 치우쳤다','mid']
+       : v<0.80 ? ['몸이 못 따라간다','low']
+                : ['유리몸','bad'];
+}
+/* 무엇을 하다 다치는가. cause 로 갈라서 그 장면에 맞는 부상이 나오게 한다.
+   hit 은 회복하고 나서도 남는 자국이다 — 훈련으로 도로 올리면 된다.  */
+const PM_INJURIES=[
+  {id:'ham',  name:'햄스트링 근육통', min:1,max:3, cause:'전력질주', hit:{spd:-4},
+   line:'베이스를 돌다 뒷허벅지를 잡았다'},
+  {id:'calf', name:'종아리 경직',     min:1,max:2, cause:'전력질주', hit:{spd:-3},
+   line:'뛰다 말고 종아리를 주무른다'},
+  {id:'wrist',name:'손목 염좌',       min:1,max:2, cause:'스윙',     hit:{con:-3},
+   line:'크게 헛돌리고 손목을 털었다. 잘 안 펴진다'},
+  {id:'back', name:'허리 담',         min:1,max:3, cause:'스윙',     hit:{pow:-4},
+   line:'다 돌리고 나서 허리를 짚고 못 일어난다'},
+  {id:'obliq',name:'옆구리 결림',     min:2,max:4, cause:'스윙',     hit:{pow:-3,con:-2},
+   line:'스윙하다 옆구리를 잡았다. 숨 쉴 때마다 아프다'},
+  {id:'shldr',name:'어깨 통증',       min:2,max:4, cause:'송구',     hit:{arm:-4},
+   line:'던지고 나서 어깨를 계속 돌린다'},
+  {id:'elbow',name:'팔꿈치 통증',     min:2,max:5, cause:'송구',     hit:{arm:-3,ctl:-3},
+   line:'팔꿈치를 접었다 폈다 한다. 표정이 안 좋다'},
+  {id:'ankle',name:'발목 접질림',     min:2,max:4, cause:'슬라이딩', hit:{spd:-3,def:-2},
+   line:'슬라이딩하다 베이스에 발이 걸렸다'},
+  {id:'knee', name:'무릎 통증',       min:2,max:5, cause:'수비',     hit:{spd:-3,def:-3},
+   line:'타구를 쫓다 무릎이 꺾였다'},
+  {id:'fingr',name:'손가락 타박상',   min:1,max:2, cause:'수비',     hit:{def:-2},
+   line:'글러브 위로 공을 맞았다. 손가락이 부었다'},
+];
+/* 부상이 남긴 자국을 능력치에 새긴다.
+   회복하면 뛸 수는 있는데 **그 자리가 깎인 채로** 돌아온다.
+   훈련으로 도로 올리면 된다 — 그게 이 모드의 리듬이다.
+   [주의] 반드시 장부(myRatings)에 적어야 한다. 로스터 객체만 고치면
+   새로고침 한 번에 없던 일이 된다.                                 */
+function injHitText(hit){
+  const KN={con:'컨택',pow:'파워',eye:'선구',spd:'주루',def:'수비',arm:'어깨',
+            stf:'구위',ctl:'제구',sta:'체력'};
+  return Object.keys(hit||{}).map(k=>`${KN[k]||k} ${hit[k]}`).join(' · ');
+}
+function applyInjuryHit(pid, pm){
+  if(typeof ST==='undefined'||!ST||!pm||!pm.hit) return 0;
+  const me=ST.playerId||MYID;
+  if(pid!==me) return 0;                       // 자국은 내 선수한테만 남는다
+  const p=TBYID['wwzw'].players.find(x=>x.id===pid); if(!p) return 0;
+  Object.keys(pm.hit).forEach(k=>{
+    const d=pm.hit[k];
+    if(k==='stf'||k==='ctl'||k==='sta'){
+      if(p.pitch&&p.pitch[k]!=null) p.pitch[k]=Math.max(10, p.pitch[k]+d);
+    } else if(p[k]!=null){
+      p[k]=Math.max(8, p[k]+d);
+    }
+  });
+  ['con','pow','eye','spd','def','arm'].forEach(k=>{ if(p[k]!=null) p[k]=Math.round(p[k]*10)/10; });
+  if(p.pitch) ['stf','ctl','sta'].forEach(k=>{ p.pitch[k]=Math.round(p.pitch[k]*10)/10; });
+  finalizeTeam(TBYID['wwzw']);
+  if(typeof buildPitcherPool==='function') buildPitcherPool();
+  myRatingsSave();                             // 안 적으면 새로고침에 없던 일이 된다
+  return 1;
+}
+
+/* 경기 중에 굴린다. 한 경기에 한 번만 다친다 — 두 번 다치면 그건 사고다. */
+LiveGame.prototype.rollMyInjury = function(cause, mult){
+  if(!this.manual || this._myHurt) return null;
+  if(!(typeof isPlayerMode==='function' && isPlayerMode())) return null;
+  if(typeof ST==='undefined' || !ST || ST.injMode==='off') return null;
+  const me=this.myId||(ST&&ST.playerId); if(!me) return null;
+  const side=this.userSide();
+  const p=(side.team.players||[]).find(x=>x.id===me); if(!p) return null;
+  const load=bodyLoad(p);
+  const cond=(ST.cond&&ST.cond[me]!=null)?ST.cond[me]:70;
+  const mm=(typeof META!=='undefined')?META[me]:null;
+  /* 균형 잡힌 몸이면 한 시즌에 한 번 다칠까 말까다.
+     파워만 찍어 놓으면 서너 경기에 한 번씩 어딘가 나간다.          */
+  let pr=0.0040*(mult||1);
+  pr *= (1+load*3.0);
+  pr *= (cond<55 ? 1.7 : (cond<70 ? 1.25 : 1));
+  if(mm && mm.traits.includes('유리몸')) pr*=1.8;
+  if(mm && mm.traits.includes('철강'))   pr*=0.45;
+  pr=Math.min(0.11, pr);
+  if(this.rng()>=pr) return null;
+  const pool=PM_INJURIES.filter(x=>x.cause===cause);
+  const list=pool.length?pool:PM_INJURIES;
+  const inj=list[Math.min(list.length-1,(this.rng()*list.length)|0)];
+  const games=inj.min+((this.rng()*(inj.max-inj.min+1))|0);
+  this._myHurt={id:inj.id, name:inj.name, games:Math.max(1,games),
+                hit:inj.hit, line:inj.line, cause, load};
+  this.log.push({t:'me', text:`⚠ ${p.name} — ${inj.line}`});
+  this.log.push({t:'me', text:`${inj.name}. 그 자리에서 빠진다`});
+  /* [주의] 여기서 바로 라인업을 건드리면 안 된다.
+     스윙하다 다치는 판정은 **타석 한가운데**서 돈다. 그 자리에서 slots 를
+     갈아버리면 엔진이 그 타석을 다른 사람 이름으로 굴린다.
+     그래서 예약만 하고, 타석이 끝나는 자리(step)에서 실제로 뺀다.   */
+  this._hurtPending=true;
+  this.injuries.push({id:me, roll:this.rng(), why:'몸', pm:this._myHurt});
+  return this._myHurt;
+};
+/* 예약된 부상 교체를 안전한 자리에서 실행한다 (타석과 타석 사이) */
+LiveGame.prototype.flushHurt = function(){
+  if(!this._hurtPending) return false;
+  this._hurtPending=false;
+  const h=this._myHurt;
+  return this.subOutMe('injury', h?h.name:'부상');
+};
+
+/* ================= 교체엔 이유가 있다 =================
+   [제보] "선수모드 중에 5경기 연속 안타였는데 2회 수비때 교체되서
+           한타석도 못서서 기록 깨진경우가 생겼대 교체를 하려면 납득
+           가능한 이유가 나오면 좋을듯 감독이 멘트 치고 넌 이래서
+           교체다 하면서 교체 당하는거지"
+
+   두 가지를 같이 고친다.
+     ① **한 타석도 못 서고는 안 뺀다.** 기록이 걸려 있으면 더 안 뺀다.
+        타석에 한 번은 세워놓고 빼는 게 사람이 하는 짓이다.
+     ② 뺄 때는 **왜 뺐는지 감독이 말한다.** 그 말을 화면에 띄운다.   */
+const SUB_WHY={
+  nohit:  {t:'오늘은 안 맞는 날이다',
+    lines:['오늘은 방망이가 안 나가네. 다음 주에 보자',
+           '오늘 컨디션 아닌 것 같다. 쉬어라',
+           '무리하지 마라. 길게 보자']},
+  blowout:{t:'이미 벌어졌다',
+    lines:['오늘 됐다. 애들도 좀 뛰어야지',
+           '점수 벌어졌으니까 돌리자. 수고했다',
+           '이 정도면 충분하다. 앉아서 봐라']},
+  losing: {t:'오늘은 접는다',
+    lines:['오늘은 접자. 다음 주가 중요하다',
+           '괜히 다치지 말고 빠져 있어라',
+           '오늘은 여기까지. 다음 주에 제대로 하자']},
+  cond:   {t:'몸이 안 좋아 보인다',
+    lines:['너 몸 안 좋아 보인다. 빼자',
+           '아까부터 절뚝거리는 것 같은데. 들어와라',
+           '무리하면 다음 주도 못 나온다']},
+  chance: {t:'쟤도 한 타석은 서야 한다',
+    lines:['쟤도 오늘 나왔는데 한 타석은 서야지',
+           '오늘 나온 애들 다 한 번씩은 돌리자',
+           '너는 다음 주에 많이 나가면 된다']},
+  injury: {t:'다쳤다',
+    lines:['됐다 그만해라. 병원부터 가라',
+           '무리하지 마라. 시즌 길다',
+           '지금 빼는 게 낫다. 억지로 뛰면 더 간다']},
+};
+/* 상황을 보고 이유를 고른다 */
+LiveGame.prototype.subReasonKey = function(outId){
+  const us=this.userSide(), th=this.oppSide();
+  const diff=us.runs-th.runs;
+  const b=this.box[outId];
+  const cond=(typeof ST!=='undefined'&&ST&&ST.cond)?(ST.cond[outId]||70):70;
+  if(cond<48) return 'cond';
+  if(diff>=7) return 'blowout';
+  if(diff<=-7) return 'losing';
+  if(b && b.ab>=2 && !b.h) return 'nohit';
+  return 'chance';
+};
+LiveGame.prototype.sayWhySub = function(outId, key){
+  const K=SUB_WHY[key]||SUB_WHY.chance;
+  const line=pickOne(K.lines, this.rng);
+  const cid=(typeof coachId==='function')?coachId():null;
+  const cname=cid?this.nameOf(cid):'감독';
+  this.log.push({t:'mgr', text:`${cname}: "${line}"`});
+  return {key, title:K.t, line, coach:cid, cname};
+};
+/* 내 선수를 지금 빼도 되나.
+   한 타석도 못 섰으면 안 된다. 연속 안타가 걸려 있으면 오늘 안타를
+   칠 때까지 안 된다 — 기록은 그렇게 깨지는 게 아니다.              */
+LiveGame.prototype.protectMe = function(side, id){
+  if(!id || !side || !side.isUser) return false;
+  if(!(typeof isPlayerMode==='function' && isPlayerMode())) return false;
+  const me=this.myId||(typeof ST!=='undefined'&&ST?ST.playerId:null);
+  if(id!==me) return false;
+  const b=this.box[id];
+  if(!b || !b.pa) return true;                       // 한 타석도 못 섰다
+  if((this.myStreak||0)>=3 && !b.h) return true;     // 기록이 걸려 있다
+  return false;
+};
+/* 내가 라인업에서 빠진다 — 부상·교체가 같이 쓴다 */
+LiveGame.prototype.subOutMe = function(key, detail){
+  const s=this.userSide();
+  const me=this.myId||(typeof ST!=='undefined'&&ST?ST.playerId:null);
+  if(!me || !s || !s.slots) return false;
+  const i=s.slots.findIndex(x=>x.id===me);
+  if(i<0) return false;
+  const pos=s.slots[i].pos;
+  const bench=(this.benchPool||[]).filter(id=>this.canEnter(s,id));
+  const inId=bench.find(id=>(typeof posFit==='function')?posFit(id,pos)>0:true)||bench[0];
+  const why=this.sayWhySub(me, key);
+  if(inId){
+    s.slots[i]={id:inId,pos};
+    if(!this.box[inId]) this.box[inId]=newBoxL();
+    this.noteSub(s,i,inId,me,pos,key==='injury'?'부상 교체':'교체');
+    this.log.push({t:'sub',
+      text:`${key==='injury'?'부상 교체':'교체'} · ${this.nameOf(me)} → ${this.nameOf(inId)} (${POSNAMES[pos]||pos})`});
+  } else {
+    this.log.push({t:'sub',text:`${this.nameOf(me)}을(를) 빼야 하는데 바꿔줄 사람이 없다. 그대로 간다`});
+    return false;
+  }
+  /* 화면에 띄울 거리 — detectDecision 이 이걸 보고 장면을 하나 낸다 */
+  this._benched={why, detail:detail||'', pos, inId,
+    ab:(this.box[me]||{}).ab||0, h:(this.box[me]||{}).h||0,
+    inning:this.inning, injury:key==='injury'};
+  return true;
+};
+
 /* 판단 지점 탐지 */
 LiveGame.prototype.detectDecision = function(){
   if(this.pending) return this.pending;
+  /* 교체당했다 — 감독이 왜 뺐는지 듣는다.
+     [제보] "감독이 멘트 치고 넌 이래서 교체다 하면서 교체 당하는거지"
+     이건 그 타석에 다른 판단을 했는지와 상관이 없다. 그래서 맨 위다. */
+  if(this.manual && this._benched && !this._benchedShown){
+    this._benchedShown=true;
+    return {kind:'benched', b:this._benched};
+  }
   // 이 타석에서 이미 물어봤으면 타석이 끝날 때까지 다시 묻지 않는다
   if(this.paSeq===this.lastDecPA) return null;
   const off=this.off();
@@ -10512,6 +10763,7 @@ LiveGame.prototype.tickTactics = function(offWasUser){
 /* 한 타석 진행 — 실제 계산은 stepPA, step 은 지시 만료를 처리하는 껍데기 */
 LiveGame.prototype.step = function(){
   if(this.over) return {done:true};
+  this.flushHurt();                 // 다친 사람은 다음 타석 전에 뺀다
   if(this.pending) return {pending:this.pending};
   const offWasUser=this.off().isUser;
   this._paDone=false;
@@ -10557,6 +10809,8 @@ LiveGame.prototype.stepPA = function(){
       const att=clamp(LG.SB_PER_PA*LG.SB_MULT*off.team.tend.sb*runMul
                       *Math.exp((rn.spd-LG.SB_SPD_MID)*LG.SB_SPD_K),0,plan&&plan.go?1:LG.SB_MAX);
       if(rng()<att){
+        /* 슬라이딩 — 발목이 제일 많이 간다 */
+        if(rn.id===(this.myId||(ST&&ST.playerId))) this.rollMyInjury('슬라이딩', 1.4);
         let su=clamp(LG.SB_SUCCESS+leadB+(rn.spd-LG.SB_SU_MID)*0.0030-(def.cArm-46)*0.0060,0.45,0.99);
         /* 포수가 던지기로 했나. 던지면 잡을 확률이 오르는 대신
            빠뜨리면 한 베이스를 더 준다. 안 던지면 그냥 보낸다.      */
@@ -11074,6 +11328,9 @@ LiveGame.prototype.benchRotation = function(){
     if(sl.pos==='P') return;                              // 투수는 안 뺀다
     if(willPitch.has(sl.id)) return;                      // 오늘 던질 사람은 안 뺀다
     if(keyBats.has(sl.id)) return;                        // 시즌 성적 좋은 주전은 안 뺀다
+    /* [제보] "5경기 연속 안타였는데 한타석도 못서서 기록 깨진경우가 생겼대"
+       한 타석도 못 섰거나 기록이 걸려 있으면 안 뺀다 */
+    if(this.protectMe(us, sl.id)) return;
     const b=this.box[sl.id]; if(!b) return;
     if(b.h>0) return;                                     // 안타 친 사람은 그대로 둔다
     if(b.ab>=1 && b.ab>outAb){ outAb=b.ab; outIdx=i; }
@@ -11090,9 +11347,17 @@ LiveGame.prototype.benchRotation = function(){
   const inP=team.players.find(p=>p.id===inId);
   if(!inP) return;
 
+  /* 감독이 왜 뺐는지 말한다. 내 선수면 그 장면을 화면으로 띄운다 */
+  const why=this.sayWhySub(outId, this.subReasonKey(outId));
+  const meNow=this.myId||(typeof ST!=='undefined'&&ST?ST.playerId:null);
   us.slots[outIdx]={id:inId,pos};
   if(!this.box[inId]) this.box[inId]=newBoxL();
   this.noteSub(us,outIdx,inId,outId,pos,'교체');
+  if(meNow && outId===meNow && typeof isPlayerMode==='function' && isPlayerMode()){
+    const bx=this.box[outId]||{};
+    this._benched={why, detail:'', pos, inId, ab:bx.ab||0, h:bx.h||0,
+      inning:this.inning, injury:false};
+  }
   this._benchDone=(this._benchDone||0)+1;
   this.subs=this.subs||[];
   this.subs.push({in:inId,out:outId,pos,inning:this.inning});
@@ -11557,7 +11822,7 @@ LiveGame.prototype.mgrAction = function(kind){
         '"괜찮다"고 하는데 걸음이 이상하다'],rng);
       /* 이 경기에서 바로 빠진다 */
       const s0=this.userSide();
-      const inLineup=s0.slots.some(x=>x.id===kicker);
+      const inLineup=s0.slots.some(x=>x.id===kicker) && !this.protectMe(s0,kicker);
       if(inLineup){
         const bench=(this.benchPool||[]).filter(id=>this.canEnter(s0,id));
         const i=s0.slots.findIndex(x=>x.id===kicker);
@@ -13371,9 +13636,50 @@ function hsGraduate(){
   applyHsStart();
   return out;
 }
+/* ================= 내 능력치 장부 =================
+   [버그] **선수 모드 훈련으로 올린 능력치가 새로고침하면 전부 사라졌다.**
+   로스터는 세이브에 없다 — index.html 상수에서 매번 새로 만들어진다.
+   applyMyTrain 은 그 로스터 객체에 직접 +1.0 을 더하고 끝냈다. 세이브에는
+   흔적이 하나도 안 남았다. 여덟 주를 훈련해서 파워 55 → 61 을 만들어도
+   탭을 닫았다 켜면 55 로 돌아와 있었다.
+   (2.71.0 의 「영입 선수가 새 시즌에 사라진다」 와 똑같은 종류의 사고다)
+
+   그래서 **바뀔 때마다 장부에 적는다.** 훈련도 부상도 여기를 지난다.
+   불러올 때마다 이 장부를 로스터에 도로 얹는다.                     */
+function myRatingsSave(){
+  if(typeof ST==='undefined'||!ST||!isPlayerMode()) return null;
+  const me=ST.playerId||MYID;
+  const p=TBYID['wwzw'].players.find(x=>x.id===me);
+  if(!p) return null;
+  const R={};
+  ['con','pow','eye','spd','def','arm'].forEach(k=>{ if(p[k]!=null) R[k]=p[k]; });
+  if(p.pitch){ R.pitch={};
+    ['stf','ctl','sta'].forEach(k=>{ if(p.pitch[k]!=null) R.pitch[k]=p.pitch[k]; }); }
+  ST.myRatings=R;
+  return R;
+}
+function applyMyRatings(){
+  if(typeof ST==='undefined'||!ST||!ST.myRatings) return 0;
+  const me=ST.playerId||MYID;
+  const us=TBYID['wwzw']; if(!us) return 0;
+  const mp=us.players.find(x=>x.id===me); if(!mp) return 0;
+  const R=ST.myRatings;
+  ['con','pow','eye','spd','def','arm'].forEach(k=>{ if(R[k]!=null) mp[k]=R[k]; });
+  if(R.pitch&&mp.pitch){
+    ['stf','ctl','sta'].forEach(k=>{ if(R.pitch[k]!=null) mp.pitch[k]=R.pitch[k]; });
+    const mq=us.pitchers.find(x=>x.id===me);
+    if(mq){ mq.stf=mp.pitch.stf; mq.ctl=mp.pitch.ctl; mq.sta=mp.pitch.sta; }
+  }
+  finalizeTeam(us);
+  if(typeof buildPitcherPool==='function') buildPitcherPool();
+  if(ST.ca) ST.ca[me]=calcCA(mp);
+  return 1;
+}
+
 /* 졸업 능력치를 로스터에 얹는다.
    [주의] 로스터는 세이브에 없다 — index.html 상수에서 매번 새로 만들어진다.
-   그래서 불러올 때마다 다시 얹어야 한다. applyLeftPlayers 와 같은 이유다. */
+   그래서 불러올 때마다 다시 얹어야 한다. applyLeftPlayers 와 같은 이유다.
+   졸업 능력치를 먼저 깔고, 그 위에 훈련·부상 장부(myRatings)를 얹는다. */
 function applyHsStart(){
   if(!ST||!ST.hsRatings) return 0;
   const me=ST.playerId||MYID;
@@ -13389,6 +13695,7 @@ function applyHsStart(){
   finalizeTeam(us);
   if(typeof buildPitcherPool==='function') buildPitcherPool();
   if(ST.ca) ST.ca[me]=calcCA(p);
+  applyMyRatings();          // 그 위에 훈련·부상으로 바뀐 값을 얹는다
   return 1;
 }
 
@@ -14095,6 +14402,7 @@ async function slotLoad(i){
   ST=d; normalizeState(); applyLeftPlayers();
   MYID=ST.playerId||'ksh';
   applyHsStart();
+  applyMyRatings();          // 훈련·부상으로 바뀐 내 능력치
   return true;
 }
 async function slotNew(i){
@@ -14232,6 +14540,33 @@ function renderHomePlayer(){
     (q.outs? '<div class="pm-line">'+ipStr(q)+'이닝 · 방어율 '+
        (q.outs?(q.er*7/(q.outs/3)).toFixed(2):'-')+' · '+q.k+'탈삼진</div>' : '');
   c.appendChild(hero);
+
+  /* ---- 몸 ----
+     [요청] "스탯 올릴때 파워만 올리거나 그러면 수비나 유리몸 되는거지"
+     그러니 지금 내 몸이 어떤 상태인지 **항상 보여야** 한다.
+     안 보이면 파워만 찍다가 어느 날 갑자기 다치는 게 된다.        */
+  if(p && (ST.injMode!=='off')){
+    const L=bodyLoad(p), lab=bodyLabel(L);
+    const bc0=el('div','card');
+    bc0.appendChild(el('div','card-h','몸'));
+    const row=el('div','bdbar');
+    row.innerHTML='<span class="bd-t"><s style="width:'+
+      Math.round(Math.min(100,L/1.0*100))+'%"></s></span>'+
+      '<span class="bd-v bd-'+lab[1]+'">'+lab[0]+'</span>';
+    bc0.appendChild(row);
+    bc0.appendChild(el('p','muted', L<0.18
+      ? '파워·주루와 몸통(컨택·수비·어깨)이 잘 맞물려 있다. 잘 안 다친다.'
+      : (L<0.45
+        ? '조금 치우쳤다. 아직은 괜찮다.'
+        : (L<0.80
+          ? '<b>밀어내는 힘이 몸통보다 앞선다.</b> 전력질주·큰 스윙에서 다치기 시작한다. 수비·어깨·컨택을 올려라.'
+          : '<b class="bd-bad">유리몸이다.</b> 파워·주루만 올려놨다. 몸이 그 힘을 못 받는다 — 수비·어깨·컨택 훈련이 급하다.'))));
+    const inj=ST.injury&&ST.injury[me];
+    if(inj) bc0.appendChild(Object.assign(el('div','warn'),
+      {innerHTML:'<b>'+inj.name+'</b> — '+inj.games+'경기 결장'+
+        (inj.hit?'<br>돌아와도 '+injHitText(inj.hit)+' 상태다. 훈련으로 도로 올려라.':'')}));
+    c.appendChild(bc0);
+  }
 
   const bars=pmGoalBars();
   if(bars){
@@ -20568,6 +20903,8 @@ function makeLive(){
     myId: ST.playerId||MYID,          // 내 선수 연출용
     drunkIds: (ST.drunkIds||[]).slice(),
     umpBias: ST.umpBias||0,           // 오늘 심판이 존을 넓게 보나 좁게 보나
+    /* 지금 걸려 있는 연속 안타 경기 수 — 이게 있으면 함부로 안 뺀다 */
+    myStreak: ((ST.form&&ST.form[ST.playerId||MYID])||{}).hg||0,
     ballLive: !!ST.ballLive,          // 새 공 — 실밥이 살아 있다
   });
 }
@@ -23404,6 +23741,8 @@ function renderSwing(box, d){
         pre=(q>=0.75?'정타!!':(q>=0.55?'잘 맞았다':'맞혔다'));
         col='#7fc48f'; }
       if(q>=0.72) mvImpact(mv);
+      /* 크게 돌린 스윙 — 허리·옆구리가 여기서 간다 */
+      if(q>=0.80 && isMine) LIVE.rollMyInjury('스윙', 1.3);
     }
 
     const r=LIVE.pitchResult(kind, q, curType);
@@ -23621,6 +23960,8 @@ function renderDefPlay(box, d){
       if(done2)return; done2=true; if(sc2)sc2.stop();
       const tq=Math.max(0,Math.min(1,1-(Date.now()-t2)/T2));   // 빨리 던질수록 1에 가깝다
       LIVE._throwQ=tq;
+      /* 급하게 던진 공 — 어깨·팔꿈치가 여기서 간다 */
+      if(tq>0.75) LIVE.rollMyInjury('송구', 1.2);
       if(t) t.textContent=(where==='at:lead'?'2루로 던졌다':'1루로 던졌다')+
         (tq>0.62?' — 좋은 송구':(tq<0.28?' — 늦었다':''));
       playThenClose(box, null, where, null, null, (r,evs,fin)=>replayAfter(q,fin));
@@ -23654,6 +23995,8 @@ function renderDefPlay(box, d){
     if(t){ t.textContent=caught?(q>=0.86?'잡았다 — 호수비!':'잡았다'):'빠졌다 — 손이 안 닿았다';
       t.style.color=caught?(q>=0.86?'#ffd15c':'#7fc48f'):'#e08a70'; }
     LIVE.applyDecision('def:q:'+q.toFixed(3));
+    /* 허둥지둥 쫓아갔다 — 무릎·손가락이 여기서 간다 */
+    if(q<0.40) LIVE.rollMyInjury('수비', 1.2);
     if(caught && LIVE.bases[0] && LIVE.outs<2){ askThrow(q); return; }
     playThenClose(box, null, 'def:none', null, null, (r,evs,fin)=>replayAfter(q,fin));
   };
@@ -24011,6 +24354,70 @@ function leadScene(host, o){
   return { stop:()=>{ stop=true; }, el:cv, lead:()=>lead };
 }
 
+/* ================= 교체당하는 장면 =================
+   [제보] "교체를 하려면 납득 가능한 이유가 나오면 좋을듯
+           감독이 멘트 치고 넌 이래서 교체다 하면서 교체 당하는거지"
+
+   맞는 말이다. 로그 한 줄로 "교체 · 김상훈 → 이승민" 이 지나가면
+   그건 통보지 야구가 아니다. 감독이 앞에 서서 말한다.
+   부상이면 몸이 왜 이렇게 됐는지까지 같이 짚어준다 — 그게 다음 주
+   훈련을 뭘로 할지 정하는 정보가 된다.                              */
+function renderBenched(box, d){
+  const b=(d&&d.b)||{};
+  const why=b.why||{};
+  const me=(LIVE&&LIVE.myId)||(ST&&ST.playerId)||MYID;
+  const p=TBYID['wwzw'].players.find(x=>x.id===me);
+  const w=el('div','pl-wrap');
+  const head=el('div');
+  head.innerHTML='<div class="pl-t">'+(b.injury?'부상':'교체')+'</div>'+
+    '<div class="pl-sub">'+b.inning+'회 · 오늘 '+(b.ab||0)+'타수 '+(b.h||0)+'안타'+
+    ((LIVE&&LIVE.myStreak>=3)?' · <b style="color:#ffd15c">연속 안타 '+LIVE.myStreak+'경기째</b>':'')+
+    '</div>';
+  w.appendChild(head);
+
+  /* 감독이 서서 말한다 — 고교 대화 장면과 같은 그림을 쓴다 */
+  const talk=el('div','hstalk');
+  const cid=why.coach||(typeof coachId==='function'?coachId():null);
+  talk.innerHTML='<div class="ht-face">'+(cid?avatarHTML(cid):'')+'</div>'+
+    '<div class="ht-body"><div class="ht-nm">'+(why.cname||'감독')+'</div>'+
+    '<div class="ht-say">'+(why.line||'오늘은 여기까지 하자')+'</div>'+
+    '<div class="ht-more">'+(why.title||'')+'</div></div>';
+  w.appendChild(talk);
+
+  if(b.injury){
+    const hurt=(LIVE&&LIVE._myHurt)||null;
+    const inj=el('div','defbox');
+    inj.innerHTML='<div class="rb-t" style="color:#e08a70">'+
+      (hurt?hurt.name:(b.detail||'부상'))+'</div>'+
+      '<div class="rb-note">'+(hurt?hurt.line:'')+'</div>';
+    if(hurt&&hurt.hit){
+      inj.appendChild(Object.assign(el('div','rb-note'),
+        {innerHTML:'<b style="color:#e08a70">돌아와도 '+injHitText(hurt.hit)+
+                   '</b> — 훈련으로 도로 올릴 수 있다'}));
+    }
+    /* 왜 다쳤는지. 이게 다음 주 훈련을 정하는 정보다 */
+    if(p){
+      const L=bodyLoad(p), lab=bodyLabel(L);
+      inj.appendChild(Object.assign(el('div','rb-note'),
+        {innerHTML:'지금 내 몸 — <b class="bd-'+lab[1]+'">'+lab[0]+'</b>'+
+          (L>=0.45?'<br>파워·주루가 몸통(컨택·수비·어깨)보다 앞서 있다. 받쳐주는 쪽을 올려야 안 다친다.'
+                  :'<br>균형은 나쁘지 않다. 오늘은 운이 없었다.')}));
+    }
+    w.appendChild(inj);
+  } else if(b.inId){
+    const nx=el('div','defbox');
+    nx.innerHTML='<div class="rb-t">'+nameOf(b.inId)+'이(가) 들어간다</div>'+
+      '<div class="rb-note">'+(POSNAMES[b.pos]||b.pos)+' · 오늘 내 경기는 여기까지다</div>';
+    w.appendChild(nx);
+  }
+
+  const ok=el('button','rb-b go','알겠다');
+  ok.style.width='100%';
+  ok.onclick=()=>{ if(LIVE) LIVE._benched=null; decDone(box); };
+  w.appendChild(ok);
+  box.appendChild(w);
+}
+
 /* 투구 — 카운트를 보고 구종·코스를 고른다. 타자가 참거나 휘두른다. */
 function renderPitch(box, d){
   const def=LIVE.def(), off=LIVE.off();
@@ -24281,6 +24688,7 @@ function showDecision(d){
   if(d.kind==='pitch'){ renderPitch(box,d); return; }
   if(d.kind==='defplay'){ renderDefPlay(box,d); return; }
   if(d.kind==='lead'){ renderLead(box,d); return; }
+  if(d.kind==='benched'){ renderBenched(box,d); return; }
   if(d.kind==='throw'){ renderThrow(box,d); return; }
   if(!box._nmWired){ wireNames(box); box._nmWired=true; }   // 이름 눌러 카드 열기
   const us=LIVE.userIsHome?LIVE.home:LIVE.away;
@@ -24785,17 +25193,24 @@ function commitGame(res,usSide,thSide,uSlots){
   if(!ST.notices)ST.notices=[];
   (res.injuries||[]).forEach(iv=>{
     /* 물통을 차서 다친 거면 다리 부상으로 고정한다. 어깨가 나갈 리가 없다. */
-    const inj = iv.why==='물통'
-      ? pickOne([{name:'발등 타박상',games:2,sev:2},{name:'발가락 염좌',games:2,sev:2},
-                 {name:'발목 접질림',games:3,sev:2},{name:'정강이 타박상',games:1,sev:1}])
-      : rollInjury(iv.id,iv.roll);
+    /* [v2.73.0] 선수 모드에서 경기 중에 확정된 부상은 그 내용을 그대로 쓴다.
+       부위가 정해져 있고, 회복하고 나서도 그 자리에 자국이 남는다.   */
+    const inj = iv.pm
+      ? {name:iv.pm.name, games:iv.pm.games, sev:2, pm:iv.pm.id, hit:iv.pm.hit}
+      : (iv.why==='물통'
+        ? pickOne([{name:'발등 타박상',games:2,sev:2},{name:'발가락 염좌',games:2,sev:2},
+                   {name:'발목 접질림',games:3,sev:2},{name:'정강이 타박상',games:1,sev:1}])
+        : rollInjury(iv.id,iv.roll));
     ST.injury[iv.id]=inj;
+    if(iv.pm && iv.pm.hit) applyInjuryHit(iv.id, iv.pm);
     ST.injCount=(ST.injCount||0)+1;
     ST.notices.push({type:'injury',title:`${nameOf(iv.id)} 부상`,
-      body:iv.why==='물통'
-        ? `물통을 걷어차다 ${inj.name}이(가) 났다. 본인이 찼다.`
-        : `경기 중 ${inj.name}이(가) 발생했다.`,
-      effect:`${inj.games}경기 결장`});
+      body:iv.pm ? `${iv.pm.line}. ${inj.name}이(가) 났다.`
+        : (iv.why==='물통'
+          ? `물통을 걷어차다 ${inj.name}이(가) 났다. 본인이 찼다.`
+          : `경기 중 ${inj.name}이(가) 발생했다.`),
+      effect:`${inj.games}경기 결장`+
+        (iv.pm&&iv.pm.hit?` · ${injHitText(iv.pm.hit)}`:'')});
     if(iv.why==='물통'){
       ST.kakaoPost=ST.kakaoPost||[];
       ST.kakaoPost.push({who:coachId(),type:'notice',
@@ -25348,6 +25763,10 @@ const PM_TRAIN=[
   {id:'team', icon:'\u{1F465}', name:'팀 훈련 참석', sub:'골고루 + 감독 눈에 든다',
    g:{con:0.35,pow:0.25,eye:0.3,spd:0.3,def:0.4,arm:0.25}, cond:-4, team:true,
    d:'감독이 부른 훈련에 나간다. 조금씩 오르고, 무엇보다 **라인업에 이름이 남는다.**'},
+  {id:'body', icon:'\u{1F4AA}', name:'몸 만들기', sub:'컨택 · 수비 · 어깨',
+   g:{con:0.45,def:0.5,arm:0.4}, cond:-3,
+   d:'웨이트장에서 코어를 잡는다. 능력치는 찔끔 오르는데 '+
+     '**힘을 받아줄 몸이 생긴다** — 안 다치게 된다.'},
   {id:'rest', icon:'\u{1F634}', name:'쉰다', sub:'컨디션 회복',
    g:{}, cond:+12,
    d:'이번 주는 안 나간다. 몸을 만든다.'},
@@ -25392,6 +25811,7 @@ function applyMyTrain(){
   if(p.pitch) ['stf','ctl','sta'].forEach(k=>{ p.pitch[k]=Math.round(p.pitch[k]*10)/10; });
   finalizeTeam(TBYID['wwzw']);
   if(typeof buildPitcherPool==='function') buildPitcherPool();
+  myRatingsSave();          // 안 적으면 새로고침 한 번에 통째로 날아간다
   ST.myTrainLog = got.length? (t.name+' — '+got.join(' · ')) : (t.name+' — 아직 티가 안 난다');
   return ST.myTrainLog;
 }
@@ -25408,6 +25828,25 @@ function renderTrainPlayer(){
     const lg=el('div','card');
     lg.innerHTML='<div class="card-h">지난주</div><div class="pm-line">'+ST.myTrainLog+'</div>';
     c.appendChild(lg);
+  }
+  /* 지금 내 몸이 어떤지 — 이걸 보고 이번 주 훈련을 정한다 */
+  {
+    const mp=TBYID['wwzw'].players.find(x=>x.id===me);
+    if(mp && ST.injMode!=='off'){
+      const L=bodyLoad(mp), lab=bodyLabel(L);
+      const bc=el('div','card');
+      bc.appendChild(el('div','card-h','몸'));
+      const row=el('div','bdbar');
+      row.innerHTML='<span class="bd-t"><s style="width:'+
+        Math.round(Math.min(100,L*100))+'%"></s></span>'+
+        '<span class="bd-v bd-'+lab[1]+'">'+lab[0]+'</span>';
+      bc.appendChild(row);
+      bc.appendChild(el('p','muted', L>=0.45
+        ? '<b class="bd-'+lab[1]+'">밀어내는 힘이 몸통보다 앞선다.</b> '+
+          '이대로 파워·주루만 올리면 다친다. 「몸 만들기」나 「수비 훈련」으로 받쳐줘라.'
+        : '파워·주루와 몸통이 맞물려 있다. 이 균형을 유지해라.'));
+      c.appendChild(bc);
+    }
   }
   const canPit=(ST.role==='pit'||ST.role==='two');
   PM_TRAIN.forEach(t=>{
@@ -27346,6 +27785,26 @@ function renderMore(){
       : '내 자리로 오는 공은 경기당 네댓 번이다. 수비가 좋을수록 글러브가 닿는 범위가 넓다.'));
   }
 
+  /* 부상 — 선수 모드에서만 */
+  if(isPlayerMode()){
+    const iv=el('p','muted');
+    iv.innerHTML='<br><b>부상</b> — 능력치가 한쪽으로 치우치면 다친다. '+
+      '파워·주루가 몸통(컨택·수비·어깨)보다 크게 앞서면 그게 유리몸이다.';
+    pl.appendChild(iv);
+    const ivRow=el('div','btn-row');
+    [['on','쓴다'],['off','안 쓴다']].forEach(([v,lab])=>{
+      const b=el('button','btn'+((((ST.injMode||'on')===v))?' primary':''),lab);
+      b.onclick=()=>{ ST.injMode=v; saveGame(true); renderMore();
+        toast(v==='on'?'몸이 안 받쳐주면 다친다':'부상 없이 간다'); };
+      ivRow.appendChild(b);
+    });
+    pl.appendChild(ivRow);
+    pl.appendChild(el('div','set-note',
+      (ST.injMode||'on')==='on'
+        ? '균형 잡힌 몸이면 한 시즌에 한 번 다칠까 말까다. 파워만 찍으면 서너 경기에 한 번씩 어딘가 나간다. 회복해도 그 자리가 조금 깎인 채로 돌아온다 — 훈련으로 도로 올리면 된다.'
+        : '다치지 않는다. 능력치를 어떻게 올리든 상관없어진다.'));
+  }
+
   /* 주루 — 리드와 도루.
      [요청] "주자 나갔을때 도루할건지 말건지 베이스에서 리드 유지하면서
              막 리드 더나갈건지 너무 나가면 견제 날라오고" */
@@ -27920,6 +28379,7 @@ function normalizeState(){
   /* [v2.72.0] 수비·주루를 얼마나 직접 할지 — off / key / all */
   if(['off','key','all'].indexOf(ST.defMode)<0) ST.defMode=(ST.defAsk===false)?'off':'all';
   if(['off','key','all'].indexOf(ST.runMode)<0) ST.runMode=(ST.runAsk===false)?'off':'all';
+  if(ST.injMode!=='off') ST.injMode='on';           // [v2.73.0] 부상 (선수 모드)
   if(ST.myTrain && !PM_TRAIN.some(x=>x.id===ST.myTrain)) ST.myTrain=null;
   if(!ST.myTrain) ST.myTrain='team';                // [v2.65.0] 기본은 팀 훈련
   if(!ST.names)ST.names={};
@@ -28085,6 +28545,12 @@ function normalizeState(){
   if(!ST.dropouts)ST.dropouts=[];
   if(ST.lineupDirty==null)ST.lineupDirty=false;
   if(typeof ST.umpBias!=='number')ST.umpBias=0;     // [v2.72.0] 오늘 심판의 존
+  /* [v2.73.0] 내 능력치 장부. 옛 세이브에는 없다 —
+     지금 로스터 값(졸업 능력치까지 얹힌 상태)으로 만들어 둔다.
+     여태 훈련으로 올린 건 이미 날아갔지만 여기서부터는 안 날아간다. */
+  if(ST.mode==='player' && !ST.myRatings){
+    try{ myRatingsSave(); }catch(e){}
+  }
   if(typeof ST.ballLive!=='boolean')ST.ballLive=false;
   if(!ST.ultimatum)ST.ultimatum={};
   if(!ST.broken)ST.broken={};
@@ -28264,6 +28730,7 @@ async function boot(){
 
   MYID=ST.playerId||'ksh';
   applyHsStart();          // 졸업 능력치는 로스터에 없다 — 매번 다시 얹는다
+  applyMyRatings();        // 그 뒤에 훈련·부상으로 바뀐 값을 얹는다
   checkVersion();
   ptSavedAt=(ST.playSec||0);
   startPlayClock();
