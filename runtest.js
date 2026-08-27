@@ -268,7 +268,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
     "/anchor\\.parentNode\\.insertBefore/.test(showArgue.toString())"));
   T('타석은 스윙 버튼 밑', ()=>ev("/showArgue\\(acts,/.test(renderSwing.toString())"));
   T('마운드는 존 밑', ()=>ev("/showArgue\\(wrap, draw\\)/.test(renderPitch.toString())"));
-  T('수비는 버튼 줄 밑', ()=>ev("/showArgue\\(row, null\\)/.test(renderDefPlay.toString())"));
+  T('수비는 조작 안내 줄 밑', ()=>ev("renderDefPlay.toString().indexOf('showArgue(note, null)')>0"));
 
   console.log('\n[오심에 따진다]');
   T('접전 오심 판정이 엔진에 있다', ()=>ev("typeof LiveGame.prototype.maybeBadCall==='function'"));
@@ -343,7 +343,27 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   T('고교에서도 내가 던지면 멈춘다', ()=>ev(
     "hsRunLive.toString().indexOf(\"kind:'pitch'\")>0"));
 
-  console.log('\n[홈런형 타자]');
+  console.log('\n[홈런형 타자 — 선수 모드에서만]');
+  T('감독 모드는 실측 그대로 (홈런 곡선이 안 열린다)', ()=>ev(`(function(){
+    var team=TBYID['wwzw'], foe=TBYID['ansanutd'];
+    var pit={stf:40,ctl:40,sta:40};
+    var bat={con:55,pow:92,eye:45,spd:45,def:45,arm:45,bats:'R'};
+    var run=function(mods){
+      var s=555; var rng=function(){s=(s*1664525+1013904223)>>>0;return s/4294967296;};
+      var hr=0,ab=0;
+      for(var i=0;i<20000;i++){
+        var r=simPA(bat,pit,team,foe,rng,{bat:'normal'},70,{hr:1,d2:1,d3:1,err:1,babip:1},mods);
+        if(r.type==='BB'||r.type==='HBP')continue;
+        ab++; if(r.type==='HR')hr++;
+      }
+      return hr/ab*90;
+    };
+    var mgr=run(null), pl=run({slugger:true});
+    return (pl>mgr*2.5 && mgr<0.8) ? '감독 '+mgr.toFixed(1)+'개 vs 선수 '+pl.toFixed(1)+'개'
+      : '!'+mgr.toFixed(2)+'/'+pl.toFixed(2);
+  })()`));
+  T('스위치가 선수 모드에만 걸린다', ()=>ev(
+    "LiveGame.prototype.stepPA.toString().indexOf('slugger:true')>0 && LiveGame.prototype.stepPA.toString().indexOf('isPlayerMode()')>0"));
   T('파워를 올리면 홈런이 실제로 는다', ()=>ev(`(function(){
     var team=TBYID['wwzw'], foe=TBYID['ansanutd'];
     var pit={stf:40,ctl:40,sta:40};
@@ -352,7 +372,8 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
       var s=999; var rng=function(){s=(s*1664525+1013904223)>>>0;return s/4294967296;};
       var hr=0,ab=0;
       for(var i=0;i<20000;i++){
-        var r=simPA(bat,pit,team,foe,rng,{bat:'normal'},70,{hr:1,d2:1,d3:1,err:1,babip:1},null);
+        /* 홈런 곡선은 선수 모드에서만 열린다 — slugger 플래그가 그 스위치다 */
+        var r=simPA(bat,pit,team,foe,rng,{bat:'normal'},70,{hr:1,d2:1,d3:1,err:1,babip:1},{slugger:true});
         if(r.type==='BB'||r.type==='HBP')continue;
         ab++; if(r.type==='HR')hr++;
       }

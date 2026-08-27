@@ -64,11 +64,16 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
   T(!!d.querySelector('#decision .runstage'), '그라운드가 뜬다');
   T(/으로 온다/.test(txt('#decision .rb-t')), '타구 방향을 먼저 알려준다 :: '+txt('#decision .rb-t'));
   T(btns().length===0, '「안전하게 / 달려든다」 버튼이 없어졌다 — 손으로 쫓아간다');
-  T(/끌어라/.test(txt('#decision .rb-note')), '끌어서 조종하라고 알려준다 :: '+txt('#decision .rb-note'));
-  T(ev("typeof defChaseScene==='function'"), '타구를 쫓아가는 캔버스가 있다');
-  T(ev("/pointermove/.test(defChaseScene.toString())&&/o\\.speed\\*dt/.test(defChaseScene.toString())"),
-    '손가락 쪽으로 능력치만큼 뛴다');
-  T(ev("/def:q:/.test(renderDefPlay.toString())&&/dp\\.q!=null/.test(LiveGame.prototype.consumePlayMods.toString())"),
+  T(/손가락을 대고 미는/.test(txt('#decision .rb-note')),
+    '가상 조이스틱으로 조종하라고 알려준다 :: '+txt('#decision .rb-note'));
+  T(ev("typeof defScene==='function'"), '수비 한 판 캔버스가 있다');
+  T(ev("defScene.toString().indexOf('STICK_R')>0 && defScene.toString().indexOf('o.speed*v*dt')>0"),
+    '누른 곳으로 순간이동이 아니라 미는 방향으로 뛴다 (마인크래프트식 조이스틱)');
+  T(ev("defScene.toString().indexOf(\"phase='throw'\")>0 && defScene.toString().indexOf('throwables')>0"),
+    '같은 캔버스에서 베이스를 눌러 송구한다 (새 화면이 안 뜬다)');
+  T(ev("defScene.toString().indexOf('runners.push')>0"),
+    '주자를 전부 그린다 — 누가 어디 있는지 보여야 던질 곳을 안다');
+  T(ev("renderDefPlay.toString().indexOf('def:q:')>0 && LiveGame.prototype.consumePlayMods.toString().indexOf('dp.q!=null')>0"),
     '공에 붙은 정도가 그대로 확률로 간다');
   T(ev("(function(){var u=battedU(7);var r=bbRng(7);r();r();r();return Math.abs(u-r())<1e-12;})()"),
     '비거리 난수를 결과 전에 미리 안다 (화면과 로그가 안 어긋난다)');

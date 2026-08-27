@@ -2434,14 +2434,16 @@ function simPA(bat,pit,offTeam,defTeam,rng,tac,cond,park,mods){
   if(rng()>=babip) return {type:'OUT', gb: rng()<0.56};
 
   const pw = offTeam.tend.pow * fPow * tPow * (mods.pow||1);
-  /* [제보] "여기 홈런은 나오긴하냐 차피 선수모드인데 홈런형타자도
-             나올 수 있게 만들긴 해야함"
-     재보니 파워를 95 까지 올려도 시즌 0.5개였다. 그건 홈런형이 아니다.
-     리그 전체 홈런율은 실측(2026 시즌 팀 홈런 1개)에 맞춰야 하니
-     **평균 타자는 그대로 두고 위쪽만 가파르게** 만든다 —
-     지수를 파워에 따라 키운다. pw 가 1.0(리그 평균)이면 1.7 그대로고,
-     3.0(파워 95)이면 3.1 이 된다. 아래는 안 건드리고 위만 열린다.  */
-  const hrExp = 1.7 + Math.max(0, pw-1.25)*1.35;
+  /* [제보] "홈런형타자도 나올 수 있게 만들긴 해야함"
+            "홈런치는건 선수모드에서만 그래야한다 감독모드는 극사실 주의 유지"
+
+     맞는 말이다. 감독 모드는 2026시즌 실측을 재현하는 판이다 —
+     그 해 팀 홈런은 **한 개**였다. 거기서 홈런이 펑펑 나면 그건 딴 리그다.
+     선수 모드는 내가 키우는 판이니 파워를 찍은 만큼 담장을 넘겨야 한다.
+
+     그래서 **선수 모드에서만** 위쪽을 연다. 평균 타자(pw≈1.0)는
+     양쪽 다 1.7 그대로다 — 열리는 건 파워를 많이 올린 사람뿐이다.  */
+  const hrExp = mods.slugger ? (1.7 + Math.max(0, pw-1.25)*1.35) : 1.7;
   let p2=LG.H2*pw*park.d2, p3=LG.H3*Math.pow(pw,0.4)*park.d3,
       phr=LG.HR*Math.pow(pw,hrExp)*park.hr;
   const tot=p2+p3+phr;
@@ -7702,8 +7704,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.78.0';
-const APP_VERSION_NOTE = '시상식이 안 뜨던 것 · 땅볼 치고 안 뛰던 것 · 홈런형 타자';
+const APP_VERSION = '2.79.0';
+const APP_VERSION_NOTE = '수비를 한 화면에서 · 조이스틱으로 움직인다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7724,6 +7726,16 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.79.0', t:'수비를 한 화면에서 · 조이스틱으로 움직인다', items:[
+    '[제보] "수비 내가 화면 하나로 하라했지" · "송구를 그 따라 간곳에서 해야하는데 밑에 새로운 애니메이션 또 뜨니깐 두 개 하기가 번거롭고 주자가 안보임" — 맞는 말이다. 쫓아가는 화면과 송구 화면이 따로 뜨면 그건 두 개의 게임이다. **한 화면에서 끝까지 간다.** 타구가 오고 → 쫓아가 잡고 → 그 자리에서 베이스를 눌러 던지고 → 결과까지 같은 캔버스에서 나온다',
+    '[제보] "핸드폰 환경은 마우스가 없어서 힘들다니깐 모바일 마인크래프트처럼 수비 선수를 움직일 수 있게" · "터치로 안움직여서 그냥 아무곳 눌렀더니 외야 밖으로 순간이동해서" — 「누른 곳으로 간다」 는 마우스 조작이었다. 폰에서는 손가락이 화면을 가려서 목표 지점을 찍을 수가 없다. **가상 조이스틱**으로 바꿨다 — 화면 아무 데나 손가락을 대면 거기가 스틱 중심이고, 미는 쪽으로 뛴다. 많이 밀수록 빠르다. 순간이동은 없고 그라운드 밖으로도 안 나간다',
+    '**주자를 전부 그린다.** 1루·2루·3루 주자와 타자주자가 다 보인다. 누가 어디 있는지 안 보이면 어디로 던질지 알 수가 없다',
+    '송구는 **그라운드 위 베이스를 직접 누른다.** 베이스마다 원이 떠 있는데, 늦게 던질수록 원이 작아진다 — 그게 The Show 의 송구 정확도 미터다. 어깨가 좋을수록 처음부터 크게 시작한다. 2루로 던지면 병살을 노린 것으로 엔진이 받는다',
+    '[제보] "더돈다 눌렀는데 공이 3루 먼저 도착해서 (…) 공이 먼저 왔어도 세잎이네" — **판정과 화면이 어긋나면 그게 제일 나쁘다.** 한 베이스 더 가는 마지막 구간을 결과에 맞춰 그린다. 세이프면 송구보다 먼저 닿고, 아웃이면 송구가 먼저 닿는다',
+    '[제보] "돌아간다 누르는데 2루로 귀루도 안하고" — 송구가 손을 떠난 뒤에는 이미 결정이 난 건데 버튼이 살아 있었다. 누르면 아무 일도 안 나는 버튼은 고장이다. 이제 던지는 순간 「이미 던졌다」 로 잠긴다',
+    '[제보] "홈런치는건 선수모드에서만 그래야한다 감독모드는 극사실 주의 유지해야함" — 맞는 말이다. 감독 모드는 2026시즌 실측을 재현하는 판이고 그 해 팀 홈런은 한 개였다. 홈런 곡선은 **선수 모드에서만** 열린다. 감독 모드는 파워 92 라도 시즌 0.4개, 선수 모드는 2.2개다',
+    '[제보] "선수모드 포수로 골랐는데 왜 팀 가니깐 2루를 시키냐? 고교때 포수 시작했는데 왜 2루냐고" — 두 군데가 겹쳐서 났다. ① 감독이 라인업을 짤 때 **내가 고른 자리를 아예 안 봤다** — 능력치 순으로 돌면서 남는 자리에 꽂았다 ② 고등학교 중에 내 자리를 물으면 **10년 뒤 사회인 라인업**을 보고 있었다. 이제 선수 모드에서는 내 자리를 제일 먼저 잡고, 고교에서는 내가 고른 자리가 곧 내 자리다',
+  ]},
   {v:'2.78.0', t:'시상식이 안 뜨던 것 · 땅볼 치고 안 뛰던 것 · 홈런형 타자', items:[
     '[제보] "시상식 보고 다음시즌 시작하라는데 시상식이 안나온데 그리고 홈에서 시상식 보라는데 홈들어가면 안나온데 심각한 버그인듯" — 심각한 버그가 맞았다. **선수 모드에서 시즌이 끝나면 진행이 완전히 막혔다.** 경기 화면은 「홈에서 시상식을 보고 새 시즌을 시작해라」 라고 하는데, 선수 모드는 홈에 들어가는 순간 선수 화면으로 곧장 빠져나가서 시상식·새 시즌 블록에 영영 도달하지 못했다. 시즌이 끝난 뒤에는 두 모드가 같은 마무리 화면을 본다',
     '[제보] "땅볼치면 그냥 안뛰고" — 이것도 진짜였다. 아웃이면 주자가 갈 베이스를 0 으로 잡아놔서 **한 발짝도 안 움직였다.** 땅볼을 쳐도 1루까지는 죽어라 뛰는 게 야구다. 뜬공이면 잡히는 걸 보고 돌아온다',
@@ -11090,7 +11102,10 @@ LiveGame.prototype.stepPA = function(){
      결과를 정하지 않고 확률만 민다 — 손이 빠른 사람이 리그를 씹어먹으면
      안 되고, 못 맞혀도 게임이 망가지면 안 된다.                        */
   const umods = this.consumePlayMods(off, def);
-  const allMods = (pmods||umods) ? {...(pmods||{}), ...(umods||{})} : null;
+  /* 선수 모드에서만 홈런 곡선이 열린다 — 감독 모드는 실측 그대로 */
+  const slug = (typeof isPlayerMode==='function' && isPlayerMode()) ? {slugger:true} : null;
+  const allMods = (pmods||umods||slug)
+    ? {...(pmods||{}), ...(umods||{}), ...(slug||{})} : null;
   /* 직접 플레이에서 볼카운트로 이미 결론이 난 타석은 그 결과를 그대로 쓴다.
      [제보] "맞거나 정타면 안타나 아웃 아니겠냐" — 맞는 말이다. 배트에 맞았는데
      삼진이 나오면 안 된다. 그래서 컨택하면 인플레이 결과만 나오게 하고,
@@ -12549,14 +12564,28 @@ function recommendLineup(){
     +myLineupBias(p.id);        // 감독과 한 약속이 여기서 갈린다
   const sorted=use.slice().sort((a,b)=>sc(b)-sc(a));
   const used=new Set(); const slots=[];
+  /* [제보] "선수모드 포수로 골랐는데 왜 팀 가니깐 2루를 시키냐?"
+     감독이 내가 고른 자리를 **아예 안 보고 있었다.** 능력치 순으로 돌면서
+     남는 자리에 꽂았다. 포수를 하겠다고 고등학교 3년을 준비했는데
+     사회인 오자마자 2루를 시키면 그건 다른 게임이다.
+     선수 모드에서는 **내 자리를 제일 먼저 잡는다.** 감독이 나를
+     아예 안 쓰기로 한 게 아니면(주전 보장/벤치), 그 자리는 내 것이다. */
+  if(typeof isPlayerMode==='function' && isPlayerMode()
+     && ST.myPos && ST.myPos!=='P' && (ST.myBenched||0)<=0 && (ST.myFarm||0)<=0){
+    const meId=ST.playerId||MYID;
+    if(use.some(p=>p.id===meId)){ slots.push({id:meId,pos:ST.myPos}); used.add(ST.myPos); }
+  }
   /* [버그 이력] 예전에는 로스터의 pos 배열만 보고, 없으면 남는 자리에 아무나
      꽂았다. 그래서 포수를 못 보는 사람이 포수에, 외야 못 서는 사람이 우익에
      서는 라인업이 나왔다. 실제로 수비가 무너지는데 이유를 알 수 없었다.
      이제 posFit(설 수 있는가) 을 먼저 본다. 정 사람이 없을 때만 억지로 채운다. */
   const fitAt=(id,pos)=>(typeof posFit==='function')?posFit(id,pos):1;
   // 포수부터 — 여기가 제일 아무나 못 선다
-  const c=sorted.find(p=>fitAt(p.id,'C')>0) || sorted.find(p=>p.pos.includes('C'));
-  if(c){slots.push({id:c.id,pos:'C'});used.add('C');}
+  if(!used.has('C')){
+    const c=sorted.find(p=>fitAt(p.id,'C')>0 && !slots.some(s=>s.id===p.id))
+         || sorted.find(p=>p.pos.includes('C') && !slots.some(s=>s.id===p.id));
+    if(c){slots.push({id:c.id,pos:'C'});used.add('C');}
+  }
   for(const p of sorted){
     if(slots.length>=9)break;
     if(slots.some(s=>s.id===p.id))continue;
@@ -15087,6 +15116,13 @@ function myPos(){
       const sl=((LIVE.userSide().slots)||[]).find(x=>x.id===me);
       if(sl && sl.pos) return sl.pos;
     }catch(e){}
+  }
+  /* [제보] "고교때 포수 시작했는데 왜 2루냐고"
+     고등학교 중에 **본편(사회인) 라인업**을 보고 있었다. 그건 10년 뒤
+     다른 판의 라인업이다. 고교에서는 내가 고른 자리가 곧 내 자리다. */
+  if(typeof hsActive==='function' && hsActive()){
+    if(ST.role==='pit') return 'P';
+    return ST.myPos||null;
   }
   const sp=(typeof lineupSpotOf==='function')?lineupSpotOf(me):null;
   if(sp && sp.pos) return sp.pos;
@@ -21188,7 +21224,18 @@ function livePlay(host, o){
          흐르니까 앞으로 가면서 동시에 뒤로 가는 꼴이 된다.        */
       return backFrom+(backTo-backFrom)*seg(t, backAt, backAt+520);
     }
-    const cap = (intent==='go' && canGo) ? base+1 : Math.max(runTo, base);
+    if(intent==='go' && canGo){
+      /* [제보] "더돈다 눌렀는데 공이 3루 먼저 도착해서 (…) 공이 먼저 왔어도 세잎이네"
+         맞는 말이다. **판정과 화면이 어긋나면 그게 제일 나쁘다.**
+         한 베이스 더 가는 마지막 구간은 결과에 맞춰 시간을 잡는다 —
+         세이프면 송구보다 먼저 닿고, 아웃이면 송구가 먼저 닿는다.  */
+      const tBase=runMs*base;
+      if(t<=tBase) return Math.min(base, raw);
+      const arrive=T_THROW+THROW_MS;
+      const endT = decided ? (decided.ok ? arrive-150 : arrive+360) : (tBase+runMs);
+      return base + Math.min(1, (t-tBase)/Math.max(220,(endT-tBase)));
+    }
+    const cap = Math.max(runTo, base);
     return Math.min(cap, raw);
   };
 
@@ -21216,7 +21263,7 @@ function livePlay(host, o){
     if(decided && decided.go && decided.ok)
       return ['세이프! '+(base+1)+'루까지','#ffd15c'];
     if(decided && decided.go && !decided.ok)
-      return ['아웃 — 돌다 잡혔다 (안타는 인정)','#e08a70'];
+      return ['아웃 — 송구가 먼저 왔다 (안타는 인정)','#e08a70'];
     return [base===1?'안타':(base+'루타'),'#7fc48f'];
   };
   /* 지금 무슨 일이 벌어지고 있나 — 마디마다 한 줄 */
@@ -24883,7 +24930,11 @@ function renderSwing(box, d){
     row.appendChild(bBack); row.appendChild(bGo);
     const paintRow=()=>{
       const d2=sc&&sc.decidedAt&&sc.decidedAt();
-      if(d2){ row.style.opacity='.35'; bGo.disabled=true; bBack.disabled=true; return; }
+      if(d2){
+        row.style.opacity='.4'; bGo.disabled=true; bBack.disabled=true;
+        bGo.textContent='이미 던졌다'; bBack.textContent='—';
+        return;
+      }
       if(!offer){ bGo.disabled=true; }
     };
     if(!offer){ bGo.disabled=true;
@@ -24905,7 +24956,11 @@ function renderSwing(box, d){
           if(LIVE._badCall && LIVE._badCall.kind==='play') showArgue(row, null);
           return out ? {go:!!out.go, ok:!!out.ok} : {go:go, ok:!go};
         },
-        onTick:(t2,tot)=>{ const b=bar(); if(b) b.style.width=Math.min(100,t2/tot*100).toFixed(0)+'%'; },
+        onTick:(t2,tot)=>{ const b=bar(); if(b) b.style.width=Math.min(100,t2/tot*100).toFixed(0)+'%';
+          /* 송구가 손을 떠나는 순간 버튼을 잠근다.
+             [제보] "돌아간다 누르는데 2루로 귀루도 안하고" — 이미 결정이
+             난 뒤라 아무 일도 안 났는데 버튼은 살아 있었다. 그건 고장이다. */
+          if(sc && sc.decidedAt && sc.decidedAt()) paintRow(); },
         onEnd:()=>{
           if(t && r){ t.textContent=r.raw||r.label; t.style.color=r.color||''; }
           setTimeout(fin, 620);
@@ -25204,12 +25259,9 @@ function renderDefPlay(box, d){
   box2.innerHTML='<div class="rb-t">'+dir+'으로 온다 — 쫓아가라</div>';
   const stage=el('div','runstage');
   box2.appendChild(stage);
-  box2.appendChild(Object.assign(el('div','rb-bar'),{innerHTML:'<i></i>'}));
   const note=el('div','rb-note');
-  note.innerHTML='<b>화면을 끌어라.</b> 손가락 쪽으로 내가 뛴다 — 공에 붙어야 잡는다';
+  note.innerHTML='<b>화면 아무 데나 손가락을 대고 미는 쪽으로</b> 내가 뛴다 — 뗐다 다시 대도 된다';
   box2.appendChild(note);
-  const row=el('div','rb-row');
-  box2.appendChild(row);
   w.appendChild(box2);
   let picked=false, sc=null;
   const skip=el('button','pl-skip','알아서 하게 둔다');
@@ -25217,118 +25269,71 @@ function renderDefPlay(box, d){
     LIVE.applyDecision('def:skip'); decDone(box); };
   w.appendChild(skip);
   box.appendChild(w);
-  const bar=()=>box2.querySelector('.rb-bar > i');
 
-  const dv=p?p.def:45, sv=p?p.spd:45;
+  const dv=p?p.def:45, sv=p?p.spd:45, av=p?p.arm:45;
   const park=LIVE.park;
   const u=battedU(LIVE.paSeq);
   const fenceM=(typeof fenceAt==='function')?fenceAt(park,d.ang):100;
   const mDraw = inf ? (12+u*30) : (fenceM*(0.42+u*0.46));
-  const flyMs = Math.round((inf?1000:1500)+mDraw*(inf?14:9));
-  /* 글러브가 닿는 거리 — 수비가 좋을수록 넓다 */
+  const flyMs = Math.round((inf?1100:1650)+mDraw*(inf?14:9));
   const REACH = 13+dv*0.20;
-  /* 뛰는 속도(캔버스 px/초) — 발과 수비 판단이 같이 들어간다 */
   const SPEED = 42+sv*0.62+dv*0.30;
 
-  /* 끝나고 나서 — 어떻게 됐는지 그라운드로 끝까지 본다 */
-  const replayAfter=(q,fin)=>{
-    const play=(LIVE&&LIVE._lastPlay)||null;
-    if(!play){ setTimeout(fin,300); return; }
-    let s2=null;
-    /* dur:1 — 1막을 즉시 끝낸 상태로 세운다. 300 을 주면 첫 프레임에
-       공이 홈플레이트에 한 번 찍혔다가 튄다(= 되감기처럼 보인다).  */
-    try{ s2=groundScene(stage,{mode:'bat', ang:play.ang, dist:play.dist,
-      dur:1, park:LIVE.park, myPos:pos, bu:PS_UNI.them, du:PS_UNI.us}); }catch(e){ s2=null; }
-    if(!s2||!s2.replay){ setTimeout(fin,400); return; }
-    /* 쫓아가는 장면(1막)이 이미 끝났다 — 공을 홈에서 다시 날리지 않는다 */
-    s2.replay(play, 2200, fin, {risk:1-q, at:{ball:1, chase:1, run:0.85}});
-  };
-
-  /* ---- 2막: 어디로 던지나 ---- */
-  const askThrow=(q)=>{
-    const t=box2.querySelector('.rb-t');
-    const rn=off.team.players.find(x=>x.id===LIVE.bases[0]);
-    if(t) t.textContent='잡았다 — 어디로 던지나';
-    note.innerHTML='1루 주자 '+(rn?'<b>'+rn.name+'</b> (주루 '+Math.round(rn.spd)+')':'')+
-      ' 가 뛴다 · <b style="color:#ffd15c">빨리 던질수록 정확하다</b>';
-    row.innerHTML='';
-    stage.innerHTML='';
-    let done2=false, sc2=null;
-    const T2=2000, t2=Date.now();
-    const fire=(where)=>{
-      if(done2)return; done2=true; if(sc2)sc2.stop();
-      const tq=Math.max(0,Math.min(1,1-(Date.now()-t2)/T2));   // 빨리 던질수록 1에 가깝다
-      LIVE._throwQ=tq;
-      /* 급하게 던진 공 — 어깨·팔꿈치가 여기서 간다 */
-      if(tq>0.75) LIVE.rollMyInjury('송구', 1.2);
-      if(t) t.textContent=(where==='at:lead'?'2루로 던졌다':'1루로 던졌다')+
-        (tq>0.62?' — 좋은 송구':(tq<0.28?' — 늦었다':''));
-      playThenClose(box, null, where, null, null, (r,evs,fin)=>replayAfter(q,fin));
-    };
-    const t1=el('button','rb-b stay','1루로 — 하나만');
-    t1.onclick=()=>fire('at:first');
-    const tb=el('button','rb-b go','2루로 — 병살 ▸');
-    tb.onclick=()=>fire('at:lead');
-    row.appendChild(t1); row.appendChild(tb);
-    const b2=bar();
-    try{
-      sc2=groundScene(stage,{mode:'throw', ang:d.ang, dur:T2, park:LIVE.park, myPos:pos,
-        bu:PS_UNI.them, du:PS_UNI.us,
-        onTick:(k)=>{ if(b2) b2.style.width=((1-k)*100).toFixed(0)+'%';
-          if(k>=1) fire('at:first'); }});
-    }catch(e){
-      const iv=setInterval(()=>{
-        const k=Math.min(1,(Date.now()-t2)/T2);
-        if(b2) b2.style.width=((1-k)*100).toFixed(0)+'%';
-        if(k>=1){ clearInterval(iv); fire('at:first'); }
-      },40);
-      sc2={stop:()=>clearInterval(iv)};
-    }
-  };
-
-  const done1=(q)=>{
+  /* 판정이 나면 같은 캔버스 위에 결과를 재생한다 — 새 창을 안 띄운다 */
+  const finish=(q, where, tq)=>{
     if(picked)return; picked=true;
-    if(sc)sc.stop();
-    const caught=q>=0.5;
-    const t=box2.querySelector('.rb-t');
-    if(t){ t.textContent=caught?(q>=0.86?'잡았다 — 호수비!':'잡았다'):'빠졌다 — 손이 안 닿았다';
-      t.style.color=caught?(q>=0.86?'#ffd15c':'#7fc48f'):'#e08a70'; }
     LIVE.applyDecision('def:q:'+q.toFixed(3));
-    if(LIVE._badCall && LIVE._badCall.kind==='play') showArgue(row, null);
-    /* 허둥지둥 쫓아갔다 — 무릎·손가락이 여기서 간다 */
-    if(q<0.40) LIVE.rollMyInjury('수비', 1.2);
-    if(caught && LIVE.bases[0] && LIVE.outs<2){ askThrow(q); return; }
-    playThenClose(box, null, 'def:none', null, null, (r,evs,fin)=>replayAfter(q,fin));
+    if(tq!=null) LIVE._throwQ=tq;
+    if(LIVE._badCall && LIVE._badCall.kind==='play') showArgue(note, null);
+    playThenClose(box, null, where||'def:none', null, null, (r,evs,fin)=>{
+      const play=(LIVE&&LIVE._lastPlay)||null;
+      if(!play){ setTimeout(fin,300); return; }
+      const t=box2.querySelector('.rb-t');
+      if(t && r){ t.textContent=r.raw||r.label; t.style.color=r.color||''; }
+      if(sc && sc.showResult){ sc.showResult(play, ()=>setTimeout(fin,500)); return; }
+      setTimeout(fin, 500);
+    });
   };
 
-  /* ---- 1막 캔버스 — 여기가 실제 조종이다 ---- */
   try{
-    sc=defChaseScene(stage, {park, ang:d.ang, m:mDraw, pos, flyMs,
-      reach:REACH, speed:SPEED,
-      onTick:(k,near)=>{
-        const b=bar(); if(b) b.style.width=(k*100).toFixed(0)+'%';
-        if(note && k<1) note.innerHTML= (near<REACH)
-          ? '<b style="color:#7fc48f">붙었다</b> — 이대로 따라가라'
-          : '<b>화면을 끌어라.</b> 아직 '+Math.round(near*PS_MPP)+'m 떨어져 있다';
-      },
-      onEnd:(q)=>done1(q)});
+    sc=defScene(stage, {park, ang:d.ang, m:mDraw, pos, flyMs,
+      reach:REACH, speed:SPEED, arm:av,
+      bases:(LIVE.bases||[null,null,null]).slice(),
+      hasFirst:!!LIVE.bases[0], outs:LIVE.outs,
+      onTick:(msg)=>{ if(note && msg) note.innerHTML=msg; },
+      onStick:()=>{},
+      onTitle:(t2,col)=>{ const t=box2.querySelector('.rb-t');
+        if(t){ t.textContent=t2; if(col) t.style.color=col; } },
+      onDone:(q, where, tq)=>finish(q, where, tq)});
   }catch(e){ sc=null; }
   if(!sc){
-    /* 캔버스가 없는 환경(테스트 등) — 능력치대로 알아서 잡는다 */
+    /* 캔버스가 없는 환경(테스트 등) — 능력치대로 알아서 잡고 1루로 */
     const t0=Date.now();
     const iv=setInterval(()=>{
-      const k=Math.min(1,(Date.now()-t0)/flyMs);
-      const b=bar(); if(b) b.style.width=(k*100).toFixed(0)+'%';
-      if(k>=1){ clearInterval(iv); done1(0.5+(dv-45)*0.004); }
+      if(Date.now()-t0>=flyMs){ clearInterval(iv); finish(0.5+(dv-45)*0.004,'def:none',null); }
     },40);
     sc={stop:()=>clearInterval(iv)};
   }
   box._cleanup=()=>{ picked=true; if(sc)sc.stop(); };
 }
 
-/* 타구를 쫓아가는 캔버스. 손가락이 가리키는 쪽으로 야수가 뛴다.
-   공에 제일 가까이 붙었던 거리가 그대로 성적(q)이 된다.            */
-function defChaseScene(host, o){
+/* ================= 수비 한 판 =================
+   [제보] "수비할때 따라가라는 좋아 근데 송구를 그 따라 간곳에서 해야하는데
+           밑에 새로운 애니메이션 또 뜨니깐 두 개 하기가 번거롭고 주자가 안보임"
+          "더쇼, 프로야구스피리츠 를 제일 참고해야함"
+
+   맞는 말이다. 쫓아가는 화면과 송구 화면이 따로 뜨면 그건 두 개의 게임이다.
+   The Show 도 스피리츠도 **한 화면에서 끊기지 않고** 간다.
+
+   여기도 한 판이다.
+     ① 타구가 온다 → 화면을 끌어서 쫓아간다
+     ② 닿으면 그 자리에서 **베이스가 떠오른다.** 주자들이 뛰고 있는 게 보인다
+     ③ 베이스를 **탭하면 던진다.** 늦게 던질수록 원이 작아진다 —
+        그 원이 곧 The Show 의 송구 정확도 미터다(초록 구간이 어깨에 비례)
+     ④ 같은 캔버스에서 결과까지 재생한다
+
+   주자를 전부 그린다. 누가 어디 있는지 안 보이면 어디로 던질지 알 수가 없다. */
+function defScene(host, o){
   const cv=document.createElement('canvas');
   cv.className='runcv defcv';
   cv.width=PSW*2; cv.height=PSH*2;
@@ -25341,12 +25346,26 @@ function defChaseScene(host, o){
   const landPx=Math.max(14, Math.min(psFenceR(P,o.ang)*1.06, psMtoPx(o.m, P, o.ang)));
   const land={x:HX+Math.cos(rad)*landPx, y:HY+Math.sin(rad)*landPx};
   const home=psPosOf(o.pos, P);
-  let fx=home.x, fy=home.y;                 // 내 야수
-  let tx=home.x, ty=home.y;                 // 손가락이 가리키는 곳
-  let best=9999, stop=false, ended=false;
+  const BP=[{x:HX,y:HY}, PS_B[1], PS_B[2], PS_B[3], {x:HX,y:HY}];
+  const lerp=(a,b,t)=>({x:a.x+(b.x-a.x)*t, y:a.y+(b.y-a.y)*t});
+  const seg=(t,a,b)=>Math.max(0,Math.min(1,(t-a)/Math.max(1,(b-a))));
+  const man=(x,y,u,run,flip)=>psMan(g,x,y+7,u,run?(1+((Date.now()/100|0)%2)):0,flip,false);
+
+  /* 주자 — 타석 전 베이스 상태에서 만든다. 전부 그린다 */
+  const runners=[];
+  (o.bases||[]).forEach((rid,i)=>{ if(rid) runners.push({from:i+1, to:i+2}); });
+  runners.push({from:0, to:1, batter:true});          // 타자주자
+  const runAt=(b)=>{ const i=Math.max(0,Math.min(3,Math.floor(b))), f=b-i;
+    return {x:BP[i].x+(BP[i+1].x-BP[i].x)*f, y:BP[i].y+(BP[i+1].y-BP[i].y)*f}; };
+  /* 주자는 2.1초에 한 베이스 — 던질 곳을 고를 시간이 있어야 한다 */
+  const RUN_MS=2100;
+
+  let fx=home.x, fy=home.y, tx=home.x, ty=home.y;
+  let best=9999, stop=false, phase='chase', caught=false;
+  let catchAt=0, throwAt=0, tgt=null, q=0, tq=0;
   const t0=Date.now();
   let last=t0;
-  const rollMs=560;                          // 떨어지고 나서 굴러가는 동안도 잡을 수 있다
+  const rollMs=560;
   const total=o.flyMs+rollMs;
   const toLocal=(ev)=>{
     const r=cv.getBoundingClientRect();
@@ -25354,12 +25373,79 @@ function defChaseScene(host, o){
     const sy=(typeof ev.clientY==='number'&&isFinite(ev.clientY))?ev.clientY:r.top+r.height/2;
     return {x:(sx-r.left)/Math.max(1,r.width)*PSW, y:(sy-r.top)/Math.max(1,r.height)*PSH};
   };
-  const aim=(ev)=>{ if(ev&&ev.preventDefault)ev.preventDefault();
-    const q=toLocal(ev); tx=q.x; ty=q.y; };
+  /* 송구할 수 있는 베이스 — 주자가 향하는 곳만 띄운다 */
+  const throwables=()=>{
+    const out=[{b:1, label:'1루'}];
+    if(o.bases&&o.bases[0]) out.push({b:2, label:'2루'});
+    if(o.bases&&o.bases[1]) out.push({b:3, label:'3루'});
+    if(o.bases&&o.bases[2]) out.push({b:0, label:'홈'});
+    return out;
+  };
+  const basePt=(b)=>(b===0||b>=4)?{x:HX,y:HY}:PS_B[b];
+  /* 늦게 던질수록 작아지는 원 — 이게 송구 정확도다.
+     어깨가 좋을수록 처음부터 크게 시작한다(The Show 의 초록 구간). */
+  const ringOf=(nowMs)=>{
+    const dt=Math.max(0,(nowMs-catchAt)/1400);
+    const base=9+ (o.arm-45)*0.10;
+    return Math.max(3.5, base*(1-dt*0.72));
+  };
+  /* ---- 조작: 가상 조이스틱 ----
+     [제보] "핸드폰 환경은 마우스가 없어서 힘들다니깐 모바일 마인크래프트처럼
+             수비 선수를 움직일 수 있게 만들고"
+            "터치로 안움직여서 그냥 아무곳 눌렀더니 외야 밖으로 순간이동해서"
+
+     맞는 말이다. 「누른 곳으로 간다」 는 마우스 조작이다. 폰에서는
+     손가락이 화면을 가리니까 목표 지점을 정확히 찍을 수가 없다.
+     마인크래프트 모바일처럼 **손가락을 댄 자리가 스틱의 중심**이 되고,
+     거기서 미는 방향으로 움직인다. 어디를 눌러도 순간이동은 없다.  */
+  let stick=null;
+  const STICK_R=26;
+  const tapBase=(ev)=>{
+    if(phase!=='throw') return;
+    if(ev&&ev.preventDefault)ev.preventDefault();
+    const pt=toLocal(ev);
+    let bestB=null, bestD=1e9;
+    throwables().forEach(t=>{
+      const bp=basePt(t.b);
+      const dd=Math.hypot(bp.x-pt.x, bp.y-pt.y);
+      if(dd<bestD){ bestD=dd; bestB=t; }
+    });
+    if(!bestB || bestD>34) return;                  // 베이스를 눌러야 던진다
+    const now=Date.now()-t0;
+    tq=Math.max(0,Math.min(1,(ringOf(now)-3.5)/Math.max(1,(9+(o.arm-45)*0.10)-3.5)));
+    tgt=bestB; throwAt=now; phase='throw2';
+    if(o.onTitle) o.onTitle(bestB.label+'로 던졌다'+(tq>0.6?' — 좋은 송구':(tq<0.25?' — 늦었다':'')),'#ffd15c');
+    if(o.onTick) o.onTick('공이 '+bestB.label+'로 간다');
+    /* 2루 송구는 병살을 노린 것이다 — 엔진이 그렇게 받는다 */
+    const where=(bestB.b===2 && o.hasFirst)?'at:lead':'at:first';
+    setTimeout(()=>{ if(o.onDone) o.onDone(q, where, tq); }, 520);
+  };
+  const onDown=(ev)=>{
+    if(phase==='throw'||phase==='throw2'){ tapBase(ev); return; }
+    if(phase!=='chase') return;
+    if(ev&&ev.preventDefault)ev.preventDefault();
+    const q2=toLocal(ev);
+    stick={ox:q2.x, oy:q2.y, dx:0, dy:0};
+    try{cv.setPointerCapture(ev.pointerId);}catch(e){}
+  };
+  const onMove=(ev)=>{
+    if(!stick||phase!=='chase') return;
+    if(!(ev.buttons||ev.pressure)) return;
+    if(ev&&ev.preventDefault)ev.preventDefault();
+    const q2=toLocal(ev);
+    let dx=q2.x-stick.ox, dy=q2.y-stick.oy;
+    const dd=Math.hypot(dx,dy);
+    if(dd>STICK_R){ dx=dx/dd*STICK_R; dy=dy/dd*STICK_R; }
+    stick.dx=dx; stick.dy=dy;
+  };
+  const onUp=()=>{ stick=null; };
   cv.style.touchAction='none';
-  cv.addEventListener('pointerdown',(ev)=>{ aim(ev);
-    try{cv.setPointerCapture(ev.pointerId);}catch(e){} });
-  cv.addEventListener('pointermove',(ev)=>{ if(ev.buttons||ev.pressure) aim(ev); });
+  cv.addEventListener('pointerdown', onDown);
+  cv.addEventListener('pointermove', onMove);
+  cv.addEventListener('pointerup', onUp);
+  cv.addEventListener('pointercancel', onUp);
+  cv.addEventListener('pointerleave', onUp);
+
   const ballAt=(now)=>{
     if(now<=o.flyMs){ const k=Math.min(1,now/o.flyMs);
       return {x:HX+(land.x-HX)*k, y:HY+(land.y-HY)*k,
@@ -25367,41 +25453,150 @@ function defChaseScene(host, o){
     const r2=Math.min(1,(now-o.flyMs)/rollMs);
     return {x:land.x+Math.cos(rad)*18*r2, y:land.y+Math.sin(rad)*18*r2, z:0};
   };
+  const plate=(txt,col,fs)=>{
+    const h=fs+13, w2=Math.max(84, txt.length*(fs*0.82)+28), x=160-w2/2, y=13;
+    g.fillStyle='rgba(9,12,16,.80)';
+    g.beginPath();
+    if(g.roundRect) g.roundRect(x,y,w2,h,9); else g.rect(x,y,w2,h);
+    g.fill();
+    g.strokeStyle=col; g.lineWidth=1.6; g.stroke();
+    g.font='900 '+fs+'px system-ui,-apple-system,sans-serif';
+    g.textAlign='center'; g.textBaseline='middle';
+    g.fillStyle=col; g.fillText(txt, 160, y+h/2+1);
+    g.textBaseline='alphabetic'; g.textAlign='left';
+  };
+
+  let toldChase=false;
   const draw=()=>{
     if(stop) return;
     const now=Date.now()-t0;
     const dt=Math.min(0.06,(Date.now()-last)/1000); last=Date.now();
-    /* 손가락 쪽으로 뛴다 — 능력치가 속도다 */
-    const dx=tx-fx, dy=ty-fy, dd=Math.hypot(dx,dy);
-    if(dd>1){ const step=Math.min(dd, o.speed*dt); fx+=dx/dd*step; fy+=dy/dd*step; }
-    const b=ballAt(now);
+    /* 내 야수 — 스틱을 민 방향으로. 많이 밀수록 빠르다 */
+    if(phase==='chase' && stick){
+      const dd=Math.hypot(stick.dx,stick.dy);
+      if(dd>3){
+        const v=Math.min(1, dd/STICK_R);
+        fx+=stick.dx/dd*o.speed*v*dt;
+        fy+=stick.dy/dd*o.speed*v*dt;
+      }
+    }
+    /* 그라운드 밖으로는 못 나간다 */
+    fx=Math.max(8, Math.min(PSW-8, fx));
+    fy=Math.max(8, Math.min(PSH-8, fy));
+    const b=ballAt(Math.min(now, phase==='chase'?now:catchAt));
     const near=Math.hypot(b.x-fx, b.y-fy);
-    if(now>=o.flyMs*0.55) best=Math.min(best, near);   // 공이 오기 전에 붙은 건 안 쳐준다
+    if(phase==='chase'){
+      if(now>=o.flyMs*0.55) best=Math.min(best, near);
+      /* 공에 닿았다 — 그 자리에서 송구 단계로 */
+      if(near<=o.reach && now>=o.flyMs*0.85){
+        q=Math.max(0.55, Math.min(1, 1-best/Math.max(1,o.reach*2.1)));
+        caught=true; phase='throw'; catchAt=now;
+        if(o.onTitle) o.onTitle(q>=0.86?'잡았다 — 호수비!':'잡았다','#7fc48f');
+        if(o.onTick) o.onTick('<b>베이스를 눌러라.</b> 늦을수록 송구가 나빠진다');
+      } else if(now>=total){
+        q=Math.max(0,Math.min(1,1-best/Math.max(1,o.reach*2.1)));
+        caught=(q>=0.5);
+        if(caught){ phase='throw'; catchAt=now;
+          if(o.onTitle) o.onTitle('잡았다','#7fc48f');
+          if(o.onTick) o.onTick('<b>베이스를 눌러라.</b> 늦을수록 송구가 나빠진다');
+        } else {
+          phase='miss';
+          if(o.onTitle) o.onTitle('빠졌다 — 손이 안 닿았다','#e08a70');
+          if(o.onTick) o.onTick('타구가 빠져나갔다');
+          setTimeout(()=>{ if(o.onDone) o.onDone(q, 'def:none', null); }, 620);
+        }
+      }
+    }
+    /* 송구 단계에서 시간이 너무 흐르면 알아서 1루로 */
+    if(phase==='throw' && now-catchAt>1500){
+      tq=0.05; tgt={b:1,label:'1루'}; throwAt=now; phase='throw2';
+      if(o.onTitle) o.onTitle('늦었다 — 1루로','#e08a70');
+      setTimeout(()=>{ if(o.onDone) o.onDone(q,'at:first',tq); }, 480);
+    }
+
     g.setTransform(2,0,0,2,0,0);
     psField(g,P);
+    /* 나머지 야수 */
     Object.keys(PS_POS).forEach(kk=>{
       if(kk===o.pos) return;
-      const q=psPosOf(kk,P);
-      psMan(g,q.x,q.y+7,PS_UNI.us,0,q.x<HX,false);
+      const qq=psPosOf(kk,P);
+      man(qq.x,qq.y,PS_UNI.us,false,qq.x<HX);
     });
-    g.strokeStyle='rgba(255,255,255,.30)'; g.lineWidth=1.5;
-    g.beginPath(); g.moveTo(HX,HY); g.lineTo(b.x,b.y); g.stroke();
-    psBall(g,b.x,b.y,b.z);
-    /* 나 — 글러브가 닿는 범위. 초록이면 잡을 거리다 */
-    g.strokeStyle=(near<o.reach)?'rgba(127,196,143,.85)':'rgba(255,209,92,.55)';
-    g.lineWidth=(near<o.reach)?2.2:1.5;
-    g.beginPath(); g.arc(fx,fy,o.reach,0,Math.PI*2); g.stroke();
-    psMan(g,fx,fy+7,PS_UNI.us,dd>2?(1+((Date.now()/100|0)%2)):0,fx<HX,false);
-    if(dd>3){ g.strokeStyle='rgba(255,255,255,.35)'; g.lineWidth=1;
-      g.beginPath(); g.arc(tx,ty,5,0,Math.PI*2); g.stroke(); }
-    if(o.onTick) o.onTick(Math.min(1,now/total), near);
-    if(now<total) requestAnimationFrame(draw);
-    else if(!ended){ ended=true; stop=true;
-      const q=Math.max(0,Math.min(1,1-best/Math.max(1,o.reach*2.1)));
-      if(o.onEnd) o.onEnd(q); }
+    /* 주자 전부 — 누가 어디 있는지 보여야 어디로 던질지 안다 */
+    const rk=Math.min(1, now/RUN_MS);
+    runners.forEach(r=>{
+      const at=r.from+(r.to-r.from)*rk;
+      const pt=runAt(at);
+      man(pt.x,pt.y,PS_UNI.them,rk<1,at>=1&&at<3);
+    });
+    /* 타구 */
+    if(phase==='chase'){
+      g.strokeStyle='rgba(255,255,255,.30)'; g.lineWidth=1.5;
+      g.beginPath(); g.moveTo(HX,HY); g.lineTo(b.x,b.y); g.stroke();
+      psBall(g,b.x,b.y,b.z);
+    } else if(phase==='throw'){
+      psBall(g,fx,fy-2,0);
+    } else if(phase==='throw2' && tgt){
+      const bp=basePt(tgt.b);
+      const k=seg(now,throwAt,throwAt+460);
+      const tp=lerp({x:fx,y:fy}, bp, k);
+      g.strokeStyle='rgba(255,209,92,.6)'; g.lineWidth=1.5;
+      g.beginPath(); g.moveTo(fx,fy); g.lineTo(tp.x,tp.y); g.stroke();
+      psBall(g,tp.x,tp.y,0);
+    } else {
+      psBall(g,b.x,b.y,0);
+    }
+    /* 내 야수 + 글러브 범위 */
+    if(phase==='chase'){
+      g.strokeStyle=(near<o.reach)?'rgba(127,196,143,.85)':'rgba(255,209,92,.55)';
+      g.lineWidth=(near<o.reach)?2.2:1.5;
+      g.beginPath(); g.arc(fx,fy,o.reach,0,Math.PI*2); g.stroke();
+    }
+    man(fx,fy,PS_UNI.us,phase==='chase'&&!!stick,fx<HX);
+    /* 조이스틱 — 손가락이 있는 곳에 그린다 */
+    if(phase==='chase' && stick){
+      g.strokeStyle='rgba(255,255,255,.28)'; g.lineWidth=2;
+      g.beginPath(); g.arc(stick.ox,stick.oy,STICK_R,0,Math.PI*2); g.stroke();
+      g.fillStyle='rgba(255,209,92,.55)';
+      g.beginPath(); g.arc(stick.ox+stick.dx, stick.oy+stick.dy, 9,0,Math.PI*2); g.fill();
+      g.strokeStyle='rgba(255,209,92,.9)'; g.lineWidth=1.5;
+      g.beginPath(); g.arc(stick.ox+stick.dx, stick.oy+stick.dy, 9,0,Math.PI*2); g.stroke();
+    }
+    /* 송구 단계 — 베이스 위에 원. 늦을수록 작아진다(정확도 미터) */
+    if(phase==='throw'){
+      const rr=ringOf(now);
+      throwables().forEach(t=>{
+        const bp=basePt(t.b);
+        g.strokeStyle=(rr>6)?'rgba(127,196,143,.9)':'rgba(224,138,112,.9)';
+        g.lineWidth=2.2;
+        g.beginPath(); g.arc(bp.x,bp.y,rr+5,0,Math.PI*2); g.stroke();
+        g.font='900 10px system-ui,-apple-system,sans-serif';
+        g.textAlign='center';
+        g.fillStyle='#e9e4d8'; g.fillText(t.label, bp.x, bp.y-rr-9);
+        g.textAlign='left';
+      });
+    }
+    if(phase==='chase' && !toldChase && now>o.flyMs*0.5){ toldChase=true; }
+    if(phase==='chase'){
+      const mLeft=Math.round(near*PS_MPP);
+      plate(near<o.reach?'붙었다'
+            :(stick?(mLeft+'m 남았다'):'화면에 손가락을 대고 밀어라'),
+            near<o.reach?'#7fc48f':(stick?'#e9e4d8':'#ffd15c'), 14);
+    }
+    requestAnimationFrame(draw);
   };
   draw();
-  return { stop:()=>{ stop=true; }, el:cv };
+  /* 결과를 같은 캔버스에서 재생한다 — 새 창이 안 뜬다 */
+  const showResult=(play, done)=>{
+    stop=true;
+    let s2=null;
+    try{ s2=groundScene(host,{mode:'bat', ang:play.ang, dist:play.dist,
+      dur:1, park:P, myPos:o.pos, bu:PS_UNI.them, du:PS_UNI.us}); }catch(e){ s2=null; }
+    if(!s2||!s2.replay){ if(done)done(); return; }
+    try{ cv.style.display='none'; }catch(e){}
+    s2.replay(play, 2000, done, {risk:1-q, at:{ball:1, chase:1, run:0.85}});
+  };
+  return { stop:()=>{ stop=true; }, el:cv, showResult };
 }
 
 /* 포수 — 뛰면 던진다.
