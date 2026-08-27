@@ -1626,6 +1626,26 @@ table.hl-tbl td.hl-o{color:#c98a80}
 .rb-bar>i{display:block;height:100%;width:0%;
   background:linear-gradient(90deg,#3fa564,#c9a227,#d2544a)}
 .rb-note{font-size:10.5px;color:var(--dim);text-align:center;margin-bottom:9px}
+/* 리드 고르는 칸 — 세로로 크게. 폰에서 한 손으로 누른다.
+   [제보] "리드 나가는 시스템이 너무어려워" — 끌어서 미세 조절하는 건
+   폰에서 할 짓이 아니었다. 숫자를 같이 깔아서 뭘 고르는지 보이게 한다. */
+.lead-grid{display:flex;flex-direction:column;gap:7px;margin-top:9px}
+.lead-b{display:block;width:100%;text-align:left;padding:12px 13px;border-radius:11px;
+  background:var(--panel2);border:1px solid #2a323d;color:#e2eaf5;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.lead-b span{display:block;font-size:14.5px;font-weight:800}
+.lead-b i{display:block;font-style:normal;font-size:11.5px;color:#8b95a3;margin-top:3px}
+.lead-b u{display:block;text-decoration:none;font-size:11.5px;font-weight:700;
+  color:#c9a227;margin-top:4px}
+.lead-b.on{border-color:#c9a227;background:#232b36}
+.lead-b.run{background:linear-gradient(180deg,#2f8f4e,#1f6f3a);border-color:#3fa564;color:#fff}
+.lead-b.run i,.lead-b.run u{color:rgba(255,255,255,.82)}
+.lead-b.run.off{background:var(--panel2);border-color:#2a323d;opacity:.5}
+.lead-b.stay{border-style:dashed}
+.lead-b.danger{background:linear-gradient(180deg,#b4553a,#8a3d28);border-color:#e08a70;
+  color:#fff;font-size:16px;padding:18px 13px}
+.lead-b.danger i{color:rgba(255,255,255,.9);font-weight:800}
+.lead-b:active{transform:scale(.99)}
 .rb-row{display:flex;gap:8px}
 .rb-b{flex:1;padding:14px 6px;border-radius:10px;font-size:14px;font-weight:800;
   border:1px solid var(--line);color:var(--ink)}
@@ -2414,7 +2434,16 @@ function simPA(bat,pit,offTeam,defTeam,rng,tac,cond,park,mods){
   if(rng()>=babip) return {type:'OUT', gb: rng()<0.56};
 
   const pw = offTeam.tend.pow * fPow * tPow * (mods.pow||1);
-  let p2=LG.H2*pw*park.d2, p3=LG.H3*Math.pow(pw,0.4)*park.d3, phr=LG.HR*Math.pow(pw,1.7)*park.hr;
+  /* [제보] "여기 홈런은 나오긴하냐 차피 선수모드인데 홈런형타자도
+             나올 수 있게 만들긴 해야함"
+     재보니 파워를 95 까지 올려도 시즌 0.5개였다. 그건 홈런형이 아니다.
+     리그 전체 홈런율은 실측(2026 시즌 팀 홈런 1개)에 맞춰야 하니
+     **평균 타자는 그대로 두고 위쪽만 가파르게** 만든다 —
+     지수를 파워에 따라 키운다. pw 가 1.0(리그 평균)이면 1.7 그대로고,
+     3.0(파워 95)이면 3.1 이 된다. 아래는 안 건드리고 위만 열린다.  */
+  const hrExp = 1.7 + Math.max(0, pw-1.25)*1.35;
+  let p2=LG.H2*pw*park.d2, p3=LG.H3*Math.pow(pw,0.4)*park.d3,
+      phr=LG.HR*Math.pow(pw,hrExp)*park.hr;
   const tot=p2+p3+phr;
   if(tot>0.85){const s=0.85/tot;p2*=s;p3*=s;phr*=s;}
   const rr=rng();
@@ -7673,8 +7702,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.77.0';
-const APP_VERSION_NOTE = '선수 모드는 진짜 야구다 — 형들도 2군에 간다';
+const APP_VERSION = '2.78.0';
+const APP_VERSION_NOTE = '시상식이 안 뜨던 것 · 땅볼 치고 안 뛰던 것 · 홈런형 타자';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7695,6 +7724,16 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.78.0', t:'시상식이 안 뜨던 것 · 땅볼 치고 안 뛰던 것 · 홈런형 타자', items:[
+    '[제보] "시상식 보고 다음시즌 시작하라는데 시상식이 안나온데 그리고 홈에서 시상식 보라는데 홈들어가면 안나온데 심각한 버그인듯" — 심각한 버그가 맞았다. **선수 모드에서 시즌이 끝나면 진행이 완전히 막혔다.** 경기 화면은 「홈에서 시상식을 보고 새 시즌을 시작해라」 라고 하는데, 선수 모드는 홈에 들어가는 순간 선수 화면으로 곧장 빠져나가서 시상식·새 시즌 블록에 영영 도달하지 못했다. 시즌이 끝난 뒤에는 두 모드가 같은 마무리 화면을 본다',
+    '[제보] "땅볼치면 그냥 안뛰고" — 이것도 진짜였다. 아웃이면 주자가 갈 베이스를 0 으로 잡아놔서 **한 발짝도 안 움직였다.** 땅볼을 쳐도 1루까지는 죽어라 뛰는 게 야구다. 뜬공이면 잡히는 걸 보고 돌아온다',
+    '[제보] "여기 홈런은 나오긴하냐 차피 선수모드인데 홈런형타자도 나올 수 있게 만들긴 해야함" — 재보니 파워를 95 까지 올려도 시즌 0.5개였다. 그건 홈런형이 아니다. 리그 전체 홈런율은 실측(2026시즌 팀 홈런 1개)에 맞춰야 하니 **평균 타자는 그대로 두고 위쪽만 가파르게** 열었다. 파워 92 면 시즌 두세 개, 95 면 서너 개가 나온다 — 4부에서 그 정도면 홈런왕이다',
+    '[제보] "투수 타자 겸업은 왜 투수가 안되는거지" — 로테이션을 능력치 순으로만 뽑고 있었다. 투수를 골라도 그 팀에서 여섯 번째 안에 못 들면 **한 시즌을 한 번도 안 던졌다.** 투수를 고른 건 내 선택인데 감독이 그걸 무시하면 의미가 없다. 이제 선수 모드에서 투수·이도류면 로테이션 맨 앞이고, 이도류면 지명타자도 자동으로 꺼진다',
+    '[제보] "투수겸 타자인데 고교 때는 타자만하고" — 고교는 로테이션에 나를 1번으로 넣어놨는데 **마운드에서 멈추는 분기가 없었다.** 내가 선발이어도 자동으로 굴러갔다. 이제 고교에서도 내가 던지는 공은 내가 던진다',
+    '[제보] "리드 나가는 시스템이 너무어려워" · "리드 이정도이다 뭐 어쩌라고 읽다가 이미 지나감 너무 빨라서" — 끌어서 미세 조절하는 건 폰에서 할 짓이 아니었다. **세 칸으로 못 박았다** — 붙어 있는다 / 보통 / 크게 나간다. 칸마다 도루 성공률과 견제사 확률을 **숫자로** 깐다. 시간 제한도 없앴다 — 고를 때까지 안 넘어간다. 견제가 오면 「돌아가!」 를 1.25초 준다',
+    '[제보] "선수모드에 감독액션이 왜있어" — 맞는 말이다. 물통 차고 투수 바꾸는 건 감독 일이다. 선수 모드에서 뺐다. (오심 항의는 남는다 — 그건 「내가 따진다」 라 선수가 하는 게 맞다)',
+    '[제보] "한 주 시작할때 홈에서 훈련갈 수 있는 칸이 있어야 될듯 훈련 있는지도 잘 모를듯 훈련이 되고있는지도 다음 주 뭐 잘되었다고 나와야지" — 홈에 「이번 주 훈련」 칸을 넣었다. 지금 뭘 고른 상태인지 보이고 눌러서 바꾼다. 지난주에 뭐가 올랐는지도 바로 위에 뜬다. 정수로 안 오른 주에도 **얼마나 쌓였는지**를 말해준다 — 예전엔 「아직 티가 안 난다」 로만 끝나서 훈련이 되는 건지 알 수가 없었다',
+  ]},
   {v:'2.77.0', t:'선수 모드는 진짜 야구다 — 형들도 2군에 간다', items:[
     '[요청] "감독모드는 2군이 있으면 안되고 실존선수도 강등 콜업 가능하고 이적 가능하게해 선수모드에서만. 선수모드에선 실제 야구같은거지" — 맞는 말이다. 감독 모드는 열넷을 데리고 굴리는 동네 야구다. 거기에 2군이 있으면 그건 다른 게임이다. **감독 모드에서 2군과 이적 시장을 통째로 뺐다** — 주간에 안 돌고 화면에도 안 뜬다',
     '선수 모드는 반대다. 내가 그 안의 한 명이니까 위아래가 있어야 한다. **이제 실존 선수도 2군에 내려간다.** 12타수 이상에서 2할1푼 밑이면 이건이 진짜로 내린다. 2주 동안 못 나가고, 2군에서 2할8푼을 넘기면 올라온다',
@@ -12566,9 +12605,20 @@ function buildPitcherPool(){
 function recommendRotation(){
   const t=TBYID['wwzw'];
   buildPitcherPool();
-  return t.pitchers.slice()
+  let out=t.pitchers.slice()
     .sort((a,b)=>(b.stf*1.1+b.ctl*1.3+b.sta*0.8)-(a.stf*1.1+a.ctl*1.3+a.sta*0.8))
     .slice(0,6).map(p=>p.id);
+  /* [제보] "투수 타자 겸업은 왜 투수가 안되는거지"
+     로테이션을 능력치 순으로만 뽑고 있었다. 그래서 투수를 골라도
+     그 팀에서 여섯 번째 안에 못 들면 **한 시즌을 한 번도 안 던졌다.**
+     투수를 고른 건 내 선택이다 — 감독이 그걸 무시하면 그 선택이
+     아무 의미가 없다. 선수 모드에서 투수·이도류면 맨 앞에 세운다.  */
+  if(typeof isPlayerMode==='function' && isPlayerMode()
+     && ST && (ST.role==='pit'||ST.role==='two')){
+    const me=ST.playerId||MYID;
+    if(t.pitchers.some(p=>p.id===me)) out=[me].concat(out.filter(x=>x!==me)).slice(0,6);
+  }
+  return out;
 }
 function recalcTeamDefense(team, slots, gearPenalty){
   if(!team.isUser) return;
@@ -14327,6 +14377,19 @@ function hsRunLive(){
         return;
       }
     }
+    /* [제보] "투수겸 타자인데 고교 때는 타자만하고"
+       로테이션에는 나를 1번으로 넣어놨는데(hsRotation) **마운드에서
+       멈추는 분기가 없었다.** 그래서 내가 선발이어도 자동으로 굴러갔다.
+       내가 던지는 공은 내가 던진다.                                */
+    if(!off.isUser && LIVE.def().isUser && LIVE.paSeq!==LIVE._lastPlayPA
+       && (ST.role==='pit'||ST.role==='two')){
+      const mp=LIVE.curPitcher(LIVE.def());
+      if(mp && mp.id===me){
+        flushLog(); updateLiveUI();
+        showDecision({kind:'pitch', label:'코스'});
+        return;
+      }
+    }
     if(LIVE.pending) LIVE.applyDecision('change');
     LIVE.step();
   }
@@ -15426,6 +15489,33 @@ function renderHomePlayer(){
     c.appendChild(today);
   }
 
+  /* ---- 이번 주에 뭘 할까 ----
+     [제보] "한 주 시작할때 홈에서 훈련갈 수 있는 칸이 있어야 될듯
+             훈련 있는지도 잘 모를듯 훈련이 되고있는지도 다음 주 뭐
+             잘되었다고 나와야지"
+     맞는 말이다. 훈련 탭이 따로 있으면 아무도 안 들어간다.
+     **홈에 뭘 고를지와 지난주에 뭐가 올랐는지를 같이 깐다.**        */
+  {
+    const tc=el('div','card');
+    tc.appendChild(el('div','card-h','이번 주 훈련'));
+    if(ST.myTrainLog){
+      tc.appendChild(Object.assign(el('div','trn-last'),
+        {innerHTML:'<b>지난주</b> '+ST.myTrainLog}));
+    }
+    const cur=(typeof pmTrainDef==='function')?pmTrainDef(ST.myTrain):null;
+    const pick=el('button','mystatus '+(cur?'in':'out')+' tapon');
+    pick.innerHTML=cur
+      ? '<div class="ms-big">'+cur.icon+' '+cur.name+'</div>'+
+        '<div class="ms-sub">'+cur.sub+' · 컨디션 '+(cur.cond>0?'+':'')+cur.cond+'</div>'+
+        '<div class="ms-why">주를 시작하면 적용된다 — 눌러서 바꾼다</div>'
+      : '<div class="ms-big">아직 안 골랐다</div>'+
+        '<div class="ms-sub">이번 주에 뭘 할지 정해라</div>'+
+        '<div class="ms-why">안 고르면 아무것도 안 오른다</div>';
+    pick.onclick=()=>go('train');
+    tc.appendChild(pick);
+    c.appendChild(tc);
+  }
+
   /* ---- 팀에서 누가 내려갔나 ---- */
   {
     const R=Object.keys(ST.farmReal||{});
@@ -15518,7 +15608,15 @@ function renderHomePlayer(){
 /* ---------- 홈 ---------- */
 function renderHome(){
   /* [제보] "선수모드인데도 감독모드랑 너무 섞여서 감독모드 그 자체" */
-  if(isPlayerMode() && ST && ST.schedule) return renderHomePlayer();
+  /* [제보] "시상식 보고 다음시즌 시작하라는데 시상식이 안나온데
+             그리고 홈에서 시상식 보라는데 홈들어가면 안나온데"
+     심각한 버그가 맞았다. **시즌이 끝나면 진행이 완전히 막혔다.**
+     경기 화면은 "홈에서 시상식을 보고 새 시즌을 시작해라" 라고 하는데,
+     선수 모드는 홈에서 renderHomePlayer() 로 곧장 빠져나가서
+     시상식·새 시즌 블록에 **영영 도달하지 못했다.**
+     시즌이 끝난 뒤에는 두 모드가 같은 화면을 본다 — 시상식과
+     새 시즌 시작은 감독이 하는 일이 아니라 그냥 그 판의 마무리다. */
+  if(isPlayerMode() && ST && ST.schedule && !ST.seasonOver) return renderHomePlayer();
   const c=$('#view'); c.innerHTML='';
   const st=ST.stand['wwzw'];
   const played=ST.schedule.filter(s=>s.played).length;
@@ -21030,6 +21128,11 @@ function livePlay(host, o){
   const flyOut=(isOut && !play.gb);
   /* 엔진이 보장하는 베이스 — 여기까지는 무조건 세이프다 */
   const base = HR?4 : (play.type==='3B')?3 : (play.type==='2B')?2 : isOut?0 : 1;
+  /* [제보] "땅볼치면 그냥 안뛰고"
+     진짜였다. 아웃이면 base 가 0 이라 주자 위치가 min(0, ...) 로 눌렸다 —
+     **한 발짝도 안 움직였다.** 땅볼을 쳐도 1루까지는 죽어라 뛰는 게 야구다.
+     달리는 목표(runTo)와 기록상 안전한 베이스(base)를 갈라놓는다.   */
+  const runTo = HR?4 : isOut ? (flyOut?0:1) : base;
   const canGo = !!o.offer;                       // 한 베이스 더 노릴 수 있나
 
   /* ---- 시간표 ----
@@ -21085,7 +21188,7 @@ function livePlay(host, o){
          흐르니까 앞으로 가면서 동시에 뒤로 가는 꼴이 된다.        */
       return backFrom+(backTo-backFrom)*seg(t, backAt, backAt+520);
     }
-    const cap = (intent==='go' && canGo) ? base+1 : base;
+    const cap = (intent==='go' && canGo) ? base+1 : Math.max(runTo, base);
     return Math.min(cap, raw);
   };
 
@@ -21141,7 +21244,7 @@ function livePlay(host, o){
   const man=(x,y,u,run,flip)=>psMan(g,x,y+7,u,run?(1+((Date.now()/100|0)%2)):0,flip,false);
 
   const T_END=()=>HR ? (trotMs*4+600)
-    : Math.max(T_THROW+THROW_MS+620, runMs*Math.max(1,tgtBase)+460);
+    : Math.max(T_THROW+THROW_MS+620, runMs*Math.max(1,Math.max(tgtBase,runTo))+460);
 
   const draw=()=>{
     if(stop) return;
@@ -21226,7 +21329,7 @@ function livePlay(host, o){
                if(intent!=='back'){
                  const t=now();
                  backFrom=runPos(t);
-                 backTo=Math.max(0, Math.floor(Math.min(backFrom, base)));
+                 backTo=Math.max(0, Math.floor(Math.min(backFrom, Math.max(runTo,base))));
                  intent='back'; backAt=t;
                } return true; },
     canGo:()=>canGo,
@@ -21794,6 +21897,16 @@ function sanitizeRotation(){
   // 중복 제거
   ST.rotation=ST.rotation.filter((id,i)=>ST.rotation.indexOf(id)===i);
   if(!ST.rotation.length)ST.rotation=recommendRotation();
+  /* 투수·이도류를 골랐으면 로테이션 맨 앞은 나다. 옛 세이브에서
+     이미 짜여 있던 로테이션도 여기서 바로잡는다.                   */
+  if(typeof isPlayerMode==='function' && isPlayerMode()
+     && ST && (ST.role==='pit'||ST.role==='two')){
+    const me=ST.playerId||MYID;
+    if(t.pitchers.some(p=>p.id===me) && ST.rotation[0]!==me)
+      ST.rotation=[me].concat(ST.rotation.filter(x=>x!==me));
+    /* 이도류는 타순에도 서야 한다 — 지명타자를 쓰면 투수는 안 친다 */
+    if(ST.role==='two') ST.useDH=false;
+  }
   return ST.rotation;
 }
 
@@ -22229,6 +22342,11 @@ function paintLiveCtl(){
   lc.innerHTML='';
   /* 고등학생은 감독이 아니다. 교체도 작전도 내가 안 한다 */
   if(LIVE._hs) return;
+  /* [제보] "선수모드에 감독액션이 왜있어" — 맞는 말이다.
+     물통 차고 심판한테 항의하고 투수를 바꾸는 건 감독이 하는 일이다.
+     선수는 자기 타석·수비·주루만 한다. (오심 항의는 따로 있다 —
+     그건 「내가 따진다」 라 선수가 하는 게 맞다)                    */
+  if(typeof isPlayerMode==='function' && isPlayerMode()) return;
   if(!LIVE.manual) return;
   const b=el('button','btn','⚡ 감독 액션'+(LIVE.mgr.left>0?` (${LIVE.mgr.left})`:' 소진'));
   if(LIVE.mgr.left<=0) b.disabled=true;
@@ -25360,34 +25478,46 @@ function renderLead(box, d){
   const cSlot=(def.slots||[]).find(x=>x.pos==='C');
   const cat=cSlot?def.team.players.find(x=>x.id===cSlot.id):null;
   const w=el('div','pl-wrap');
+
+  const spd=p?p.spd:45, iq=p?stealIQ(p):45;
+  const cArm=cat?cat.arm:45, cDef=cat?cat.def:45;
+  /* 각 리드에서 실제로 쓰는 확률을 **그대로** 보여준다.
+     [제보] "리드 나가는 시스템이 너무어려워" · "리드 이정도이다 뭐 어쩌라고"
+     숫자를 안 보여주고 「크게 나간다」 라고만 하면 뭘 고르라는 건지 모른다.
+     엔진이 쓰는 식을 그대로 계산해서 화면에 깐다.                   */
+  const suOf=(lead)=>{
+    const leadB=(lead-1)*0.055;
+    return Math.max(0.45, Math.min(0.99,
+      LG.SB_SUCCESS+leadB+(spd-LG.SB_SU_MID)*0.0030+(iq-46)*0.0034
+      -(cArm-46)*0.0060-(cDef-46)*0.0026 - 0.26));   // 작정하고 뛰는 몫
+  };
+  const pickOf=(lead)=>Math.max(0.02, Math.min(0.92,
+    (0.30+lead*0.24)-(spd-45)*0.004-(iq-45)*0.0045));
+
   const head=el('div');
   head.innerHTML='<div class="pl-t">주루 · 1루</div>'+
     '<div class="pl-sub">'+LIVE.inning+'회 '+LIVE.outs+'아웃 · 투수 '+
       '<b style="color:#e2eaf5">'+pit.name+'</b> '+
       '<b style="color:#ffd15c">'+LIVE.pitchCount(pit.id)+'구</b>'+
-      (cat?' · 포수 '+cat.name+' (어깨 '+Math.round(cat.arm)+')':'')+'</div>'+
+      (cat?' · 포수 '+cat.name+' (어깨 '+Math.round(cat.arm)+' 수비 '+Math.round(cat.def)+')':'')+'</div>'+
     (p?'<div class="bat-info"><div class="bi-top"><b>'+p.name+'</b><em>1루 주자</em></div>'+
-       '<div class="bi-r">주루 '+Math.round(p.spd)+' · 올해 도루 '+
-       (((LIVE.box[me]||{}).sb)||0)+'개 · 실패 '+(((LIVE.box[me]||{}).cs)||0)+'</div></div>':'');
+       '<div class="bi-r">발 '+Math.round(spd)+' · 주루 센스 '+Math.round(iq)+
+       ' · 올해 도루 '+(((LIVE.box[me]||{}).sb)||0)+'개 (실패 '+(((LIVE.box[me]||{}).cs)||0)+')</div></div>':'');
   w.appendChild(head);
 
   const box2=el('div','defbox');
   box2.innerHTML='<div class="rb-t">리드를 얼마나 벌리나</div>';
   const stage=el('div','runstage');
   box2.appendChild(stage);
-  box2.appendChild(Object.assign(el('div','rb-bar'),{innerHTML:'<i></i>'}));
   const note=el('div','rb-note');
-  note.innerHTML='<b>화면을 옆으로 끌어라.</b> 많이 나갈수록 도루가 되지만 견제가 온다';
+  note.innerHTML='<b>천천히 골라라.</b> 고를 때까지 안 넘어간다';
   box2.appendChild(note);
-  const row=el('div','rb-row');
+  const row=el('div','lead-grid');
   box2.appendChild(row);
   w.appendChild(box2);
   box.appendChild(w);
-  const bar=()=>box2.querySelector('.rb-bar > i');
 
-  let done2=false, sc=null;
-  /* 리드는 **타석 전에** 끝나는 판단이다. decDone 이 lastDecPA 를 찍으면
-     그 타석의 작전·대타 판단이 통째로 막힌다. 찍기 전 값을 되돌린다. */
+  let done2=false, sc=null, lead=1;
   const closeLead=()=>{
     const keep=LIVE?LIVE.lastDecPA:-1;
     decDone(box);
@@ -25398,78 +25528,94 @@ function renderLead(box, d){
     const t=box2.querySelector('.rb-t');
     if(t && txt){ t.textContent=txt; t.style.color=col||''; }
     LIVE.applyDecision(choice);
-    setTimeout(closeLead, txt?520:0);
+    setTimeout(closeLead, txt?680:0);
   };
-  /* 견제가 왔다 — 잠깐 뜨는 「돌아가!」 를 못 누르면 죽는다 */
-  const onPick=(backCb)=>{
+
+  /* 견제 — 「돌아가!」 를 못 누르면 죽는다. 시간을 넉넉히 준다 */
+  const onPick=()=>{
+    if(done2) return;
     const t=box2.querySelector('.rb-t');
-    if(t){ t.textContent='견제!'; t.style.color='#e08a70'; }
+    if(t){ t.textContent='견제!! 돌아가라'; t.style.color='#e08a70'; }
+    note.innerHTML='<b style="color:#e08a70">지금 눌러라</b>';
     row.innerHTML='';
-    const b=el('button','rb-b go','돌아가! ▸');
+    const b=el('button','lead-b danger');
+    b.innerHTML='<span>◂ 돌아간다</span><i>지금!</i>';
     let hit=false;
-    b.onclick=()=>{ if(hit)return; hit=true; backCb(true); };
-    b.addEventListener('pointerdown',(ev)=>{ if(ev&&ev.preventDefault)ev.preventDefault();
-      if(hit)return; hit=true; backCb(true); });
+    const back=(ok)=>{ if(hit)return; hit=true; pickResult(ok); };
+    b.onclick=()=>back(true);
+    b.addEventListener('pointerdown',(ev)=>{ if(ev&&ev.preventDefault)ev.preventDefault(); back(true); });
     row.appendChild(b);
-    setTimeout(()=>{ if(!hit){ hit=true; backCb(false); } }, 760);
+    setTimeout(()=>{ if(!hit) back(false); }, 1250);
   };
   const pickResult=(back)=>{
     const r=LIVE.runPickoff(back);
     flushLog(); updateLiveUI();
+    const t=box2.querySelector('.rb-t');
     if(r && r.out){
       LIVE._lastRunPA=LIVE.paSeq;
-      const t=box2.querySelector('.rb-t');
       if(t){ t.textContent='견제사 — 너무 나가 있었다'; t.style.color='#e08a70'; }
       done2=true; if(sc)sc.stop();
       if(LIVE._badCall && LIVE._badCall.kind==='play'){ showArgue(row, null);
         setTimeout(closeLead, 3200); return false; }
-      setTimeout(closeLead, 900);
+      setTimeout(closeLead, 1100);
       return false;
     }
-    const t=box2.querySelector('.rb-t');
     if(t){ t.textContent='살았다 — 아슬아슬했다'; t.style.color='#7fc48f'; }
+    note.innerHTML='다시 고를 수 있다';
     buildRow();
     return true;
-    /* (견제사면 위에서 이미 닫는다 — 그때 항의 줄이 붙는다) */
   };
-  let leadPx=10;
+
+  /* ---- 고르는 칸 세 개 + 뛴다 ---- */
+  const LEADS=[
+    {v:0, n:'붙어 있는다', d:'견제 안 온다 · 도루 못 한다'},
+    {v:1, n:'보통',        d:'평범한 리드'},
+    {v:2, n:'크게 나간다', d:'도루가 잘 된다 · 견제가 온다'},
+  ];
   const buildRow=()=>{
     row.innerHTML='';
-    const b1=el('button','rb-b stay','안 뛴다');
-    b1.onclick=()=>fin(leadPx<8?'run:hug':(leadPx>=18?'run:lead':'run:normal'),
-      leadPx<8?'베이스에 붙는다':'리드만 유지한다','#9fb0c4');
-    const b2=el('button','rb-b go','뛴다 ▸');
-    b2.onclick=()=>fin('run:go','뛴다!','#ffd15c');
-    row.appendChild(b1); row.appendChild(b2);
+    LEADS.forEach(L=>{
+      const b=el('button','lead-b'+(lead===L.v?' on':''));
+      const su=Math.round(suOf(L.v)*100), pk=Math.round(pickOf(L.v)*100);
+      b.innerHTML='<span>'+L.n+'</span>'+
+        '<i>'+L.d+'</i>'+
+        '<u>'+(L.v===0?'도루 —':'도루 성공 '+su+'%')+' · 견제사 '+pk+'%</u>';
+      b.onclick=()=>{ if(done2)return; lead=L.v; if(sc&&sc.setLead)sc.setLead(L.v); buildRow(); };
+      row.appendChild(b);
+    });
+    const go=el('button','lead-b run'+(lead===0?' off':''));
+    go.innerHTML='<span>▸ 뛴다</span><i>'+(lead===0?'붙어 있으면 못 뛴다':'지금 스타트를 끊는다')+'</i>'+
+      '<u>'+(lead===0?'—':'성공 '+Math.round(suOf(lead)*100)+'%')+'</u>';
+    if(lead===0) go.disabled=true;
+    else go.onclick=()=>fin('run:go','뛴다!','#ffd15c');
+    row.appendChild(go);
+    const stay=el('button','lead-b stay');
+    stay.innerHTML='<span>안 뛴다 — 다음 타자를 본다</span>'+
+      '<i>'+(lead===0?'베이스에 붙어 있는다':(lead===2?'크게 나간 채로 기다린다':'리드만 유지한다'))+'</i>';
+    stay.onclick=()=>fin(lead===0?'run:hug':(lead>=2?'run:lead':'run:normal'),
+      lead===0?'베이스에 붙는다':'리드만 유지한다','#9fb0c4');
+    row.appendChild(stay);
   };
   buildRow();
 
   try{
-    sc=leadScene(stage, {park:LIVE.park, spd:(p?p.spd:45),
-      onLead:(px)=>{ leadPx=px;
-        if(note && !done2) note.innerHTML= px>=18
-          ? '<b style="color:#e08a70">많이 나갔다</b> — 견제가 온다'
-          : (px<8 ? '베이스에 붙어 있다 — 도루는 못 한다'
-                  : '보통 리드 — 무난하다');
-      },
-      onTick:(k)=>{ const b=bar(); if(b) b.style.width=((1-k)*100).toFixed(0)+'%'; },
-      onPick:()=>{ if(done2) return; onPick((back)=>pickResult(back)); },
-      onEnd:()=>{ if(done2)return;
-        fin(leadPx<8?'run:hug':(leadPx>=18?'run:lead':'run:normal'), null, null); }});
+    sc=leadScene(stage, {park:LIVE.park, lead:1,
+      onPick:()=>onPick(),
+      onEnd:()=>{ if(!done2) fin(lead===0?'run:hug':(lead>=2?'run:lead':'run:normal'), null, null); }});
   }catch(e){ sc=null; }
   if(!sc){
-    const t0=Date.now(), T=4200;
-    const iv=setInterval(()=>{
-      const k=Math.min(1,(Date.now()-t0)/T);
-      const b=bar(); if(b) b.style.width=((1-k)*100).toFixed(0)+'%';
-      if(k>=1){ clearInterval(iv); if(!done2) fin('run:normal', null, null); }
-    },40);
-    sc={stop:()=>clearInterval(iv)};
+    /* 캔버스가 없으면(테스트 등) 그냥 기다린다 — 안 고르면 8초 뒤 보통 */
+    const to=setTimeout(()=>{ if(!done2) fin('run:normal', null, null); }, 8000);
+    sc={stop:()=>clearTimeout(to), setLead:()=>{}};
   }
   box._cleanup=()=>{ done2=true; if(sc)sc.stop(); };
 }
 
-/* 1루에서의 리드. 옆으로 끌면 그만큼 나간다. 많이 나가면 견제가 온다. */
+/* 1루에서의 리드. 버튼으로 고르면 그만큼 나가서 선다.
+   [제보] "리드 나가는 시스템이 너무어려워"
+   끌어서 미세 조절하는 건 폰에서 할 짓이 아니었다. 세 칸으로 못 박고,
+   화면은 **지금 얼마나 나가 있는지**만 보여준다. 시간 제한도 없앴다 —
+   견제가 오기 전까지는 얼마든지 들여다볼 수 있다.                  */
 function leadScene(host, o){
   const cv=document.createElement('canvas');
   cv.className='runcv leadcv';
@@ -25481,59 +25627,46 @@ function leadScene(host, o){
   const HX=160, HY=236;
   const b1=PS_B[1], b2=PS_B[2];
   const LEN=Math.hypot(b2.x-b1.x, b2.y-b1.y);
-  const MAX=28;                                   // 최대 리드(px)
-  let lead=10, want=10, stop=false, ended=false;
-  let picking=false, picked=false;
-  const T=4200, t0=Date.now();
-  /* 견제가 오는 시점 — 리드가 클수록 빨리, 자주 온다 */
-  const pickAt=900+Math.random()*1900;
-  const toLocal=(ev)=>{
-    const r=cv.getBoundingClientRect();
-    const sx=(typeof ev.clientX==='number'&&isFinite(ev.clientX))?ev.clientX:r.left+r.width/2;
-    return (sx-r.left)/Math.max(1,r.width)*PSW;
-  };
-  const aim=(ev)=>{ if(ev&&ev.preventDefault)ev.preventDefault();
-    const x=toLocal(ev);
-    /* 화면 오른쪽 끝이 최대 리드다 — 왼쪽으로 끌면 베이스로 붙는다 */
-    want=Math.max(0, Math.min(MAX, (x-b1.x+40)/70*MAX));
-  };
-  cv.style.touchAction='none';
-  cv.addEventListener('pointerdown',(ev)=>{ aim(ev);
-    try{cv.setPointerCapture(ev.pointerId);}catch(e){} });
-  cv.addEventListener('pointermove',(ev)=>{ if(ev.buttons||ev.pressure) aim(ev); });
+  const STEP=[3, 13, 26];                      // 붙는다 · 보통 · 크게
+  let want=STEP[o.lead!=null?o.lead:1], lead=want;
+  let stop=false, picking=false, picked=false;
+  const t0=Date.now();
+  /* 견제는 **크게 나가 있을 때만**, 그것도 한 번만 온다.
+     시간 제한이 없으니 이게 유일한 재촉이다.                        */
+  let pickAt=2600+Math.random()*2600;
   const draw=()=>{
     if(stop) return;
     const now=Date.now()-t0;
-    lead += (want-lead)*0.18;
+    lead += (want-lead)*0.16;
     g.setTransform(2,0,0,2,0,0);
     psField(g,P);
     Object.keys(PS_POS).forEach(kk=>{
       const q=psPosOf(kk,P);
       psMan(g,q.x,q.y+7,PS_UNI.them,0,q.x<HX,false);
     });
-    /* 나 — 1루에서 2루 쪽으로 나가 있다 */
     const rx=b1.x+(b2.x-b1.x)*(lead/LEN), ry=b1.y+(b2.y-b1.y)*(lead/LEN);
-    g.strokeStyle=(lead>=18)?'rgba(224,138,112,.75)':'rgba(255,209,92,.45)';
+    g.strokeStyle=(lead>=20)?'rgba(224,138,112,.75)':'rgba(255,209,92,.45)';
     g.lineWidth=1.5;
     g.beginPath(); g.moveTo(b1.x,b1.y); g.lineTo(rx,ry); g.stroke();
     psMan(g,rx,ry+7,PS_UNI.us,picking?2:0,true,false);
-    /* 리드 눈금 */
-    g.font='900 11px system-ui,-apple-system,sans-serif';
-    g.textAlign='center'; g.fillStyle=(lead>=18)?'#e08a70':'#ffd15c';
-    g.fillText(Math.round(lead*PS_MPP*10)/10+'m', rx, ry-16);
+    g.font='900 12px system-ui,-apple-system,sans-serif';
+    g.textAlign='center'; g.fillStyle=(lead>=20)?'#e08a70':'#ffd15c';
+    g.fillText(Math.round(lead*PS_MPP*10)/10+'m', rx, ry-17);
     g.textAlign='left';
-    if(o.onLead) o.onLead(lead);
-    if(o.onTick) o.onTick(Math.min(1,now/T));
-    /* 견제 */
-    if(!picked && !picking && now>pickAt && lead>=11){
+    if(!picked && !picking && now>pickAt && want>=20){
       picking=true; picked=true;
       if(o.onPick) o.onPick();
     }
-    if(now<T) requestAnimationFrame(draw);
-    else if(!ended){ ended=true; stop=true; if(o.onEnd) o.onEnd(lead); }
+    requestAnimationFrame(draw);
   };
   draw();
-  return { stop:()=>{ stop=true; }, el:cv, lead:()=>lead };
+  return {
+    stop:()=>{ stop=true; },
+    el:cv,
+    setLead:(v)=>{ want=STEP[Math.max(0,Math.min(2,v))];
+      /* 크게 나가기로 바꾸면 그때부터 견제 시계가 돈다 */
+      if(v>=2 && picked===false) pickAt=(Date.now()-t0)+1800+Math.random()*2400; },
+  };
 }
 
 /* ================= 교체당하는 장면 =================
@@ -27004,7 +27137,25 @@ function applyMyTrain(){
   finalizeTeam(TBYID['wwzw']);
   if(typeof buildPitcherPool==='function') buildPitcherPool();
   myRatingsSave();          // 안 적으면 새로고침 한 번에 통째로 날아간다
-  ST.myTrainLog = got.length? (t.name+' — '+got.join(' · ')) : (t.name+' — 아직 티가 안 난다');
+  /* [제보] "훈련이 되고있는지도 다음 주 뭐 잘되었다고 나와야지"
+     0.1 씩 붙는 훈련이라 정수가 안 올라간 주가 많다. 그때 「아직 티가
+     안 난다」 로만 끝내면 훈련이 되고 있는 건지 알 수가 없다.
+     안 오른 주에도 **얼마나 쌓였는지**를 말해준다.                 */
+  if(!got.length){
+    const near=Object.keys(t.g||{}).map(k=>{
+      const v=(k==='stf'||k==='ctl'||k==='sta')?(p.pitch?p.pitch[k]:null):p[k];
+      if(v==null) return null;
+      const frac=Math.round((v-Math.floor(v))*100);
+      return (KN[k]||k)+' '+Math.floor(v)+(frac?('.'+String(frac).padStart(2,'0').slice(0,1)):'');
+    }).filter(Boolean);
+    ST.myTrainLog = t.name+' — 쌓이는 중 ('+near.join(' · ')+')';
+  } else {
+    ST.myTrainLog = t.name+' — '+got.join(' · ');
+  }
+  ST.notices=ST.notices||[];
+  ST.notices.push({type:'train', title:'지난주 훈련 — '+t.name,
+    body: got.length?('올랐다: '+got.join(' · ')):'아직 정수로는 안 올랐다. 계속 쌓이는 중이다.',
+    effect: '컨디션 '+(t.cond>0?'+':'')+t.cond});
   return ST.myTrainLog;
 }
 function renderTrainPlayer(){

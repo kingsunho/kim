@@ -92,12 +92,21 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
   ev("showDecision({kind:'lead'})"); await wait(150);
   T(!!d.querySelector('#decision .runstage'), '1루 그라운드가 뜬다');
   T(/리드를 얼마나/.test(txt('#decision .rb-t')), '제목 :: '+txt('#decision .rb-t'));
-  T(btns().join('/')==='안 뛴다/뛴다 ▸', '버튼 :: '+btns().join(' / '));
-  T(ev("typeof leadScene==='function'&&/pointermove/.test(leadScene.toString())"),
-    '끌어서 리드를 벌린다');
+  T([...d.querySelectorAll('#decision .lead-b span')].map(x=>x.textContent).join('/')
+      ==='붙어 있는다/보통/크게 나간다/▸ 뛴다/안 뛴다 — 다음 타자를 본다',
+    '리드 세 칸 + 뛴다 + 안 뛴다 :: '+
+      [...d.querySelectorAll('#decision .lead-b span')].map(x=>x.textContent).join(' / '));
+  T(ev("typeof leadScene==='function' && /setLead/.test(leadScene.toString())"),
+    '끌지 않고 버튼으로 고른다');
+  T(/도루 성공 \d+% · 견제사 \d+%/.test(txt('#decision')),
+    '각 칸에 실제 확률이 적혀 있다 (「이정도이다」 가 아니라 숫자)');
+  T(ev("!/T\\b.*4200/.test(renderLead.toString()) && /8000/.test(renderLead.toString())"),
+    '시간 제한이 없다 — 고를 때까지 기다린다');
   T(ev("typeof LiveGame.prototype.runPickoff==='function'"), '견제사 판정이 엔진에 있다');
   T(ev("/run:go/.test(LiveGame.prototype.applyDecision.toString())"), '도루 지시가 엔진까지 간다');
-  [...d.querySelectorAll('#decision .rb-b')].find(b=>/뛴다 ▸/.test(b.textContent)).click();
+  [...d.querySelectorAll('#decision .lead-b')].find(b=>/크게 나간다/.test(b.textContent)).click();
+  await wait(60);
+  [...d.querySelectorAll('#decision .lead-b')].find(b=>/▸ 뛴다/.test(b.textContent)).click();
   await wait(900);
   T(!d.querySelector('#decision.on'), '고르면 판단창이 닫힌다');
 

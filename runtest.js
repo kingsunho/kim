@@ -305,6 +305,64 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
     "/umpBias: ST\\.umpBias/.test(makeLive.toString())&&/cfg\\.umpBias/.test(LiveGame.toString())"));
   T('새 공은 장타가 는다', ()=>ev("/cfg\\.ballLive/.test(LiveGame.toString())"));
 
+  console.log('\n[시즌이 끝나도 길이 있다]');
+  T('선수 모드에서도 시상식이 뜬다 (시즌 종료가 막히던 버그)', ()=>ev(`(function(){
+    ST.mode='player'; ST.playerId='ksh'; ST.seasonOver=true; ST.awards=null;
+    ST.round=ST.schedule.length;
+    go('home');
+    var t=document.querySelector('#view').textContent;
+    var btn=[].slice.call(document.querySelectorAll('#view button'))
+      .some(function(b){return /새 시즌/.test(b.textContent);});
+    ST.seasonOver=false; ST.round=0;
+    return (/시즌 시상식/.test(t) && btn) ? '시상식 + 새 시즌 버튼' : '!'+(/시즌 시상식/.test(t))+'/'+btn;
+  })()`));
+  T('시즌 종료 전에는 선수 홈이 그대로다', ()=>ev(`(function(){
+    ST.mode='player'; ST.seasonOver=false;
+    go('home');
+    var t=document.querySelector('#view').textContent;
+    return /능력치|오늘|이번 주 훈련/.test(t) ? '선수 화면' : '!감독 화면이 떴다';
+  })()`));
+
+  console.log('\n[투수 겸업]');
+  T('투수·이도류면 로테이션 맨 앞이다', ()=>ev(`(function(){
+    ST.mode='player'; ST.playerId='swm'; ST.role='two';
+    var r=recommendRotation();
+    var ok1=(r[0]==='swm');
+    ST.rotation=['kjh','kig']; sanitizeRotation();
+    var ok2=(ST.rotation[0]==='swm');
+    var ok3=(ST.useDH===false);
+    ST.playerId='ksh'; ST.role='bat';
+    return (ok1&&ok2&&ok3) ? '로테 1번 · 지명타자 해제' : '!'+[ok1,ok2,ok3].join(',');
+  })()`));
+  T('감독 모드는 능력치 순 그대로다', ()=>ev(`(function(){
+    ST.mode='mgr';
+    var r=recommendRotation();
+    ST.mode='player';
+    return r.length===6 ? '여섯 명' : '!'+r.length;
+  })()`));
+  T('고교에서도 내가 던지면 멈춘다', ()=>ev(
+    "hsRunLive.toString().indexOf(\"kind:'pitch'\")>0"));
+
+  console.log('\n[홈런형 타자]');
+  T('파워를 올리면 홈런이 실제로 는다', ()=>ev(`(function(){
+    var team=TBYID['wwzw'], foe=TBYID['ansanutd'];
+    var pit={stf:40,ctl:40,sta:40};
+    var run=function(pw){
+      var bat={con:55,pow:pw,eye:45,spd:45,def:45,arm:45,bats:'R'};
+      var s=999; var rng=function(){s=(s*1664525+1013904223)>>>0;return s/4294967296;};
+      var hr=0,ab=0;
+      for(var i=0;i<20000;i++){
+        var r=simPA(bat,pit,team,foe,rng,{bat:'normal'},70,{hr:1,d2:1,d3:1,err:1,babip:1},null);
+        if(r.type==='BB'||r.type==='HBP')continue;
+        ab++; if(r.type==='HR')hr++;
+      }
+      return hr/ab*90;    // 시즌 90타수 환산
+    };
+    var lo=run(50), hi=run(92);
+    return (hi>=2.5 && lo<0.5) ? '파워50 '+lo.toFixed(1)+'개 vs 파워92 '+hi.toFixed(1)+'개'
+      : '!'+lo.toFixed(2)+'/'+hi.toFixed(2);
+  })()`));
+
   console.log('\n[예외]');
   T('콘솔 예외 없음', ()=>errs.length?('!'+errs.slice(0,2).join(' / ')):'깨끗');
   console.log(errs.length?`\n❌ ${errs.length}개 실패`:'\n✅ 이상 없음');
