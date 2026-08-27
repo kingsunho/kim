@@ -367,6 +367,15 @@ button{font-family:inherit;cursor:pointer}
 .help-b p{margin:0 0 7px}
 .help-b p:last-child{margin-bottom:0}
 .help-b b{color:#e2eaf5}
+/* 이번 주에 산 훈련 줄 */
+.trn-q{display:flex;align-items:center;gap:9px;padding:8px 10px;margin-top:7px;
+  background:#141a22;border:1px solid #2a323d;border-radius:9px}
+.trn-q .tq-i{font-size:17px}
+.trn-q .tq-n{flex:1;color:#e2eaf5;font-size:13.5px;font-weight:700}
+.trn-q .tq-n i{display:block;color:#8e9bb0;font-size:11.5px;font-weight:400;font-style:normal}
+.trn-q .tq-x{background:#20272f;border:1px solid #39424e;color:#c3ccd7;
+  border-radius:7px;padding:5px 10px;font-size:11.5px}
+.tn-cnt{color:var(--gold)}
 @keyframes innIn{from{opacity:0;transform:translate(-50%,-50%) scale(.9)}
                  to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
 /* 내가 고른 선수 관련 플레이 강조 */
@@ -2408,7 +2417,7 @@ function buildAI(def,seed){
 function buildUser(){
   const players=WWZW.map(p=>({...p}));
   const pitchers=players.filter(p=>p.pitch).map(p=>({
-    id:p.id,name:p.name,stf:p.pitch.stf,ctl:p.pitch.ctl,sta:p.pitch.sta,playerId:p.id}));
+    id:p.id,name:p.name,stf:p.pitch.stf,ctl:p.pitch.ctl,sta:p.pitch.sta,brk:p.pitch.brk,playerId:p.id}));
   const d=WWZW_TEND;
   return finalizeTeam({id:d.id,name:d.name,ops:d.ops,avg:d.avg,
     tend:{k:d.t[0],bb:d.t[1],sb:d.t[2],babip:d.t[3],pow:d.t[4],err:d.err},
@@ -2513,7 +2522,11 @@ function simPA(bat,pit,offTeam,defTeam,rng,tac,cond,park,mods){
                       * (mods.babip||1), 0.15, 0.75);
   if(rng()>=babip) return {type:'OUT', gb: gbOf(0.56)};
 
-  const pw = offTeam.tend.pow * fPow * tPow * (mods.pow||1);
+  /* 변화(brk) — 배트 중심을 피한다. 각이 좋은 투수한테는 큰 게 덜 나온다.
+     이 칸이 「장타 억제형」 이다. 리그 평균 투수(구위 45·제구 43)의
+     기본 brk 가 27 이라 거기를 1.0 으로 두고 위아래로 벌어진다. */
+  const pMov = Math.exp(-(brkOf(pit)-27)*0.0075);
+  const pw = offTeam.tend.pow * fPow * tPow * (mods.pow||1) * pMov;
   /* [제보] "홈런형타자도 나올 수 있게 만들긴 해야함"
             "홈런치는건 선수모드에서만 그래야한다 감독모드는 극사실 주의 유지"
 
@@ -7218,6 +7231,60 @@ function myGrade(){
     tier: w>=118?'good':(w>=85?'mid':'bad')};
 }
 
+/* =========================================================
+   역할 면담 — 감독이 방향을 제안한다
+   ---------------------------------------------------------
+   [건의] "이도류 할때 투수나 타자 성적 너무 안좋은 부분있으면 감독이
+           너 하나에만 집중하는거 어때 하면서 하나만 선택할 수 있거나
+           그냥 그대로 이도류 할 수 있게 하거나 투수는 뭐 선발이나 중계
+           고를 수 있게 해주고 타자는 경쟁 포지션이 너무 빡세면 못 올라
+           가니깐 뭐 다른 포지션 추천해준다거나 이런느낌"
+
+   성적 면담(bossTalk)과 다른 줄기다. 저건 "잘했냐 못했냐" 고
+   이건 "그럼 뭘 할 거냐" 다. 셋 중 하나가 걸리면 부른다.
+     two — 이도류인데 둘 다 안 된다     → 하나만 고르거나 그대로
+     pit — 투수인데 선발/중계를 안 정했다 → 고른다
+     pos — 자리를 뺏겼다                → 다른 자리를 권한다
+   무엇을 고르든 **강제는 없다.** 그대로 가는 선택지가 항상 있다.  */
+/* 우리 팀에서 제일 얇은 자리 — 거기로 가면 내가 설 자리가 생긴다 */
+function thinPosFor(pid){
+  const us=TBYID['wwzw']; if(!us) return null;
+  let best=null, bestV=1e9;
+  ['C','1B','2B','3B','SS','LF','CF','RF'].forEach(pos=>{
+    if(ST && pos===ST.myPos) return;
+    let top=0;
+    us.players.forEach(p=>{ if(p.id===pid) return;
+      const f=posFit(p.id,pos); if(f>top) top=f; });
+    const v=top-posFit(pid,pos)*0.5;      // 남이 잘 볼수록 · 내가 못 볼수록 나쁘다
+    if(v<bestV){ bestV=v; best=pos; }
+  });
+  return best;
+}
+function rollRoleTalk(){
+  if(typeof isPlayerMode!=='function' || !isPlayerMode()) return;
+  if(ST.roleTalk) return;
+  const played=ST.schedule.filter(x=>x.played).length;
+  if(played<4) return;
+  if(played-(ST.roleTalkAt==null?-99:ST.roleTalkAt) < 4) return;
+  const boss=bossId(); if(!boss) return;
+  const me=ST.playerId||MYID;
+  const b=ST.bat[me]||blankBat();
+  const q=ST.pit[me]||blankPit();
+  const ip=(q.outs||0)/3;
+  const era=ip? q.er*7/ip : null;
+  const bAvg=b.ab? b.h/b.ab : null;
+  if(ST.role==='two' && b.ab>=15 && ip>=4 && bAvg<0.220 && era>9.0){
+    ST.roleTalk={kind:'two', boss, avg:bAvg, era, ab:b.ab, h:b.h, ip}; return;
+  }
+  if((ST.role==='pit'||ST.role==='two') && ip>=5 && !ST.pitRole){
+    ST.roleTalk={kind:'pit', boss, ip, era}; return;
+  }
+  if(ST.role!=='pit' && ST.myPosTaken && ST.myPosTaken.pos){
+    const alt=thinPosFor(me);
+    if(alt) ST.roleTalk={kind:'pos', boss, pos:ST.myPosTaken.pos,
+                         by:ST.myPosTaken.by, alt};
+  }
+}
 /* 면담 개시 판정 — 시즌 중 최대 2회, 4경기 이상 뛰었을 때 */
 function rollBossTalk(){
   if(ST.bossTalk) return;                        // 이미 대기 중
@@ -7826,8 +7893,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.86.0';
-const APP_VERSION_NOTE = '내가 빠질 이유가 없다 · 실책은 공이 간 자리에서 난다';
+const APP_VERSION = '2.87.0';
+const APP_VERSION_NOTE = '1군은 뺏어서 올라가는 데다 · 투수도 키울 게 넷이다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7848,6 +7915,29 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.87.0', t:'1군은 뺏어서 올라가는 데다 · 투수도 키울 게 넷이다', items:[
+    '[제보] "2군 안걸치고 왜 바로 1군 온거지?" · "왜 올라오자마자 주전보장 3경기가 된거야 1군은 좀 빡세야 되는데" — 맞는 말이다. **이제 누구든 2군을 거친다.** 고교 3년이 폭격 수준이면 한 주만 보고 올리고, 못했으면 여덟 주를 2군에서 친다. 그리고 **주전 보장을 통째로 없앴다** — 졸업할 때도, 콜업될 때도. 올려주는 것까지가 감독 일이고 자리는 내가 뺏는 거다',
+    '[제보] "고교 졸업하면 스탯이 진짜 말이안된다 (…) 고교때 진짜 폭격 수준 아니면 스탯 이정도로 주면 안될듯" — 재보니 진짜였다. 우리 팀 컨택이 63~87인데 졸업치가 31~56(노력까지 65)로 나왔다. 갓 고등학교 나온 애가 팀 평균 근처에서 시작했다는 뜻이다. **26~44(노력까지 50)로 내렸다.** 주전들 한참 아래에서 시작하고, 거기서 올리는 게 본편이다',
+    '[버그] 2군 경기를 **직접 쳐도** 주가 넘어갈 때 가짜 타석을 또 굴려서 얹고 있었다. 4타수 3안타를 치고 와도 그 위에 3타수 무안타가 덧붙었다 — 콜업 타율이 내 것이 아니었다. 직접 친 주는 그 기록만 쓴다',
+    '[제보] "코인 너무 많이 준다 뭘 얼마나 잘했길래 코인을 줬는지 나와야될듯 -도 이유가 있어야하고" — 2안타 1타점에 이기면 +8이었는데 훈련 하나가 4다. 한 경기가 두 주치를 벌어왔다. **값을 반으로 내렸다** (안타 +1 · 홈런 +3 · 이기면 +1 · 무안타 -2). 그리고 줄마다 몇 점인지 같이 적는다',
+    '[제보] "그 코인으로 다음 주 기다리는게 아니라 바로 코인으로 스탯 올릴 수 있게 해야할듯 근데 바로 스탯이 올라가면 안되겠지? 차근차근 다음주 제도로 하니깐 코인이 너무 많이 남음" — 정확히 그렇게 했다. **코인이 있는 만큼 그 자리에서 산다** (한 주에 셋까지). 산 훈련은 **다음 주에 한꺼번에** 몸에 붙는다. 무르면 코인을 돌려받는다',
+    '말리는 건 코인이 아니라 **몸**이다. 훈련마다 컨디션이 깎이니 셋을 몰아서 하면 그 주 경기를 지친 몸으로 나간다. 같은 훈련을 두 번 하면 두 번째는 덜 는다',
+    '[제보] "투수는 훈련하는거 왜 없냐" · "구속형 제구형 변화형 장타억제력형 약간 이런 투수도 육성할게 많아야되는데" — 「투구 훈련」 하나로 구위·제구·체력이 한꺼번에 조금씩 오르던 걸 **네 갈래로 갈랐다.** 구속(구위) · 제구 · 변화구 · 어깨 만들기(체력). 무엇을 사느냐가 곧 어떤 투수냐다',
+    '**변화(brk)가 새 능력치로 생겼다.** 올리면 던질 수 있는 구종이 늘고, 배트 중심을 비껴가서 **큰 것을 덜 맞는다** — 이게 「장타 억제형」 이다. 스물세 팀 투수와 옛 세이브에는 이 칸이 없어서 구위·제구로 짐작한다. 예전과 똑같이 굴러가고, 훈련한 사람만 위로 간다',
+    '[제보] "한 경기 안에서 투수는 체력이 있긴해야할듯 구속 유지가 계속 되는게 뭐 다 체력이 깡패는 아니니깐 체력도 훈련시켜야지" — 여태 경기 중에 지치는 건 「더위 타는」 특성이 붙은 사람뿐이었다. 나머지는 1회에 던지는 공과 6회에 던지는 공이 똑같았다. **이제 체력이 정한 한계의 3/4 를 넘기면 구위와 제구가 떨어진다.** 마운드 화면에 「팔이 안 올라간다」 까지 적힌다. 아무리 체력이 나빠도 2이닝 전에는 안 지친다',
+    '[제보] "주루 빠르고 선구안 좋으면 1번타자 (…) 타순도 좀 짜임새 있게 들어갔으면" — 여태 1번은 컨택과 발만 봤다. **선구안을 아예 안 봤다** — 출루를 못 하는 1번은 1번이 아니다. 아홉 자리에 각자 할 일을 줬다: 1번 발+선구안 · 2번 다재다능 · 3번 컨택(고타율) · 4번 한 방 · 5번 타점 · 8번 발이라도 있는 쪽. 1번에는 힘 있는 타자를 오히려 뒤로 민다 — 4번에 있어야 할 사람이다',
+    '[제보] "투수만 하는거는 지명타자 사용 이용해서 투수만해야하고 이도류는 지명타자가 없으니깐 수비 들어가야지" — 야구 규칙이 그렇게 생겼다. **역할이 지명타자 사용 여부를 정한다** — 투수만이면 지타를 쓰고(타석에 안 선다), 이도류면 지타를 안 쓴다(타순에도 들고 수비도 한다)',
+    '[제보] "그 선택한 포지션이 너무 강하면 아에 교체 아웃당하긴 해야지" — 내가 고른 자리라고 무조건 내 것이면 그건 경쟁이 아니다. **스무 타석은 기회를 주고**, 그 뒤에도 1할8푼을 못 치는데 그 자리를 훨씬 잘 보는 사람이 있으면 감독이 그 사람을 쓴다',
+    '[제보] "포수 밀려서 2루로 오는 느낌이냐 이거 내포지션으로 가는게 아니라 감독이 땜빵 준거 맞지?" — 맞다, 땜빵이었다. 그런데 그 사실이 화면 어디에도 없어서 「느낌」 으로 알아채야 했다. 이제 **「내 자리(포수)는 OO가 본다 — 오늘 2루는 땜빵이다」** 라고 못 박는다',
+    '[제보] "교체아웃 되었으면 이거 나머지 경기 볼건지 바로 결과 볼건지 선택하게 해주고" — 내 경기는 끝났는데 남의 타석을 아홉 번 더 넘겨야 했다. 이제 고른다. [제보] "제발 교체당했으면 왜 교체했는지 이유가 나오게좀해줘" — 말은 하고 있었는데 한 줄뿐이라 이유인지 인사인지 몰랐다. **숫자를 같이 붙인다** — 오늘 몇 타수 몇 안타에 시즌이 얼마인지',
+    '[건의] "이도류 할때 (…) 감독이 너 하나에만 집중하는거 어때 하면서 (…) 투수는 뭐 선발이나 중계 고를 수 있게 해주고 타자는 (…) 다른 포지션 추천해준다거나" — **역할 면담**이 생겼다. 성적 면담이 「잘했냐 못했냐」 라면 이건 「그럼 뭘 할 거냐」 다. 셋 중 하나가 걸리면 감독이 따로 부른다',
+    '· **이도류인데 둘 다 안 된다** → 타자만 / 투수만 / 그대로 이도류. 그대로 가면 사기가 오른다 — 어려운 길을 고른 거다',
+    '· **투수인데 선발이냐 중계냐** → 선발이면 첫 회부터, 중계면 선발이 내려갈 때 올라간다. 로테이션이 실제로 그렇게 바뀐다',
+    '· **자리를 뺏겼다** → 우리 팀에서 제일 얇은 자리를 골라서 권한다. 옮기든 그 자리를 뺏어 오든 내가 정한다. **강제는 없다**',
+    '[제보] "내가 주자로 나가면 리드할건지 도루할건지 왜 안나오냐 (고교라서 안나오나)" — 고교라서 안 나온 게 맞다. 고교·2군 진행에는 **주루 분기가 아예 없었다.** 치고 나가도 다음 타자만 보고 있었다. 이제 뜬다. (앞 베이스에 주자가 있으면 안 뜬다 — 그건 원래 그렇다)',
+    '고교·2군 진행이 **포수 송구 창을 놓치던 것**도 같이 고쳤다. 그 창은 v2.86.0부터 다른 길로 올라온다',
+    '육성 구조를 검사하는 growtest 를 새로 넣었다 — 코인이 정확히 얼마 나가고 들어오는지, 같은 훈련을 두 번 하면 0.6배인지, 실제로 짠 라인업에서 1번이 4번보다 빠른지까지 센다',
+  ]},
   {v:'2.86.0', t:'내가 빠질 이유가 없다 · 실책은 공이 간 자리에서 난다', items:[
     '[제보·심각] "왜 내가 플레이 하는데 개인사정 결장은 뭐고 결과만 본다 안눌리네 그래서 진행이 안되잖아" — 둘 다 진짜였고 겹쳐서 **주가 통째로 막혔다.** 먼저 선수 모드에서는 **내 선수가 개인 사정으로 안 빠진다.** 오늘 나갈지 말지는 내가 정하는 것이지 게임이 정할 일이 아니다. 남들 결장은 그대로고, 부상·2군도 그대로다',
     '[버그·심각] 그래도 못 나가는 날(부상·2군)에 뜨는 「결과만 본다 ▸」 가 **아예 안 눌렸다.** 결장 화면을 그리고 거기서 끝내는데, 경기를 틀 무대(#stage)는 그 아래 정상 경로에서 만들어진다. 붙을 데가 없으니 빈 화면 위에서 죽었다. 이제 그 화면이 무대를 직접 깔고 튼다',
@@ -10332,10 +10422,23 @@ function pitchHand(pit, bat){
   return th===bh ? 1 : -1;
 }
 /* 이 투수가 던질 수 있는 구종 */
+/* 변화(brk) — **훈련으로만 생기는 칸**이다.
+   [요청] "구속형 제구형 변화형 장타억제력형 약간 이런 투수도 육성할게
+           많아야되는데 그러니깐 그 경기끝나면 얻는 코인으로 투수 타자
+           둘다 올려야되니깐 이도류가 힘든거지"
+   스물세 팀 투수와 옛 세이브에는 이 칸이 없다. 없으면 구위·제구에서
+   추정해서 **예전과 똑같이** 굴러가게 한다 — 훈련한 사람만 위로 간다. */
+function brkOf(pit){
+  if(!pit) return 0;
+  if(pit.brk!=null) return pit.brk;
+  return ((pit.stf||30)*0.5+(pit.ctl||30)*0.5)*0.62;
+}
 function arsenalOf(pit){
   const out=['ff'];
-  const s=(pit&&pit.stf)||30, c=(pit&&pit.ctl)||30;
-  const skill=s*0.6+c*0.4;
+  const s=(pit&&pit.stf)||30, c=(pit&&pit.ctl)||30, b=brkOf(pit);
+  /* 각을 만드는 힘이 구종 수를 정한다. 계수는 brk 를 안 쓰던 시절
+     (stf*0.6+ctl*0.4) 과 **기본값에서 같은 값이 나오게** 맞췄다. */
+  const skill=s*0.42+c*0.28+b*0.48;
   ['sl','ch','cu','fk'].forEach(k=>{ if(skill>=PITCH_TYPES[k].need) out.push(k); });
   return out;
 }
@@ -11381,9 +11484,31 @@ LiveGame.prototype.stepPA = function(){
   }
 
   let pitE = pit;
+  /* [제보] "한 경기 안에서 투수는 체력이 있긴해야할듯 구속 유지가 계속
+             되는게 뭐 다 체력이 깡패는 아니니깐 체력도 훈련시켜야지"
+     맞는 말이다. 여태 경기 중에 지치는 건 '더위 타는' 특성이 붙은
+     사람뿐이었다. 나머지는 1회에 던지는 공과 6회에 던지는 공이 똑같았다.
+     사회인야구는 오히려 반대다 — 대부분 서너 이닝이면 팔이 안 올라간다.
+     체력(sta)이 정하는 한계(lim, 아웃 개수)의 3/4 를 넘기면 그때부터
+     구위와 제구가 떨어진다. 체력이 좋을수록 늦게, 덜 떨어진다.
+     [주의] 아무리 체력이 나빠도 2이닝(6아웃) 전에는 안 지친다 —
+     첫 회부터 무너지면 마운드에 서는 재미가 없다.                  */
+  {
+    const sta=(pit.sta!=null)?pit.sta:40;
+    const lim=Math.max(6, Math.round(4+(sta-22)*0.19));
+    const fadeAt=Math.max(6, Math.round(lim*0.75));
+    const over=(pl.outs||0)-fadeAt;
+    if(over>0){
+      const k=Math.min(1, over/Math.max(4, lim-fadeAt+4));
+      const dStf=k*(15-Math.max(0,Math.min(7,(sta-30)*0.15)));
+      const dCtl=k*(9 -Math.max(0,Math.min(4,(sta-30)*0.09)));
+      pitE={...pit, stf:Math.max(12,pit.stf-dStf), ctl:Math.max(10,pit.ctl-dCtl)};
+      this._pitFade={outs:pl.outs, k, stf:Math.round(dStf), ctl:Math.round(dCtl)};
+    } else this._pitFade=null;
+  }
   if(pit.heatFade && pl.outs>=6){
     const over=Math.min(12,pl.outs-6);
-    pitE={...pit, stf:Math.max(14,pit.stf-8-over*1.6), ctl:Math.max(10,pit.ctl-5-over*1.1)};
+    pitE={...pitE, stf:Math.max(14,pitE.stf-8-over*1.6), ctl:Math.max(10,pitE.ctl-5-over*1.1)};
   }
   /* 수비 시프트 — 정면 타구는 잘 잡히지만 반대쪽으로 빠지면 장타가 된다.
      simPA 를 고치지 않고 구장 배수(park)만 갈아끼워서 표현한다.        */
@@ -12682,11 +12807,38 @@ function pinnedPos(){
   if(!ST.useDH && ((ST.rotation||[])[0]===me)) return null;   // 오늘 내가 던진다
   return ST.myPos;
 }
+/* [제보] "그 선택한 포지션이 너무 강하면 아에 교체 아웃당하긴 해야지"
+   맞는 말이다. 내가 고른 자리라고 무조건 내 것이면 그건 경쟁이 아니다.
+   다만 **기회는 준다** — 스무 타석은 서 봐야 판단이 된다. 그 뒤에도
+   1할8푼을 못 치는데 그 자리를 훨씬 잘 보는 사람이 있으면 감독이 그
+   사람을 쓴다. 뺏겼으면 뺏겼다고 화면에 적어준다(ST.myPosTaken) —
+   [제보] "감독이 땜빵 준거 맞지?" 에 답이 있어야 한다.            */
+function posRivalFor(pos){
+  const me=ST.playerId||MYID;
+  const b=(ST.bat&&ST.bat[me])||null;
+  if(!b || (b.ab||0)<20) return null;                 // 아직 기회 중이다
+  if((b.h||0)/(b.ab||1) >= 0.180) return null;        // 치고 있으면 내 자리다
+  const L=ST.lineup||[];
+  const cur=L.find(x=>x&&x.pos===pos&&x.id!==me);
+  if(!cur) return null;
+  const myFit=posFit(me,pos), hisFit=posFit(cur.id,pos);
+  const myCA=(typeof effCA==='function')?effCA(me):0;
+  const hisCA=(typeof effCA==='function')?effCA(cur.id):0;
+  if(hisFit>myFit+8 && hisCA>myCA+6) return cur.id;
+  return null;
+}
 function pinMyPos(){
-  const pos=pinnedPos(); if(!pos) return;
+  const pos=pinnedPos();
+  if(!pos){ if(ST) ST.myPosTaken=null; return; }
   const L=ST.lineup; if(!Array.isArray(L)||L.length<9) return;
   const me=ST.playerId||MYID;
   const mi=L.findIndex(x=>x&&x.id===me); if(mi<0) return;
+  const rival=posRivalFor(pos);
+  if(rival && L[mi].pos!==pos){
+    ST.myPosTaken={by:rival, pos, at:L[mi].pos};
+    return;                                   // 뺏겼다 — 오늘은 딴 자리다
+  }
+  ST.myPosTaken=null;
   if(L[mi].pos===pos) return;
   /* 그 자리에 있던 사람과 통째로 맞바꾼다. 한 명만 옮기면 자리가 겹친다. */
   const hi=L.findIndex((x,i)=>i!==mi && x && x.pos===pos);
@@ -12948,12 +13100,32 @@ function recommendLineup(){
   const byId=id=>t.players.find(p=>p.id===id);
   const pool2=slots.slice(); const order=[];
   const take=fn=>{let bi=0,bv=-1e9;pool2.forEach((s,i)=>{const v=fn(byId(s.id));if(v>bv){bv=v;bi=i;}});return pool2.splice(bi,1)[0];};
-  order.push(take(p=>p.con*1.2+p.spd*1.4));
-  order.push(take(p=>p.con*1.3+p.spd*1.0));
-  order.push(take(p=>p.con*1.0+p.pow*1.2));
-  order.push(take(p=>p.pow*1.6));
-  order.push(take(p=>p.pow*1.2+p.con*0.7));
-  while(pool2.length) order.push(take(p=>p.con+p.pow+p.eye*0.5));
+  /* [제보] "주루 빠르고 선구안 좋으면 1번타자 가고 다재다능하면 2번타자
+             파워보단 컨택으로 고타율 가능하면 3번 큰한방 있으면 4번타자
+             타점 처리 능력이 있는 힘있는 타자5번 약간 타순도 좀 짜임새
+             있게 들어갔으면 하네"
+     맞는 말이다. 여태 1번은 컨택과 발만 봤다 — **선구안을 아예 안 봤다.**
+     출루를 못 하는 1번은 1번이 아니다. 2번도 그냥 '두 번째로 잘 치는
+     사람' 이었다. 아홉 자리에 각자 할 일을 준다.
+       1번 발 + 선구안 · 2번 다재다능 · 3번 컨택(고타율)
+       4번 한 방 · 5번 타점 · 6~7번 남은 타격 · 8번 발 · 9번 나머지     */
+  const bal=p=>{                    // 다재다능 — 제일 약한 칸이 얼마나 되나
+    const v=[p.con,p.pow,p.eye,p.spd,p.def];
+    return Math.min.apply(null,v)*1.6 + (v.reduce((a,b)=>a+b,0)/v.length)*0.6;
+  };
+  const push=fn=>{ if(pool2.length) order.push(take(fn)); };
+  /* [주의] 1번에 con 을 실으면 **팀에서 제일 잘 치는 사람이 1번**으로
+     올라온다. 그건 짜임새가 아니라 그냥 잘하는 순서다. 발과 눈으로만
+     뽑고, 힘 있는 타자는 오히려 뒤로 민다 — 4번에 있어야 할 사람이다. */
+  push(p=>p.spd*1.6+p.eye*1.4-p.pow*0.5);        // 1번 — 나가서 뛴다
+  push(p=>bal(p)+p.con*0.4);                      // 2번 — 다 할 줄 안다
+  push(p=>p.con*1.7+p.eye*0.6+p.pow*0.4);         // 3번 — 제일 잘 친다
+  push(p=>p.pow*1.8+p.con*0.3);                   // 4번 — 한 방
+  push(p=>p.pow*1.1+p.con*1.0+p.eye*0.3);         // 5번 — 밀어낸다
+  push(p=>p.con*0.9+p.pow*0.8+p.eye*0.4);         // 6번
+  push(p=>p.con*0.8+p.def*0.5+p.eye*0.4);         // 7번
+  push(p=>p.spd*0.9+p.con*0.6);                   // 8번 — 발이라도 있는 쪽
+  while(pool2.length) order.push(take(p=>p.con+p.pow*0.6));
   return order;
 }
 function buildPitcherPool(){
@@ -12962,7 +13134,7 @@ function buildPitcherPool(){
   t.pitchers = t.players.map(p=>{
     const m=META[p.id];
     const pf = m&&m.pos ? (m.pos['P']||25) : 25;
-    if(p.pitch) return {id:p.id,name:p.name,stf:p.pitch.stf,ctl:p.pitch.ctl,sta:p.pitch.sta};
+    if(p.pitch) return {id:p.id,name:p.name,stf:p.pitch.stf,ctl:p.pitch.ctl,sta:p.pitch.sta,brk:p.pitch.brk};
     return {id:p.id,name:p.name,
       stf:Math.round(clamp(pf*0.55+p.arm*0.45,18,75)),
       ctl:Math.round(clamp(pf*0.75+p.eye*0.25-8,15,70)),
@@ -13292,6 +13464,15 @@ function runWeek(){
      참고용이었는데, 선수 모드에서는 **이게 곧 감독의 판단**이 된다.
      그래서 이 함수가 얼마나 납득 가능한지가 이 모드의 재미를 정한다. */
   if(ST.mode==='player'){
+    /* [제보] "투수만 하는거는 지명타자 사용 이용해서 투수만해야하고
+               이도류는 지명타자가 없으니깐 수비 들어가야지"
+       맞는 말이다. 야구 규칙이 그렇게 생겼다. 내가 고른 역할이 지명타자
+       사용 여부를 정한다 —
+         투수만  : 지타를 쓴다. 나는 마운드만 보고 타석에 안 선다
+         이도류  : 지타를 안 쓴다. 내가 타순에도 들고 수비도 한다
+       (야수는 감독이 알아서 — 예전 그대로 ST.useDH 를 안 건드린다)  */
+    if(ST.role==='pit')      ST.useDH=true;
+    else if(ST.role==='two') ST.useDH=false;
     ST.lineup=recommendLineup(); optimizePositions(); applyDHRule(); sanitizeRotation();
   }
   // 결장자가 라인업에 있으면 자동 교체
@@ -13730,29 +13911,39 @@ function farmWeek(rng){
   if((ST.myFarm||0)>0){
     ST.myFarm--;
     const mine=ST.farmMe||{g:0,ab:0,h:0};
-    /* 2군 경기를 뛴다 */
-    const p=us.players.find(x=>x.id===me)
-         || {con:45,pow:45};
-    const ab=3+((rng()*2)|0);
-    let h=0;
-    const pr=Math.max(0.12,Math.min(0.65, 0.22+((p.con||45)-40)*0.0070));
-    for(let i=0;i<ab;i++) if(rng()<pr) h++;
-    mine.g++; mine.ab+=ab; mine.h+=h;
+    /* [버그] 2군 경기를 **직접 쳤는데도** 여기서 가짜 타석을 또 굴려
+       기록에 얹고 있었다. 내가 4타수 3안타를 치고 와도 그 위에 3타수
+       무안타가 덧붙어서 콜업 타율이 내 것이 아니었다.
+       직접 친 주는 그 기록만 쓴다. 안 친 주만 대신 굴린다.        */
+    const playedSelf=(ST.farmDone||0)>(ST.farmDoneSeen||0);
+    ST.farmDoneSeen=(ST.farmDone||0);
+    let ab=0, h=0;
+    if(!playedSelf){
+      const p=us.players.find(x=>x.id===me)
+           || {con:45,pow:45};
+      ab=3+((rng()*2)|0);
+      const pr=Math.max(0.12,Math.min(0.65, 0.22+((p.con||45)-40)*0.0070));
+      for(let i=0;i<ab;i++) if(rng()<pr) h++;
+      mine.g++; mine.ab+=ab; mine.h+=h;
+    }
     ST.farmMe=mine;
     if(ST.myFarm<=0){
       ST.myFarm=0;
       const avg=mine.ab?mine.h/mine.ab:0;
       const up=avg>=0.280;
       ST.farmMe=null;
+      /* [제보] "왜 올라오자마자 주전보장 3경기가 된거야"
+         맞는 말이다. 올려주는 것까지가 감독의 일이고, 자리는 내가
+         뺏는 거다. 콜업에 보장을 안 붙인다.                       */
       msgs.push({type:'farm', title: up?'1군 콜업':'1군 복귀',
         body: (cid?nameOf(cid):'감독')+`: "`+
-          (up?`2군에서 ${mine.ab}타수 ${mine.h}안타. 올라와라"`
+          (up?`2군에서 ${mine.ab}타수 ${mine.h}안타. 올라와라. 자리는 니가 만들어라"`
              :`이제 됐다. 다시 해보자"`),
-        effect: up?'주전 보장 3경기':'1군 등록'});
-      if(up) ST.myGuarantee=Math.max(ST.myGuarantee||0, 3);
+        effect:'1군 등록 — 라인업은 매주 다시 짠다'});
     } else {
       msgs.push({type:'farm', title:`2군 ${ST.myFarm+1}주차`,
-        body:`이번 주 ${ab}타수 ${h}안타 · 누적 ${mine.ab}타수 ${mine.h}안타`+
+        body:(playedSelf?`직접 친 기록으로 센다`:`이번 주 ${ab}타수 ${h}안타`)+
+          ` · 누적 ${mine.ab}타수 ${mine.h}안타`+
           (mine.ab?` (${fmt3(mine.h/mine.ab)})`:''),
         effect:`2할8푼을 넘기면 올라간다 · 남은 ${ST.myFarm}주`});
     }
@@ -13862,7 +14053,7 @@ function applyTrades(){
       to.pitchers=to.pitchers||[];
       if(!to.pitchers.some(q=>q.id===t.pid))
         to.pitchers.push({id:src.id,name:src.name,stf:src.pitch.stf,
-          ctl:src.pitch.ctl,sta:src.pitch.sta});
+          ctl:src.pitch.ctl,sta:src.pitch.sta,brk:src.pitch.brk});
       TEAMS.forEach(tm=>{ if(tm.id!==t.to && tm.pitchers)
         tm.pitchers=tm.pitchers.filter(q=>q.id!==t.pid); });
     }
@@ -14010,7 +14201,7 @@ function farmOurTeam(){
   while(players.length<10 && guard++<20) push(makeFarmPlayer(rng,'fx_'+guard));
   const pitchers=[];
   players.forEach(p=>{
-    if(p.pitch) pitchers.push({id:p.id,name:p.name,stf:p.pitch.stf,ctl:p.pitch.ctl,sta:p.pitch.sta,playerId:p.id});
+    if(p.pitch) pitchers.push({id:p.id,name:p.name,stf:p.pitch.stf,ctl:p.pitch.ctl,sta:p.pitch.sta,brk:p.pitch.brk,playerId:p.id});
     else if(p.stf!=null) pitchers.push({id:p.id,name:p.name,stf:p.stf,ctl:p.ctl,sta:p.sta});
   });
   pitchers.sort((a,b)=>(b.stf*0.6+b.ctl*0.4)-(a.stf*0.6+a.ctl*0.4));
@@ -14118,7 +14309,24 @@ function farmRunLive(){
     }
     /* 2군에서도 내 수비는 내가 한다 — 여기가 적응하는 자리다.
        포수면 타구가 아니라 도루 저지(throw)가 내 일이다. */
-    if(!off.isUser && LIVE.def().isUser && LIVE.paSeq!==LIVE._lastDefPA
+    /* [제보] "내가 주자로 나가면 리드할건지 도루할건지 왜 안나오냐
+               (고교라서 안나오나)"
+       고교라서 안 나온 게 맞다. 고교·2군 진행에는 **주루 분기가 아예
+       없었다.** 치고 나가도 다음 타자만 보고 있었다는 뜻이다.
+       ("앞에 베이스에 주자있으면 안나와도 되긴해" — 그건 엔진이
+        이미 그렇게 본다. 2루가 비어 있을 때만 묻는다)              */
+    if(off.isUser && LIVE.paSeq!==LIVE._lastRunPA
+       && typeof askModeOf==='function' && askModeOf('run')!=='off'
+       && LIVE.outs<3 && LIVE.bases[0]===me && !LIVE.bases[1]){
+      const rd=LIVE.detectDecision();
+      if(rd && rd.kind==='lead'){
+        flushLog(); updateLiveUI(); showDecision(rd); return;
+      }
+    }
+    /* [주의] 포수 송구는 이제 step() 안에서 pending 으로 올라온다.
+       타석 도장(_lastDefPA)만 보면 그 창을 놓친다 — pending 을 먼저 본다. */
+    if(!off.isUser && LIVE.def().isUser
+       && (LIVE.pending || LIVE.paSeq!==LIVE._lastDefPA)
        && askModeOf('def')!=='off'){
       const dd=LIVE.detectDecision();
       if(dd && (dd.kind==='defplay'||dd.kind==='throw')){
@@ -14363,7 +14571,7 @@ function hsTeamOf(school, year, seed, meId, meBoost){
   /* 투수 — pitch 가 있는 실존 인물 + stf 를 가진 부원 */
   const pitchers=[];
   players.forEach(p=>{
-    if(p.pitch) pitchers.push({id:p.id,name:p.name,stf:p.pitch.stf,ctl:p.pitch.ctl,sta:p.pitch.sta,playerId:p.id});
+    if(p.pitch) pitchers.push({id:p.id,name:p.name,stf:p.pitch.stf,ctl:p.pitch.ctl,sta:p.pitch.sta,brk:p.pitch.brk,playerId:p.id});
     else if(p.npc && p.stf) pitchers.push({id:p.id,name:p.name,stf:p.stf,ctl:p.ctl,sta:p.sta});
   });
   pitchers.sort((a,b)=>(b.stf*0.6+b.ctl*0.4)-(a.stf*0.6+a.ctl*0.4));
@@ -15251,7 +15459,24 @@ function hsRunLive(){
        도루를 당해도 화면 한 번 안 뜨고 지나갔다.
        [주의] 포수는 타구가 안 온다(defZoneHit 가 C 를 막는다).
        포수의 수비는 **도루 저지(throw)** 다 — 그것도 같이 받는다.  */
-    if(!off.isUser && LIVE.def().isUser && LIVE.paSeq!==LIVE._lastDefPA
+    /* [제보] "내가 주자로 나가면 리드할건지 도루할건지 왜 안나오냐
+               (고교라서 안나오나)"
+       고교라서 안 나온 게 맞다. 고교·2군 진행에는 **주루 분기가 아예
+       없었다.** 치고 나가도 다음 타자만 보고 있었다는 뜻이다.
+       ("앞에 베이스에 주자있으면 안나와도 되긴해" — 그건 엔진이
+        이미 그렇게 본다. 2루가 비어 있을 때만 묻는다)              */
+    if(off.isUser && LIVE.paSeq!==LIVE._lastRunPA
+       && typeof askModeOf==='function' && askModeOf('run')!=='off'
+       && LIVE.outs<3 && LIVE.bases[0]===me && !LIVE.bases[1]){
+      const rd=LIVE.detectDecision();
+      if(rd && rd.kind==='lead'){
+        flushLog(); updateLiveUI(); showDecision(rd); return;
+      }
+    }
+    /* [주의] 포수 송구는 이제 step() 안에서 pending 으로 올라온다.
+       타석 도장(_lastDefPA)만 보면 그 창을 놓친다 — pending 을 먼저 본다. */
+    if(!off.isUser && LIVE.def().isUser
+       && (LIVE.pending || LIVE.paSeq!==LIVE._lastDefPA)
        && askModeOf('def')!=='off'){
       const dd=LIVE.detectDecision();
       if(dd && (dd.kind==='defplay'||dd.kind==='throw')){
@@ -15278,8 +15503,15 @@ function hsLiveEnd(){
 /* ---------- 졸업 ---------- */
 function hsLin(v,lo,hi){ return Math.max(0,Math.min(1,(v-lo)/(hi-lo))); }
 /* 졸업치 = HS_BASE + 나간 만큼 + 잘한 만큼. 어른 능력치는 안 본다. */
-const HS_GRAD_PLAY=10;      // 3년 꼬박 뛰기만 해도
-const HS_GRAD_PERF=26;      // 성적으로 채울 수 있는 몫
+/* [제보] "고교 졸업하면 스탯이 진짜 말이안된다 1군벽은 좀 높아야되는데
+           고교때 진짜 폭격 수준 아니면 스탯 이정도로 주면 안될듯"
+   맞는 말이었다. 우리 팀 컨택이 63~87 인데 졸업치가 31~56(노력까지 65)로
+   나왔다. **고등학교를 갓 나온 애가 팀 평균 근처에서 시작**했다는 뜻이다.
+   그러면 1군에 벽이 없다. 뛴 몫 10→6 · 성적 몫 26→18 · 노력 9→6 으로
+   내린다. 이제 26~44(노력까지 50)다 — 팀 주전들 한참 아래에서 시작한다.
+   거기서부터 올리는 게 본편이다. */
+const HS_GRAD_PLAY=6;       // 3년 꼬박 뛰기만 해도
+const HS_GRAD_PERF=18;      // 성적으로 채울 수 있는 몫
 /* 6경기 성적 → 시작 능력치 배율.
    못해도 0.58, 잘하면 0.98 까지. 실제 2026 능력치가 1.00 이라
    **졸업하면 아직 완성형이 아니다.** 거기까지 가는 게 본편이다.     */
@@ -15348,7 +15580,7 @@ function hsGraduate(){
   const out={};
   ['con','pow','eye','spd','def','arm'].forEach(k=>{
     if(p[k]==null) return;
-    out[k]=Math.round(K(g[k])) + Math.min(9,(EF[k]||0));
+    out[k]=Math.round(K(g[k])) + Math.min(6,(EF[k]||0));
   });
   /* 투수로 뛰었으면 투구 능력치도. 안 뛰었으면 손대지 않는다.
      [주의] 어른 로스터에 pitch 가 있는지는 안 본다 — 야수를 골라도
@@ -15378,20 +15610,21 @@ function hsGraduate(){
     const gAvg = ST.role==='pit' ? pitAvg
                : ST.role==='two' ? Math.max(batAvg, (batAvg+pitAvg)/2)
                : batAvg;
-    const wk = gAvg>=0.62 ? 0 : (gAvg>=0.42 ? 2 : 4);
+    /* [제보] "2군 안걸치고 왜 바로 1군 온거지?" ·
+              "왜 올라오자마자 주전보장 3경기가 된거야 1군은 좀 빡세야 되는데"
+       맞는 말이다. 고등학교를 나왔다고 곧바로 1군 주전이면 그건 이 게임이
+       아니다. **누구든 2군을 거친다.** 3년이 좋았으면 한 주만에 올라가고,
+       못했으면 여덟 주를 친다. 그리고 **주전 보장을 없앴다** — 올라와서
+       자리를 뺏는 것까지가 이 모드다. */
+    const wk = gAvg>=0.88 ? 1 : (gAvg>=0.68 ? 2 : (gAvg>=0.46 ? 4 : (gAvg>=0.28 ? 6 : 8)));
     ST.notices=ST.notices||[];
-    if(wk>0){
-      ST.myFarm=wk; ST.farmMe={g:0,ab:0,h:0}; ST.farmDone=0;
-      ST.notices.push({type:'farm', title:'2군에서 시작한다',
-        body:'고등학교 성적으로는 아직 1군이 아니다. '+wk+'주 동안 2군에서 친다.',
-        effect:'2할8푼을 넘기면 올라간다'});
-    } else {
-      ST.myFarm=0; ST.farmMe=null;
-      ST.myGuarantee=Math.max(ST.myGuarantee||0,3);
-      ST.notices.push({type:'farm', title:'바로 1군이다',
-        body:'고등학교 3년이 좋았다. 감독이 곧바로 1군에 넣었다.',
-        effect:'주전 보장 3경기'});
-    }
+    ST.myFarm=wk; ST.farmMe={g:0,ab:0,h:0}; ST.farmDone=0; ST.farmDoneSeen=0;
+    ST.notices.push({type:'farm',
+      title: wk<=1?'2군에서 한 주만':'2군에서 시작한다',
+      body: (wk<=1
+        ? '고등학교 3년이 좋았다. 그래도 1군은 1군이다 — 한 주만 2군에서 보고 올린다.'
+        : '고등학교를 나왔다고 1군이 되는 게 아니다. '+wk+'주 동안 2군에서 친다.'),
+      effect:'2할8푼을 넘기면 올라간다 · 주전 보장은 없다'});
   }
   return out;
 }
@@ -15412,8 +15645,10 @@ function myRatingsSave(){
   if(!p) return null;
   const R={};
   ['con','pow','eye','spd','def','arm','sIQ'].forEach(k=>{ if(p[k]!=null) R[k]=p[k]; });
+  /* [로스터는 세이브에 없다] 훈련으로 올린 값은 여기 안 적으면
+     새로고침 한 번에 통째로 날아간다. 변화(brk)도 같이 적는다. */
   if(p.pitch){ R.pitch={};
-    ['stf','ctl','sta'].forEach(k=>{ if(p.pitch[k]!=null) R.pitch[k]=p.pitch[k]; }); }
+    ['stf','ctl','sta','brk'].forEach(k=>{ if(p.pitch[k]!=null) R.pitch[k]=p.pitch[k]; }); }
   ST.myRatings=R;
   return R;
 }
@@ -15426,9 +15661,9 @@ function applyMyRatings(){
   const R=ST.myRatings;
   ['con','pow','eye','spd','def','arm','sIQ'].forEach(k=>{ if(R[k]!=null) mp[k]=R[k]; });
   if(R.pitch&&mp.pitch){
-    ['stf','ctl','sta'].forEach(k=>{ if(R.pitch[k]!=null) mp.pitch[k]=R.pitch[k]; });
+    ['stf','ctl','sta','brk'].forEach(k=>{ if(R.pitch[k]!=null) mp.pitch[k]=R.pitch[k]; });
     const mq=us.pitchers.find(x=>x.id===me);
-    if(mq){ mq.stf=mp.pitch.stf; mq.ctl=mp.pitch.ctl; mq.sta=mp.pitch.sta; }
+    if(mq){ mq.stf=mp.pitch.stf; mq.ctl=mp.pitch.ctl; mq.sta=mp.pitch.sta; mq.brk=mp.pitch.brk; }
   }
   finalizeTeam(us);
   if(typeof buildPitcherPool==='function') buildPitcherPool();
@@ -15450,11 +15685,11 @@ function applyHsStart(){
   if(R.pitch){
     /* 야수를 골랐는데 고교에서 투수로 뛰었으면 마운드에 올려준다.
        어른 로스터에는 pitch 가 없으니 여기서 만들어야 한다. */
-    if(!p.pitch) p.pitch={stf:R.pitch.stf,ctl:R.pitch.ctl,sta:R.pitch.sta};
+    if(!p.pitch) p.pitch={stf:R.pitch.stf,ctl:R.pitch.ctl,sta:R.pitch.sta,brk:R.pitch.brk};
     ['stf','ctl','sta'].forEach(k=>{ if(R.pitch[k]!=null) p.pitch[k]=R.pitch[k]; });
     let q=us.pitchers.find(x=>x.id===me);
     if(!q){ q={id:me,name:p.name,stf:0,ctl:0,sta:0,playerId:me}; us.pitchers.push(q); }
-    q.stf=p.pitch.stf; q.ctl=p.pitch.ctl; q.sta=p.pitch.sta;
+    q.stf=p.pitch.stf; q.ctl=p.pitch.ctl; q.sta=p.pitch.sta; q.brk=p.pitch.brk;
     if(ST.pit&&!ST.pit[me])ST.pit[me]=blankPit();
     if(ST.rest&&ST.rest[me]==null)ST.rest[me]=3;
   }
@@ -16326,7 +16561,7 @@ function pmGoalBars(){
   };
   Object.keys(KN).forEach(k=>{ if(now[k]!=null) bar(KN[k], now[k]); });
   if(now.pitch){
-    const PN={stf:'구위',ctl:'제구',sta:'체력'};
+    const PN={stf:'구위',ctl:'제구',sta:'체력',brk:'변화'};
     Object.keys(PN).forEach(k=>{ if(now.pitch[k]!=null) bar(PN[k], now.pitch[k]); });
   }
   return box;
@@ -16458,16 +16693,17 @@ function renderHomePlayer(){
       tc.appendChild(Object.assign(el('div','trn-last'),
         {innerHTML:'<b>지난주</b> '+ST.myTrainLog}));
     }
-    const cur=(typeof pmTrainDef==='function')?pmTrainDef(ST.myTrain):null;
-    const pick=el('button','mystatus '+(cur?'in':'out')+' tapon');
-    pick.innerHTML=cur
-      ? '<div class="ms-big">'+cur.icon+' '+cur.name+'</div>'+
-        '<div class="ms-sub">'+cur.sub+' · 코인 '+(trainCost(cur)||'무료')+
-          (canAfford(cur)?'':' <b style="color:#e08a70">— 모자란다</b>')+'</div>'+
-        '<div class="ms-why">주를 시작하면 적용된다 — 눌러서 바꾼다</div>'
-      : '<div class="ms-big">아직 안 골랐다</div>'+
-        '<div class="ms-sub">이번 주에 뭘 할지 정해라</div>'+
-        '<div class="ms-why">안 고르면 아무것도 안 오른다</div>';
+    const Q=(typeof trainQueue==='function')?trainQueue():[];
+    const pick=el('button','mystatus '+(Q.length?'in':'out')+' tapon');
+    pick.innerHTML=Q.length
+      ? '<div class="ms-big">'+Q.map(id=>{const t=pmTrainDef(id);return t?t.icon:'';}).join(' ')+
+          ' '+Q.length+'개 샀다</div>'+
+        '<div class="ms-sub">'+Q.map(id=>{const t=pmTrainDef(id);return t?t.name:'';}).join(' + ')+'</div>'+
+        '<div class="ms-why">다음 주에 한꺼번에 붙는다 · 컨디션 '+
+          (trainQueueCond()>0?'+':'')+trainQueueCond()+' — 눌러서 더 사거나 무른다</div>'
+      : '<div class="ms-big">아직 아무것도 안 샀다</div>'+
+        '<div class="ms-sub">코인 '+coinSlot()+'개로 살 수 있다</div>'+
+        '<div class="ms-why">안 사면 이번 주는 아무것도 안 오른다</div>';
     pick.onclick=()=>go('train');
     tc.appendChild(pick);
     c.appendChild(tc);
@@ -16827,6 +17063,76 @@ function renderHome(){
       bc.appendChild(done);
     }
     c.appendChild(bc);
+  }
+
+  /* ---- 역할 면담 ---- 감독이 방향을 제안한다. 강제는 없다 */
+  if(ST.roleTalk){
+    const R=ST.roleTalk;
+    const meR=ST.playerId||MYID;
+    const rc=el('div','card');
+    rc.innerHTML=`<div class="card-h">${nmLink(R.boss,nameOf(R.boss))}이(가) 따로 부른다</div>`;
+    const room=el('div','kakao');
+    const say=(a,b2)=>{ const wd=el('div','kmsg');
+      wd.innerHTML=`<div class="kname">${nmLink(R.boss,nameOf(R.boss))}</div>`+
+        `<div class="kbub">${sayTo(R.boss, meR, a, b2)}</div>`;
+      room.appendChild(wd); };
+    const note=(t)=>{ const wd=el('div','kmsg notice');
+      wd.innerHTML=`<div class="kbub">${t}</div>`; room.appendChild(wd); };
+    let opts=[];
+    if(R.kind==='two'){
+      say('너 둘 다 하느라 둘 다 애매하다. 하나에만 집중해보는 거 어떠냐',
+          '둘 다 하시느라 둘 다 애매합니다. 하나에만 집중해보시는 건 어떠세요');
+      note(`타자 ${R.ab}타수 ${R.h}안타 (${fmt3(R.avg)}) · `+
+           `투수 ${R.ip.toFixed(1)}이닝 방어율 ${R.era.toFixed(2)}`);
+      opts=[['bat','타자만 하겠다','훈련이 타격에 다 들어간다 · 마운드에 안 올라간다'],
+            ['pit','투수만 하겠다','지명타자를 쓴다 · 타석에 안 선다'],
+            ['keep','그대로 이도류로 간다','둘 다 반씩 큰다 — 어렵다는 건 안다']];
+    } else if(R.kind==='pit'){
+      say('너 선발로 갈래 중계로 갈래. 정해놔야 내가 운영을 한다',
+          '선발로 가실래요 중계로 가실래요. 정해놔야 제가 운영을 합니다');
+      note(`지금까지 ${R.ip.toFixed(1)}이닝`+(R.era!=null?` · 방어율 ${R.era.toFixed(2)}`:''));
+      opts=[['sp','선발로 간다','첫 회부터 내가 던진다 · 이닝이 길다'],
+            ['rp','중계로 간다','선발이 내려가면 올라간다 · 짧게 전력으로']];
+    } else {
+      say(`${nameOf(R.by)}가 ${POSNAMES[R.pos]||R.pos} 를 잘 본다. 너 ${POSNAMES[R.alt]||R.alt} 한번 봐볼래`,
+          `${nameOf(R.by)}씨가 ${POSNAMES[R.pos]||R.pos} 를 잘 봅니다. ${POSNAMES[R.alt]||R.alt} 한번 봐보실래요`);
+      note(`${POSNAMES[R.alt]||R.alt} 는 우리 팀에서 제일 얇은 자리다 · `+
+           `지금 내 적합도 ${Math.round(posFit(meR,R.alt))}`);
+      opts=[['move',(POSNAMES[R.alt]||R.alt)+'로 옮긴다','자리가 비어 있다 · 적합도는 훈련으로 올린다'],
+            ['stay',(POSNAMES[R.pos]||R.pos)+'를 지킨다','뺏어 오겠다는 거다']];
+    }
+    rc.appendChild(room);
+    const box=el('div','card sendbox');
+    box.appendChild(el('div','card-h','뭐라고 할까'));
+    opts.forEach(([k,n,d2])=>{
+      const b=el('button','sendopt bossopt');
+      b.innerHTML=`<b>${n}</b><span>${d2}</span>`;
+      b.onclick=()=>{
+        let msg=n;
+        if(R.kind==='two'){
+          if(k==='bat'){ ST.role='bat'; ST.pitRole=null; msg='타자만 하기로 했다'; }
+          else if(k==='pit'){ ST.role='pit'; ST.useDH=true; msg='투수만 하기로 했다'; }
+          else { ST.morale[meR]=Math.min(100,(ST.morale[meR]||70)+8);
+                 if(ST.bond)bondAdd(R.boss,-2); msg='그대로 이도류로 간다'; }
+        } else if(R.kind==='pit'){
+          ST.pitRole=k; msg=(k==='sp'?'선발로 간다':'중계로 간다');
+        } else {
+          if(k==='move'){ ST.myPos=R.alt; ST.myPosTaken=null;
+            msg=(POSNAMES[R.alt]||R.alt)+'로 옮긴다'; }
+          else { ST.morale[meR]=Math.min(100,(ST.morale[meR]||70)+5);
+            msg=(POSNAMES[R.pos]||R.pos)+'를 지킨다'; }
+        }
+        ST.roleTalkAt=ST.schedule.filter(x=>x.played).length;
+        ST.roleTalk=null;
+        /* 정한 대로 이번 주 라인업·로테이션을 다시 짠다 */
+        try{ ST.lineup=recommendLineup(); optimizePositions(); applyDHRule(); sanitizeRotation(); }catch(e){}
+        toast(msg);
+        saveGame(true); go('home');
+      };
+      box.appendChild(b);
+    });
+    rc.appendChild(box);
+    c.appendChild(rc);
   }
 
   /* ---- 시즌 초 장비 구매 안건 ---- 사자는 쪽과 아끼자는 쪽이 갈린다 */
@@ -18818,6 +19124,7 @@ function openPlayerCard(pid){
     let pb='';
     pb+=otBar('구위', pit.stf, null);
     pb+=otBar('제구', pit.ctl, null);
+    pb+=otBar('변화', Math.round(brkOf(pit)), null);
     pb+=otBar('체력', pit.sta, null);
     add(otSec('피칭 레이팅', pb));
   };
@@ -19030,6 +19337,7 @@ function renderPlayer(){
     let pb='';
     pb+=otBar('구위', pit.stf, null);
     pb+=otBar('제구', pit.ctl, (pa-ca>0)?Math.min(80,pit.ctl+22):null);
+    pb+=otBar('변화', Math.round(brkOf(pit)), null);
     pb+=otBar('체력', pit.sta, null);
     pb+=`<p class="ot-note">${p.pitch
       ? '실제 등판 기록(이닝·사사구·탈삼진·자책)에서 산출한 값이다.'
@@ -19602,6 +19910,16 @@ function coachNoteFor(pid){
     else if((ST.cond&&ST.cond[pid]!=null&&ST.cond[pid]<50)) bits.push('컨디션 '+Math.round(ST.cond[pid])+' — 몸이 안 좋다');
     else bits.push('오늘은 다른 사람을 쓴다 — 자리 경쟁에서 밀렸다');
   } else if((ST.myGuarantee||0)>0 && pid===me) bits.push('주전 보장 '+ST.myGuarantee+'경기');
+  /* [제보] "포수 투수로 시작했는데 포수 밀려서 2루로 오는 느낌이냐
+             이거 내포지션으로 가는게 아니라 감독이 땜빵 준거 맞지?"
+     맞다, 땜빵이었다. 그런데 그 사실이 화면 어디에도 없어서 「느낌」 으로
+     알아채야 했다. 자리를 뺏겼으면 **누구한테 뺏겼고 오늘은 어디를
+     보는지** 못 박는다. 그래야 뭘 올려야 하는지가 정해진다.        */
+  if(pid===me && ST.myPosTaken && ST.myPosTaken.pos){
+    const T=ST.myPosTaken;
+    bits.push('내 자리('+(POSNAMES[T.pos]||T.pos)+')는 '+nameOf(T.by)+
+      '이(가) 본다 — 오늘 '+(POSNAMES[T.at]||T.at)+'는 땜빵이다');
+  }
   /* [제보] "라인업 제외사유에는 전체적은 성적도 있어야지 그동안 계속
              쭈욱 보여줬는데 빼면 이상하잖아"
      맞는 말이다. 왜 뺐는지만 적고 성적을 지우면, 그 판단이 맞는지
@@ -23149,8 +23467,19 @@ function sanitizeRotation(){
   if(typeof isPlayerMode==='function' && isPlayerMode()
      && ST && (ST.role==='pit'||ST.role==='two')){
     const me=ST.playerId||MYID;
-    if(t.pitchers.some(p=>p.id===me) && ST.rotation[0]!==me)
-      ST.rotation=[me].concat(ST.rotation.filter(x=>x!==me));
+    /* [건의] "투수는 뭐 선발이나 중계 고를 수 있게 해주고"
+       감독과 면담해서 정한다(ST.pitRole). 선발이면 맨 앞, 중계면
+       두 번째다 — 선발이 내려가면 그때 내가 올라간다. 안 정했으면
+       예전처럼 맨 앞이다.                                        */
+    if(t.pitchers.some(p=>p.id===me)){
+      const rest=ST.rotation.filter(x=>x!==me);
+      if(ST.pitRole==='rp'){
+        if(rest.length) ST.rotation=[rest[0], me].concat(rest.slice(1));
+        else ST.rotation=[me];
+      } else if(ST.rotation[0]!==me){
+        ST.rotation=[me].concat(rest);
+      }
+    }
     /* 이도류는 타순에도 서야 한다 — 지명타자를 쓰면 투수는 안 친다 */
     if(ST.role==='two') ST.useDH=false;
   }
@@ -27284,10 +27613,19 @@ function renderBenched(box, d){
   /* 감독이 서서 말한다 — 고교 대화 장면과 같은 그림을 쓴다 */
   const talk=el('div','hstalk');
   const cid=why.coach||(typeof coachId==='function'?coachId():null);
+  /* [제보] "제발 교체당했으면 왜 교체했는지 이유가 나오게좀해줘"
+     말은 하고 있었는데 「오늘은 여기까지 하자」 같은 한 줄뿐이라
+     그게 이유인지 인사인지 알 수가 없었다. **숫자를 같이 붙인다** —
+     오늘 몇 타수 몇 안타에 시즌이 얼마인지. 그래야 납득하든 열받든 한다. */
+  const sb=(ST.bat&&ST.bat[me])||null;
+  const facts=[];
+  facts.push('오늘 '+(b.ab||0)+'타수 '+(b.h||0)+'안타');
+  if(sb&&sb.ab) facts.push('시즌 '+fmt3(sb.h/sb.ab)+' ('+sb.ab+'타수 '+sb.h+'안타)');
+  if(b.injury) facts.push('부상');
   talk.innerHTML='<div class="ht-face">'+(cid?avatarHTML(cid):'')+'</div>'+
     '<div class="ht-body"><div class="ht-nm">'+(why.cname||'감독')+'</div>'+
     '<div class="ht-say">'+(why.line||'오늘은 여기까지 하자')+'</div>'+
-    '<div class="ht-more">'+(why.title||'')+'</div></div>';
+    '<div class="ht-more"><b>'+(why.title||'교체')+'</b> — '+facts.join(' · ')+'</div></div>';
   w.appendChild(talk);
 
   if(b.injury){
@@ -27317,10 +27655,23 @@ function renderBenched(box, d){
     w.appendChild(nx);
   }
 
-  const ok=el('button','rb-b go','알겠다');
-  ok.style.width='100%';
-  ok.onclick=()=>{ if(LIVE) LIVE._benched=null; decDone(box); };
-  w.appendChild(ok);
+  /* [제보] "교체아웃 되었으면 이거 나머지 경기 볼건지 바로 결과 볼건지
+             선택하게 해주고"
+     맞는 말이다. 내 경기는 끝났는데 남의 타석을 아홉 번 더 넘겨야 했다.
+     벤치에서 끝까지 볼지, 결과만 볼지 고른다.                       */
+  const row=el('div','lead-grid');
+  const bw=el('button','lead-b run');
+  bw.innerHTML='<span>남은 경기를 본다</span><i>벤치에서 끝까지 본다</i>';
+  bw.onclick=()=>{ if(LIVE) LIVE._benched=null; decDone(box); };
+  row.appendChild(bw);
+  const bs=el('button','lead-b stay');
+  bs.innerHTML='<span>바로 결과만 본다 ▸</span><i>나머지는 알아서 굴린다</i>';
+  bs.onclick=()=>{
+    if(LIVE){ LIVE._benched=null; LIVE.manual=false; }
+    decDone(box);
+  };
+  row.appendChild(bs);
+  w.appendChild(row);
   box.appendChild(w);
 }
 
@@ -27374,9 +27725,28 @@ function renderPitch(box, d){
       ? `${tb.ab}타수 ${tb.h}안타${tb.hr?` · 홈런 ${tb.hr}`:''}${tb.d2+tb.d3?` · 장타 ${tb.d2+tb.d3}`:''}`+
         `${tb.bb+tb.hbp?` · ${tb.bb+tb.hbp}사사구`:''}${tb.k?` · 삼진 ${tb.k}`:''}`
       : '첫 타석';
+    /* [제보] "한 경기 안에서 투수는 체력이 있긴해야할듯 구속 유지가 계속
+               되는게 뭐 다 체력이 깡패는 아니니깐"
+       엔진이 깎는 그 값을 그대로 계산해서 보여준다. 안 보이면 체력을
+       훈련할 이유가 없다.                                          */
+    const fq=(LIVE.pbox&&LIVE.pbox[p.id])||null;
+    const fOuts=fq?(fq.outs||0):0;
+    const fSta=(p.sta!=null)?p.sta:40;
+    const fLim=Math.max(6, Math.round(4+(fSta-22)*0.19));
+    const fAt=Math.max(6, Math.round(fLim*0.75));
+    const fK=fOuts>fAt ? Math.min(1,(fOuts-fAt)/Math.max(4,fLim-fAt+4)) : 0;
+    const fStf=Math.max(12, p.stf - fK*(15-Math.max(0,Math.min(7,(fSta-30)*0.15))));
+    const fCtl=Math.max(10, p.ctl - fK*( 9-Math.max(0,Math.min(4,(fSta-30)*0.09))));
+    const fTxt = fK<=0 ? '팔이 아직 가볍다'
+      : (fK<0.4 ? '슬슬 무거워진다' : (fK<0.8 ? '많이 지쳤다 — 공이 몰린다' : '팔이 안 올라간다'));
+    const fCol = fK<=0?'#7fc48f':(fK<0.4?'#c9a227':'#e08a70');
     head.innerHTML=`<div class="pl-t">투구 · ${c.b}볼 ${c.s}스트라이크</div>
       <div class="pl-sub">${LIVE.inning}회 ${LIVE.outs}아웃 ·
-        마운드 <b style="color:#e2eaf5">${p.name}</b> (구위 ${p.stf} 제구 ${p.ctl})</div>
+        마운드 <b style="color:#e2eaf5">${p.name}</b> (구위 ${Math.round(fStf)}${
+          fK>0?`<i style="color:${fCol}">↓${Math.round(p.stf-fStf)}</i>`:''} 제구 ${Math.round(fCtl)}${
+          fK>0?`<i style="color:${fCol}">↓${Math.round(p.ctl-fCtl)}</i>`:''})</div>
+      <div class="pl-sub">체력 ${fSta} · ${fOuts}아웃째 —
+        <b style="color:${fCol}">${fTxt}</b></div>
       ${bat?`<div class="bat-info">
         <div class="bi-top"><b>${ord>=0?`${ord+1}번 `:''}${bat.name}</b>
           <em class="${bat.bats==='L'?'lh':''}">${bat.bats==='L'?'좌타':'우타'}</em></div>
@@ -28355,6 +28725,7 @@ function commitGame(res,usSide,thSide,uSlots){
   ST.partyDone = !won;
   ST.mystery = rollMysteryEvent(ST, uUniq);
   rollBossTalk();                    // 내 성적을 보고 감독이 부를지 판정
+  rollRoleTalk();                    // 방향을 다시 잡을 때가 됐는지
   if(!sch.po) simOtherGames(sch.opp);   // 플레이오프는 네 팀만 뛴다
   applyTraining();
   /* 선수 모드 — 이번 주에 내가 고른 것 하나. 팀 훈련과 같은 자리에서 적용한다
@@ -28736,7 +29107,8 @@ function applyTraining(){
         p.pitch[pkey]=Math.min(80,p.pitch[pkey]+up);
         ST.pitGain[pid][pkey]=(ST.pitGain[pid][pkey]||0)+up;
         const pp=us.pitchers.find(x=>x.id===pid);
-        if(pp){ pp.ctl=Math.round(p.pitch.ctl); pp.stf=Math.round(p.pitch.stf); pp.sta=Math.round(p.pitch.sta); }
+        if(pp){ pp.ctl=Math.round(p.pitch.ctl); pp.stf=Math.round(p.pitch.stf); pp.sta=Math.round(p.pitch.sta);
+                if(p.pitch.brk!=null) pp.brk=Math.round(p.pitch.brk); }
         label=STAT_KN[pkey]; shown=up;
       } else if(me&&room<=0){
         gains.push(`${p.name} ${STAT_KN[pkey]} — 이번 시즌 훈련 여지를 다 썼다`);
@@ -28813,26 +29185,33 @@ function coinsForGame(res, won, tie){
   const q=(res&&res.pbox)?res.pbox[me]:null;
   const rows=[];
   let n=0;
-  const add=(v,label)=>{ if(!v) return; n+=v; rows.push({v,label}); };
+  /* [제보] "코인 너무 많이 준다 뭘 얼마나 잘했길래 코인을 줬는지 나와야될듯
+             -도 이유가 있어야하고"
+     맞는 말이었다. 2안타 1타점 이기면 그것만으로 +8 이었는데 훈련 하나가
+     4다. 한 경기가 두 주치를 벌어오니 쌓이기만 했다. **값을 반으로
+     내렸다.** 그리고 줄마다 몇 점인지를 같이 적는다 — 왜 깎였는지도
+     보여야 다음 경기에 뭘 할지가 정해진다.                          */
+  const add=(v,label)=>{ if(!v||!label) return; n+=v;
+    rows.push({v,label:label+' '+(v>0?'+':'')+v}); };
   if(!b || !b.pa){
     add(1,'오늘은 안 나갔다');
   } else {
-    add(b.h*2, b.h?('안타 '+b.h+'개'):'');
-    add(b.d2+b.d3*2, (b.d2+b.d3)?('장타 '+(b.d2+b.d3)+'개'):'');
-    add(b.hr*5, b.hr?('홈런 '+b.hr+'개'):'');
-    add(b.rbi, b.rbi?('타점 '+b.rbi):'');
-    add(b.sb*2, b.sb?('도루 '+b.sb):'');
-    add((b.bb+b.hbp), (b.bb+b.hbp)?('출루 '+(b.bb+b.hbp)):'');
+    add(b.h, b.h?('안타 '+b.h+'개'):'');
+    add(b.d2+b.d3, (b.d2+b.d3)?('장타 '+(b.d2+b.d3)+'개'):'');
+    add(b.hr*3, b.hr?('홈런 '+b.hr+'개'):'');
+    add(Math.min(3,b.rbi), b.rbi?('타점 '+b.rbi):'');
+    add(b.sb, b.sb?('도루 '+b.sb):'');
+    add(Math.min(2,b.bb+b.hbp), (b.bb+b.hbp)?('출루 '+(b.bb+b.hbp)):'');
     add(-(b.e||0)*2, b.e?('실책 '+b.e):'');
-    if(b.ab>=3 && !b.h) add(-1,'무안타');
+    if(b.ab>=3 && !b.h) add(-2,'무안타');
   }
   if(q && q.outs){
-    add(Math.floor(q.outs/3)*2, '투구 '+Math.floor(q.outs/3)+'이닝');
-    add(q.k, q.k?('탈삼진 '+q.k):'');
+    add(Math.floor(q.outs/3), '투구 '+Math.floor(q.outs/3)+'이닝');
+    add(Math.min(3,q.k), q.k?('탈삼진 '+q.k):'');
     add(-(q.er||0), q.er?('자책 '+q.er):'');
   }
-  add(won?2:(tie?1:0), won?'이겼다':(tie?'비겼다':''));
-  return {n:Math.max(-6,n), rows:rows.filter(r=>r.label)};
+  add(won?1:0, won?'이겼다':'');
+  return {n:Math.max(-6,n), rows:rows};
 }
 /* 훈련 값. 많이 오르는 건 비싸다 */
 function trainCost(t){
@@ -28842,6 +29221,9 @@ function trainCost(t){
   if(t.id==='body') return 3;
   return 4;
 }
+/* [남겨둔다] 훈련을 하나만 고르던 시절의 함수다. 지금은 canAffordQ 가
+   줄 길이까지 같이 본다. 세이브 호환이나 옛 화면이 다시 필요할 때가
+   있어서 지우지 않는다 — 지울 거면 참조 수를 다시 세라. */
 function canAfford(t){ return coinSlot() >= trainCost(t); }
 
 const PM_TRAIN=[
@@ -28861,9 +29243,29 @@ const PM_TRAIN=[
    g:{sIQ:1.5,spd:0.4}, cond:-4,
    d:'투수 버릇을 본다. 스타트 끊는 연습을 한다.<br>'+
      '**발만 빠르면 뛰다가 잡힌다** — 도루는 이 둘이 같이 올라야 된다.'},
-  {id:'pit',  icon:'\u{26BE}', name:'투구 훈련', sub:'구위 · 제구 · 체력', pit:true,
-   g:{stf:0.9,ctl:1.0,sta:0.8}, cond:-7,
-   d:'불펜에서 던진다. 어깨를 쓰는 만큼 회복이 느리다.'},
+  /* [제보] "투수는 훈련하는거 왜 없냐" ·
+            "구속형 제구형 변화형 장타억제력형 약간 이런 투수도 육성할게
+             많아야되는데"
+     맞는 말이다. 여태 투수 훈련은 「투구 훈련」 하나였고 구위·제구·체력이
+     한꺼번에 조금씩 올랐다. 그러면 어떤 투수가 될지를 내가 못 정한다.
+     네 갈래로 가른다 — 무엇을 사느냐가 곧 어떤 투수냐다.
+     이도류는 이걸 타격 훈련과 나눠 사야 한다. 그게 이도류의 값이다. */
+  {id:'pspd', icon:'\u{1F525}', name:'구속 훈련', sub:'구위', pit:true,
+   g:{stf:1.5}, cond:-7,
+   d:'롱토스와 하체를 쓴다. **빠른 공으로 이기는 투수**가 된다 — '+
+     '삼진이 늘고 공이 안 밀린다. 대신 어깨를 제일 많이 쓴다.'},
+  {id:'pctl', icon:'\u{1F3AF}', name:'제구 훈련', sub:'제구', pit:true,
+   g:{ctl:1.5}, cond:-5,
+   d:'같은 자리에 계속 던진다. **볼넷이 준다.** '+
+     '이 리그는 사사구로 무너진다 — 제일 확실한 투자다.'},
+  {id:'pbrk', icon:'\u{1F300}', name:'변화구 연습', sub:'변화 · 장타 억제', pit:true,
+   g:{brk:1.4,ctl:0.3}, cond:-6,
+   d:'각을 만든다. **던질 수 있는 구종이 늘고**, '+
+     '배트 중심을 비껴가서 **큰 것을 덜 맞는다.**'},
+  {id:'psta', icon:'\u{1F3CB}', name:'어깨 만들기', sub:'체력', pit:true,
+   g:{sta:1.6}, cond:-4,
+   d:'뛰고 또 뛴다. **늦게 지친다** — '+
+     '3회부터 구속이 빠지는 건 이걸 안 해서다.'},
   {id:'team', icon:'\u{1F465}', name:'팀 훈련 참석', sub:'골고루 + 감독 눈에 든다',
    g:{con:0.35,pow:0.25,eye:0.3,spd:0.3,def:0.4,arm:0.25}, cond:-4, team:true,
    d:'감독이 부른 훈련에 나간다. 조금씩 오르고, 무엇보다 **라인업에 이름이 남는다.**'},
@@ -28876,29 +29278,101 @@ const PM_TRAIN=[
    d:'이번 주는 안 나간다. 몸을 만든다.'},
 ];
 function pmTrainDef(id){ return PM_TRAIN.find(x=>x.id===(id||(ST&&ST.myTrain)))||null; }
-/* 주간 처리 때 한 번 적용한다 */
+
+/* ================= 이번 주에 산 훈련 =================
+   [제보] "그 코인으로 다음 주 기다리는게 아니라 바로 코인으로 스탯 올릴 수
+           있게 해야할듯 근데 바로 스탯이 올라가면 안되겠지? 차근차근 다음주
+           제도로 하니깐 코인이 너무 많이 남음"
+
+   맞는 말이다. 여태는 **한 주에 하나만** 고를 수 있었다. 코인은 경기마다
+   들어오는데 쓸 데가 주당 하나뿐이니 쌓이기만 했다.
+   이제 **코인이 있는 만큼 그 자리에서 산다.** 다만 스탯은 바로 안 오른다 —
+   산 훈련은 줄에 쌓였다가 **다음 주에 한꺼번에** 몸에 붙는다.
+
+   브레이크는 코인이 아니라 **몸**이다. 훈련마다 컨디션이 깎이니까 셋을
+   몰아서 하면 그 주 경기를 지친 몸으로 나간다. 한 주에 셋까지.
+   같은 훈련을 두 번 하면 두 번째는 덜 는다 — 하루에 배팅장을 두 번 가도
+   두 배로 늘지는 않는다.                                            */
+const TRAIN_Q_MAX=3;
+function trainQueue(){
+  if(!ST) return [];
+  if(!Array.isArray(ST.myTrainQ)){
+    /* 옛 세이브 — 하나만 고르던 시절의 ST.myTrain 을 줄로 옮긴다 */
+    ST.myTrainQ = (ST.myTrain && pmTrainDef(ST.myTrain)) ? [ST.myTrain] : [];
+  }
+  return ST.myTrainQ;
+}
+/* 이번 주에 산 훈련이 깎을 컨디션 합계 */
+function trainQueueCond(){
+  return trainQueue().reduce((a,id)=>{ const t=pmTrainDef(id); return a+(t?t.cond:0); },0);
+}
+/* 산다 — 코인은 그 자리에서 낸다. 못 사면 왜 못 사는지 돌려준다 */
+function trainBuy(id){
+  const t=pmTrainDef(id); if(!t) return '없는 훈련이다';
+  const Q=trainQueue();
+  /* 쉬는 건 혼자만 한다 — 쉬면서 배팅장에 갈 수는 없다 */
+  if(id==='rest'){
+    if(Q.length){ trainRefundAll(); }
+    ST.myTrainQ=['rest']; ST.myTrain='rest'; return null;
+  }
+  if(Q.length===1 && Q[0]==='rest'){ ST.myTrainQ=[]; }
+  if(trainQueue().length>=TRAIN_Q_MAX) return '한 주에 '+TRAIN_Q_MAX+'개까지다. 몸이 안 따라준다';
+  const cost=trainCost(t);
+  if(cost>coinSlot()) return '코인이 '+cost+'개 필요하다 (가진 '+coinSlot()+')';
+  coinAdd(-cost);
+  trainQueue().push(id);
+  ST.myTrain=id;                       // 옛 화면들이 아직 이걸 본다
+  return null;
+}
+/* 무른다 — 주가 넘어가기 전이면 코인을 돌려준다 */
+function trainRefund(i){
+  const Q=trainQueue();
+  if(i<0||i>=Q.length) return;
+  const t=pmTrainDef(Q[i]);
+  if(t) coinAdd(trainCost(t));
+  Q.splice(i,1);
+  ST.myTrain=Q.length?Q[Q.length-1]:null;
+}
+function trainRefundAll(){
+  const Q=trainQueue();
+  while(Q.length) trainRefund(Q.length-1);
+}
+function canAffordQ(t){
+  if(!t) return false;
+  if(t.id!=='rest' && trainQueue().length>=TRAIN_Q_MAX) return false;
+  return coinSlot()>=trainCost(t);
+}
+
+/* 주간 처리 때 한 번 적용한다 — 이번 주에 산 것을 전부 */
 function applyMyTrain(){
   if(!isPlayerMode()) return null;
-  let t=pmTrainDef(ST.myTrain); if(!t) return null;
   const me=ST.playerId||MYID;
   const p=TBYID['wwzw'].players.find(x=>x.id===me);
   if(!p) return null;
-  /* 코인이 모자라면 못 한다 — 쉬는 걸로 바뀐다 */
-  const cost=trainCost(t);
-  if(cost>coinSlot()){
-    const rest=pmTrainDef('rest');
-    var short0=t.name+' — 코인이 모자라 못 했다 (필요 '+cost+' · 가진 '+coinSlot()+')';
-    ST.myTrainLog=short0;
+  const Q=trainQueue().slice();
+  ST.myTrainQ=[]; ST.myTrain=null;
+  if(!Q.length){
+    ST.myTrainLog='이번 주는 아무것도 안 샀다 — 아무것도 안 올랐다';
     ST.notices=ST.notices||[];
-    ST.notices.push({type:'train', title:'훈련 못 함 — '+t.name,
-      body:'훈련 코인이 '+cost+'개 필요한데 '+coinSlot()+'개뿐이다.',
-      effect:'경기에서 잘해야 코인이 모인다'});
-    t=rest; ST.myTrain='rest'; ST.coinShort=true;
-  } else if(cost>0){
-    coinAdd(-cost); ST.coinShort=false;
-  } else ST.coinShort=false;
-  ST.cond[me]=Math.max(20,Math.min(100,(ST.cond[me]||70)+t.cond));
-  if(t.team){
+    ST.notices.push({type:'train', title:'훈련 없음',
+      body:'이번 주에 산 훈련이 없다. 코인이 있으면 훈련 화면에서 사면 된다.',
+      effect:'가진 코인 '+coinSlot()+'개'});
+    return ST.myTrainLog;
+  }
+  /* 같은 훈련을 두 번 하면 두 번째부터는 덜 는다 */
+  const seen={}, gains={}, names=[];
+  let cond=0, teamed=false;
+  Q.forEach(id=>{
+    const t=pmTrainDef(id); if(!t) return;
+    const rep=seen[id]||0; seen[id]=rep+1;
+    const mul=rep?0.6:1;
+    cond+=t.cond;
+    names.push(t.name+(rep?' (또)':''));
+    if(t.team) teamed=true;
+    Object.keys(t.g||{}).forEach(k=>{ gains[k]=(gains[k]||0)+t.g[k]*mul; });
+  });
+  ST.cond[me]=Math.max(20,Math.min(100,(ST.cond[me]||70)+cond));
+  if(teamed){
     /* 나간 것으로 친다 — 감독이 보고 있다 */
     if(!ST.trainAttend) ST.trainAttend=[];
     if(ST.trainAttend.indexOf(me)<0) ST.trainAttend.push(me);
@@ -28908,14 +29382,15 @@ function applyMyTrain(){
   /* 이도류는 두 몫을 나눠 쓴다 — 그게 이도류의 값이다 */
   const half=isTwoWay()?0.55:1;
   const KN={con:'컨택',pow:'파워',eye:'선구',spd:'주루',def:'수비',arm:'어깨',
-            sIQ:'주루 센스', stf:'구위',ctl:'제구',sta:'체력'};
+            sIQ:'주루 센스', stf:'구위',ctl:'제구',sta:'체력',brk:'변화'};
   const got=[];
   /* 주루 센스는 원래 로스터에 없는 칸이다 — 처음 훈련하면 지금 값에서 시작한다 */
-  if(t.g && t.g.sIQ!=null && p.sIQ==null) p.sIQ=Math.round(stealIQ(p)*10)/10;
-  Object.keys(t.g||{}).forEach(k=>{
-    const amt=t.g[k]*half;
-    if(k==='stf'||k==='ctl'||k==='sta'){
+  if(gains.sIQ!=null && p.sIQ==null) p.sIQ=Math.round(stealIQ(p)*10)/10;
+  Object.keys(gains).forEach(k=>{
+    const amt=gains[k]*half;
+    if(k==='stf'||k==='ctl'||k==='sta'||k==='brk'){
       if(!p.pitch) return;
+      if(p.pitch[k]==null) p.pitch[k]=(k==='brk')?0:30;
       const before=p.pitch[k];
       p.pitch[k]=Math.min(99, p.pitch[k]+amt);
       if(Math.floor(p.pitch[k])>Math.floor(before)) got.push(KN[k]+' +'+(Math.floor(p.pitch[k])-Math.floor(before)));
@@ -28928,7 +29403,8 @@ function applyMyTrain(){
   });
   /* 정수로 굳힌다 — 소수점이 화면에 새면 지저분하다 */
   ['con','pow','eye','spd','def','arm','sIQ'].forEach(k=>{ if(p[k]!=null) p[k]=Math.round(p[k]*10)/10; });
-  if(p.pitch) ['stf','ctl','sta'].forEach(k=>{ p.pitch[k]=Math.round(p.pitch[k]*10)/10; });
+  if(p.pitch) ['stf','ctl','sta','brk'].forEach(k=>{
+    if(p.pitch[k]!=null) p.pitch[k]=Math.round(p.pitch[k]*10)/10; });
   finalizeTeam(TBYID['wwzw']);
   if(typeof buildPitcherPool==='function') buildPitcherPool();
   myRatingsSave();          // 안 적으면 새로고침 한 번에 통째로 날아간다
@@ -28936,23 +29412,22 @@ function applyMyTrain(){
      0.1 씩 붙는 훈련이라 정수가 안 올라간 주가 많다. 그때 「아직 티가
      안 난다」 로만 끝내면 훈련이 되고 있는 건지 알 수가 없다.
      안 오른 주에도 **얼마나 쌓였는지**를 말해준다.                 */
+  const label=names.join(' + ');
   if(!got.length){
-    const near=Object.keys(t.g||{}).map(k=>{
-      const v=(k==='stf'||k==='ctl'||k==='sta')?(p.pitch?p.pitch[k]:null):p[k];
+    const near=Object.keys(gains).map(k=>{
+      const v=(k==='stf'||k==='ctl'||k==='sta'||k==='brk')?(p.pitch?p.pitch[k]:null):p[k];
       if(v==null) return null;
       const frac=Math.round((v-Math.floor(v))*100);
       return (KN[k]||k)+' '+Math.floor(v)+(frac?('.'+String(frac).padStart(2,'0').slice(0,1)):'');
     }).filter(Boolean);
-    ST.myTrainLog = t.name+' — 쌓이는 중 ('+near.join(' · ')+')';
+    ST.myTrainLog = label+' — 쌓이는 중 ('+near.join(' · ')+')';
   } else {
-    ST.myTrainLog = t.name+' — '+got.join(' · ');
+    ST.myTrainLog = label+' — '+got.join(' · ');
   }
-  /* 코인이 모자라 못 한 주는 그 사실이 제일 중요하다 — 덮어쓰지 않는다 */
-  if(ST.coinShort){ ST.myTrainLog=short0; ST.coinShort=false; return ST.myTrainLog; }
   ST.notices=ST.notices||[];
-  ST.notices.push({type:'train', title:'지난주 훈련 — '+t.name,
+  ST.notices.push({type:'train', title:'지난주 훈련 — '+label,
     body: got.length?('올랐다: '+got.join(' · ')):'아직 정수로는 안 올랐다. 계속 쌓이는 중이다.',
-    effect: '컨디션 '+(t.cond>0?'+':'')+t.cond});
+    effect: '컨디션 '+(cond>0?'+':'')+cond+(Q.length>1?(' · '+Q.length+'개를 몰아서 했다'):'')});
   return ST.myTrainLog;
 }
 function renderTrainPlayer(){
@@ -28960,12 +29435,38 @@ function renderTrainPlayer(){
   const me=ST.playerId||MYID;
   const head=el('div','card');
   head.innerHTML='<div class="card-h">이번 주에 뭘 할까 · 코인 '+coinSlot()+'개</div>'+
-    '<p class="muted"><b>하나만 고른다.</b> 그게 어떤 선수가 되느냐를 정한다.<br>'+
-    '<b>훈련은 코인으로 산다.</b> 경기에서 잘하면 코인이 모인다 — '+
-    '안타 +2 · 홈런 +5 · 타점 +1 · 도루 +2 · 실책 -2.<br>'+
+    '<p class="muted"><b>코인이 있는 만큼 그 자리에서 산다.</b> 한 주에 '+TRAIN_Q_MAX+'개까지.<br>'+
+    '산 훈련은 <b>다음 주에 한꺼번에</b> 몸에 붙는다 — 사자마자 오르지는 않는다.<br>'+
+    '말리는 건 코인이 아니라 <b>몸</b>이다. 몰아서 하면 그 주 경기를 지친 몸으로 나간다.<br>'+
+    '경기에서 잘하면 코인이 모인다 — 안타 +1 · 홈런 +3 · 타점 +1 · 실책 -2 · 무안타 -2.<br>'+
     (isTwoWay()?'투수 겸 타자라 한 번에 오르는 폭이 절반이다. 그게 이도류의 값이다.<br>':'')+
-    '주간을 시작하면 그대로 적용된다.</p>';
+    '</p>';
   c.appendChild(head);
+  /* 이번 주에 산 것 — 주가 넘어가기 전이면 무를 수 있다 */
+  {
+    const Q=trainQueue();
+    const qc=el('div','card');
+    qc.appendChild(el('div','card-h','이번 주에 산 훈련 '+Q.length+'/'+TRAIN_Q_MAX));
+    if(!Q.length){
+      qc.appendChild(el('p','muted','아직 아무것도 안 샀다. 아래에서 고르면 코인이 나간다.'));
+    } else {
+      Q.forEach((id,i)=>{
+        const t=pmTrainDef(id); if(!t) return;
+        const r=el('div','trn-q');
+        r.innerHTML='<span class="tq-i">'+t.icon+'</span>'+
+          '<span class="tq-n">'+t.name+'<i>'+t.sub+'</i></span>';
+        const x=el('button','tq-x','무른다');
+        x.onclick=()=>{ trainRefund(i); saveGame(true); renderTrainPlayer(); toast('코인을 돌려받았다'); };
+        r.appendChild(x);
+        qc.appendChild(r);
+      });
+      const cd=trainQueueCond();
+      qc.appendChild(Object.assign(el('div','trn-last'),{innerHTML:
+        '<b>컨디션</b> '+(cd>0?'+':'')+cd+
+        (cd<=-12?' — <b style="color:#e08a70">이 몸으로 경기를 나간다</b>':'')}));
+    }
+    c.appendChild(qc);
+  }
   if(ST.myTrainLog){
     const lg=el('div','card');
     lg.innerHTML='<div class="card-h">지난주</div><div class="pm-line">'+ST.myTrainLog+'</div>';
@@ -28993,16 +29494,21 @@ function renderTrainPlayer(){
   const canPit=(ST.role==='pit'||ST.role==='two');
   PM_TRAIN.forEach(t=>{
     if(t.pit && !canPit) return;
-    const cost=trainCost(t), ok=canAfford(t);
-    const b=el('button','trncard'+(ST.myTrain===t.id?' on':'')+(ok?'':' poor'));
+    const cost=trainCost(t), ok=canAffordQ(t);
+    const bought=trainQueue().filter(x=>x===t.id).length;
+    const b=el('button','trncard'+(bought?' on':'')+(ok?'':' poor'));
     b.innerHTML='<div class="tn-top"><span class="tn-i">'+t.icon+'</span>'+
-      '<span class="tn-n">'+t.name+'</span><span class="tn-s">'+t.sub+'</span></div>'+
+      '<span class="tn-n">'+t.name+(bought?(' <b class="tn-cnt">×'+bought+'</b>'):'')+'</span>'+
+      '<span class="tn-s">'+t.sub+'</span></div>'+
       '<div class="tn-d">'+t.d.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')+'</div>'+
       '<div class="tn-c">컨디션 '+(t.cond>0?'+':'')+t.cond+
         ' · <b class="'+(ok?'tn-ok':'tn-no')+'">코인 '+(cost||'무료')+'</b>'+
-        (ok?'':' — 모자란다')+'</div>';
-    b.onclick=()=>{ if(!ok){ toast('훈련 코인이 '+cost+'개 필요하다 (가진 '+coinSlot()+')'); return; }
-      ST.myTrain=t.id; saveGame(true); renderTrainPlayer(); toast(t.name); };
+        (ok?'':' — 못 산다')+(bought>0?' · 또 사면 덜 는다':'')+'</div>';
+    b.onclick=()=>{
+      const why=trainBuy(t.id);
+      if(why){ toast(why); return; }
+      saveGame(true); renderTrainPlayer(); toast(t.name+' 샀다');
+    };
     c.appendChild(b);
   });
   const step=nextStepInfo();
@@ -31774,7 +32280,7 @@ function placeExile(rec, obj){
     dest.pitchers=dest.pitchers||[];
     if(!dest.pitchers.some(q=>q.id===pid))
       dest.pitchers.push({id:src.id,name:src.name,stf:src.pitch.stf,
-        ctl:src.pitch.ctl,sta:src.pitch.sta,playerId:src.id});
+        ctl:src.pitch.ctl,sta:src.pitch.sta,brk:src.pitch.brk,playerId:src.id});
   }
   return true;
 }
@@ -31948,6 +32454,12 @@ function normalizeState(){
   if(ST.bossTalk&&!us.players.some(p=>p.id===ST.bossTalk.boss))ST.bossTalk=null;
   if(ST.bossTalkCount==null)ST.bossTalkCount=0;
   if(ST.bossTalkAt==null)ST.bossTalkAt=-99;
+  if(ST.roleTalk===undefined)ST.roleTalk=null;
+  if(ST.roleTalk&&!us.players.some(p=>p.id===ST.roleTalk.boss))ST.roleTalk=null;
+  if(ST.roleTalkAt==null)ST.roleTalkAt=-99;
+  if(ST.pitRole===undefined)ST.pitRole=null;
+  if(ST.myPosTaken===undefined)ST.myPosTaken=null;
+  if(!Array.isArray(ST.myTrainQ))ST.myTrainQ=(ST.myTrain?[ST.myTrain]:[]);
   if(!ST.valuePrev)ST.valuePrev={};
   if(!Array.isArray(ST.drunkIds))ST.drunkIds=[];
   // 장비 — 예전 세이브는 true/false 였다. 등급 구조로 옮긴다.
