@@ -306,6 +306,40 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   T(ev("normalizeState.toString().indexOf('trainSessAt')>0"),
     '옛 세이브에도 자리가 생긴다');
 
+  /* ---------------------------------------------------------------
+     [요청] "사사구 맞으면 부상확률 올려야 되긴함 뭐 몇주 부상 몇달 부상
+             (…) 뭐 수비하다가 타구를 맞는다거나"
+     --------------------------------------------------------------- */
+  console.log('\n[공에 맞아서 다친다]');
+  T(ev("PM_INJURIES.some(function(x){return x.cause==='사구'})"+
+       " && PM_INJURIES.some(function(x){return x.cause==='타구'})"),
+    '몸에 맞는 공과 수비 중 타구로 다치는 길이 생겼다');
+  T(ev("PM_INJURIES.filter(function(x){return x.cause==='사구'}).length>=4"),
+    '사구 부상이 여러 갈래다 (발등 타박부터 손등 골절까지)');
+  T(ev("Math.max.apply(null,PM_INJURIES.map(function(x){return x.max}))>=16"),
+    '제일 긴 부상이 몇 달짜리다 (예전엔 다섯 경기가 최대였다)');
+  T(ev(`(function(){
+      /* 무게가 있어야 손등 골절이 발등 타박만큼 자주 나오지 않는다 */
+      var a=PM_INJURIES.find(function(x){return x.id==='hand'});
+      var b=PM_INJURIES.find(function(x){return x.id==='foot'});
+      return a && b && a.w < b.w;
+    })()`), '큰 부상은 드물게 나온다 (무게가 다르다)');
+  T(ev("/무게대로 뽑는다/.test(LiveGame.prototype.rollMyInjury.toString())"),
+    '실제로 무게를 보고 뽑는다');
+  T(ev("injLenText(2)==='2경기' && /한 달/.test(injLenText(6)) && /개월/.test(injLenText(16))"),
+    '몇 경기가 몇 달인지 적어준다 — 16경기면 「약 4개월」');
+  T(ev("/rollMyInjury\\('사구', 12\\)/.test(LiveGame.prototype.stepPA.toString())"),
+    '몸에 맞으면 평소의 열두 배로 판정한다');
+  T(ev("/rollMyInjury\\('타구'/.test(renderDefPlay.toString())"),
+    '수비하다 타구에 맞는다');
+  T(ev("/inf\\?2.6:1.2/.test(renderDefPlay.toString())"),
+    '내야가 외야보다 위험하다 — 타구가 빠르고 바운드가 튄다');
+  T(ev(`(function(){
+      /* 못 잡을수록 몸에 맞는다 — q 가 낮으면 배수가 커진다 */
+      var m=renderDefPlay.toString();
+      return /1-Math.max\\(0,Math.min\\(1,q\\)\\)/.test(m);
+    })()`), '손이 안 닿은 공일수록 맞는다');
+
   console.log('\n[예외]');
   T(jsErr.length===0, '콘솔 예외 없음 :: '+(jsErr[0]||'없음'));
   console.log(fail? `\n❌ ${fail}개 실패` : '\n✅ 이상 없음');
