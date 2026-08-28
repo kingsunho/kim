@@ -7893,8 +7893,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.87.0';
-const APP_VERSION_NOTE = '1군은 뺏어서 올라가는 데다 · 투수도 키울 게 넷이다';
+const APP_VERSION = '2.88.0';
+const APP_VERSION_NOTE = '내가 던진 공도 끝까지 본다 · 2루를 돌면 3루 코치가 부른다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7915,6 +7915,16 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.88.0', t:'내가 던진 공도 끝까지 본다 · 2루를 돌면 3루 코치가 부른다', items:[
+    '**마운드에도 2막이 생겼다.** 타석은 「내가 친 공」, 수비는 「내가 잡은 공」 을 끝까지 보여주는데 마운드만 글자 한 줄 뜨고 창이 닫혔다. 내가 던진 공이 안타가 됐는지 잡혔는지를 화면으로 한 번도 못 봤다는 뜻이다. 이제 **타구가 날아가고 야수가 쫓아가고 송구가 들어오는 것까지** 같은 그라운드에서 본다. 금색 테두리는 마운드다 — 관점만 바꾼 것이다',
+    '**「알아서 치게 뒀다」 도 2막을 탄다.** 스윙을 안 골랐을 뿐이지 타구는 똑같이 날아가는데, 자동으로 넘긴 타석만 여전히 화면이 그냥 꺼졌다. 주루까지 자동인 건 아니다 — 돌지 말지는 그대로 내가 정한다',
+    '[되는 이유] 결과는 엔진이 **먼저** 정해놓는다. 화면은 그걸 재생만 한다. 그래서 연출을 아무리 늘려도 중계 로그·기록과 어긋날 수가 없다',
+    '**주루가 두 단계가 됐다.** 여태 「한 베이스 더」 는 딱 한 번이었다 — 1루타를 2루타로 늘리면 거기서 끝. 진짜 야구는 **1루 코치가 「돌아!」 하고, 2루를 돌 때 3루 코치가 다시 판단**한다',
+    '이제 2루를 밟는 순간 **한 번 더 묻는다.** 「▸ 3루 / ◂ 2루」 가 그라운드 위에 뜨고, 야수가 중계 송구를 준비하는 동안 정한다. 늦게 정할수록 위험한 건 첫 판단과 같다. 3루까지 가면 기록도 3루타가 된다',
+    '두 번째에서 서면 첫 판단으로 늘린 **2루타는 그대로 남는다.** 3루에서 죽어도 2루타는 인정된다 — 야구 기록이 그렇게 생겼다',
+    '[원칙] 두 번째 창을 여는 것도 **엔진이다.** 3루가 비어 있고 아웃이 남아 있을 때만 열린다. 버튼이 엔진보다 크게 약속하면 기록과 화면이 어긋나기 때문이다. 판정도 첫 판단과 **같은 확률식**을 쓴다',
+    'groundtest 에 2막과 두 단계 주루 검사를 넣었다 — 1루타에서 두 번 물어 3루까지 가는 것을 엔진만으로 끝까지 굴려본다',
+  ]},
   {v:'2.87.0', t:'1군은 뺏어서 올라가는 데다 · 투수도 키울 게 넷이다', items:[
     '[제보] "2군 안걸치고 왜 바로 1군 온거지?" · "왜 올라오자마자 주전보장 3경기가 된거야 1군은 좀 빡세야 되는데" — 맞는 말이다. **이제 누구든 2군을 거친다.** 고교 3년이 폭격 수준이면 한 주만 보고 올리고, 못했으면 여덟 주를 2군에서 친다. 그리고 **주전 보장을 통째로 없앴다** — 졸업할 때도, 콜업될 때도. 올려주는 것까지가 감독 일이고 자리는 내가 뺏는 거다',
     '[제보] "고교 졸업하면 스탯이 진짜 말이안된다 (…) 고교때 진짜 폭격 수준 아니면 스탯 이정도로 주면 안될듯" — 재보니 진짜였다. 우리 팀 컨택이 63~87인데 졸업치가 31~56(노력까지 65)로 나왔다. 갓 고등학교 나온 애가 팀 평균 근처에서 시작했다는 뜻이다. **26~44(노력까지 50)로 내렸다.** 주전들 한참 아래에서 시작하고, 거기서 올리는 게 본편이다',
@@ -10792,7 +10802,8 @@ LiveGame.prototype.resolveStretch = function(go, risk){
   const from=(of.hit==='1B')?0:1;
   if(!go){
     this.log.push({t:'play', cls:'hit', text:`${of.name} 섰다 — ${from+1}루에서 멈췄다`});
-    if(this._lastPlay) this._lastPlay.stretched=false;
+    /* 두 번째 판단에서 선 거면 첫 판단으로 늘린 2루타는 그대로 남는다 */
+    if(this._lastPlay && !of.second) this._lastPlay.stretched=false;
     return {go:false, ok:true, type:of.hit};
   }
   /* 전력질주 — 몸이 안 받쳐주면 여기서 간다 */
@@ -10809,7 +10820,19 @@ LiveGame.prototype.resolveStretch = function(go, risk){
     this.hl(of.hit==='1B'?'d2':'d3', side, of.name, '돌아서 늘렸다');
     if(this._lastPlay){ this._lastPlay.type=(of.hit==='1B')?'2B':'3B';
       this._lastPlay.stretched=true; this._lastPlay.runOut=null; }
-    return {go:true, ok:true, type:(of.hit==='1B')?'2B':'3B'};
+    /* [계획 B] 두 단계 주루 —
+       "진짜는 1루 코치가 「돌아!」 하고, 2루를 돌 때 3루 코치가 다시 판단하는 것"
+       1루타를 2루타로 늘렸으면 **거기서 한 번 더 물어볼 자리**를 남긴다.
+       3루가 비어 있고 아웃이 남아 있어야 값어치가 있다.
+       [원칙] 창을 여는 건 엔진이다. 화면은 엔진이 열어준 만큼만 묻는다 —
+       버튼이 엔진보다 크게 약속하면 기록과 화면이 어긋난다.        */
+    let again=false;
+    if(of.hit==='1B' && !of.second && this.outs<3 && !this.bases[2]){
+      this._stretchOffer={hit:'2B', batId:of.batId, pitId:of.pitId,
+        half:of.half, name:of.name, defTeam:of.defTeam, second:true};
+      again=true;
+    }
+    return {go:true, ok:true, type:(of.hit==='1B')?'2B':'3B', again};
   }
   /* 죽었다. 그래도 안타는 남는다 */
   delete this.runnerP[of.batId];
@@ -22514,6 +22537,13 @@ function livePlay(host, o){
   let stop=false, ended=false;
   let decided=null;            // resolveStretch 결과
   let tgtBase=base;            // 송구가 갈 베이스
+  /* [계획 B] 두 단계 주루 —
+     "1루 코치가 「돌아!」 하고, 2루를 돌 때 3루 코치가 다시 판단"
+     첫 판단이 성공하고 **엔진이 한 번 더 물어도 된다고 하면**(decided.again)
+     여기서 두 번째 창이 열린다. 창을 여는 건 엔진이다 — 화면은 열어준
+     만큼만 묻는다. 버튼이 엔진보다 크게 약속하면 기록과 어긋난다.  */
+  let stage2=false, intent2='auto', go2At=null, decided2=null;
+  let T2_THROW=0, tgtBase2=0, arrive1=0;
   const t0=Date.now();
   const now=()=>Date.now()-t0;
 
@@ -22564,7 +22594,15 @@ function livePlay(host, o){
       const arrive=T_THROW+THROW_MS;
       const endT = decided ? (decided.ok ? arrive-150 : arrive+360) : (tBase+runMs);
       /* 최소 0.42초는 뛰어야 뛰는 것처럼 보인다 */
-      return base + Math.min(1, (t-tBase)/Math.max(420,(endT-tBase)));
+      const at1 = base + Math.min(1, (t-tBase)/Math.max(420,(endT-tBase)));
+      if(!stage2 || t<=endT) return at1;
+      /* 베이스를 밟았다. 여기서부터가 두 번째 판단이다 */
+      const b1=base+1;
+      if(intent2!=='go') return b1;                 // 섰거나 아직 안 정했다
+      const arrive2=T2_THROW+THROW_GO;
+      const endT2 = decided2 ? (decided2.ok ? arrive2-150 : arrive2+360)
+                             : (T2_THROW+runMs);
+      return b1 + Math.min(1, (t-endT)/Math.max(420,(endT2-endT)));
     }
     const cap = Math.max(runTo, base);
     return Math.min(cap, raw);
@@ -22583,6 +22621,22 @@ function livePlay(host, o){
     if(decided.go) tgtBase=base+1;
     else           tgtBase=Math.max(1, base);
     THROW_MS = decided.go ? THROW_GO : THROW_BASE;
+    arrive1 = T_THROW+THROW_MS;
+    /* 엔진이 한 번 더 물어도 된다고 했다 — 3루 코치 차례다 */
+    if(decided.go && decided.ok && decided.again){
+      stage2=true; tgtBase2=base+2;
+      T2_THROW = arrive1 + 900;          // 베이스를 돌면서 정할 시간
+    }
+  };
+  /* 두 번째 송구가 손을 떠나는 순간 — 3루로 갈지가 여기서 갈린다 */
+  const decide2=()=>{
+    if(!stage2 || decided2) return;
+    const went=(intent2==='go');
+    const risk = went
+      ? Math.max(0, Math.min(1, 1-seg(go2At!=null?go2At:T2_THROW, arrive1, T2_THROW)))
+      : 0;
+    decided2 = (o.onDecide2 ? o.onDecide2(went, risk) : null) || {go:went, ok:!went};
+    if(!decided2.go) tgtBase2=base+1;
   };
 
   /* 최종 판정 문구 */
@@ -22591,6 +22645,10 @@ function livePlay(host, o){
     if(flyOut) return ['뜬공 아웃','#e08a70'];
     if(isOut) return ['땅볼 아웃 — 1루에서','#e08a70'];
     if(play.type==='E') return ['실책 — 살았다','#7fc48f'];
+    if(decided2 && decided2.go)
+      return decided2.ok
+        ? ['세이프! '+(base+2)+'루까지 — 두 베이스','#ffd15c']
+        : ['아웃 — '+(base+2)+'루에서 ('+(base+1)+'루타는 인정)','#e08a70'];
     if(decided && decided.go && decided.ok)
       return ['세이프! '+(base+1)+'루까지','#ffd15c'];
     if(decided && decided.go && !decided.ok)
@@ -22605,6 +22663,13 @@ function livePlay(host, o){
     if(t<T_THROW) return canGo&&intent!=='go'
       ? ['잡았다 — 지금 정해라','#ffd15c'] : ['잡았다','#e9e4d8'];
     if(t<T_THROW+THROW_MS) return [(tgtBase>=4?'홈':tgtBase+'루')+'로 송구','#ffd15c'];
+    /* 두 단계 주루 — 베이스를 돌고 나서 한 번 더 정한다 */
+    if(stage2 && !decided2 && t<T2_THROW)
+      return intent2!=='go'
+        ? [(base+1)+'루 돌았다 — 더 갈까','#ffd15c']
+        : [(base+1)+'루 돌았다 — 간다','#7fc48f'];
+    if(stage2 && t<T2_THROW+THROW_GO)
+      return [(tgtBase2>=4?'홈':tgtBase2+'루')+'로 중계 송구','#ffd15c'];
     return null;
   };
   const plate=(txt,col,fs)=>{
@@ -22659,12 +22724,14 @@ function livePlay(host, o){
   };
 
   const T_END=()=>HR ? (trotMs*4+600)
+    : stage2 ? (T2_THROW+THROW_GO+760)
     : Math.max(T_THROW+THROW_MS+620, runMs*Math.max(1,Math.max(tgtBase,runTo))+460);
 
   const draw=()=>{
     if(stop) return;
     const t=now();
     if(t>=T_THROW) decide();
+    if(stage2 && t>=T2_THROW) decide2();
     const sh=hrShake(t);
     const sx=sh?(Math.sin(t/26)*sh):0, sy=sh?(Math.cos(t/19)*sh*0.7):0;
     g.setTransform(2,0,0,2,sx*2,sy*2);
@@ -22698,6 +22765,12 @@ function livePlay(host, o){
          땅볼이랑 구분이 안 갔다. 뜬공을 잡으면 그걸로 끝이다.
          공은 야수 손에 있고 송구는 없다.                            */
       bp=lerp({x:HX,y:HY}, land, seg(t,0,T_LAND));
+    } else if(stage2 && t>=arrive1){
+      /* 두 번째 송구 — 야수가 받아서 다음 베이스로 중계한다.
+         T2_THROW 전에는 공이 그 베이스에 머물러 있다(seg 가 0 이다). */
+      const from=PS_B[Math.min(3,base+1)];
+      const tg2=(tgtBase2>=4)?{x:HX,y:HY}:PS_B[Math.min(3,tgtBase2)];
+      bp=lerp(from, tg2, seg(t,T2_THROW,T2_THROW+THROW_GO));
     } else {
       const tg=(tgtBase>=4)?{x:HX,y:HY}:PS_B[Math.min(3,tgtBase)];
       bp=lerp(land, tg, seg(t,T_THROW,T_THROW+THROW_MS));
@@ -22757,6 +22830,24 @@ function livePlay(host, o){
           g.fillStyle='#e08a70'; g.fillText('돌아간다', bk.x, bk.y+20); g.textAlign='left'; }
       }
     }
+    /* [계획 B] 두 번째 판단 — 베이스를 돌면서 그 다음 베이스를 누른다.
+       1루 코치가 「돌아!」 했으면 이번엔 3루 코치가 판단할 차례다.   */
+    if(stage2 && !decided2 && !HR && !flyOut){
+      const b1=base+1, b2=Math.min(4,base+2);
+      g.font='900 10px system-ui,-apple-system,sans-serif'; g.textAlign='center';
+      const nb=basePt(b2), on=(intent2==='go');
+      g.strokeStyle=on?'rgba(127,196,143,.95)':'rgba(255,255,255,.55)';
+      g.lineWidth=on?2.6:2;
+      g.beginPath(); g.arc(nb.x,nb.y,on?12:10,0,Math.PI*2); g.stroke();
+      g.fillStyle=on?'#7fc48f':'#e9e4d8';
+      g.fillText(on?'가는 중':('▸ '+(b2>=4?'홈':b2+'루')), nb.x, nb.y-15);
+      const bk=basePt(b1), onB=(intent2==='back');
+      g.strokeStyle=onB?'rgba(224,138,112,.95)':'rgba(255,255,255,.35)';
+      g.lineWidth=onB?2.6:1.6;
+      g.beginPath(); g.arc(bk.x,bk.y,onB?12:9,0,Math.PI*2); g.stroke();
+      if(onB){ g.fillStyle='#e08a70'; g.fillText('여기서 선다', bk.x, bk.y+20); }
+      g.textAlign='left';
+    }
 
     /* 자막 */
     const fin=(t>=T_END()-620);
@@ -22794,14 +22885,17 @@ function livePlay(host, o){
   /* 베이스를 누르면 몸이 반응한다 — 수비의 송구 탭과 같은 손놀림 */
   cv.style.touchAction='none';
   cv.addEventListener('pointerdown',(ev)=>{
-    if(decided||HR||flyOut) return;
+    if(HR||flyOut) return;
+    const two=(stage2 && !decided2);          // 두 번째 판단이 열려 있다
+    if(decided && !two) return;
     if(ev&&ev.preventDefault)ev.preventDefault();
     const pt=toLocal(ev);
     const here=Math.max(0,Math.min(4,Math.floor(runPos(now()))));
-    const nx=basePt(Math.min(4,base+1)), bk=basePt(here);
+    const nx=basePt(two?Math.min(4,base+2):Math.min(4,base+1));
+    const bk=basePt(two?(base+1):here);
     const dN=Math.hypot(nx.x-pt.x, nx.y-pt.y);
     const dB=Math.hypot(bk.x-pt.x, bk.y-pt.y);
-    if(canGo && dN<=30 && dN<=dB){ api.go(); if(o.onTap) o.onTap('go'); return; }
+    if((two||canGo) && dN<=30 && dN<=dB){ api.go(); if(o.onTap) o.onTap('go'); return; }
     if(dB<=30){ api.back(); if(o.onTap) o.onTap('back'); }
   });
   draw();
@@ -22809,17 +22903,27 @@ function livePlay(host, o){
     stop:()=>{ stop=true; },
     el:cv,
     /* 마구마구처럼 — 누르는 순간 몸이 반응한다 */
-    go:()=>{ if(decided||!canGo) return false;
-             if(intent!=='go'){ intent='go'; goAt=now(); } return true; },
-    back:()=>{ if(decided) return false;
-               if(intent!=='back'){
-                 const t=now();
-                 backFrom=runPos(t);
-                 backTo=Math.max(0, Math.floor(Math.min(backFrom, Math.max(runTo,base))));
-                 intent='back'; backAt=t;
-               } return true; },
+    go:()=>{
+      if(stage2 && !decided2){
+        if(intent2!=='go'){ intent2='go'; go2At=now(); } return true; }
+      if(decided||!canGo) return false;
+      if(intent!=='go'){ intent='go'; goAt=now(); } return true; },
+    back:()=>{
+      if(stage2 && !decided2){ intent2='back'; return true; }
+      if(decided) return false;
+      if(intent!=='back'){
+        const t=now();
+        backFrom=runPos(t);
+        backTo=Math.max(0, Math.floor(Math.min(backFrom, Math.max(runTo,base))));
+        intent='back'; backAt=t;
+      } return true; },
     canGo:()=>canGo,
     decidedAt:()=>decided,
+    /* 지금 몇 번째 판단인가 — 0 첫 판단 · 1 두 번째(3루 코치) · 2 끝났다.
+       버튼 글씨가 이걸 보고 바뀐다.                                  */
+    phase:()=>(stage2 ? (decided2?2:1) : (decided?2:0)),
+    nextBase:()=>(stage2&&!decided2)?Math.min(4,base+2):Math.min(4,base+1),
+    heldBase:()=>(stage2&&!decided2)?(base+1):base,
   };
   return api;
 }
@@ -26518,15 +26622,30 @@ function renderSwing(box, d){
     });
     row.className='baserow';
     row.appendChild(bBack); row.appendChild(bGo);
+    /* [계획 B] 버튼 글씨가 판단 단계를 따라간다.
+         0 첫 판단(1루 코치) · 1 두 번째(3루 코치) · 2 이미 던졌다      */
+    let lastPh=-1;
     const paintRow=()=>{
-      const d2=sc&&sc.decidedAt&&sc.decidedAt();
-      if(d2){
+      const ph=(sc&&sc.phase)?sc.phase()
+             :((sc&&sc.decidedAt&&sc.decidedAt())?2:0);
+      if(ph===lastPh) return;
+      lastPh=ph;
+      if(ph===2){
         row.style.opacity='.4'; bGo.disabled=true; bBack.disabled=true;
         bGo.innerHTML='<span>—</span><i>이미 던졌다</i>';
         bBack.innerHTML='<span>—</span><i></i>';
         return;
       }
-      if(!offer){ bGo.disabled=true; }
+      if(ph===1){
+        row.style.opacity=''; bGo.disabled=false; bBack.disabled=false;
+        bGo.innerHTML='<span>▸ 3루</span><i>한 베이스 더</i>';
+        bBack.innerHTML='<span>◂ 2루</span><i>여기서 선다</i>';
+        if(note) note.innerHTML='<b>2루를 돌았다.</b> 3루까지 갈 건가 — 여기서 정한다';
+        return;
+      }
+      row.style.opacity='';
+      bBack.disabled=false;
+      bGo.disabled=!offer;
     };
     if(!offer){ bGo.disabled=true; }
     paintRow();
@@ -26544,13 +26663,29 @@ function renderSwing(box, d){
           paintRow();
           /* 접전이 아웃으로 불렸으면 그 자리에서 따질 수 있다 */
           if(LIVE._badCall && LIVE._badCall.kind==='play') showArgue(row, null);
+          /* again — 엔진이 「3루도 노려볼 수 있다」 고 창을 하나 더 열었다 */
+          return out ? {go:!!out.go, ok:!!out.ok, again:!!out.again} : {go:go, ok:!go};
+        },
+        /* [계획 B] 3루 코치 — 2루를 돌면서 한 번 더 정한다.
+           엔진이 같은 자리(_stretchOffer)를 다시 채워놨으므로
+           같은 함수·같은 확률식으로 굴린다. 두 군데서 따로 쓰면 어긋난다. */
+        onDecide2:(go,risk)=>{
+          const out=(LIVE&&LIVE.resolveStretch)?LIVE.resolveStretch(go,risk):null;
+          flushLog(); updateLiveUI();
+          if(note) note.textContent = go
+            ? (out&&out.ok?'3루까지 갔다 — 세이프':'3루에서 갈렸다')
+            : '2루에서 섰다';
+          paintRow();
+          if(LIVE._badCall && LIVE._badCall.kind==='play') showArgue(row, null);
           return out ? {go:!!out.go, ok:!!out.ok} : {go:go, ok:!go};
         },
         onTick:(t2,tot)=>{ const b=bar(); if(b) b.style.width=Math.min(100,t2/tot*100).toFixed(0)+'%';
           /* 송구가 손을 떠나는 순간 버튼을 잠근다.
              [제보] "돌아간다 누르는데 2루로 귀루도 안하고" — 이미 결정이
-             난 뒤라 아무 일도 안 났는데 버튼은 살아 있었다. 그건 고장이다. */
-          if(sc && sc.decidedAt && sc.decidedAt()) paintRow(); },
+             난 뒤라 아무 일도 안 났는데 버튼은 살아 있었다. 그건 고장이다.
+             [계획 B] 두 번째 창이 열릴 때도 여기서 글씨가 바뀐다.
+             paintRow 는 단계가 안 바뀌면 아무것도 안 한다.           */
+          paintRow(); },
         onEnd:()=>{
           if(t && r){ t.textContent=r.raw||r.label; t.style.color=r.color||''; }
           setTimeout(fin, 620);
@@ -26746,9 +26881,14 @@ function renderSwing(box, d){
     swingAt({x:c.x, y:c.y});
   });
   take.onclick=()=>{ if(phase!=='pitch'||done||resolved)return; judge(null); };
+  /* [계획 A] 「알아서 치게 뒀다」 도 2막을 탄다.
+     v2.70.0 이 고친 「고르면 화면이 그냥 꺼진다」 가 **손으로 친 타석에만**
+     적용돼 있었다. 자동으로 넘긴 타석은 여전히 글자 한 줄 뜨고 창이
+     닫혔다 — 스윙을 안 골랐을 뿐이지 타구는 똑같이 날아간다.
+     주루까지 자동인 건 아니다. 돌지 말지는 여전히 내가 정한다.     */
   auto.onclick=()=>{ if(done||resolved)return;
-    done=true; resolved=true; if(anim)anim.stop();
-    playThenClose(box,mv,'playskip','알아서 치게 뒀다','#9fb0c4'); };
+    if(anim)anim.stop();
+    endPA('알아서 치게 뒀다','#9fb0c4', false, showRun); };
 
   /* [제보] "노림수 선택하는 게 너무 빨라서 노려서 칠 수가 없네"
      첫 공에만 3초를 주고 두 번째 공부터는 0.8초 만에 던져버렸다.
@@ -27708,6 +27848,54 @@ function renderPitch(box, d){
   };
   let type=null, busy=false, resolved=false;
 
+  /* [계획 A] 2막 — **내가 던진 공이 어디로 갔나.**
+     타석은 「내가 친 공」, 수비는 「내가 잡은 공」 을 끝까지 보여주는데
+     마운드만 글자 한 줄 뜨고 창이 닫혔다. 내가 던진 공이 안타가 됐는지
+     잡혔는지를 화면으로 한 번도 못 봤다는 뜻이다.
+
+     [되는 이유] 결과는 엔진이 이미 정해놨다(LIVE._lastPlay). 여기서는
+     groundScene().replay() 로 **재생만** 한다. 연출이 결과를 만드는 게
+     아니라서 중계 로그와 어긋날 수가 없다.
+     내 자리(금색 테두리)는 마운드다 — 관점만 바꾼 것이다.
+     삼진·볼넷은 탄 공이 없으니 마운드 그림에 글자만 남기고 닫는다. */
+  const showMound=(r, evs, doneCb)=>{
+    const play=(LIVE&&LIVE._lastPlay)||null;
+    if(!play){ setTimeout(doneCb, r?(r.big?1150:850):260); return; }
+    /* 존과 구종 줄은 접는다 — 이제 고를 게 없다 */
+    wrap.style.display='none'; tRow.style.display='none'; skip.style.display='none';
+    const box2=el('div','runbox');
+    box2.innerHTML='<div class="rb-t"></div>';
+    const t=box2.querySelector('.rb-t');
+    if(t) t.textContent=`${dirName(play.ang)} 쪽 · ${play.dist||0}m`;
+    const stage=el('div','runstage'); box2.appendChild(stage);
+    const note=el('div','rb-note','내가 던진 공이 어디로 갔는지 끝까지 본다');
+    box2.appendChild(note);
+    w.appendChild(box2);
+    let sc=null, ended=false;
+    const fin=()=>{
+      if(ended)return; ended=true;
+      try{ if(sc)sc.stop(); }catch(e){}
+      try{ box2.parentNode&&box2.parentNode.removeChild(box2); }catch(e){}
+      doneCb();
+    };
+    try{
+      sc=groundScene(stage, {mode:'field', ang:play.ang, dist:play.dist,
+        park:LIVE.park, myPos:'P', dur:1});
+      sc.replay(play, (play.dist||0)>60?2500:2000, ()=>{
+        if(t && r){ t.textContent=r.raw||r.label; t.style.color=r.color||''; }
+        if(note) note.textContent = (play.type==='OUT')
+          ? '내가 던진 공이 잡혔다' : '살아 나갔다';
+        setTimeout(fin, 720);
+      });
+    }catch(e){ sc=null; }
+    if(!sc){
+      /* 캔버스를 못 쓰는 환경(테스트 등) — 결과만 짧게 두고 닫는다 */
+      if(t && r){ t.textContent=r.raw||r.label; t.style.color=r.color||''; }
+      setTimeout(fin, 420);
+    }
+    box2._stop=()=>{ if(sc)sc.stop(); };
+  };
+
   /* [제보] "투구 떴을 때 투수 교체했는데도 투수가 그대로 이름이 나오네"
      판단창은 열릴 때 한 번 그려지고 끝이라, 상시 버튼으로 투수를 바꿔도
      화면은 예전 투수를 계속 보여줬다. 지금 마운드에 선 사람을 매번 다시 읽는다. */
@@ -27945,9 +28133,9 @@ function renderPitch(box, d){
           return;
         }
         resolved=true;
-        if(res.end==='BB'){ playThenClose(box,mv,'playskip','볼넷 내줬다','#e08a70'); return; }
-        if(res.end==='K'){  playThenClose(box,mv,'playskip','삼진!','#7fc48f'); return; }
-        playThenClose(box,mv,'playskip',pre,col);
+        if(res.end==='BB'){ playThenClose(box,mv,'playskip','볼넷 내줬다','#e08a70',showMound); return; }
+        if(res.end==='K'){  playThenClose(box,mv,'playskip','삼진!','#7fc48f',showMound); return; }
+        playThenClose(box,mv,'playskip',pre,col,showMound);
       }});
     });
   };

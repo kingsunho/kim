@@ -38,7 +38,15 @@ node soaktest.js           # 풀 시즌을 실제 UI 경로로 완주
 `nametest` `mgrtest` `kakaotest` `careertest` `compattest` `smoketest` …).
 
 **확률 기반이라 가끔 실패하는 것** — 실패하면 3회 재실행해서 판단한다:
-`advtest.js` `wltest.js` `recruittest.js` `dectest2.js`
+`advtest.js` `wltest.js` `recruittest.js` `dectest2.js` `playtest.js`
+
+`playtest.js` 의 「정타 치고 볼넷·삼진 나는 일이 거의 없다」 는 새 게임 시드에
+따라 6회 중 1~2회 실패한다 (v2.86.0 에서도 같은 비율이다 — 재본 값이다).
+`dectest2.js` 의 「수비 판단창이 여러 번 떴다」 도 5회 중 3회 실패한다.
+둘 다 원래부터 그렇다.
+
+jsdom 테스트를 **여러 개 한꺼번에 돌리면** 부하 때문에 멀쩡한 것도 실패한다.
+하나씩 다시 돌려서 판단해라.
 
 3회 다 **같은 항목**이 실패하면 그건 간헐이 아니라 진짜 고장이다.
 `traintest2.js` 는 여기 적혀 있다는 이유로 스물다섯 판 동안 넘어갔는데,

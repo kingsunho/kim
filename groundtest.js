@@ -285,6 +285,75 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
   T(ev("playThenClose.toString().indexOf('r && mv')>0"),
     'playThenClose 가 mv 없이 불려도 안 터진다');
 
+  /* ---------------------------------------------------------------
+     [계획 A] 2막을 나머지 화면에도 — 자동 타석과 마운드
+     --------------------------------------------------------------- */
+  console.log('\n[2막 — 자동 타석과 마운드]');
+  T(ev("/endPA\\('알아서 치게 뒀다'[^)]*showRun\\)/.test(renderSwing.toString())"),
+    '「알아서 치게 뒀다」 도 2막을 탄다 (창이 그냥 안 꺼진다)');
+  T(ev("/const showMound=/.test(renderPitch.toString())"),
+    '마운드에도 2막이 있다 — 내가 던진 공이 어디로 갔나');
+  T(ev("/mode:'field'[\\s\\S]{0,80}myPos:'P'/.test(renderPitch.toString())"),
+    '내 자리(금색)가 마운드다 — 관점만 바꾼 것이다');
+  T(ev("(renderPitch.toString().match(/playThenClose\\([^)]*showMound/g)||[]).length===3"),
+    '볼넷 · 삼진 · 인플레이 셋 다 2막으로 넘어간다');
+  T(ev("/sc.replay\\(play,/.test(renderPitch.toString())"),
+    'groundScene().replay() 로 **재생만** 한다 (결과는 엔진이 이미 정했다)');
+
+  /* ---------------------------------------------------------------
+     [계획 B] 주루를 두 단계로 — 1루 코치 · 3루 코치
+     --------------------------------------------------------------- */
+  console.log('\n[주루 두 단계]');
+  T(ev("/second:true/.test(LiveGame.prototype.resolveStretch.toString())"),
+    '엔진이 두 번째 판단 자리를 남긴다');
+  T(ev("/again/.test(LiveGame.prototype.resolveStretch.toString())"),
+    '화면에 「한 번 더 물어도 된다」 를 알려준다');
+  T(ev("/stage2/.test(livePlay.toString()) && /decide2/.test(livePlay.toString())"),
+    '화면에 두 번째 창이 있다');
+  T(ev("/onDecide2/.test(livePlay.toString()) && /onDecide2/.test(renderSwing.toString())"),
+    '두 번째 답도 같은 엔진 함수로 굴린다 (확률식이 하나다)');
+  T(ev("/phase:\\(\\)=>/.test(livePlay.toString())"),
+    '지금 몇 번째 판단인지 화면이 알 수 있다 (버튼 글씨가 따라간다)');
+  /* 엔진만으로 두 단계를 끝까지 굴려본다 — 1루타 → 2루타 → 3루타 */
+  T(ev(`(function(){
+      ST.mode='player'; ST.playerId='ksh'; MYID='ksh';
+      LIVE=makeLive(); LIVE.manual=true; LIVE.myId='ksh';
+      var g=0; while(!LIVE.off().isUser && g++<300){
+        if(LIVE.pending)LIVE.applyDecision('change'); LIVE.step(); }
+      var side=LIVE.off();
+      var bid=side.slots[0].id;
+      LIVE.bases=[bid,null,null]; LIVE.outs=0;
+      if(!LIVE.box[bid]) LIVE.box[bid]=newBoxL();
+      LIVE.box[bid].d2=0; LIVE.box[bid].d3=0;
+      LIVE._lastPlay={type:'1B',ang:0,dist:40,gb:false};
+      LIVE._stretchOffer={hit:'1B', batId:bid, pitId:LIVE.curPitcher(LIVE.def()).id,
+        half:LIVE.half, name:LIVE.nameOf(bid), defTeam:LIVE.def().team};
+      /* 첫 판단 — 제일 이른 타이밍(risk 0)이면 대부분 산다 */
+      var a=null;
+      for(var i=0;i<60 && !(a&&a.ok);i++){
+        LIVE.bases=[bid,null,null];
+        LIVE._stretchOffer={hit:'1B', batId:bid, pitId:LIVE.curPitcher(LIVE.def()).id,
+          half:LIVE.half, name:LIVE.nameOf(bid), defTeam:LIVE.def().team};
+        LIVE.outs=0;
+        a=LIVE.resolveStretch(true,0);
+      }
+      if(!a||!a.ok||!a.again) return false;
+      if(!LIVE.stretchOffer()) return false;          // 두 번째 창이 열려 있다
+      var d2before=LIVE.box[bid].d2;
+      var b=null;
+      for(var j=0;j<60 && !(b&&b.ok);j++){
+        LIVE.bases=[null,bid,null]; LIVE.outs=0;
+        LIVE._stretchOffer={hit:'2B', batId:bid, pitId:LIVE.curPitcher(LIVE.def()).id,
+          half:LIVE.half, name:LIVE.nameOf(bid), defTeam:LIVE.def().team, second:true};
+        b=LIVE.resolveStretch(true,0);
+      }
+      /* 두 번째까지 성공하면 3루에 서 있고 기록은 3루타다 */
+      return !!(b && b.ok && b.type==='3B' && LIVE.bases[2]===bid
+                && LIVE.box[bid].d3>0 && !LIVE.stretchOffer());
+    })()`), '1루타 → 2루타 → 3루타까지 두 번 물어서 간다');
+  T(ev("/of.second/.test(LiveGame.prototype.resolveStretch.toString())"),
+    '두 번째에서 섰어도 첫 판단으로 늘린 2루타는 남는다');
+
   console.log('\n[예외]');
   T(jsErr.length===0, jsErr.length?('❌ '+jsErr.slice(0,3).join(' | ')):'콘솔 예외 없음');
 

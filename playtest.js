@@ -10,6 +10,11 @@ const w=dom.window,d=w.document,ev=s=>w.eval(s);
 const T=(n,f)=>{try{const r=f();console.log((r?'  ✅ ':'  ❌ ')+n+(typeof r==='string'?' :: '+r:''));if(!r)errs.push(n);}catch(e){console.log('  ❌ '+n+' :: '+e.message);errs.push(n)}};
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 setTimeout(async()=>{
+  /* [간헐 실패] 이 파일만 기다리지 않고 곧바로 시작했다. index.html 이
+     2.4MB 라 기기·부하에 따라 페이지 스크립트가 아직 안 끝났을 수 있고,
+     그러면 .pickcard 클릭이 헛나가서 **그 뒤 통계 검사가 전부 어긋난다.**
+     매번 다른 항목이 실패한 이유가 이거다. 다른 테스트처럼 기다린다.  */
+  await wait(800);
   d.querySelectorAll('.pickcard')[0].click();await wait(50);
   [...d.querySelectorAll('#view .btn')].find(b=>b.textContent==='이 선수로 시작').click();
   await wait(250);
