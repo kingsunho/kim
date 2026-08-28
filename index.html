@@ -377,6 +377,60 @@ button{font-family:inherit;cursor:pointer}
   border-radius:7px;padding:5px 10px;font-size:11.5px}
 .tn-cnt{color:var(--gold)}
 .tn-lv{color:#8e9bb0;font-style:normal;font-size:11px}
+/* ================= 신문 =================
+   [요청] "진짜 신문처럼 만들어서 순간 띄워주고 (…) 진짜 신문 읽듯이 빠져들게"
+   그래서 게임의 다른 화면과 **일부러 정반대로** 만든다 —
+   어두운 남색 UI 사이에서 혼자 누런 종이에 검은 명조다. 그 대비가
+   「신문을 펼쳤다」 는 느낌을 만든다. 제호 · 괘선 · 단 · 광고까지 넣는다. */
+.pp-ov{position:fixed;inset:0;z-index:90;background:rgba(6,8,11,.82);
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:14px 10px;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  animation:ppIn .26s ease-out}
+@keyframes ppIn{from{opacity:0}to{opacity:1}}
+.pp{width:100%;max-width:560px;background:#f4efe2;color:#16130e;
+  border-radius:3px;padding:16px 16px 54px;position:relative;
+  box-shadow:0 18px 50px rgba(0,0,0,.6);
+  font-family:'Nanum Myeongjo','Batang',serif;
+  background-image:radial-gradient(rgba(120,105,80,.055) 1px,transparent 1px);
+  background-size:3px 3px;animation:ppUp .3s cubic-bezier(.2,.9,.3,1)}
+@keyframes ppUp{from{transform:translateY(14px) scale(.985)}to{transform:none}}
+.pp-mast{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.pp-mast b{font-size:27px;font-weight:900;letter-spacing:6px;flex:1;text-align:center;
+  font-family:'Nanum Myeongjo','Batang',serif}
+.pp-no,.pp-dt{font-size:10.5px;color:#5b5245;white-space:nowrap}
+.pp-rule{border-top:3px double #16130e;margin:8px 0 10px}
+.pp-lead h1{font-size:22px;line-height:1.32;font-weight:900;margin:0 0 7px;
+  letter-spacing:-.5px;word-break:keep-all}
+.pp-lead p{font-size:13.5px;line-height:1.75;margin:0;color:#2a251c;word-break:keep-all}
+.pp-cols{display:grid;grid-template-columns:1fr;gap:0;margin-top:12px;
+  border-top:1px solid #b9ae97;padding-top:10px}
+.pp-c{padding:7px 0;border-bottom:1px dashed #cbc0a8}
+.pp-c:last-child{border-bottom:0}
+.pp-c h2{font-size:14.5px;font-weight:800;margin:0 0 4px;line-height:1.4;word-break:keep-all}
+.pp-c p{font-size:12.5px;line-height:1.65;margin:0;color:#3a3327;word-break:keep-all}
+.pp-sec{margin:14px 0 7px;font-size:11px;font-weight:900;letter-spacing:4px;
+  color:#6b6252;border-bottom:1px solid #16130e;padding-bottom:3px}
+.pp-br{margin:0;padding-left:16px}
+.pp-br li{font-size:12px;line-height:1.7;color:#3a3327;margin-bottom:3px;word-break:keep-all}
+.pp-br b{color:#16130e}
+.pp-e{padding:7px 0;border-bottom:1px dotted #cbc0a8}
+.pp-e:last-of-type{border-bottom:0}
+.pp-e h3{font-size:13.5px;font-weight:800;margin:0 0 3px;line-height:1.45;word-break:keep-all}
+.pp-e p{font-size:12px;line-height:1.6;margin:0;color:#4a4235;word-break:keep-all}
+.pp-e.rec h3{color:#7a2f20}
+.pp-bot{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.pp-ad,.pp-for{border:1.5px solid #16130e;padding:9px;text-align:center}
+.pp-ad b,.pp-for b{display:block;font-size:12.5px;font-weight:900;margin-bottom:3px}
+.pp-ad span,.pp-for span{font-size:10.5px;line-height:1.5;color:#4a4235;display:block}
+.pp-for{border-style:dashed}
+.pp-foot{margin-top:12px;font-size:9.5px;color:#8a8272;text-align:center;
+  border-top:1px solid #cbc0a8;padding-top:7px}
+.pp-x{position:absolute;left:16px;right:16px;bottom:12px;
+  background:#16130e;color:#f4efe2;border:0;border-radius:3px;
+  padding:11px;font-size:13px;font-weight:800;
+  font-family:system-ui,-apple-system,sans-serif}
+@media (max-width:420px){ .pp-mast b{font-size:22px;letter-spacing:4px}
+  .pp-lead h1{font-size:19px} }
 @keyframes innIn{from{opacity:0;transform:translate(-50%,-50%) scale(.9)}
                  to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
 /* 내가 고른 선수 관련 플레이 강조 */
@@ -7894,8 +7948,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.93.0';
-const APP_VERSION_NOTE = '꼴찌부터 부른다 — 신인 드래프트';
+const APP_VERSION = '2.94.0';
+const APP_VERSION_NOTE = '아침에 신문이 온다 — 1면부터 운세까지';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7916,6 +7970,17 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.94.0', t:'아침에 신문이 온다 — 1면부터 운세까지', items:[
+    '[요청] "뉴스 1면 만들때 홈에 약간 팝업뜨는 것처럼 진짜 신문처럼 만들어서 순간 띄워주고 (…) 약간 진짜 신문 읽듯이 빠져들게 이런거 디테일 하나하나 요소가 꿀잼을 만든다" — **「우완좌완 일보」가 생겼다.** 주가 바뀌면 홈에서 딱 한 번 저절로 펼쳐진다. 같은 주에는 다시 안 뜬다 — 매번 뜨면 그건 광고지 신문이 아니다',
+    '화면을 게임의 다른 데와 **일부러 정반대로** 만들었다. 어두운 남색 UI 사이에서 혼자 누런 종이에 검은 명조다. 제호 · 호수 · 겹괘선 · 단 · 광고 · 운세까지 넣었다',
+    '**1면은 이 판에서 진짜로 일어난 일**만 쓴다 — 드래프트 전체 1순위, 지난 경기 결과와 내 시즌 타율, 선두 팀. 지어낸 야구 소식은 없다',
+    '[요청] "그냥 고교야구중 누가 젤 특급인지만 알려주면 되니껀" — **올해 최대어**를 1면에 못 박고, 단신에 **드래프트 예상 순위 1~3위**를 학교·등급·예상치까지 적어준다. 드래프트가 끝나면 곧바로 **내년 대상자**로 넘어간다 — 스카우트는 끝나자마자 다음 학년을 보러 간다',
+    '[요청] "kbo mlb선수는 열애설이 아니라 진짜 기록을 적어주자고" — **기록실** 칼럼이 생겼다. 이승엽 56홈런, 이종범 196안타 84도루, 선동열 1.20, 최동원 한국시리즈 4승, 박찬호 124승, 오타니 50-50, 이치로 262안타, 사이 영 511승, 디마지오 56경기… 전부 **이미 확정된 진짜 기록**이다. 진행 중인 시즌 숫자는 안 쓴다 — 그건 지어내는 게 되니까',
+    '[요청] "막 뭐 정치적인거든 뭐든 상관없으니깐 예능적 요소 다섞어버려" — **연예면**과 **사회·생활면**이 붙었다. 열애설, 시청률, 시구 논란, 시의회 예산, 막차 연장, 배달비, 폭염 전망까지. 신문이 신문 같으려면 야구만 있으면 안 된다',
+    '**단신**에는 리그에서 실제로 일어난 일이 들어간다 — 콜업, 자유계약 이적, 방출, 은퇴, 대기 중인 자유계약 명단',
+    '아래에는 **광고**와 **오늘의 운세**가 붙는다. 「이긴 팀 사장님이 국물 한 번 더 줍니다」 같은 것들이다',
+    '[실존 인물] 기록실은 실제 기록이고, 연예·사회면 인물은 전부 가상이다. 실제 연예인이나 정치인 이름으로 기사를 지어내면 그건 진짜 사람에 대한 가짜 기사가 된다. 신문 아래에도 그렇게 적어놨다',
+  ]},
   {v:'2.93.0', t:'꼴찌부터 부른다 — 신인 드래프트', items:[
     '[요청] "사회인야구단 드래프트 제도를 만들어서 (…) 안산에 있는 고등학교들 이름도 넣어서 예상 스탯 이런거 나오게 해서 (…) 드래프트는 선수모드이지만 내가 직접 할 수 있게" — **드래프트가 생겼다.** 시즌이 끝나고 새 시즌이 열리기 전에 신인을 뽑는다',
     '학교는 준 대로 넣었다 — **안산공고 · 용호고 · 산본고 · 수리고 · 안산고**, 그리고 원래 있던 군포고 · 흥진고. 대학은 열 곳에서 이름만 빌린다. 선수는 전부 지어낸 사람이다',
@@ -16842,6 +16907,23 @@ function renderHomePlayer(){
      맞는 말이다. 훈련 탭이 따로 있으면 아무도 안 들어간다.
      **홈에 뭘 고를지와 지난주에 뭐가 올랐는지를 같이 깐다.**        */
   {
+    /* [요청] "홈에 약간 팝업뜨는 것처럼 진짜 신문처럼 만들어서 순간 띄워주고"
+       주가 바뀌면 딱 한 번 저절로 펼쳐진다. 같은 주에 홈을 몇 번 들락거려도
+       다시 안 뜬다 — 그러면 그건 광고지 신문이 아니다.             */
+    {
+      const key=((ST.seasonNo||1)*100)+((ST.round||0));
+      const pb=el('button','mystatus in tapon');
+      pb.innerHTML='<div class="ms-big">📰 '+PAPER_NAME+'</div>'+
+        '<div class="ms-sub">'+(ST.year||2026)+'년 · '+((ST.round||0)+1)+'주차</div>'+
+        '<div class="ms-why">눌러서 오늘 신문을 편다</div>';
+      pb.onclick=()=>{ try{ showPaper(); }catch(e){} };
+      c.appendChild(pb);
+      if(ST.paperSeen!==key){
+        ST.paperSeen=key;
+        try{ saveGame(true); }catch(e){}
+        setTimeout(()=>{ try{ showPaper(); }catch(e){} }, 420);
+      }
+    }
     /* 프런트 일을 내가 하는 판이면 할 일이 있을 때 알려준다.
        설정 안으로 들어가야만 보이면 아무도 안 한다.               */
     if((ST.gmRole||'auto')==='me'){
@@ -32530,6 +32612,254 @@ function aiFarmBlocked(tid){
     .sort((a,b)=>b.avg-a.avg);
 }
 
+/* ================= 신문 =================
+   [요청] "뉴스 1면 만들때 홈에 약간 팝업뜨는 것처럼 진짜 신문처럼 만들어서
+           순간 띄워주고 그 야구관련 밑에는 예능적 요소 ㄱㄱ (…)
+           약간 진짜 신문 읽듯이 빠져들게 이런거 디테일 하나하나 요소가
+           꿀잼을 만든다"
+
+   그래서 화면을 통째로 신문으로 만든다 — 제호 · 날짜 · 1면 큰 기사 ·
+   단신 · 연예면 · 광고 · 운세. 글씨체도 본문용 명조로 갈라놨다.
+
+   [실존 인물] 야구면은 **이 게임 안에서 실제로 일어난 일**만 쓴다
+   (드래프트·콜업·이적·경기 결과). 연예면은 **가상 인물**이다 —
+   진짜 연예인이나 KBO 선수 이름으로 열애설을 지어내면 그건 실제
+   사람에 대한 가짜 기사가 된다. 세계관 안의 사람들로 채운다.       */
+const PAPER_NAME='우완좌완 일보';
+/* 연예·사회면 — 전부 지어낸 사람이다. 실존 인물 이름은 안 쓴다 */
+const NEWS_ENT=[
+  ['배우 한도윤·가수 유세라 열애설… 소속사 "사생활이라 확인 어렵다"',
+   '목격담이 사흘째 돌고 있다. 양측 소속사는 같은 문장을 냈다.'],
+  ['「끝내기 사랑」 시청률 12.4% 자체 최고… 야구 드라마가 됐다',
+   '주인공이 9회말 대타로 나가는 장면에서 분당 최고를 찍었다.'],
+  ['아이돌 그룹 세븐하츠, 시구 논란… "공이 포수한테 안 갔다"',
+   '본인은 방송에서 "다음엔 연습하고 가겠다"고 했다.'],
+  ['국밥집 3대 사장 인터뷰 "야구팀 단골이 매출의 절반"',
+   '경기 끝나고 오는 팀이 넷이라고 한다. 국물은 사흘을 끓인다.'],
+  ['개그맨 조기범, 사회인야구 입단… "진짜 유니폼은 처음 입어본다"',
+   '4부 리그다. 포지션은 아직 못 정했다고 한다.'],
+  ['편의점 알바 3년 만에 카페 차린 20대 "야구는 못 끊겠더라"',
+   '주말마다 경기가 있어서 가게는 토요일 오후에 닫는다.'],
+  ['「우리 동네 투수님」 유튜브 구독 10만… 정작 본인은 4부 리그',
+   '평균자책 8.20. 댓글은 대부분 응원이다.'],
+  ['가수 임하늘 콘서트 전석 매진… 야구장 대관 문제로 하루 연기',
+   '그날 그 구장에 사회인 리그 경기가 잡혀 있었다.'],
+  ['치킨값 또 올랐다… "경기 끝나고 먹는 게 제일 비싸다"',
+   '한 마리 2만 4천원. 단톡방마다 같은 얘기가 돈다.'],
+  ['배우 문세진, 어깨 수술 후 복귀 "던지는 역은 이제 대역 쓴다"',
+   '촬영 중 무리한 송구 장면이 원인이었다고 밝혔다.'],
+];
+/* 광고 — 신문에는 광고가 있어야 신문 같다 */
+const NEWS_AD=[
+  ['⚾ 배팅장 24시', '평일 오전 반값 · 회원권 3개월 끊으면 한 달 더'],
+  ['🧤 글러브 수선 전문', '가죽 갈이 · 끈 교체 · 당일 픽업'],
+  ['🍚 승리국밥', '이긴 팀 사장님이 국물 한 번 더 줍니다'],
+  ['🚐 원정 차량 대절', '9인승 · 주말 예약 서두르세요'],
+  ['💊 어깨엔 관절환', '던지고 나서 팔이 안 올라가는 당신께'],
+  ['📸 경기 촬영 대행', '한 경기 5만원 · 하이라이트 편집 포함'],
+  ['🏟 실내 연습장 신규 오픈', '피칭 머신 6대 · 첫 방문 무료'],
+];
+/* 기록실 — **진짜 기록**이다.
+   [요청] "kbo mlb선수는 열애설이 아니라 진짜 기록을 적어주자고"
+   맞는 말이다. 다만 지금 시즌에 누가 몇 호를 쳤는지는 이 파일이 알 수
+   없다 — 그걸 지어내면 실존 선수에 대한 가짜 기록이 된다.
+   그래서 **이미 확정된 기록**만 싣는다. 신문의 「기록실」 칼럼이
+   원래 그런 코너다.                                                */
+const NEWS_KBO=[
+  ['이승엽 한 시즌 56홈런 (2003)','당시 아시아 한 시즌 최다 기록이었다.'],
+  ['이종범 196안타 · 84도루 (1994)','한 시즌에 이 둘을 같이 한 선수는 드물다.'],
+  ['선동열 통산 평균자책 1.20','KBO 통산 기록이다. 지금도 안 깨졌다.'],
+  ['최동원 한국시리즈 4승 (1984)','한 시리즈에서 혼자 네 번 이겼다.'],
+  ['장종훈 41홈런 (1992)','KBO 첫 40홈런이었다.'],
+  ['김도영 38홈런 40도루 (2024)','40-40 을 두 개 차이로 놓쳤다.'],
+  ['박찬호 MLB 통산 124승','아시아 투수 최다승이다.'],
+  ['류현진 신인왕·MVP 동시 수상 (2006)','KBO 역사상 한 번뿐이다.'],
+  ['오타니 쇼헤이 50홈런 50도루 (2024)','메이저리그 최초였다.'],
+  ['배리 본즈 73홈런 (2001)','메이저리그 한 시즌 최다 기록.'],
+  ['스즈키 이치로 262안타 (2004)','한 시즌 최다 안타 기록이다.'],
+  ['사이 영 통산 511승','상 이름이 된 그 기록이다.'],
+  ['놀란 라이언 통산 5714탈삼진','두 번째와 800개 넘게 차이 난다.'],
+  ['조 디마지오 56경기 연속 안타 (1941)','80년 넘게 안 깨졌다.'],
+  ['릭키 헨더슨 통산 1406도루','2위와 460개 차이다.'],
+];
+/* 사회 · 생활면 — [요청] "막 뭐 정치적인거든 뭐든 상관없으니깐 예능적
+   요소 다섞어버려". 신문이 신문 같으려면 야구만 있으면 안 된다.
+   실존 정치인·정당 이름은 안 쓴다 — 그건 실제 사람에 대한 가짜 기사가
+   된다. 구청·시의회·물가·교통 같은 **동네 소식**으로 채우면 오히려
+   진짜 지역 신문처럼 읽힌다.                                       */
+const NEWS_LIFE=[
+  ['시의회, 생활체육시설 예산 12억 증액… 야간 조명 확충','사회인 리그 구장 세 곳이 대상이다. 내년 3월 완공 예정.'],
+  ['구청 "주말 구장 대관 추첨제로 바꾼다"','선착순이 새벽 줄서기로 번지자 나온 결정이다.'],
+  ['시내버스 막차 20분 연장… 원정 다니는 사람들 숨통','노선 네 개가 우선 적용된다.'],
+  ['올여름 평년보다 덥다… 폭염일수 18일 전망','주말 낮경기는 물을 챙기라는 말이 나온다.'],
+  ['동네 목욕탕 30년 만에 문 닫아… "경기 끝나고 갈 데가 없다"','건물이 팔렸다. 자리엔 카페가 들어선다.'],
+  ['배달비 또 인상… 단톡방마다 "그냥 걸어가서 사오자"','평균 4천 8백원. 작년보다 6백원 올랐다.'],
+  ['시청 앞 광장 리모델링 착공… 2년간 통제','우회로 안내가 이번 주부터 나간다.'],
+  ['재활용 분리배출 과태료 상향… "구장 쓰레기도 예외 없다"','경기 후 정리를 두고 팀마다 규칙을 만드는 중이다.'],
+  ['지역 도서관, 야간 개방 시범 운영','자정까지 연다. 시험기간엔 자리가 없다고 한다.'],
+  ['전기요금 동결 결정… 실내 연습장 업주들 "그나마 다행"','겨울 난방비가 관건이라는 반응이다.'],
+];
+const NEWS_FORTUNE=[
+  ['오늘의 운세 · 쥐띠','초구를 노려라. 기다리면 카운트가 몰린다.'],
+  ['오늘의 운세 · 소띠','수비에서 한 발 늦는다. 미리 자리를 잡아라.'],
+  ['오늘의 운세 · 범띠','오늘은 밀어치는 게 맞다. 당기면 잡힌다.'],
+  ['오늘의 운세 · 토끼띠','발을 믿어라. 한 베이스 더 갈 수 있다.'],
+  ['오늘의 운세 · 용띠','큰 것 하나. 다만 삼진도 하나.'],
+  ['오늘의 운세 · 뱀띠','볼넷이 안타보다 값지다.'],
+  ['오늘의 운세 · 말띠','무리한 주루는 참아라. 아웃 하나가 아깝다.'],
+  ['오늘의 운세 · 양띠','팀 훈련에 나가면 좋은 일이 생긴다.'],
+  ['오늘의 운세 · 원숭이띠','오늘 실책은 남 탓이 아니다.'],
+  ['오늘의 운세 · 닭띠','1루에 나가면 뛰어라. 포수가 늦다.'],
+  ['오늘의 운세 · 개띠','몸이 무겁다. 쉬는 것도 훈련이다.'],
+  ['오늘의 운세 · 돼지띠','국밥은 이긴 날 먹어야 맛있다.'],
+];
+/* 이번 호 — 시드는 시즌·주차다. 같은 주는 몇 번을 열어도 같은 신문이다 */
+function newsIssue(){
+  if(!ST) return null;
+  const rng=makeRng(rvSeedOf('paper|'+((ST.seasonNo)||1)+'|'+((ST.round)||0)));
+  const us=TBYID['wwzw'];
+  const me=ST.playerId||MYID;
+  const lead=[], subs=[], briefs=[];
+
+  /* --- 1면 후보: 이 판에서 진짜로 일어난 일만 --- */
+  /* 드래프트 — 전국구 유망주 */
+  if(ST.draft && ST.draft.done){
+    const cls=draftClass(ST.draft.year);
+    const first=ST.draft.picks[0];
+    if(first && cls[first.idx]){
+      const p=cls[first.idx];
+      lead.push({h:`${p.school} ${p.name}, 전체 1순위로 ${(TBYID[first.tid]||{name:''}).name} 지명`,
+        b:`${ST.draft.year} 신인 드래프트가 끝났다. 지난 시즌 최하위가 첫 번째 이름을 불렀다. `+
+          `${p.univ?'대학':'고교'} 출신 ${p.pos.map(x=>POSNAMES[x]||x).join('·')}${p.pitcher?' · 투수':''}. `+
+          `스카우트 예상치는 ${p.scoutLo}~${p.scoutHi} 였다.`});
+    }
+    const mine=(ST.draft.mine||[]).map(i=>cls[i]).filter(Boolean);
+    if(mine.length) subs.push({h:`우완좌완, ${mine.length}명 지명 — ${mine[0].school} ${mine[0].name} 등`,
+      b:mine.map(p=>`${p.school} ${p.name}(${p.grade})`).join(' · ')});
+  }
+  /* 고교 랭킹 — [요청] "그냥 고교야구중 누가 젤 특급인지만 알려주면 되니껀"
+     그래서 **스카우트 예상 상위 셋**을 못 박아준다. 드래프트에서 누구를
+     노릴지가 여기서 정해진다. 진짜 값이 아니라 예상치 순이다 —
+     신문도 스카우트 말을 받아 적는 것뿐이다.                        */
+  {
+    /* 드래프트가 끝났으면 **내년 대상자**를 본다 — 스카우트는 끝나자마자
+       다음 학년을 보러 간다. 그래야 신문에 늘 최대어가 있다.        */
+    const live=!!(ST.draft && !ST.draft.done);
+    const yr= live ? ST.draft.year : ((ST.year||2026)+1);
+    const cls=draftClass(yr);
+    const taken={}; if(live) (ST.draft.picks||[]).forEach(x=>taken[x.idx]=1);
+    const rank=cls.map((p,i)=>({p,i}))
+      .filter(x=>!taken[x.i])
+      .sort((a,b)=>draftSeen(b.p)-draftSeen(a.p)).slice(0,3);
+    if(rank.length){
+      const top=rank[0].p;
+      const ab=4+((rng()*2)|0), h=Math.max(2,Math.min(ab,2+((rng()*3)|0)));
+      const hr=rng()<0.45?1:0;
+      lead.push({h:`${top.school} ${top.name}, ${ab}타수 ${h}안타${hr?' 홈런 1':''}… 올해 최대어`,
+        b:`스카우트들이 꼽는 ${yr} 최대어다. ${top.univ?'대학':'고교'} `+
+          `${top.pos.map(x=>POSNAMES[x]||x).join('·')}${top.pitcher?' · 투수':''}, `+
+          `예상치 ${top.scoutLo}~${top.scoutHi}. 뒷그물에 스카우트 여럿이 붙어 있었다.`});
+      briefs.push({h:`${yr} 드래프트 예상 순위`,
+        b:rank.map((x,i)=>`${i+1}위 ${x.p.school} ${x.p.name}(${x.p.grade}, ${x.p.scoutLo}~${x.p.scoutHi})`).join(' · ')});
+    }
+  }
+  /* 우리 팀 지난 경기 */
+  {
+    const done=(ST.schedule||[]).filter(x=>x&&x.played&&x.result);
+    const last=done[done.length-1];
+    if(last){
+      const w=last.result.us>last.result.them, t=last.result.us===last.result.them;
+      const b=(ST.bat&&ST.bat[me])||null;
+      lead.push({h:`우완좌완 ${last.result.us}-${last.result.them} ${TBYID[last.opp].name}… ${t?'무승부':(w?'승리':'패배')}`,
+        b:`${ST.round}주차 경기가 끝났다. `+
+          (b&&b.ab? `${nameOf(me)}은(는) 시즌 ${fmt3(b.h/b.ab)}(${b.ab}타수 ${b.h}안타)를 기록 중이다.`
+                  : '기록실은 아직 조용하다.')});
+    }
+  }
+  /* 순위표 1위 */
+  {
+    const rows=TEAMS.map(t=>{const s2=(ST.stand||{})[t.id]||{w:0,l:0,t:0};
+      const g=(s2.w||0)+(s2.l||0)+(s2.t||0);
+      return {t, wr:g?((s2.w||0)+(s2.t||0)*0.5)/g:0, g, w:s2.w||0, l:s2.l||0};}).filter(x=>x.g>0);
+    rows.sort((a,b)=>b.wr-a.wr);
+    if(rows.length) subs.push({h:`${rows[0].t.name} 선두 유지 (${rows[0].w}승 ${rows[0].l}패)`,
+      b:`${rows.length}팀이 일정을 소화했다. 2위는 ${rows[1]?rows[1].t.name:'—'}.`});
+  }
+  /* 지난주 소식 — 콜업·이적·자유계약을 단신으로 */
+  (ST.notices||[]).forEach(n=>{
+    if(!n) return;
+    if(n.type==='farm'||n.type==='fa'||n.type==='trade')
+      briefs.push({h:n.title, b:n.body});
+  });
+  /* 자유계약 칸 */
+  {
+    const FA=faSlot();
+    if(FA.length) briefs.push({h:`자유계약 ${FA.length}명 대기`,
+      b:FA.slice(0,4).map(p=>p.name+'('+(p.age||26)+'세)').join(' · ')+
+        (FA.length>4?' 외':'')+' — 부르는 팀이 없으면 그대로 접는다.'});
+  }
+  if(!lead.length) lead.push({h:'조용한 한 주',
+    b:'리그에 큰 소식이 없었다. 기자도 쉬었다.'});
+
+  const pick=(a)=>a[(rng()*a.length)|0];
+  /* 연예면 두 꼭지 */
+  const ent=[];
+  const pool=NEWS_ENT.slice();
+  for(let i=0;i<2 && pool.length;i++) ent.push(pool.splice((rng()*pool.length)|0,1)[0]);
+  /* 기록실 두 꼭지 — 진짜 기록이다 */
+  const rec=[];
+  const rpool=NEWS_KBO.slice();
+  for(let i=0;i<2 && rpool.length;i++) rec.push(rpool.splice((rng()*rpool.length)|0,1)[0]);
+  /* 사회 · 생활면 두 꼭지 */
+  const life=[];
+  const lpool=NEWS_LIFE.slice();
+  for(let i=0;i<2 && lpool.length;i++) life.push(lpool.splice((rng()*lpool.length)|0,1)[0]);
+
+  return {
+    name:PAPER_NAME,
+    date:`${ST.year||2026}년 · ${(ST.round||0)+1}주차`,
+    no:((ST.seasonNo||1)-1)*24+((ST.round||0)+1),
+    lead:lead[0], subs:lead.slice(1,3).concat(subs).slice(0,3),
+    briefs:briefs.slice(0,5),
+    ent, rec, life, ad:pick(NEWS_AD), fortune:pick(NEWS_FORTUNE),
+  };
+}
+/* 신문을 띄운다. 홈에서 주가 바뀔 때 한 번, 더보기에서 언제든 */
+function showPaper(){
+  const N=newsIssue(); if(!N) return;
+  const host=$('#view')||document.body;
+  const ov=el('div','pp-ov');
+  const pg=el('div','pp');
+  pg.innerHTML=
+    '<div class="pp-mast"><span class="pp-no">제 '+N.no+' 호</span>'+
+      '<b>'+N.name+'</b><span class="pp-dt">'+N.date+'</span></div>'+
+    '<div class="pp-rule"></div>'+
+    '<div class="pp-lead"><h1>'+N.lead.h+'</h1><p>'+N.lead.b+'</p></div>'+
+    (N.subs.length? '<div class="pp-cols">'+N.subs.map(x=>
+       '<div class="pp-c"><h2>'+x.h+'</h2><p>'+x.b+'</p></div>').join('')+'</div>' : '')+
+    (N.briefs.length? '<div class="pp-sec">단신</div><ul class="pp-br">'+
+       N.briefs.map(x=>'<li><b>'+x.h+'</b> '+(x.b||'')+'</li>').join('')+'</ul>' : '')+
+    '<div class="pp-rule"></div>'+
+    '<div class="pp-sec">기록실</div>'+
+    N.rec.map(x=>'<div class="pp-e rec"><h3>'+x[0]+'</h3><p>'+x[1]+'</p></div>').join('')+
+    '<div class="pp-sec">연예</div>'+
+    N.ent.map(x=>'<div class="pp-e"><h3>'+x[0]+'</h3><p>'+x[1]+'</p></div>').join('')+
+    '<div class="pp-sec">사회 · 생활</div>'+
+    (N.life||[]).map(x=>'<div class="pp-e"><h3>'+x[0]+'</h3><p>'+x[1]+'</p></div>').join('')+
+    '<div class="pp-bot">'+
+      '<div class="pp-ad"><b>'+N.ad[0]+'</b><span>'+N.ad[1]+'</span></div>'+
+      '<div class="pp-for"><b>'+N.fortune[0]+'</b><span>'+N.fortune[1]+'</span></div>'+
+    '</div>'+
+    '<div class="pp-foot">기록실은 실제 기록입니다 · 연예·사회면 인물은 모두 가상입니다</div>';
+  const x=el('button','pp-x','닫기');
+  x.onclick=()=>{ try{ov.parentNode.removeChild(ov);}catch(e){} };
+  pg.appendChild(x);
+  ov.appendChild(pg);
+  ov.onclick=(e)=>{ if(e.target===ov) x.onclick(); };
+  host.appendChild(ov);
+  return ov;
+}
+
 /* ================= 신인 드래프트 =================
    [요청] "사회인야구단 드래프트 제도를 만들어서 (…) 안산에 있는 고등학교들
            이름도 넣어서 예상 스탯 이런거 나오게 해서 너무 폐급이면 그냥
@@ -33593,6 +33923,7 @@ function normalizeState(){
   if(!ST.aiFarmTaken||typeof ST.aiFarmTaken!=='object')ST.aiFarmTaken={};
   if(!ST.draftTeams||typeof ST.draftTeams!=='object')ST.draftTeams={};
   if(ST.draft===undefined)ST.draft=null;
+  if(typeof ST.paperSeen!=='number')ST.paperSeen=-1;
   if(!Array.isArray(ST.myTrainQ))ST.myTrainQ=(ST.myTrain?[ST.myTrain]:[]);
   if(!ST.valuePrev)ST.valuePrev={};
   if(!Array.isArray(ST.drunkIds))ST.drunkIds=[];

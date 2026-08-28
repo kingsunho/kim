@@ -248,6 +248,53 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
     })()`), '2군이 꽉 찬 채로 신인을 뽑으면 제일 아래를 자리에서 뺀다');
   T(ev("typeof renderDraft==='function' && !!VIEWS.draft"), '드래프트 화면이 있다');
 
+  /* ---------------------------------------------------------------
+     [요청] 뉴스 1면 — 신문처럼 · 야구 밑에 예능·사회 · KBO/MLB 는 진짜 기록
+     --------------------------------------------------------------- */
+  console.log('\n[신문]');
+  T(ev("typeof newsIssue==='function' && typeof showPaper==='function'"),
+    '신문을 만들고 펼치는 길이 있다');
+  T(ev(`(function(){
+      var a=JSON.stringify(newsIssue());
+      var b=JSON.stringify(newsIssue());
+      return a===b;
+    })()`), '같은 주에는 몇 번을 열어도 같은 신문이다');
+  T(ev(`(function(){
+      var r0=ST.round; ST.round=(r0||0)+1;
+      var b=JSON.stringify(newsIssue());
+      ST.round=r0;
+      var a=JSON.stringify(newsIssue());
+      return a!==b;
+    })()`), '주가 바뀌면 새 신문이 나온다');
+  T(ev("(function(){var N=newsIssue();return !!(N.lead&&N.lead.h&&N.lead.b);})()"),
+    '1면 기사가 있다');
+  T(ev("(function(){var N=newsIssue();return N.rec.length===2 && N.ent.length===2 && N.life.length===2;})()"),
+    '기록실 · 연예 · 사회 각 두 꼭지씩 실린다');
+  T(ev("NEWS_KBO.some(function(x){return /이승엽/.test(x[0])})"+
+       " && NEWS_KBO.some(function(x){return /오타니/.test(x[0])})"),
+    '기록실은 KBO·MLB 실제 기록이다');
+  T(ev("NEWS_KBO.every(function(x){return /\\(\\d{4}\\)|통산|연속/.test(x[0])})"),
+    '전부 이미 확정된 기록이다 — 진행 중인 시즌 숫자를 지어내지 않는다');
+  T(ev(`(function(){
+      /* 고교 최대어를 딱 집어준다 — "누가 젤 특급인지만 알려주면 되니깐" */
+      var N=newsIssue();
+      var all=JSON.stringify(N);
+      return /최대어/.test(all) && /드래프트 예상 순위/.test(all);
+    })()`), '올해 최대어와 예상 순위 셋을 알려준다');
+  T(ev(`(function(){
+      var N=newsIssue();
+      var yr=(ST.draft&&ST.draft.year)||((ST.year||2026)+1);
+      var cls=draftClass(yr);
+      var taken={}; if(ST.draft)(ST.draft.picks||[]).forEach(function(x){taken[x.idx]=1});
+      var best=cls.map(function(p,i){return {p:p,i:i}}).filter(function(x){return !taken[x.i]})
+        .sort(function(a,b){return draftSeen(b.p)-draftSeen(a.p)})[0];
+      return !best || JSON.stringify(N).indexOf(best.p.name)>=0;
+    })()`), '신문이 꼽는 최대어가 실제 예상 1위와 같다');
+  T(ev("(function(){var N=newsIssue();return !!(N.ad&&N.fortune&&N.name&&N.no);})()"),
+    '제호 · 호수 · 광고 · 운세까지 신문 꼴을 갖췄다');
+  T(ev("normalizeState.toString().indexOf('paperSeen')>0"),
+    '한 주에 한 번만 저절로 뜬다 (본 주는 기억한다)');
+
   console.log('\n[세이브]');
   T(ev("normalizeState.toString().indexOf('aiFarmStat')>0"+
        " && normalizeState.toString().indexOf('aiFarmUp')>0"),
