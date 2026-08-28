@@ -2723,7 +2723,25 @@ function simPA(bat,pit,offTeam,defTeam,rng,tac,cond,park,mods){
    3루타는 더 갈 데가 없다(홈은 따로 판정한다) — 그대로 둔다.        */
 /* 성공 확률만 따로 뺀다 — 엔진(stretchRun)과 화면에서 고른 뒤 굴리는
    resolveStretch 가 **같은 식**을 써야 한다. 두 군데서 따로 쓰면 언젠가 어긋난다. */
-function stretchOdds(hit, bat, defTeam, late){
+/* [요청] "수비할때는 수비자의 판단 · 치고나서 주루할때 주루자의 판단에
+           따라 결과가 달라져야 재밋긴할거야"
+
+   맞는 말이다. 여태 둘은 따로 놀았다 — 내가 주루를 정할 때 상대 야수가
+   뭘 하는지 알 수도 없었고, 내가 수비를 정할 때 상대 주자가 뭘 하는지도
+   안 보였다. 그러면 그냥 확률 굴리기지 맞대결이 아니다.
+
+   야수도 판단을 한다 —
+     **달려든다(charge)** : 빨리 잡는다. 주자가 한 베이스 더 가기 어렵다.
+                            대신 놓치면 뒤로 빠져서 크게 준다.
+     **안전하게(safe)**   : 확실히 잡는다. 그 사이에 주자가 간다.
+   수비가 좋을수록, 접전일수록 달려든다.                          */
+function foeFieldPlan(defTeam, rng, late){
+  const dv=(defTeam&&defTeam._slotDef!=null)?defTeam._slotDef
+          :((defTeam&&defTeam.mean&&defTeam.mean.def)||46);
+  const p=Math.max(0.15, Math.min(0.75, 0.32+(dv-46)*0.011+(late?0.10:0)));
+  return (rng()<p) ? 'charge' : 'safe';
+}
+function stretchOdds(hit, bat, defTeam, late, foe){
   const spd=(bat&&bat.spd)||40;
   const dv=(defTeam&&defTeam._slotDef!=null)?defTeam._slotDef
           :((defTeam&&defTeam.mean&&defTeam.mean.def)||46);
@@ -2734,6 +2752,9 @@ function stretchOdds(hit, bat, defTeam, late){
      **언제 정했는지가 크게 갈리게** 한다. 야수가 공에 닿기 전에
      마음먹으면 대부분 산다. 송구 직전에 튀어나가면 대부분 죽는다.  */
   let p = 0.74 + (spd-45)*0.011 - (dv-46)*0.009 - L*0.66;
+  /* 야수가 달려들면 어렵고, 안전하게 가면 지금이 기회다 */
+  if(foe==='charge') p-=0.14;
+  else if(foe==='safe') p+=0.10;
   if(hit==='2B') p-=0.16;                    // 2루에서 3루는 훨씬 어렵다
   return Math.max(0.05,Math.min(0.94,p));
 }
@@ -8084,8 +8105,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.6.0';
-const APP_VERSION_NOTE = '직선타가 생겼다 — 병살도 나고 투수도 맞는다';
+const APP_VERSION = '3.7.0';
+const APP_VERSION_NOTE = '야수가 달려든다 — 그걸 보고 돌지 말지 정한다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8106,6 +8127,15 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.7.0', t:'야수가 달려든다 — 그걸 보고 돌지 말지 정한다', items:[
+    '[요청] "수비할때는 수비자의 판단 · 치고나서 주루할때 주루자의 판단에 따라 결과가 달라져야 재밋긴할거야" — 맞는 말이다. 여태 둘은 **따로 놀았다.** 내가 주루를 정할 때 상대 야수가 뭘 하는지 알 수도 없었고, 내가 수비를 정할 때 상대 주자가 뭘 하는지도 안 보였다. 그러면 그냥 확률 굴리기지 맞대결이 아니다',
+    '**야수도 판단을 한다.** 「달려든다」 면 빨리 잡아서 한 베이스 더 가기 어렵고, 「안전하게」 가면 그 사이에 갈 수 있다. **수비가 좋은 팀일수록 과감하다**',
+    '그리고 그걸 **주루 화면에 보여준다** — 「야수가 달려든다 — 무리하면 잡힌다」 / 「안전하게 잡으러 간다 — 지금이 기회다」. 보이니까 내 판단이 판단이 된다',
+    '**반대쪽도 맞물린다.** 여태 내 수비는 아웃이냐 안타냐만 갈랐지 **주자를 못 묶었다.** 이제 내가 공에 딱 붙어서 잡으면 상대 주자가 한 베이스 더 못 가고, 손이 안 닿았으면 크게 준다',
+    '내가 친 게 직선타면 주루 화면도 그렇게 말한다 — 「직선타 — 잡히면 못 돌아온다」',
+    '[버그·큰 것] 이걸 만들다가 **원래부터 있던 사고**를 하나 찾았다. 반이닝이 끝나며 일찍 빠져나가는 자리가 여덟 군데인데(도루 실패로 3아웃 · 협살 · 병살 · 번트 · 직선타 …), **중계 로그에 장면을 옮기는 건 그 함수 맨 끝**이었다. 그래서 **그 여덟 가지 장면이 로그에서 통째로 사라졌다** — 「도루 실패로 이닝이 끝났는데 중계에 아무것도 안 남는다」 가 그거다. 이제 일찍 나갈 때도 남는다',
+    '[주의] 그걸 일괄로 고치다가 **그 함수 자신의 반환문까지 바꿔서 무한 재귀**가 났다. 검사가 바로 잡았고 그 한 줄만 되돌렸다',
+  ]},
   {v:'3.6.0', t:'직선타가 생겼다 — 병살도 나고 투수도 맞는다', items:[
     '[제보] "약간 직선타가 지금 없긴해.. 직선타도 있으면 좋겠는데" — 맞는 말이었다. 여태 타구는 **땅볼 아니면 뜬공** 둘뿐이었다. 야구에는 셋이 있다 — 땅볼 · **직선타** · 뜬공. 뜬공 중 셋에 하나쯤을 직선타로 갈랐다 (아웃 비율은 그대로라 리그 계산이 안 흔들린다)',
     '[요청] "직선타면 주자가 리드하거나 도루했을경우 원래베이스로 던지면 병살플레이" — 그대로다. 직선타는 잡히는 순간 주자가 이미 나가 있다. **원래 베이스로 던지기만 하면 병살**이다. **뛰고 있었으면 거의 못 돌아오고**, 크게 나가 있었으면 셋에 하나, 베이스에 붙어 있었으면 거의 안 걸린다',
@@ -11196,7 +11226,7 @@ LiveGame.prototype.resolveStretch = function(go, risk){
   }
   /* 전력질주 — 몸이 안 받쳐주면 여기서 간다 */
   if(of.batId===(this.myId||(ST&&ST.playerId))) this.rollMyInjury('전력질주', 1.6);
-  const ok = this.rng() < stretchOdds(of.hit, bat, of.defTeam, risk);
+  const ok = this.rng() < stretchOdds(of.hit, bat, of.defTeam, risk, of.foe);
   if(this.bases[from]===of.batId) this.bases[from]=null;
   if(ok){
     this.bases[from+1]=of.batId;
@@ -11217,7 +11247,8 @@ LiveGame.prototype.resolveStretch = function(go, risk){
     let again=false;
     if(of.hit==='1B' && !of.second && this.outs<3 && !this.bases[2]){
       this._stretchOffer={hit:'2B', batId:of.batId, pitId:of.pitId,
-        half:of.half, name:of.name, defTeam:of.defTeam, second:true};
+        half:of.half, name:of.name, defTeam:of.defTeam, second:true,
+        foe:foeFieldPlan(of.defTeam, this.rng, true)};
       again=true;
     }
     return {go:true, ok:true, type:(of.hit==='1B')?'2B':'3B', again};
@@ -11839,6 +11870,23 @@ LiveGame.prototype.step = function(){
   return r;
 };
 
+/* [버그 이력] 반이닝을 끝내며 일찍 빠져나가는 자리가 여럿인데
+   (도루 실패로 3아웃 · 협살 · 병살 · 번트 · 직선타 …),
+   **events 를 중계 로그로 옮기는 건 stepPA 맨 끝**이다.
+   그래서 그 장면들이 로그에서 통째로 사라졌다 — 「도루 실패로 이닝이
+   끝났는데 중계에 아무것도 안 남는다」 가 그거다.
+   일찍 나갈 때는 여기를 거쳐서 나간다.                            */
+LiveGame.prototype.endEarly = function(events){
+  const me=this.myId||(typeof ST!=='undefined'&&ST?ST.playerId:null);
+  const meName=me?this.nameOf(me):null;
+  (events||[]).forEach(e=>{
+    const mine=!!(meName && e.text && (e.text.indexOf(meName)===0 || e.text.indexOf('— '+meName)>=0));
+    this.log.push({t:'play', me:mine, ...e});
+  });
+  /* [주의] 여기서 endEarly 를 또 부르면 무한 재귀다. 실제로 한 번 났다 —
+     일괄 치환이 이 함수의 반환문까지 바꿔버렸다. */
+  return {events, half:true};
+};
 LiveGame.prototype.stepPA = function(){
   const off=this.off(), def=this.def();
   const pit=this.curPitcher(def), pl=this.pbox[pit.id];
@@ -11882,7 +11930,7 @@ LiveGame.prototype.stepPA = function(){
           if(this.box[me3]) this.box[me3].cs++;
           events.push({text:`${rn3.name} 3루 도루 실패 — 태그 아웃`,cls:'out'});
           this.hl('cs',off,rn3.name,'3루 도루 실패');
-          if(this.outs>=3){ this.endHalf(); return {events, half:true}; }
+          if(this.outs>=3){ this.endHalf(); return this.endEarly(events); }
         }
       }
     }
@@ -12005,7 +12053,13 @@ LiveGame.prototype.stepPA = function(){
              [야구] 잡혔다고 바로 아웃이 아니다. 베이스 사이에 걸려서
              왔다 갔다 하다가, 야수가 흘리면 살아 나간다. 4부 리그는
              그 확률이 꽤 높다 — 송구를 두세 번 주고받아야 하니까.  */
+          /* [버그] 여기서 `return {events}` 로 일찍 빠져나갔었다.
+             그런데 events 를 중계 로그에 옮기는 건 **stepPA 맨 끝**이다 —
+             일찍 나가면 협살 장면이 로그에 하나도 안 남고, 그 타석도
+             통째로 안 굴렀다. 원래 도루 실패 코드가 안 그랬던 이유가
+             이거다(3아웃일 때만 나간다). 같은 모양으로 맞춘다.     */
           const rd=(rng()<0.34);
+          let escaped=false;
           if(rd){
             const dv=(def._slotDef!=null)?def._slotDef:46;
             const esc=clamp(0.16+(rn.spd-46)*0.0045-(dv-46)*0.0055, 0.05, 0.42);
@@ -12014,21 +12068,22 @@ LiveGame.prototype.stepPA = function(){
               events.push({text:`${rn.name} 협살에 걸렸다가 살았다 — 2루까지`,cls:'sb'});
               if(this.box[rn.id]) this.box[rn.id].sb++;
               pl.sbA++; def.sbAllowed++;
-              if(this.outs>=3){ this.endHalf(); return {events, half:true}; }
-              return {events};
+              escaped=true;
+            } else {
+              this.bases[0]=null;this.outs++;pl.outs++;this.box[rn.id].cs++;
+              events.push({text:`${rn.name} 협살 — 사이에 걸려 아웃`,cls:'out'});
+              this.hl('cs',off,rn.name,'협살');
+              if(off.isUser) this.maybeBadCall('협살 접전');
+              escaped=true;
             }
-            this.bases[0]=null;this.outs++;pl.outs++;this.box[rn.id].cs++;
-            events.push({text:`${rn.name} 협살 — 사이에 걸려 아웃`,cls:'out'});
-            this.hl('cs',off,rn.name,'협살');
-            if(off.isUser) this.maybeBadCall('협살 접전');
-            if(this.outs>=3){ this.endHalf(); return {events, half:true}; }
-            return {events};
           }
-          this.bases[0]=null;this.outs++;pl.outs++;this.box[rn.id].cs++;
-          events.push({text:`${rn.name} 도루 실패`+(ct==='go'?' — 포수 송구 아웃':''),cls:'out'});
-          this.hl('cs',off,rn.name,'2루 도루 실패');
-          if(off.isUser) this.maybeBadCall('2루 도루 접전');
-          if(this.outs>=3){ this.endHalf(); return {events, half:true}; }
+          if(!escaped){
+            this.bases[0]=null;this.outs++;pl.outs++;this.box[rn.id].cs++;
+            events.push({text:`${rn.name} 도루 실패`+(ct==='go'?' — 포수 송구 아웃':''),cls:'out'});
+            this.hl('cs',off,rn.name,'2루 도루 실패');
+            if(off.isUser) this.maybeBadCall('2루 도루 접전');
+          }
+          if(this.outs>=3){ this.endHalf(); return this.endEarly(events); }
         }
       }
     }
@@ -12269,7 +12324,19 @@ LiveGame.prototype.stepPA = function(){
   } : null;
   // 번트 앤 런은 주자가 한 베이스 더 간다
   /* 뛰고 있었으면 한 베이스를 더 간다 — 그게 히트앤런의 값이다 */
-  const advOdds = this._runGo ? 0.92 : ((off.isUser && this._buntRun) ? 0.62 : 0.35);
+  let advOdds = this._runGo ? 0.92 : ((off.isUser && this._buntRun) ? 0.62 : 0.35);
+  /* [요청] "수비할때는 수비자의 판단에 따라 결과가 달라져야"
+     **내가 수비했으면 그 판단이 상대 주자를 정한다.** 딱 붙어서 잡으면
+     상대가 한 베이스 더 못 가고, 손이 안 닿았으면 크게 준다.
+     여태 내 수비는 아웃/안타만 갈랐지 **주자를 못 묶었다.**      */
+  {
+    const dp0=this._defPlay;
+    if(def.isUser && dp0 && dp0.q!=null){
+      advOdds = Math.max(0.05, Math.min(0.85, advOdds + (0.55-dp0.q)*0.70));
+    } else if(def.isUser && dp0 && dp0.bold!=null){
+      advOdds += dp0.bold ? 0.10 : -0.08;    // 달려들면 뚫릴 때 크게 준다
+    }
+  }
 
   const score=(rid,e)=>{ if(!rid)return; this.box[rid].r++; off.runs++; this.curIR=(this.curIR||0)+1;
     // 그 주자를 내보낸 투수에게 단다 (승계주자 규칙). 기록이 없으면 지금 던지는 투수.
@@ -12312,7 +12379,7 @@ LiveGame.prototype.stepPA = function(){
         else { this.bases[0]=null; this.outs++; pl.outs++;
           if(this.box[rg.id]) this.box[rg.id].cs++;
           events.push({text:`${rg.name} 삼진 때 뛰다 아웃 — 삼진 병살`,cls:'out'});
-          if(this.outs>=3){ this._runGo=false; this.endHalf(); return {events, half:true}; } }
+          if(this.outs>=3){ this._runGo=false; this.endHalf(); return this.endEarly(events); } }
       }
     }
   }
@@ -12427,7 +12494,7 @@ LiveGame.prototype.stepPA = function(){
         }
         if(!done2) events.push({text:`${bat.name} 직선타 아웃${bbTag(bb)}`,cls:'out'});
       }
-      if(this.outs>=3){ this.endHalf(); return {events, half:true}; }
+      if(this.outs>=3){ this.endHalf(); return this.endEarly(events); }
     }
     else if(res.bunt){
       bl.sh=(bl.sh||0)+1;
@@ -12445,7 +12512,7 @@ LiveGame.prototype.stepPA = function(){
         this.bases[0]=bat.id; onBase(bat.id);
         events.push({text:`${bat.name} 번트 실패 — 앞 주자가 잡혔다`,cls:'out'});
       }
-      if(this.outs>=3){ this.endHalf(); return {events, half:true}; }
+      if(this.outs>=3){ this.endHalf(); return this.endEarly(events); }
     }
     else if(res.gb&&this.bases[0]&&this.outs<3&&rng()<dpRisk){this.bases[0]=null;pl.outs++;this.outs++;
       this.dpCount=(this.dpCount||0)+1;
@@ -12457,7 +12524,7 @@ LiveGame.prototype.stepPA = function(){
       this.bases[0]=null; pl.outs++; this.outs++;
       this.dpCount=(this.dpCount||0)+1;
       events.push({text:`${bat.name} 뜬공 — 뛰던 주자가 못 돌아왔다. 병살${bbTag(bb)}`,cls:'out'});
-      if(this.outs>=3){ this._runGo=false; this.endHalf(); return {events, half:true}; }
+      if(this.outs>=3){ this._runGo=false; this.endHalf(); return this.endEarly(events); }
     }
     else if(this.bases[2]&&this.outs<3&&!res.gb&&sfRoll(this,rng)){
       // 홈보살 특성 보유 외야수가 있으면 잡아낸다
@@ -12536,7 +12603,9 @@ LiveGame.prototype.stepPA = function(){
     const sfrom=(res.stretchAsk==='1B')?0:1;
     if(this.bases[sfrom]===bat.id && !this.bases[sfrom+1]){
       this._stretchOffer={hit:res.stretchAsk, batId:bat.id, pitId:pit.id,
-        half:this.half, name:bat.name, defTeam:def.team};
+        half:this.half, name:bat.name, defTeam:def.team,
+        /* 상대 야수가 이미 정했다 — 나는 그걸 보고 정한다 */
+        foe:foeFieldPlan(def.team, rng, false)};
     }
   }
 
@@ -12613,7 +12682,7 @@ LiveGame.prototype.stepPA = function(){
       this.finish(); return {events, done:true};
     }
   }
-  if(this.outs>=3){ this.endHalf(); return {events, half:true}; }
+  if(this.outs>=3){ this.endHalf(); return this.endEarly(events); }
   return {events};
 };
 
@@ -27766,10 +27835,18 @@ function renderSwing(box, d){
     const stage=el('div','runstage');
     box2.appendChild(stage);
     box2.appendChild(Object.assign(el('div','rb-bar'),{innerHTML:'<i></i>'}));
+    /* [요청] "수비자의 판단 · 주루자의 판단에 따라 결과가 달라져야"
+       상대 야수가 이미 정했다 — 그걸 보여줘야 내 판단이 판단이 된다.
+       달려들면 무리하지 말고, 안전하게 가면 지금이 기회다.        */
+    const foeTxt = (offer&&offer.foe==='charge')
+      ? '<b style="color:#e08a70">야수가 달려든다</b> — 무리하면 잡힌다'
+      : (offer&&offer.foe==='safe')
+        ? '<b style="color:#7fc48f">안전하게 잡으러 간다</b> — 지금이 기회다' : '';
     const note=el('div','rb-note', offer
-      ? '<b>그라운드의 베이스를 눌러라.</b> 다음 베이스 = 더 간다 · 밟은 베이스 = 돌아간다'
+      ? ('<b>그라운드의 베이스를 눌러라.</b> 다음 = 더 간다 · 밟은 = 돌아간다'+
+         (foeTxt?('<br>'+foeTxt):''))
       : (play.type==='OUT'
-        ? (play.gb?'땅볼 — 1루까지 뛴다':'뜬공 — 잡히면 베이스로 돌아간다')
+        ? (play.gb?'땅볼 — 1루까지 뛴다':(play.ld?'직선타 — 잡히면 못 돌아온다':'뜬공 — 잡히면 베이스로 돌아간다'))
         : '타구를 끝까지 본다'));
     box2.appendChild(note);
     const row=el('div','rb-row');

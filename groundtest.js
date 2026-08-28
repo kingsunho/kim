@@ -540,6 +540,43 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
   T(ev("/isLD\\?0.62:1/.test(renderDefPlay.toString())"),
     '직선타는 반응할 시간이 짧다');
 
+  console.log('\n[수비 판단 ↔ 주루 판단]');
+  T(ev("typeof foeFieldPlan==='function'"),
+    '상대 야수도 판단을 한다 (달려든다 / 안전하게)');
+  T(ev(`(function(){
+      var rng=makeRng(9), n={charge:0,safe:0};
+      for(var i=0;i<400;i++) n[foeFieldPlan({_slotDef:46}, rng, false)]++;
+      return n.charge>0 && n.safe>0;
+    })()`), '둘 다 나온다');
+  T(ev(`(function(){
+      /* 수비가 좋을수록 더 달려든다 */
+      var lo=0,hi=0,r1=makeRng(4),r2=makeRng(4);
+      for(var i=0;i<400;i++){ if(foeFieldPlan({_slotDef:30},r1,false)==='charge')lo++; }
+      for(var i=0;i<400;i++){ if(foeFieldPlan({_slotDef:70},r2,false)==='charge')hi++; }
+      return hi>lo;
+    })()`), '수비가 좋은 팀이 더 과감하다');
+  T(ev(`(function(){
+      var a=stretchOdds('1B',{spd:55},{_slotDef:46},0,'charge');
+      var b=stretchOdds('1B',{spd:55},{_slotDef:46},0,'safe');
+      return b>a+0.15;
+    })()`), '달려들면 한 베이스 더 가기 어렵고, 안전하게 가면 쉽다');
+  T(ev("/야수가 달려든다/.test(renderSwing.toString())"),
+    '주루 화면이 야수가 뭘 하는지 보여준다 — 보고 정하라고');
+  T(ev("/0.55-dp0.q/.test(LiveGame.prototype.stepPA.toString())"),
+    '내 수비가 상대 주자의 추가 진루를 정한다 (딱 잡으면 못 간다)');
+  T(ev("/직선타 — 잡히면 못 돌아온다/.test(renderSwing.toString())"),
+    '내가 친 게 직선타면 주루 화면이 그렇게 말한다');
+
+  T(ev("typeof LiveGame.prototype.endEarly==='function'"),
+    '반이닝이 일찍 끝나도 그 장면이 중계에 남는다');
+  T(ev("!/return this.endEarly\\(events\\);\\s*\\};/.test(LiveGame.prototype.endEarly.toString())"),
+    'endEarly 가 자기를 다시 부르지 않는다 (무한 재귀)');
+  T(ev(`(function(){
+      /* 도루 실패로 3아웃이 되면 그 줄이 로그에 남아야 한다 */
+      var m=LiveGame.prototype.stepPA.toString();
+      return !/return \\{events, half:true\\}/.test(m);
+    })()`), 'stepPA 의 일찍 나가는 자리가 전부 endEarly 를 탄다');
+
   console.log('\n[예외]');
   T(jsErr.length===0, jsErr.length?('❌ '+jsErr.slice(0,3).join(' | ')):'콘솔 예외 없음');
 
