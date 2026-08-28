@@ -7894,8 +7894,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.91.0';
-const APP_VERSION_NOTE = '스물네 팀이 24명씩 · 저쪽 2군에서도 사람이 올라온다';
+const APP_VERSION = '2.92.0';
+const APP_VERSION_NOTE = '자를 사람과 데려올 사람 — 자유계약 칸이 생겼다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7916,6 +7916,15 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.92.0', t:'자를 사람과 데려올 사람 — 자유계약 칸이 생겼다', items:[
+    '[요청] "잠재력 너무 안좋거나 막 현재 너무 못하면 방출하는거지 그리고 그 방출당한자들은 은퇴안했으면 자유계약칸에 있어서 다른팀이 데려올 수 있고" — 그대로 만들었다. 흐름은 하나다: **2군 정원(30)이 찬다 → 제일 못하는 사람을 자른다 → 나이가 많으면 은퇴하고 아니면 자유계약 칸으로 → 다른 팀이 데려간다**',
+    '**자유계약 칸**은 어디선가 방출된 사람이 모이는 데다. 잘하는 사람일수록 빨리 팔린다. 여섯 주 안에 아무도 안 부르면 야구를 접는다 — 그 사람 이름이 소식에 남는다',
+    '[요청] "감독들이 상대 2군 중 뎁스때문에 못오는 애들 막 영입할 수 있게" — **남의 팀 2군에서 데려온다.** 실력이 없어서가 아니라 그 팀 앞자리가 막혀서 못 올라오는 사람이다. 데려오면 **우리 2군**으로 들어온다 — 1군은 거기서 다시 뚫어야 한다',
+    '[뺀 것] **트레이드는 안 넣었다.** "이건 좀 상대 팀도 머리가 똑똑해야해서" 라는 말이 맞다. 어설프게 넣으면 말도 안 되는 거래가 나온다',
+    '[설정] 더보기 → **프런트 일**에서 「감독이 알아서」 / 「내가 한다」 를 고른다. 「내가 한다」 면 **선수단 운영** 화면에서 자를 사람과 데려올 사람을 직접 고르고, 홈에도 카드가 뜬다. 「감독이 알아서」 면 매주 감독이 판단하고 결과만 소식으로 온다',
+    '방출 판단은 지금 실력에 나이를 얹는다 — 서른 넘어서 2군이면 답이 없고, 스물셋 아래면 더 본다. 열두 타수 넘게 1할8푼을 못 치면 크게 깎인다',
+    '[주의] `signPlayer` 라는 이름을 스카우트 영입이 이미 쓰고 있었다. 그대로 썼으면 **뒤엣것이 앞엣것을 덮어서** 스카우트가 통째로 죽는다 — `posFit` 이 스물다섯 판 동안 그렇게 죽어 있었다. `farmSign` 으로 갈랐고 검사에도 넣었다',
+  ]},
   {v:'2.91.0', t:'스물네 팀이 24명씩 · 저쪽 2군에서도 사람이 올라온다', items:[
     '[요청] "프로야구처럼 각팀 1군은 최소 24명은 등록 되어있어야 할 것 같음" — 맞는 말이다. 열넷으로는 주전 경쟁이 안 된다. 아홉 자리에 열넷이면 벤치가 다섯이고 그 다섯도 웬만하면 안 바뀐다. **선수 모드에서 스물네 팀이 전부 24명 등록**이 된다',
     '실존 열넷은 그대로다 — 모자란 자리만 채운다. **감독 모드는 안 부풀린다.** 거기는 2026시즌 실측을 재현하는 판이라 지어낸 사람을 열 명 넣으면 딴 리그가 된다',
@@ -13562,6 +13571,9 @@ function runWeek(){
     farmWeek(rng).forEach(m=>ST.notices.push(m));
     /* 스물세 팀 2군도 같이 굴린다 — 저쪽에서도 사람이 올라온다 */
     aiFarmWeek(rng).forEach(m=>ST.notices.push(m));
+    /* 자유계약 칸이 돌아가고, 감독이 알아서 하는 판이면 프런트 일도 돈다 */
+    faWeek(rng).forEach(m=>ST.notices.push(m));
+    frontOfficeWeek(rng).forEach(m=>ST.notices.push(m));
     rollTrade(rng).forEach(m=>ST.notices.push(m));
   }
   // 지난 경기 갈등으로 예고된 결장 반영
@@ -16818,6 +16830,19 @@ function renderHomePlayer(){
      맞는 말이다. 훈련 탭이 따로 있으면 아무도 안 들어간다.
      **홈에 뭘 고를지와 지난주에 뭐가 올랐는지를 같이 깐다.**        */
   {
+    /* 프런트 일을 내가 하는 판이면 할 일이 있을 때 알려준다.
+       설정 안으로 들어가야만 보이면 아무도 안 한다.               */
+    if((ST.gmRole||'auto')==='me'){
+      const full=farmSlot().length>=FARM_MAX;
+      const tgN=(typeof signTargets==='function')?signTargets().length:0;
+      const fc=el('button','mystatus '+(full?'out':'in')+' tapon');
+      fc.innerHTML='<div class="ms-big">선수단 운영 · 2군 '+farmSlot().length+'/'+FARM_MAX+'</div>'+
+        '<div class="ms-sub">'+(full?'자리가 꽉 찼다 — 자를 사람을 정해라'
+                                    :'데려올 수 있는 사람 '+tgN+'명')+'</div>'+
+        '<div class="ms-why">방출 · 자유계약 · 남의 팀 2군에서 데려오기</div>';
+      fc.onclick=()=>go('front');
+      c.appendChild(fc);
+    }
     /* [요청] "부상당하면 스탯이 확내려갔다가 경기뛰면서 차근차근 다시
                스탯 복구되게" — 얼마나 남았는지가 보여야 뛸 맛이 난다 */
     const scar=(typeof injScarLeft==='function')?injScarLeft():[];
@@ -31791,6 +31816,9 @@ function renderMore(){
       gmRow.appendChild(b);
     });
     pl.appendChild(gmRow);
+    const fb=el('button','btn','선수단 운영 — 방출 · 영입 보기');
+    fb.onclick=()=>go('front');
+    pl.appendChild(fb);
   }
   pl.appendChild(el('div','set-note', ST.mode==='player'
     ? '라인업 화면이 잠긴다. 오늘 나가는지는 발표를 봐야 안다.'
@@ -32463,6 +32491,156 @@ function aiFarmBlocked(tid){
     .sort((a,b)=>b.avg-a.avg);
 }
 
+/* ================= 방출 · 자유계약 · 영입 =================
+   [요청] "잠재력 너무 안좋거나 막 현재 너무 못하면 방출하는거지 그리고
+           그 방출당한자들은 은퇴안했으면 자유계약칸에 있어서 다른팀이
+           데려올 수 있고"
+   [요청] "감독들이 상대 2군 중 뎁스때문에 못오는 애들 막 영입할 수 있게"
+   [뺀 것] 트레이드 — "이건 좀 상대 팀도 머리가 똑똑해야해서" 라고
+           사용자가 직접 뺐다. 억지로 넣으면 말도 안 되는 거래가 나온다.
+
+   흐름은 하나다.
+     2군 정원(30)이 찬다 → 제일 못하는 사람을 자른다 → 나이가 많으면
+     은퇴하고, 아니면 **자유계약 칸**으로 간다 → 다른 팀이 데려간다.
+   우리도 거기서 데려오고, **상대 2군에서 뎁스에 막힌 애**도 데려온다.
+   그게 곧 내 주전 경쟁이다.                                        */
+const FA_MAX=24;        // 자유계약 칸에 이 이상은 안 쌓아둔다
+const FA_WEEKS=6;       // 이 주 안에 아무도 안 데려가면 야구를 접는다
+function faSlot(){
+  if(!ST) return [];
+  if(!Array.isArray(ST.freeAgents)) ST.freeAgents=[];
+  return ST.freeAgents;
+}
+/* 이 사람을 자를 만한가 — 낮을수록 먼저 잘린다.
+   지금 실력(farmScore)에 나이를 얹는다. 서른 넘어서 2군이면 답이 없다. */
+function releaseValue(p){
+  let v=farmScore(p);
+  const age=p.age||26;
+  if(age>=31) v-=18;
+  else if(age>=28) v-=8;
+  else if(age<=23) v+=10;          // 어리면 더 본다
+  if(p.ab>=12 && p.h/p.ab<0.180) v-=14;
+  return v;
+}
+function releaseCandidates(){
+  return farmSlot().filter(p=>p&&!p.up)
+    .map(p=>({p, v:releaseValue(p)}))
+    .sort((a,b)=>a.v-b.v);
+}
+/* 자른다. 은퇴가 아니면 자유계약 칸으로 간다 */
+function releasePlayer(pid, why){
+  const F=farmSlot();
+  const i=F.findIndex(x=>x&&x.id===pid);
+  if(i<0) return null;
+  const p=F.splice(i,1)[0];
+  const rng=makeRng(rvSeedOf(p.id+'|rel|'+((ST.round||0))));
+  const age=p.age||26;
+  const retire = age>=34 || (age>=31 && rng()<0.45);
+  if(!retire){
+    const FA=faSlot();
+    FA.push({...p, from:'wwzw', since:(ST.round||0), why:why||'방출'});
+    while(FA.length>FA_MAX) FA.shift();
+  }
+  return {p, retire};
+}
+/* 데려올 수 있는 사람 — 자유계약 + 상대 2군에서 뎁스에 막힌 애 */
+function signTargets(){
+  const out=[];
+  faSlot().forEach((p,i)=>out.push({kind:'fa', idx:i, p,
+    avg:p.ab?p.h/p.ab:0, fromName:(TBYID[p.from]||{name:'어디선가'}).name}));
+  if(typeof TEAMS!=='undefined') TEAMS.forEach(t=>{
+    if(!t||t.id==='wwzw') return;
+    const taken=(ST.aiFarmTaken&&ST.aiFarmTaken[t.id])||[];
+    aiFarmBlocked(t.id).filter(x=>taken.indexOf(x.i)<0).slice(0,2)
+      .forEach(x=>out.push({kind:'farm', tid:t.id, idx:x.i, p:x.p,
+        avg:x.avg, fromName:t.name+' 2군'}));
+  });
+  return out.sort((a,b)=>farmScore(b.p)-farmScore(a.p));
+}
+/* 데려온다 — 우리 2군으로 들어온다. 1군은 거기서 다시 뚫어야 한다.
+   [주의] signPlayer 는 스카우트 영입(30348줄)이 이미 쓰고 있는 이름이다.
+   같은 이름을 두 번 쓰면 **뒤엣것이 앞엣것을 덮는다** — posFit 이 그렇게
+   스물다섯 판 동안 죽어 있었다. 이름을 갈랐다.                     */
+function farmSign(tg){
+  if(!tg||!tg.p) return null;
+  const F=farmSlot();
+  if(F.length>=FARM_MAX) return {err:'2군이 '+FARM_MAX+'명으로 꽉 찼다. 먼저 자리를 비워라'};
+  if(tg.kind==='fa'){
+    const FA=faSlot();
+    const j=FA.findIndex(x=>x&&x.id===tg.p.id);
+    if(j>=0) FA.splice(j,1);
+  } else {
+    if(!ST.aiFarmTaken) ST.aiFarmTaken={};
+    const arr=ST.aiFarmTaken[tg.tid]||(ST.aiFarmTaken[tg.tid]=[]);
+    if(arr.indexOf(tg.idx)<0) arr.push(tg.idx);
+  }
+  /* 아이디를 우리 것으로 바꿔 넣는다 — 남의 팀 아이디를 그대로 두면
+     둘러보기 화면에서 저쪽 사람으로도 보인다. */
+  const np={...tg.p, id:'sg_'+((ST.seasonNo||1))+'_'+((ST.round||0))+'_'+F.length,
+            farm:true, up:false, joined:(ST.round||0),
+            g:0, ab:0, h:0, d2:0, hr:0, rbi:0, bb:0, k:0};
+  F.push(np);
+  if(typeof META!=='undefined') META[np.id]=farmMeta(np);
+  return {ok:true, p:np};
+}
+/* 한 주 — 자유계약 칸이 돌아간다. 다른 팀이 데려가고, 오래되면 접는다 */
+function faWeek(rng){
+  const msgs=[];
+  const FA=faSlot();
+  for(let i=FA.length-1;i>=0;i--){
+    const p=FA[i]; if(!p){ FA.splice(i,1); continue; }
+    const weeks=(ST.round||0)-(p.since||0);
+    /* 잘하는 사람일수록 빨리 팔린다 */
+    const pull=Math.max(0.04, Math.min(0.42, (farmScore(p)-40)*0.010+0.10));
+    if(rng()<pull){
+      const cands=(typeof TEAMS!=='undefined')
+        ? TEAMS.filter(t=>t&&t.id!=='wwzw') : [];
+      const to=cands.length?cands[(rng()*cands.length)|0]:null;
+      FA.splice(i,1);
+      if(to) msgs.push({type:'fa', title:'자유계약 — '+p.name,
+        body:`${p.name}이(가) ${to.name}(으)로 갔다.`,
+        effect:'우리가 안 데려간 사람이다'});
+      continue;
+    }
+    if(weeks>=FA_WEEKS){
+      FA.splice(i,1);
+      msgs.push({type:'fa', title:'은퇴 — '+p.name,
+        body:`${p.name}이(가) 부르는 팀이 없어 야구를 접었다.`,
+        effect:'자유계약 칸에서 사라진다'});
+    }
+  }
+  return msgs;
+}
+/* 감독이 알아서 하는 판 — 정원이 차면 자르고, 자리가 남으면 데려온다.
+   [설정] gmRole 이 'me' 면 여기서 아무것도 안 한다. 내가 한다.     */
+function frontOfficeWeek(rng){
+  const msgs=[];
+  if(!ST || ST.mode!=='player') return msgs;
+  if((ST.gmRole||'auto')!=='auto') return msgs;
+  const cid=(typeof coachId==='function')?coachId():null;
+  /* 방출 — 정원이 찼거나, 대놓고 못하는 사람이 있으면 */
+  const F=farmSlot();
+  const cand=releaseCandidates();
+  if(cand.length && (F.length>=FARM_MAX || (cand[0].v<28 && rng()<0.30))){
+    const r=releasePlayer(cand[0].p.id, '기량 미달');
+    if(r) msgs.push({type:'fa', title:'방출 — '+r.p.name,
+      body:(cid?nameOf(cid):'감독')+`: "${r.p.name}은(는) 여기까지다"`,
+      effect:r.retire?'그대로 은퇴했다':'자유계약 칸으로 갔다'});
+  }
+  /* 영입 — 자리가 있으면 제일 좋은 사람을 데려온다 */
+  if(farmSlot().length<FARM_MAX-1 && rng()<0.28){
+    const tg=signTargets()[0];
+    if(tg){
+      const r=farmSign(tg);
+      if(r&&r.ok) msgs.push({type:'fa', title:'영입 — '+r.p.name,
+        body:(cid?nameOf(cid):'감독')+`: "${tg.fromName}에서 데려왔다. `+
+          (tg.kind==='farm'?'거기선 자리가 없어서 못 올라오던 애다"':'자유계약이다"'),
+        effect:'우리 2군으로 들어온다 — 1군은 거기서 다시 뚫어야 한다'});
+    }
+  }
+  return msgs;
+}
+
 /* 상대 팀 2군 — 시뮬레이션에는 없다. 팀 이름으로 시드를 박아 만든다.
    같은 팀을 다시 열면 같은 사람이 나온다(시즌이 바뀌면 물갈이된다).
    2군 경기에서 만나는 상대(farmFoeTeam)와는 다른 사람들이다 —
@@ -32710,12 +32888,102 @@ function rvCard(p){
 }
 
 /* ---------- 네비 ---------- */
+/* ================= 선수단 운영 (프런트) =================
+   [설정] gmRole 이 'me' 일 때만 들어온다. 'auto' 면 감독이 알아서 하고
+   여기는 「감독이 하고 있다」 는 안내만 뜬다.
+   여기서 하는 건 셋이다 — 방출 · 자유계약 영입 · 상대 2군에서 데려오기.
+   라인업은 어느 쪽이든 감독이 짠다.                                */
+function renderFront(){
+  const c=$('#view'); c.innerHTML='';
+  if(!isPlayerMode()){
+    c.appendChild(el('div','card','선수 모드에서만 쓰는 화면이다.'));
+    const b=el('button','btn primary','홈으로'); b.onclick=()=>go('home');
+    c.appendChild(b); return;
+  }
+  const mine=(ST.gmRole||'auto')==='me';
+  const head=el('div','card');
+  head.innerHTML='<div class="card-h">선수단 운영 · 2군 '+farmSlot().length+'/'+FARM_MAX+'명</div>'+
+    '<p class="muted">'+(mine
+      ? '<b>내가 한다.</b> 자를 사람과 데려올 사람을 직접 고른다.<br>'+
+        '데려온 사람은 <b>우리 2군</b>으로 들어온다 — 1군은 거기서 다시 뚫어야 한다.<br>'+
+        '<span class="dimx">라인업은 그래도 감독이 짠다. 자리는 내가 뺏는 거다.</span>'
+      : '<b>감독이 알아서 한다.</b> 방출도 영입도 감독 몫이다 — 결과만 소식으로 온다.<br>'+
+        '<span class="dimx">직접 하고 싶으면 더보기 → 프런트 일 에서 「내가 한다」로 바꿔라.</span>')+
+    '</p>';
+  c.appendChild(head);
+
+  /* ---- 우리 2군 · 방출 ---- */
+  {
+    const card=el('div','card');
+    card.appendChild(el('div','card-h','우리 2군'));
+    const list=releaseCandidates();
+    if(!list.length) card.appendChild(el('p','muted','2군에 사람이 없다.'));
+    list.slice().reverse().forEach(({p,v})=>{
+      const row=el('div','pk-row');
+      const a=p.ab?fmt3(p.h/p.ab):'-';
+      row.innerHTML='<div class="pk-l"><div class="pk-name">'+p.name+
+        '<span class="ftag">'+(p.age||26)+'세</span></div>'+
+        '<div class="pk-note">'+((p.pos||[]).map(x=>POSNAMES[x]||x).join('·')||'-')+
+        ' · '+(p.ab?(p.ab+'타수 '+p.h+'안타 ('+a+')'):'아직 안 뛰었다')+
+        ' · 값어치 '+Math.round(v)+'</div></div>';
+      if(mine){
+        const b=el('button','tq-x','방출');
+        b.onclick=()=>{
+          if(!confirm(p.name+'을(를) 방출한다. 되돌릴 수 없다.')) return;
+          const r=releasePlayer(p.id,'감독 판단');
+          saveGame(true); renderFront();
+          toast(r? (r.retire? p.name+' — 그대로 은퇴했다' : p.name+' — 자유계약 칸으로') : '실패');
+        };
+        row.appendChild(b);
+      }
+      card.appendChild(row);
+    });
+    c.appendChild(card);
+  }
+
+  /* ---- 데려올 수 있는 사람 ---- */
+  {
+    const card=el('div','card');
+    card.appendChild(el('div','card-h','데려올 수 있는 사람'));
+    card.appendChild(Object.assign(el('p','muted'),{innerHTML:
+      '<b>자유계약</b>은 어디선가 방출된 사람이다. 몇 주 안에 아무도 안 데려가면 야구를 접는다.<br>'+
+      '<b>남의 팀 2군</b>은 거기서 뎁스에 막혀 못 올라오는 사람이다 — 실력이 없어서가 아니다.'}));
+    const tg=signTargets();
+    if(!tg.length) card.appendChild(el('p','muted','지금은 데려올 사람이 없다.'));
+    tg.slice(0,14).forEach(x=>{
+      const p=x.p;
+      const row=el('div','pk-row');
+      row.innerHTML='<div class="pk-l"><div class="pk-name">'+p.name+
+        '<span class="ftag">'+(x.kind==='fa'?'자유계약':'막혀 있음')+'</span>'+
+        '<span class="lh" style="background:#2a323d;color:#c3ccd7">'+(p.age||26)+'세</span></div>'+
+        '<div class="pk-note">'+x.fromName+' · '+
+        ((p.pos||[]).map(y=>POSNAMES[y]||y).join('·')||'-')+
+        ' · 2군 '+fmt3(x.avg)+' · 컨택 '+Math.round(p.con)+' 파워 '+Math.round(p.pow)+
+        ' 수비 '+Math.round(p.def)+'</div></div>';
+      if(mine){
+        const b=el('button','tq-x','영입');
+        b.onclick=()=>{
+          const r=farmSign(x);
+          if(r&&r.err){ toast(r.err); return; }
+          saveGame(true); renderFront();
+          toast(p.name+' 영입 — 우리 2군으로');
+        };
+        row.appendChild(b);
+      }
+      card.appendChild(row);
+    });
+    c.appendChild(card);
+  }
+
+  const hb=el('button','btn','홈으로'); hb.onclick=()=>go('home'); c.appendChild(hb);
+}
+
 const VIEWS={home:renderHome,squad:renderSquad,lineup:renderLineup,kakao:renderKakao,
   game:renderGame,train:renderTrain,scout:renderScout,stand:renderStand,stats:renderStats,
   records:renderRecords,pick:renderPick,more:renderMore,meet:renderMeet,recruit:renderRecruit,
   tutorial:renderTutorial,player:renderPlayer,hall:renderHall,whatif:renderWhatIf,
   role:renderRole,slots:renderSlots,start:renderStart,mode:renderMode,hs:renderHS,
-  glog:renderGlog,rosters:renderRosters};
+  glog:renderGlog,rosters:renderRosters,front:renderFront};
 /* 선수 모드면 감독 전용 탭을 아예 안 보이게 한다.
    눌러도 막히긴 하지만, 있는데 안 되는 것보다 없는 게 낫다. */
 function paintTabs(){
@@ -32989,6 +33257,8 @@ function normalizeState(){
   if(!ST.aiFarmStat||typeof ST.aiFarmStat!=='object')ST.aiFarmStat={};
   if(!ST.aiFarmUp||typeof ST.aiFarmUp!=='object')ST.aiFarmUp={};
   if(ST.gmRole!=='me'&&ST.gmRole!=='auto')ST.gmRole='auto';
+  if(!Array.isArray(ST.freeAgents))ST.freeAgents=[];
+  if(!ST.aiFarmTaken||typeof ST.aiFarmTaken!=='object')ST.aiFarmTaken={};
   if(!Array.isArray(ST.myTrainQ))ST.myTrainQ=(ST.myTrain?[ST.myTrain]:[]);
   if(!ST.valuePrev)ST.valuePrev={};
   if(!Array.isArray(ST.drunkIds))ST.drunkIds=[];

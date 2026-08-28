@@ -105,6 +105,76 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   T(ev("(function(){ ST.farm=[]; farmFill(40); return farmSlot().length<=30; })()"),
     '더 채우라고 해도 정원을 안 넘는다');
 
+  /* ---------------------------------------------------------------
+     [요청] "잠재력 너무 안좋거나 막 현재 너무 못하면 방출하는거지 그리고
+             그 방출당한자들은 은퇴안했으면 자유계약칸에 있어서 다른팀이
+             데려올 수 있고"
+     --------------------------------------------------------------- */
+  console.log('\n[방출 · 자유계약 · 영입]');
+  T(ev("typeof releasePlayer==='function' && typeof farmSign==='function'"+
+       " && typeof faSlot==='function'"), '자르고 데려오는 길이 있다');
+  T(ev("typeof signPlayer==='function' && signPlayer.length===2"),
+    '스카우트 영입(signPlayer)과 이름이 안 겹친다 — 뒤엣것이 앞엣것을 덮으면 안 된다');
+  T(ev(`(function(){
+      ST.farm=[]; ST.freeAgents=[]; farmFill(9);
+      var young=farmSlot()[0]; young.age=24;
+      var r=releasePlayer(young.id,'검사');
+      return r && !r.retire && faSlot().length===1
+             && faSlot()[0].name===young.name
+             && !farmSlot().some(function(p){return p.id===young.id});
+    })()`), '어린 선수를 자르면 자유계약 칸으로 간다');
+  T(ev(`(function(){
+      ST.farm=[]; ST.freeAgents=[]; farmFill(9);
+      var old=farmSlot()[0]; old.age=36;
+      var r=releasePlayer(old.id,'검사');
+      return r && r.retire && faSlot().length===0;
+    })()`), '나이가 많으면 그대로 은퇴한다 — 자유계약 칸에 안 들어간다');
+  T(ev(`(function(){
+      /* 자유계약은 시간이 지나면 다른 팀이 데려가거나 접는다 */
+      ST.farm=[]; ST.freeAgents=[]; farmFill(9);
+      farmSlot().slice(0,3).forEach(function(p){ p.age=25; releasePlayer(p.id,'검사'); });
+      var n0=faSlot().length;
+      var rng=makeRng(7);
+      var msgs=[];
+      ST.round=(ST.round||0)+FA_WEEKS+1;
+      for(var i=0;i<3;i++) msgs=msgs.concat(faWeek(rng));
+      return n0===3 && faSlot().length<n0 && msgs.length>0;
+    })()`), '자유계약 칸이 실제로 돌아간다 (데려가거나 접는다)');
+  T(ev(`(function(){
+      /* 남의 팀 2군에서 막힌 애를 데려오면 우리 2군으로 들어온다 */
+      ST.aiFarmStat={}; ST.aiFarmUp={}; ST.aiFarmTaken={};
+      var rng=makeRng(21);
+      for(var i=0;i<8;i++) aiFarmWeek(rng);
+      var tg=signTargets().filter(function(x){return x.kind==='farm'})[0];
+      if(!tg) return false;
+      ST.farm=[]; farmFill(5);
+      var n0=farmSlot().length;
+      var r=farmSign(tg);
+      var taken=(ST.aiFarmTaken[tg.tid]||[]).indexOf(tg.idx)>=0;
+      return r&&r.ok && farmSlot().length===n0+1 && taken
+             && signTargets().every(function(x){return !(x.kind==='farm'&&x.tid===tg.tid&&x.idx===tg.idx)});
+    })()`), '남의 팀 2군에서 데려오면 우리 2군에 들어오고, 다시는 안 뜬다');
+  T(ev(`(function(){
+      ST.farm=[]; farmFill(30);
+      var tg=signTargets()[0];
+      if(!tg) return true;
+      var r=farmSign(tg);
+      return !!(r&&r.err);
+    })()`), '2군이 30명으로 꽉 차면 못 데려온다 — 먼저 자리를 비워야 한다');
+  T(ev("frontOfficeWeek.toString().indexOf(\"gmRole||'auto')!=='auto'\")>0"),
+    '「내가 한다」 로 두면 감독이 멋대로 자르거나 데려오지 않는다');
+  T(ev(`(function(){
+      /* 감독이 알아서 하는 판 — 정원이 차 있으면 자른다 */
+      ST.gmRole='auto'; ST.mode='player';
+      ST.farm=[]; farmFill(30); ST.freeAgents=[];
+      var rng=makeRng(3);
+      var msgs=[];
+      for(var i=0;i<4;i++) msgs=msgs.concat(frontOfficeWeek(rng));
+      return msgs.some(function(m){return /방출/.test(m.title||'')});
+    })()`), '감독이 알아서 하는 판이면 정원이 찼을 때 자른다');
+  T(ev("typeof renderFront==='function' && !!VIEWS.front"),
+    '선수단 운영 화면이 있다');
+
   console.log('\n[세이브]');
   T(ev("normalizeState.toString().indexOf('aiFarmStat')>0"+
        " && normalizeState.toString().indexOf('aiFarmUp')>0"),
