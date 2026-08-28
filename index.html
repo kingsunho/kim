@@ -2834,6 +2834,29 @@ function nameInSide(pid, side){
   if(p) return p.name;
   return (typeof nameOf==='function')?nameOf(pid):pid;
 }
+/* [요청] "3루에있을때 약간 희생플라이 하는경우 있잖아 그때 뛸건지 말지도"
+   맞는 말이다. 태그업은 **공이 뜨기 전에** 정하는 것이다 — 실제로도
+   3루 코치가 미리 「깊으면 뛴다」 를 정해놓는다. 그래서 리드 화면에서
+   미리 고르고, 그 답이 여기서 확률을 바꾼다.
+     go     — 깊으면 무조건 뛴다 (성공 0.55, 대신 얕으면 홈에서 죽는다)
+     normal — 예전 그대로 (0.30)
+     hold   — 안 뛴다 (0)
+   내가 3루에 없으면 예전 그대로 0.30 이다.                        */
+function sfRoll(G, rng){
+  const me=G.myId||(typeof ST!=='undefined'&&ST?ST.playerId:null);
+  const mine=(me && G.bases[2]===me);
+  const plan=G._tagPlan; if(mine) G._tagPlan=null;
+  if(!mine || !plan || plan==='normal') return rng()<0.30;
+  if(plan==='hold') return false;
+  /* 적극적으로 뛰면 자주 들어가지만, 안 되면 홈에서 태그 아웃이다 */
+  if(rng()<0.55) return true;
+  G.bases[2]=null; G.outs++;
+  const pl=G.pbox&&G.pbox[G.curPitcher(G.def()).id];
+  if(pl) pl.outs++;
+  if(G.box[me]) G.box[me].cs=(G.box[me].cs||0);
+  G.log.push({t:'play', cls:'out', text:`${G.nameOf(me)} 태그업 — 홈에서 아웃`});
+  return false;
+}
 /* 반이닝 시작 — 실책 장부를 비운다 */
 function newErrLedger(){ return {outs:0, roe:{}}; }
 /* 지금 이 득점이 자책인가 */
@@ -8016,8 +8039,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.1.0';
-const APP_VERSION_NOTE = '5툴은 없다 — 잘한 칸만 오르고 못한 칸은 깎인다';
+const APP_VERSION = '3.2.0';
+const APP_VERSION_NOTE = '2루도 3루도 뛴다 · 뛰는 공에 타자가 친다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8038,6 +8061,14 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.2.0', t:'2루도 3루도 뛴다 · 뛰는 공에 타자가 친다', items:[
+    '[요청] "2루 3루 열어주고" — **2루에서 3루 도루**가 열렸다. 3루는 훨씬 어렵다 — 포수가 짧게 던지고 3루수는 태그만 하면 된다. 그래서 성공률이 2루 도루보다 20% 낮다. 성공하면 뜬공 하나로 들어온다',
+    '[주의] 3루 도루는 **내가 고른 경우에만** 굴린다. AI 스물세 팀까지 3루 도루를 시키면 리그 계산이 흔들린다 — 실측에도 3루 도루는 거의 없다',
+    '[요청] "3루에있을때 약간 희생플라이 하는경우 있잖아 그때 뛸건지 말지도" — 3루에 서면 화면이 **태그업 판단**으로 바뀐다. 「깊으면 뛴다(55%, 실패하면 홈에서 아웃)」 / 「상황 보고 간다(30%)」 / 「안 뛴다」. 실제로도 3루 코치가 **공이 뜨기 전에** 정해놓는다',
+    '[요청] "난 뛸려고 했는데 만약 ai타자가 쳤으면 뭐 병살이 될수도 있고 한베이스 더가게 될수도 있고 삼진나올수도 있고" · "야구라는 스포츠니깐 모든 확률이 있어야된다고 본다 모든 플레잉에" — 맞는 말이었다. 여태 도루는 **타석과 완전히 따로** 굴렀다. 내가 뛰면 도루만 판정되고 그 공에 타자가 뭘 했는지는 아무 상관이 없었다. 그런 야구는 없다',
+    '이제 **히트앤런**이 생겼다. 뛰는 그 공은 열에 넷쯤 배트에 닿고, 닿으면 도루 판정을 건너뛰고 **타석 결과가 나를 데려간다** — **안타면 한 베이스 더**(2루가 아니라 3루까지) · **뜬공이면 못 돌아와서 병살** · **땅볼이면 포스가 풀려 병살이 덜 나고** · **삼진이면 그때 포수가 던진다**(배트가 시야를 가려서 오히려 살기 쉽다)',
+    '[검사] **lintcheck 이 문법을 안 봤다.** 이번에 `if / else if` 사슬 사이에 한 줄을 끼워 넣어서 SyntaxError 가 났는데 정적 검사가 전부 통과했다. 문법이 깨지면 그 스크립트가 통째로 안 돌아간다 — **게임이 죽는다.** 그것보다 큰 사고가 없는데 제일 싸게 잡을 수 있다. 이제 여덟 개 스크립트를 실제로 파싱해보고 맨 앞에서 막는다',
+  ]},
   {v:'3.1.0', t:'5툴은 없다 — 잘한 칸만 오르고 못한 칸은 깎인다', items:[
     '[제보] "고교때 스탯 산정할때 (…) 타자라면 장타치면 파워만 오르고 안타치면 컨택만 오르고 볼넷나가면 선구만 오르고 그외 못하면 깎여야되는데 너무 쉽게쉽게 다같이 스탯이 오르니깐 무조건 5툴가이 되겠어" — 재보니 진짜였다. 두 가지가 겹쳐 있었다',
     '① **칸이 서로 물려 있었다.** 파워를 장타율로 쟀는데 거기엔 단타가 들어간다 — **안타만 쳐도 파워가 올랐다.** 어깨는 아예 「수비×0.6 + 파워×0.4」 라서 **방망이가 어깨를 올렸다**',
@@ -11652,6 +11683,35 @@ LiveGame.prototype.stepPA = function(){
   const psBefore=this.bases.slice();     // 2D 장면용 — 타석 전 주자
   const psRunsB=off.runs;
 
+  /* 2루 → 3루 — [요청] "2루 3루 열어주고"
+     [주의] **내가 뛰겠다고 고른 경우에만** 굴린다. AI 까지 3루 도루를
+     시키면 리그 계산이 흔들린다 — 실측에도 3루 도루는 거의 없다.
+     3루는 훨씬 어렵다. 포수가 짧게 던지고 3루수는 태그만 하면 된다.  */
+  if(this.bases[1] && !this.bases[2] && this.outs<3){
+    const me3=this.myId||(typeof ST!=='undefined'&&ST?ST.playerId:null);
+    const plan3=this._runPlan3; this._runPlan3=null;
+    if(me3 && this.bases[1]===me3 && plan3 && plan3.go){
+      const rn3=off.team.players.find(x=>x.id===me3);
+      if(rn3){
+        this.rollMyInjury('슬라이딩', 1.5);
+        const su3=clamp(LG.SB_SUCCESS-0.20
+          +(rn3.spd-LG.SB_SU_MID)*0.0030+(stealIQ(rn3)-46)*0.0034
+          -((def.cArm||46)-46)*0.0055, 0.18, 0.90);
+        if(rng()<su3){
+          this.bases[2]=this.bases[1]; this.bases[1]=null;
+          if(this.box[me3]) this.box[me3].sb++;
+          pl.sbA++; def.sbAllowed++;
+          events.push({text:`${rn3.name} 3루 도루 성공`,cls:'sb'});
+        } else {
+          this.bases[1]=null; this.outs++; pl.outs++;
+          if(this.box[me3]) this.box[me3].cs++;
+          events.push({text:`${rn3.name} 3루 도루 실패 — 태그 아웃`,cls:'out'});
+          this.hl('cs',off,rn3.name,'3루 도루 실패');
+          if(this.outs>=3){ this.endHalf(); return {events, half:true}; }
+        }
+      }
+    }
+  }
   // 도루
   if(this.bases[0] && !this.bases[1]){
     const rn=off.team.players.find(x=>x.id===this.bases[0]);
@@ -11692,10 +11752,31 @@ LiveGame.prototype.stepPA = function(){
         if(plan.go) runMul=999;                   // 뛰기로 했다 — 무조건 시도
         else if(plan.lead>=2) runMul*=2.0;
         else if(plan.lead<=0) runMul=0;           // 베이스에 붙어 있는다
+        /* [주의] 이 줄을 위의 if/else 사슬 **사이에** 넣었다가 문법이
+           깨졌다(Unexpected token 'else'). 사슬이 끝난 뒤에 적는다. */
+        this._runPlan0go=!!plan.go;               // 「작정하고 뛰었다」 를 기억한다
       }
       const att=clamp(LG.SB_PER_PA*LG.SB_MULT*off.team.tend.sb*runMul
                       *Math.exp((rn.spd-LG.SB_SPD_MID)*LG.SB_SPD_K),0,plan&&plan.go?1:LG.SB_MAX);
       attempt=rng()<att;
+      }
+      /* [요청] "난 뛸려고 했는데 만약 ai타자가 쳤으면 뭐 병살이 될수도
+                 있고 한베이스 더가게 될수도 있고 삼진나올수도 있고" ·
+                 "야구라는 스포츠니깐 모든 확률이 있어야된다고 본다"
+
+         맞는 말이었다. 여태 도루는 **타석과 완전히 따로** 굴렀다 —
+         내가 뛰면 도루만 판정되고, 그 공에 타자가 뭘 했는지는 아무
+         상관이 없었다. 그런 야구는 없다.
+         이제 내가 작정하고 뛴 공은 **열에 넷쯤 배트에 닿는다.** 그러면
+         도루 판정을 건너뛰고 **타석 결과가 나를 데려간다** —
+           안타면 한 베이스 더 · 뜬공이면 못 돌아와서 병살 ·
+           땅볼이면 포스가 풀려서 병살이 덜 나고 · 삼진이면 그때 던진다.  */
+      if(attempt && !held){
+        const meRun=(rn.id===(this.myId||(typeof ST!=='undefined'&&ST?ST.playerId:null)));
+        if(meRun && this._runPlan0go && rng()<0.38){
+          this._runGo=true;
+          attempt=false;                    // 이 공은 도루가 아니라 타석이다
+        }
       }
       if(attempt){
         /* 포수가 나면 여기서 멈추고 물어본다. 답이 오면 위의 held 로
@@ -11939,7 +12020,8 @@ LiveGame.prototype.stepPA = function(){
     ang:bb.ang, dist:bb.m, dir:bb.dir, err:res.type==='E'
   } : null;
   // 번트 앤 런은 주자가 한 베이스 더 간다
-  const advOdds = (off.isUser && this._buntRun) ? 0.62 : 0.35;
+  /* 뛰고 있었으면 한 베이스를 더 간다 — 그게 히트앤런의 값이다 */
+  const advOdds = this._runGo ? 0.92 : ((off.isUser && this._buntRun) ? 0.62 : 0.35);
 
   const score=(rid,e)=>{ if(!rid)return; this.box[rid].r++; off.runs++; this.curIR=(this.curIR||0)+1;
     // 그 주자를 내보낸 투수에게 단다 (승계주자 규칙). 기록이 없으면 지금 던지는 투수.
@@ -11953,7 +12035,24 @@ LiveGame.prototype.stepPA = function(){
     if(nb>=3){score(this.bases[b],e);bl.rbi++;} else this.bases[nb]=this.bases[b]; this.bases[b]=null; } } };
 
   if(res.type==='K'){ bl.ab++;bl.k++;pl.k++;pl.outs++;this.outs++;
-    events.push({text:`${bat.name} 삼진`,cls:'out'}); }
+    events.push({text:`${bat.name} 삼진`,cls:'out'});
+    /* 뛰고 있었는데 헛스윙이면 그 공에 포수가 던진다. 배트가 시야를
+       가려서 평소보다 살기 쉽다 — 그게 히트앤런의 값이다. */
+    if(this._runGo && this.bases[0] && !this.bases[1] && this.outs<3){
+      const rg=off.team.players.find(x=>x.id===this.bases[0]);
+      if(rg){
+        const su=clamp(LG.SB_SUCCESS+0.06+(rg.spd-LG.SB_SU_MID)*0.0030
+                       -((def.cArm||46)-46)*0.0055, 0.25, 0.95);
+        if(rng()<su){ this.bases[1]=this.bases[0]; this.bases[0]=null;
+          if(this.box[rg.id]) this.box[rg.id].sb++; pl.sbA++; def.sbAllowed++;
+          events.push({text:`${rg.name} 2루 도루 — 삼진 때 뛰었다`,cls:'sb'}); }
+        else { this.bases[0]=null; this.outs++; pl.outs++;
+          if(this.box[rg.id]) this.box[rg.id].cs++;
+          events.push({text:`${rg.name} 삼진 때 뛰다 아웃 — 삼진 병살`,cls:'out'});
+          if(this.outs>=3){ this._runGo=false; this.endHalf(); return {events, half:true}; } }
+      }
+    }
+  }
   else if(res.type==='BB'||res.type==='HBP'){
     const isBB=res.type==='BB';
     if(isBB){bl.bb++;pl.bb++;off.bbs++;}else{
@@ -12005,7 +12104,9 @@ LiveGame.prototype.stepPA = function(){
     bl.ab++;pl.outs++;this.outs++;
     const dpB = def.isUser ? (typeof dpBonus==='function'?dpBonus(def.slots).bonus:0) : 0;
     // 번트 앤 런은 굴러가면 주자가 걸릴 위험이 조금 더 크다
-    let dpRisk = 0.030 + dpB + ((off.isUser&&this._buntRun)?0.050:0)
+    /* 뛰고 있으면 포스가 풀린다 — 땅볼 병살은 오히려 덜 나온다.
+       대신 아래에서 뜬공에 되돌아가지 못해 병살이 난다.            */
+    let dpRisk = (this._runGo?0.008:0.030) + dpB + ((off.isUser&&this._buntRun)?0.050:0)
       + ((mm && mm.traits.includes('똥차'))?0.045:0);   // 똥차는 1루에서 못 산다
     /* 내가 2루로 던지기로 했나. 어깨가 좋을수록 병살이 는다.
        1루로 던지기로 했으면 병살은 애초에 없다 — 하나만 잡는다. */
@@ -12024,7 +12125,15 @@ LiveGame.prototype.stepPA = function(){
       this.dpCount=(this.dpCount||0)+1;
       events.push({text:`${bat.name} 병살타`+(ta==='lead'?' — 2루로 던져 둘 다 잡았다':'')+bbTag(bb),cls:'out'});
       this.hl('dp',off,bat.name,'');}
-    else if(this.bases[2]&&this.outs<3&&!res.gb&&rng()<0.30){
+    else if(this._runGo && this.bases[0] && this.outs<3 && !res.gb && rng()<0.34){
+      /* 뛰고 있는데 뜬공이 잡혔다. 되돌아갈 시간이 없다 — 병살이다.
+         이게 히트앤런의 값이다: 안타면 크게 벌고 뜬공이면 크게 잃는다. */
+      this.bases[0]=null; pl.outs++; this.outs++;
+      this.dpCount=(this.dpCount||0)+1;
+      events.push({text:`${bat.name} 뜬공 — 뛰던 주자가 못 돌아왔다. 병살${bbTag(bb)}`,cls:'out'});
+      if(this.outs>=3){ this._runGo=false; this.endHalf(); return {events, half:true}; }
+    }
+    else if(this.bases[2]&&this.outs<3&&!res.gb&&sfRoll(this,rng)){
       // 홈보살 특성 보유 외야수가 있으면 잡아낸다
       const of=def.slots.filter(x=>['LF','CF','RF'].includes(x.pos))
         .map(x=>def.team.players.find(p=>p.id===x.id)).filter(Boolean)
@@ -12095,6 +12204,7 @@ LiveGame.prototype.stepPA = function(){
   /* 「돌아? 서?」를 아직 안 물어봤다. 타구를 다 보여준 뒤에 물어볼 수 있게
      지금 상황을 남겨둔다. 갈 베이스가 비어 있어야 물어볼 값어치가 있다 —
      2루에 주자가 서 있으면 애초에 갈 데가 없다.                        */
+  this._runGo=false; this._runPlan0go=false;
   this._stretchOffer=null;
   if(res.stretchAsk && this.outs<3){
     const sfrom=(res.stretchAsk==='1B')?0:1;
@@ -12424,9 +12534,30 @@ LiveGame.prototype.applyDecision = function(choice){
   /* 주루 — 리드와 도루. 작전 횟수를 안 먹는다(내 몸으로 하는 거다) */
   if(typeof choice==='string' && choice.indexOf('run:')===0){
     this._lastRunPA=this.paSeq;
+    const meR=this.myId||(typeof ST!=='undefined'&&ST?ST.playerId:null);
+    /* [요청] "2루 3루 열어주고 3루에있을때 약간 희생플라이 하는경우
+               있잖아 그때 뛸건지 말지도" — 같은 버튼인데 **내가 어느
+       베이스에 서 있느냐**로 하는 일이 다르다.
+         1루 — 리드·도루·히트앤런
+         2루 — 3루 도루 (_runPlan3)
+         3루 — 뜬공에 태그업할지 (_tagPlan)                          */
+    const on2 = meR && this.bases[1]===meR && this.bases[0]!==meR;
+    const on3 = meR && this.bases[2]===meR && this.bases[0]!==meR && this.bases[1]!==meR;
+    if(on3){
+      this._tagPlan = (choice==='run:go') ? 'go'
+                    : (choice==='run:hug') ? 'hold' : 'normal';
+      return;
+    }
+    if(on2){
+      this._runPlan3 = (choice==='run:go') ? {go:true, lead:2}
+                     : (choice==='run:lead') ? {go:false, lead:2} : {go:false, lead:1};
+      return;
+    }
+    this._hitRun=(choice==='run:hitrun');
     if(choice==='run:hug')       this.setRunPlan({lead:0, go:false});
     else if(choice==='run:lead') this.setRunPlan({lead:2, go:false});
     else if(choice==='run:go')   this.setRunPlan({lead:2, go:true});
+    else if(choice==='run:hitrun') this.setRunPlan({lead:2, go:false});
     else                         this.setRunPlan({lead:1, go:false});
     return;
   }
@@ -28162,6 +28293,12 @@ function renderLead(box, d){
   const cat=cSlot?def.team.players.find(x=>x.id===cSlot.id):null;
   const w=el('div','pl-wrap');
 
+  /* [요청] "2루 3루 열어주고 3루에있을때 약간 희생플라이 하는경우
+             있잖아 그때 뛸건지 말지도"
+     같은 화면인데 서 있는 베이스마다 하는 일이 다르다.            */
+  const base1=(LIVE.bases[0]===me);
+  const base2=(!base1 && LIVE.bases[1]===me);
+  const base3=(!base1 && !base2 && LIVE.bases[2]===me);
   const spd=p?p.spd:45, iq=p?stealIQ(p):45;
   const cArm=cat?cat.arm:45, cDef=cat?cat.def:45;
   /* 각 리드에서 실제로 쓰는 확률을 **그대로** 보여준다.
@@ -28294,6 +28431,20 @@ function renderLead(box, d){
     if(lead===0) go.disabled=true;
     else go.onclick=()=>fin('run:go','뛴다!','#ffd15c');
     row.appendChild(go);
+    /* [요청] "난 뛸려고 했는데 만약 ai타자가 쳤으면 뭐 병살이 될수도 있고
+               한베이스 더가게 될수도 있고 삼진나올수도 있고" ·
+               "야구라는 스포츠니깐 모든 확률이 있어야된다"
+       뛰는 그 공에 타자가 배트를 대면 도루가 아니라 **타석이 나를
+       데려간다.** 안타면 한 베이스 더, 뜬공이면 못 돌아와서 병살,
+       땅볼이면 포스가 풀린다. 그게 히트앤런이다.                   */
+    if(base1){
+      const hr2=el('button','lead-b run'+(lead===0?' off':''));
+      hr2.innerHTML='<span>▸ 히트앤런</span><i>뛰면서 타자가 친다</i>'+
+        '<u>안타면 한 베이스 더 · 뜬공이면 병살</u>';
+      if(lead===0) hr2.disabled=true;
+      else hr2.onclick=()=>fin('run:hitrun','히트앤런!','#ffd15c');
+      row.appendChild(hr2);
+    }
     const stay=el('button','lead-b stay');
     stay.innerHTML='<span>안 뛴다 — 다음 타자를 본다</span>'+
       '<i>'+(lead===0?'베이스에 붙어 있는다':(lead===2?'크게 나간 채로 기다린다':'리드만 유지한다'))+'</i>';
@@ -28301,7 +28452,33 @@ function renderLead(box, d){
       lead===0?'베이스에 붙는다':'리드만 유지한다','#9fb0c4');
     row.appendChild(stay);
   };
-  buildRow();
+  if(base3){
+    /* 3루 — 도루가 아니라 **태그업**을 미리 정한다. 실제로도 3루 코치가
+       공이 뜨기 전에 「깊으면 뛴다」 를 정해놓는다.               */
+    { const tt=box2.querySelector('.rb-t'); if(tt) tt.textContent='3루 — 뜬공이 뜨면 뛸 건가'; }
+    note.innerHTML='<b>공이 뜨기 전에 정한다.</b> 깊으면 뛰고 얕으면 못 뛴다';
+    row.innerHTML='';
+    [['run:go','▸ 깊으면 뛴다','들어갈 확률 55% · 실패하면 홈에서 아웃','run'],
+     ['run:normal','상황 보고 간다','평소대로 (30%)','' ],
+     ['run:hug','안 뛴다','베이스를 안 뜬다','stay']].forEach(([k,n,d2,cls])=>{
+      const b=el('button','lead-b '+cls);
+      b.innerHTML='<span>'+n+'</span><i>'+d2+'</i>';
+      b.onclick=()=>fin(k, n.replace('▸ ',''), '#ffd15c');
+      row.appendChild(b);
+    });
+  } else if(base2){
+    { const tt=box2.querySelector('.rb-t'); if(tt) tt.textContent='2루 — 3루까지 갈 건가'; }
+    note.innerHTML='<b>3루 도루는 훨씬 어렵다.</b> 포수가 짧게 던지고 3루수는 태그만 하면 된다';
+    row.innerHTML='';
+    [['run:go','▸ 3루로 뛴다','성공하면 뜬공 하나로 들어온다','run'],
+     ['run:lead','크게 나간 채로 본다','견제가 온다',''],
+     ['run:hug','붙어 있는다','안전하게','stay']].forEach(([k,n,d2,cls])=>{
+      const b=el('button','lead-b '+cls);
+      b.innerHTML='<span>'+n+'</span><i>'+d2+'</i>';
+      b.onclick=()=>fin(k, n.replace('▸ ',''), '#ffd15c');
+      row.appendChild(b);
+    });
+  } else buildRow();
 
   try{
     sc=leadScene(stage, {park:LIVE.park, lead:1,

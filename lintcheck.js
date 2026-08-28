@@ -9,7 +9,32 @@ const T=(n,f)=>{try{const r=f();const ok=r===true||(typeof r==='string'&&!/^!/.t
   catch(e){console.log('  ❌ '+n+' :: '+e.message);bad.push(n)}};
 
 // JS 부분만 본다 (CSS 의 rgba(...) 같은 걸 함수 호출로 오해하지 않게)
-const jsAll=[...s.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join('\n');
+const blocks=[...s.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]);
+const jsAll=blocks.join('\n');
+
+/* ================= 문법 =================
+   [사고 2026-08-28] `if(a) x; <새 줄>; else if(b) y;` 처럼 if/else 사슬
+   **사이에** 한 줄을 끼워 넣어서 SyntaxError 가 났다. 그런데 여기 있는
+   검사는 전부 정규식이라 **문법이 깨진 걸 하나도 못 잡았다.**
+   문법이 깨지면 그 script 태그가 통째로 안 돌아간다 — 게임이 죽는다.
+   그것보다 큰 사고가 없는데 제일 싸게 잡을 수 있다. 맨 앞에 둔다.
+   (node 의 파서를 그대로 쓴다. 우리가 렉서를 만들 이유가 없다)      */
+console.log('[문법 — 스크립트가 실제로 파싱되나]');
+{
+  const vm=require('vm');
+  let broke=null;
+  blocks.forEach((b,i)=>{
+    if(broke) return;
+    try{ new vm.Script(b, {filename:'script#'+(i+1)}); }
+    catch(e){
+      const m=/(\d+)\n/.exec(e.stack||'');
+      const ln=(e.stack||'').split('\n').slice(0,4).join(' / ');
+      broke='script#'+(i+1)+' — '+e.message+'  ('+ln.slice(0,160)+')';
+    }
+  });
+  T('여덟 개 스크립트가 전부 파싱된다', ()=> broke? ('!'+broke) : (blocks.length+'개 OK'));
+}
+
 /* 블록주석만 지운다. 이건 안전하다(*\/ 로 확실히 끝난다).
    줄주석·문자열은 정규식으로 안전하게 못 지운다 — // 가 정규식과 URL 안에도 있다. */
 const js=jsAll.replace(/\/\*[\s\S]*?\*\//g,' ');

@@ -134,8 +134,8 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
   T(!!d.querySelector('#decision .runstage'), '1루 그라운드가 뜬다');
   T(/리드를 얼마나/.test(txt('#decision .rb-t')), '제목 :: '+txt('#decision .rb-t'));
   T([...d.querySelectorAll('#decision .lead-b span')].map(x=>x.textContent).join('/')
-      ==='붙어 있는다/보통/크게 나간다/▸ 뛴다/안 뛴다 — 다음 타자를 본다',
-    '리드 세 칸 + 뛴다 + 안 뛴다 :: '+
+      ==='붙어 있는다/보통/크게 나간다/▸ 뛴다/▸ 히트앤런/안 뛴다 — 다음 타자를 본다',
+    '리드 세 칸 + 뛴다 + 히트앤런 + 안 뛴다 :: '+
       [...d.querySelectorAll('#decision .lead-b span')].map(x=>x.textContent).join(' / '));
   T(ev("typeof leadScene==='function' && /setLead/.test(leadScene.toString())"),
     '끌지 않고 버튼으로 고른다');
@@ -366,6 +366,29 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
     '2군도 마찬가지다');
   T(ev("/keyMoment/.test(hsRunLive.toString())"),
     '「중요한 순간만」 설정도 그대로 지킨다');
+
+  console.log('\n[베이스마다 다른 주루]');
+  T(ev("/base1|base2|base3/.test(renderLead.toString())"),
+    '1루·2루·3루에서 하는 일이 갈린다');
+  T(ev("/3루까지 갈 건가/.test(renderLead.toString())"),
+    '2루에서는 3루 도루를 묻는다');
+  T(ev("/뜬공이 뜨면 뛸 건가/.test(renderLead.toString())"),
+    '3루에서는 태그업을 미리 정한다');
+  T(ev("typeof sfRoll==='function' && /_tagPlan/.test(sfRoll.toString())"),
+    '그 답이 희생플라이 확률을 바꾼다');
+  T(ev("/_runPlan3/.test(LiveGame.prototype.stepPA.toString())"),
+    '2루→3루 도루가 엔진에 있다');
+  T(ev("/_runGo/.test(LiveGame.prototype.stepPA.toString())"),
+    '뛰는 공에 타자가 치는 길이 있다 (히트앤런)');
+  T(ev("/뛰던 주자가 못 돌아왔다/.test(LiveGame.prototype.stepPA.toString())"),
+    '뜬공이면 못 돌아와서 병살이 난다');
+  T(ev("/삼진 때 뛰었다/.test(LiveGame.prototype.stepPA.toString())"),
+    '삼진이면 그때 포수가 던진다');
+  T(ev(`(function(){
+      /* 히트앤런이면 안타에 한 베이스를 더 간다 */
+      var m=LiveGame.prototype.stepPA.toString();
+      return /this._runGo \\? 0.92/.test(m) && /this._runGo\\?0.008:0.030/.test(m);
+    })()`), '안타면 한 베이스 더 · 땅볼은 포스가 풀려 병살이 덜 난다');
 
   console.log('\n[예외]');
   T(jsErr.length===0, jsErr.length?('❌ '+jsErr.slice(0,3).join(' | ')):'콘솔 예외 없음');
