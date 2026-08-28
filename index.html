@@ -8060,8 +8060,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.4.0';
-const APP_VERSION_NOTE = '번트를 댄다 · 밀고 당긴다 · 협살에서 산다';
+const APP_VERSION = '3.5.0';
+const APP_VERSION_NOTE = '비가 오면 멈춘다 · 하루에 두 경기';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8082,6 +8082,14 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.5.0', t:'비가 오면 멈춘다 · 하루에 두 경기', items:[
+    '**경기 중에 비가 온다.** 여태는 경기 전에 우천 취소만 있었다. 이제 하다가 굵어지면 **심판이 중단**시킨다. 절반쯤은 삼십 분 만에 그쳐서 이어서 하고, 안 그치면 갈린다',
+    '[야구 규칙] **정규이닝의 절반**을 넘겼으면 그대로 성립한다 — **강우 콜드게임**이다. 못 넘겼으면 **노게임**이라 없던 일이 되고 다음에 다시 한다. 7이닝 경기면 4회가 기준이다',
+    '**노게임이면 기록이 하나도 안 남는다.** 타율도 방어율도 순위도 코인도 그대로다. 그 주를 처음부터 다시 한다 — 실제 규칙이 그렇다',
+    '그날 날씨가 나쁠수록 자주 멈춘다. 가랑비·장맛비·눈이면 확률이 오른다',
+    '**더블헤더**가 생겼다. 사회인야구는 구장 대관이 어려워서 리그가 하루에 두 경기를 몰아주는 일이 있다. 한 시즌에 한두 번 잡힌다',
+    '**2차전은 몸이 안 돌아온다.** 한 주 쉰 게 아니라 아침 경기를 뛰고 바로 또 나가는 거다 — 전원 컨디션 -10, 투수 피로도 안 풀린다. 경기 화면에 「더블헤더 2차전」 이라고 뜨고, 달력에도 **앞 경기와 같은 날**에 찍힌다',
+  ]},
   {v:'3.4.0', t:'번트를 댄다 · 밀고 당긴다 · 협살에서 산다', items:[
     '**번트**가 생겼다. 감독의 「번트 지시」가 아니라 **내가 타석에서 직접 대는 것**이다. 주자가 있고 2아웃이 아닐 때만 뜬다 — 쓸 수 없는 걸 띄워두지 않는다',
     '네 갈래로 갈린다. **희생번트**(주자가 한 베이스씩 간다) · **기습번트 안타**(발이 빠르면 그대로 산다) · **팝플라이**(주자 못 간다) · **번트 실패**(앞 주자가 잡히고 나만 산다). 컨택이 좋으면 잘 대고, 상대 수비가 좋으면 잘 잡는다',
@@ -12534,6 +12542,39 @@ LiveGame.prototype.endHalf = function(){
   this.curIR=0;
   this.outs=0; this.bases=[null,null,null]; this.runnerP={};
   this.errLed=newErrLedger();          // 반이닝이 바뀌면 실책 장부도 새로
+  /* [요청] "야구 같은 요소는 다넣어야해" — **경기 중 비**.
+     [야구 규칙] 비가 오면 일단 멈춘다(중단). 그치면 이어서 하고,
+     안 그치면 **정규이닝의 절반**을 넘겼느냐로 갈린다 —
+       넘겼으면 그대로 성립(**강우 콜드**),
+       못 넘겼으면 **노게임**(다음에 다시 한다).
+     사회인야구는 대관 시간이 정해져 있어서 오래 못 기다린다.
+     그날 날씨가 나쁠수록 자주 난다.                                */
+  if(!this.over && !this.rainStopped && this.inning>=2){
+    const wx=(typeof ST!=='undefined'&&ST)?ST.weather:null;
+    const wdef=(typeof WEATHERS!=='undefined')
+      ? WEATHERS.find(w=>w.id===wx) : null;
+    const base=(wdef&&wdef.cancel)?wdef.cancel*0.06:0.004;
+    if(this.rng()<base){
+      this.rainStopped=true;
+      this.log.push({t:'mgr',text:'비가 굵어졌다. 심판이 경기를 중단시킨다'});
+      /* 기다려 본다 — 그치면 이어서 한다 */
+      if(this.rng()<0.55){
+        this.log.push({t:'mgr',text:'삼십 분 만에 그쳤다. 이어서 간다'});
+      } else {
+        const half=Math.ceil(this.INN/2);
+        if(this.inning>=half){
+          this.rainCold=true;
+          this.log.push({t:'mgr',
+            text:`${this.inning}회까지 했으니 경기는 성립한다 — 강우 콜드게임`});
+          this.mercy=true; this.finish(); return;
+        }
+        this.noGame=true;
+        this.log.push({t:'mgr',
+          text:`${this.inning}회밖에 못 했다 — 노게임. 다음에 다시 한다`});
+        this.finish(); return;
+      }
+    }
+  }
 
   if(this.half===0){
     this.half=1;
@@ -12712,6 +12753,8 @@ LiveGame.prototype.finish = function(){
     }
   }
   this.result={
+    /* 비로 끊긴 경기 — 절반을 못 채웠으면 노게임, 넘겼으면 강우 콜드 */
+    noGame:!!this.noGame, rainCold:!!this.rainCold,
     away:{team:this.away.team,runs:this.away.runs,hits:this.away.hits,errs:this.away.errs,bbs:this.away.bbs,sbAllowed:this.away.sbAllowed,line:this.away.line,used:this.away.used||[],slots:this.away.slots,rot:this.away.rot},
     home:{team:this.home.team,runs:this.home.runs,hits:this.home.hits,errs:this.home.errs,bbs:this.home.bbs,sbAllowed:this.home.sbAllowed,line:this.home.line,used:this.home.used||[],slots:this.home.slots,rot:this.home.rot},
     box:this.box, pbox:this.pbox, log:this.log, tie,
@@ -13457,6 +13500,20 @@ function newSeason(){
   const opps=TEAMS.filter(t=>t.id!=='wwzw').map(t=>t.id);
   for(let i=opps.length-1;i>0;i--){const j=(rng()*(i+1))|0;[opps[i],opps[j]]=[opps[j],opps[i]];}
   const schedule=opps.map((o,i)=>({round:i+1,opp:o,homeGame:i%2===0,played:false,result:null,park:PARKS[(i*7+3)%PARKS.length].id}));
+  /* [요청] "야구 같은 요소는 다넣어야해" — **더블헤더**.
+     [사회인야구] 구장 대관이 어려워서 리그가 하루에 두 경기를 몰아주는
+     일이 있다. 두 번째 경기는 **같은 날**이라 몸이 안 돌아온다 —
+     그게 더블헤더의 전부다. 한 시즌에 한두 번이면 충분하다.        */
+  {
+    const n=schedule.length;
+    const picks=[];
+    for(let t=0;t<2;t++){
+      const i=4+((rng()*(n-8))|0);
+      if(i>0 && i<n && !picks.includes(i) && !picks.includes(i-1) && !picks.includes(i+1))
+        picks.push(i);
+    }
+    picks.forEach(i=>{ if(schedule[i]) schedule[i].dh=2; });   // 그 날의 2차전
+  }
   const stand={}; TEAMS.forEach(t=>stand[t.id]={w:0,l:0,t:0,rf:0,ra:0,g:0});
   const bat={},pit={},lgBat={},lgPit={},rest={};
   const us=TBYID['wwzw'];
@@ -14176,6 +14233,20 @@ function runWeek(){
   if(!ST.notices)ST.notices=[];
   ST.events=[];
   ST.weekSeq=(ST.weekSeq||0)+1;
+  /* [더블헤더] 오늘 두 번째 경기라면 몸이 안 돌아온다. 한 주 쉰 게
+     아니라 방금 한 경기를 뛰고 바로 또 나가는 것이다.             */
+  {
+    const sc=(ST.schedule||[])[ST.round];
+    if(sc && sc.dh===2){
+      const us=TBYID['wwzw'];
+      us.players.forEach(p=>{ ST.cond[p.id]=Math.max(20,(ST.cond[p.id]||70)-10); });
+      if(ST.rest) Object.keys(ST.rest).forEach(k=>{
+        ST.rest[k]=Math.max(0,(ST.rest[k]==null?3:ST.rest[k])-1); });
+      ST.notices.push({type:'weather', title:'더블헤더 2차전',
+        body:'같은 날 두 번째 경기다. 아침 경기를 뛰고 바로 또 나간다.',
+        effect:'전원 컨디션 -10 · 투수 피로가 안 풀렸다'});
+    }
+  }
   const rng=makeRng((ST.seed+ST.round*31337+ST.weekSeq*7717)>>>0);
   Object.keys(ST.injury).forEach(pid=>{
     const inj=ST.injury[pid]; if(!inj)return;
@@ -18453,7 +18524,7 @@ function renderHome(){
   const dateLbl=(ST.calendar&&ST.calendar.label)||'';
   const card=el('div','card');
   card.innerHTML=`<div class="card-h">${next.round}차전 · ${next.homeGame?'홈':'원정'}</div>
-    <div class="gdate">${dateLbl}${ST.calendar&&ST.calendar.holiday?` · ${ST.calendar.holiday}`:''} · ${wxN}
+    <div class="gdate">${((ST.schedule||[])[ST.round]||{}).dh===2?'더블헤더 2차전 · ':''}${dateLbl}${ST.calendar&&ST.calendar.holiday?` · ${ST.calendar.holiday}`:''} · ${wxN}
       <i class="gapx">${gapLabel(ST.round, ST.year||2026)}</i></div>
     <div class="opp-name">${opp.name}</div>
     <div class="opp-ops">팀 OPS ${opp.ops.toFixed(3)} · 타율 ${fmt3(opp.avg)}</div>
@@ -29819,7 +29890,22 @@ function commitGame(res,usSide,thSide,uSlots){
   // 이번 경기 결장자(부상·개인사정)를 경기 중 부상이 반영되기 전에 미리 잡아둔다.
   // 결장한 경기는 약속 위반으로 치지 않기 때문이다.
   const absentIds=TBYID['wwzw'].players.filter(p=>!isAvailable(p.id)).map(p=>p.id);
+  /* [야구 규칙] **노게임** — 정규이닝 절반을 못 채우고 비로 끊기면
+     그 경기는 없던 일이 된다. 기록도 안 남고 다시 한다.
+     여기서 일찍 빠져나가야 성적·코인·순위가 안 들어간다.          */
+  if(res.noGame){
+    ST.notices=ST.notices||[];
+    ST.notices.push({type:'rain', title:'노게임 — 비로 중단',
+      body:'정규이닝 절반을 못 채웠다. 이 경기는 없던 일이 된다.',
+      effect:'기록에 안 남는다 · 다음에 다시 한다'});
+    ST.weekDone=false; ST.announced=false;
+    LIVE=null;
+    saveGame(true); go('home');
+    toast('노게임 — 다시 한다');
+    return;
+  }
   sch.played=true; sch.result={us:usSide.runs,them:thSide.runs};
+  if(res.rainCold) sch.rainCold=true;
 
   /* 그날 뛴 사람 전원. 대타로 교체된 선발도 여기 남아 있다.
      예전에는 slots 만 보고 누적해서, 대타가 들어간 자리의 선발 기록이
@@ -33689,7 +33775,9 @@ function calRounds(){
   const y=(ST&&ST.year)||2026;
   const dates=seasonDates(y);
   return (ST.schedule||[]).map((sc,i)=>({
-    i, sc, dt:dates[i]||null,
+    i, sc,
+    /* 더블헤더 2차전은 앞 경기와 **같은 날**이다 */
+    dt:(sc.dh===2 && dates[i-1]) ? dates[i-1] : (dates[i]||null),
     opp:(TBYID[sc.opp]||{name:sc.opp}),
   })).filter(x=>x.dt);
 }

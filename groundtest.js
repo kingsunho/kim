@@ -482,6 +482,33 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
       return pitchArmWear({pbox:{ksh:{np:60,outs:9}}})===null;
     })()`), '적게 던진 날은 아무 일도 없다');
 
+  console.log('\n[비 · 더블헤더]');
+  T(ev("/rainStopped/.test(LiveGame.prototype.endHalf.toString())"),
+    '경기 중에 비가 와서 멈춘다');
+  T(ev("/강우 콜드게임/.test(LiveGame.prototype.endHalf.toString())"+
+       " && /노게임/.test(LiveGame.prototype.endHalf.toString())"),
+    '정규이닝 절반을 넘겼으면 강우 콜드, 못 넘겼으면 노게임 — 규칙대로');
+  T(ev("/Math.ceil\\(this.INN\\/2\\)/.test(LiveGame.prototype.endHalf.toString())"),
+    '절반 기준이 정규이닝을 따라간다 (7이닝이면 4회)');
+  T(ev("/noGame:!!this.noGame/.test(LiveGame.prototype.finish.toString())"),
+    '그 사실이 결과에 실려 나간다');
+  /* 확정 처리는 commitGame 안에 있다 — 거기서 일찍 빠져나가야
+     성적·코인·순위에 안 들어간다 */
+  T(ev("/res.noGame/.test(commitGame.toString()) && /ST.weekDone=false/.test(commitGame.toString())"),
+    '노게임이면 그 주를 다시 한다 (기록·순위에 안 들어간다)');
+  T(ev(`(function(){
+      var n=0;
+      for(var s2=0;s2<12;s2++){
+        var st=newSeason();
+        n+=(st.schedule||[]).filter(function(x){return x.dh===2}).length;
+      }
+      return n>0;
+    })()`), '시즌마다 더블헤더가 잡힌다');
+  T(ev("/dh===2/.test(runWeek.toString()) && /컨디션 -10/.test(runWeek.toString())"),
+    '2차전은 몸이 안 돌아온다 — 전원 컨디션이 깎이고 투수 피로가 남는다');
+  T(ev("/sc.dh===2 && dates\\[i-1\\]/.test(calRounds.toString())"),
+    '달력에서 2차전이 앞 경기와 같은 날에 찍힌다');
+
   console.log('\n[예외]');
   T(jsErr.length===0, jsErr.length?('❌ '+jsErr.slice(0,3).join(' | ')):'콘솔 예외 없음');
 
