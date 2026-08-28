@@ -7948,8 +7948,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.94.0';
-const APP_VERSION_NOTE = '아침에 신문이 온다 — 1면부터 운세까지';
+const APP_VERSION = '2.95.0';
+const APP_VERSION_NOTE = '우린 거지구단이다 · 2군도 눌러서 본다 · 모의 드래프트';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7970,6 +7970,15 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.95.0', t:'우린 거지구단이다 · 2군도 눌러서 본다 · 모의 드래프트', items:[
+    '[요청] "팀마다 운영비 차이 있어야 될듯해 (…) 실제 단원리그c순위 대로 팀 부유 평균 가난 (…) 근데 우완좌완팀은 돈 별로 없는 거지구단으로 해줘 실제로도돈이 없으니깐 우린 나이가 어려서" — 실제 순위 순으로 **부유 · 평균 · 가난** 셋으로 갈랐다. **우완좌완은 순위와 상관없이 가난**이다',
+    '돈이 하는 일은 둘이다. **자유계약을 데려간다** — 부유 3표 · 평균 2표 · 가난 1표로 뽑는다. 그리고 **제 팀 유망주를 붙잡는다** — 부유한 팀 2군에서는 사람이 아예 안 새어 나오고, 평균은 한 명, 가난한 팀은 두 명까지 새어 나온다. 다 부자면 서로 뜯어가서 아무 일도 안 난다',
+    '[요청] "선수모드에 선수단은 좀더 쉽게 볼 수 있게 해줘야될듯 1군, 2군 선수 뭐 다 볼 수 있게" — **선수단 탭에서 1군 · 2군을 바로 오간다.** 2군을 보려고 더보기까지 들어갈 필요가 없다. 옆에 「24팀 ▸」 도 붙어 있다',
+    '2군 명단에는 이름 · 나이 · 자리 · 2군 성적 · 능력치 여섯 칸(투수면 구위·제구·체력)이 한 줄에 다 나온다. **눌러 들어가면** 카드가 뜬다. 1군에서 강등된 실존 선수도 따로 묶어서 보여준다',
+    '[질문] "드래프트 창은 어디에 있는건가??" — 시즌이 끝나야 열리는데 들어갈 데가 없었다. **더보기에 상시 입구**를 달았다. 열려 있으면 「내 차례다 ▸」 로 뜨고, 아직이면 언제 열리는지 적어준다. 진행 중이면 **홈에도 카드**가 뜬다',
+    '[요청] "드래프트 하기전에 신문에 예상 지명 순위 이런거 나오게 하자 실제처럼" — **모의 드래프트**가 1면 옆에 실린다. 지금 순위 그대로 시즌이 끝난다고 치고 꼴찌부터 예상 선수를 붙여본다. 본지 스카우트 예상이라 자주 틀린다',
+    '신문에 **구단 살림** 단신도 붙었다 — 어느 팀이 여유가 있고 우리가 얼마나 가난한지',
+  ]},
   {v:'2.94.0', t:'아침에 신문이 온다 — 1면부터 운세까지', items:[
     '[요청] "뉴스 1면 만들때 홈에 약간 팝업뜨는 것처럼 진짜 신문처럼 만들어서 순간 띄워주고 (…) 약간 진짜 신문 읽듯이 빠져들게 이런거 디테일 하나하나 요소가 꿀잼을 만든다" — **「우완좌완 일보」가 생겼다.** 주가 바뀌면 홈에서 딱 한 번 저절로 펼쳐진다. 같은 주에는 다시 안 뜬다 — 매번 뜨면 그건 광고지 신문이 아니다',
     '화면을 게임의 다른 데와 **일부러 정반대로** 만들었다. 어두운 남색 UI 사이에서 혼자 누런 종이에 검은 명조다. 제호 · 호수 · 겹괘선 · 단 · 광고 · 운세까지 넣었다',
@@ -16924,6 +16933,15 @@ function renderHomePlayer(){
         setTimeout(()=>{ try{ showPaper(); }catch(e){} }, 420);
       }
     }
+    if(ST.draft && !ST.draft.done){
+      const dc=el('button','mystatus in tapon');
+      const cur=draftNow();
+      dc.innerHTML='<div class="ms-big">📋 '+ST.draft.year+' 신인 드래프트</div>'+
+        '<div class="ms-sub">'+(cur?(cur.round+'라운드 '+cur.no+'순위 진행 중'):'끝났다')+'</div>'+
+        '<div class="ms-why">눌러서 지명하러 간다</div>';
+      dc.onclick=()=>go('draft');
+      c.appendChild(dc);
+    }
     /* 프런트 일을 내가 하는 판이면 할 일이 있을 때 알려준다.
        설정 안으로 들어가야만 보이면 아무도 안 한다.               */
     if((ST.gmRole||'auto')==='me'){
@@ -19777,8 +19795,83 @@ function tradeCard(){
   });
   return card;
 }
+/* 우리 2군 — 눌러서 세부 스탯까지 본다 */
+function renderSquadFarm(c){
+  const F=farmSlot().filter(p=>p&&!p.up);
+  const head=el('div','card');
+  head.innerHTML='<div class="card-h">우리 2군 · '+F.length+'/'+FARM_MAX+'명</div>'+
+    '<p class="muted">이름을 누르면 능력치와 2군 성적이 나온다.<br>'+
+    '<b>여기서 잘 치면 1군으로 올라온다.</b> 신인과 영입한 사람도 여기서 시작한다.</p>';
+  c.appendChild(head);
+  /* 1군에서 내려간 실존 선수 */
+  const down=Object.keys(ST.farmReal||{}).filter(k=>ST.farmReal[k]);
+  if(down.length){
+    const dc=el('div','card');
+    dc.appendChild(el('div','card-h','1군에서 내려온 사람'));
+    down.forEach(pid=>{
+      const rec=ST.farmReal[pid];
+      const row=el('button','pick-row');
+      row.innerHTML='<div class="pk-l"><div class="pk-name">'+nameOf(pid)+
+        '<span class="tagx">강등</span></div>'+
+        '<div class="pk-note">남은 '+(rec.weeks||0)+'주 · 2군 '+
+        (rec.ab?(rec.ab+'타수 '+rec.h+'안타 ('+fmt3(rec.h/rec.ab)+')'):'아직 안 뛰었다')+
+        '</div></div>';
+      row.onclick=()=>openPlayerCard(pid);
+      dc.appendChild(row);
+    });
+    c.appendChild(dc);
+  }
+  const card=el('div','card');
+  card.appendChild(el('div','card-h','2군 명단'));
+  if(!F.length) card.appendChild(el('p','muted','2군에 사람이 없다.'));
+  F.slice().sort((a,b)=>farmScore(b)-farmScore(a)).forEach(p=>{
+    const row=el('button','pick-row');
+    const a=p.ab?fmt3(p.h/p.ab):'-';
+    row.innerHTML='<div class="pk-l"><div class="pk-name">'+p.name+
+      (p.rookie?'<span class="ftag" style="color:#ffd15c">신인</span>':'')+
+      '<span class="lh" style="background:#2a323d;color:#c3ccd7">'+(p.age||26)+'세</span>'+
+      (p.pitch?'<span class="ftag">투수</span>':'')+'</div>'+
+      '<div class="pk-note">'+((p.pos||[]).map(x=>POSNAMES[x]||x).join('·')||'-')+
+      ' · '+(p.ab?(p.g+'경기 '+p.ab+'타수 '+p.h+'안타 ('+a+')'+(p.hr?(' · 홈런 '+p.hr):''))
+                 :'아직 안 뛰었다')+
+      '<br>컨택 '+Math.round(p.con)+' · 파워 '+Math.round(p.pow)+' · 선구 '+Math.round(p.eye)+
+      ' · 주루 '+Math.round(p.spd)+' · 수비 '+Math.round(p.def)+' · 어깨 '+Math.round(p.arm)+
+      (p.pitch?('<br>구위 '+Math.round(p.pitch.stf)+' · 제구 '+Math.round(p.pitch.ctl)+
+                ' · 체력 '+Math.round(p.pitch.sta)):'')+
+      '</div></div>'+
+      '<div class="pk-r"><div class="pk-stat">값어치 '+Math.round(farmScore(p))+'</div></div>';
+    row.onclick=()=>{ try{ rvCard(p); }catch(e){} };
+    card.appendChild(row);
+  });
+  c.appendChild(card);
+  if(isPlayerMode()){
+    const b=el('button','btn','선수단 운영 — 방출 · 영입');
+    b.onclick=()=>go('front');
+    c.appendChild(b);
+  }
+}
+let squadLevel='first';        // first | farm
 function renderSquad(){
   const c=$('#view'); c.innerHTML='';
+  /* [요청] "선수모드에 선수단은 좀더 쉽게 볼 수 있게 해줘야될듯 1군, 2군
+             선수 뭐 다 볼 수 있게 잘 그냥 눌러 들어가야 잘 세부 스탯같은게
+             잘 보이도록"
+     2군을 보려면 더보기 → 선수단 둘러보기까지 들어가야 했다. 그건 아무도
+     안 찾는다. **선수단 탭에서 바로 1군 · 2군을 오간다.**            */
+  {
+    const lv=el('div','subtabs');
+    [['first','1군'],['farm','2군 '+farmSlot().filter(p=>p&&!p.up).length+'명']]
+      .forEach(([k,n])=>{
+        const b=el('button','subtab'+(squadLevel===k?' on':''),n);
+        b.onclick=()=>{ squadLevel=k; renderSquad(); };
+        lv.appendChild(b);
+      });
+    const b2=el('button','subtab','24팀 ▸');
+    b2.onclick=()=>go('rosters');
+    lv.appendChild(b2);
+    c.appendChild(lv);
+  }
+  if(squadLevel==='farm'){ renderSquadFarm(c); return; }
   const tabs=el('div','subtabs');
   [['ca','능력'],['val','가치'],['war','WAR'],['cond','컨디션'],['morale','사기']].forEach(([k,n])=>{
     const b=el('button','subtab'+(squadSort===k?' on':''),n);
@@ -31940,6 +32033,14 @@ function renderMore(){
     const fb=el('button','btn','선수단 운영 — 방출 · 영입 보기');
     fb.onclick=()=>go('front');
     pl.appendChild(fb);
+    /* [질문] "드래프트 창은 어디에 있는건가??"
+       시즌이 끝나야 열리는데 들어갈 데가 없으면 어디 있는지 알 수가 없다.
+       열려 있으면 여기서 바로 들어가고, 아직이면 언제 열리는지 적어준다. */
+    const db=el('button','btn'+((ST.draft&&!ST.draft.done)?' primary':''),
+      (ST.draft&&!ST.draft.done)?'신인 드래프트 — 내 차례다 ▸'
+        :(ST.draft?'신인 드래프트 결과 보기':'신인 드래프트 (시즌이 끝나면 열린다)'));
+    db.onclick=()=>{ if(!ST.draft){ toast('시즌을 마치면 드래프트가 열린다'); return; } go('draft'); };
+    pl.appendChild(db);
   }
   pl.appendChild(el('div','set-note', ST.mode==='player'
     ? '라인업 화면이 잠긴다. 오늘 나가는지는 발표를 봐야 안다.'
@@ -32762,6 +32863,21 @@ function newsIssue(){
       briefs.push({h:`${yr} 드래프트 예상 순위`,
         b:rank.map((x,i)=>`${i+1}위 ${x.p.school} ${x.p.name}(${x.p.grade}, ${x.p.scoutLo}~${x.p.scoutHi})`).join(' · ')});
     }
+    /* [요청] "드래프트 하기전에 신문에 예상 지명 순위 이런거 나오게 하자
+               실제처럼" — **모의 드래프트**다. 지금 순위 그대로 시즌이
+       끝난다고 치고, 꼴찌부터 스카우트 예상 상위 선수를 붙여본다.
+       진짜 지명이 아니라 신문이 해보는 예상이다 — 그래서 자주 틀린다. */
+    if(!live){
+      const order=draftOrderFrom(ST.stand);
+      const pool=cls.map((p,i)=>({p,i})).sort((a,b)=>draftSeen(b.p)-draftSeen(a.p));
+      const mock=[];
+      for(let i=0;i<Math.min(6,order.length) && i<pool.length;i++){
+        const tn=(TBYID[order[i]]||{name:order[i]}).name;
+        mock.push(`${i+1}순위 ${tn} → ${pool[i].p.school} ${pool[i].p.name}`);
+      }
+      if(mock.length) subs.push({h:`${yr} 모의 드래프트 — 1라운드 예상`,
+        b:mock.join(' · ')+' … 본지 스카우트 예상이다. 순서는 지난 시즌 순위 역순으로 잡았다.'});
+    }
   }
   /* 우리 팀 지난 경기 */
   {
@@ -32784,6 +32900,12 @@ function newsIssue(){
     rows.sort((a,b)=>b.wr-a.wr);
     if(rows.length) subs.push({h:`${rows[0].t.name} 선두 유지 (${rows[0].w}승 ${rows[0].l}패)`,
       b:`${rows.length}팀이 일정을 소화했다. 2위는 ${rows[1]?rows[1].t.name:'—'}.`});
+  }
+  /* 팀 살림 — 돈 있는 팀이 사람을 데려간다 */
+  {
+    const rich=TEAMS.filter(t=>t&&teamWealth(t.id)===2).slice(0,3).map(t=>t.name);
+    if(rich.length) briefs.push({h:'구단 살림',
+      b:`${rich.join(' · ')} 등이 여유가 있다. 우완좌완은 리그에서 손꼽히게 가난하다 — 자유계약이 나와도 부르지를 못한다.`});
   }
   /* 지난주 소식 — 콜업·이적·자유계약을 단신으로 */
   (ST.notices||[]).forEach(n=>{
@@ -33053,6 +33175,27 @@ function draftRunToMe(){
      은퇴하고, 아니면 **자유계약 칸**으로 간다 → 다른 팀이 데려간다.
    우리도 거기서 데려오고, **상대 2군에서 뎁스에 막힌 애**도 데려온다.
    그게 곧 내 주전 경쟁이다.                                        */
+/* ================= 팀 살림 =================
+   [요청] "팀마다 운영비 차이 있어야 될듯해 지금 실제 팀 순위 있잖아
+           실제 단원리그c순위 대로 팀 부유 평균 가난 해야하지 않을까 싶다.
+           그래야 밸런스가 맞는게 다 돈많으면 서로 뜯어가니깐
+           근데 우완좌완팀은 돈 별로 없는 거지구단으로 해줘 실제로도돈이
+           없으니깐 우린 나이가 어려서"
+
+   LEAGUE_DEFS 는 실제 순위 순으로 적혀 있다. 그걸 그대로 셋으로 가른다.
+   **우완좌완은 순위와 상관없이 가난**이다 — 실제로 그렇다니까.
+   돈이 하는 일은 하나다: **자유계약을 데려가고, 제 팀 유망주를 붙잡는다.**
+   다 부자면 서로 뜯어가서 아무 일도 안 벌어진다.                  */
+const WEALTH_NAME=['가난','평균','부유'];
+function teamWealth(tid){
+  if(tid==='wwzw') return 0;                      // 거지구단
+  const i=LEAGUE_DEFS.findIndex(d=>d.id===tid);
+  if(i<0) return 1;
+  const n=LEAGUE_DEFS.length;
+  if(i < n/3) return 2;
+  if(i < n*2/3) return 1;
+  return 0;
+}
 const FA_MAX=24;        // 자유계약 칸에 이 이상은 안 쌓아둔다
 const FA_WEEKS=6;       // 이 주 안에 아무도 안 데려가면 야구를 접는다
 function faSlot(){
@@ -33100,9 +33243,14 @@ function signTargets(){
   if(typeof TEAMS!=='undefined') TEAMS.forEach(t=>{
     if(!t||t.id==='wwzw') return;
     const taken=(ST.aiFarmTaken&&ST.aiFarmTaken[t.id])||[];
-    aiFarmBlocked(t.id).filter(x=>taken.indexOf(x.i)<0).slice(0,2)
+    /* 부유한 팀은 제 유망주를 안 놔준다 — 돈이 있으니 붙잡는다.
+       가난한 팀에서는 두 명까지 새어 나온다. 그게 돈의 값이다. */
+    const w=teamWealth(t.id);
+    const room=(w>=2)?0:(w===1?1:2);
+    if(!room) return;
+    aiFarmBlocked(t.id).filter(x=>taken.indexOf(x.i)<0).slice(0,room)
       .forEach(x=>out.push({kind:'farm', tid:t.id, idx:x.i, p:x.p,
-        avg:x.avg, fromName:t.name+' 2군'}));
+        avg:x.avg, wealth:w, fromName:t.name+' 2군'}));
   });
   return out.sort((a,b)=>farmScore(b.p)-farmScore(a.p));
 }
@@ -33142,9 +33290,14 @@ function faWeek(rng){
     /* 잘하는 사람일수록 빨리 팔린다 */
     const pull=Math.max(0.04, Math.min(0.42, (farmScore(p)-40)*0.010+0.10));
     if(rng()<pull){
-      const cands=(typeof TEAMS!=='undefined')
-        ? TEAMS.filter(t=>t&&t.id!=='wwzw') : [];
-      const to=cands.length?cands[(rng()*cands.length)|0]:null;
+      /* 돈 있는 팀이 먼저 데려간다. 부유 3표 · 평균 2표 · 가난 1표 */
+      const bag=[];
+      (typeof TEAMS!=='undefined'?TEAMS:[]).forEach(t=>{
+        if(!t||t.id==='wwzw') return;
+        const w=teamWealth(t.id)+1;
+        for(let k=0;k<w;k++) bag.push(t);
+      });
+      const to=bag.length?bag[(rng()*bag.length)|0]:null;
       FA.splice(i,1);
       if(to) msgs.push({type:'fa', title:'자유계약 — '+p.name,
         body:`${p.name}이(가) ${to.name}(으)로 갔다.`,

@@ -295,6 +295,53 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   T(ev("normalizeState.toString().indexOf('paperSeen')>0"),
     '한 주에 한 번만 저절로 뜬다 (본 주는 기억한다)');
 
+  /* ---------------------------------------------------------------
+     [요청] 팀 살림 · 선수단 보기 · 드래프트 입구 · 모의 드래프트
+     --------------------------------------------------------------- */
+  console.log('\n[팀 살림]');
+  T(ev("teamWealth('wwzw')===0"), '우완좌완은 거지구단이다 (순위와 무관하게 가난)');
+  T(ev("teamWealth(LEAGUE_DEFS[0].id)===2 && teamWealth(LEAGUE_DEFS[LEAGUE_DEFS.length-1].id)===0"),
+    '실제 순위 위쪽이 부유하고 아래쪽이 가난하다');
+  T(ev(`(function(){
+      var n={0:0,1:0,2:0};
+      LEAGUE_DEFS.forEach(function(d){ n[teamWealth(d.id)]++; });
+      return n[0]>0 && n[1]>0 && n[2]>0;
+    })()`), '셋으로 갈린다 — 다 부자면 서로 뜯어가서 아무 일도 안 난다');
+  T(ev("/teamWealth/.test(faWeek.toString())"),
+    '자유계약은 돈 있는 팀이 더 자주 데려간다');
+  T(ev(`(function(){
+      /* 부유한 팀은 제 유망주를 안 놔준다 */
+      ST.aiFarmStat={}; ST.aiFarmUp={}; ST.aiFarmTaken={};
+      var rng=makeRng(55);
+      for(var i=0;i<10;i++) aiFarmWeek(rng);
+      var tg=signTargets().filter(function(x){return x.kind==='farm'});
+      return tg.every(function(x){return teamWealth(x.tid)<2});
+    })()`), '부유한 팀 2군에서는 사람이 안 새어 나온다');
+
+  console.log('\n[선수단 · 드래프트 입구]');
+  T(ev("typeof renderSquadFarm==='function' && /squadLevel/.test(renderSquad.toString())"),
+    '선수단 탭에서 1군 · 2군을 바로 오간다');
+  T(ev("/rvCard/.test(renderSquadFarm.toString()) && /openPlayerCard/.test(renderSquadFarm.toString())"),
+    '눌러서 세부 스탯까지 본다 (2군 선수도, 강등된 실존 선수도)');
+  T(ev("/신인 드래프트/.test(renderMore.toString())"),
+    '더보기에 드래프트 입구가 있다 (「드래프트 창은 어디에 있는건가」)');
+  T(ev(`(function(){
+      /* 드래프트 전에는 신문이 모의 드래프트를 싣는다 */
+      ST.draft=null;
+      var N=newsIssue();
+      return JSON.stringify(N).indexOf('모의 드래프트')>=0;
+    })()`), '드래프트 전에 신문에 모의 지명 순위가 실린다');
+  T(ev(`(function(){
+      var N=newsIssue();
+      var s2=JSON.stringify(N);
+      /* 꼴찌부터 이름이 불린다 — 순위 역순이 모의에도 그대로 */
+      var order=draftOrderFrom(ST.stand);
+      var first=(TBYID[order[0]]||{}).name||'';
+      return !first || s2.indexOf(first)>=0;
+    })()`), '모의 지명도 꼴찌부터다');
+  T(ev("JSON.stringify(newsIssue()).indexOf('가난')>=0"),
+    '신문이 구단 살림도 다룬다');
+
   console.log('\n[세이브]');
   T(ev("normalizeState.toString().indexOf('aiFarmStat')>0"+
        " && normalizeState.toString().indexOf('aiFarmUp')>0"),
