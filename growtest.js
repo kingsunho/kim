@@ -42,16 +42,43 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
     '실책하고 무안타면 깎인다');
   T(ev("typeof trainQueue==='function' && typeof trainBuy==='function'"+
        " && typeof trainRefund==='function'"), '훈련을 사고 무르는 길이 있다');
+  /* [요청] "초반 업그레이드는 싼데 스탯이 올라갈수록 코인이 개비싼
+             그런 더쇼처럼 해야함" */
+  T(ev("typeof trainLevel==='function' && Array.isArray(TRAIN_PRICE)"),
+    '값이 능력치 구간을 따라간다');
   T(ev(`(function(){
+      var p=TBYID['wwzw'].players.find(function(x){return x.id==='ksh'});
+      var t=pmTrainDef('bat');
+      var c0=p.con, w0=p.pow;
+      p.con=28; p.pow=28; var cheap=trainCost(t);
+      p.con=70; p.pow=70; var dear=trainCost(t);
+      p.con=c0; p.pow=w0;
+      return cheap===2 && dear===12 && dear>cheap*4;
+    })()`), '컨택 28 은 2코인 · 컨택 70 은 12코인 (여섯 배)');
+  T(ev("(function(){ return trainCost(pmTrainDef('rest'))===0; })()"),
+    '쉬는 건 그대로 공짜다');
+  T(ev(`(function(){
+      var p=TBYID['wwzw'].players.find(function(x){return x.id==='ksh'});
+      var c0=p.con,w0=p.pow,e0=p.eye,s0=p.spd,d0=p.def,a0=p.arm;
+      p.con=p.pow=p.eye=p.spd=p.def=p.arm=30;
+      var team=trainCost(pmTrainDef('team')), bat=trainCost(pmTrainDef('bat'));
+      p.con=c0;p.pow=w0;p.eye=e0;p.spd=s0;p.def=d0;p.arm=a0;
+      return team<bat;
+    })()`), '팀 훈련은 같은 구간에서도 절반값이다');
+  T(ev(`(function(){
+      var p=TBYID['wwzw'].players.find(function(x){return x.id==='ksh'});
+      var c0=p.con,w0=p.pow,d0=p.def,a0=p.arm,s0=p.spd;
+      p.con=p.pow=p.def=p.arm=p.spd=30;      // 전부 2코인 구간
       ST.coin=20; ST.myTrainQ=[]; ST.myTrain=null;
       var a=trainBuy('bat'), b=trainBuy('def'), c=trainBuy('run');
-      return !a&&!b&&!c && trainQueue().length===3 && ST.coin===8;
-    })()`), '한 주에 셋을 사면 코인이 그 자리에서 나간다 (20 → 8)');
-  T(ev("trainBuy('eye')!==null && trainQueue().length===3"),
-    '넷째는 못 산다 — 몸이 안 따라준다');
-  T(ev("trainQueueCond()<=-15"), '몰아서 사면 컨디션이 그만큼 깎인다');
-  T(ev("(function(){ trainRefund(0); return trainQueue().length===2 && ST.coin===12; })()"),
-    '무르면 코인을 돌려받는다');
+      var okBuy=(!a&&!b&&!c && trainQueue().length===3 && ST.coin===14);
+      var okFour=(trainBuy('eye')!==null && trainQueue().length===3);
+      var okCond=(trainQueueCond()<=-15);
+      trainRefund(0);
+      var okBack=(trainQueue().length===2 && ST.coin===16);
+      p.con=c0;p.pow=w0;p.def=d0;p.arm=a0;p.spd=s0;
+      return okBuy&&okFour&&okCond&&okBack;
+    })()`), '싼 구간에서 셋을 사면 20 → 14, 무르면 16 으로 돌아온다');
   T(ev(`(function(){
       /* 산 것이 다음 주에 한꺼번에 붙는다 */
       var p=TBYID['wwzw'].players.find(function(x){return x.id==='ksh'});

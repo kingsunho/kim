@@ -376,6 +376,7 @@ button{font-family:inherit;cursor:pointer}
 .trn-q .tq-x{background:#20272f;border:1px solid #39424e;color:#c3ccd7;
   border-radius:7px;padding:5px 10px;font-size:11.5px}
 .tn-cnt{color:var(--gold)}
+.tn-lv{color:#8e9bb0;font-style:normal;font-size:11px}
 @keyframes innIn{from{opacity:0;transform:translate(-50%,-50%) scale(.9)}
                  to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
 /* 내가 고른 선수 관련 플레이 강조 */
@@ -7893,8 +7894,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.88.0';
-const APP_VERSION_NOTE = '내가 던진 공도 끝까지 본다 · 2루를 돌면 3루 코치가 부른다';
+const APP_VERSION = '2.89.0';
+const APP_VERSION_NOTE = '싼 데부터 채울래 비싼 주무기를 밀래 — 훈련값이 능력치를 따라간다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7915,6 +7916,14 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.89.0', t:'싼 데부터 채울래 비싼 주무기를 밀래 — 훈련값이 능력치를 따라간다', items:[
+    '[요청] "코인을 (…) 초반 업그레이드는 싼데 스탯이 올라갈수록 코인이 개비싼 그런 더쇼처럼 해야함" — 맞는 말이다. 여태는 뭘 사든 4코인이었다. **값이 다 같으면 어디에 쓸지가 고민이 안 된다** — 아무거나 눌러도 똑같으니까',
+    '이제 **그 훈련이 올려주는 칸의 지금 값**으로 값이 매겨진다. 35 아래는 2코인, 45까지 3, 55까지 5, 65까지 8, 75까지 12, 85까지 17, 그 위는 23이다. 30짜리 컨택을 올리는 건 싸고 70짜리 컨택을 더 올리는 건 비싸다',
+    '훈련 카드마다 **지금 그 칸이 몇인지**를 같이 적는다. 왜 이 값인지가 보여야 고를 수 있다',
+    '여러 칸을 같이 올리는 훈련(팀 훈련 · 몸 만들기)은 올려주는 양으로 가중평균해서 값을 낸다. 팀 훈련은 같은 구간에서도 절반값이고, 쉬는 건 그대로 공짜다',
+    '[균형] 졸업이 26~50이라 **초반은 2~3코인**이다 — 한 경기 벌이로 두 번도 산다. 팀 주전 구간(60~87)에 들어가면 한 번에 8~23이라 몇 경기를 모아야 한다. 「1군 벽」이 능력치에만 있는 게 아니라 값에도 있다는 뜻이다',
+    '[안내] v2.86.0 · v2.87.0 · v2.88.0 세 판이 만들어만 놓고 배포가 안 돼 있었다. 그래서 「투구 훈련이 하나로 합쳐져 있다」 「결장인데 결과만 본다가 안 눌린다」 가 고쳤는데도 그대로 보였다. 이번에 같이 올라간다',
+  ]},
   {v:'2.88.0', t:'내가 던진 공도 끝까지 본다 · 2루를 돌면 3루 코치가 부른다', items:[
     '**마운드에도 2막이 생겼다.** 타석은 「내가 친 공」, 수비는 「내가 잡은 공」 을 끝까지 보여주는데 마운드만 글자 한 줄 뜨고 창이 닫혔다. 내가 던진 공이 안타가 됐는지 잡혔는지를 화면으로 한 번도 못 봤다는 뜻이다. 이제 **타구가 날아가고 야수가 쫓아가고 송구가 들어오는 것까지** 같은 그라운드에서 본다. 금색 테두리는 마운드다 — 관점만 바꾼 것이다',
     '**「알아서 치게 뒀다」 도 2막을 탄다.** 스윙을 안 골랐을 뿐이지 타구는 똑같이 날아가는데, 자동으로 넘긴 타석만 여전히 화면이 그냥 꺼졌다. 주루까지 자동인 건 아니다 — 돌지 말지는 그대로 내가 정한다',
@@ -29401,13 +29410,50 @@ function coinsForGame(res, won, tie){
   add(won?1:0, won?'이겼다':'');
   return {n:Math.max(-6,n), rows:rows};
 }
-/* 훈련 값. 많이 오르는 건 비싸다 */
+/* ================= 훈련 값 =================
+   [요청] "초반 업그레이드는 싼데 스탯이 올라갈수록 코인이 개비싼
+           그런 더쇼처럼 해야함"
+
+   맞는 말이다. 여태는 뭘 사든 4코인이었다. 값이 다 같으면 **어디에 쓸지가
+   고민이 안 된다** — 아무거나 눌러도 똑같으니까.
+   The Show 도 낮은 구간은 몇 푼이고 위로 갈수록 한 칸에 몇 배가 든다.
+   그래서 **그 훈련이 올려주는 칸의 지금 값**으로 값을 매긴다.
+     30 짜리 컨택을 올리는 건 싸고, 70 짜리 컨택을 더 올리는 건 비싸다.
+   여러 칸을 같이 올리는 훈련(팀 훈련·몸 만들기)은 올려주는 양으로
+   가중평균한다. 쉬는 건 그대로 공짜다.
+
+   [균형] 졸업이 26~50 이라 초반은 2~3코인이다 — 한 경기에 두 번도 산다.
+   팀 주전 구간(60~87)에 들어가면 8~23 이라 몇 경기를 모아야 한다.
+   그게 「1군 벽」 이 능력치에만 있는 게 아니라 값에도 있다는 뜻이다. */
+const TRAIN_PRICE=[[35,2],[45,3],[55,5],[65,8],[75,12],[85,17],[999,23]];
+/* 이 훈련이 지금 건드리는 구간이 얼마인가 */
+function trainLevel(t){
+  if(!t || !t.g) return 40;
+  const me=(typeof ST!=='undefined'&&ST)?(ST.playerId||MYID):null;
+  const p=me?(TBYID['wwzw'].players.find(x=>x.id===me)||null):null;
+  if(!p) return 40;
+  let sum=0, w=0;
+  Object.keys(t.g).forEach(k=>{
+    const gv=t.g[k]; if(!gv) return;
+    let v=null;
+    if(k==='stf'||k==='ctl'||k==='sta'||k==='brk')
+      v=p.pitch ? (k==='brk'?brkOf(p.pitch):p.pitch[k]) : null;
+    else if(k==='sIQ') v=(p.sIQ!=null)?p.sIQ:stealIQ(p);
+    else v=p[k];
+    if(v==null) return;
+    sum+=v*gv; w+=gv;
+  });
+  return w? sum/w : 40;
+}
 function trainCost(t){
   if(!t) return 0;
   if(t.id==='rest') return 0;
-  if(t.id==='team') return 2;
-  if(t.id==='body') return 3;
-  return 4;
+  const v=trainLevel(t);
+  const row=TRAIN_PRICE.find(x=>v<x[0])||TRAIN_PRICE[TRAIN_PRICE.length-1];
+  let c=row[1];
+  /* 팀 훈련은 골고루 찔끔 오르는 대신 원래 싼 자리다 — 절반값 */
+  if(t.id==='team') c=Math.max(1, Math.round(c*0.5));
+  return c;
 }
 /* [남겨둔다] 훈련을 하나만 고르던 시절의 함수다. 지금은 canAffordQ 가
    줄 길이까지 같이 본다. 세이브 호환이나 옛 화면이 다시 필요할 때가
@@ -29625,6 +29671,9 @@ function renderTrainPlayer(){
   head.innerHTML='<div class="card-h">이번 주에 뭘 할까 · 코인 '+coinSlot()+'개</div>'+
     '<p class="muted"><b>코인이 있는 만큼 그 자리에서 산다.</b> 한 주에 '+TRAIN_Q_MAX+'개까지.<br>'+
     '산 훈련은 <b>다음 주에 한꺼번에</b> 몸에 붙는다 — 사자마자 오르지는 않는다.<br>'+
+    '<b>값은 지금 능력치를 따라간다.</b> 낮은 칸은 2~3코인이고, '+
+    '주전급(60 위)으로 갈수록 한 번에 8~23코인이 든다. '+
+    '싼 데부터 채울지, 비싸도 주무기를 밀지는 네가 정한다.<br>'+
     '말리는 건 코인이 아니라 <b>몸</b>이다. 몰아서 하면 그 주 경기를 지친 몸으로 나간다.<br>'+
     '경기에서 잘하면 코인이 모인다 — 안타 +1 · 홈런 +3 · 타점 +1 · 실책 -2 · 무안타 -2.<br>'+
     (isTwoWay()?'투수 겸 타자라 한 번에 오르는 폭이 절반이다. 그게 이도류의 값이다.<br>':'')+
@@ -29691,6 +29740,8 @@ function renderTrainPlayer(){
       '<div class="tn-d">'+t.d.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')+'</div>'+
       '<div class="tn-c">컨디션 '+(t.cond>0?'+':'')+t.cond+
         ' · <b class="'+(ok?'tn-ok':'tn-no')+'">코인 '+(cost||'무료')+'</b>'+
+        /* 왜 이 값인지 — 지금 그 칸이 얼마인지를 같이 보여준다 */
+        (t.id==='rest'?'':' <i class="tn-lv">'+Math.round(trainLevel(t))+' 구간</i>')+
         (ok?'':' — 못 산다')+(bought>0?' · 또 사면 덜 는다':'')+'</div>';
     b.onclick=()=>{
       const why=trainBuy(t.id);
