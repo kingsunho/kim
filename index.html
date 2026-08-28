@@ -433,6 +433,18 @@ button{font-family:inherit;cursor:pointer}
   padding:14px 0 8px}
 .tp-res b{font-size:52px;font-weight:900;line-height:1}
 .tp-res span{font-size:19px;color:#c3ccd7;font-weight:800}
+/* 올스타 명단 · 점수판 */
+.as-list{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.as-list.pit{margin-top:6px;padding-top:7px;border-top:1px dashed #2a323d}
+.as-p{background:#141a22;border:1px solid #2a323d;border-radius:8px;
+  padding:5px 8px;font-size:12px;color:#e2eaf5}
+.as-p i{display:block;font-style:normal;font-size:10px;color:#8e9bb0}
+.as-p.me{border-color:#c9a227;background:#221d10}
+.as-score{display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:12px 0 6px}
+.as-score b{font-size:13px;color:#c3ccd7;font-weight:700}
+.as-score span{font-size:34px;font-weight:900;color:#ffd15c}
+.as-score em{font-style:normal;color:#6b7684}
 /* ================= 신문 =================
    [요청] "진짜 신문처럼 만들어서 순간 띄워주고 (…) 진짜 신문 읽듯이 빠져들게"
    그래서 게임의 다른 화면과 **일부러 정반대로** 만든다 —
@@ -8004,8 +8016,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.98.0';
-const APP_VERSION_NOTE = '훈련도 직접 한다 — 열 번 쳐서 등급만큼 번다';
+const APP_VERSION = '2.99.0';
+const APP_VERSION_NOTE = '올스타 주간 — 전야제 홈런더비부터 동부·서부까지';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8026,6 +8038,17 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.99.0', t:'올스타 주간 — 전야제 홈런더비부터 동부·서부까지', items:[
+    '[요청] "시즌 중반 7월쯤에 올스타전을 넣자 (…) 동부 서부 나누셈 (…) 투수들은 1이닝씩만던지고" — **올스타 주간**이 생겼다. 시즌 일정의 절반을 넘기면 리그가 하루 쉰다',
+    '**동부 · 서부**로 갈린다. 순위 순으로 자르면 한쪽이 다 세지니까 **팀을 번갈아** 나눴다. 명단은 리그 성적으로 뽑는다 — 야수 열한 명, 투수 다섯 명. 유니폼 색도 갈랐다',
+    '**투수는 1이닝씩** 돌아간다. 다섯 명이 차례로 올라온다',
+    '[요청] "올스타전 전야제 전날엔 홈런더비, 리그에서 장타율 높은애들 10명이서" — **전야제 홈런더비**가 먼저다. 장타율 상위 열 명, 열 번 쳐서 몇 개 넘기나. 상위 둘이 결승 다섯 스윙',
+    '**내가 뽑히면 직접 친다.** 훈련 세션과 같은 타이밍 바인데, 정타를 맞혀도 **파워로 한 번 더 굴린다** — 맞았는데 안 넘어가는 게 있다. 못 뽑히면 관중석에서 본다. 그게 다음 시즌의 목표가 된다',
+    '올스타전과 더비는 **시즌 기록에 안 들어간다.** 실제로도 그렇다. 남는 건 신문 기사와 이름값이다',
+    '[요청] "올스타전 하기전이나 예를들어 막 김선호: 홈런더비 우승 따놓은 당상? 막 이런느낌 (…) 기레기들 느낌 팍팍 넣어서" — 올스타 주간이 가까워지면 신문 1면이 **그 톤으로 바뀐다.** 「홈런더비 우승 \'따놓은 당상\'?」 「[단독] 관계자 "손목만 괜찮으면"」 「충격, 올스타 명단에 \'그 이름\'이 없다… 왜?」 「독주 굳히나… 2위와 격차 \'이 정도\'」',
+    '**낚시는 제목이지 기록이 아니다.** 장타율도 순위도 진짜 값이다 — 그게 기레기와 거짓말의 차이다. 검사로도 못 박았다',
+    '올스타 주간이 끝나면 결과 기사로 바뀐다 — 스코어 · MVP · 더비 우승자',
+  ]},
   {v:'2.98.0', t:'훈련도 직접 한다 — 열 번 쳐서 등급만큼 번다', items:[
     '[요청] "훈련도 실제 플레이하는 느낌이 있었으면 좋겠다 (…) 배팅훈련은 타격모션 10번해서 뭐 8번 이상 성공하면 s 6번 a 등등" · "그 훈련 플레이를 해서 코인을 얻는 구조로가자, 일반 플레이도 얻고 훈련도 얻는거지 그걸 원래 시스템에 투자하는거고" — 그대로 만들었다',
     '**훈련 세션**이 생겼다. 열 번 해서 몇 번 맞히느냐로 등급이 갈린다 — **S(8개↑) +10코인 · A(6개↑) +7 · B(4개↑) +4 · C +1**. **공짜다** — 세션은 코인을 쓰지 않고 벌어오기만 한다. 그래서 순환이 안 생긴다',
@@ -17025,6 +17048,16 @@ function renderHomePlayer(){
     /* [요청] "홈에 약간 팝업뜨는 것처럼 진짜 신문처럼 만들어서 순간 띄워주고"
        주가 바뀌면 딱 한 번 저절로 펼쳐진다. 같은 주에 홈을 몇 번 들락거려도
        다시 안 뜬다 — 그러면 그건 광고지 신문이 아니다.             */
+    /* [요청] "시즌 중반 7월쯤에 올스타전" — 그 주가 오면 홈에서 잡는다 */
+    if(isPlayerMode() && (ST.round||0)>=allstarWeek() && !(ST.allstar&&ST.allstar.done)){
+      const ab=el('button','mystatus in tapon');
+      const A=ST.allstar;
+      ab.innerHTML='<div class="ms-big">⭐ 올스타 주간</div>'+
+        '<div class="ms-sub">'+((A&&A.step==='game')?'올스타전':'전야제 · 홈런더비')+'</div>'+
+        '<div class="ms-why">리그가 하루 쉰다 — 뽑혔나 보러 간다</div>';
+      ab.onclick=()=>go('allstar');
+      c.appendChild(ab);
+    }
     {
       /* [질문] "더쇼 rtts모드처럼 달력스케줄 나오면서" — 달력 입구 */
       const cb=el('button','mystatus in tapon');
@@ -33380,6 +33413,373 @@ function trainRun(def0){
   };
 }
 
+/* ================= 올스타전 · 홈런더비 =================
+   [요청] "시즌 중반 7월쯤에 올스타전을 넣자 그 리그에서 잘하는 애들 끼리
+           뭐 그냥 너가 알아서 동부 서부 나누셈 붙는거지 옷색깔 다르긴한데
+           투수들은 1이닝씩만던지고"
+   [요청] "올스타전 전야제 전날엔 홈런더비, 리그에서 장타율 높은애들
+           10명이서 서로 홈런 대결"
+
+   시즌 중반(전체 일정의 절반)에 열린다. 리그 성적으로 뽑고, 팀을
+   번갈아 동부·서부로 가른다 — 순위 순으로 자르면 한쪽이 다 강해진다.
+   **투수는 1이닝씩**이라 다섯 명이 돌아간다.
+
+   [기록] 올스타전과 더비는 **시즌 기록에 안 들어간다.** 실제로도 그렇다.
+   여기서 잘하면 남는 건 신문 기사와 명예다.
+   [뽑히는 게 목표다] 못 뽑히면 신문으로 본다. 그게 다음 시즌의 동기다. */
+const AS_INN=5;
+const DERBY_N=10;
+const DERBY_SWINGS=10;
+function allstarWeek(){
+  const n=((ST&&ST.schedule)||[]).length||22;
+  return Math.max(3, Math.floor(n/2));
+}
+/* 팀을 번갈아 가른다 — 실제 순위로 자르면 동부가 다 세진다 */
+function asSide(tid){
+  const i=(typeof TEAMS!=='undefined')?TEAMS.findIndex(t=>t&&t.id===tid):-1;
+  return (i<0||i%2===0)?'east':'west';
+}
+const AS_NAME={east:'동부 올스타', west:'서부 올스타'};
+const AS_UNI={east:{cap:'#2f5fb0',top:'#e8edf5',num:'#2f5fb0'},
+              west:{cap:'#b23a34',top:'#2a2f36',num:'#e8762c'}};
+function asStatOf(tid,pid){
+  return (tid==='wwzw') ? ((ST.bat||{})[pid]||null) : ((ST.lgBat||{})[pid]||null);
+}
+/* 올스타 명단 — 야수 아홉 · 투수 다섯. 리그 성적으로 뽑는다 */
+function allstarBuild(){
+  const rng=makeRng(rvSeedOf('as|'+((ST.year||2026))+'|'+((ST.seasonNo||1))));
+  const bats={east:[],west:[]}, pits={east:[],west:[]};
+  TEAMS.forEach(t=>{
+    if(!t) return;
+    const sd=asSide(t.id);
+    (t.players||[]).forEach(p=>{
+      const b=asStatOf(t.id,p.id);
+      if(!b||(b.ab||0)<6) return;
+      bats[sd].push({t,p,b, avg:b.h/b.ab, v:(b.h/b.ab)*1.6+ops(b)});
+    });
+    (t.pitchers||[]).forEach(q=>{
+      const l=(t.id==='wwzw')?((ST.pit||{})[q.id]):((ST.lgPit||{})[q.id]);
+      const ip=l?((l.outs||0)/3):0;
+      if(ip<2) return;
+      const era=ip? (l.er*7/ip) : 99;
+      pits[sd].push({t,q,l, ip, era, v:-era+ip*0.35});
+    });
+  });
+  const mk=(sd)=>{
+    const bs=bats[sd].sort((a,b)=>b.v-a.v).slice(0,11);
+    const ps=pits[sd].sort((a,b)=>b.v-a.v).slice(0,5);
+    const players=bs.map(x=>({...x.p, _team:x.t.name}));
+    const pitchers=ps.map(x=>({...x.q, _team:x.t.name}));
+    /* 사람이 모자라면 그 쪽 팀들에서 그냥 잘하는 사람으로 채운다 */
+    if(players.length<9){
+      TEAMS.filter(t=>t&&asSide(t.id)===sd).forEach(t=>{
+        (t.players||[]).forEach(p=>{
+          if(players.length>=9||players.some(x=>x.id===p.id)) return;
+          players.push({...p, _team:t.name});
+        });
+      });
+    }
+    if(!pitchers.length){
+      TEAMS.filter(t=>t&&asSide(t.id)===sd).forEach(t=>{
+        (t.pitchers||[]).slice(0,1).forEach(q=>{
+          if(pitchers.length>=5) return;
+          pitchers.push({...q, _team:t.name});
+        });
+      });
+    }
+    /* [1이닝씩] 체력을 낮춰 놓으면 엔진이 세 아웃마다 바꾼다.
+       엔진을 안 건드리고 「올스타전 투수 운용」 을 만드는 제일 싼 길이다. */
+    pitchers.forEach(q=>{ q.sta=17; });
+    return finalizeTeam({id:'as_'+sd, name:AS_NAME[sd], ops:1.0, avg:.30,
+      tend:{k:1.0,bb:1.0,sb:1.1,babip:1.0,pow:1.15,err:0.9},
+      players, pitchers, isUser:false});
+  };
+  const east=mk('east'), west=mk('west');
+  const me=ST.playerId||MYID;
+  const mySide=east.players.some(p=>p.id===me)?'east'
+              :(west.players.some(p=>p.id===me)?'west':null);
+  return {east, west, mySide, rng};
+}
+/* 홈런더비 — 장타율 상위 열 명 */
+function derbyField(){
+  const out=[];
+  TEAMS.forEach(t=>{
+    if(!t) return;
+    (t.players||[]).forEach(p=>{
+      const b=asStatOf(t.id,p.id);
+      if(!b||(b.ab||0)<6) return;
+      const slg=(b.h+b.d2+b.d3*2+b.hr*3)/b.ab;
+      out.push({t,p,b,slg});
+    });
+  });
+  out.sort((a,b)=>b.slg-a.slg);
+  const me=ST.playerId||MYID;
+  const top=out.slice(0,DERBY_N);
+  /* 내가 열 명 안에 못 들면 그냥 못 나가는 거다 — 그게 목표가 된다 */
+  return top;
+}
+/* AI 한 명이 몇 개 넘기나 */
+function derbySwing(p, rng, swings){
+  const pw=(p.pow||45);
+  let hr=0;
+  for(let i=0;i<(swings||DERBY_SWINGS);i++){
+    const pr=Math.max(0.05, Math.min(0.62, (pw-38)*0.0115+0.10));
+    if(rng()<pr) hr++;
+  }
+  return hr;
+}
+/* ---------- 올스타 주간 화면 ---------- */
+function asSlot(){
+  if(!ST.allstar) ST.allstar={year:(ST.year||2026), step:'derby', done:false,
+                              derby:null, game:null};
+  return ST.allstar;
+}
+function renderAllstar(){
+  const c=$('#view'); c.innerHTML='';
+  const A=asSlot();
+  const me=ST.playerId||MYID;
+  const head=el('div','card');
+  head.innerHTML='<div class="hs-yr">'+(ST.year||2026)+' 올스타 주간</div>'+
+    '<div class="card-h">'+(A.step==='derby'?'전야제 · 홈런더비'
+      :(A.step==='game'?'올스타전':'올스타 주간 끝'))+'</div>'+
+    '<p class="muted">시즌 중반, 리그가 하루 쉰다. '+
+    '<b>기록에는 안 들어간다</b> — 여기서 남는 건 신문 기사와 이름값이다.</p>';
+  c.appendChild(head);
+
+  /* ---- 전야제 홈런더비 ---- */
+  if(A.step==='derby'){
+    const field=derbyField();
+    const inIt=field.some(x=>x.p.id===me);
+    const fc=el('div','card');
+    fc.appendChild(el('div','card-h','출전 10인 · 장타율 순'));
+    field.forEach((x,i)=>{
+      const row=el('div','pk-row'+(x.p.id===me?' cur':''));
+      row.innerHTML='<div class="pk-l"><div class="pk-name">'+
+        '<span class="pc-no">'+(i+1)+'</span> '+x.p.name+
+        (x.p.id===me?'<span class="ftag" style="color:#ffd15c">나</span>':'')+'</div>'+
+        '<div class="pk-note">'+x.t.name+' · 장타율 '+fmt3(x.slg)+
+        ' · 파워 '+Math.round(x.p.pow)+'</div></div>';
+      fc.appendChild(row);
+    });
+    c.appendChild(fc);
+    if(A.derby){
+      const rc=el('div','card');
+      rc.appendChild(el('div','card-h','결과'));
+      A.derby.rows.forEach((r,i)=>{
+        const row=el('div','pk-row'+(r.id===me?' cur':''));
+        row.innerHTML='<div class="pk-l"><div class="pk-name">'+
+          (i===0?'🏆 ':'')+r.name+'</div>'+
+          '<div class="pk-note">'+r.team+' · 1차 '+r.r1+'개'+
+          (r.r2!=null?(' · 결승 '+r.r2+'개'):'')+'</div></div>';
+        rc.appendChild(row);
+      });
+      c.appendChild(rc);
+      const nb=el('button','btn primary','올스타전으로 ▸');
+      nb.onclick=()=>{ A.step='game'; saveGame(true); renderAllstar(); };
+      c.appendChild(nb);
+      return;
+    }
+    const b=el('button','btn primary', inIt?'홈런더비 나간다 ▸':'더비를 본다 ▸');
+    b.onclick=()=>{ if(inIt) derbyPlay(field); else { derbyAuto(field); renderAllstar(); } };
+    c.appendChild(b);
+    if(!inIt) c.appendChild(el('p','muted',
+      '장타율 열 명 안에 못 들었다. 관중석에서 본다 — 다음엔 저기 서 있자.'));
+    return;
+  }
+
+  /* ---- 올스타전 ---- */
+  if(A.step==='game'){
+    const B=allstarBuild();
+    const info=el('div','card');
+    info.innerHTML='<div class="card-h">'+AS_NAME.east+' vs '+AS_NAME.west+'</div>'+
+      '<p class="muted">'+AS_INN+'이닝 · <b>투수는 1이닝씩</b> 돌아간다.<br>'+
+      (B.mySide? '<b style="color:#ffd15c">'+AS_NAME[B.mySide]+'에 뽑혔다.</b> 직접 뛴다.'
+               : '이번엔 못 뽑혔다. 중계로 본다.')+'</p>';
+    c.appendChild(info);
+    [['east',B.east],['west',B.west]].forEach(([sd,t])=>{
+      const rc=el('div','card');
+      rc.appendChild(el('div','card-h',AS_NAME[sd]));
+      const wrap=el('div','as-list');
+      t.players.slice(0,11).forEach(p=>{
+        const sp=el('span','as-p'+(p.id===me?' me':''));
+        sp.innerHTML=p.name+'<i>'+(p._team||'')+'</i>';
+        wrap.appendChild(sp);
+      });
+      rc.appendChild(wrap);
+      const pw=el('div','as-list pit');
+      t.pitchers.slice(0,5).forEach(q=>{
+        const sp=el('span','as-p'+(q.id===me?' me':''));
+        sp.innerHTML='⚾ '+q.name+'<i>'+(q._team||'')+'</i>';
+        pw.appendChild(sp);
+      });
+      rc.appendChild(pw);
+      c.appendChild(rc);
+    });
+    if(A.game){
+      const g=A.game;
+      const rc=el('div','card');
+      rc.innerHTML='<div class="card-h">최종</div>'+
+        '<div class="as-score"><b>'+AS_NAME.east+'</b><span>'+g.e+'</span>'+
+        '<em>:</em><span>'+g.w+'</span><b>'+AS_NAME.west+'</b></div>'+
+        '<p class="muted">'+(g.mvp?('MVP — '+g.mvp):'')+'</p>';
+      c.appendChild(rc);
+      const nb=el('button','btn primary','시즌으로 돌아간다 ▸');
+      nb.onclick=()=>{ A.done=true; A.step='done'; saveGame(true); go('home'); };
+      c.appendChild(nb);
+      return;
+    }
+    const b=el('button','btn primary', B.mySide?'올스타전 뛴다 ▸':'경기를 본다 ▸');
+    b.onclick=()=>allstarPlay(B);
+    c.appendChild(b);
+    return;
+  }
+  const hb=el('button','btn primary','홈으로'); hb.onclick=()=>go('home'); c.appendChild(hb);
+}
+/* 더비 — 자동 */
+function derbyAuto(field){
+  const A=asSlot();
+  const rng=makeRng(rvSeedOf('derby|'+((ST.year||2026))));
+  const rows=field.map(x=>({id:x.p.id, name:x.p.name, team:x.t.name,
+    r1:derbySwing(x.p,rng), r2:null}));
+  rows.sort((a,b)=>b.r1-a.r1);
+  /* 상위 둘이 결승 다섯 스윙 */
+  const f2=rows.slice(0,2);
+  f2.forEach(r=>{
+    const p=field.find(x=>x.p.id===r.id).p;
+    r.r2=derbySwing(p,rng,5);
+  });
+  f2.sort((a,b)=>(b.r2-a.r2)||(b.r1-a.r1));
+  const rest=rows.filter(r=>!f2.some(x=>x.id===r.id));
+  A.derby={rows:f2.concat(rest), champ:f2[0]?f2[0].name:''};
+  ST.notices=ST.notices||[];
+  ST.notices.push({type:'fa', title:'홈런더비 — '+(A.derby.champ||'')+' 우승',
+    body:A.derby.rows.slice(0,3).map(r=>r.name+' '+r.r1+'개').join(' · '),
+    effect:'기록에는 안 들어간다'});
+  saveGame(true);
+}
+/* 더비 — 내가 친다. 타이밍 바 열 번, 정타면 파워로 넘긴다 */
+function derbyPlay(field){
+  const c=$('#view'); c.innerHTML='';
+  const me=ST.playerId||MYID;
+  const mine=field.find(x=>x.p.id===me);
+  const p=mine.p;
+  const zw=Math.max(11, Math.min(30, 12+(p.con||45)*0.20));
+  let n=0, hr=0, running=false, raf=null, dir=1, pos=0, speed=0;
+  const head=el('div','card');
+  head.innerHTML='<div class="card-h">🏟 홈런더비 · '+p.name+'</div>'+
+    '<p class="muted">열 번 친다. <b>정타를 맞히면</b> 파워로 담장을 넘긴다 — '+
+    '파워 '+Math.round(p.pow)+'.</p>';
+  c.appendChild(head);
+  const box=el('div','card');
+  const bar=el('div','tp-bar');
+  bar.innerHTML='<div class="tp-zone"></div><div class="tp-mk"></div>';
+  box.appendChild(bar);
+  const zone=bar.querySelector('.tp-zone'), mk=bar.querySelector('.tp-mk');
+  zone.style.left=(50-zw/2)+'%'; zone.style.width=zw+'%';
+  const note=el('div','tp-note','초록 칸에서 눌러라');
+  box.appendChild(note);
+  const cnt=el('div','tp-res');
+  cnt.innerHTML='<b style="color:#ffd15c">0</b><span>0 / '+DERBY_SWINGS+'</span>';
+  box.appendChild(cnt);
+  c.appendChild(box);
+  const btn=el('button','btn primary tp-go','시작 ▶'); c.appendChild(btn);
+  const rng=makeRng(rvSeedOf('derbyme|'+((ST.year||2026))));
+  const stop=()=>{ running=false; if(raf) cancelAnimationFrame(raf); raf=null; };
+  const step=()=>{ if(!running) return;
+    pos+=dir*speed;
+    if(pos>=100){pos=100;dir=-1;} if(pos<=0){pos=0;dir=1;}
+    mk.style.left=pos+'%'; raf=requestAnimationFrame(step); };
+  const next=()=>{
+    if(n>=DERBY_SWINGS){ done(); return; }
+    speed=0.9+n*0.12; pos=dir>0?0:100; running=true;
+    note.textContent=(n+1)+'/'+DERBY_SWINGS; btn.textContent='지금!'; step();
+  };
+  const tap=()=>{
+    if(!running){ next(); return; }
+    stop();
+    const lo=50-zw/2, hi=50+zw/2;
+    const ok=(pos>=lo&&pos<=hi);
+    let out=false;
+    if(ok){
+      const pr=Math.max(0.20, Math.min(0.90, (p.pow-38)*0.014+0.34));
+      if(rng()<pr){ hr++; out=true; }
+    }
+    n++;
+    cnt.innerHTML='<b style="color:#ffd15c">'+hr+'</b><span>'+n+' / '+DERBY_SWINGS+'</span>';
+    note.innerHTML=out?'<b style="color:#ffd15c">넘어갔다!</b>'
+      :(ok?'<b style="color:#c9a227">맞았는데 안 넘어갔다</b>'
+          :'<b style="color:#e08a70">빗맞았다</b>');
+    btn.textContent=(n>=DERBY_SWINGS)?'결과 ▸':'다음 ▶';
+  };
+  btn.onclick=tap;
+  bar.addEventListener('pointerdown',(e)=>{ if(e&&e.preventDefault)e.preventDefault(); tap(); });
+  const done=()=>{
+    stop();
+    const A=asSlot();
+    const rng2=makeRng(rvSeedOf('derby|'+((ST.year||2026))));
+    const rows=field.map(x=>({id:x.p.id, name:x.p.name, team:x.t.name,
+      r1:(x.p.id===me)?hr:derbySwing(x.p,rng2), r2:null}));
+    rows.sort((a,b)=>b.r1-a.r1);
+    const f2=rows.slice(0,2);
+    f2.forEach(r=>{
+      if(r.id===me){ r.r2=Math.round(hr*0.5); return; }
+      const q=field.find(x=>x.p.id===r.id).p;
+      r.r2=derbySwing(q,rng2,5);
+    });
+    f2.sort((a,b)=>(b.r2-a.r2)||(b.r1-a.r1));
+    const rest=rows.filter(r=>!f2.some(x=>x.id===r.id));
+    A.derby={rows:f2.concat(rest), champ:f2[0]?f2[0].name:''};
+    ST.notices=ST.notices||[];
+    ST.notices.push({type:'fa', title:'홈런더비 — '+A.derby.champ+' 우승',
+      body:nameOf(me)+' '+hr+'개', effect:'기록에는 안 들어간다'});
+    saveGame(true); renderAllstar();
+  };
+}
+/* 올스타전 — 두 팀을 붙인다 */
+function allstarPlay(B){
+  const A=asSlot();
+  const c=$('#view'); c.innerHTML='';
+  const head=el('div','card');
+  head.innerHTML='<div class="hs-yr">'+(ST.year||2026)+' 올스타전</div>'+
+    '<div class="card-h">'+AS_NAME.east+' vs '+AS_NAME.west+'</div>'+
+    '<div class="hs-kind">'+AS_INN+'이닝 · 투수 1이닝씩</div>';
+  c.appendChild(head);
+  const st=el('div','stage'); st.id='stage'; c.appendChild(st);
+  const T={bat:'normal',run:'normal',hook:'normal'};
+  const me=ST.playerId||MYID;
+  const homeIsEast=true;
+  LIVE=new LiveGame({
+    away:B.west, home:B.east,
+    awayLineup:aiLineup(B.west), homeLineup:aiLineup(B.east),
+    awayRotation:aiRotation(B.west), homeRotation:aiRotation(B.east),
+    awayTactics:T, homeTactics:T, awayCond:{}, homeCond:{},
+    userIsHome:(B.mySide!=='west'), myId:B.mySide?me:null,
+    rng:B.rng, innings:AS_INN,
+    park:{hr:1.35,d2:1.05,d3:1.00,err:0.90,babip:1.02},
+  });
+  LIVE.manual=false; LIVE._as=true; LIVE._logSeen=0;
+  buildLiveStage();
+  let g=0;
+  while(!LIVE.over && g++<4000){ if(LIVE.pending) LIVE.applyDecision('change'); LIVE.step(); }
+  LIVE.finish();
+  const r=LIVE.result;
+  const e=(homeIsEast?LIVE.home:LIVE.away).runs, w=(homeIsEast?LIVE.away:LIVE.home).runs;
+  /* MVP — 그날 제일 많이 친 사람 */
+  let mvp=null, bv=-1;
+  Object.keys(LIVE.box||{}).forEach(id=>{
+    const b=LIVE.box[id]; if(!b||!b.pa) return;
+    const v=b.h*2+b.hr*3+b.rbi;
+    if(v>bv){ bv=v; mvp=LIVE.nameOf?LIVE.nameOf(id):id; }
+  });
+  A.game={e, w, mvp};
+  LIVE=null;
+  ST.notices=ST.notices||[];
+  ST.notices.push({type:'fa', title:'올스타전 — '+AS_NAME.east+' '+e+' : '+w+' '+AS_NAME.west,
+    body:(mvp?('MVP '+mvp):'')+(B.mySide?(' · 나는 '+AS_NAME[B.mySide]+'로 나갔다'):' · 나는 못 뽑혔다'),
+    effect:'기록에는 안 들어간다'});
+  saveGame(true); renderAllstar();
+}
+
 const PAPER_NAME='우완좌완 일보';
 /* 조사 — 게임 안에서는 「이(가)」 로 퉁쳐도 말투가 사니까 괜찮은데,
    **신문은 다르다.** 「김선호은(는)」 이 1면에 박히면 신문 같지가 않다.
@@ -33617,6 +34017,45 @@ function newsIssue(){
       const hr=all.slice().sort((a,b)=>(b.b.hr||0)-(a.b.hr||0))[0];
       if(hr && hr.b.hr) briefs.push({h:'홈런 선두',
         b:`${hr.p.name}(${hr.t.name}) ${hr.b.hr}개. 이 리그에서 담장을 넘기는 건 쉬운 일이 아니다.`});
+    }
+  }
+  /* [요청] "올스타전 이런거 할때도 신문 나오고 (…) 올스타전 하기전이나
+             예를들어 막 김선호: 홈런더비 우승 따놓은 당상? 막 이런느낌
+             알잖아 · 기레기들 느낌 팍팍 넣어서"
+
+     그래서 여기만 톤을 바꾼다. 물음표로 끝내고, 단정은 안 하고 흘리고,
+     「관계자에 따르면」 을 붙인다. **숫자는 진짜다** — 낚시는 제목이지
+     기록이 아니다. 그게 기레기와 거짓말의 차이다.                  */
+  if(typeof allstarWeek==='function' && isPlayerMode()){
+    const A=ST.allstar;
+    const near=(ST.round||0)>=allstarWeek()-2;
+    if(near && !(A&&A.done)){
+      const f=derbyField();
+      if(f.length){
+        const t1=f[0], mine=f.findIndex(x=>x.p.id===me);
+        const TITLES=[
+          `${t1.p.name}, 홈런더비 우승 '따놓은 당상'?`,
+          `[단독] ${t1.p.name} 홈런더비 출전… 관계자 "손목만 괜찮으면"`,
+          `충격, 올스타 명단에 '그 이름'이 없다… 왜?`,
+          `${t1.p.name} 독주 굳히나… 2위와 격차 '이 정도'`,
+        ];
+        const h=TITLES[(rng()*TITLES.length)|0];
+        lead.push({h, b:`전야제 홈런더비 출전 열 명이 정해졌다. `+
+          `${t1.t.name} ${t1.p.name}이(가) 장타율 ${fmt3(t1.slg)}로 맨 앞이다. `+
+          `${f[1]?`${f[1].p.name}(${fmt3(f[1].slg)})가 뒤를 잇는다. `:''}`+
+          `한 관계자는 "그날 컨디션이 다 한다"고 했다.`});
+        briefs.push({h:'홈런더비 출전 10인',
+          b:f.slice(0,5).map((x,i)=>`${i+1}위 ${x.p.name}(${x.t.name}) ${fmt3(x.slg)}`).join(' · ')+' 외 5명'});
+        briefs.push({h: mine>=0 ? `${nameOf(me)} 더비 출전 확정 (${mine+1}번)`
+                                : `${nameOf(me)}, 이번엔 관중석`,
+          b: mine>=0 ? '장타율 열 명 안에 들었다. 그날 방망이가 어떨지는 아무도 모른다.'
+                     : '장타율 열 명 안에 못 들었다. 다음 시즌을 기약한다.'});
+      }
+    } else if(A && A.done && A.game){
+      lead.push({h:`올스타전 ${AS_NAME.east} ${A.game.e} : ${A.game.w} ${AS_NAME.west}`,
+        b:(A.game.mvp?`MVP는 ${A.game.mvp}. `:'')+
+          `투수는 한 이닝씩 돌았다. 기록에는 안 남는 하루였지만 이름은 남았다.`+
+          (A.derby&&A.derby.champ?` 전날 홈런더비는 ${A.derby.champ}이(가) 가져갔다.`:'')});
     }
   }
   /* 팀 살림 — 돈 있는 팀이 사람을 데려간다 */
@@ -34519,7 +34958,7 @@ const VIEWS={home:renderHome,squad:renderSquad,lineup:renderLineup,kakao:renderK
   tutorial:renderTutorial,player:renderPlayer,hall:renderHall,whatif:renderWhatIf,
   role:renderRole,slots:renderSlots,start:renderStart,mode:renderMode,hs:renderHS,
   glog:renderGlog,rosters:renderRosters,front:renderFront,draft:renderDraft,
-  entry:renderEntry,cal:renderCal,trainplay:renderTrainPlay};
+  entry:renderEntry,cal:renderCal,trainplay:renderTrainPlay,allstar:renderAllstar};
 /* 선수 모드면 감독 전용 탭을 아예 안 보이게 한다.
    눌러도 막히긴 하지만, 있는데 안 되는 것보다 없는 게 낫다. */
 function paintTabs(){
@@ -34799,6 +35238,7 @@ function normalizeState(){
   if(ST.draft===undefined)ST.draft=null;
   if(typeof ST.paperSeen!=='number')ST.paperSeen=-1;
   if(typeof ST.trainSessAt!=='number')ST.trainSessAt=-1;
+  if(ST.allstar===undefined)ST.allstar=null;
   if(ST.entryDraft===undefined)ST.entryDraft=null;
   if(typeof ST.founderOn!=='boolean')ST.founderOn=false;
   if(!Array.isArray(ST.myTrainQ))ST.myTrainQ=(ST.myTrain?[ST.myTrain]:[]);

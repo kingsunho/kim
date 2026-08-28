@@ -462,6 +462,83 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
       return a.indexOf('김선호')>=0 && b2.indexOf('송승민')>=0 && a!==b2;
     })()`), '누구로 시작하든 그 사람 기사가 나온다');
 
+  /* ---------------------------------------------------------------
+     [요청] 올스타전(동부/서부, 투수 1이닝) · 전야제 홈런더비 ·
+            신문에 기레기 톤 예고 기사
+     --------------------------------------------------------------- */
+  console.log('\n[올스타전 · 홈런더비]');
+  T(ev("typeof allstarBuild==='function' && typeof derbyField==='function'"+
+       " && typeof renderAllstar==='function' && !!VIEWS.allstar"),
+    '올스타전과 홈런더비가 있다');
+  T(ev("(function(){var n=(ST.schedule||[]).length; return allstarWeek()>=3 && allstarWeek()<=n;})()"),
+    '시즌 중반에 열린다');
+  T(ev(`(function(){
+      /* 동부·서부가 번갈아 갈린다 — 순위로 자르면 한쪽이 다 세진다 */
+      var e=0,w=0;
+      TEAMS.forEach(function(t){ if(asSide(t.id)==='east')e++; else w++; });
+      return Math.abs(e-w)<=1;
+    })()`), '동부·서부가 반씩 갈린다');
+  T(ev(`(function(){
+      ST.year=2026; ST.round=11;
+      var us=TBYID['wwzw'];
+      us.players.forEach(function(p,i){
+        ST.bat[p.id]=ST.bat[p.id]||blankBat();
+        var b=ST.bat[p.id]; b.pa=40;b.ab=36;b.h=14-i%6;b.d2=4;b.hr=(i<3?2:0);b.rbi=9;
+      });
+      TEAMS.forEach(function(t){ if(t.id==='wwzw')return;
+        (t.players||[]).slice(0,8).forEach(function(p,i){
+          ST.lgBat[p.id]=ST.lgBat[p.id]||blankBat();
+          var b=ST.lgBat[p.id]; b.pa=38;b.ab=34;b.h=9+((i*3)%9);b.d2=3;b.hr=(i%4===0?2:0);b.rbi=8;
+        });
+        (t.pitchers||[]).slice(0,3).forEach(function(q,i){
+          ST.lgPit[q.id]=ST.lgPit[q.id]||blankPit();
+          var l=ST.lgPit[q.id]; l.outs=18+i*3; l.er=4+i;
+        });
+      });
+      var B=allstarBuild();
+      return B.east.players.length>=9 && B.west.players.length>=9
+             && B.east.pitchers.length>=1 && B.west.pitchers.length>=1;
+    })()`), '리그 성적으로 양쪽 명단이 채워진다');
+  T(ev(`(function(){
+      var B=allstarBuild();
+      return B.east.pitchers.every(function(q){return q.sta===17;})
+          && B.west.pitchers.every(function(q){return q.sta===17;});
+    })()`), '투수는 1이닝씩 — 체력을 낮춰 세 아웃마다 바뀐다');
+  T(ev("derbyField().length===DERBY_N || derbyField().length>0"),
+    '홈런더비는 장타율 상위 열 명이다');
+  T(ev(`(function(){
+      var f=derbyField();
+      for(var i=1;i<f.length;i++) if(f[i-1].slg<f[i].slg) return false;
+      return true;
+    })()`), '장타율 순으로 줄 세운다');
+  T(ev(`(function(){
+      ST.allstar=null; var A=asSlot();
+      var f=derbyField();
+      derbyAuto(f);
+      A=ST.allstar;
+      return A.derby && A.derby.rows.length===f.length && A.derby.champ
+             && A.derby.rows[0].r2!=null;
+    })()`), '더비가 굴러가고 결승까지 간다');
+  T(ev(`(function(){
+      /* 올스타 주간이 가까우면 신문이 예고 기사를 쓴다 — 기레기 톤 */
+      ST.allstar=null; ST.round=Math.max(0, allstarWeek()-1);
+      var s2=JSON.stringify(newsIssue());
+      return /따놓은 당상|단독|충격|굳히나/.test(s2) && /홈런더비 출전 10인/.test(s2);
+    })()`), '올스타 전에 예고 기사가 나온다 (「따놓은 당상?」 같은)');
+  T(ev(`(function(){
+      /* 낚시는 제목이지 숫자가 아니다 — 장타율은 진짜 값이어야 한다 */
+      var f=derbyField();
+      var s2=JSON.stringify(newsIssue());
+      return s2.indexOf(f[0].p.name)>=0 && s2.indexOf(fmt3(f[0].slg))>=0;
+    })()`), '제목은 낚시라도 숫자는 진짜다');
+  T(ev(`(function(){
+      ST.allstar={year:ST.year,step:'done',done:true,
+                  derby:{rows:[],champ:'아무개'}, game:{e:5,w:3,mvp:'홍길동'}};
+      var s2=JSON.stringify(newsIssue());
+      ST.allstar=null;
+      return /올스타전 동부 올스타 5 : 3/.test(s2) && /홍길동/.test(s2);
+    })()`), '끝나면 결과 기사로 바뀐다');
+
   console.log('\n[세이브]');
   T(ev("normalizeState.toString().indexOf('aiFarmStat')>0"+
        " && normalizeState.toString().indexOf('aiFarmUp')>0"),
