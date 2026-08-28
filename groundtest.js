@@ -509,6 +509,37 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
   T(ev("/sc.dh===2 && dates\\[i-1\\]/.test(calRounds.toString())"),
     '달력에서 2차전이 앞 경기와 같은 날에 찍힌다');
 
+  console.log('\n[직선타]');
+  T(ev("/ldOf/.test(simPA.toString())"),
+    '타구가 셋으로 갈린다 — 땅볼 · 직선타 · 뜬공');
+  T(ev(`(function(){
+      /* 뜬공에서 갈라낸 것이라 아웃 비율은 안 바뀐다 */
+      var m=simPA.toString();
+      return /gb:isGb, ld: isGb\\?false:ldOf\\(\\)/.test(m);
+    })()`), '직선타는 뜬공에서 갈라냈다 (아웃 비율 불변)');
+  T(ev("/직선타 — /.test(LiveGame.prototype.stepPA.toString())"),
+    '주자가 나가 있으면 원래 베이스로 던져 병살이 난다');
+  T(ev(`(function(){
+      /* 뛰고 있으면 거의 못 돌아온다 · 붙어 있으면 거의 안 걸린다 */
+      var m=LiveGame.prototype.stepPA.toString();
+      return /this._runGo\\?1.0:0/.test(m) && /plan.lead<=0\\)\\?0.02/.test(m);
+    })()`), '리드를 벌렸을수록 · 뛰고 있었을수록 못 돌아온다');
+  T(ev("/투수 강습/.test(LiveGame.prototype.stepPA.toString())"),
+    '가운데 직선타는 투수를 맞힌다');
+  T(ev("/rollMyInjury\\('타구', 9\\)/.test(LiveGame.prototype.stepPA.toString())"),
+    '내가 던지고 있었으면 크게 다칠 수 있다');
+  T(ev("/맞고 굴절, 내야안타/.test(LiveGame.prototype.stepPA.toString())"),
+    '맞고 튀면 아웃이 안 되고 안타가 된다');
+  T(ev(`(function(){
+      var a=battedBall(11,'LD',psPark(),'R',false).m;
+      var b=battedBall(11,'FB',psPark(),'R',false).m;
+      return a<b;
+    })()`), '직선타는 뜬공보다 멀리 안 간다 (낮고 빠르다)');
+  T(ev("typeof battedIsLine==='function' && /d.ld/.test(renderDefPlay.toString())"),
+    '수비 화면이 직선타인 걸 미리 알려준다');
+  T(ev("/isLD\\?0.62:1/.test(renderDefPlay.toString())"),
+    '직선타는 반응할 시간이 짧다');
+
   console.log('\n[예외]');
   T(jsErr.length===0, jsErr.length?('❌ '+jsErr.slice(0,3).join(' | ')):'콘솔 예외 없음');
 

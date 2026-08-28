@@ -115,7 +115,10 @@ const txt=sel=>{ const e=d.querySelector(sel); return e?e.textContent.replace(/\
           var n=L.log.length;
           L.applyDecision('thr:go');
           L.step();
-          var got=L.log.slice(n).filter(function(x){return /도루/.test(x.text||'')});
+          /* [v3.4.0] 도루 실패의 일부가 **협살**로 간다 — 문구가
+             「협살 — 사이에 걸려 아웃」 / 「협살에 걸렸다가 살았다」 다.
+             「도루」 라는 글자만 찾으면 그걸 놓친다.               */
+          var got=L.log.slice(n).filter(function(x){return /도루|협살/.test(x.text||'')});
           if(!got.length) return false;         // 물어봤는데 도루가 없었다
           steals++;
           continue;

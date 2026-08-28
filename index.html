@@ -2642,6 +2642,15 @@ function simPA(bat,pit,offTeam,defTeam,rng,tac,cond,park,mods){
      경기당 네댓 번뿐이라 리그 지표는 안 흔들린다.               */
   /* 화면에서 본 타구 종류가 그대로 기록된다 — 내야면 땅볼, 외야면 뜬공 */
   const gbOf=(dflt)=> (mods.defGb==null ? (rng()<dflt) : !!mods.defGb);
+  /* [요청] "직선타가 지금 없긴해.. 직선타도 있으면 좋겠는데"
+     맞는 말이다. 여태 타구는 **땅볼 아니면 뜬공** 둘뿐이었다.
+     야구에는 셋이 있다 — 땅볼 · **직선타** · 뜬공.
+     직선타는 뜬공에서 갈라낸다(아웃 비율은 그대로라 리그 계산이
+     안 흔들린다). 뜬공 중 셋에 하나쯤이 직선타다.
+     직선타는 두 가지가 다르다 —
+       ① 주자가 나가 있으면 **원래 베이스로 던져 병살**이 난다
+       ② 가운데로 가면 **투수를 맞힌다** (강습 타구)               */
+  const ldOf=()=> rng()<0.34;
   if(mods.defForce==='out') return {type:'OUT', gb: gbOf(0.62)};
   if(mods.defForce==='hit'){
     const eR=clamp(LG.ERR_PER_BIP*2.2*(mods.err||1), 0.02, 0.35);
@@ -2656,7 +2665,10 @@ function simPA(bat,pit,offTeam,defTeam,rng,tac,cond,park,mods){
 
   const babip = clamp(LG.BABIP * offTeam.tend.babip * fBip * pBip * dFactor * tBip * park.babip
                       * (mods.babip||1), 0.15, 0.75);
-  if(rng()>=babip) return {type:'OUT', gb: gbOf(0.56)};
+  if(rng()>=babip){
+    const isGb=gbOf(0.56);
+    return {type:'OUT', gb:isGb, ld: isGb?false:ldOf()};
+  }
 
   /* 변화(brk) — 배트 중심을 피한다. 각이 좋은 투수한테는 큰 게 덜 나온다.
      이 칸이 「장타 억제형」 이다. 리그 평균 투수(구위 45·제구 43)의
@@ -3427,6 +3439,15 @@ function defZoneHit(pos, ang){
    spray: 'pull' 당긴다 · 'oppo' 민다 · null 평소대로
    시프트가 있는 판이라 방향을 고르는 게 실제로 값이 있다 —
    당기면 세게 가지만 시프트에 걸리고, 밀면 빈 쪽으로 간다.        */
+/* 이 타구가 직선타인가 — **결과보다 먼저** 알 수 있다.
+   simPA 가 ldOf() 를 부르는 자리와 같은 난수 흐름을 쓰는 게 아니라
+   타구 번호(seq)에서 결정적으로 뽑는다. 화면이 미리 알려주기 위한
+   것이고, 실제 판정은 엔진이 한다 — 어긋나도 화면 문구만 다르다.  */
+function battedIsLine(seq){
+  const r=bbRng((seq|0)+90001);
+  r(); r();
+  return r()<0.34;
+}
 function battedBall(seq, kind, park, bats, itp, spray){
   const rng=bbRng(seq);
   const foul=(typeof PS_FOUL!=='undefined')?PS_FOUL:50.2;
@@ -3450,6 +3471,9 @@ function battedBall(seq, kind, park, bats, itp, spray){
   else if(kind==='3B')         m=F*(0.82+u*0.14);
   else if(kind==='2B')         m=F*(0.72+u*0.20);
   else if(kind==='SF')         m=F*(0.66+u*0.20);
+  /* 직선타 — 낮고 빠르다. 멀리는 안 가지만 순식간에 지나간다.
+     그래서 잡기가 제일 어렵다.                                    */
+  else if(kind==='LD')         m=F*(0.34+u*0.30);
   else if(kind==='FB')         m=F*(0.48+u*0.44);
   else if(kind==='1B')         m=F*(0.34+u*0.36);
   else if(kind==='E')          m=18+u*38;
@@ -8060,8 +8084,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.5.0';
-const APP_VERSION_NOTE = '비가 오면 멈춘다 · 하루에 두 경기';
+const APP_VERSION = '3.6.0';
+const APP_VERSION_NOTE = '직선타가 생겼다 — 병살도 나고 투수도 맞는다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8082,6 +8106,13 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.6.0', t:'직선타가 생겼다 — 병살도 나고 투수도 맞는다', items:[
+    '[제보] "약간 직선타가 지금 없긴해.. 직선타도 있으면 좋겠는데" — 맞는 말이었다. 여태 타구는 **땅볼 아니면 뜬공** 둘뿐이었다. 야구에는 셋이 있다 — 땅볼 · **직선타** · 뜬공. 뜬공 중 셋에 하나쯤을 직선타로 갈랐다 (아웃 비율은 그대로라 리그 계산이 안 흔들린다)',
+    '[요청] "직선타면 주자가 리드하거나 도루했을경우 원래베이스로 던지면 병살플레이" — 그대로다. 직선타는 잡히는 순간 주자가 이미 나가 있다. **원래 베이스로 던지기만 하면 병살**이다. **뛰고 있었으면 거의 못 돌아오고**, 크게 나가 있었으면 셋에 하나, 베이스에 붙어 있었으면 거의 안 걸린다',
+    '[요청] "막 투수 맞고 다른곳으로 튈 수 도 있고 그럼 투수는 부상이긴하겠지" — **투수 강습 타구**가 생겼다. 가운데로 가는 직선타는 열에 하나쯤 투수를 맞힌다. 절반은 반사적으로 잡아내서 아웃이고, 절반은 **맞고 튀어서 내야안타**가 된다. 내가 던지고 있었으면 **크게 다칠 수 있다** — 사회인야구에서 제일 무서운 장면이다',
+    '직선타는 **낮고 빠르다.** 뜬공보다 멀리 안 가는 대신 순식간에 지나간다. 내 앞으로 오면 수비 화면이 **미리 알려주고**(「좌중간으로 직선타! — 순식간이다」) **반응할 시간이 40% 짧다.** 대신 잡으면 그대로 아웃이고 주자까지 잡는다',
+    '[주의] 준비 버튼 문구가 직선타 여부를 읽는데 그 값을 아래에서 만들다가 화면이 죽었다. 함수 맨 위로 올렸다 — 자바스크립트는 만들기 전에 읽으면 그 자리에서 멈춘다',
+  ]},
   {v:'3.5.0', t:'비가 오면 멈춘다 · 하루에 두 경기', items:[
     '**경기 중에 비가 온다.** 여태는 경기 전에 우천 취소만 있었다. 이제 하다가 굵어지면 **심판이 중단**시킨다. 절반쯤은 삼십 분 만에 그쳐서 이어서 하고, 안 그치면 갈린다',
     '[야구 규칙] **정규이닝의 절반**을 넘겼으면 그대로 성립한다 — **강우 콜드게임**이다. 못 넘겼으면 **노게임**이라 없던 일이 되고 다음에 다시 한다. 7이닝 경기면 4회가 기준이다',
@@ -11681,7 +11712,12 @@ LiveGame.prototype.detectDecision = function(){
              교체가 있으면 3루에서 잡은 공이 외야 뜬공으로 적힌다.
              [제보] "3루에서 땅볼잡고 2루 던졌는데 좌측 73미터 아웃임" */
           this._defShownPos=pos;
-          return {kind:'defplay', ang, pos};
+          /* [요청] "직선타도 있으면 좋겠는데" — 내 앞으로 오는 직선타는
+             **순식간에 지나간다.** 화면에 미리 알려주고 시간을 줄인다.
+             결과는 아직 안 나왔지만 타구 종류는 미리 알 수 있다 —
+             방향과 같은 자리에서 나온다(엔진이 먼저 정한다).      */
+          const ldNow=battedIsLine(this.paSeq);
+          return {kind:'defplay', ang, pos, ld:ldNow};
         }
       }
     }
@@ -12217,7 +12253,7 @@ LiveGame.prototype.stepPA = function(){
   this._paPitches=0;
   /* [요청] "칠때마다 비거리도 적어주고"
      인플레이 타구면 방향·비거리를 만들어 둔다. 로그도 중계 화면도 이걸 쓴다. */
-  const bbKind = (res.type==='OUT') ? (res.gb?'GB':'FB') : res.type;
+  const bbKind = (res.type==='OUT') ? (res.gb?'GB':(res.ld?'LD':'FB')) : res.type;
   const bb = ['1B','2B','3B','HR','OUT','E'].indexOf(res.type)>=0
     ? battedBall(this.paSeq, bbKind, this.park, bat.bats||'R', !!res.itp, this._spray) : null;
   this._bb=bb;
@@ -12229,7 +12265,7 @@ LiveGame.prototype.stepPA = function(){
      어긋날 수가 없다.                                                */
   this._lastPlay = bb ? {
     type:res.type, gb:!!res.gb, stretched:!!res.stretched, runOut:res.runOut||null,
-    ang:bb.ang, dist:bb.m, dir:bb.dir, err:res.type==='E'
+    ang:bb.ang, dist:bb.m, dir:bb.dir, ld:!!res.ld, err:res.type==='E'
   } : null;
   // 번트 앤 런은 주자가 한 베이스 더 간다
   /* 뛰고 있었으면 한 베이스를 더 간다 — 그게 히트앤런의 값이다 */
@@ -12348,7 +12384,52 @@ LiveGame.prototype.stepPA = function(){
     } else if(ta==='first'){
       dpRisk = 0;
     }
-    if(res.bunt){
+    /* [요청] "직선타면 주자가 리드하거나 도루했을경우 원래베이스로
+               던지면 병살플레이" · "투수 맞고 다른곳으로 튈 수 도 있고
+               그럼 투수는 부상이긴하겠지"
+       [야구] 직선타는 잡히는 순간 주자가 이미 나가 있다. 원래 베이스로
+       던지기만 하면 병살이다. 리드를 크게 벌렸을수록, 뛰고 있었을수록
+       못 돌아온다. 그리고 가운데로 가는 직선타는 **투수를 맞힌다** —
+       사회인야구에서 제일 무서운 장면이다.                        */
+    if(res.ld && !res.bunt){
+      /* ① 투수 강습 — 가운데로 갔으면 */
+      const straight=(bb && Math.abs(bb.ang)<=9);
+      if(straight && rng()<0.14){
+        const pid=pit.id;
+        const meNow=this.myId||(typeof ST!=='undefined'&&ST?ST.playerId:null);
+        if(meNow && pid===meNow) this.rollMyInjury('타구', 9);
+        if(rng()<0.45){
+          /* 글러브를 스쳐 튀었다 — 아웃이 안 된다 */
+          this.outs--; pl.outs--;
+          bl.h++; bl.ab=bl.ab; off.hits++;
+          this.bases[0]=bat.id; onBase(bat.id);
+          events.push({text:`${bat.name} 투수 강습 — ${pit.name}을(를) 맞고 굴절, 내야안타${bbTag(bb)}`,cls:'hit'});
+          this.log.push({t:'mgr',text:`${pit.name}이(가) 한참 못 일어난다. 다들 마운드로 뛰어나왔다`});
+        } else {
+          events.push({text:`${bat.name} 투수 정면 직선타 — ${pit.name}이(가) 그대로 잡았다${bbTag(bb)}`,cls:'out'});
+          this.log.push({t:'mgr',text:`${pit.name}이(가) 반사적으로 글러브를 올렸다. 아찔했다`});
+        }
+      } else {
+        /* ② 직선타 병살 — 주자가 나가 있으면 원래 베이스로 던진다 */
+        const plan=this._runPlan;
+        const off0=(this._runGo?1.0:0)
+          + ((plan&&plan.lead>=2)?0.34:((plan&&plan.lead<=0)?0.02:0.16));
+        let done2=false;
+        for(let b=2;b>=0 && !done2;b--){
+          if(!this.bases[b] || this.outs>=3) continue;
+          if(rng()<Math.min(0.85, off0)){
+            const rid=this.bases[b];
+            this.bases[b]=null; this.outs++; pl.outs++;
+            this.dpCount=(this.dpCount||0)+1;
+            events.push({text:`${bat.name} 직선타 — ${this.nameOf(rid)}이(가) 못 돌아왔다. 병살${bbTag(bb)}`,cls:'out'});
+            done2=true;
+          }
+        }
+        if(!done2) events.push({text:`${bat.name} 직선타 아웃${bbTag(bb)}`,cls:'out'});
+      }
+      if(this.outs>=3){ this.endHalf(); return {events, half:true}; }
+    }
+    else if(res.bunt){
       bl.sh=(bl.sh||0)+1;
       if(res.bunt==='sac'){
         /* 진루타 — 앞 주자부터 한 베이스씩 간다 */
@@ -28066,6 +28147,11 @@ function battedU(seq){
 }
 const DEF_INFIELD=['P','C','1B','2B','3B','SS'];
 function renderDefPlay(box, d){
+  /* 직선타는 낮고 빠르다 — 반응할 시간이 확 준다. 대신 잡으면 그대로
+     아웃이고, 주자가 나가 있으면 병살까지 간다.
+     [주의] 준비 버튼 문구가 이 값을 쓴다 — **맨 위에서** 잡아야 한다.
+     아래에 두면 「초기화 전에 못 읽는다」로 화면이 죽는다.        */
+  const isLD=!!(d && d.ld);
   const def=LIVE.def(), off=LIVE.off();
   const me=LIVE.myId||(ST&&ST.playerId)||MYID;
   const p=def.team.players.find(x=>x.id===me);
@@ -28141,7 +28227,8 @@ function renderDefPlay(box, d){
      그대로 놓친다. **내가 누를 때까지 공이 안 온다.**            */
   const goRow=el('div','lead-grid');
   const goB=el('button','lead-b run');
-  goB.innerHTML='<span>준비 됐다 ▶</span><i>누르면 타구가 온다 — 천천히 해라</i>';
+  goB.innerHTML='<span>준비 됐다 ▶</span><i>'+
+    (isLD?'<b style="color:#e08a70">직선타다 — 빠르다</b>':'누르면 타구가 온다 — 천천히 해라')+'</i>';
   goRow.appendChild(goB);
   const skip=el('button','lead-b stay');
   skip.innerHTML='<span>알아서 하게 둔다</span><i>이 타구는 자동으로 처리한다</i>';
@@ -28161,7 +28248,7 @@ function renderDefPlay(box, d){
   const u=battedU(LIVE.paSeq);
   const fenceM=(typeof fenceAt==='function')?fenceAt(park,d.ang):100;
   const mDraw = inf ? (12+u*30) : (fenceM*(0.42+u*0.46));
-  const flyMs = Math.round((inf?2000:2600)+mDraw*(inf?22:13));
+  const flyMs = Math.round(((inf?2000:2600)+mDraw*(inf?22:13)) * (isLD?0.62:1));
   /* [제보] "수비 지금 속도면 너무 빡세다"
      내야는 타구가 1.3~1.7초 만에 지나갔다. 조이스틱을 잡고 방향을 읽고
      쫓아가기까지 손이 그 안에 안 들어온다 — 준비 버튼을 눌러도 마찬가지다.
@@ -28201,7 +28288,10 @@ function renderDefPlay(box, d){
   const start=()=>{
   goRow.style.display='none';
   plLock(true);
-  const t0b=box2.querySelector('.rb-t'); if(t0b) t0b.textContent=dir+'으로 온다 — 쫓아가라';
+  const t0b=box2.querySelector('.rb-t');
+  if(t0b) t0b.textContent = isLD
+    ? (dir+'으로 직선타! — 순식간이다')
+    : (dir+'으로 온다 — 쫓아가라');
   try{
     sc=defScene(stage, {park, ang:d.ang, m:mDraw, pos, flyMs,
       reach:REACH, speed:SPEED, arm:av,
