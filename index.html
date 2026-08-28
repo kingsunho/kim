@@ -7894,8 +7894,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.89.0';
-const APP_VERSION_NOTE = '싼 데부터 채울래 비싼 주무기를 밀래 — 훈련값이 능력치를 따라간다';
+const APP_VERSION = '2.90.0';
+const APP_VERSION_NOTE = '다치면 확 꺼진다 · 대신 뛰면서 돌아온다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7916,6 +7916,15 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.90.0', t:'다치면 확 꺼진다 · 대신 뛰면서 돌아온다', items:[
+    '[요청] "부상당하면 스탯이 확내려갔다가 경기뛰면서 차근차근 다시 스탯 복구되게" — 맞는 말이다. 여태 부상 자국은 파워 -4 처럼 얕게 남고 **훈련으로만** 도로 올릴 수 있었다. 그러면 다친 게 「훈련 몇 번 손해」 로 끝난다',
+    '이제 **다치는 순간 확 꺼진다.** 자국이 2.6배로 깊어졌다 — 허리 담이면 파워가 60에서 49.6으로 떨어진다. 화면에도 실제로 깎이는 값을 적는다 (예전엔 표의 -4 를 적어놓고 실제로는 다르게 굴러갈 뻔했다)',
+    '**그리고 경기를 뛸 때마다 돌아온다.** 깎인 만큼을 빚으로 들고 있다가 일곱 분의 일씩 갚는다 — 일곱 경기면 원래 값으로 딱 맞춰 돌아온다. 더도 덜도 아니다',
+    '**벤치에 앉은 날은 안 돌아온다.** 뛴 경기만 센다 — 2군 경기도 경기다. 몸은 쓰면서 낫는 거다',
+    '훈련은 이것과 **별개로** 오른다. 다친 자리를 훈련으로 밀면 빚을 갚는 것과 겹쳐서 더 빨리 올라온다 — 급하면 그렇게 해라',
+    '홈 화면에 「부상 여파 — 파워 -7.4」 처럼 **아직 안 돌아온 몫**이 뜬다. 얼마나 남았는지가 보여야 뛸 맛이 난다',
+    '[주의] 능력치 바닥(8)에 걸려서 실제로 덜 깎였으면 빚도 그만큼만 진다. 안 그러면 다 갚았을 때 다치기 전보다 높아진다',
+  ]},
   {v:'2.89.0', t:'싼 데부터 채울래 비싼 주무기를 밀래 — 훈련값이 능력치를 따라간다', items:[
     '[요청] "코인을 (…) 초반 업그레이드는 싼데 스탯이 올라갈수록 코인이 개비싼 그런 더쇼처럼 해야함" — 맞는 말이다. 여태는 뭘 사든 4코인이었다. **값이 다 같으면 어디에 쓸지가 고민이 안 된다** — 아무거나 눌러도 똑같으니까',
     '이제 **그 훈련이 올려주는 칸의 지금 값**으로 값이 매겨진다. 35 아래는 2코인, 45까지 3, 55까지 5, 65까지 8, 75까지 12, 85까지 17, 그 위는 23이다. 30짜리 컨택을 올리는 건 싸고 70짜리 컨택을 더 올리는 건 비싸다',
@@ -10947,30 +10956,96 @@ const PM_INJURIES=[
    훈련으로 도로 올리면 된다 — 그게 이 모드의 리듬이다.
    [주의] 반드시 장부(myRatings)에 적어야 한다. 로스터 객체만 고치면
    새로고침 한 번에 없던 일이 된다.                                 */
+/* 화면에 적는 값은 **실제로 깎이는 값**이어야 한다 — 표의 값이 아니라
+   INJ_SCAR_MULT 를 곱한 값이다. 「파워 -4」 라고 써놓고 -10 이 깎이면
+   그건 거짓말이다.                                                 */
 function injHitText(hit){
-  const KN={con:'컨택',pow:'파워',eye:'선구',spd:'주루',def:'수비',arm:'어깨',
-            stf:'구위',ctl:'제구',sta:'체력'};
-  return Object.keys(hit||{}).map(k=>`${KN[k]||k} ${hit[k]}`).join(' · ');
+  return Object.keys(hit||{})
+    .map(k=>`${INJ_KN[k]||k} ${Math.round(hit[k]*INJ_SCAR_MULT*10)/10}`).join(' · ');
 }
+/* [요청] "부상당하면 스탯이 확내려갔다가 경기뛰면서 차근차근 다시 스탯
+           복구되게"
+
+   여태는 자국이 -2~-4 로 얕게 남고 **훈련으로만** 도로 올릴 수 있었다.
+   그러면 다친 게 「훈련 몇 번 손해」 로 끝난다. 다치는 순간 확 꺼지고,
+   그 다음엔 경기를 뛰면서 몸이 스스로 돌아오는 쪽이 야구에 가깝다.
+     · 다치면 자국이 2.6배로 깊어진다 (파워 -4 → -10)
+     · 깎인 만큼을 **빚(ST.injScar)** 으로 들고 있는다
+     · **경기를 뛸 때마다** 일곱 분의 일씩 갚는다 — 일곱 경기면 원래대로
+     · 벤치에 앉은 날은 안 는다. 뛴 경기만 센다
+     · 훈련은 이것과 별개로 올라간다. 둘 다 하면 더 빨리 돌아온다
+   [주의] 바닥(8/10)에 걸려서 실제로 덜 깎였으면 빚도 그만큼만 진다.
+   안 그러면 갚을 때 원래보다 높아진다.                             */
+const INJ_SCAR_MULT=2.6;
+const INJ_HEAL_GAMES=7;
+const INJ_KN={con:'컨택',pow:'파워',eye:'선구',spd:'주루',def:'수비',arm:'어깨',
+              stf:'구위',ctl:'제구',sta:'체력',brk:'변화'};
 function applyInjuryHit(pid, pm){
   if(typeof ST==='undefined'||!ST||!pm||!pm.hit) return 0;
   const me=ST.playerId||MYID;
   if(pid!==me) return 0;                       // 자국은 내 선수한테만 남는다
   const p=TBYID['wwzw'].players.find(x=>x.id===pid); if(!p) return 0;
+  if(!ST.injScar) ST.injScar={};
   Object.keys(pm.hit).forEach(k=>{
-    const d=pm.hit[k];
-    if(k==='stf'||k==='ctl'||k==='sta'){
-      if(p.pitch&&p.pitch[k]!=null) p.pitch[k]=Math.max(10, p.pitch[k]+d);
-    } else if(p[k]!=null){
-      p[k]=Math.max(8, p[k]+d);
+    const d=Math.round(pm.hit[k]*INJ_SCAR_MULT*10)/10;      // 음수다
+    let before=null, after=null;
+    if(k==='stf'||k==='ctl'||k==='sta'||k==='brk'){
+      if(!p.pitch||p.pitch[k]==null) return;
+      before=p.pitch[k]; p.pitch[k]=Math.max(10, before+d); after=p.pitch[k];
+    } else {
+      if(p[k]==null) return;
+      before=p[k]; p[k]=Math.max(8, before+d); after=p[k];
     }
+    const owe=Math.round((before-after)*10)/10;              // 실제로 깎인 몫
+    if(owe<=0) return;
+    const S=ST.injScar[k]||{left:0,per:0};
+    S.left=Math.round((S.left+owe)*10)/10;
+    S.per =Math.max(S.per, Math.round((owe/INJ_HEAL_GAMES)*100)/100);
+    ST.injScar[k]=S;
   });
   ['con','pow','eye','spd','def','arm'].forEach(k=>{ if(p[k]!=null) p[k]=Math.round(p[k]*10)/10; });
-  if(p.pitch) ['stf','ctl','sta'].forEach(k=>{ p.pitch[k]=Math.round(p.pitch[k]*10)/10; });
+  if(p.pitch) ['stf','ctl','sta','brk'].forEach(k=>{
+    if(p.pitch[k]!=null) p.pitch[k]=Math.round(p.pitch[k]*10)/10; });
   finalizeTeam(TBYID['wwzw']);
   if(typeof buildPitcherPool==='function') buildPitcherPool();
   myRatingsSave();                             // 안 적으면 새로고침에 없던 일이 된다
   return 1;
+}
+/* 아직 안 돌아온 몫 — 화면이 이걸 읽어서 「부상 여파」 를 보여준다 */
+function injScarLeft(){
+  const S=(typeof ST!=='undefined'&&ST)?ST.injScar:null;
+  if(!S) return [];
+  return Object.keys(S).filter(k=>S[k]&&S[k].left>0.05)
+    .map(k=>({k, name:INJ_KN[k]||k, left:S[k].left}));
+}
+/* 경기를 뛰면 그만큼 아문다. 다 갚으면 장부에서 지운다 */
+function healInjScar(){
+  if(typeof ST==='undefined'||!ST||!ST.injScar) return null;
+  const ks=Object.keys(ST.injScar); if(!ks.length) return null;
+  const me=ST.playerId||MYID;
+  const p=TBYID['wwzw'].players.find(x=>x.id===me); if(!p) return null;
+  const back=[];
+  ks.forEach(k=>{
+    const S=ST.injScar[k];
+    if(!S||!(S.left>0)){ delete ST.injScar[k]; return; }
+    const step=Math.round(Math.min(S.left, Math.max(0.3, S.per||0.5))*10)/10;
+    if(k==='stf'||k==='ctl'||k==='sta'||k==='brk'){
+      if(!p.pitch||p.pitch[k]==null){ delete ST.injScar[k]; return; }
+      p.pitch[k]=Math.round((p.pitch[k]+step)*10)/10;
+    } else {
+      if(p[k]==null){ delete ST.injScar[k]; return; }
+      p[k]=Math.round((p[k]+step)*10)/10;
+    }
+    S.left=Math.round((S.left-step)*10)/10;
+    back.push((INJ_KN[k]||k)+' +'+step.toFixed(1)+
+      (S.left>0.05?(' (남은 '+S.left.toFixed(1)+')'):' — 다 돌아왔다'));
+    if(S.left<=0.05) delete ST.injScar[k];
+  });
+  if(!back.length) return null;
+  finalizeTeam(TBYID['wwzw']);
+  if(typeof buildPitcherPool==='function') buildPitcherPool();
+  myRatingsSave();
+  return back;
 }
 
 /* 경기 중에 굴린다. 한 경기에 한 번만 다친다 — 두 번 다치면 그건 사고다. */
@@ -14389,6 +14464,13 @@ function farmLiveEnd(){
   if(isPlayerMode()){
     const cg=coinsForGame(res, usS.runs>thS.runs, usS.runs===thS.runs);
     coinAdd(cg.n); ST.lastCoin=cg;
+    /* 2군에서 뛴 것도 경기다 — 여기서도 몸이 돌아온다 */
+    if(b&&b.pa){
+      const back=healInjScar();
+      if(back){ ST.notices=ST.notices||[];
+        ST.notices.push({type:'train', title:'다친 자리가 아문다',
+          body:back.join(' · '), effect:'경기를 뛸수록 돌아온다'}); }
+    }
   }
   LIVE=null;
   ST.farmDone=(ST.farmDone||0)+1;
@@ -16660,7 +16742,8 @@ function renderHomePlayer(){
     const inj=ST.injury&&ST.injury[me];
     if(inj) bc0.appendChild(Object.assign(el('div','warn'),
       {innerHTML:'<b>'+inj.name+'</b> — '+inj.games+'경기 결장'+
-        (inj.hit?'<br>돌아와도 '+injHitText(inj.hit)+' 상태다. 훈련으로 도로 올려라.':'')}));
+        (inj.hit?'<br>돌아와도 '+injHitText(inj.hit)+' 상태다. '+
+          '<b>경기를 뛰면 '+INJ_HEAL_GAMES+'경기에 걸쳐 스스로 돌아온다.</b> 훈련은 그 위에 얹힌다.':'')}));
     c.appendChild(bc0);
   }
 
@@ -16714,6 +16797,19 @@ function renderHomePlayer(){
      맞는 말이다. 훈련 탭이 따로 있으면 아무도 안 들어간다.
      **홈에 뭘 고를지와 지난주에 뭐가 올랐는지를 같이 깐다.**        */
   {
+    /* [요청] "부상당하면 스탯이 확내려갔다가 경기뛰면서 차근차근 다시
+               스탯 복구되게" — 얼마나 남았는지가 보여야 뛸 맛이 난다 */
+    const scar=(typeof injScarLeft==='function')?injScarLeft():[];
+    if(scar.length){
+      const ic=el('div','card');
+      ic.appendChild(el('div','card-h','부상 여파'));
+      ic.appendChild(Object.assign(el('div','mystatus out'),{innerHTML:
+        '<div class="ms-big">'+scar.map(x=>x.name+' -'+x.left.toFixed(1)).join(' · ')+'</div>'+
+        '<div class="ms-sub">아직 안 돌아온 몫이다</div>'+
+        '<div class="ms-why">경기를 뛸 때마다 돌아온다 — 벤치에 앉으면 안 돌아온다 · '+
+          '훈련은 그것과 별개로 오른다</div>'}));
+      c.appendChild(ic);
+    }
     const tc=el('div','card');
     tc.appendChild(el('div','card-h','이번 주 훈련 · 코인 '+coinSlot()+'개'));
     if(ST.lastCoin && ST.lastCoin.rows && ST.lastCoin.rows.length){
@@ -27786,7 +27882,8 @@ function renderBenched(box, d){
     if(hurt&&hurt.hit){
       inj.appendChild(Object.assign(el('div','rb-note'),
         {innerHTML:'<b style="color:#e08a70">돌아와도 '+injHitText(hurt.hit)+
-                   '</b> — 훈련으로 도로 올릴 수 있다'}));
+                   '</b> — 확 꺼진다. 대신 <b>경기를 뛸 때마다 조금씩 돌아온다</b> ('+
+                   INJ_HEAL_GAMES+'경기면 원래대로)'}));
     }
     /* 왜 다쳤는지. 이게 다음 주 훈련을 정하는 정보다 */
     if(p){
@@ -28872,6 +28969,15 @@ function commitGame(res,usSide,thSide,uSlots){
       body: cg.rows.length? cg.rows.map(r=>r.label+' '+(r.v>0?'+':'')+r.v).join(' · ')
                           : '오늘은 딱히 벌 게 없었다',
       effect:'코인으로 훈련을 산다'});
+    /* [요청] "경기뛰면서 차근차근 다시 스탯 복구되게"
+       **뛴 경기만** 센다. 벤치에 앉아 있으면 몸이 안 돌아온다.     */
+    const meI=ST.playerId||MYID;
+    const mbI=(res.box&&res.box[meI])||null, mqI=(res.pbox&&res.pbox[meI])||null;
+    if((mbI&&mbI.pa)||(mqI&&mqI.outs)){
+      const back=healInjScar();
+      if(back) ST.notices.push({type:'train', title:'다친 자리가 아문다',
+        body:back.join(' · '), effect:'경기를 뛸수록 돌아온다'});
+    }
   }
   const dpCount = res.dpCount||0;
   const miles = accrueCareer(ST,res,uUniq,won,tie,dpCount);
@@ -32698,6 +32804,7 @@ function normalizeState(){
   if(ST.roleTalkAt==null)ST.roleTalkAt=-99;
   if(ST.pitRole===undefined)ST.pitRole=null;
   if(ST.myPosTaken===undefined)ST.myPosTaken=null;
+  if(!ST.injScar||typeof ST.injScar!=='object')ST.injScar={};
   if(!Array.isArray(ST.myTrainQ))ST.myTrainQ=(ST.myTrain?[ST.myTrain]:[]);
   if(!ST.valuePrev)ST.valuePrev={};
   if(!Array.isArray(ST.drunkIds))ST.drunkIds=[];

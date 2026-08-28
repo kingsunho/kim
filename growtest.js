@@ -209,6 +209,47 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   T(ev("/LIVE.pending \\|\\| LIVE.paSeq!==LIVE._lastDefPA/.test(hsRunLive.toString())"),
     '포수 송구 창(pending)을 고교 진행이 안 놓친다');
 
+  /* ---------------------------------------------------------------
+     [요청] "부상당하면 스탯이 확내려갔다가 경기뛰면서 차근차근 다시
+             스탯 복구되게"
+     --------------------------------------------------------------- */
+  console.log('\n[부상 — 확 꺼지고 뛰면서 돌아온다]');
+  T(ev("INJ_SCAR_MULT>2 && INJ_HEAL_GAMES>=5"),
+    '자국이 깊어지고 여러 경기에 걸쳐 아문다');
+  T(ev("/파워 -10.4/.test(injHitText({pow:-4}))"),
+    '화면에 적는 값이 실제로 깎이는 값이다 (표의 -4 가 아니라 -10.4)');
+  T(ev(`(function(){
+      var p=TBYID['wwzw'].players.find(function(x){return x.id==='ksh'});
+      ST.playerId='ksh'; MYID='ksh'; ST.mode='player';
+      p.pow=60; ST.injScar={};
+      applyInjuryHit('ksh',{hit:{pow:-4}});
+      return Math.abs(p.pow-49.6)<0.05 && ST.injScar.pow
+             && Math.abs(ST.injScar.pow.left-10.4)<0.05;
+    })()`), '파워 60 이 49.6 으로 확 꺼지고, 10.4 를 빚으로 들고 있는다');
+  T(ev(`(function(){
+      var p=TBYID['wwzw'].players.find(function(x){return x.id==='ksh'});
+      var steps=0;
+      while(injScarLeft().length && steps++<40) healInjScar();
+      return steps<=INJ_HEAL_GAMES+1 && Math.abs(p.pow-60)<0.15
+             && injScarLeft().length===0;
+    })()`), '일곱 경기를 뛰면 60 으로 딱 돌아온다');
+  T(ev(`(function(){
+      /* 바닥에 걸리면 빚도 그만큼만 진다 — 갚을 때 원래보다 높아지면 안 된다 */
+      var p=TBYID['wwzw'].players.find(function(x){return x.id==='ksh'});
+      p.spd=10; ST.injScar={};
+      applyInjuryHit('ksh',{hit:{spd:-3}});
+      var owed=ST.injScar.spd?ST.injScar.spd.left:0;
+      var steps=0;
+      while(injScarLeft().length && steps++<40) healInjScar();
+      var ok=Math.abs(p.spd-10)<0.15 && owed===2;
+      p.spd=60;
+      return ok;
+    })()`), '바닥(8)에 걸려 2 만 깎였으면 2 만 돌려준다');
+  T(ev("/healInjScar/.test(farmLiveEnd.toString())"),
+    '2군에서 뛴 것도 경기로 친다');
+  T(ev("normalizeState.toString().indexOf('injScar')>0"),
+    '옛 세이브에도 장부가 생긴다');
+
   console.log('\n[예외]');
   T(jsErr.length===0, '콘솔 예외 없음 :: '+(jsErr[0]||'없음'));
   console.log(fail? `\n❌ ${fail}개 실패` : '\n✅ 이상 없음');
