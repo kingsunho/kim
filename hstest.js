@@ -107,6 +107,63 @@ setTimeout(async()=>{
     return d.querySelector('#view').innerHTML.indexOf('잠재')>=0;
   });
 
+  /* [요청] "선수모드 시작할때 선수를 클릭하잖아. 거기서는 동등하게 누구나
+             제로에서 시작하는건 맞는데 그 외 선택 안당한 사람들은 원래
+             우리가 측정했던 스탯으로 가는걸로 하자 (물론 얘네도 고등학생때는
+             나이에 맞게 스탯을 좀 깎고 하긴해야겠지) 왜냐면 그럼 우완좌완만
+             스탯이 다 이상할것 같아서"
+     이게 이 저장소에서 제일 깨지기 쉬운 약속이다 — 고교 눈금을 만지다
+     보면 본편 열넷까지 같이 눌러버리기 십상이다. 못 박아둔다. */
+  console.log('\n[고른 사람만 0에서 · 나머지는 실측 그대로]');
+  T('고교에서는 실존 동급생도 학년 눈금으로 눌린다', ()=>{
+    const r=ev(`(function(){
+      ST.mode='player'; ST.playerId='ksh'; MYID='ksh';
+      var adult=TBYID['wwzw'].players.find(function(p){return p.id==='swm'}).con;
+      var T2=hsTeamOf('gunpo', 2017, ST.seed||1, 'ksh', 0);
+      var hs=T2.players.find(function(x){return x.id==='swm'});
+      return JSON.stringify({adult:adult, hs:hs?hs.con:null, base:hsBaseOf(2)});
+    })()`);
+    const o=JSON.parse(r);
+    /* 어른 값(87)을 그대로 들고 나오면 안 되고, 학년 기준선 근처여야 한다 */
+    return o.hs!=null && o.hs < o.adult-20 && Math.abs(o.hs-o.base)<=22;
+  });
+  T('고교에서 내 선수만 HS_BASE 에서 출발한다', ()=>{
+    const r=ev(`(function(){
+      var T2=hsTeamOf('heung', 2017, ST.seed||1, 'ksh', 0);
+      var me=T2.players.find(function(x){return x.id==='ksh'});
+      return me? me.con : -1;
+    })()`);
+    return r===ev('HS_BASE');
+  });
+  T('졸업해도 나 말고는 아무도 값이 안 바뀐다 (실측 그대로)', ()=>{
+    const r=ev(`(function(){
+      ST.mode='player'; ST.playerId='ksh'; MYID='ksh';
+      TEAMS=buildAllTeams();TBYID={};TEAMS.forEach(function(x){TBYID[x.id]=x});buildPitcherPool();
+      var K=['con','pow','eye','spd','def','arm'];
+      var base={};
+      TBYID['wwzw'].players.forEach(function(p){
+        base[p.id]={}; K.forEach(function(k){ base[p.id][k]=p[k]; }); });
+      ST.hsRatings={con:34,pow:30,eye:28,spd:31,def:29,arm:30};
+      applyHsStart();
+      var moved=[];
+      TBYID['wwzw'].players.forEach(function(p){
+        var b=base[p.id];
+        if(K.some(function(k){ return Math.abs(p[k]-b[k])>0.01; })) moved.push(p.id);
+      });
+      return moved.join(',');
+    })()`);
+    return r==='ksh';
+  });
+  T('그래서 우완좌완 열넷 중 열셋은 2026 실측값 그대로다', ()=>{
+    const r=ev(`(function(){
+      /* 송승민 컨택 87 은 실제 박스스코어에서 뽑은 값이다.
+         내가 김선호로 시작해도 송승민은 87 이어야 한다. */
+      var p=TBYID['wwzw'].players.find(function(x){return x.id==='swm'});
+      return p? p.con : -1;
+    })()`);
+    return r>=80;
+  });
+
   console.log(errs.length?'\n실패 '+errs.length+'개':'\n전부 통과');
   if(errs.length){console.log(errs.join('\n'));process.exit(1);}
   process.exit(0);
