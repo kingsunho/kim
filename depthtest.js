@@ -342,6 +342,52 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   T(ev("JSON.stringify(newsIssue()).indexOf('가난')>=0"),
     '신문이 구단 살림도 다룬다');
 
+  /* ---------------------------------------------------------------
+     [요청] 스토리 개편 — 드래프트로 입단 · 순번은 고교 성적 ·
+            99년생은 한 해 먼저 뽑힌 선배 · 창단 감독이 이건에게 넘긴다
+     --------------------------------------------------------------- */
+  console.log('\n[입단 드래프트]');
+  T(ev("typeof entryDraftBuild==='function' && typeof renderEntry==='function' && !!VIEWS.entry"),
+    '입단 드래프트가 있다');
+  T(ev("(function(){ST.playerId='ksh';MYID='ksh';return entryDraftYear()===2019;})()"),
+    '2000년생은 2019 드래프트다');
+  T(ev("(function(){ST.playerId='swm';MYID='swm';return entryDraftYear()===2018;})()"),
+    '1999년생은 한 해 먼저 2018 드래프트다');
+  T(ev("(function(){ST.playerId='swm';MYID='swm';return entryMates().length===6;})()"),
+    '99년생은 동기 여섯이 같이 뽑힌다 (군포고 일곱 명)');
+  T(ev("(function(){ST.playerId='ksh';MYID='ksh';return entryMates().length===6;})()"),
+    '00년생도 동기 여섯이 같이 뽑힌다');
+  T(ev("entryPickNo(1.0)<entryPickNo(0.5) && entryPickNo(0.5)<entryPickNo(0.0)"),
+    '고교 성적이 좋을수록 앞 순번이다');
+  T(ev("entryPickNo(1.0)<=3 && entryPickNo(0)>=100"),
+    '폭격하면 최상위, 대충 보내면 끝자락이다');
+  T(ev("entryFarmWeeks(1)===1 && entryFarmWeeks(120)===8"),
+    '순번이 곧 2군 기간이다 — 앞 순번은 한 주, 끝자락은 여덟 주');
+  T(ev(`(function(){
+      ST.playerId='ksh'; MYID='ksh';
+      var E=entryDraftBuild(0.9);
+      return E.near.some(function(r){return r.me}) && E.mates.length===6
+             && E.myRound>=1 && E.myIn>=1;
+    })()`), '지명 순서판에 내 줄이 있고 동기도 같이 나온다');
+  T(ev(`(function(){
+      /* 00년생이면 이건이 감독, 99년생이면 창단 감독 */
+      ST.playerId='ksh'; MYID='ksh';
+      var a=entryCoach();
+      ST.playerId='swm'; MYID='swm';
+      var b=entryCoach();
+      ST.playerId='ksh'; MYID='ksh';
+      return !a.founder && b.founder && b.name===FOUNDER_NAME;
+    })()`), '00년생은 이건이 부르고, 99년생은 창단 감독이 부른다 (동기가 나를 뽑을 순 없다)');
+  T(ev(`(function(){
+      ST.founderOn=true;
+      var m=founderHandover(makeRng(1));
+      return !!m && !ST.founderOn && /사퇴/.test(m.title);
+    })()`), '창단 감독은 첫 주에 이건에게 넘기고 빠진다');
+  T(ev("founderHandover(makeRng(1))===null"),
+    '한 번 넘기면 다시 안 넘긴다');
+  T(ev("/entryDraftBuild/.test(hsGraduate.toString())"),
+    '졸업하면 곧바로 드래프트로 간다 (예전엔 2군으로 직행)');
+
   console.log('\n[세이브]');
   T(ev("normalizeState.toString().indexOf('aiFarmStat')>0"+
        " && normalizeState.toString().indexOf('aiFarmUp')>0"),

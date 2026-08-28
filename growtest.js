@@ -100,8 +100,13 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
     '졸업치를 내렸다 — 뛴 몫 6 · 성적 몫 18 (예전 10 · 26)');
   T(ev("HS_BASE+HS_GRAD_PLAY+HS_GRAD_PERF")===44,
     '3년을 완벽하게 보내도 44 다 (팀 주전은 60~87)');
-  T(ev("/gAvg>=0.88 \\? 1 :/.test(hsGraduate.toString())"),
+  /* [v2.96.0] 2군 기간을 정하는 자리가 hsGraduate 의 if 사슬에서
+     **입단 드래프트 순번**으로 옮겨갔다 — 고교 성적 → 지명 순번 →
+     2군 기간. 검사도 그쪽을 본다. */
+  T(ev("entryFarmWeeks(1)===1 && Math.min.apply(null,[1,10,30,60,90,120].map(entryFarmWeeks))===1"),
     '제일 잘해도 2군을 한 주는 거친다');
+  T(ev("/entryFarmWeeks/.test(hsGraduate.toString())"),
+    '2군 기간을 지명 순번이 정한다');
   T(ev("hsGraduate.toString().indexOf('주전 보장은 없다')>0"),
     '졸업하면서 주전 보장을 안 준다');
   T(ev("farmWeek.toString().indexOf('주전 보장')<0"),

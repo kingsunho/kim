@@ -377,6 +377,9 @@ button{font-family:inherit;cursor:pointer}
   border-radius:7px;padding:5px 10px;font-size:11.5px}
 .tn-cnt{color:var(--gold)}
 .tn-lv{color:#8e9bb0;font-style:normal;font-size:11px}
+.ht-role{display:block;font-style:normal;font-size:10.5px;color:#8e9bb0;font-weight:400}
+.ht-blank{width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  font-size:26px;background:#20272f;border-radius:50%}
 /* ================= 신문 =================
    [요청] "진짜 신문처럼 만들어서 순간 띄워주고 (…) 진짜 신문 읽듯이 빠져들게"
    그래서 게임의 다른 화면과 **일부러 정반대로** 만든다 —
@@ -7948,8 +7951,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.95.0';
-const APP_VERSION_NOTE = '우린 거지구단이다 · 2군도 눌러서 본다 · 모의 드래프트';
+const APP_VERSION = '2.96.0';
+const APP_VERSION_NOTE = '이름이 불린다 — 고교 3년이 지명 순번이 된다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7970,6 +7973,15 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.96.0', t:'이름이 불린다 — 고교 3년이 지명 순번이 된다', items:[
+    '[요청] "내가 선택한 캐릭터는 드래프트 지명 받는걸로 이건 감독이 지명하는거고 나머지 00년생들도 그 드래프트에 우완좌완에 뽑혀야겠지? 순번은 고교 성적으로 해서 우완좌완 들어가게하자" — 졸업하고 곧바로 2군으로 가던 걸 뜯어고쳤다. 그 사이에 **입단 드래프트**가 들어간다',
+    '**순번은 고교 3년이 정한다.** 폭격했으면 전체 1~3순위에서 불리고, 대충 보냈으면 100순위 밖에서 겨우 불린다. 그리고 **그 순번이 그대로 2군 기간**이 된다 — 앞 순번은 한 주, 끝자락은 여덟 주. 고등학교를 대충 보내면 그 값을 프로에서 치른다',
+    '지명 순서판에 **내 앞뒤 네 명씩**이 보이고, **동기 여섯 명**이 몇 순위에 우완좌완에 뽑혔는지도 같이 나온다. 앞으로 몇 년을 같이 갈 사람들이다',
+    '[결정] **99년생은 한 해 먼저 뽑힌 선배다.** 1999년생 일곱은 전원 군포고 동창이라 2018년에 같이 뽑히고, 2000년생 일곱(군포고 다섯·흥진고 둘)은 2019년에 뽑힌다. 99년생으로 시작하면 이듬해 후배 일곱이 들어온다 — 그게 그 판의 주전 경쟁이다',
+    '[지적] "00년생들이 했을때는 이건이 감독 그대로고 99년생이 플레이할때는 그냥 감독을 만들어서 해야겠네" — 맞는 말이다. 99년생으로 하면 **이건도 내 동기**라 그 사람이 나를 지명하는 게 말이 안 된다. 그때는 **창단 감독 박성재**가 부른다. 군포고 애들을 데려다 사회인 팀을 꾸린 어른이다',
+    '[요청] "99년생이 뽑혀서 들어오게되면 감독이 일말의 이유로 이건한테 감독 넘겨주는 그림" — **입단 첫 주에 넘긴다.** 지방 발령, 둘째 출산, 무릎 수술, 가게 확장 중 하나다. 그 뒤로는 이건 감독이다 — 창단 감독이 오래 붙어 있으면 단톡도 면담도 교체 멘트도 전부 어색해진다',
+    '드래프트 화면은 졸업 화면에서 「드래프트장으로 ▸」 로 넘어간다',
+  ]},
   {v:'2.95.0', t:'우린 거지구단이다 · 2군도 눌러서 본다 · 모의 드래프트', items:[
     '[요청] "팀마다 운영비 차이 있어야 될듯해 (…) 실제 단원리그c순위 대로 팀 부유 평균 가난 (…) 근데 우완좌완팀은 돈 별로 없는 거지구단으로 해줘 실제로도돈이 없으니깐 우린 나이가 어려서" — 실제 순위 순으로 **부유 · 평균 · 가난** 셋으로 갈랐다. **우완좌완은 순위와 상관없이 가난**이다',
     '돈이 하는 일은 둘이다. **자유계약을 데려간다** — 부유 3표 · 평균 2표 · 가난 1표로 뽑는다. 그리고 **제 팀 유망주를 붙잡는다** — 부유한 팀 2군에서는 사람이 아예 안 새어 나오고, 평균은 한 명, 가난한 팀은 두 명까지 새어 나온다. 다 부자면 서로 뜯어가서 아무 일도 안 난다',
@@ -13659,6 +13671,7 @@ function runWeek(){
     aiFarmWeek(rng).forEach(m=>ST.notices.push(m));
     /* 자유계약 칸이 돌아가고, 감독이 알아서 하는 판이면 프런트 일도 돈다 */
     faWeek(rng).forEach(m=>ST.notices.push(m));
+    { const hv=founderHandover(rng); if(hv) ST.notices.push(hv); }
     frontOfficeWeek(rng).forEach(m=>ST.notices.push(m));
     rollTrade(rng).forEach(m=>ST.notices.push(m));
   }
@@ -15849,14 +15862,23 @@ function hsGraduate(){
        아니다. **누구든 2군을 거친다.** 3년이 좋았으면 한 주만에 올라가고,
        못했으면 여덟 주를 친다. 그리고 **주전 보장을 없앴다** — 올라와서
        자리를 뺏는 것까지가 이 모드다. */
-    const wk = gAvg>=0.88 ? 1 : (gAvg>=0.68 ? 2 : (gAvg>=0.46 ? 4 : (gAvg>=0.28 ? 6 : 8)));
+    /* [요청] "내가 선택한 캐릭터는 드래프트 지명 받는걸로 (…) 순번은
+               고교 성적으로 해서 우완좌완 들어가게하자"
+       졸업하고 곧바로 2군으로 가던 걸, 그 사이에 **입단 드래프트**를
+       끼운다. 순번은 고교 3년이 정하고, 그 순번이 2군 기간이 된다.
+       동기들도 같은 드래프트에서 우완좌완에 뽑힌다.               */
+    ST.entryDraft=entryDraftBuild(gAvg);
+    /* 99년생이면 이건이 내 동기다 — 팀을 만든 어른이 나를 뽑는다.
+       그 사람은 첫 주에 이건에게 넘기고 빠진다. */
+    ST.founderOn=!!entryCoach().founder;
+    const wk=entryFarmWeeks(ST.entryDraft.myNo);
     ST.notices=ST.notices||[];
     ST.myFarm=wk; ST.farmMe={g:0,ab:0,h:0}; ST.farmDone=0; ST.farmDoneSeen=0;
     ST.notices.push({type:'farm',
-      title: wk<=1?'2군에서 한 주만':'2군에서 시작한다',
-      body: (wk<=1
-        ? '고등학교 3년이 좋았다. 그래도 1군은 1군이다 — 한 주만 2군에서 보고 올린다.'
-        : '고등학교를 나왔다고 1군이 되는 게 아니다. '+wk+'주 동안 2군에서 친다.'),
+      title:ST.entryDraft.year+' 드래프트 — 전체 '+ST.entryDraft.myNo+'순위',
+      body:'우완좌완이 '+ST.entryDraft.myRound+'라운드 '+ST.entryDraft.myIn+'순위로 불렀다. '+
+        (wk<=1?'앞 순번이라 한 주만 2군에서 보고 올린다.'
+              :wk+'주 동안 2군에서 친다.'),
       effect:'2할8푼을 넘기면 올라간다 · 주전 보장은 없다'});
   }
   return out;
@@ -16186,8 +16208,11 @@ function renderHS(){
     ep.appendChild(room);
     c.appendChild(ep);
 
-    const go2=el('button','btn primary','우완좌완으로');
-    go2.onclick=async()=>{ await saveGame(true); go('home'); toast('여기서부터 진짜다'); };
+    const go2=el('button','btn primary',
+      (ST.entryDraft?'드래프트장으로 ▸':'우완좌완으로'));
+    go2.onclick=async()=>{ await saveGame(true);
+      if(ST.entryDraft){ go('entry'); toast('이름이 불린다'); }
+      else { go('home'); toast('여기서부터 진짜다'); } };
     c.appendChild(go2);
     hsPastList(c);
     return;
@@ -32726,6 +32751,188 @@ function aiFarmBlocked(tid){
    (드래프트·콜업·이적·경기 결과). 연예면은 **가상 인물**이다 —
    진짜 연예인이나 KBO 선수 이름으로 열애설을 지어내면 그건 실제
    사람에 대한 가짜 기사가 된다. 세계관 안의 사람들로 채운다.       */
+/* ================= 입단 드래프트 =================
+   [요청] "내가 선택한 캐릭터는 드래프트 지명 받는걸로 이건 감독이
+           지명하는거고 나머지 00년생들도 그 드래프트에 우완좌완에
+           뽑혀야겠지? 순번은 고교 성적으로 해서 우완좌완 들어가게하자"
+   [결정] 99년생은 **한 해 먼저 뽑힌 선배**로 간다. 구조는 같고 해가 다르다.
+     1999년생 → 2018 드래프트 (군포고 동창 일곱이 같이)
+     2000년생 → 2019 드래프트 (군포고 다섯 · 흥진고 둘)
+   99년생으로 시작하면 이듬해 00년생 일곱이 들어온다 — 후배가 내 자리를
+   노리는 게 그 판의 축이다.
+
+   [핵심] **순번은 고교 3년 성적이 정한다.** 폭격했으면 앞자리에서
+   불리고 못했으면 5라운드에 겨우 불린다. 그 순번이 곧 감독의 기대치라
+   2군에서 보내는 기간이 거기서 갈린다. 고교를 대충 보내면 그 값을
+   프로에서 치른다 — 그게 이 모드의 뼈대다.                        */
+/* [지적] "00년생들이 했을때는 이건이 감독 그대로고 99년생이 플레이할때는
+           그냥 감독을 만들어서 해야겠네"
+   맞는 말이다. 99년생으로 시작하면 **이건도 내 동기**다. 동기가 나를
+   지명했다는 건 말이 안 된다. 그때는 **팀을 만든 어른**이 부른다 —
+   군포고 애들을 데려다 사회인 팀을 꾸린 사람이다. 지어낸 인물이고,
+   본편 로스터에는 안 들어간다(선수가 아니라 만든 사람이니까).      */
+const FOUNDER_NAME='박성재';
+const FOUNDER_DESC='팀을 만든 사람. 서른둘에 사회인 팀을 꾸려서 군포고 애들을 데려왔다.';
+function entryCoach(){
+  const me=(typeof ST!=='undefined'&&ST)?(ST.playerId||MYID):MYID;
+  const born=(META[me]&&META[me].born)||2000;
+  const cid=(typeof coachId==='function')?coachId():null;
+  /* 감독이 나랑 같은 해에 태어났으면 그건 동기다 — 창단 감독이 부른다 */
+  if(cid && META[cid] && META[cid].born!==born)
+    return {id:cid, name:nameOf(cid), founder:false};
+  return {id:null, name:FOUNDER_NAME, founder:true};
+}
+/* [요청] "99년생이 뽑혀서 들어오게되면 감독이 일말의 이유로 이건한테
+           감독 넘겨주는 그림"
+   창단 감독이 오래 붙어 있으면 본편 전체가 어색해진다(단톡·면담·교체
+   멘트가 전부 이건 기준이다). 그래서 **입단하고 첫 주에** 넘긴다 —
+   짧고 굵은 장면 하나로 끝낸다. 그 뒤로는 이건 감독이다.          */
+const FOUNDER_QUIT=[
+  ['회사에서 지방으로 발령이 났다','이제 주말마다 못 온다'],
+  ['둘째가 태어났다','당분간은 애를 봐야 한다'],
+  ['무릎 수술 날짜를 잡았다','재활만 반년이라고 한다'],
+  ['가게를 하나 더 열게 됐다','주말이 통째로 날아간다'],
+];
+function founderHandover(rng){
+  if(!ST || !ST.founderOn) return null;
+  ST.founderOn=false;
+  const r=pickOne(FOUNDER_QUIT, rng||Math.random);
+  const cid=(typeof coachId==='function')?coachId():'lg';
+  return {type:'coach', title:FOUNDER_NAME+' 감독 사퇴 — '+nameOf(cid)+'이(가) 맡는다',
+    body:FOUNDER_NAME+': "'+r[0]+'. '+r[1]+'. 팀은 '+nameOf(cid)+'이가 맡아라."',
+    effect:'오늘부터 감독은 '+nameOf(cid)+'다'};
+}
+function entryDraftYear(){
+  const me=(typeof ST!=='undefined'&&ST)?(ST.playerId||MYID):MYID;
+  const m=(typeof META!=='undefined')?META[me]:null;
+  return ((m&&m.born)?m.born:2000)+19;
+}
+/* 같은 해에 태어난 우리 팀 사람들 — 나랑 같이 뽑히는 동기다 */
+function entryMates(){
+  const me=(typeof ST!=='undefined'&&ST)?(ST.playerId||MYID):MYID;
+  const born=(META[me]&&META[me].born)||2000;
+  const us=TBYID['wwzw'];
+  return us.players.filter(p=>p.id!==me && META[p.id] && META[p.id].born===born);
+}
+/* 고교 성적(0~1) → 전체 순번. 낮을수록 좋다 */
+function entryPickNo(gAvg){
+  const g=Math.max(0,Math.min(1,gAvg||0));
+  const teams=(typeof TEAMS!=='undefined')?TEAMS.length:24;
+  const total=teams*DRAFT_ROUNDS;
+  /* 1.0 이면 1순위, 0 이면 거의 끝자리. 위쪽이 촘촘해야 폭격이 값이 있다 */
+  const raw=1+Math.pow(1-g,1.35)*(total-4);
+  return Math.max(1, Math.min(total, Math.round(raw)));
+}
+function entryDraftBuild(gAvg){
+  const me=ST.playerId||MYID;
+  const year=entryDraftYear();
+  const teams=(typeof TEAMS!=='undefined')?TEAMS.length:24;
+  const rng=makeRng(rvSeedOf('entry|'+year+'|'+me));
+  const myNo=entryPickNo(gAvg);
+  const other=TEAMS.filter(t=>t&&t.id!=='wwzw');
+  const near=[];
+  for(let n=Math.max(1,myNo-4); n<=Math.min(teams*DRAFT_ROUNDS, myNo+4); n++){
+    if(n===myNo){
+      near.push({no:n, team:'우완좌완', name:nameOf(me), me:true,
+                 school:(META[me]&&META[me].school)||'-'});
+    } else {
+      const t=other[(rng()*other.length)|0];
+      near.push({no:n, team:t?t.name:'—',
+        name:HS_SUR[(rng()*HS_SUR.length)|0]+HS_GIV[(rng()*HS_GIV.length)|0],
+        school:DRAFT_HS[(rng()*DRAFT_HS.length)|0]});
+    }
+  }
+  /* 동기들 — 능력치 순으로 우완좌완이 순서대로 불렀다 */
+  const mates=entryMates().slice()
+    .sort((a,b)=>(b.con+b.pow+b.eye+b.def)-(a.con+a.pow+a.eye+a.def));
+  const used={}; used[myNo]=1;
+  const mateRows=mates.map((p,i)=>{
+    let n=myNo + (i+1)*teams + ((rng()*6)|0) - 3;   // 라운드를 하나씩 건너뛴다
+    n=Math.max(1, Math.min(teams*DRAFT_ROUNDS, n));
+    while(used[n]) n++;
+    used[n]=1;
+    return {no:n, name:p.name, id:p.id,
+            school:(META[p.id]&&META[p.id].school)||'-'};
+  }).sort((a,b)=>a.no-b.no);
+  return {year, myNo, myRound:Math.ceil(myNo/teams),
+          myIn:((myNo-1)%teams)+1, near, mates:mateRows, teams};
+}
+/* 지명 순번이 2군 기간을 정한다 — 감독의 기대치가 그대로 시간이 된다 */
+function entryFarmWeeks(myNo){
+  if(myNo<=10) return 1;
+  if(myNo<=30) return 2;
+  if(myNo<=60) return 4;
+  if(myNo<=90) return 6;
+  return 8;
+}
+function renderEntry(){
+  const c=$('#view'); c.innerHTML='';
+  const E=ST&&ST.entryDraft;
+  if(!E){
+    c.appendChild(el('div','card','지금은 드래프트 기간이 아니다.'));
+    const b=el('button','btn primary','홈으로'); b.onclick=()=>go('home');
+    c.appendChild(b); return;
+  }
+  const me=ST.playerId||MYID;
+  const head=el('div','card');
+  head.innerHTML='<div class="card-h">'+E.year+' 신인 드래프트</div>'+
+    '<p class="muted">고등학교 3년이 여기서 값으로 매겨진다. '+
+    '<b>순번은 성적이 정한다</b> — 그리고 그 순번이 감독의 기대치가 된다.</p>';
+  c.appendChild(head);
+
+  const EC=entryCoach();
+  const big=el('div','card');
+  big.innerHTML='<div class="hstalk"><div class="ht-face">'+
+      (EC.id?avatarHTML(EC.id):'<div class="ht-blank">🧢</div>')+'</div>'+
+    '<div class="ht-body"><div class="ht-nm">'+EC.name+
+      (EC.founder?'<i class="ht-role">창단 감독</i>':'<i class="ht-role">감독</i>')+'</div>'+
+    '<div class="ht-say">우완좌완, '+nameOf(me)+'.</div>'+
+    '<div class="ht-more">전체 '+E.myNo+'순위 · '+E.myRound+'라운드 '+E.myIn+'순위'+
+      (EC.founder?'<br><span class="dimx">'+FOUNDER_DESC+'</span>':'')+'</div></div></div>';
+  c.appendChild(big);
+
+  const bd=el('div','card');
+  bd.appendChild(el('div','card-h','지명 순서'));
+  E.near.forEach(r=>{
+    const row=el('div','pk-row'+(r.me?' cur':''));
+    row.innerHTML='<div class="pk-l"><div class="pk-name">'+
+      '<span class="pc-no">'+r.no+'</span> '+r.name+
+      (r.me?'<span class="ftag" style="color:#ffd15c">나</span>':'')+'</div>'+
+      '<div class="pk-note">'+r.school+' → '+r.team+'</div></div>';
+    bd.appendChild(row);
+  });
+  c.appendChild(bd);
+
+  if(E.mates&&E.mates.length){
+    const mc=el('div','card');
+    mc.appendChild(el('div','card-h','같이 뽑힌 동기'));
+    mc.appendChild(el('p','muted','같은 해에 우완좌완이 부른 사람들이다. 앞으로 몇 년을 같이 간다.'));
+    E.mates.forEach(m2=>{
+      const row=el('div','pk-row');
+      row.innerHTML='<div class="pk-l"><div class="pk-name">'+
+        '<span class="pc-no">'+m2.no+'</span> '+m2.name+'</div>'+
+        '<div class="pk-note">'+m2.school+'</div></div>';
+      mc.appendChild(row);
+    });
+    c.appendChild(mc);
+  }
+
+  const wk=entryFarmWeeks(E.myNo);
+  const nx=el('div','card');
+  nx.innerHTML='<div class="card-h">그래서 어디서 시작하나</div>'+
+    '<p class="muted">'+
+    (wk<=1?'<b>한 주만 2군에서 본다.</b> 앞 순번이라 감독이 빨리 보고 싶어 한다.'
+          :'<b>'+wk+'주 동안 2군에서 친다.</b> '+
+           (E.myNo>90?'끝자락에 불렸다 — 여기서부터 올라가는 거다.'
+                     :'순번만큼 기다린다. 2할8푼을 넘기면 올라간다.'))+
+    '<br>1군 자리는 보장이 없다. <b>자리는 뺏는 거다.</b></p>';
+  c.appendChild(nx);
+
+  const go2=el('button','btn primary','입단한다 ▸');
+  go2.onclick=()=>{ ST.entryDraft=null; saveGame(true); go('home'); };
+  c.appendChild(go2);
+}
+
 const PAPER_NAME='우완좌완 일보';
 /* 연예·사회면 — 전부 지어낸 사람이다. 실존 인물 이름은 안 쓴다 */
 const NEWS_ENT=[
@@ -33798,7 +34005,8 @@ const VIEWS={home:renderHome,squad:renderSquad,lineup:renderLineup,kakao:renderK
   records:renderRecords,pick:renderPick,more:renderMore,meet:renderMeet,recruit:renderRecruit,
   tutorial:renderTutorial,player:renderPlayer,hall:renderHall,whatif:renderWhatIf,
   role:renderRole,slots:renderSlots,start:renderStart,mode:renderMode,hs:renderHS,
-  glog:renderGlog,rosters:renderRosters,front:renderFront,draft:renderDraft};
+  glog:renderGlog,rosters:renderRosters,front:renderFront,draft:renderDraft,
+  entry:renderEntry};
 /* 선수 모드면 감독 전용 탭을 아예 안 보이게 한다.
    눌러도 막히긴 하지만, 있는데 안 되는 것보다 없는 게 낫다. */
 function paintTabs(){
@@ -34077,6 +34285,8 @@ function normalizeState(){
   if(!ST.draftTeams||typeof ST.draftTeams!=='object')ST.draftTeams={};
   if(ST.draft===undefined)ST.draft=null;
   if(typeof ST.paperSeen!=='number')ST.paperSeen=-1;
+  if(ST.entryDraft===undefined)ST.entryDraft=null;
+  if(typeof ST.founderOn!=='boolean')ST.founderOn=false;
   if(!Array.isArray(ST.myTrainQ))ST.myTrainQ=(ST.myTrain?[ST.myTrain]:[]);
   if(!ST.valuePrev)ST.valuePrev={};
   if(!Array.isArray(ST.drunkIds))ST.drunkIds=[];
