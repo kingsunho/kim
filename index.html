@@ -380,6 +380,38 @@ button{font-family:inherit;cursor:pointer}
 .ht-role{display:block;font-style:normal;font-size:10.5px;color:#8e9bb0;font-weight:400}
 .ht-blank{width:100%;height:100%;display:flex;align-items:center;justify-content:center;
   font-size:26px;background:#20272f;border-radius:50%}
+/* ================= 시즌 달력 =================
+   The Show RTTS 의 달력을 사회인야구 리듬으로 옮긴 것.
+   하루가 아니라 **한 주가 한 칸**이다 — 주중 훈련, 주말 경기. */
+.cal-todo{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:9px}
+.cal-td{background:#141a22;border:1px solid #2a323d;border-radius:10px;
+  padding:10px 6px;text-align:center;color:#c3ccd7}
+.cal-td.on{border-color:#3f7a52;background:#16211a}
+.cal-td .ct-i{display:block;font-size:19px;margin-bottom:3px}
+.cal-td .ct-n{display:block;font-size:12.5px;font-weight:800;color:#e2eaf5}
+.cal-td .ct-s{display:block;font-size:10.5px;color:#8e9bb0;margin-top:2px;line-height:1.35}
+.cal-td.on .ct-s{color:#7fc48f}
+.cal-g{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:9px}
+.cal-h{text-align:center;font-size:10.5px;color:#8e9bb0;padding:3px 0;font-weight:700}
+.cal-h.sun{color:#e08a70}.cal-h.sat{color:#7fa8d8}
+.cal-d{min-height:46px;border-radius:7px;background:#111720;border:1px solid #1e2530;
+  padding:3px 2px;text-align:center;position:relative;overflow:hidden}
+.cal-d.pad{background:transparent;border:0}
+.cal-d .cd-n{display:block;font-size:10.5px;color:#6b7684}
+.cal-d.sun .cd-n{color:#c07a68}.cal-d.sat .cd-n{color:#6b8fb8}
+.cal-d .cd-hol{display:block;font-size:8px;color:#c9a227;line-height:1.1}
+.cal-d .cd-tr{display:block;font-size:8.5px;color:#4a5563;margin-top:6px}
+.cal-d .cd-g{display:block;font-size:9.5px;font-weight:800;margin-top:3px;line-height:1.2}
+.cal-d .cd-g.w{color:#7fc48f}.cal-d .cd-g.l{color:#e08a70}
+.cal-d .cd-g.t{color:#c9a227}.cal-d .cd-g.nx{color:#8e9bb0}
+.cal-d .cd-op{display:block;font-size:8.5px;color:#8e9bb0;line-height:1.2}
+.cal-d.done{background:#151b24;border-color:#2a323d}
+.cal-d.now{background:#1b2a20;border-color:#4c8a63;box-shadow:0 0 0 1px #4c8a63 inset}
+.cal-d.next{background:#141a22;border-color:#2a323d}
+.cd-key{padding:1px 6px;border-radius:5px;font-size:11px}
+.cd-key.now{background:#1b2a20;color:#7fc48f}
+.cd-key.done{background:#151b24;color:#c3ccd7}
+.cd-key.next{background:#141a22;color:#8e9bb0}
 /* ================= 신문 =================
    [요청] "진짜 신문처럼 만들어서 순간 띄워주고 (…) 진짜 신문 읽듯이 빠져들게"
    그래서 게임의 다른 화면과 **일부러 정반대로** 만든다 —
@@ -7951,8 +7983,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.96.0';
-const APP_VERSION_NOTE = '이름이 불린다 — 고교 3년이 지명 순번이 된다';
+const APP_VERSION = '2.97.0';
+const APP_VERSION_NOTE = '시즌 달력이 열린다 · 신문이 우리 팀을 쓴다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7973,6 +8005,18 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.97.0', t:'시즌 달력이 열린다 · 신문이 우리 팀을 쓴다', items:[
+    '[질문] "더쇼 rtts모드처럼 달력스케줄 나오면서 막 그거 되는것처럼 가능한가" — 된다. 알고 보니 **이 게임엔 이미 진짜 날짜가 있었다.** 2월 첫 일요일부터 10월까지 실제 경기일이 잡혀 있고, 간격도 실제 리그처럼 들쭉날쭉하다(2/22 → 3/29 → 4/12 …). 그걸 펼치기만 하면 됐다',
+    '**시즌 달력**이 생겼다. 월별 그리드에 경기일이 박히고 지난 경기는 승패와 점수가, 앞 경기는 홈·원정과 상대가 뜬다. 오늘은 초록으로 표시된다. **지난 경기 칸을 누르면 그 경기 기록**으로 간다',
+    'The Show 와 다른 점이 하나 있다 — RTTS 는 매일이 경기지만 **사회인야구는 주말에만** 한다. 그래서 하루가 아니라 **한 주가 한 칸**이다. 주중엔 훈련 표시가 뜨고, 대관이 안 되면 2~3주씩 빈다',
+    '달력 위에 **이번 주 할 일** 세 칸이 붙는다 — 훈련을 샀는지, 라인업이 발표됐는지, 경기를 치렀는지. 눌러서 바로 그 화면으로 간다. RTTS 의 그 줄이다',
+    '[요청] "우완좌완 신문이니깐 단원리그 c에서 우완좌완 누가 잘치고 있다 이런것처럼" — 신문에 **우리 팀 타율 1위** 기사가 실린다. 「우완좌완 송승민 타율 .444… 팀 선두」 처럼. 내가 몇 위인지, 1위와 몇 리 차이인지도 단신에 나온다',
+    '**단원리그 C 개인 순위**와 **홈런 선두**도 실린다. 스물네 팀을 통틀어 누가 제일 잘 치고 있는지',
+    '[요청] "누구 초고교급 어디팀 지명 가능인가?" — 최대어를 **어느 팀이 부를 수 있는지** 기사로 나온다. 순위 역순이라 못하는 팀일수록 유리하다. 우리가 몇 번째로 부를 수 있는지, 그때까지 그 선수가 남아 있을지까지 적는다',
+    '[버그] 그 기사에 **선수 이름이 빈칸으로** 찍혔다. `top` 이라는 이름을 블록 밖에서 쓰는 바람에 **브라우저 전역 `window.top`** 을 집고 있었다. 이름이 짧으면 전역과 부딪힌다',
+    '신문에 **조사**를 붙였다. 게임 말투에서는 「이(가)」 로 퉁쳐도 되는데 1면에 「김선호은(는)」 이 박히면 신문 같지가 않다. 받침을 보고 고른다',
+    '1면 아래 기사를 셋에서 다섯으로, 단신을 다섯에서 일곱으로 늘렸다. 팀 타율 1위 같은 게 잘려나가면 「우완좌완 신문」 이라는 말이 무색해진다',
+  ]},
   {v:'2.96.0', t:'이름이 불린다 — 고교 3년이 지명 순번이 된다', items:[
     '[요청] "내가 선택한 캐릭터는 드래프트 지명 받는걸로 이건 감독이 지명하는거고 나머지 00년생들도 그 드래프트에 우완좌완에 뽑혀야겠지? 순번은 고교 성적으로 해서 우완좌완 들어가게하자" — 졸업하고 곧바로 2군으로 가던 걸 뜯어고쳤다. 그 사이에 **입단 드래프트**가 들어간다',
     '**순번은 고교 3년이 정한다.** 폭격했으면 전체 1~3순위에서 불리고, 대충 보냈으면 100순위 밖에서 겨우 불린다. 그리고 **그 순번이 그대로 2군 기간**이 된다 — 앞 순번은 한 주, 끝자락은 여덟 주. 고등학교를 대충 보내면 그 값을 프로에서 치른다',
@@ -16944,6 +16988,17 @@ function renderHomePlayer(){
     /* [요청] "홈에 약간 팝업뜨는 것처럼 진짜 신문처럼 만들어서 순간 띄워주고"
        주가 바뀌면 딱 한 번 저절로 펼쳐진다. 같은 주에 홈을 몇 번 들락거려도
        다시 안 뜬다 — 그러면 그건 광고지 신문이 아니다.             */
+    {
+      /* [질문] "더쇼 rtts모드처럼 달력스케줄 나오면서" — 달력 입구 */
+      const cb=el('button','mystatus in tapon');
+      const done=(ST.schedule||[]).filter(x=>x&&x.played).length;
+      cb.innerHTML='<div class="ms-big">🗓 시즌 달력</div>'+
+        '<div class="ms-sub">'+((ST.calendar&&ST.calendar.label)||'')+
+          ' · '+done+'/'+((ST.schedule||[]).length)+'경기</div>'+
+        '<div class="ms-why">이번 주 할 일과 남은 일정을 한눈에</div>';
+      cb.onclick=()=>go('cal');
+      c.appendChild(cb);
+    }
     {
       const key=((ST.seasonNo||1)*100)+((ST.round||0));
       const pb=el('button','mystatus in tapon');
@@ -32933,7 +32988,142 @@ function renderEntry(){
   c.appendChild(go2);
 }
 
+/* ================= 시즌 달력 =================
+   [질문] "더쇼 rtts모드처럼 달력스케줄 나오면서 막 그거 되는것처럼
+           가능한가"
+   된다. 이 게임엔 **이미 실제 날짜가 있다** — seasonDates() 가 2월 첫
+   일요일부터 10월까지 진짜 경기일을 만들고, 간격도 실제 리그처럼
+   들쭉날쭉하다(2/22 → 3/29 → 4/12 …). 그걸 펼치기만 하면 된다.
+
+   [The Show 와 다른 점] RTTS 는 매일이 경기다. 사회인야구는 **주말에만**
+   한다. 그래서 하루하루를 넘기는 게 아니라 **한 주가 한 칸**이다 —
+   주중엔 훈련, 주말에 경기. 달력에 그 리듬이 그대로 보인다.        */
+const CAL_WD=['일','월','화','수','목','금','토'];
+function calRounds(){
+  const y=(ST&&ST.year)||2026;
+  const dates=seasonDates(y);
+  return (ST.schedule||[]).map((sc,i)=>({
+    i, sc, dt:dates[i]||null,
+    opp:(TBYID[sc.opp]||{name:sc.opp}),
+  })).filter(x=>x.dt);
+}
+function renderCal(){
+  const c=$('#view'); c.innerHTML='';
+  const rounds=calRounds();
+  if(!rounds.length){
+    c.appendChild(el('div','card','아직 일정이 없다.'));
+    const b=el('button','btn primary','홈으로'); b.onclick=()=>go('home');
+    c.appendChild(b); return;
+  }
+  const cur=Math.min(ST.round||0, rounds.length-1);
+  const y=(ST&&ST.year)||2026;
+
+  /* ---- 이번 주 할 일 (RTTS 의 그 줄) ---- */
+  {
+    const me=ST.playerId||MYID;
+    const now=rounds[cur];
+    const card=el('div','card');
+    card.appendChild(el('div','card-h','이번 주 · '+
+      (now?((now.dt.getMonth()+1)+'월 '+now.dt.getDate()+'일 ('+CAL_WD[now.dt.getDay()]+')'):'')));
+    const q=el('div','cal-todo');
+    const bought=(typeof trainQueue==='function')?trainQueue().length:0;
+    const rows=[
+      ['🏋️','훈련', bought? (bought+'개 샀다') : '아직 안 샀다', bought>0, ()=>go('train')],
+      ['📋','라인업', ST.announced?'발표됐다':(ST.weekDone?'아직 발표 전':'주가 안 열렸다'),
+        !!ST.announced, ()=>go(isPlayerMode()?'home':'lineup')],
+      ['⚾','경기', (now&&now.sc.played)?'끝났다':(ST.announced?'나갈 수 있다':'발표 뒤에'),
+        !!(now&&now.sc.played), ()=>go('game')],
+    ];
+    rows.forEach(([ic,nm,st,ok,fn])=>{
+      const r=el('button','cal-td'+(ok?' on':''));
+      r.innerHTML='<span class="ct-i">'+ic+'</span><span class="ct-n">'+nm+'</span>'+
+        '<span class="ct-s">'+st+'</span>';
+      r.onclick=fn;
+      q.appendChild(r);
+    });
+    card.appendChild(q);
+    c.appendChild(card);
+  }
+
+  /* ---- 달력 ---- */
+  const byMonth={};
+  rounds.forEach(r=>{ const m=r.dt.getMonth()+1; (byMonth[m]=byMonth[m]||[]).push(r); });
+  const months=Object.keys(byMonth).map(Number).sort((a,b)=>a-b);
+  months.forEach(m=>{
+    const card=el('div','card');
+    card.appendChild(el('div','card-h',y+'년 '+m+'월'));
+    const grid=el('div','cal-g');
+    CAL_WD.forEach((w,i)=>{
+      const h=el('div','cal-h'+(i===0?' sun':(i===6?' sat':'')));
+      h.textContent=w; grid.appendChild(h);
+    });
+    const first=new Date(y,m-1,1);
+    const days=new Date(y,m,0).getDate();
+    for(let k=0;k<first.getDay();k++) grid.appendChild(el('div','cal-d pad'));
+    for(let dnum=1;dnum<=days;dnum++){
+      const dt=new Date(y,m-1,dnum);
+      const hit=byMonth[m].find(r=>r.dt.getDate()===dnum);
+      const cell=el(hit?'button':'div','cal-d'+
+        (dt.getDay()===0?' sun':(dt.getDay()===6?' sat':''))+
+        (hit?(hit.i<cur?' done':(hit.i===cur?' now':' next')):''));
+      let inner='<span class="cd-n">'+dnum+'</span>';
+      /* 휴일 */
+      const hol=HOLIDAYS.find(h=>{
+        const p2=h.md.split('-');
+        return Number(p2[0])===m && Number(p2[1])===dnum;
+      });
+      if(hol) inner+='<span class="cd-hol">'+hol.name+'</span>';
+      if(hit){
+        const sc=hit.sc;
+        const nm=(hit.opp.short||hit.opp.name||'').slice(0,4);
+        if(sc.played&&sc.result){
+          const w2=sc.result.us>sc.result.them, t2=sc.result.us===sc.result.them;
+          inner+='<span class="cd-g '+(t2?'t':(w2?'w':'l'))+'">'+
+            (t2?'무':(w2?'승':'패'))+' '+sc.result.us+':'+sc.result.them+'</span>'+
+            '<span class="cd-op">'+nm+'</span>';
+        } else {
+          inner+='<span class="cd-g nx">'+(sc.homeGame?'홈':'원정')+'</span>'+
+            '<span class="cd-op">'+nm+'</span>';
+        }
+      } else if(dt.getDay()===3){
+        /* 주중 훈련 — 사회인야구는 수요일쯤 한 번 모인다 */
+        inner+='<span class="cd-tr">훈련</span>';
+      }
+      cell.innerHTML=inner;
+      if(hit){
+        cell.onclick=()=>{
+          if(hit.i<cur){ glogView=hit.i; go('glog'); }
+          else if(hit.i===cur) go('game');
+          else toast(nm+' 전 · '+(hit.dt.getMonth()+1)+'월 '+hit.dt.getDate()+'일');
+        };
+      }
+      grid.appendChild(cell);
+    }
+    card.appendChild(grid);
+    c.appendChild(card);
+  });
+
+  const lg=el('div','card');
+  lg.innerHTML='<p class="muted"><b class="cd-key now">오늘</b> 이번 주 경기 · '+
+    '<b class="cd-key done">지난 경기</b> 눌러서 기록 · '+
+    '<b class="cd-key next">앞으로</b><br>'+
+    '사회인야구는 주말에만 한다 — 주중은 훈련이고 한 주가 한 칸이다. '+
+    '대관이 안 되면 2~3주씩 비기도 한다. 실제 리그가 그랬다.</p>';
+  c.appendChild(lg);
+  const hb=el('button','btn','홈으로'); hb.onclick=()=>go('home'); c.appendChild(hb);
+}
+
 const PAPER_NAME='우완좌완 일보';
+/* 조사 — 게임 안에서는 「이(가)」 로 퉁쳐도 말투가 사니까 괜찮은데,
+   **신문은 다르다.** 「김선호은(는)」 이 1면에 박히면 신문 같지가 않다.
+   받침을 보고 고른다. 한글이 아니면 뒤엣것을 쓴다.                */
+function josa(w, pair){
+  const t=String(w||'');
+  if(!t) return pair[1];
+  const c=t.charCodeAt(t.length-1);
+  if(c<0xAC00||c>0xD7A3) return pair[1];
+  return ((c-0xAC00)%28) ? pair[0] : pair[1];
+}
 /* 연예·사회면 — 전부 지어낸 사람이다. 실존 인물 이름은 안 쓴다 */
 const NEWS_ENT=[
   ['배우 한도윤·가수 유세라 열애설… 소속사 "사생활이라 확인 어렵다"',
@@ -33084,6 +33274,19 @@ function newsIssue(){
       }
       if(mock.length) subs.push({h:`${yr} 모의 드래프트 — 1라운드 예상`,
         b:mock.join(' · ')+' … 본지 스카우트 예상이다. 순서는 지난 시즌 순위 역순으로 잡았다.'});
+      /* [요청] "누구 초고교급 어디팀 지명 가능인가? 막이런거"
+         최대어를 어느 팀이 데려갈 수 있는지 — 순위 역순이라 **못하는
+         팀일수록 유리하다.** 우리가 몇 번째로 부를 수 있는지도 적는다. */
+      const wwIdx=order.indexOf('wwzw');
+      const t0=(TBYID[order[0]]||{name:'—'}).name;
+      /* [버그] 여기서 top 을 그대로 썼더니 **브라우저 전역 window.top** 을
+         집어서 「초고교급 undefined」 가 찍혔다. top 은 위 블록 안에서만
+         산다. 이름이 짧으면 전역과 부딪힌다 — 스코프를 다시 잡는다. */
+      const best=rank[0].p;
+      briefs.push({h:`초고교급 ${best.school} ${best.name}, 어느 팀이 부르나`,
+        b:`지금 순위대로면 ${t0}${josa(t0,['이','가'])} 1순위 지명권을 갖는다. `+
+          (wwIdx===0 ? '우완좌완이 제일 먼저 부른다 — 꼴찌의 유일한 값이다.'
+           : `우완좌완은 ${wwIdx+1}번째다. ${best.name}까지 남아 있을 확률은 낮다.`)});
     }
   }
   /* 우리 팀 지난 경기 */
@@ -33095,7 +33298,7 @@ function newsIssue(){
       const b=(ST.bat&&ST.bat[me])||null;
       lead.push({h:`우완좌완 ${last.result.us}-${last.result.them} ${TBYID[last.opp].name}… ${t?'무승부':(w?'승리':'패배')}`,
         b:`${ST.round}주차 경기가 끝났다. `+
-          (b&&b.ab? `${nameOf(me)}은(는) 시즌 ${fmt3(b.h/b.ab)}(${b.ab}타수 ${b.h}안타)를 기록 중이다.`
+          (b&&b.ab? `${nameOf(me)}${josa(nameOf(me),['은','는'])} 시즌 ${fmt3(b.h/b.ab)}(${b.ab}타수 ${b.h}안타)를 기록 중이다.`
                   : '기록실은 아직 조용하다.')});
     }
   }
@@ -33107,6 +33310,47 @@ function newsIssue(){
     rows.sort((a,b)=>b.wr-a.wr);
     if(rows.length) subs.push({h:`${rows[0].t.name} 선두 유지 (${rows[0].w}승 ${rows[0].l}패)`,
       b:`${rows.length}팀이 일정을 소화했다. 2위는 ${rows[1]?rows[1].t.name:'—'}.`});
+  }
+  /* [요청] "우완좌완 신문이니깐 단원리그 c에서 우완좌완 누가 잘치고 있다
+             이런것처럼"
+     우리 팀 타격 1위를 1면 옆에 세운다. 이름이 신문에 나오는 게
+     사회인야구에서 제일 큰 일이다.                                 */
+  {
+    const us=TBYID['wwzw'];
+    const rows=us.players.map(p=>({p, b:(ST.bat||{})[p.id]||null}))
+      .filter(x=>x.b && x.b.ab>=8)
+      .map(x=>({...x, avg:x.b.h/x.b.ab}))
+      .sort((a,b)=>b.avg-a.avg);
+    if(rows.length){
+      const t1=rows[0];
+      subs.push({h:`우완좌완 ${t1.p.name} 타율 ${fmt3(t1.avg)}… 팀 선두`,
+        b:`${t1.b.ab}타수 ${t1.b.h}안타`+
+          (t1.b.hr?` · 홈런 ${t1.b.hr}`:'')+(t1.b.rbi?` · 타점 ${t1.b.rbi}`:'')+
+          (rows[1]?`. 뒤를 ${rows[1].p.name}(${fmt3(rows[1].avg)})${josa(rows[1].p.name,['이','가'])} 쫓는다.`:'.')});
+      /* 내가 그 안에 있나 — 없으면 그것도 기사다 */
+      const mi=rows.findIndex(x=>x.p.id===me);
+      if(mi>0) briefs.push({h:`${nameOf(me)} 팀내 타율 ${mi+1}위`,
+        b:`${fmt3(rows[mi].avg)}. 1위와 ${(rows[0].avg-rows[mi].avg).toFixed(3).replace('0.','.')} 차이다.`});
+      else if(mi<0) briefs.push({h:`${nameOf(me)} 아직 표본 부족`,
+        b:'여덟 타석을 채워야 순위에 오른다.'});
+    }
+  }
+  /* 리그 개인 순위 — 스물네 팀 통틀어 누가 제일 잘 치나 */
+  {
+    const all=[];
+    TEAMS.forEach(t=>{ (t.players||[]).forEach(p=>{
+      const b=(ST.lgBat||{})[p.id]||((t.id==='wwzw')?((ST.bat||{})[p.id]):null);
+      if(b && b.ab>=10) all.push({t, p, b, avg:b.h/b.ab});
+    }); });
+    if(all.length){
+      all.sort((a,b)=>b.avg-a.avg);
+      const top=all.slice(0,3);
+      briefs.push({h:'단원리그 C 타율 순위',
+        b:top.map((x,i)=>`${i+1}위 ${x.p.name}(${x.t.name}) ${fmt3(x.avg)}`).join(' · ')});
+      const hr=all.slice().sort((a,b)=>(b.b.hr||0)-(a.b.hr||0))[0];
+      if(hr && hr.b.hr) briefs.push({h:'홈런 선두',
+        b:`${hr.p.name}(${hr.t.name}) ${hr.b.hr}개. 이 리그에서 담장을 넘기는 건 쉬운 일이 아니다.`});
+    }
   }
   /* 팀 살림 — 돈 있는 팀이 사람을 데려간다 */
   {
@@ -33148,8 +33392,10 @@ function newsIssue(){
     name:PAPER_NAME,
     date:`${ST.year||2026}년 · ${(ST.round||0)+1}주차`,
     no:((ST.seasonNo||1)-1)*24+((ST.round||0)+1),
-    lead:lead[0], subs:lead.slice(1,3).concat(subs).slice(0,3),
-    briefs:briefs.slice(0,5),
+    /* 1면 아래 기사는 넉넉히 — 팀 타율 1위 같은 게 잘려나가면
+       「우완좌완 신문」 이라는 말이 무색해진다 */
+    lead:lead[0], subs:lead.slice(1,3).concat(subs).slice(0,5),
+    briefs:briefs.slice(0,7),
     ent, rec, life, ad:pick(NEWS_AD), fortune:pick(NEWS_FORTUNE),
   };
 }
@@ -34006,7 +34252,7 @@ const VIEWS={home:renderHome,squad:renderSquad,lineup:renderLineup,kakao:renderK
   tutorial:renderTutorial,player:renderPlayer,hall:renderHall,whatif:renderWhatIf,
   role:renderRole,slots:renderSlots,start:renderStart,mode:renderMode,hs:renderHS,
   glog:renderGlog,rosters:renderRosters,front:renderFront,draft:renderDraft,
-  entry:renderEntry};
+  entry:renderEntry,cal:renderCal};
 /* 선수 모드면 감독 전용 탭을 아예 안 보이게 한다.
    눌러도 막히긴 하지만, 있는데 안 되는 것보다 없는 게 낫다. */
 function paintTabs(){

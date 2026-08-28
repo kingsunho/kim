@@ -388,6 +388,44 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   T(ev("/entryDraftBuild/.test(hsGraduate.toString())"),
     '졸업하면 곧바로 드래프트로 간다 (예전엔 2군으로 직행)');
 
+  /* ---------------------------------------------------------------
+     [질문] "더쇼 rtts모드처럼 달력스케줄 나오면서 막 그거 되는것처럼
+             가능한가" — 된다. 이미 실제 날짜가 있었다.
+     --------------------------------------------------------------- */
+  console.log('\n[시즌 달력]');
+  T(ev("typeof renderCal==='function' && !!VIEWS.cal"), '달력 화면이 있다');
+  T(ev(`(function(){
+      var r=calRounds();
+      return r.length>=20 && r.every(function(x){return x.dt instanceof Date});
+    })()`), '경기마다 진짜 날짜가 붙는다');
+  T(ev(`(function(){
+      /* 간격이 일정하지 않아야 실제 리그다 — 2주씩 비기도 한다 */
+      var r=calRounds();
+      var gaps={};
+      for(var i=1;i<r.length;i++){
+        var w=Math.round((r[i].dt-r[i-1].dt)/(7*86400000));
+        gaps[w]=(gaps[w]||0)+1;
+      }
+      return Object.keys(gaps).length>=2;
+    })()`), '간격이 들쭉날쭉하다 (대관이 안 되면 2~3주씩 빈다)');
+  T(ev(`(function(){
+      var r=calRounds();
+      return r.every(function(x){return x.dt.getDay()===0 || x.dt.getDay()===6});
+    })()`), '경기는 주말에만 잡힌다');
+  T(ev("/cal-todo/.test(renderCal.toString()) && /이번 주 할 일/.test(renderCal.toString())"),
+    '이번 주 할 일(훈련·라인업·경기)이 위에 뜬다 — RTTS 의 그 줄');
+  T(ev("/glogView/.test(renderCal.toString())"),
+    '지난 경기 칸을 누르면 그 경기 기록으로 간다');
+  T(ev(`(function(){
+      w2=0;
+      var y=(ST.year||2026);
+      var d=seasonDates(y);
+      /* 같은 해는 몇 번을 불러도 같은 일정이어야 한다 */
+      var a=seasonDates(y).map(function(x){return +x}).join(',');
+      var b=seasonDates(y).map(function(x){return +x}).join(',');
+      return a===b;
+    })()`), '같은 해 일정은 항상 같다');
+
   console.log('\n[세이브]');
   T(ev("normalizeState.toString().indexOf('aiFarmStat')>0"+
        " && normalizeState.toString().indexOf('aiFarmUp')>0"),
