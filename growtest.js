@@ -255,6 +255,57 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   T(ev("normalizeState.toString().indexOf('injScar')>0"),
     '옛 세이브에도 장부가 생긴다');
 
+  /* ---------------------------------------------------------------
+     [요청] "훈련도 실제 플레이하는 느낌" · "훈련 플레이를 해서 코인을
+             얻는 구조" · "타자들은 타격훈련 수비훈련만 투수는 투수훈련만"
+     --------------------------------------------------------------- */
+  console.log('\n[훈련 세션 — 해서 코인을 번다]');
+  T(ev("typeof renderTrainPlay==='function' && !!VIEWS.trainplay && TRAIN_TRIES===10"),
+    '열 번 해서 등급이 나오는 훈련 세션이 있다');
+  T(ev("trainGrade(8).g==='S' && trainGrade(6).g==='A' && trainGrade(4).g==='B' && trainGrade(3).g==='C'"),
+    '8개 S · 6개 A · 4개 B · 그 아래 C');
+  T(ev("trainGrade(8).coin===10 && trainGrade(6).coin===7 && trainGrade(4).coin===4 && trainGrade(0).coin===1"),
+    '등급만큼 코인을 번다 (S +10 · A +7 · B +4 · C +1)');
+  T(ev("/coinAdd\\(G.coin\\)/.test(trainRun.toString()) && !/trainCost/.test(trainRun.toString())"),
+    '세션은 코인을 쓰지 않고 벌어오기만 한다 — 순환이 안 생긴다');
+  T(ev(`(function(){
+      /* 판정 폭이 그 능력치를 탄다 */
+      var p=TBYID['wwzw'].players.find(function(x){return x.id==='ksh'});
+      ST.playerId='ksh'; MYID='ksh';
+      var c0=p.con;
+      p.con=20; var lo=trainZone(trainSessionDef('bat')).w;
+      p.con=70; var hi=trainZone(trainSessionDef('bat')).w;
+      p.con=c0;
+      return hi>lo+8;
+    })()`), '컨택이 높으면 초록 칸이 넓다 (훈련도 능력치를 탄다)');
+  T(ev(`(function(){
+      ST.role='bat';
+      var ok=TRAIN_SESSIONS.filter(trainSessionAllowed).map(function(t){return t.id});
+      return ok.indexOf('bat')>=0 && ok.indexOf('def')>=0 && ok.indexOf('pit')<0;
+    })()`), '타자는 배팅·펑고만 (불펜은 못 선다)');
+  T(ev(`(function(){
+      ST.role='pit';
+      var ok=TRAIN_SESSIONS.filter(trainSessionAllowed).map(function(t){return t.id});
+      return ok.length===1 && ok[0]==='pit';
+    })()`), '투수는 불펜만');
+  T(ev(`(function(){
+      ST.role='two';
+      var ok=TRAIN_SESSIONS.filter(trainSessionAllowed);
+      ST.role='bat';
+      return ok.length===TRAIN_SESSIONS.length;
+    })()`), '이도류는 셋 다 — 그래서 고달프다');
+  T(ev(`(function(){
+      ST.seasonNo=1; ST.round=3; ST.trainSessAt=-1;
+      var a=trainSessionDone();
+      ST.trainSessAt=1*100+3;
+      var b=trainSessionDone();
+      ST.round=4;
+      var c2=trainSessionDone();
+      return !a && b && !c2;
+    })()`), '주에 한 번이다 — 주가 바뀌면 다시 열린다');
+  T(ev("normalizeState.toString().indexOf('trainSessAt')>0"),
+    '옛 세이브에도 자리가 생긴다');
+
   console.log('\n[예외]');
   T(jsErr.length===0, '콘솔 예외 없음 :: '+(jsErr[0]||'없음'));
   console.log(fail? `\n❌ ${fail}개 실패` : '\n✅ 이상 없음');

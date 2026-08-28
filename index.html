@@ -384,6 +384,7 @@ button{font-family:inherit;cursor:pointer}
    The Show RTTS 의 달력을 사회인야구 리듬으로 옮긴 것.
    하루가 아니라 **한 주가 한 칸**이다 — 주중 훈련, 주말 경기. */
 .cal-todo{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:9px}
+.cal-todo.four{grid-template-columns:1fr 1fr}
 .cal-td{background:#141a22;border:1px solid #2a323d;border-radius:10px;
   padding:10px 6px;text-align:center;color:#c3ccd7}
 .cal-td.on{border-color:#3f7a52;background:#16211a}
@@ -412,6 +413,26 @@ button{font-family:inherit;cursor:pointer}
 .cd-key.now{background:#1b2a20;color:#7fc48f}
 .cd-key.done{background:#151b24;color:#c3ccd7}
 .cd-key.next{background:#141a22;color:#8e9bb0}
+/* ================= 훈련 세션 =================
+   타이밍 바 하나로 네 종목을 다 굴린다. 폰에서 손가락 하나면 되고,
+   판정 폭(초록 칸)이 그 능력치를 그대로 탄다. */
+.tp-bar{position:relative;height:52px;background:#0f141b;border:1px solid #2a323d;
+  border-radius:10px;margin:10px 0 8px;overflow:hidden;touch-action:none;cursor:pointer}
+.tp-zone{position:absolute;top:0;bottom:0;background:rgba(79,138,99,.30);
+  border-left:1px solid #4c8a63;border-right:1px solid #4c8a63}
+.tp-mk{position:absolute;top:5px;bottom:5px;width:5px;margin-left:-2.5px;
+  background:#e2eaf5;border-radius:3px;box-shadow:0 0 9px rgba(226,234,245,.55)}
+.tp-mk.good{background:#7fc48f;box-shadow:0 0 14px rgba(127,196,143,.85)}
+.tp-note{text-align:center;font-size:13px;color:#c3ccd7;min-height:19px}
+.tp-dots{display:flex;gap:5px;justify-content:center;margin-top:9px}
+.tp-dot{width:11px;height:11px;border-radius:50%;background:#20272f;border:1px solid #2a323d}
+.tp-dot.ok{background:#4c8a63;border-color:#7fc48f}
+.tp-dot.no{background:#5c3a33;border-color:#e08a70}
+.tp-go{margin-top:4px}
+.tp-res{display:flex;align-items:baseline;justify-content:center;gap:14px;
+  padding:14px 0 8px}
+.tp-res b{font-size:52px;font-weight:900;line-height:1}
+.tp-res span{font-size:19px;color:#c3ccd7;font-weight:800}
 /* ================= 신문 =================
    [요청] "진짜 신문처럼 만들어서 순간 띄워주고 (…) 진짜 신문 읽듯이 빠져들게"
    그래서 게임의 다른 화면과 **일부러 정반대로** 만든다 —
@@ -3402,7 +3423,7 @@ function calcCA(p){
   return (p.con*1.3 + p.pow*1.1 + p.eye*0.8 + p.spd*0.7 + p.def*0.7 + p.arm*0.4)/5.0;
 }
 function calcPA(p, meta){
-  const age = 2026 - (meta?meta.born:1999);
+  const age = ((typeof ST!=='undefined'&&ST&&ST.year)?ST.year:2026) - (meta?meta.born:1999);
   const youth = age<=21?14:age<=24?10:age<=26?7:3;
   return Math.min(80, calcCA(p) + youth*0.6 + (meta?meta.pot:4));
 }
@@ -7983,8 +8004,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.97.0';
-const APP_VERSION_NOTE = '시즌 달력이 열린다 · 신문이 우리 팀을 쓴다';
+const APP_VERSION = '2.98.0';
+const APP_VERSION_NOTE = '훈련도 직접 한다 — 열 번 쳐서 등급만큼 번다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8005,6 +8026,19 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.98.0', t:'훈련도 직접 한다 — 열 번 쳐서 등급만큼 번다', items:[
+    '[요청] "훈련도 실제 플레이하는 느낌이 있었으면 좋겠다 (…) 배팅훈련은 타격모션 10번해서 뭐 8번 이상 성공하면 s 6번 a 등등" · "그 훈련 플레이를 해서 코인을 얻는 구조로가자, 일반 플레이도 얻고 훈련도 얻는거지 그걸 원래 시스템에 투자하는거고" — 그대로 만들었다',
+    '**훈련 세션**이 생겼다. 열 번 해서 몇 번 맞히느냐로 등급이 갈린다 — **S(8개↑) +10코인 · A(6개↑) +7 · B(4개↑) +4 · C +1**. **공짜다** — 세션은 코인을 쓰지 않고 벌어오기만 한다. 그래서 순환이 안 생긴다',
+    '고리는 이렇게 돈다: **주중에 훈련 세션(코인을 번다) → 주말에 경기(여기서도 번다) → 모은 코인으로 능력치 훈련을 산다(다음 주에 몸에 붙는다).** 이제 코인 버는 자리가 둘이다',
+    '조작은 **타이밍 바** 하나다. 마커가 왔다 갔다 하고 초록 칸에서 누르면 성공. 뒤로 갈수록 빨라진다. 폰에서 손가락 하나로 된다',
+    '**판정 폭이 그 능력치를 탄다.** 컨택 20이면 초록 칸이 16%, 70이면 27%다 — 잘하는 사람은 훈련도 잘된다. 훈련이 능력치를 만들고 능력치가 훈련을 쉽게 만든다',
+    '[요청] "타자들은 타격훈련 수비훈련만 할 수 있게 투수는 투수훈련만" — 타자는 **배팅·펑고**, 투수는 **불펜 피칭**, 이도류는 **셋 다**. 타자가 불펜에서 열 개를 던지고 있으면 그건 다른 게임이다. (세션은 코인만 벌어오니 막아도 못 키우는 칸은 안 생긴다)',
+    '주에 한 번이다. 달력의 「이번 주 할 일」에도 칸이 하나 늘었다 — 훈련 세션 · 능력치 · 라인업 · 경기',
+    '[질문] "그럼 이게임은 드래프트 이후 몇년도 부터 시작하는거야? 00년생 기준 2020년인가?" — 재보니 **어긋나 있었다.** 고교가 00년생 2016~2018 인데 본편은 2026 으로 박혀 있어서 **7년이 통째로 비었다.** 드래프트를 넣으면서 생긴 구멍이다',
+    '이제 **선수 모드는 입단한 해부터 시작한다** — 99년생은 2018, 00년생은 2019. 시즌을 넘길 때마다 연도가 오른다. **나이도 그 해 기준**으로 센다 (예전엔 2026 고정이라 열아홉 살 신인이 스물여섯으로 나왔다)',
+    '**감독 모드는 그대로 2026이다.** 거기는 2026시즌 실측을 재현하는 판이라 연도를 옮기면 전제가 무너진다',
+    '[확인] 신문은 원래부터 **고른 선수 기준**이다. 송승민으로 시작하면 「우완좌완 송승민…」 이 나온다. 검사로 못 박았다',
+  ]},
   {v:'2.97.0', t:'시즌 달력이 열린다 · 신문이 우리 팀을 쓴다', items:[
     '[질문] "더쇼 rtts모드처럼 달력스케줄 나오면서 막 그거 되는것처럼 가능한가" — 된다. 알고 보니 **이 게임엔 이미 진짜 날짜가 있었다.** 2월 첫 일요일부터 10월까지 실제 경기일이 잡혀 있고, 간격도 실제 리그처럼 들쭉날쭉하다(2/22 → 3/29 → 4/12 …). 그걸 펼치기만 하면 됐다',
     '**시즌 달력**이 생겼다. 월별 그리드에 경기일이 박히고 지난 경기는 승패와 점수가, 앞 경기는 홈·원정과 상대가 뜬다. 오늘은 초록으로 표시된다. **지난 경기 칸을 누르면 그 경기 기록**으로 간다',
@@ -15912,6 +15946,9 @@ function hsGraduate(){
        끼운다. 순번은 고교 3년이 정하고, 그 순번이 2군 기간이 된다.
        동기들도 같은 드래프트에서 우완좌완에 뽑힌다.               */
     ST.entryDraft=entryDraftBuild(gAvg);
+    /* 본편은 **입단한 해**부터다. 고교 2016~2018 을 지나 2026 에서
+       깨어나면 7년이 어디로 갔는지 설명이 안 된다. */
+    ST.year=ST.entryDraft.year;
     /* 99년생이면 이건이 내 동기다 — 팀을 만든 어른이 나를 뽑는다.
        그 사람은 첫 주에 이건에게 넘기고 빠진다. */
     ST.founderOn=!!entryCoach().founder;
@@ -19476,7 +19513,7 @@ function openPlayerCard(pid){
     <div>
       <div class="pcs-n1">${nm}${p&&p.no!=null?`<i>#${p.no}</i>`:''}${ours&&formTag(pid)?`<span class="ftag">${formTag(pid)}</span>`:''}</div>
       <div class="pcs-n2">${team.name} · ${pitFirst?'투수':(p?(main?POSNAMES[main]:'지명타자'):'투수')}`+
-      `${p?` · 타 ${p.bats==='L'?'좌':'우'}`:''}${m?` · ${2026-m.born}세`:''}</div>
+      `${p?` · 타 ${p.bats==='L'?'좌':'우'}`:''}${m?` · ${ageOf(p.id)}세`:''}</div>
       ${ours&&nickOf(pid)?`<div class="pcs-n2">'${nickOf(pid)}'</div>`:''}
     </div>`;
   body.appendChild(top);
@@ -19670,7 +19707,7 @@ function renderPlayer(){
   top.innerHTML=`<div class="ot-pic">${avatarHTML(p.id)}</div>
     <div class="ot-nm">
       <div class="ot-n1">${p.name}${p.no!=null?`<i class="ot-no">#${p.no}</i>`:''}${formTag(p.id)?`<span class="ftag">${formTag(p.id)}</span>`:''}<b>${main?POSNAMES[main]:'DH'}</b></div>
-      <div class="ot-n2">${nickOf(p.id)?`'${nickOf(p.id)}' · `:''}${2026-m.born}세 · 타/투 ${p.bats==='L'?'좌':'우'}/${m.throws==='L'?'좌':'우'}${bdayTag(p.id)}</div>
+      <div class="ot-n2">${nickOf(p.id)?`'${nickOf(p.id)}' · `:''}${ageOf(p.id)}세 · 타/투 ${p.bats==='L'?'좌':'우'}/${m.throws==='L'?'좌':'우'}${bdayTag(p.id)}</div>
       <div class="ot-ov">
         <div class="ot-ovi"><span>전체</span><b>${ca.toFixed(0)}</b></div>
         <div class="ot-ovi"><span>포텐셜</span><b class="dim">${pa.toFixed(0)}</b></div>
@@ -19688,7 +19725,7 @@ function renderPlayer(){
 
   /* ---- 개인 세부 사항 ---- */
   let detail='';
-  detail+=otRow('나이',`${2026-m.born}세`);
+  detail+=otRow('나이',`${ageOf(p.id)}세`);
   detail+=otRow('포지션', main?`${POSNAMES[main]} (${Math.round(posFit(p.id,main))})`:'지명타자');
   detail+=otRow('타 / 투', `${p.bats==='L'?'좌':'우'} / ${m.throws==='L'?'좌':'우'}`);
   if(BIRTHDAY[p.id]){
@@ -20021,7 +20058,7 @@ function renderSquad(){
     card.innerHTML=`
       <div class="pc-top">
         <div class="pc-id"><span class="pc-name">${p.name}</span>${p.no!=null?`<span class="pc-no">#${p.no}</span>`:''}${formTag(p.id)?`<span class="ftag" title="${formLabel(p.id)}">${formTag(p.id)}</span>`:''}
-          <span class="pc-age">${2026-m.born}세</span>
+          <span class="pc-age">${ageOf(p.id)}세</span>
           ${p.bats==='L'?'<span class="lh">좌</span>':''}
           ${injv?`<span class="tagx">${injv.name} ${injv.games}경기</span>`:''}
           ${abs&&!injv?`<span class="tagx">${abs}</span>`:''}</div>
@@ -30125,6 +30162,19 @@ function renderTrainPlayer(){
     (isTwoWay()?'투수 겸 타자라 한 번에 오르는 폭이 절반이다. 그게 이도류의 값이다.<br>':'')+
     '</p>';
   c.appendChild(head);
+  /* [요청] "그 훈련 플레이를 해서 코인을 얻는 구조로가자"
+     코인을 버는 자리가 경기 말고 하나 더 생겼다. 제일 위에 둔다 —
+     사려면 먼저 벌어야 하니까.                                     */
+  {
+    const done=(typeof trainSessionDone==='function')&&trainSessionDone();
+    const sb=el('button','mystatus '+(done?'in':'out')+' tapon');
+    sb.innerHTML='<div class="ms-big">🏋️ 훈련 세션'+(done?' — 했다':'')+'</div>'+
+      '<div class="ms-sub">'+(done?(ST.trainSessLog||'이번 주는 끝'):
+        '열 번 해서 등급만큼 코인을 번다 · 공짜')+'</div>'+
+      '<div class="ms-why">'+(done?'다음 주에 또 할 수 있다':'S면 +10 · A +7 · B +4 · C +1')+'</div>';
+    sb.onclick=()=>go('trainplay');
+    c.appendChild(sb);
+  }
   /* 이번 주에 산 것 — 주가 넘어가기 전이면 무를 수 있다 */
   {
     const Q=trainQueue();
@@ -32857,6 +32907,20 @@ function founderHandover(rng){
     body:FOUNDER_NAME+': "'+r[0]+'. '+r[1]+'. 팀은 '+nameOf(cid)+'이가 맡아라."',
     effect:'오늘부터 감독은 '+nameOf(cid)+'다'};
 }
+/* [질문] "그럼 이게임은 드래프트 이후 몇년도 부터 시작하는거야? 00년생
+           기준 2020년인가?"
+   진짜로 어긋나 있었다. 고교가 2016~2018 인데 본편은 2026 으로 박혀
+   있어서 **7년이 통째로 비었다.** 드래프트를 넣으면서 생긴 구멍이다.
+   **선수 모드는 입단한 해부터 시작한다** — 99년생 2018, 00년생 2019.
+   시즌을 넘길 때마다 연도가 오른다.
+   [감독 모드는 그대로 2026 이다] 거기는 2026시즌 실측을 재현하는 판이라
+   연도를 옮기면 그 전제가 무너진다.
+   [나이] 그래서 나이도 2026 고정이 아니라 그 해 기준으로 센다.     */
+function ageOf(pid){
+  const m=(typeof META!=='undefined')?META[pid]:null;
+  const y=(typeof ST!=='undefined'&&ST&&ST.year)?ST.year:2026;
+  return y-((m&&m.born)||1999);
+}
 function entryDraftYear(){
   const me=(typeof ST!=='undefined'&&ST)?(ST.playerId||MYID):MYID;
   const m=(typeof META!=='undefined')?META[me]:null;
@@ -33025,10 +33089,12 @@ function renderCal(){
     const card=el('div','card');
     card.appendChild(el('div','card-h','이번 주 · '+
       (now?((now.dt.getMonth()+1)+'월 '+now.dt.getDate()+'일 ('+CAL_WD[now.dt.getDay()]+')'):'')));
-    const q=el('div','cal-todo');
+    const q=el('div','cal-todo four');
     const bought=(typeof trainQueue==='function')?trainQueue().length:0;
+    const sess=(typeof trainSessionDone==='function')&&trainSessionDone();
     const rows=[
-      ['🏋️','훈련', bought? (bought+'개 샀다') : '아직 안 샀다', bought>0, ()=>go('train')],
+      ['🏋️','훈련 세션', sess?'했다':'코인 벌러', !!sess, ()=>go('trainplay')],
+      ['💪','능력치', bought? (bought+'개 샀다') : '아직 안 샀다', bought>0, ()=>go('train')],
       ['📋','라인업', ST.announced?'발표됐다':(ST.weekDone?'아직 발표 전':'주가 안 열렸다'),
         !!ST.announced, ()=>go(isPlayerMode()?'home':'lineup')],
       ['⚾','경기', (now&&now.sc.played)?'끝났다':(ST.announced?'나갈 수 있다':'발표 뒤에'),
@@ -33111,6 +33177,207 @@ function renderCal(){
     '대관이 안 되면 2~3주씩 비기도 한다. 실제 리그가 그랬다.</p>';
   c.appendChild(lg);
   const hb=el('button','btn','홈으로'); hb.onclick=()=>go('home'); c.appendChild(hb);
+}
+
+/* ================= 훈련 세션 =================
+   [요청] "훈련도 실제 플레이하는 느낌이 있었으면 좋겠다고 함, 예를 들어
+           배팅훈련은 타격모션 10번해서 뭐 8번 이상 성공하면 s 6번 a 등등"
+   [요청] "그 훈련 플레이를 해서 코인을 얻는 구조로가자, 일반 플레이도 얻고
+           훈련도 얻는거지 그걸 원래 시스템에 투자하는거고"
+
+   그래서 고리를 이렇게 짠다 —
+     ① 주중에 **훈련 세션**을 한다 (공짜다). 열 번 해서 몇 번 맞히나
+     ② 등급이 나온다 (S / A / B / C) → 그만큼 **코인을 번다**
+     ③ 주말에 **경기**를 한다 → 여기서도 코인을 번다
+     ④ 모은 코인으로 **능력치 훈련을 산다** (예전 그대로)
+   순환이 안 생긴다 — 세션은 코인을 쓰지 않고 벌어오기만 한다.
+
+   [왜 타이밍 바인가] 폰에서 손가락 하나로 되고, 잘하는 사람과 못하는
+   사람이 갈리고, 능력치가 **판정 폭**으로 들어간다. 컨택이 높으면
+   초록 구간이 넓다 — 훈련도 능력치를 탄다.                        */
+const TRAIN_SESSIONS=[
+  {id:'bat', icon:'\u{1F3CF}', name:'배팅 훈련', stat:'con', unit:'스윙',
+   d:'날아오는 공을 정확한 타이밍에 친다. <b>컨택</b>이 좋을수록 칠 수 있는 폭이 넓다.'},
+  {id:'pit', icon:'\u{26BE}', name:'불펜 피칭', stat:'ctl', pit:true, unit:'투구',
+   d:'같은 자리에 열 개를 던진다. <b>제구</b>가 좋을수록 존이 넓다.'},
+  {id:'def', icon:'\u{1F9E4}', name:'펑고', stat:'def', unit:'타구',
+   d:'열 개를 받는다. <b>수비</b>가 좋을수록 손이 먼저 나간다.'},
+];
+/* [요청] "타자들은 타격훈련 수비훈련만 할 수 있게 투수는 투수훈련만"
+   맞는 말이다. 타자가 불펜에서 열 개를 던지고 있으면 그건 다른 게임이다.
+     타자   — 배팅 · 펑고
+     투수   — 불펜 피칭
+     이도류 — 셋 다 (그래서 이도류가 고달프다)
+   [주의] 세션은 **코인만 벌어온다.** 능력치는 그 코인으로 따로 산다 —
+   그러니 막아도 못 키우는 칸이 생기지는 않는다.                    */
+function trainSessionAllowed(t){
+  if(!t || !ST) return false;
+  const role=ST.role||'bat';
+  if(role==='two') return true;
+  if(role==='pit') return !!t.pit;
+  return !t.pit;
+}
+const TRAIN_TRIES=10;
+/* 등급 — [요청] "8번 이상 성공하면 s 6번 a 등등" */
+function trainGrade(hit){
+  if(hit>=8) return {g:'S', coin:10, c:'#ffd15c', say:'오늘 몸이 좋다'};
+  if(hit>=6) return {g:'A', coin:7,  c:'#7fc48f', say:'괜찮았다'};
+  if(hit>=4) return {g:'B', coin:4,  c:'#c9a227', say:'그럭저럭'};
+  return {g:'C', coin:1, c:'#e08a70', say:'오늘은 안 됐다'};
+}
+/* 판정 폭 — 능력치가 높을수록 넓다. 20 이면 16% · 70 이면 27% */
+function trainZone(def0){
+  const me=(typeof ST!=='undefined'&&ST)?(ST.playerId||MYID):MYID;
+  const p=TBYID['wwzw'].players.find(x=>x.id===me);
+  let v=40;
+  if(p){
+    if(def0.pit) v=(p.pitch&&p.pitch[def0.stat]!=null)?p.pitch[def0.stat]:35;
+    else v=(p[def0.stat]!=null)?p[def0.stat]:40;
+  }
+  return {v:Math.round(v), w:Math.max(11, Math.min(30, 12+v*0.22))};
+}
+function trainSessionDef(id){ return TRAIN_SESSIONS.find(x=>x.id===id)||null; }
+function trainSessionDone(){ return (ST&&ST.trainSessAt===((ST.seasonNo||1)*100+(ST.round||0))); }
+
+function renderTrainPlay(){
+  const c=$('#view'); c.innerHTML='';
+  if(!isPlayerMode()){
+    c.appendChild(el('div','card','선수 모드에서만 하는 훈련이다.'));
+    const b=el('button','btn primary','홈으로'); b.onclick=()=>go('home');
+    c.appendChild(b); return;
+  }
+  const head=el('div','card');
+  head.innerHTML='<div class="card-h">훈련 세션 · 코인 '+coinSlot()+'개</div>'+
+    '<p class="muted"><b>여기서 코인을 번다.</b> 열 번 해서 몇 번 맞히느냐로 등급이 갈린다 — '+
+    '<b style="color:#ffd15c">S 8개↑ +10</b> · <b style="color:#7fc48f">A 6개↑ +7</b> · '+
+    '<b style="color:#c9a227">B 4개↑ +4</b> · <b style="color:#e08a70">C +1</b><br>'+
+    '<b>공짜다.</b> 번 코인으로 능력치 훈련을 사면 된다. 주에 한 번.<br>'+
+    '타자는 배팅·펑고, 투수는 불펜, 이도류는 셋 다 할 수 있다.<br>'+
+    '<span class="dimx">판정 폭은 그 능력치를 탄다 — 컨택이 높으면 배팅 훈련이 쉽다.</span></p>';
+  c.appendChild(head);
+
+  if(trainSessionDone()){
+    const dn=el('div','card');
+    dn.innerHTML='<div class="card-h">이번 주는 했다</div>'+
+      '<p class="muted">'+(ST.trainSessLog||'')+'<br>다음 주에 또 할 수 있다.</p>';
+    c.appendChild(dn);
+    const b=el('button','btn primary','훈련 사러 가기');
+    b.onclick=()=>go('train'); c.appendChild(b);
+    const hb=el('button','btn','홈으로'); hb.onclick=()=>go('home'); c.appendChild(hb);
+    return;
+  }
+
+  TRAIN_SESSIONS.forEach(t=>{
+    if(!trainSessionAllowed(t)) return;
+    const z=trainZone(t);
+    const b=el('button','trncard');
+    b.innerHTML='<div class="tn-top"><span class="tn-i">'+t.icon+'</span>'+
+      '<span class="tn-n">'+t.name+'</span>'+
+      '<span class="tn-s">'+TRAIN_TRIES+t.unit+'</span></div>'+
+      '<div class="tn-d">'+t.d+'</div>'+
+      '<div class="tn-c">지금 '+z.v+' — 판정 폭 '+Math.round(z.w)+'%</div>';
+    b.onclick=()=>trainRun(t);
+    c.appendChild(b);
+  });
+  const hb=el('button','btn','나중에 한다'); hb.onclick=()=>go('home'); c.appendChild(hb);
+}
+
+/* 한 판 — 마커가 왔다 갔다 하고, 초록 구간에서 누르면 성공 */
+function trainRun(def0){
+  const c=$('#view'); c.innerHTML='';
+  const z=trainZone(def0);
+  let tryN=0, hit=0, running=false, raf=null, dir=1, pos=0, speed=0;
+  const head=el('div','card');
+  head.innerHTML='<div class="card-h">'+def0.icon+' '+def0.name+'</div>';
+  c.appendChild(head);
+
+  const box=el('div','card');
+  const bar=el('div','tp-bar');
+  bar.innerHTML='<div class="tp-zone"></div><div class="tp-mk"></div>';
+  box.appendChild(bar);
+  const zone=bar.querySelector('.tp-zone');
+  const mk=bar.querySelector('.tp-mk');
+  zone.style.left=(50-z.w/2)+'%';
+  zone.style.width=z.w+'%';
+  const note=el('div','tp-note','초록 칸에서 눌러라');
+  box.appendChild(note);
+  const dots=el('div','tp-dots');
+  box.appendChild(dots);
+  const paint=()=>{
+    dots.innerHTML='';
+    for(let i=0;i<TRAIN_TRIES;i++){
+      const d2=el('span','tp-dot'+(i<tryN?(marks[i]?' ok':' no'):''));
+      dots.appendChild(d2);
+    }
+  };
+  const marks=[];
+  paint();
+  c.appendChild(box);
+
+  const btn=el('button','btn primary tp-go','시작 ▶');
+  c.appendChild(btn);
+
+  const stop=()=>{ running=false; if(raf) cancelAnimationFrame(raf); raf=null; };
+  const step=()=>{
+    if(!running) return;
+    pos+=dir*speed;
+    if(pos>=100){ pos=100; dir=-1; }
+    if(pos<=0){ pos=0; dir=1; }
+    mk.style.left=pos+'%';
+    raf=requestAnimationFrame(step);
+  };
+  const nextTry=()=>{
+    if(tryN>=TRAIN_TRIES){ finish(); return; }
+    /* 뒤로 갈수록 빨라진다 — 열 개를 다 맞히기는 쉽지 않아야 한다 */
+    speed=0.85+tryN*0.13;
+    pos=dir>0?0:100;
+    running=true;
+    note.textContent=(tryN+1)+'/'+TRAIN_TRIES+' — 초록 칸에서';
+    btn.textContent='지금!';
+    step();
+  };
+  const tap=()=>{
+    if(!running){ nextTry(); return; }
+    stop();
+    const lo=50-z.w/2, hi=50+z.w/2;
+    const ok=(pos>=lo && pos<=hi);
+    marks[tryN]=ok; tryN++;
+    hit+=ok?1:0;
+    paint();
+    mk.classList.toggle('good', ok);
+    note.innerHTML=ok?'<b style="color:#7fc48f">맞았다</b>'
+                     :'<b style="color:#e08a70">빗나갔다</b>';
+    btn.textContent=(tryN>=TRAIN_TRIES)?'결과 보기 ▸':'다음 ▶';
+    setTimeout(()=>{ mk.classList.remove('good'); }, 220);
+  };
+  btn.onclick=tap;
+  bar.addEventListener('pointerdown',(ev)=>{ if(ev&&ev.preventDefault)ev.preventDefault(); tap(); });
+
+  const finish=()=>{
+    stop();
+    const G=trainGrade(hit);
+    coinAdd(G.coin);
+    ST.trainSessAt=((ST.seasonNo||1)*100+(ST.round||0));
+    ST.trainSessLog=def0.name+' — '+hit+'/'+TRAIN_TRIES+' · '+G.g+'등급 · 코인 +'+G.coin;
+    /* 몸은 쓴 만큼 축난다. 세션은 가볍게 */
+    const me=ST.playerId||MYID;
+    ST.cond[me]=Math.max(20,Math.min(100,(ST.cond[me]||70)-3));
+    ST.notices=ST.notices||[];
+    ST.notices.push({type:'train', title:'훈련 세션 — '+def0.name,
+      body:hit+'/'+TRAIN_TRIES+' 성공 · '+G.g+'등급', effect:'코인 +'+G.coin});
+    saveGame(true);
+    c.innerHTML='';
+    const r=el('div','card');
+    r.innerHTML='<div class="card-h">'+def0.name+' 끝</div>'+
+      '<div class="tp-res"><b style="color:'+G.c+'">'+G.g+'</b>'+
+        '<span>'+hit+' / '+TRAIN_TRIES+'</span></div>'+
+      '<p class="muted">'+G.say+'. <b>코인 +'+G.coin+'</b> (가진 '+coinSlot()+')<br>'+
+      '이 코인으로 능력치 훈련을 사면 다음 주에 몸에 붙는다.</p>';
+    c.appendChild(r);
+    const b1=el('button','btn primary','훈련 사러 가기 ▸');
+    b1.onclick=()=>go('train'); c.appendChild(b1);
+    const b2=el('button','btn','홈으로'); b2.onclick=()=>go('home'); c.appendChild(b2);
+  };
 }
 
 const PAPER_NAME='우완좌완 일보';
@@ -34252,7 +34519,7 @@ const VIEWS={home:renderHome,squad:renderSquad,lineup:renderLineup,kakao:renderK
   tutorial:renderTutorial,player:renderPlayer,hall:renderHall,whatif:renderWhatIf,
   role:renderRole,slots:renderSlots,start:renderStart,mode:renderMode,hs:renderHS,
   glog:renderGlog,rosters:renderRosters,front:renderFront,draft:renderDraft,
-  entry:renderEntry,cal:renderCal};
+  entry:renderEntry,cal:renderCal,trainplay:renderTrainPlay};
 /* 선수 모드면 감독 전용 탭을 아예 안 보이게 한다.
    눌러도 막히긴 하지만, 있는데 안 되는 것보다 없는 게 낫다. */
 function paintTabs(){
@@ -34531,6 +34798,7 @@ function normalizeState(){
   if(!ST.draftTeams||typeof ST.draftTeams!=='object')ST.draftTeams={};
   if(ST.draft===undefined)ST.draft=null;
   if(typeof ST.paperSeen!=='number')ST.paperSeen=-1;
+  if(typeof ST.trainSessAt!=='number')ST.trainSessAt=-1;
   if(ST.entryDraft===undefined)ST.entryDraft=null;
   if(typeof ST.founderOn!=='boolean')ST.founderOn=false;
   if(!Array.isArray(ST.myTrainQ))ST.myTrainQ=(ST.myTrain?[ST.myTrain]:[]);

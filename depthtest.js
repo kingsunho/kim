@@ -426,6 +426,42 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
       return a===b;
     })()`), '같은 해 일정은 항상 같다');
 
+  console.log('\n[시간선]');
+  T(ev("(function(){ST.playerId='ksh';MYID='ksh';return hsYearsFor('ksh').join(',')==='2016,2017,2018';})()"),
+    '00년생 고교는 2016~2018 이다');
+  T(ev("(function(){ST.playerId='swm';MYID='swm';return hsYearsFor('swm').join(',')==='2015,2016,2017';})()"),
+    '99년생 고교는 2015~2017 이다 (한 해 위)');
+  T(ev("/ST.year=ST.entryDraft.year/.test(hsGraduate.toString())"),
+    '본편은 입단한 해부터다 — 2026 으로 건너뛰지 않는다');
+  T(ev(`(function(){
+      ST.playerId='ksh'; MYID='ksh'; ST.year=2019;
+      return ageOf('ksh')===19 && ageOf('swm')===20;
+    })()`), '나이도 그 해 기준으로 센다 (2026 고정이 아니다)');
+  T(ev(`(function(){
+      ST.year=2026;
+      return ageOf('ksh')===26;
+    })()`), '연도가 오르면 나이도 같이 오른다');
+  T(ev("newSeason.toString().indexOf('year:2026')>0"),
+    '감독 모드는 그대로 2026 이다 — 실측을 재현하는 판이라 연도를 못 옮긴다');
+
+  console.log('\n[신문은 고른 선수 기준]');
+  T(ev(`(function(){
+      /* [지적] "저건 김선호를 선택해서 플레이를 해서 저렇게 나온거지?
+                 다른사람들 선택하면 그 사람 기준으로 해줘야지" */
+      ST.year=2026; ST.round=3;
+      var us=TBYID['wwzw'];
+      us.players.forEach(function(p,i){
+        ST.bat[p.id]=ST.bat[p.id]||blankBat();
+        var b=ST.bat[p.id]; b.pa=40; b.ab=36; b.h=14-i%5; b.rbi=8;
+      });
+      ST.playerId='ksh'; MYID='ksh';
+      var a=JSON.stringify(newsIssue());
+      ST.playerId='swm'; MYID='swm';
+      var b2=JSON.stringify(newsIssue());
+      ST.playerId='ksh'; MYID='ksh';
+      return a.indexOf('김선호')>=0 && b2.indexOf('송승민')>=0 && a!==b2;
+    })()`), '누구로 시작하든 그 사람 기사가 나온다');
+
   console.log('\n[세이브]');
   T(ev("normalizeState.toString().indexOf('aiFarmStat')>0"+
        " && normalizeState.toString().indexOf('aiFarmUp')>0"),
