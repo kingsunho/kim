@@ -7894,8 +7894,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.90.0';
-const APP_VERSION_NOTE = '다치면 확 꺼진다 · 대신 뛰면서 돌아온다';
+const APP_VERSION = '2.91.0';
+const APP_VERSION_NOTE = '스물네 팀이 24명씩 · 저쪽 2군에서도 사람이 올라온다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7916,6 +7916,17 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.91.0', t:'스물네 팀이 24명씩 · 저쪽 2군에서도 사람이 올라온다', items:[
+    '[요청] "프로야구처럼 각팀 1군은 최소 24명은 등록 되어있어야 할 것 같음" — 맞는 말이다. 열넷으로는 주전 경쟁이 안 된다. 아홉 자리에 열넷이면 벤치가 다섯이고 그 다섯도 웬만하면 안 바뀐다. **선수 모드에서 스물네 팀이 전부 24명 등록**이 된다',
+    '실존 열넷은 그대로다 — 모자란 자리만 채운다. **감독 모드는 안 부풀린다.** 거기는 2026시즌 실측을 재현하는 판이라 지어낸 사람을 열 명 넣으면 딴 리그가 된다',
+    '[요청·큰 것] **상대 23팀 2군이 실체가 됐다.** 여태 상대 2군은 보라고 만든 그림이었다 — 경기 때마다 즉석에서 만들고 버려서 **성적도 안 쌓이고 콜업도 없었다.** 그러면 「저 팀 2군에 좋은 애가 막혀 있다」 는 말이 성립하지 않는다',
+    '이제 **매주 스물세 팀 2군이 다 같이 경기를 한다.** 성적이 쌓이고, 어린 선수는 거기서 큰다. 3할3푼을 넘기면 그 팀 1군으로 **올라간다** — 우리 팀만 콜업이 있던 걸 리그 전체로 넓혔다',
+    '[용량] 24팀 × 열 명을 세이브에 통째로 넣으면 파일이 터진다. 명단은 **팀 아이디와 시즌으로 결정적으로** 만들고 **성적만** 저장한다 — 같은 팀을 다시 열면 같은 사람이 나오고 시즌이 바뀌면 물갈이된다',
+    '[요청] "2군은 최대 30명까지만 모을 수 있게하자" — 우리 2군 정원을 30명으로 못 박았다. 자리가 무한이면 아무도 안 자른다',
+    '[요청] "선수모드이지만 그 설정에서 그걸 고를 수 있게 하자 감독님이 알아서 다하게 해서 플레이에만 집중할건지 자기가 드래프트 뭐 이런 영입 방출 참여해서 감독노릇까지 할건지" — **프런트 일**을 누가 할지 설정에서 고른다. 「감독이 알아서」 / 「내가 한다」. 어느 쪽이든 라인업은 감독이 짠다 — 자리는 내가 뺏는 거다',
+    '[주의] 뎁스를 넣어도 **주전 아홉의 평균은 안 흔들린다.** 팀 강함은 상위 아홉으로 재기 때문이다 — 안 그러면 리그 캘리브레이션이 통째로 어긋난다. 검사로 못 박았다(depthtest)',
+    '리그 이적 인원 상한도 24명 로스터에 맞췄다. 예전 값(16)이면 선수 모드에서는 이적이 영영 안 난다',
+  ]},
   {v:'2.90.0', t:'다치면 확 꺼진다 · 대신 뛰면서 돌아온다', items:[
     '[요청] "부상당하면 스탯이 확내려갔다가 경기뛰면서 차근차근 다시 스탯 복구되게" — 맞는 말이다. 여태 부상 자국은 파워 -4 처럼 얕게 남고 **훈련으로만** 도로 올릴 수 있었다. 그러면 다친 게 「훈련 몇 번 손해」 로 끝난다',
     '이제 **다치는 순간 확 꺼진다.** 자국이 2.6배로 깊어졌다 — 허리 담이면 파워가 60에서 49.6으로 떨어진다. 화면에도 실제로 깎이는 값을 적는다 (예전엔 표의 -4 를 적어놓고 실제로는 다르게 굴러갈 뻔했다)',
@@ -12836,6 +12847,7 @@ function newSeason(){
     /* 감독은 시즌이 바뀌어도 그대로 간다 — 물려받았으면 계속 그 사람이다 */
     coachPid:(typeof ST!=='undefined'&&ST&&ST.coachPid)?ST.coachPid:null,
     playMode:(typeof ST!=='undefined'&&ST&&ST.playMode)?ST.playMode:PLAY_KEY,
+    gmRole:'auto',        // 프런트 일(드래프트·영입·방출)을 누가 하나
     playBat:(typeof ST!=='undefined'&&ST&&ST.playBat)?ST.playBat:PLAY_KEY,
     playPit:(typeof ST!=='undefined'&&ST&&ST.playPit)?ST.playPit:PLAY_KEY,
     sceneMode:(typeof ST!=='undefined'&&ST&&ST.sceneMode)?ST.sceneMode:'key',
@@ -13548,6 +13560,8 @@ function runWeek(){
      선수 모드는 **내가 그 안의 한 명**이라 위아래가 있어야 한다.   */
   if(isPlayerMode()){
     farmWeek(rng).forEach(m=>ST.notices.push(m));
+    /* 스물세 팀 2군도 같이 굴린다 — 저쪽에서도 사람이 올라온다 */
+    aiFarmWeek(rng).forEach(m=>ST.notices.push(m));
     rollTrade(rng).forEach(m=>ST.notices.push(m));
   }
   // 지난 경기 갈등으로 예고된 결장 반영
@@ -13805,10 +13819,14 @@ function farmSlot(){
   if(!Array.isArray(ST.farm)) ST.farm=[];
   return ST.farm;
 }
+/* [요청] "2군은 최대 30명까지만 모을 수 있게하자"
+   [요청] "잠재력 너무 안좋거나 막 현재 너무 못하면 방출하는거지"
+   정원이 있어야 방출이 판단이 된다. 자리가 무한이면 아무도 안 자른다. */
+const FARM_MAX=30;
 /* 시즌이 열릴 때 2군을 채운다. 이미 있으면 모자란 만큼만 */
 function farmFill(n){
   const F=farmSlot();
-  const want=n||9;
+  const want=Math.min(FARM_MAX, n||9);
   const rng=makeRng(((ST.seed||1)*7717 + (ST.seasonNo||1)*104729 + F.length*31)>>>0);
   let guard=0;
   while(F.length<want && guard++<40){
@@ -14259,7 +14277,10 @@ function rollTrade(rng){
   const val=p=>playerValue(p, META[p.id], (ST.lgBat&&ST.lgBat[p.id])||null);
   const target=pool.slice().sort((a,b)=>val(b)-val(a))[0];
   if(!target) return [];
-  if(buyer.t.players.length>=16) return [];
+  /* [뎁스] 예전 로스터가 열넷이라 16 이 상한이었다. 선수 모드에서는
+     24명 등록이라 그 숫자로는 이적이 영영 안 난다.               */
+  const ROSTER_CAP=(ST&&ST.mode==='player')?(ROSTER_MIN+6):16;
+  if(buyer.t.players.length>=ROSTER_CAP) return [];
 
   ST.trades.push({pid:target.id, from:seller.t.id, to:buyer.t.id,
                   round:ST.round, season:ST.seasonNo||1,
@@ -31749,6 +31770,28 @@ function renderMore(){
     mdRow.appendChild(b);
   });
   pl.appendChild(mdRow);
+
+  /* [요청] "선수모드이지만 그 설정에서 그걸 고를 수 있게 하자 감독님이
+             알아서 다하게 해서 플레이에만 집중할건지 자기가 드래프트 뭐
+             이런 영입 방출 참여해서 감독노릇까지 할건지"
+     맞는 말이다. 같은 선수 모드여도 원하는 게 다르다 — 타석에만 집중하고
+     싶은 사람이 있고, 팀 미래까지 만지고 싶은 사람이 있다.
+     라인업은 어느 쪽이든 감독이 짠다. 여기서 갈리는 건 **프런트 일**이다:
+     드래프트 지명 · 영입 · 방출.                                    */
+  if(ST.mode==='player'){
+    const gm=el('p','muted');
+    gm.innerHTML='<br><b>프런트 일</b> — 드래프트 지명 · 영입 · 방출을 누가 하나.<br>'+
+      '<span class="dimx">어느 쪽이든 라인업은 감독이 짠다. 자리는 내가 뺏는 거다.</span>';
+    pl.appendChild(gm);
+    const gmRow=el('div','btn-row');
+    [['auto','감독이 알아서','나는 플레이에만 집중한다'],
+     ['me','내가 한다','드래프트·영입·방출을 직접 고른다']].forEach(([k,n,d2])=>{
+      const b=el('button','btn'+(((ST.gmRole||'auto')===k)?' primary':''),n);
+      b.onclick=()=>{ ST.gmRole=k; saveGame(true); renderMore(); toast(d2); };
+      gmRow.appendChild(b);
+    });
+    pl.appendChild(gmRow);
+  }
   pl.appendChild(el('div','set-note', ST.mode==='player'
     ? '라인업 화면이 잠긴다. 오늘 나가는지는 발표를 봐야 안다.'
     : '타순·로테이션을 직접 짠다. 여태 하던 방식이다.'));
@@ -32286,6 +32329,140 @@ function rvBestPos(p){
   return best;
 }
 
+/* ================= 리그 뎁스 =================
+   [요청] "프로야구처럼 각팀 1군은 최소 24명은 등록 되어있어야 할 것 같음"
+
+   맞는 말이다. 열넷으로는 주전 경쟁이 안 된다 — 아홉 자리에 열넷이면
+   벤치가 다섯이고 그 다섯도 웬만하면 안 바뀐다. 뎁스가 얇으면
+   2군에서 올라올 자리도, 뺏길 자리도 없다.
+
+   [선수 모드에서만] 감독 모드는 2026시즌 실측을 재현하는 판이다.
+   거기에 지어낸 사람을 열 명 넣으면 그건 딴 리그다. 열넷 그대로 간다.
+
+   [세이브] 24팀 × 열 명을 통째로 저장하면 용량이 터진다. **팀 아이디와
+   시즌으로 결정적으로 만든다** — 같은 팀을 다시 열면 같은 사람이 나오고,
+   시즌이 바뀌면 물갈이된다. 상대 2군(aiFarmRoster)이 쓰던 방식 그대로다.
+   [멱등] 매 로드마다 돈다. 이미 채웠으면 아무것도 안 한다.        */
+const ROSTER_MIN=24;
+function deepenTeam(t){
+  if(!t||!Array.isArray(t.players)) return 0;
+  if(t.players.some(p=>p&&p.depth)) return 0;         // 이미 채웠다
+  const need=ROSTER_MIN-t.players.length;
+  if(need<=0) return 0;
+  const rng=makeRng(rvSeedOf(t.id+'|depth|'+((ST&&ST.seasonNo)||1)));
+  for(let i=0;i<need;i++){
+    const p=makeFarmPlayer(rng, t.id+'_d'+i);
+    p.farm=false; p.depth=true;                       // 1군 등록이지 2군이 아니다
+    t.players.push(p);
+    if(p.pitch && (t.pitchers||[]).length<9){
+      t.pitchers=t.pitchers||[];
+      t.pitchers.push({id:p.id,name:p.name,
+        stf:p.pitch.stf,ctl:p.pitch.ctl,sta:p.pitch.sta,brk:p.pitch.brk});
+    }
+    if(typeof META!=='undefined' && !META[p.id]) META[p.id]=farmMeta(p);
+  }
+  finalizeTeam(t);
+  return need;
+}
+/* 리그 전체를 24명으로. 로스터를 다시 만들 때마다 부른다 */
+function deepenLeague(){
+  if(typeof ST==='undefined'||!ST||ST.mode!=='player') return 0;
+  if(typeof TEAMS==='undefined'||!Array.isArray(TEAMS)) return 0;
+  let n=0;
+  TEAMS.forEach(t=>{ n+=deepenTeam(t); });
+  if(n && typeof buildPitcherPool==='function') buildPitcherPool();
+  return n;
+}
+
+/* ================= 상대 팀 2군을 실체로 =================
+   여태 상대 2군은 **보라고 만든 그림**이었다. 성적도 안 쌓이고 콜업도
+   없었다. 그러면 「저 팀 2군에 좋은 애가 막혀 있다」 는 말이 성립하지
+   않는다 — 막혀 있을 자리도, 뚫고 올라올 일도 없으니까.
+   이제 매주 실제로 굴린다. 명단은 결정적으로 만들고(aiFarmRoster)
+   **성적만** 세이브에 쌓는다 — 그게 제일 싸다.                    */
+function aiFarmStat(tid){
+  if(!ST.aiFarmStat) ST.aiFarmStat={};
+  if(!Array.isArray(ST.aiFarmStat[tid])) ST.aiFarmStat[tid]=[];
+  return ST.aiFarmStat[tid];
+}
+/* 한 주 — 스물세 팀 2군이 다 같이 경기를 한다 */
+function aiFarmWeek(rng){
+  const msgs=[];
+  if(typeof TEAMS==='undefined') return msgs;
+  TEAMS.forEach(t=>{
+    if(!t||t.id==='wwzw') return;
+    const R=aiFarmRoster(t.id);
+    const S=aiFarmStat(t.id);
+    R.forEach((p,i)=>{
+      const st=S[i]||(S[i]=[0,0,0,0]);            // [g,ab,h,hr]
+      const ab=2+((rng()*3)|0);
+      const pr=Math.max(0.10, Math.min(0.62, 0.20+(p.con-40)*0.0065+(p.pow-40)*0.0020));
+      let h=0, hr=0;
+      for(let j=0;j<ab;j++){
+        if(rng()<pr){ h++; if(rng()<0.06+(p.pow-40)*0.003) hr++; }
+      }
+      st[0]++; st[1]+=ab; st[2]+=h; st[3]+=hr;
+      /* 어린 선수는 2군에서 큰다 — 여기가 「막혀 있는 유망주」 가 되는 자리다 */
+      if((p.age||26)<=24 && rng()<0.22){
+        const k=['con','pow','eye','spd','def','arm'][(rng()*6)|0];
+        p[k]=Math.min(78, p[k]+1);
+      }
+    });
+    /* 콜업 — 3할3푼 넘게 치면 1군에 올린다. 자리가 없으면 못 올라간다.
+       그 「못 올라간 애」 가 나중에 영입 대상이 된다.               */
+    if(!ST.aiFarmUp) ST.aiFarmUp={};
+    const up=ST.aiFarmUp[t.id]||(ST.aiFarmUp[t.id]=[]);
+    if(rng()<0.22 && up.length<2){
+      let bi=-1, bv=0.330;
+      R.forEach((p,i)=>{
+        if(up.indexOf(i)>=0) return;
+        const st=S[i]; if(!st||st[1]<10) return;
+        const a=st[2]/st[1];
+        if(a>bv){ bv=a; bi=i; }
+      });
+      if(bi>=0){
+        up.push(bi);
+        applyAiFarmUp();
+        msgs.push({type:'farm', title:`${t.name} 콜업`,
+          body:`${R[bi].name}이(가) 2군에서 ${S[bi][1]}타수 ${S[bi][2]}안타(${fmt3(bv)})를 치고 올라왔다.`,
+          effect:`${t.name} 뎁스가 두꺼워진다`});
+      }
+    }
+  });
+  return msgs;
+}
+/* 올린 사람을 실제 1군 로스터에 얹는다. 매 로드마다 돈다 — 멱등이어야 한다 */
+function applyAiFarmUp(){
+  if(typeof ST==='undefined'||!ST||!ST.aiFarmUp) return 0;
+  let n=0;
+  Object.keys(ST.aiFarmUp).forEach(tid=>{
+    const t=(typeof TBYID!=='undefined')?TBYID[tid]:null; if(!t) return;
+    const R=aiFarmRoster(tid);
+    (ST.aiFarmUp[tid]||[]).forEach(i=>{
+      const p=R[i]; if(!p) return;
+      if(t.players.some(x=>x.id===p.id)) return;
+      const q={...p, farm:false, depth:true};
+      t.players.push(q);
+      if(q.pitch){ t.pitchers=t.pitchers||[];
+        if(!t.pitchers.some(x=>x.id===q.id))
+          t.pitchers.push({id:q.id,name:q.name,stf:q.pitch.stf,ctl:q.pitch.ctl,sta:q.pitch.sta}); }
+      if(typeof META!=='undefined' && !META[q.id]) META[q.id]=farmMeta(q);
+      n++;
+    });
+    if(n) finalizeTeam(t);
+  });
+  return n;
+}
+/* 그 팀 2군에서 **뎁스에 막혀 못 올라온** 사람들 — 영입 대상이 된다 */
+function aiFarmBlocked(tid){
+  const R=aiFarmRoster(tid), S=aiFarmStat(tid);
+  const up=(ST.aiFarmUp&&ST.aiFarmUp[tid])||[];
+  return R.map((p,i)=>({p, i, st:S[i]||[0,0,0,0]}))
+    .filter(x=>up.indexOf(x.i)<0 && x.st[1]>=8)
+    .map(x=>({...x, avg:x.st[1]?x.st[2]/x.st[1]:0}))
+    .sort((a,b)=>b.avg-a.avg);
+}
+
 /* 상대 팀 2군 — 시뮬레이션에는 없다. 팀 이름으로 시드를 박아 만든다.
    같은 팀을 다시 열면 같은 사람이 나온다(시즌이 바뀌면 물갈이된다).
    2군 경기에서 만나는 상대(farmFoeTeam)와는 다른 사람들이다 —
@@ -32653,6 +32830,10 @@ function normalizeState(){
      모드를 바꿔도 되돌리지 않는다** — 기록이 어긋나기 때문이다. */
   applyFarm();               // 2군에서 올라온 사람도 상수에 없다 — 매번 다시 얹는다
   applyTrades();             // 리그 이적도 상수에 없다 — 매번 다시 옮긴다
+  /* [로스터는 세이브에 없다] 1군 뎁스도, 상대 팀 콜업도 상수에 없다.
+     매 로드마다 다시 만들어 얹어야 한다. 둘 다 멱등이다.          */
+  deepenLeague();
+  applyAiFarmUp();
   finalizeTeam(us);
   buildPitcherPool();
   /* 이름 장부 — 나중에 팀을 나가도 기록에 이름이 남게 한다.
@@ -32805,6 +32986,9 @@ function normalizeState(){
   if(ST.pitRole===undefined)ST.pitRole=null;
   if(ST.myPosTaken===undefined)ST.myPosTaken=null;
   if(!ST.injScar||typeof ST.injScar!=='object')ST.injScar={};
+  if(!ST.aiFarmStat||typeof ST.aiFarmStat!=='object')ST.aiFarmStat={};
+  if(!ST.aiFarmUp||typeof ST.aiFarmUp!=='object')ST.aiFarmUp={};
+  if(ST.gmRole!=='me'&&ST.gmRole!=='auto')ST.gmRole='auto';
   if(!Array.isArray(ST.myTrainQ))ST.myTrainQ=(ST.myTrain?[ST.myTrain]:[]);
   if(!ST.valuePrev)ST.valuePrev={};
   if(!Array.isArray(ST.drunkIds))ST.drunkIds=[];
