@@ -66,7 +66,11 @@ setTimeout(async()=>{
   const R=ids.map(pid=>({pid, r:run(pid,'bat',911)}));
   const cons=R.map(x=>x.r.con);
   console.log('   같은 시드 열넷 졸업 컨택: '+cons.join(' '));
-  T('졸업치가 '+BASE+' 아래로 안 내려간다', ()=>cons.every(c=>c>=BASE));
+  /* [v3.1.0] 뒤집혔다. [요청] "그외 못하면 깎여야되는데 너무 쉽게쉽게
+     다같이 스탯이 오르니깐 무조건 5툴가이 되겠어" — 이제 못한 칸은
+     시작값 아래로 내려간다. 바닥은 8 이다.                        */
+  T('못한 칸은 '+BASE+' 아래로도 내려간다 (바닥 8)', ()=>
+    cons.every(c=>c>=8) && cons.some(c=>c<BASE+6));
   T('졸업치가 어른 능력치 순서를 안 따라간다', ()=>{
     const adult=ev(`(function(){const m={};TBYID['wwzw'].players.forEach(p=>m[p.id]=p.con);return JSON.stringify(m)})()`);
     const A=JSON.parse(adult);
@@ -89,11 +93,25 @@ setTimeout(async()=>{
     return (Math.max(...c)-Math.min(...c))>=15;
   });
 
+  /* [요청] "무조건 5툴가이 되겠어" — 칸마다 본 게 다르면 졸업치도
+     칸마다 갈려야 한다. 여섯 칸이 다 비슷하면 그건 5툴이다. */
+  T('한 사람 안에서도 칸마다 갈린다 (5툴이 안 나온다)', ()=>{
+    const K=['con','pow','eye','spd','def','arm'];
+    const spread=many.map(x=>{
+      const v=K.map(k=>x[k]).filter(n=>n!=null);
+      return Math.max.apply(null,v)-Math.min.apply(null,v);
+    });
+    const avg=spread.reduce((s,x)=>s+x,0)/spread.length;
+    console.log('   한 사람 안 칸 편차 평균 '+avg.toFixed(1));
+    return avg>=10;
+  });
+
   console.log('\n[투수로 시작하면 실제로 던진다]');
   const P=ids.slice(0,5).map(pid=>run(pid,'pit',911));
   console.log('   아웃카운트: '+P.map(x=>x.outs).join(' '));
   T('전원 한 경기 이상 던진다', ()=>P.every(x=>x.outs>=9));
-  T('투구 졸업 능력치가 나온다', ()=>P.every(x=>x.pitch&&x.pitch.stf>=BASE));
+  /* 투수도 못 던지면 깎인다 — 있기는 하되 BASE 를 보장하지는 않는다 */
+  T('투구 졸업 능력치가 나온다', ()=>P.every(x=>x.pitch&&x.pitch.stf>=8));
   T('구위가 0으로 안 나온다', ()=>P.every(x=>x.pitch.stf>0&&x.pitch.ctl>0&&x.pitch.sta>0));
 
   console.log('\n[별]');

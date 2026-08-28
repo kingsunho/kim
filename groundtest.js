@@ -354,6 +354,19 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
   T(ev("/of.second/.test(LiveGame.prototype.resolveStretch.toString())"),
     '두 번째에서 섰어도 첫 판단으로 늘린 2루타는 남는다');
 
+  console.log('\n[준비 턴 · 고교 주루]');
+  T(ev("/준비 됐다/.test(renderThrow.toString())"),
+    '포수 송구에도 「준비 됐다」 가 있다 (누를 때까지 주자가 안 뛴다)');
+  T(ev("/block:'end'/.test(renderThrow.toString())"),
+    '아래쪽을 맞춰 끌어온다 — 폰에서 스크롤이 올라가 장면을 놓치던 것');
+  T(ev("!/const rd=LIVE.detectDecision\\(\\)/.test(hsRunLive.toString())"+
+       " && /showDecision\\(\\{kind:'lead'\\}\\)/.test(hsRunLive.toString())"),
+    '고교 주루가 뜬다 — detectDecision 이 다음 타자 스윙을 먼저 돌려주던 것');
+  T(ev("/showDecision\\(\\{kind:'lead'\\}\\)/.test(farmRunLive.toString())"),
+    '2군도 마찬가지다');
+  T(ev("/keyMoment/.test(hsRunLive.toString())"),
+    '「중요한 순간만」 설정도 그대로 지킨다');
+
   console.log('\n[예외]');
   T(jsErr.length===0, jsErr.length?('❌ '+jsErr.slice(0,3).join(' | ')):'콘솔 예외 없음');
 

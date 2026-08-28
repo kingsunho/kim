@@ -8016,8 +8016,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.0.0';
-const APP_VERSION_NOTE = '공에 맞으면 몇 달을 쉰다 · 전 화면 점검기';
+const APP_VERSION = '3.1.0';
+const APP_VERSION_NOTE = '5툴은 없다 — 잘한 칸만 오르고 못한 칸은 깎인다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8038,6 +8038,16 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.1.0', t:'5툴은 없다 — 잘한 칸만 오르고 못한 칸은 깎인다', items:[
+    '[제보] "고교때 스탯 산정할때 (…) 타자라면 장타치면 파워만 오르고 안타치면 컨택만 오르고 볼넷나가면 선구만 오르고 그외 못하면 깎여야되는데 너무 쉽게쉽게 다같이 스탯이 오르니깐 무조건 5툴가이 되겠어" — 재보니 진짜였다. 두 가지가 겹쳐 있었다',
+    '① **칸이 서로 물려 있었다.** 파워를 장타율로 쟀는데 거기엔 단타가 들어간다 — **안타만 쳐도 파워가 올랐다.** 어깨는 아예 「수비×0.6 + 파워×0.4」 라서 **방망이가 어깨를 올렸다**',
+    '② **출전 몫이 모든 칸에 똑같이 붙었다.** 세 해를 다 나가면 그것만으로 여섯 칸이 전부 올랐다. 그게 5툴의 정체다',
+    '이제 **한 칸은 한 가지만 본다** — 컨택←타율 · 파워←**순장타(ISO)** · 선구←볼넷률 · 주루←도루·3루타 · 수비←실책 · 어깨←**던진 이닝**. 투수는 구위←탈삼진·**피안타** · 제구←**볼넷** · 체력←이닝이다. 안타를 맞으면 구위가, 볼넷을 주면 제구가 깎인다',
+    '[요청] "그외 못하면 깎여야되는데" — 예전 식은 성적 몫이 **0 아래로 안 갔다.** 아무리 못해도 26이 바닥이라 못하면 손해라는 게 없었다. 이제 **가운데가 본전**이고 그보다 못한 칸은 시작값 아래로 내려간다 (바닥 8)',
+    '재보니 타율 .200 미만으로 3년을 보내면 컨택 **15.8**, .350을 넘기면 **39.1** 로 졸업한다. 한 사람 안에서도 칸끼리 평균 **17** 씩 벌어진다 — 이제 5툴이 안 나온다',
+    '[제보] "수비도 할때마다 준비 되었는지 물어보게 해줘 (…) 포수로 처음 설명해주고 나서부터 냅다 뛰니깐 핸드폰은 스크롤 올라가서 바로 수비 장면을 못봐" — 수비에는 「준비 됐다」 가 있는데 **포수 송구에는 없었다.** 창이 뜨자마자 타이머가 돌았다. 이제 여기도 **내가 누를 때까지 주자가 안 뛴다.** 화면도 아래쪽을 맞춰 끌어온다',
+    '[제보] "고교때는 주루플레이가 안나와서 주루 스탯을 모르겠네" — 진짜였다. v2.87.0에서 고교에 주루를 넣었는데, 그 자리에서 부르는 함수가 **다음 타자의 스윙을 먼저 돌려줬다**(감독 모드는 남의 타석도 물어보니까). 고교·2군은 내 타석에서만 멈추는데 그걸 몰랐다. **리드 창이 한 번도 안 떴다는 뜻이다.** 이제 뜬다 — 그래서 도루도 하고 주루 스탯도 오른다',
+  ]},
   {v:'3.0.0', t:'공에 맞으면 몇 달을 쉰다 · 전 화면 점검기', items:[
     '[요청] "사사구 맞으면 부상확률 올려야 되긴함 뭐 몇주 부상 몇달 부상 뭔말인지 알지? 뭐 수비하다가 타구를 맞는다거나" — 맞는 말이었다. 여태 **공에 맞아서 다치는 길이 아예 없었다.** 슬라이딩·스윙·송구로만 다쳤고, 제일 긴 부상이 다섯 경기였다',
     '**몸에 맞는 공**으로 다친다 — 발등 타박(1~3경기) · 팔꿈치 타박(2~4) · 갈비뼈 실금(6~11) · **손등 골절(9~16경기)**. 평소 판정의 **열두 배**로 올렸다. 한 시즌에 한두 번 맞으니 실제로 다치는 건 드물다 — 드문 대신 크게 다친다',
@@ -14706,11 +14716,17 @@ function farmRunLive(){
         이미 그렇게 본다. 2루가 비어 있을 때만 묻는다)              */
     if(off.isUser && LIVE.paSeq!==LIVE._lastRunPA
        && typeof askModeOf==='function' && askModeOf('run')!=='off'
+       && (askModeOf('run')!=='key' || LIVE.keyMoment())
        && LIVE.outs<3 && LIVE.bases[0]===me && !LIVE.bases[1]){
-      const rd=LIVE.detectDecision();
-      if(rd && rd.kind==='lead'){
-        flushLog(); updateLiveUI(); showDecision(rd); return;
-      }
+      /* [제보] "고교때는 주루플레이가 안나와서 주루 스탯을 모르겠네"
+         진짜였다. 여기서 detectDecision() 을 불렀는데, 그 함수는 **다음
+         타자의 스윙**을 먼저 돌려준다(감독 모드는 남의 타석도 물어보니까).
+         고교·2군은 내 타석에서만 멈추는데 그걸 모른다. 그래서 리드 창이
+         한 번도 안 떴다.
+         조건은 바로 위에서 이미 다 봤다 — 여기서 바로 띄운다.       */
+      flushLog(); updateLiveUI();
+      showDecision({kind:'lead'});
+      return;
     }
     /* [주의] 포수 송구는 이제 step() 안에서 pending 으로 올라온다.
        타석 도장(_lastDefPA)만 보면 그 창을 놓친다 — pending 을 먼저 본다. */
@@ -15863,11 +15879,17 @@ function hsRunLive(){
         이미 그렇게 본다. 2루가 비어 있을 때만 묻는다)              */
     if(off.isUser && LIVE.paSeq!==LIVE._lastRunPA
        && typeof askModeOf==='function' && askModeOf('run')!=='off'
+       && (askModeOf('run')!=='key' || LIVE.keyMoment())
        && LIVE.outs<3 && LIVE.bases[0]===me && !LIVE.bases[1]){
-      const rd=LIVE.detectDecision();
-      if(rd && rd.kind==='lead'){
-        flushLog(); updateLiveUI(); showDecision(rd); return;
-      }
+      /* [제보] "고교때는 주루플레이가 안나와서 주루 스탯을 모르겠네"
+         진짜였다. 여기서 detectDecision() 을 불렀는데, 그 함수는 **다음
+         타자의 스윙**을 먼저 돌려준다(감독 모드는 남의 타석도 물어보니까).
+         고교·2군은 내 타석에서만 멈추는데 그걸 모른다. 그래서 리드 창이
+         한 번도 안 떴다.
+         조건은 바로 위에서 이미 다 봤다 — 여기서 바로 띄운다.       */
+      flushLog(); updateLiveUI();
+      showDecision({kind:'lead'});
+      return;
     }
     /* [주의] 포수 송구는 이제 step() 안에서 pending 으로 올라온다.
        타석 도장(_lastDefPA)만 보면 그 창을 놓친다 — pending 을 먼저 본다. */
@@ -15906,8 +15928,9 @@ function hsLin(v,lo,hi){ return Math.max(0,Math.min(1,(v-lo)/(hi-lo))); }
    그러면 1군에 벽이 없다. 뛴 몫 10→6 · 성적 몫 26→18 · 노력 9→6 으로
    내린다. 이제 26~44(노력까지 50)다 — 팀 주전들 한참 아래에서 시작한다.
    거기서부터 올리는 게 본편이다. */
-const HS_GRAD_PLAY=6;       // 3년 꼬박 뛰기만 해도
+const HS_GRAD_PLAY=6;       // 3년 꼬박 뛰기만 해도 (모든 칸에 공통)
 const HS_GRAD_PERF=18;      // 성적으로 채울 수 있는 몫
+const HS_MID=0.38;          // 이만큼이 본전. 그 아래면 깎인다
 /* 6경기 성적 → 시작 능력치 배율.
    못해도 0.58, 잘하면 0.98 까지. 실제 2026 능력치가 1.00 이라
    **졸업하면 아직 완성형이 아니다.** 거기까지 가는 게 본편이다.     */
@@ -15933,16 +15956,38 @@ function hsGrades(){
      **주루는 뭘 해도 안 오르고 수비는 뭘 해도 만점**이었고, 투수는 잘
      던지든 못 던지든 졸업치가 같았다. 졸업치가 절대값이 된 지금은
      그게 그대로 티가 난다. 실측 분포에 맞춰 다시 잡는다.             */
+  /* [제보] "고교때 스탯 산정할때 투수면 뭐 볼넷주거나 그러면 제구가
+             깎인다던지 안타를 맞으면 구위가 깎인다던지 타자라면 장타치면
+             파워만 오르고 안타치면 컨택만 오르고 볼넷나가면 선구만 오르고
+             그외 못하면 깎여야되는데 너무 쉽게쉽게 다같이 스탯이 오르니깐
+             무조건 5툴가이 되겠어"
+
+     맞는 말이다. 두 가지가 겹쳐 있었다.
+       ① **칸이 서로 물려 있었다.** 파워를 장타율(slg)로 쟀는데 slg 에는
+          단타가 들어간다 — 안타만 쳐도 파워가 올랐다. 어깨는 아예
+          수비×0.6 + 파워×0.4 라서 방망이가 어깨를 올렸다.
+       ② **출전 몫이 모든 칸에 똑같이 붙었다.** 세 해를 다 나가면
+          그것만으로 여섯 칸이 전부 올랐다. 그게 5툴의 정체다.
+
+     이제 **한 칸은 한 가지만 본다.**
+       컨택 ← 타율          파워 ← **순장타(ISO)**   선구 ← 볼넷률
+       주루 ← 도루·3루타    수비 ← 실책             어깨 ← 던진 이닝
+       구위 ← 탈삼진·피안타 제구 ← 볼넷             체력 ← 이닝
+     그리고 **못하면 깎인다** — 아래 K() 가 가운데를 0 으로 잡는다.   */
+  const iso = b.ab? (b.d2+b.d3*2+b.hr*3)/b.ab : 0;   // 순장타 — 단타가 안 샌다
+  const hit9 = ip? (q.h*7/ip) : 0;                   // 이닝당 피안타
   g.con = hsLin(avg, 0.170, 0.440);
-  g.pow = hsLin(slg, 0.210, 0.590);
-  g.eye = hsLin(bbr, 0.095, 0.300)*0.6 + hsLin(obp-avg, 0.080, 0.200)*0.4;
-  g.spd = hsLin(b.sb, 0, 3)*0.7 + hsLin(b.d3, 0, 1)*0.3;
-  /* 수비는 고교 기록으로 잴 게 실책밖에 없다. 전 경기 출전은 기본이라
-     그것만으로 만점을 주면 아무나 수비 만렙으로 졸업한다 — 상한 0.80. */
-  g.def = hsLin(b.g, 0, hsGamesCount())*0.35 + (1-hsLin(b.e, 0, 3))*0.45;
-  g.arm = g.def*0.6 + g.pow*0.4;
-  g.stf = ip? (hsLin(k9, 0.85, 1.40)*0.7 + (1-hsLin(era, 5.5, 13.5))*0.3) : 0;
-  g.ctl = ip? ((1-hsLin(bb9, 0.85, 1.70))*0.7 + (1-hsLin(era, 5.5, 13.5))*0.3) : 0;
+  g.pow = hsLin(iso, 0.040, 0.260);
+  g.eye = hsLin(bbr, 0.095, 0.300);
+  g.spd = hsLin(b.sb, 0, 3)*0.75 + hsLin(b.d3, 0, 1)*0.25;
+  /* 수비는 고교 기록으로 잴 게 실책밖에 없다. 출전은 거들기만 한다 */
+  g.def = (1-hsLin(b.e, 0, 3))*0.75 + hsLin(b.g, 0, hsGamesCount())*0.25;
+  /* 어깨는 방망이와 아무 상관이 없다. 던진 사람은 던진 만큼,
+     안 던진 사람은 수비에서 조금만 가져간다.                        */
+  g.arm = ip? Math.max(hsLin(ip, 2, 14), g.def*0.5) : g.def*0.55;
+  /* 안타를 맞으면 구위가 깎이고, 볼넷을 주면 제구가 깎인다 */
+  g.stf = ip? (hsLin(k9, 0.85, 1.40)*0.6 + (1-hsLin(hit9, 1.0, 2.6))*0.4) : 0;
+  g.ctl = ip? (1-hsLin(bb9, 0.85, 1.70)) : 0;
   g.sta = ip? hsLin(ip, 4, 15) : 0;
   return g;
 }
@@ -15969,14 +16014,20 @@ function hsGraduate(){
        그냥 다 나가기만 해도  +10   (3년 꼬박 뛴 것 자체가 실력이다)
        성적으로              +26   (다 채우면 팀 평균 위 · 최상위는 아니다)
      졸업은 완성이 아니라 시작이다 — 본편에서 계속 오른다. */
-  const K=(v)=>HS_BASE + HS_GRAD_PLAY*exp + HS_GRAD_PERF*Math.max(0,Math.min(1,v));
+  /* [요청] "그외 못하면 깎여야되는데"
+     예전 식은 성적 몫이 **0 아래로 안 갔다.** 아무리 못해도 20+6 이
+     바닥이라 「못하면 손해」가 없었다. 가운데(HS_MID)를 0 으로 잡아서
+     그보다 못하면 **깎이게** 한다 — 잘하면 +18, 못하면 -11 이다.
+     그래야 세 해를 어떻게 보냈는지가 칸마다 다르게 남는다.        */
+  const K=(v)=>HS_BASE + HS_GRAD_PLAY*exp
+    + HS_GRAD_PERF*(Math.max(0,Math.min(1,v))-HS_MID)/(1-HS_MID);
   /* 3년 동안 고른 것들 — 웨이트장에 살았으면 파워가, 영상만 봤으면 선구가 붙는다.
      크게 안 갈린다. 한 판 더 하고 싶어질 정도만.                     */
   const EF=H.eff||{};
   const out={};
   ['con','pow','eye','spd','def','arm'].forEach(k=>{
     if(p[k]==null) return;
-    out[k]=Math.round(K(g[k])) + Math.min(6,(EF[k]||0));
+    out[k]=Math.max(8, Math.round(K(g[k])) + Math.min(6,(EF[k]||0)));
   });
   /* 투수로 뛰었으면 투구 능력치도. 안 뛰었으면 손대지 않는다.
      [주의] 어른 로스터에 pitch 가 있는지는 안 본다 — 야수를 골라도
@@ -15985,7 +16036,7 @@ function hsGraduate(){
   if(H.pit.outs>0){
     out.pitch={};
     ['stf','ctl','sta'].forEach(k=>{
-      out.pitch[k]=Math.round(K(g[k])) + Math.min(9,(EF[k]||0));
+      out.pitch[k]=Math.max(8, Math.round(K(g[k])) + Math.min(6,(EF[k]||0)));
     });
   }
   ST.hsRatings=out;
@@ -16314,7 +16365,10 @@ function renderHS(){
       card.appendChild(bars);
       card.appendChild(el('p','muted',
         '고1 때 전부 '+HS_BASE+'에서 시작했다. 여기까지가 3년으로 번 것이다. '+
-        '누구로 시작했든 출발은 같았다 — 이 숫자는 순전히 네가 친 것과 던진 것이다. '+
+        '누구로 시작했든 출발은 같았다 — 이 숫자는 순전히 네가 친 것과 던진 것이다.<br>'+
+        '<b>칸마다 본 게 다르다.</b> 안타는 컨택, 장타는 파워, 볼넷은 선구, '+
+        '도루는 주루, 실책은 수비, 던진 이닝은 어깨다. '+
+        '<b>못한 칸은 '+HS_BASE+' 아래로 내려간다</b> — 세 해를 어떻게 보냈는지가 칸마다 다르게 남는다.<br>'+
         '여기가 끝이 아니라 시작이다. 경기에 나가고 훈련한 만큼 계속 오른다. 한계는 없다.'));
     }
     c.appendChild(card);
@@ -28050,6 +28104,23 @@ function renderThrow(box, d){
   box2.appendChild(row);
   w.appendChild(box2);
   const bar=box2.querySelector('.rb-bar > i');
+  /* [제보] "수비도 할때마다 준비 되었는지 물어보게 해줘 (…) 포수로 처음
+             설명해주고 나서부터 냅다 뛰니깐 이게 문제가 핸드폰은 스크롤
+             올라가서 바로 수비 장면을 못봐"
+     맞는 말이다. 수비(renderDefPlay)에는 「준비 됐다」 가 있는데
+     **포수 송구에는 없었다.** 창이 뜨자마자 2.2초 타이머가 돌아서,
+     스크롤이 아직 움직이는 중이면 그대로 놓친다. 여기도 내가 누를
+     때까지 주자가 안 뛴다.                                          */
+  const goRow=el('div','lead-grid');
+  const goB=el('button','lead-b run');
+  goB.innerHTML='<span>준비 됐다 ▶</span><i>누르면 주자가 뛴다 — 천천히 해라</i>';
+  goRow.appendChild(goB);
+  box2.appendChild(goRow);
+  row.style.display='none';
+  setTimeout(()=>{ try{ box.scrollIntoView({block:'end',behavior:'smooth'}); }catch(e){} },30);
+  const start=()=>{
+  goRow.style.display='none';
+  row.style.display='';
   try{
     sc=groundScene(stage, {mode:'steal', ang:0, dur:2200, park:LIVE.park, myPos:'C',
       onTick:(k)=>{ if(bar) bar.style.width=(k*100).toFixed(0)+'%';
@@ -28064,6 +28135,9 @@ function renderThrow(box, d){
     },40);
     sc={stop:()=>clearInterval(iv)};
   }
+  };
+  goB.onclick=start;
+  goB.addEventListener('pointerdown',(ev)=>{ if(ev&&ev.preventDefault)ev.preventDefault(); start(); });
   box._cleanup=()=>{ done2=true; if(sc)sc.stop(); };
   const skip=el('button','pl-skip','알아서 하게 둔다');
   skip.onclick=()=>{ if(done2)return; done2=true; if(sc)sc.stop();
