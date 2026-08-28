@@ -442,6 +442,46 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
   T(ev("/몸쪽으로 붙였다/.test(LiveGame.prototype.stepPA.toString())"),
     '위협구 — 우리 타자가 맞으면 되갚는다');
 
+  console.log('\n[번트 · 방향 · 협살 · 어깨]');
+  T(ev("typeof LiveGame.prototype.buntResult==='function'"),
+    '번트를 실제로 댄다 (감독의 「번트 지시」와 다르다)');
+  T(ev(`(function(){
+      var rng=makeRng(3), n={sac:0,hit:0,pop:0,fail:0};
+      var G=Object.create(LiveGame.prototype);
+      for(var i=0;i<400;i++){
+        var r=G.buntResult({spd:62,con:60},{_slotDef:46},rng);
+        n[r.bunt]++;
+      }
+      return n.sac>0 && n.hit>0 && n.pop>0 && n.fail>0;
+    })()`), '진루타 · 기습번트 안타 · 팝플라이 · 앞 주자 아웃 네 갈래가 다 나온다');
+  T(ev("/희생번트 — 주자를 보냈다/.test(LiveGame.prototype.stepPA.toString())"),
+    '성공하면 주자가 한 베이스씩 간다');
+  T(ev("/번트를 댄다/.test(renderSwing.toString()) && /LIVE.outs<2/.test(renderSwing.toString())"),
+    '주자가 있고 2아웃이 아닐 때만 뜬다');
+  T(ev("battedBall.length===6 && /spray==='pull'/.test(battedBall.toString())"),
+    '밀어치기·당겨치기가 타구 방향에 실제로 들어간다');
+  T(ev(`(function(){
+      var a=battedBall(7,'1B',psPark(),'R',false,'pull').ang;
+      var b=battedBall(7,'1B',psPark(),'R',false,'oppo').ang;
+      return a<b;   // 우타가 당기면 좌측(음수), 밀면 우측
+    })()`), '우타가 당기면 좌측, 밀면 우측으로 간다');
+  T(ev("/_spray/.test(renderSwing.toString())"),
+    '타석에서 방향을 고른다');
+  T(ev("/협살에 걸렸다가 살았다/.test(LiveGame.prototype.stepPA.toString())"),
+    '런다운 — 사이에 걸렸다가 살아 나가기도 한다');
+  T(ev("typeof pitchArmWear==='function'"),
+    '어깨 통증이 누적된다');
+  T(ev(`(function(){
+      ST.mode='player'; ST.playerId='ksh'; MYID='ksh';
+      ST.rest={ksh:3}; ST.injury={};
+      var m=pitchArmWear({pbox:{ksh:{np:130,outs:15}}});
+      return !!m && ST.rest['ksh']<3;
+    })()`), '많이 던진 다음 경기는 회복이 덜 된다');
+  T(ev(`(function(){
+      ST.rest={ksh:3};
+      return pitchArmWear({pbox:{ksh:{np:60,outs:9}}})===null;
+    })()`), '적게 던진 날은 아무 일도 없다');
+
   console.log('\n[예외]');
   T(jsErr.length===0, jsErr.length?('❌ '+jsErr.slice(0,3).join(' | ')):'콘솔 예외 없음');
 
