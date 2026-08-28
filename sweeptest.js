@@ -184,6 +184,30 @@ const ST_round=()=>Number(dom.window.eval('ST.round'))||0;
     T(!worst, worst? (nm+' :: '+worst) : nm+' — 전 화면 이상 없음');
   }
 
+  /* [지적] "선수모드는 지시같은게 다른 용어로 되어야하는거 알지?"
+     맞는 말이다. 선수 모드에서 나는 **선수 한 명**이다. 「지시」 「작전」
+     「감독 액션」 은 감독 말이라 화면에 남아 있으면 안 된다.
+     화면을 훑어서 감독 어휘가 새어 나오는지 본다.                  */
+  console.log('\n[선수 모드에 감독 말이 남아 있나]');
+  {
+    ev("ST.mode='player'; ST.role='two'; ST.myFarm=0; ST.injury={}; ST.round=11");
+    const MGR=/지시|작전|감독 액션|물통|선수 영입|상대 분석/;
+    let found=[];
+    for(const [v,nm] of SCREENS){
+      try{
+        if(v==='player') ev("profileId='ksh'");
+        w.go(v); await wait(50);
+        /* 설명 문장이 아니라 **누를 것과 제목**만 본다. 남 얘기(김상훈
+           소개의 「상대 분석 자료」)까지 잡으면 노이즈만 는다.       */
+        const nodes=[...d.querySelectorAll('#view button, #view .card-h, #view .ms-big, #view .ms-sub, #view .subtab')];
+        const hitN=nodes.map(n=>n.textContent.replace(/\s+/g,' ')).find(t=>MGR.test(t));
+        if(hitN) found.push(nm+' 「'+hitN.match(MGR)[0]+'」 :: '+hitN.slice(0,50));
+      }catch(e){}
+    }
+    T(found.length===0, found.length? ('감독 말 '+found.length+'곳 :: '+found[0]) : '감독 말이 안 보인다');
+    if(found.length>1) found.slice(1,4).forEach(x=>console.log('     · '+x));
+  }
+
   console.log('\n[콘솔]');
   T(jsErr.length===0, '예외 없음 :: '+(jsErr.slice(0,2).join(' / ')||'없음'));
 

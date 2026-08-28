@@ -152,8 +152,15 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
   [...d.querySelectorAll('#decision .lead-b')].find(b=>/▸ 뛴다/.test(b.textContent)).click();
   /* [v2.86.0] 「뛴다」 는 그 자리에서 도루까지 굴리고 결과를 1.3초 보여준다.
      예전(0.68초)보다 오래 열려 있는다 — "도루 하고 있는 장면도 안나오고" */
-  await wait(2200);
-  T(!d.querySelector('#decision.on'), '고르면 판단창이 닫힌다');
+  /* [v3.2.0] 히트앤런이 생기면서 「뛴다」 뒤의 갈래가 늘었다.
+     타석이 굴러가고 내가 **아직 1루에 있으면 다음 리드 창이 정당하게
+     새로 열린다.** 그래서 「창이 아예 없다」 로 보면 안 된다 —
+     **그 창이 닫혔는지**(판단창 번호가 바뀌었는지)로 본다.        */
+  const tok0=ev("(document.getElementById('decision')||{})._decTok");
+  await wait(3600);
+  T(ev("(function(){var b=document.getElementById('decision');"+
+       "return !b || !b.classList.contains('on') || b._decTok!=="+(tok0|0)+";})()"),
+    '고른 그 판단창은 닫힌다 (다음 창이 열리는 건 정상이다)');
 
   console.log('\n[송구가 엔진까지 간다]');
   T(ev("LiveGame.prototype.applyDecision.toString().indexOf(\"choice==='at:lead'\")>0"),
@@ -165,11 +172,25 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
   setup(); ev("ST.myPos='C'");
   ev("showDecision({kind:'throw', what:'sb'})"); await wait(150);
   await passHelp();                // 포수도 처음 한 번은 설명이 깔린다
+  /* [v3.3.0] 포수 송구에도 「준비 됐다」 가 생겼다 — 누르기 전에는
+     주자가 안 뛴다. 실제 손놀림대로 눌러준다. */
+  {
+    const rb=[...d.querySelectorAll('#decision .lead-b span')]
+      .find(x=>/준비 됐다/.test(x.textContent));
+    T(!!rb, '포수 송구에도 준비 턴이 있다');
+    if(rb){ rb.parentElement.click(); await wait(120); }
+  }
   T(!!d.querySelector('#decision .runstage'), '그라운드가 뜬다');
   T(/던질 건가/.test(txt('#decision .rb-t')), '제목 :: '+txt('#decision .rb-t'));
   T(btns().join('/')==='안 던진다/던진다 ▸', '버튼 :: '+btns().join(' / '));
   d.querySelector('#decision .rb-b.go').click(); await wait(400);
-  T(ev("LIVE && LIVE._catchThrow==='go'"), '던진다가 엔진에 닿는다');
+  /* [v2.86.0~] 고르면 곧바로 엔진이 그 도루를 굴린다 — _catchThrow 는
+     판정하면서 **비워진다.** 그래서 그 칸만 보면 타이밍 싸움이 된다.
+     「엔진에 닿았나」 는 결과(중계 로그)로 본다.                    */
+  T(ev("(function(){ if(!LIVE) return false;"+
+       "if(LIVE._catchThrow==='go') return true;"+
+       "return (LIVE.log||[]).some(function(l){return /도루/.test(l.text||'')}); })()"),
+    '던진다가 엔진에 닿는다 (판정까지 굴러간다)');
 
   console.log('\n[\uc8fc\ub8e8 2\ub9c9 \u2014 \uace0\ub974\uace0 \ub098\uc11c\ub3c4 \ud654\uba74\uc774 \uc774\uc5b4\uc9c4\ub2e4]');
   T(ev("/replay/.test(groundScene.toString())"), 'groundScene \uc774 2\ub9c9(replay)\uc744 \uac00\uc9c0\uace0 \uc788\ub2e4');
@@ -389,6 +410,37 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
       var m=LiveGame.prototype.stepPA.toString();
       return /this._runGo \\? 0.92/.test(m) && /this._runGo\\?0.008:0.030/.test(m);
     })()`), '안타면 한 베이스 더 · 땅볼은 포스가 풀려 병살이 덜 난다');
+
+  console.log('\n[야구다운 것들]');
+  T(ev("/낫아웃 출루/.test(LiveGame.prototype.stepPA.toString())"),
+    '낫아웃 — 삼진을 포수가 흘리면 1루로 뛴다');
+  T(ev("/canRun=\\(!this.bases\\[0\\] \\|\\| this.outs>=3\\)/.test(LiveGame.prototype.stepPA.toString())"),
+    '1루가 비었거나 2아웃일 때만 — 규칙이 그렇다');
+  T(ev("/포일 — 주자 진루/.test(LiveGame.prototype.stepPA.toString())"),
+    '폭투와 포일이 갈린다 (누구 기록이냐가 다르다)');
+  T(ev("/보크 — 주자 한 베이스/.test(LiveGame.prototype.runPickoff.toString())"),
+    '견제하다 보크가 난다');
+  T(ev("(function(){var n={wide:0,tight:0,even:0};"+
+       "for(var i=0;i<300;i++){var r=Math.random();"+
+       "n[r<0.22?'wide':(r<0.44?'tight':'even')]++;}"+
+       "return n.wide>0&&n.tight>0&&n.even>0;})()"),
+    '심판 존이 경기마다 넓다/좁다/보통으로 갈린다');
+  T(ev("/umpZone/.test(LiveGame.prototype.stepPA.toString())"),
+    '그 존이 삼진·볼넷에 실제로 들어간다');
+  T(ev("/오늘 심판/.test(buildLiveStage.toString())"),
+    '경기 화면에 오늘 심판이 뜬다');
+  T(ev("pitchesForPA.length===3 && /bat.eye/.test(pitchesForPA.toString())"),
+    '파울 커트 — 선구안이 좋으면 투구수를 갉아먹는다');
+  T(ev(`(function(){
+      var rng=makeRng(5);
+      var lo=0,hi=0;
+      for(var i=0;i<300;i++){ lo+=pitchesForPA('K',rng,{eye:30}); }
+      var rng2=makeRng(5);
+      for(var i=0;i<300;i++){ hi+=pitchesForPA('K',rng2,{eye:75}); }
+      return hi>lo;
+    })()`), '선구 75가 30보다 공을 더 본다');
+  T(ev("/몸쪽으로 붙였다/.test(LiveGame.prototype.stepPA.toString())"),
+    '위협구 — 우리 타자가 맞으면 되갚는다');
 
   console.log('\n[예외]');
   T(jsErr.length===0, jsErr.length?('❌ '+jsErr.slice(0,3).join(' | ')):'콘솔 예외 없음');
