@@ -7894,8 +7894,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '2.92.0';
-const APP_VERSION_NOTE = '자를 사람과 데려올 사람 — 자유계약 칸이 생겼다';
+const APP_VERSION = '2.93.0';
+const APP_VERSION_NOTE = '꼴찌부터 부른다 — 신인 드래프트';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -7916,6 +7916,18 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'2.93.0', t:'꼴찌부터 부른다 — 신인 드래프트', items:[
+    '[요청] "사회인야구단 드래프트 제도를 만들어서 (…) 안산에 있는 고등학교들 이름도 넣어서 예상 스탯 이런거 나오게 해서 (…) 드래프트는 선수모드이지만 내가 직접 할 수 있게" — **드래프트가 생겼다.** 시즌이 끝나고 새 시즌이 열리기 전에 신인을 뽑는다',
+    '학교는 준 대로 넣었다 — **안산공고 · 용호고 · 산본고 · 수리고 · 안산고**, 그리고 원래 있던 군포고 · 흥진고. 대학은 열 곳에서 이름만 빌린다. 선수는 전부 지어낸 사람이다',
+    '[요청] "24개팀이나 있으니깐 24x5 이정도만 (…) 몇몇은대학생도 섞어주고" — 참가자는 **팀 수 × 5라운드 = 120명**이다. 다섯에 하나쯤이 대학생이다',
+    '[요청] "드래프트는 순위 거꾸로역순할거야 kbo처럼" — **지난 시즌 순위 역순**이다. 꼴찌가 1순위고, 라운드마다 같은 순서로 다시 돈다',
+    '**진짜 능력치는 뽑기 전에 안 보여준다.** 보이는 건 스카우트가 매긴 **예상 범위**다. **고교생은 범위가 넓고**(도박) **대학생은 좁다**(안전). 대학생은 지금이 거의 다고, 고교생은 잠재가 크게 갈린다. 그래서 지명이 고민이 된다 — 뽑고 나면 진짜 값이 드러난다',
+    '전국구는 몇 명 안 된다. 그 몇 명이 1순위가 되고, 나중에 뉴스거리가 된다',
+    '뽑은 신인은 **우리 2군**으로 들어온다. 2군이 30명으로 꽉 차 있으면 제일 아래가 밀려난다 — 그 사람은 자유계약 칸으로 간다',
+    '**남의 팀이 뽑아간 사람도 그 팀 2군에 실제로 들어간다.** 거기서 크고, 잘하면 그 팀 1군으로 올라온다. 저 팀이 왜 갑자기 두꺼워졌는지가 설명이 된다',
+    '[설정] 「내가 한다」 면 내 차례에 멈춰서 직접 고른다. 중간에 「감독에게 맡긴다」 로 넘길 수도 있다. 「감독이 알아서」 면 전부 자동으로 돌리고 결과만 소식으로 온다',
+    '[용량] 120명을 세이브에 안 넣는다. **연도로 시드를 박아** 만들고 누가 몇 번을 뽑았는지만 저장한다. 같은 해를 다시 열면 같은 사람이 나온다',
+  ]},
   {v:'2.92.0', t:'자를 사람과 데려올 사람 — 자유계약 칸이 생겼다', items:[
     '[요청] "잠재력 너무 안좋거나 막 현재 너무 못하면 방출하는거지 그리고 그 방출당한자들은 은퇴안했으면 자유계약칸에 있어서 다른팀이 데려올 수 있고" — 그대로 만들었다. 흐름은 하나다: **2군 정원(30)이 찬다 → 제일 못하는 사람을 자른다 → 나이가 많으면 은퇴하고 아니면 자유계약 칸으로 → 다른 팀이 데려간다**',
     '**자유계약 칸**은 어디선가 방출된 사람이 모이는 데다. 잘하는 사람일수록 빨리 팔린다. 여섯 주 안에 아무도 안 부르면 야구를 접는다 — 그 사람 이름이 소식에 남는다',
@@ -17627,6 +17639,10 @@ function renderHome(){
         if(p.pitch&&f.pitch) ['stf','ctl','sta'].forEach(k=>{ if(p.pitch[k]!=null) f.pitch[k]=p.pitch[k]; });
       });
       finalizeTeam(TBYID['wwzw']); buildPitcherPool();
+      /* [요청] "드래프트는 순위 거꾸로역순할거야 kbo처럼"
+         순서는 **지난 시즌 순위**로 정한다. newSeason() 이 순위표를
+         밀어버리기 때문에 밀리기 전에 들고 있어야 한다.            */
+      const standPrev=(ST&&ST.stand)?ST.stand:null;
       ST=newSeason();
       Object.assign(ST,{career:keep.career,teamCareer:keep.teamCareer,milestones:keep.milestones,
         firsts:keep.firsts,seasonNo:keep.seasonNo,discharged:keep.discharged,playerId:keep.playerId,
@@ -17637,6 +17653,29 @@ function renderHome(){
       ST.teamCareer.seasons=(ST.teamCareer.seasons||0)+1;
       normalizeState();
       ST.lineup=recommendLineup();ST.rotation=recommendRotation();
+      /* [요청] "사회인야구단 드래프트 제도를 만들어서 (…) 드래프트는
+                 선수모드이지만 내가 직접 할 수 있게"
+         새 시즌이 열리기 전에 신인을 뽑는다. 순위 역순이라 못한 팀이
+         먼저 고른다 — 그래서 내년 주전 경쟁이 여기서 갈린다.
+         「감독이 알아서」 면 전부 자동으로 돌리고 결과만 남긴다.     */
+      if(isPlayerMode()){
+        ST.draftTeams={};
+        ST.draft=draftOpen(ST.year, standPrev);
+        draftRunToMe();
+        if(!ST.draft.done && (ST.gmRole||'auto')==='me'){
+          await saveGame(true);
+          go('draft');
+          toast(`${ST.seasonNo}년차 — 드래프트부터`);
+          return;
+        }
+        const cls=draftClass(ST.draft.year);
+        const got=(ST.draft.mine||[]).map(ix=>cls[ix]).filter(Boolean);
+        ST.notices=ST.notices||[];
+        ST.notices.push({type:'fa', title:ST.draft.year+' 신인 드래프트',
+          body: got.length? got.map(p=>p.school+' '+p.name).join(' · ')
+                          : '이번엔 뽑은 사람이 없다.',
+          effect:'감독이 지명했다 — 직접 하려면 더보기에서 「내가 한다」'});
+      }
       await saveGame(true);go('home');
       toast(`${ST.seasonNo}년차 시즌 시작`);
     };
@@ -32491,6 +32530,186 @@ function aiFarmBlocked(tid){
     .sort((a,b)=>b.avg-a.avg);
 }
 
+/* ================= 신인 드래프트 =================
+   [요청] "사회인야구단 드래프트 제도를 만들어서 (…) 안산에 있는 고등학교들
+           이름도 넣어서 예상 스탯 이런거 나오게 해서 너무 폐급이면 그냥
+           방출해버리고 드래프트는 선수모드이지만 내가 직접 할 수 있게"
+   [요청] "24개팀이나 있으니깐 24x5 이정도만 고등학생 드래프트 참가자로,,
+           몇몇은대학생도 섞어주고"
+   [요청] "드래프트는 순위 거꾸로역순할거야 kbo처럼"
+   [요청] "드래프트 고민하고 거기서 팀 미래랑 자기 주전 경쟁 등등이
+           결정되는 요소이니깐"
+
+   학교 이름은 사용자가 직접 준 것이다 — 안산·군포 쪽 학교들이다.
+   대학은 이름만 빌린다. 선수는 전부 지어낸 사람이다.
+
+   [핵심] **실제 능력치는 뽑기 전에 안 보여준다.** 보이는 건 스카우트가
+   매긴 **예상 범위**다. 고교생은 범위가 넓고(=도박) 대학생은 좁다(=안전).
+   그래야 지명이 고민이 된다. 뽑고 나면 진짜 값이 드러난다.
+
+   [용량] 120명을 세이브에 넣지 않는다. **연도로 시드를 박아** 만들고,
+   누가 몇 번을 뽑았는지(번호)만 저장한다.                          */
+const DRAFT_HS=['안산공고','용호고','산본고','수리고','안산고','군포고','흥진고'];
+const DRAFT_UNIV=['한양대','고려대','연세대','성균관대','동국대',
+                  '인하대','단국대','경희대','중앙대','건국대'];
+const DRAFT_ROUNDS=5;
+const DRAFT_UNIV_RATE=0.22;      // 다섯에 하나쯤은 대학생이다
+const DRAFT_CACHE={};
+/* 그 해 드래프트 참가자 — 팀 수 × 라운드 만큼 */
+function draftClass(year){
+  const key='dc|'+year;
+  if(DRAFT_CACHE[key]) return DRAFT_CACHE[key];
+  const rng=makeRng(rvSeedOf('draft|'+year));
+  const n=(typeof TEAMS!=='undefined'?TEAMS.length:24)*DRAFT_ROUNDS;
+  const POSP=['C','1B','2B','3B','SS','LF','CF','RF'];
+  const out=[];
+  for(let i=0;i<n;i++){
+    const univ=rng()<DRAFT_UNIV_RATE;
+    /* 전국구는 몇 명 안 된다. 그 몇 명이 뉴스가 되고 1순위가 된다 */
+    const t=rng();
+    const tier = t<0.05 ? 3 : (t<0.20 ? 2 : (t<0.55 ? 1 : 0));
+    /* 대학생은 이미 다 컸다 — 지금은 높고 더 안 큰다.
+       고교생은 지금은 낮아도 잠재가 있다.                          */
+    const base = (univ?34:26) + tier*6 + (univ?4:0);
+    const sp=(w)=>Math.max(8, Math.min(72, Math.round(base+(rng()*2-1)*w)));
+    const pitcher=rng()<0.30;
+    const main=POSP[(rng()*POSP.length)|0];
+    const sub=POSP[(rng()*POSP.length)|0];
+    const p={
+      id:'dp_'+year+'_'+i,
+      name:HS_SUR[(rng()*HS_SUR.length)|0]+HS_GIV[(rng()*HS_GIV.length)|0],
+      univ, school: univ?DRAFT_UNIV[(rng()*DRAFT_UNIV.length)|0]
+                       :DRAFT_HS[(rng()*DRAFT_HS.length)|0],
+      age: univ ? 22+((rng()*2)|0) : 19,
+      bats: rng()<0.20?'L':'R', throws: rng()<0.12?'L':'R',
+      con:sp(11), pow:sp(13), eye:sp(10), spd:sp(12), def:sp(11), arm:sp(11),
+      stf:sp(12), ctl:sp(11), sta:sp(10),
+      pitcher, pos: main===sub?[main]:[main,sub],
+      tier,
+      /* 잠재 — 고교생이 크다. 이게 "도박" 의 값이다 */
+      pot: univ ? 2+((rng()*3)|0) : 5+((rng()*9)|0),
+    };
+    if(pitcher) p.pitch={stf:p.stf, ctl:p.ctl, sta:p.sta};
+    /* 스카우트가 매긴 예상 — 진짜 값 주변으로 흐리게. 고교생일수록 넓다 */
+    const truth=draftTrue(p);
+    const blur=(univ?4:9)+ (3-tier)*1.5;
+    const mid=Math.round(truth+(rng()*2-1)*blur*0.5);
+    p.scoutLo=Math.max(5, Math.round(mid-blur));
+    p.scoutHi=Math.min(95, Math.round(mid+blur));
+    p.grade = truth>=52?'A' : (truth>=44?'B' : (truth>=36?'C':'D'));
+    /* 전국구면 이름이 알려져 있다 — 뉴스에 뜨는 애들이다 */
+    p.hype = Math.round(tier*25 + (univ?10:0) + rng()*15);
+    out.push(p);
+  }
+  DRAFT_CACHE[key]=out;
+  return out;
+}
+/* 이 선수의 진짜 값어치 한 숫자 — 등급과 AI 지명이 이걸 본다 */
+function draftTrue(p){
+  if(!p) return 0;
+  if(p.pitcher) return (p.stf*1.2+p.ctl*1.3+p.sta*0.6)/3.1;
+  return (p.con*1.2+p.pow*0.9+p.eye*0.7+p.spd*0.6+p.def*0.7+p.arm*0.4)/4.5;
+}
+/* 스카우트가 보는 값 — 예상 범위의 가운데. AI 도 이걸 보고 뽑는다
+   (그래서 AI 도 가끔 헛다리를 짚는다. 그게 맞다)                   */
+function draftSeen(p){ return ((p.scoutLo||0)+(p.scoutHi||0))/2; }
+
+/* 지명 순서 — **순위 역순**. 꼴찌가 1순위다 (KBO 방식).
+   라운드마다 같은 순서로 다시 돈다.                               */
+function draftOrderFrom(stand){
+  const rows=(typeof TEAMS!=='undefined'?TEAMS:[]).map(t=>{
+    const s=(stand&&stand[t.id])||{w:0,l:0,t:0};
+    const g=(s.w||0)+(s.l||0)+(s.t||0);
+    return {id:t.id, wr: g? ((s.w||0)+(s.t||0)*0.5)/g : 0.5, g};
+  });
+  rows.sort((a,b)=>a.wr-b.wr);          // 승률 낮은 순 = 꼴찌부터
+  return rows.map(r=>r.id);
+}
+/* 드래프트를 연다. 지난 시즌 순위표를 넘겨받는다 */
+function draftOpen(year, stand){
+  const order=draftOrderFrom(stand);
+  return {year, order, picks:[], on:0, done:false, mine:[]};
+}
+function draftNow(){
+  const D=ST&&ST.draft; if(!D||D.done) return null;
+  const per=D.order.length;
+  if(D.on>=per*DRAFT_ROUNDS) return null;
+  return {tid:D.order[D.on%per], round:((D.on/per)|0)+1, no:(D.on%per)+1};
+}
+/* 아직 안 뽑힌 사람들 */
+function draftPool(){
+  const D=ST&&ST.draft; if(!D) return [];
+  const taken={}; D.picks.forEach(x=>{ taken[x.idx]=1; });
+  return draftClass(D.year).map((p,i)=>({p,i}))
+    .filter(x=>!taken[x.i]);
+}
+/* 한 명 지명한다 */
+function draftTake(idx){
+  const D=ST&&ST.draft; if(!D||D.done) return null;
+  const cur=draftNow(); if(!cur) return null;
+  const cls=draftClass(D.year);
+  const p=cls[idx]; if(!p) return null;
+  if(D.picks.some(x=>x.idx===idx)) return null;      // 이미 뽑혔다
+  D.picks.push({tid:cur.tid, idx, round:cur.round});
+  if(cur.tid==='wwzw'){
+    D.mine.push(idx);
+    draftToFarm(p);
+  } else {
+    if(!ST.draftTeams) ST.draftTeams={};
+    const arr=ST.draftTeams[cur.tid]||(ST.draftTeams[cur.tid]=[]);
+    arr.push(idx);
+  }
+  D.on++;
+  if(D.on>=D.order.length*DRAFT_ROUNDS) D.done=true;
+  return {tid:cur.tid, p, round:cur.round};
+}
+/* 우리가 뽑은 사람은 2군으로 들어온다. 자리가 없으면 제일 아래를 자른다 */
+function draftToFarm(p){
+  const F=farmSlot();
+  if(F.length>=FARM_MAX){
+    const c=releaseCandidates()[0];
+    if(c){
+      const r=releasePlayer(c.p.id,'신인에게 자리를 내줬다');
+      ST.notices=ST.notices||[];
+      if(r) ST.notices.push({type:'fa', title:'자리 정리 — '+r.p.name,
+        body:'신인이 들어와서 '+r.p.name+'이(가) 밀렸다.',
+        effect:r.retire?'그대로 은퇴했다':'자유계약 칸으로 갔다'});
+    }
+  }
+  const np={...p, id:'rk_'+p.id, farm:true, up:false, joined:(ST.round||0),
+            g:0, ab:0, h:0, d2:0, hr:0, rbi:0, bb:0, k:0, rookie:true};
+  farmSlot().push(np);
+  if(typeof META!=='undefined') META[np.id]=farmMeta(np);
+  return np;
+}
+/* AI 가 뽑는다 — 스카우트 예상(draftSeen)을 보고 고른다. 진짜 값은 모른다 */
+function draftAiPick(rng){
+  const cur=draftNow(); if(!cur) return null;
+  const pool=draftPool();
+  if(!pool.length){ if(ST.draft) ST.draft.done=true; return null; }
+  /* 위에서 몇 명은 고만고만하다 — 그중에 하나를 집는다 (AI 도 헛다리를 짚는다) */
+  const top=pool.slice().sort((a,b)=>draftSeen(b.p)-draftSeen(a.p)).slice(0,4);
+  const pick=top[(rng()*top.length)|0]||top[0];
+  return draftTake(pick.i);
+}
+/* 내 차례가 올 때까지(또는 끝날 때까지) 굴린다 */
+function draftRunToMe(){
+  const D=ST&&ST.draft; if(!D) return [];
+  const rng=makeRng(rvSeedOf('draftai|'+D.year+'|'+D.on));
+  const done=[];
+  let guard=0;
+  while(!D.done && guard++<400){
+    const cur=draftNow(); if(!cur) break;
+    if(cur.tid==='wwzw' && (ST.gmRole||'auto')==='me') break;
+    const r = (cur.tid==='wwzw')
+      ? draftAiPick(rng)          // 감독이 알아서 하는 판이면 우리 것도 AI 가
+      : draftAiPick(rng);
+    if(!r) break;
+    if(r.tid==='wwzw') done.push(r);
+  }
+  return done;
+}
+
 /* ================= 방출 · 자유계약 · 영입 =================
    [요청] "잠재력 너무 안좋거나 막 현재 너무 못하면 방출하는거지 그리고
            그 방출당한자들은 은퇴안했으면 자유계약칸에 있어서 다른팀이
@@ -32650,11 +32869,23 @@ function rvSeedOf(s){ let h=2166136261;
   for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); }
   return h>>>0; }
 function aiFarmRoster(tid){
-  const key=tid+'|'+((ST&&ST.seasonNo)||1);
+  /* 드래프트로 뽑아간 사람이 뒤에 붙는다. 붙은 사람 수까지 열쇠에 넣어야
+     새로 뽑았을 때 캐시가 안 묵는다. **뒤에 붙이는 게 중요하다** —
+     앞 번호가 밀리면 aiFarmStat 의 성적이 딴 사람 것이 된다.        */
+  const drafted=(ST&&ST.draftTeams&&ST.draftTeams[tid])||[];
+  const key=tid+'|'+((ST&&ST.seasonNo)||1)+'|'+drafted.length;
   if(RV_AI_FARM[key]) return RV_AI_FARM[key];
-  const rng=makeRng(rvSeedOf(key)^0x2f6a3d);
+  const rng=makeRng(rvSeedOf(tid+'|'+((ST&&ST.seasonNo)||1))^0x2f6a3d);
   const out=[];
   for(let i=0;i<10;i++) out.push(makeFarmPlayer(rng, tid+'_f'+i));
+  if(drafted.length && ST&&ST.draft){
+    const cls=draftClass(ST.draft.year);
+    drafted.forEach(ix=>{
+      const dp=cls[ix]; if(!dp) return;
+      out.push({...dp, id:tid+'_rk'+ix, farm:true, up:false, rookie:true,
+                g:0, ab:0, h:0, d2:0, hr:0, rbi:0, bb:0, k:0});
+    });
+  }
   RV_AI_FARM[key]=out;
   return out;
 }
@@ -32888,6 +33119,107 @@ function rvCard(p){
 }
 
 /* ---------- 네비 ---------- */
+/* ================= 드래프트 화면 =================
+   내 차례가 오면 멈추고, 남의 차례는 알아서 굴린다.
+   [보이는 것] 진짜 능력치가 아니라 **스카우트 예상 범위**다.
+   고교생은 범위가 넓다 — 그게 도박이고, 그래서 고민이 된다.      */
+function renderDraft(){
+  const c=$('#view'); c.innerHTML='';
+  const D=ST&&ST.draft;
+  if(!D){
+    c.appendChild(el('div','card','지금은 드래프트 기간이 아니다.'));
+    const b=el('button','btn primary','홈으로'); b.onclick=()=>go('home');
+    c.appendChild(b); return;
+  }
+  const per=D.order.length;
+  const head=el('div','card');
+  const cur=draftNow();
+  head.innerHTML='<div class="card-h">'+D.year+' 신인 드래프트</div>'+
+    '<p class="muted">지명 순서는 <b>지난 시즌 순위 역순</b>이다 — 꼴찌가 1순위. '+
+    DRAFT_ROUNDS+'라운드까지 돈다.<br>'+
+    '보이는 건 <b>스카우트 예상</b>이지 진짜 능력치가 아니다. '+
+    '<b>고교생은 범위가 넓고</b>(도박) <b>대학생은 좁다</b>(안전). '+
+    '뽑고 나면 진짜 값이 드러난다.<br>'+
+    (cur?('지금 <b>'+cur.round+'라운드 '+cur.no+'순위</b> · '+
+          (TBYID[cur.tid]||{name:cur.tid}).name)
+        :'<b>드래프트가 끝났다.</b>')+'</p>';
+  c.appendChild(head);
+
+  /* 우리가 뽑은 사람 */
+  if(D.mine&&D.mine.length){
+    const mc=el('div','card');
+    mc.appendChild(el('div','card-h','우리가 뽑은 사람'));
+    const cls=draftClass(D.year);
+    D.mine.forEach((ix,n)=>{
+      const p=cls[ix]; if(!p) return;
+      const row=el('div','pk-row');
+      row.innerHTML='<div class="pk-l"><div class="pk-name">'+(n+1)+'라운드 '+p.name+
+        '<span class="ftag">'+p.school+'</span></div>'+
+        '<div class="pk-note">진짜 값 '+Math.round(draftTrue(p))+
+        ' · 컨택 '+p.con+' 파워 '+p.pow+' 수비 '+p.def+
+        (p.pitcher?(' · 구위 '+p.stf+' 제구 '+p.ctl):'')+
+        ' · 잠재 '+p.pot+'</div></div>';
+      mc.appendChild(row);
+    });
+    c.appendChild(mc);
+  }
+
+  if(D.done){
+    const b=el('button','btn primary','시즌 시작 ▸');
+    b.onclick=()=>{ saveGame(true); go('home'); };
+    c.appendChild(b);
+    return;
+  }
+  const mine=(cur&&cur.tid==='wwzw'&&(ST.gmRole||'auto')==='me');
+  if(!mine){
+    const w=el('div','card','남의 차례다. 돌리면 내 차례까지 간다.');
+    c.appendChild(w);
+    const b=el('button','btn primary','내 차례까지 돌린다 ▸');
+    b.onclick=()=>{ draftRunToMe(); saveGame(true); renderDraft(); };
+    c.appendChild(b);
+    return;
+  }
+
+  /* 내 차례 — 후보를 깐다 */
+  const list=el('div','card');
+  list.appendChild(el('div','card-h','지명한다 · 남은 '+draftPool().length+'명'));
+  const pool=draftPool().slice()
+    .sort((a,b)=>draftSeen(b.p)-draftSeen(a.p)).slice(0,20);
+  pool.forEach(x=>{
+    const p=x.p;
+    const row=el('button','pick-row');
+    const gcol={A:'#ffd15c',B:'#7fc48f',C:'#c9a227',D:'#8e9bb0'}[p.grade]||'#8e9bb0';
+    row.innerHTML='<div class="pk-l"><div class="pk-name">'+p.name+
+      '<span class="ftag" style="color:'+gcol+'">'+p.grade+'</span>'+
+      '<span class="lh" style="background:#2a323d;color:#c3ccd7">'+
+        (p.univ?'대학':'고교')+'</span></div>'+
+      '<div class="pk-note">'+p.school+' · '+p.age+'세 · '+
+      ((p.pos||[]).map(y=>POSNAMES[y]||y).join('·')||'-')+
+      (p.pitcher?' · 투수':'')+
+      '<br>예상 <b>'+p.scoutLo+' ~ '+p.scoutHi+'</b>'+
+      (p.univ?' <i style="color:#8e9bb0">(대학생 — 지금이 거의 다다)</i>'
+             :' <i style="color:#8e9bb0">(고교생 — 크게 갈린다)</i>')+
+      (p.hype>=45?' · <b style="color:#ffd15c">전국구</b>':'')+
+      '</div></div>';
+    row.onclick=()=>{
+      const r=draftTake(x.i);
+      if(!r){ toast('이미 뽑힌 선수다'); renderDraft(); return; }
+      toast(p.name+' 지명 — 우리 2군으로');
+      draftRunToMe();
+      saveGame(true); renderDraft();
+    };
+    list.appendChild(row);
+  });
+  c.appendChild(list);
+  const sk=el('button','btn','감독에게 맡긴다 (남은 지명 전부)');
+  sk.onclick=()=>{
+    const keep=ST.gmRole; ST.gmRole='auto';
+    draftRunToMe(); ST.gmRole=keep;
+    saveGame(true); renderDraft();
+  };
+  c.appendChild(sk);
+}
+
 /* ================= 선수단 운영 (프런트) =================
    [설정] gmRole 이 'me' 일 때만 들어온다. 'auto' 면 감독이 알아서 하고
    여기는 「감독이 하고 있다」 는 안내만 뜬다.
@@ -32983,7 +33315,7 @@ const VIEWS={home:renderHome,squad:renderSquad,lineup:renderLineup,kakao:renderK
   records:renderRecords,pick:renderPick,more:renderMore,meet:renderMeet,recruit:renderRecruit,
   tutorial:renderTutorial,player:renderPlayer,hall:renderHall,whatif:renderWhatIf,
   role:renderRole,slots:renderSlots,start:renderStart,mode:renderMode,hs:renderHS,
-  glog:renderGlog,rosters:renderRosters,front:renderFront};
+  glog:renderGlog,rosters:renderRosters,front:renderFront,draft:renderDraft};
 /* 선수 모드면 감독 전용 탭을 아예 안 보이게 한다.
    눌러도 막히긴 하지만, 있는데 안 되는 것보다 없는 게 낫다. */
 function paintTabs(){
@@ -33259,6 +33591,8 @@ function normalizeState(){
   if(ST.gmRole!=='me'&&ST.gmRole!=='auto')ST.gmRole='auto';
   if(!Array.isArray(ST.freeAgents))ST.freeAgents=[];
   if(!ST.aiFarmTaken||typeof ST.aiFarmTaken!=='object')ST.aiFarmTaken={};
+  if(!ST.draftTeams||typeof ST.draftTeams!=='object')ST.draftTeams={};
+  if(ST.draft===undefined)ST.draft=null;
   if(!Array.isArray(ST.myTrainQ))ST.myTrainQ=(ST.myTrain?[ST.myTrain]:[]);
   if(!ST.valuePrev)ST.valuePrev={};
   if(!Array.isArray(ST.drunkIds))ST.drunkIds=[];

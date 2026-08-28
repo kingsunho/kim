@@ -175,6 +175,79 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   T(ev("typeof renderFront==='function' && !!VIEWS.front"),
     '선수단 운영 화면이 있다');
 
+  /* ---------------------------------------------------------------
+     [요청] 드래프트 — 24×5 · 순위 역순 · 고교생 위주에 대학생 몇 명 ·
+            예상 스탯 · 내가 직접 지명
+     --------------------------------------------------------------- */
+  console.log('\n[신인 드래프트]');
+  T(ev("DRAFT_HS.indexOf('안산공고')>=0 && DRAFT_HS.indexOf('용호고')>=0"+
+       " && DRAFT_HS.indexOf('산본고')>=0 && DRAFT_HS.indexOf('수리고')>=0"+
+       " && DRAFT_HS.indexOf('안산고')>=0"),
+    '사용자가 준 학교가 다 들어 있다 (안산공고·용호고·산본고·수리고·안산고)');
+  T(ev("DRAFT_HS.indexOf('군포고')>=0 && DRAFT_HS.indexOf('흥진고')>=0"),
+    '원래 있던 군포고·흥진고도 같이 나온다');
+  T(ev("DRAFT_UNIV.length>=8"), '대학도 여럿 있다');
+  T(ev("draftClass(2027).length===TEAMS.length*DRAFT_ROUNDS && DRAFT_ROUNDS===5"),
+    '참가자가 팀 수 × 5 다 (24팀이면 120명)');
+  T(ev(`(function(){
+      var c=draftClass(2027);
+      var u=c.filter(function(p){return p.univ}).length;
+      return u>=8 && u<=c.length*0.4;
+    })()`), '대학생이 몇 명 섞여 있다 (전부도 아니고 없지도 않다)');
+  T(ev(`(function(){
+      var a=draftClass(2027).map(function(p){return p.name+p.school}).join('');
+      var b=draftClass(2027).map(function(p){return p.name+p.school}).join('');
+      return a===b && a.length>0;
+    })()`), '같은 해를 다시 열면 같은 사람이 나온다 (세이브에 안 넣는다)');
+  T(ev(`(function(){
+      var c=draftClass(2027);
+      /* 대학생은 예상 범위가 좁고 고교생은 넓다 — 그게 도박이다 */
+      var hs=c.filter(function(p){return !p.univ});
+      var uv=c.filter(function(p){return p.univ});
+      var w=function(a){return a.reduce(function(s,p){return s+(p.scoutHi-p.scoutLo)},0)/a.length};
+      return w(hs)>w(uv);
+    })()`), '고교생 예상 범위가 대학생보다 넓다');
+  T(ev("draftClass(2027).every(function(p){return p.scoutLo<p.scoutHi})"),
+    '모두 예상 범위가 있다 (진짜 값을 그대로 안 보여준다)');
+  T(ev(`(function(){
+      /* 순위 역순 — 꼴찌가 1순위 */
+      var st={};
+      TEAMS.forEach(function(t,i){ st[t.id]={w:i,l:TEAMS.length-i,t:0}; });
+      var o=draftOrderFrom(st);
+      return o[0]===TEAMS[0].id && o[o.length-1]===TEAMS[TEAMS.length-1].id;
+    })()`), '지명 순서가 지난 시즌 순위 역순이다 (꼴찌부터)');
+  T(ev(`(function(){
+      var st={}; TEAMS.forEach(function(t,i){ st[t.id]={w:i,l:24-i,t:0}; });
+      ST.draftTeams={}; ST.farm=[]; ST.gmRole='auto'; ST.mode='player';
+      ST.draft=draftOpen(2027, st);
+      draftRunToMe();
+      var D=ST.draft;
+      return D.done && D.picks.length===TEAMS.length*DRAFT_ROUNDS;
+    })()`), '감독에게 맡기면 끝까지 다 뽑는다');
+  T(ev(`(function(){
+      var D=ST.draft;
+      var seen={}; var dup=false;
+      D.picks.forEach(function(x){ if(seen[x.idx]) dup=true; seen[x.idx]=1; });
+      return !dup;
+    })()`), '같은 사람이 두 번 뽑히지 않는다');
+  T(ev("(ST.draft.mine||[]).length===DRAFT_ROUNDS"),
+    '우리도 다섯 명을 뽑았다');
+  T(ev("farmSlot().filter(function(p){return p.rookie}).length===DRAFT_ROUNDS"),
+    '뽑은 신인이 우리 2군에 실제로 들어와 있다');
+  T(ev(`(function(){
+      /* 남의 팀이 뽑아간 사람도 그 팀 2군에 붙는다 */
+      var tid=Object.keys(ST.draftTeams).find(function(k){return (ST.draftTeams[k]||[]).length});
+      if(!tid) return false;
+      return aiFarmRoster(tid).length===10+ST.draftTeams[tid].length;
+    })()`), '남의 팀 지명도 그 팀 2군에 붙는다 (앞 번호는 안 밀린다)');
+  T(ev(`(function(){
+      ST.farm=[]; farmFill(30);
+      var n0=farmSlot().length;
+      draftToFarm(draftClass(2027)[0]);
+      return farmSlot().length<=FARM_MAX;
+    })()`), '2군이 꽉 찬 채로 신인을 뽑으면 제일 아래를 자리에서 뺀다');
+  T(ev("typeof renderDraft==='function' && !!VIEWS.draft"), '드래프트 화면이 있다');
+
   console.log('\n[세이브]');
   T(ev("normalizeState.toString().indexOf('aiFarmStat')>0"+
        " && normalizeState.toString().indexOf('aiFarmUp')>0"),
