@@ -65,12 +65,26 @@ function sweep(tag){
     const sch=ev("ST.schedule[ST.round]");
     if(!sch) break;
     /* 실제 플레이 경로 — 홈에서 버튼을 눌러 진행한다.
-       '이번 주 시작' 을 눌러야 주간 회복(컨디션·사기)과 이벤트가 돈다. */
+       '이번 주 시작' 을 눌러야 주간 회복(컨디션·사기)과 이벤트가 돈다.
+       [v3.11.0] 「그날」이 생기면서 버튼 이름이 '오늘을 시작한다' 로 바뀌었고,
+       누르면 하루 화면으로 간다. 여기서는 하루를 끝까지 걸어준다 —
+       안 걸으면 주간 회복이 안 돌아서 컨디션이 바닥으로 간다.        */
     let rained=false;
     for(let z=0;z<6;z++){
       w.go('home'); await wait(90);
+      /* 하루가 열려 있으면 마디를 다 골라서 끝낸다 */
+      if(ev("typeof dayPending==='function' && dayPending()")){
+        w.go('day'); await wait(90);
+        for(let k=0;k<6;k++){
+          const o=[...d.querySelectorAll('#view .day-opt')];
+          if(!o.length) break;
+          o[(k+z)%o.length].click(); await wait(90);
+        }
+        ev("if(ST.day)ST.day.done=true;");
+        w.go('home'); await wait(90);
+      }
       const btns=[...d.querySelectorAll('#view .btn')];
-      const wk=btns.find(x=>/이번 주 시작/.test(x.textContent));
+      const wk=btns.find(x=>/이번 주 시작|오늘을 시작한다/.test(x.textContent));
       const nx=btns.find(x=>/다음 주로/.test(x.textContent));
       const beg=btns.find(x=>/단톡방에 사정해본다/.test(x.textContent));
       const mc=btns.find(x=>/용병 부른다/.test(x.textContent));

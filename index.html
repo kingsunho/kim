@@ -2130,6 +2130,31 @@ td.dimc{color:var(--dm);text-align:left}
 .pk-pot{font-size:10px;color:var(--dim);display:flex;align-items:center;gap:4px}
 /* 선수 모드에서 별 자리에 들어가는 한 줄. 별을 빼고 빈 칸으로 두면 어색하다 */
 .pk-even{font-size:10px;color:var(--dim);letter-spacing:-.2px}
+/* 「그날」 — 하루를 산다 */
+.day-head{background:linear-gradient(160deg,#1a2333,#141a24)}
+.day-t{font-size:10.5px;color:var(--dim);letter-spacing:.04em;margin-bottom:3px}
+.day-bar{display:flex;gap:4px;margin-top:9px}
+.day-bar i{flex:1;height:3px;border-radius:2px;background:#2a323d}
+.day-bar i.on{background:#4a6ea8}
+.day-bar i.now{background:var(--gold)}
+.day-log{padding:9px 12px}
+.day-l{font-size:11.5px;color:#9aa6b4;line-height:1.6;padding:2px 0}
+.day-l b{color:#e2eaf5}
+.day-time{font-size:11px;font-weight:800;color:var(--gold);letter-spacing:.04em;margin-bottom:5px}
+.day-b{font-size:13px;line-height:1.65;color:#d6dee8;margin:0 0 11px}
+.day-b b{color:#ffd15c}
+.day-opt{display:block;width:100%;box-sizing:border-box;text-align:left;margin-bottom:7px;
+  padding:12px 13px;border-radius:11px;background:var(--panel2);
+  border:1px solid var(--line);color:var(--ink)}
+.day-opt:active{border-color:var(--gold)}
+.day-opt span{display:block;font-size:13.5px;font-weight:800;color:#e2eaf5}
+.day-opt i{display:block;font-size:10.5px;color:var(--dim);font-style:normal;margin-top:3px}
+/* 평판 — 너는 이런 감독이다 */
+.rep-line{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.rep-tag{font-size:10.5px;font-weight:800;color:#0d1117;background:var(--gold);
+  border-radius:999px;padding:3px 9px}
+.rep-d{font-size:11px;color:var(--dim);line-height:1.6;margin-top:6px}
+.rep-d b{color:#e2eaf5}
 
 .pk-role{font-size:10.5px;color:#a9b4c2;margin-top:5px}
 .gdate{font-size:11.5px;color:var(--gold);margin:4px 0 6px;font-weight:600}
@@ -4717,7 +4742,8 @@ function rollWeekEvents(ST, rng){
   alive.forEach(p=>{
     if(p.id===meAbs) return;
     const m=META[p.id];
-    const att = m&&m.attend!=null ? m.attend : 0.85;
+    const att = Math.min(0.99,(m&&m.attend!=null ? m.attend : 0.85)
+      *((typeof repMul==='function')?repMul('attend'):1));
     const missP = Math.max(0.02, Math.min(0.34, (1-att)*0.48));
     if(rng()<missP){
       evts.push({type:'absent',pid:p.id,title:`${p.name} 결장`,
@@ -5054,6 +5080,13 @@ const BLOWUP_LINES={
 function updateUnhappy(ST, uSlots, ctx){
   if(!ST.unhappy)ST.unhappy={};
   if(!ST.spark)ST.spark={};
+  /* 오늘 누구를 냈는지 센다 — 「편애」 평판이 이 숫자에서 나온다.
+     경기 수도 여기서 올린다. 경기가 끝날 때 딱 한 번 부르는 자리다. */
+  if(typeof repOf==='function'){
+    const R=repOf();
+    if(R){ R.games=(R.games||0)+1;
+      (uSlots||[]).forEach(sl=>{ if(sl&&sl.id) R.starts[sl.id]=(R.starts[sl.id]||0)+1; }); }
+  }
   ctx=ctx||{};
   const msgs=[];
   const meId=ST.playerId||'ksh';
@@ -5090,7 +5123,10 @@ function updateUnhappy(ST, uSlots, ctx){
     }
 
     if(gripe){
-      sp.n=Math.min(6,sp.n+1);
+      /* 「편애」 평판이 붙어 있으면 벤치가 더 빨리 쌓인다 —
+         쓰는 사람만 쓰는 걸 다들 알고 있다는 뜻이다. */
+      const rm=(gripe==='벤치'&&typeof repMul==='function')?repMul('unhappy'):1;
+      sp.n=Math.min(6,sp.n+(rm>1?2:1));
       const i=sp.why.indexOf(gripe); if(i>=0)sp.why.splice(i,1);
       sp.why.push(gripe); if(sp.why.length>3)sp.why=sp.why.slice(-3);
     } else if(sp.n>0 && played && Math.random()<0.4){
@@ -6017,7 +6053,8 @@ function buildKakaoPre(ST){
   ST.lineup.slice().forEach(sl=>{
     const p=us.players.find(x=>x.id===sl.id); if(!p)return;
     const mm=META[p.id]; if(!mm)return;
-    const att=mm.attend!=null?mm.attend:0.85;
+    const att=Math.min(0.99,(mm.attend!=null?mm.attend:0.85)
+      *((typeof repMul==='function')?repMul('attend'):1));
     const dp=Math.max(0.01,Math.min(0.12,(1-att)*0.20));
     if(rng()<dp && canGoAbsent(p.id)){
       const pool2 = p.id==='ksw' ? DROP_KSW
@@ -8134,8 +8171,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.10.1';
-const APP_VERSION_NOTE = '주간 리그를 뺐다 — 이 게임은 혼자 하는 게임이다';
+const APP_VERSION = '3.11.0';
+const APP_VERSION_NOTE = '경기가 아니라 하루를 산다 · 너는 이런 감독이다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8156,6 +8193,19 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.11.0', t:'경기가 아니라 하루를 산다 · 너는 이런 감독이다', items:[
+    '카톡·불참·차·컨디션은 진작에 다 만들어놨는데 <b>메뉴에 흩어져 있었다.</b> 「이번 주 시작」을 누르면 결과가 한꺼번에 쏟아지고 나는 그걸 읽기만 했다. 고를 게 없었다',
+    '<b>경기 하나를 하루로 폈다.</b> 07:20 아침 → 09:10 단톡방 → 10:30 차 → 11:40 구장 → 경기. 마디마다 고를 게 있고 그게 오늘 경기와 다음 주에 남는다',
+    '<b>아침</b> — 더 잘까 · 스트레칭할까 · 밥 먹고 갈까. <b>단톡방</b> — 못 온다는 사람에게 전화를 돌릴까. 진짜로 한 명이 마음을 바꾼다. <b>차</b> — 누구를 태울까. 태우면 그쪽은 편하게 오고 나는 돌아가야 한다. <b>구장</b> — 배팅 · 캐치볼 · 러닝 · 그늘에 앉기',
+    '세상의 모든 야구게임이 경기를 판다. 이건 사회인야구를 하는 사람의 하루를 판다. 그게 되는 이유는 여기 있는 열넷이 실제로 아는 사람이라서다 — 모르는 NPC였으면 「차 태워주기」는 아무 감정도 없다',
+    '번거로우면 설정 → 「경기 당일: 바로 경기로」 로 끌 수 있다. 켜져 있어도 홈에서 그냥 내려가면 바로 경기로 간다 — 막는 게 아니라 권하는 것이다',
+    '',
+    '<b>평판이 생겼다.</b> 여태 내가 뭘 해도 세상이 똑같았다. 번트를 백 번 대든 한 번도 안 대든 상대는 몰랐다. 그건 시뮬레이터지 게임이 아니다',
+    '이제 내가 하는 짓을 센다. 번트를 자주 대면 「번트왕」이 붙고 <b>상대가 앞으로 나와 선다</b>(성공률 ×0.72). 도루를 자주 시키면 「뛰는 야구」 — 상대 포수가 앉아서 기다린다. 화를 자주 내면 「다혈질」 — 접전 판정이 불리해진다(×1.7)',
+    '사람을 챙기면 「인간적」이 붙고 다음 주에 한 명이라도 더 나온다. 쓰는 사람만 쓰면 「편애」 — 벤치 불만이 두 배로 쌓인다. 투수를 안 내리면 「뚝심」 — 흔들려도 덜 무너진다',
+    '홈 화면에 <b>「너는 이런 감독이다」</b>로 깐다. 무엇 때문에 붙었는지, 뭐가 달라지는지 같이 적는다. 숨기면 의미가 없다',
+    '[버그] 조사 함수 josa 를 같은 이름으로 하나 더 선언해서 신문용이 이겨버렸다. 세 번째 인자가 통째로 undefined 로 나갔다 — CLAUDE.md 가 경고한 그 사고를 그대로 냈다. 하나로 합쳤다',
+  ]},
   {v:'3.10.1', t:'주간 리그를 뺐다 — 이 게임은 혼자 하는 게임이다', items:[
     '지난 판에 넣은 「이번 주 대결」을 통째로 걷어냈다. 다 같이 하는 건 이 게임이 가려는 방향이 아니다',
     '같이 넣었던 버그 수정은 그대로 둔다 — 수비 화면이 떴는데 보복구로 타석이 끝나던 것',
@@ -11250,7 +11300,9 @@ LiveGame.prototype.consumePlayMods = function(off, def){
 LiveGame.prototype.maybeBadCall = function(what){
   if(!this.manual) return false;
   const bias=this._umpBias||0;
-  if(this.rng() < Math.max(0.03, 0.14-bias*0.03)){
+  /* 자주 화를 내면 심판이 곱게 안 본다 — 평판이 판정에 붙는다 */
+  const rm=(typeof repMul==='function')?repMul('ump'):1;
+  if(this.rng() < Math.max(0.03, (0.14-bias*0.03)*rm)){
     this._badCall={kind:'play', what:what||'아웃', pa:this.paSeq,
       truth:'세이프', called:'아웃'};
     this.log.push({t:'mgr',text:`심판이 ${what||'접전'}을 아웃으로 봤다 — 발이 먼저 들어간 것 같은데`});
@@ -11343,7 +11395,9 @@ LiveGame.prototype.setRunPlan = function(plan){ this._runPlan=plan||null; };
 LiveGame.prototype.buntResult = function(bat, def, rng){
   const dv=(def&&def._slotDef!=null)?def._slotDef:46;
   const spd=(bat.spd||45), con=(bat.con||45);
-  const good=clamp(0.52+(con-46)*0.0055-(dv-46)*0.0045, 0.25, 0.88);
+  /* 번트를 자주 대면 상대가 앞으로 나와 선다 — 평판이 확률에 붙는다 */
+  const rm=(typeof repMul==='function')?repMul('bunt'):1;
+  const good=clamp((0.52+(con-46)*0.0055-(dv-46)*0.0045)*rm, 0.18, 0.88);
   if(rng()<good){
     /* 기습번트 — 발이 빠르면 가끔 그대로 산다 */
     if(spd>=56 && rng()<clamp((spd-50)*0.013, 0.02, 0.24))
@@ -12091,11 +12145,13 @@ LiveGame.prototype.stepPA = function(){
         /* 슬라이딩 — 발목이 제일 많이 간다 */
         if(rn.id===(this.myId||(ST&&ST.playerId))) this.rollMyInjury('슬라이딩', 1.4);
         /* 발(spd) 과 눈치(sIQ) 를 같이 본다. 막는 쪽은 포수 어깨와 수비다 */
-        let su=clamp(LG.SB_SUCCESS+leadB
+        /* 뛰는 야구를 하면 상대 포수가 앉아서 기다린다 */
+        const rmS=(off.isUser && typeof repMul==='function')?repMul('steal'):1;
+        let su=clamp((LG.SB_SUCCESS+leadB
                      +(rn.spd-LG.SB_SU_MID)*0.0030
                      +(rIQ-46)*0.0034
                      -(def.cArm-46)*0.0060
-                     -((def.cDef!=null?def.cDef:46)-46)*0.0026, 0.45, 0.99);
+                     -((def.cDef!=null?def.cDef:46)-46)*0.0026)*rmS, 0.35, 0.99);
         /* 포수가 던지기로 했나. 던지면 잡을 확률이 오르는 대신
            빠뜨리면 한 베이스를 더 준다. 안 던지면 그냥 보낸다.      */
         const ct=this._catchThrow; this._catchThrow=null;
@@ -13235,13 +13291,16 @@ LiveGame.prototype.applyDecision = function(choice){
   /* ---- 공격 작전 ---- 전부 유효 타석 수가 붙는다 (무한 지속 버그 수정) */
   this.timeouts=Math.max(0,this.timeouts-1);
   if(choice==='bunt'){
+    if(typeof repBump==='function') repBump('bunt');
     s.tac.bat='contact'; this._buntRun=false; this.tacTTL.bat=1;
     this.log.push({t:'sub',text:'작전: 번트 · 진루타 지시 (1타석)'});
   } else if(choice==='buntrun'){
+    if(typeof repBump==='function'){ repBump('bunt'); repBump('steal'); }
     s.tac.bat='contact'; s.tac.run='aggressive'; this._buntRun=true;
     this.tacTTL.bat=1; this.tacTTL.run=1;
     this.log.push({t:'sub',text:'작전: 번트 앤 런 (1타석)'});
   } else if(choice==='steal'){
+    if(typeof repBump==='function') repBump('steal');
     s.tac.run='aggressive'; this.tacTTL.run=2;
     this.log.push({t:'sub',text:'작전: 적극 주루 지시 (2타석)'});
   } else if(choice==='patient'){
@@ -13409,6 +13468,7 @@ LiveGame.prototype.availPitchers = function(s){
 };
 /* pid 를 주면 그 사람으로, 안 주면 예전처럼 로테이션 다음 사람으로 */
 LiveGame.prototype.userPitcherChange = function(pid){
+  if(typeof repBump==='function') repBump('hook');
   const s=this.userSide();
   if(pid){
     const ok=this.availPitchers(s).some(x=>x.id===pid);
@@ -13632,6 +13692,92 @@ LiveGame.prototype.pinchHit = function(newId){
 const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 const el = (t,c,x)=>{const e=document.createElement(t); if(c)e.className=c; if(x!=null)e.textContent=x; return e;};
+
+/* =========================================================
+   평판 — 게임이 나를 캐릭터로 만든다
+   ---------------------------------------------------------
+   [문제] 내가 뭘 해도 세상이 똑같았다. 번트를 백 번 대든 한 번도 안 대든
+   상대는 모르고, 한 선수만 스무 경기 내리 써도 나머지는 가만있고,
+   경기 끝나고 화를 내든 다독이든 다음 주는 같았다.
+   **그건 시뮬레이터지 게임이 아니다.**
+
+   이제 내가 하는 짓을 센다. 그리고 세상이 그걸 보고 반응한다.
+     번트를 자주 대면      → 상대가 대비한다. 번트가 안 먹는다
+     도루를 자주 시키면    → 상대 포수가 대비한다
+     화를 자주 내면        → 심판이 곱게 안 본다
+     사람을 챙기면         → 다음 주에 더 나온다
+     한 사람만 계속 쓰면   → 나머지가 쌓인다
+   숫자를 숨기지 않는다 — 홈에 「너는 이런 감독이다」 한 줄로 깐다.
+   ========================================================= */
+const REP_KEYS=['bunt','steal','hook','anger','calm','care','favor'];
+function repOf(){
+  if(!ST) return null;
+  if(!ST.rep) ST.rep={games:0, bunt:0, steal:0, hook:0, anger:0, calm:0, care:0, starts:{}};
+  if(!ST.rep.starts) ST.rep.starts={};
+  return ST.rep;
+}
+function repBump(k, n){
+  const R=repOf(); if(!R) return;
+  if(k==='start'){ return; }
+  R[k]=(R[k]||0)+(n==null?1:n);
+}
+/* 경기당 몇 번인지로 본다 — 한 시즌 스무 경기라 절대 횟수로는 못 센다 */
+function repRate(k){
+  const R=repOf(); if(!R) return 0;
+  const g=Math.max(1, R.games||0);
+  return (R[k]||0)/g;
+}
+/* 편애 — 제일 많이 낸 사람과 제일 적게 낸 사람의 차이.
+   [주의] 결장이 잦은 사람은 내가 안 쓴 게 아니다. 그래서 **출전 가능했던
+   경기 수** 로 나눈다. 안 그러면 이민혁을 안 썼다고 매번 욕먹는다. */
+function repFavor(){
+  const R=repOf(); if(!R||!R.games) return 0;
+  const v=Object.keys(R.starts||{}).map(id=>R.starts[id]||0).filter(x=>x>0);
+  if(v.length<6) return 0;
+  v.sort((a,b)=>b-a);
+  const top=v.slice(0,5).reduce((a,b)=>a+b,0)/5;
+  const bot=v.slice(-5).reduce((a,b)=>a+b,0)/5;
+  return Math.max(0, Math.min(1, (top-bot)/Math.max(1,R.games)));
+}
+/* 지금 붙어 있는 평판표. 조건을 넘긴 것만 나온다. */
+const REP_TAGS=[
+  {k:'번트왕',   t:(r)=>repRate('bunt')>=0.9,  d:'툭하면 번트를 댄다. 상대가 앞으로 나와 선다',
+   e:'상대가 번트를 대비한다'},
+  {k:'뛰는 야구', t:(r)=>repRate('steal')>=0.9, d:'주자를 계속 뛰게 한다. 상대 포수가 앉아서 기다린다',
+   e:'상대 포수가 도루를 대비한다'},
+  {k:'속전속결', t:(r)=>repRate('hook')>=1.6,  d:'투수를 빨리 내린다. 마운드에 오래 못 서니 다들 몸이 무겁다',
+   e:'투수들이 등판을 부담스러워한다'},
+  {k:'다혈질',   t:(r)=>repRate('anger')>=0.7 && (r.anger||0)>(r.calm||0), d:'자주 화를 낸다. 심판이 곱게 안 본다',
+   e:'접전 판정이 불리해진다'},
+  {k:'인간적',   t:(r)=>repRate('care')>=1.2,  d:'사람을 챙긴다. 다음 주에 한 명이라도 더 나온다',
+   e:'출석률이 오른다'},
+  {k:'편애',     t:(r)=>repFavor()>=0.45,      d:'쓰는 사람만 쓴다. 벤치가 쌓인다',
+   e:'덜 나오는 선수의 불만이 빨리 는다'},
+  {k:'뚝심',     t:(r)=>repRate('hook')<=0.5 && (r.games||0)>=6, d:'한 번 올린 투수는 끝까지 믿는다',
+   e:'투수가 흔들려도 덜 무너진다'},
+];
+function repTags(){
+  const R=repOf(); if(!R||!R.games) return [];
+  return REP_TAGS.filter(x=>{ try{ return x.t(R); }catch(e){ return false; } });
+}
+function repHas(k){ return repTags().some(x=>x.k===k); }
+/* 세상이 반응하는 배수. 없으면 1 이다. */
+function repMul(what){
+  const R=repOf(); if(!R||!R.games) return 1;
+  if(what==='bunt')   return repHas('번트왕')  ? 0.72 : 1;
+  if(what==='steal')  return repHas('뛰는 야구')? 0.80 : 1;
+  if(what==='ump')    return repHas('다혈질')  ? 1.7  : 1;
+  if(what==='attend') return repHas('인간적')  ? 1.12 : 1;
+  if(what==='unhappy')return repHas('편애')    ? 1.5  : 1;
+  if(what==='shaky')  return repHas('뚝심')    ? 0.85 : 1;
+  return 1;
+}
+function repLine(){
+  const t=repTags();
+  if(!t.length) return null;
+  return t.map(x=>x.k).join(' · ');
+}
+
 
 /* ================= 플레이타임 =================
    숫자만 던져주면 감이 안 온다. '2시간 12분' 보다 '영화 한 편 봤다'가 와닿는다.
@@ -13895,6 +14041,7 @@ function newSeason(){
     drunkIds:[],
     bossTalk:null, bossTalkCount:0, bossTalkAt:-99, valuePrev:{},  // 감독 면담·몸값
     tutDone:false, tutStep:0,                              // 튜토리얼
+    rep:{games:0,bunt:0,steal:0,hook:0,anger:0,calm:0,care:0,starts:{}},  // 평판
     posTrain:{}, trainPos:null, trainStreak:0,             // 포지션 적응 훈련
     trainRain:false, trainPush:false,
     bond:(function(){const o={};TBYID['wwzw'].players.forEach(p=>o[p.id]=50);return o;})(),
@@ -14557,6 +14704,210 @@ let toastTimer=null;
 function toast(m){const t=$('#toast');if(!t)return;t.textContent=m;t.classList.add('show');
   clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),1900);}
 
+/* =========================================================
+   「그날」 — 경기가 아니라 하루를 산다
+   ---------------------------------------------------------
+   [문제] 카톡·불참·차·컨디션·회식은 이미 다 만들어놨는데 **메뉴에
+   흩어져 있었다.** 그래서 아무도 그게 게임인 줄 몰랐다.
+   「이번 주 시작」을 누르면 결과가 한꺼번에 쏟아지고, 나는 그걸
+   **읽기만** 했다. 고를 게 없었다.
+
+   경기 하나를 **하루**로 편다. 아침에 일어나서 밤에 자는 데까지,
+   마디마다 고를 게 있고 그게 오늘 경기와 다음 주에 남는다.
+
+     아침    잠을 더 잘까 · 몸을 풀까 · 밥을 먹을까
+     단톡방  못 온다는 사람에게 전화를 돌릴까
+     차      누구를 태우고 갈까 (태우면 늦는다)
+     구장    배팅 · 캐치볼 · 러닝 · 그냥 앉아 있기
+     경기
+     저녁    회식에 갈까 · 집에 갈까
+
+   세상의 모든 야구게임이 경기를 판다. 이건 **사회인야구를 하는
+   사람의 하루**를 판다. 그게 가능한 이유는 여기 있는 열넷이
+   실제로 아는 사람이라서다 — 모르는 NPC면 「차 태워주기」는
+   아무 감정도 없다.
+
+   [주의] 하루를 건너뛸 수 있어야 한다. 매주 여섯 번 누르는 게
+   귀찮은 사람도 있다. 설정에서 끄면 예전처럼 바로 경기로 간다.  */
+const DAY_STEPS=['morning','kakao','car','warmup'];
+function dayOn(){ return !ST || ST.dayMode!==false; }
+function daySlot(){
+  if(!ST.day) ST.day={step:0, picks:{}, log:[], done:false};
+  if(!ST.day.picks) ST.day.picks={};
+  if(!ST.day.log) ST.day.log=[];
+  return ST.day;
+}
+function dayReset(){ ST.day={step:0, picks:{}, log:[], done:false}; }
+/* 오늘 아직 하루가 안 끝났나 */
+function dayPending(){ return dayOn() && ST.weekDone && !(ST.day&&ST.day.done); }
+function dayNote(t){ const D=daySlot(); D.log.push(t); if(D.log.length>8) D.log=D.log.slice(-8); }
+/* 컨디션을 건드린다. 한 사람만, 또는 전원. */
+function dayCond(id, n){
+  if(!ST.cond) ST.cond={};
+  if(id==='*'){ TBYID['wwzw'].players.forEach(p=>{
+      ST.cond[p.id]=Math.max(20,Math.min(100,(ST.cond[p.id]||70)+n)); }); return; }
+  ST.cond[id]=Math.max(20,Math.min(100,(ST.cond[id]||70)+n));
+}
+function dayBond(id, n){
+  if(!ST.bond) ST.bond={};
+  ST.bond[id]=Math.max(0,Math.min(100,(ST.bond[id]||50)+n));
+}
+/* 오늘 못 온다고 한 사람들 — 전화를 돌릴 대상 */
+function dayAbsentees(){
+  return Object.keys(ST.absent||{}).filter(id=>
+    TBYID['wwzw'].players.some(p=>p.id===id));
+}
+/* 차에 태울 만한 사람 — 차 없는 사람 중에 오늘 나오는 사람 */
+function dayRiders(){
+  const me=ST.playerId||MYID;
+  return TBYID['wwzw'].players.filter(p=>{
+    if(p.id===me) return false;
+    if(ST.absent&&ST.absent[p.id]) return false;
+    if(ST.injury&&ST.injury[p.id]) return false;
+    const m=META[p.id];
+    return m && !m.car;
+  }).slice(0,4);
+}
+
+/* ---------- 하루 화면 ---------- */
+function renderDay(){
+  const c=$('#view'); c.innerHTML='';
+  const D=daySlot();
+  const me=ST.playerId||MYID;
+  const meP=TBYID['wwzw'].players.find(x=>x.id===me);
+  const step=DAY_STEPS[D.step];
+  if(!step){ D.done=true; saveGame(true); go('home'); return; }
+
+  const wxN=(WEATHERS.find(w=>w.id===ST.weather)||WEATHERS[0]).name;
+  const next=ST.schedule[ST.round]||{};
+  const opp=TBYID[next.opp];
+
+  const head=el('div','card day-head');
+  head.innerHTML='<div class="day-t">'+((ST.calendar&&ST.calendar.label)||'경기 당일')+
+    ' · '+wxN+'</div>'+
+    '<div class="card-h">'+(next.round||'')+'차전 · '+(opp?opp.name:'')+'</div>'+
+    '<div class="day-bar">'+DAY_STEPS.map((k,i)=>
+      '<i class="'+(i<D.step?'on':(i===D.step?'now':''))+'"></i>').join('')+'</div>';
+  c.appendChild(head);
+
+  if(D.log.length){
+    const lg=el('div','card day-log');
+    D.log.slice(-4).forEach(t=>{ const r=el('div','day-l'); r.innerHTML=t; lg.appendChild(r); });
+    c.appendChild(lg);
+  }
+
+  const box=el('div','card');
+  const pick=(title, body, opts)=>{
+    box.innerHTML='<div class="day-time">'+title+'</div><p class="day-b">'+body+'</p>';
+    opts.forEach(o=>{
+      if(o.hide) return;
+      const b=el('button','day-opt');
+      b.innerHTML='<span>'+o.t+'</span><i>'+o.d+'</i>';
+      b.onclick=()=>{ o.f(); D.step++; saveGame(true); renderDay(); };
+      box.appendChild(b);
+    });
+    c.appendChild(box);
+  };
+
+  if(step==='morning'){
+    const hot=(ST.weather==='hot'||ST.weather==='humid');
+    pick('07:20 · 아침',
+      '눈을 떴다. '+(hot?'벌써 덥다. 오늘 밖에 서 있을 생각을 하니 아득하다.'
+        :'창밖은 '+wxN+'이다.')+' 경기까지 네 시간 남았다.',
+      [{t:'더 잔다', d:'몸은 편한데 몸이 안 풀린다 · 내 컨디션 −3',
+        f:()=>{ dayCond(me,-3); dayNote('<b>더 잤다.</b> 일어나니 몸이 무겁다'); }},
+       {t:'스트레칭하고 나간다', d:'내 컨디션 +4',
+        f:()=>{ dayCond(me,4); dayNote('<b>몸을 풀고 나왔다.</b> 어깨가 가볍다'); }},
+       {t:'밥 챙겨 먹고 간다', d:'내 컨디션 +2 · 늦을 뻔했다',
+        f:()=>{ dayCond(me,2); dayNote('<b>밥을 먹고 나왔다.</b> 배는 든든하다'); }}]);
+    return;
+  }
+
+  if(step==='kakao'){
+    const outs=dayAbsentees();
+    if(!outs.length){
+      pick('09:10 · 단톡방',
+        '조용하다. 오늘은 아무도 못 온다는 말이 없다. 이런 날이 일 년에 몇 번 없다.',
+        [{t:'그럼 됐다', d:'', f:()=>{ dayNote('<b>단톡방이 조용했다.</b> 전원 참석'); }}]);
+      return;
+    }
+    const nm=outs.map(id=>nameOf(id)).join(' · ');
+    pick('09:10 · 단톡방',
+      '<b>'+outs.length+'명</b>이 못 온다고 올렸다 — '+nm+'.<br>'+
+      '읽고 넘길 수도 있고, 전화를 돌려볼 수도 있다.',
+      [{t:'전화를 돌린다', d:'한 명쯤은 마음을 바꾼다 · 내 컨디션 −2 · 평판 「인간적」',
+        f:()=>{
+          repBump('care');
+          dayCond(me,-2);
+          /* 정말로 한 명이 돌아온다 — 충성도가 높은 사람부터 */
+          const back=outs.slice().sort((a,b)=>
+            ((META[b]&&META[b].loyal)||50)-((META[a]&&META[a].loyal)||50))[0];
+          if(back && Math.random()<0.55){
+            delete ST.absent[back];
+            if(ST.pendingAbsent) delete ST.pendingAbsent[back];
+            dayBond(back,6); dayCond(back,-4);
+            dayNote('<b>'+nameOf(back)+josa(nameOf(back),['이','가'])+' 나오기로 했다.</b> "형이 전화까지 하는데 가야지"');
+          } else {
+            dayNote('<b>전화를 돌렸다.</b> 다들 사정이 있었다. 그래도 고맙다는 말은 들었다');
+            outs.forEach(id=>dayBond(id,2));
+          }
+        }},
+       {t:'그냥 둔다', d:'각자 사정이 있다',
+        f:()=>{ dayNote('<b>읽고 넘겼다.</b> 오늘은 있는 사람으로 간다'); }},
+       {t:'용병을 구한다', d:'운영비 5만원 · 사람은 채운다',
+        hide:(ST.budget||0)<5,
+        f:()=>{ ST.budget=Math.max(0,(ST.budget||0)-5);
+          dayNote('<b>용병을 구했다.</b> 5만원 나갔다. 얼굴은 처음 본다'); }}]);
+    return;
+  }
+
+  if(step==='car'){
+    const rid=dayRiders();
+    if(!rid.length){
+      pick('10:30 · 출발',
+        '차에 시동을 걸었다. 오늘은 태울 사람이 없다. 라디오만 켜고 간다.',
+        [{t:'그냥 간다', d:'', f:()=>{ dayNote('<b>혼자 갔다.</b> 길이 안 막혔다'); }}]);
+      return;
+    }
+    const opts=rid.map(p=>({
+      t:p.name+' 태우고 간다',
+      d:'그쪽 컨디션 +5 · 친해진다 · 돌아가느라 내 컨디션 −2',
+      f:()=>{ repBump('care'); dayCond(p.id,5); dayBond(p.id,5); dayCond(me,-2);
+        dayNote('<b>'+p.name+josa(p.name,['을','를'])+' 태우고 갔다.</b> 오는 길에 시시껄렁한 얘기를 했다'); }
+    }));
+    opts.push({t:'혼자 간다', d:'일찍 도착한다 · 내 컨디션 +2',
+      f:()=>{ dayCond(me,2); dayNote('<b>혼자 갔다.</b> 일찍 도착해서 앉아 있었다'); }});
+    pick('10:30 · 차',
+      '나갈 시간이다. 차 없는 사람이 <b>'+rid.length+'명</b> 있다. '+
+      '태우면 그쪽은 편하게 오지만 나는 돌아가야 한다.', opts);
+    return;
+  }
+
+  if(step==='warmup'){
+    const isPit=(ST.role==='pit'||ST.role==='two');
+    pick('11:40 · 구장',
+      '도착했다. 경기까지 이십 분 남았다. 뭘 하고 기다릴까.',
+      [{t:'배팅 친다', d:'내 컨택·파워가 오늘만 오른다',
+        f:()=>{ if(!ST.buff)ST.buff={}; ST.buff[me]={...(ST.buff[me]||{}),pow:1.06};
+          dayCond(me,1);
+          dayNote('<b>배팅을 쳤다.</b> 손맛이 나쁘지 않다'); }},
+       {t:isPit?'불펜에서 던진다':'캐치볼한다',
+        d:isPit?'오늘 제구가 좋아진다':'수비가 안정된다 · 팀 컨디션 +1',
+        f:()=>{ if(!ST.buff)ST.buff={};
+          if(isPit){ ST.buff[me]={...(ST.buff[me]||{}),all:1.05}; }
+          dayCond('*',1);
+          dayNote(isPit?'<b>불펜에서 던졌다.</b> 공이 손에 붙는다'
+                       :'<b>캐치볼을 했다.</b> 어깨가 풀렸다'); }},
+       {t:'러닝한다', d:'다리가 풀린다 · 주루가 좋아진다',
+        f:()=>{ if(!ST.buff)ST.buff={}; ST.buff[me]={...(ST.buff[me]||{}),spd:1.08};
+          dayNote('<b>운동장을 돌았다.</b> 다리가 가볍다'); }},
+       {t:'그늘에 앉아 있는다', d:'체력을 아낀다 · 내 컨디션 +3',
+        f:()=>{ dayCond(me,3);
+          dayNote('<b>그늘에 앉아 있었다.</b> 남들 몸 푸는 걸 봤다'); }}]);
+    return;
+  }
+}
+
 /* ---------- 주간 ---------- */
 function runWeek(){
   if(!ST.notices)ST.notices=[];
@@ -14641,6 +14992,8 @@ function runWeek(){
   // 결장자가 라인업에 있으면 자동 교체
   autoFixLineup();
   ST.kakao=[]; ST.kakaoPost=[]; ST.partyDone=false; ST.weekDone=true; ST.begAsked={};
+  /* 이번 주 「그날」을 새로 연다 — 아침부터 다시 시작한다 */
+  if(typeof dayReset==='function') dayReset();
   ST.sentPre=false; ST.sentPost=false; ST.teamBuff=null; ST.canParty=false; ST.dropouts=[]; ST.lineupDirty=false;
   ST.announced=false;      // 라인업을 단톡방에 올려야 경기로 넘어간다
   const anId=TBYID['wwzw'].players.find(p=>META[p.id]&&META[p.id].traits.includes('분석가'));
@@ -18815,9 +19168,30 @@ function renderHome(){
       <div class="opp-ops">${next.homeGame?'홈':'원정'} · 팀 OPS ${opp.ops.toFixed(3)}</div>
       <div class="gdate">${(holidayFor(ST.round, ST.year||2026)||{}).label||''}</div>
       <p class="muted">주간을 시작하면 회식·우취·개인 사정 같은 변수가 확정된다.</p>`;
-    const b=el('button','btn primary','이번 주 시작');
-    b.onclick=()=>{const r=runWeek();saveGame(true);if(r)toast('우천 취소');go('home');};
+    const b=el('button','btn primary', dayOn()?'오늘을 시작한다':'이번 주 시작');
+    b.onclick=()=>{const r=runWeek();saveGame(true);
+      if(r){toast('우천 취소');go('home');return;}
+      if(dayOn()&&dayPending()){ go('day'); return; }
+      go('home');};
     card.appendChild(b); c.appendChild(card); return;
+  }
+
+  /* 하루가 아직 안 끝났으면 맨 위에 한 장 깐다.
+     [주의] 예전엔 여기서 return 해서 홈을 통째로 막았다. 그러면 오늘 상대도
+     못 보고, 나간 선수 안내 같은 다른 카드도 같이 사라진다. **게이트가 아니라
+     안내다** — 건너뛰고 바로 경기로 가는 길은 아래에 그대로 열어둔다. */
+  if(dayPending()){
+    const dc=el('div','card');
+    const D=daySlot();
+    dc.innerHTML='<div class="card-h">오늘</div>'+
+      '<p class="muted">'+(D.step?'아직 경기 전이다. 하던 데서 이어서 간다.'
+        :'아침이다. 경기까지 네 시간 남았다.')+'</p>';
+    const b=el('button','btn primary', D.step?'이어서 간다':'하루를 시작한다');
+    b.onclick=()=>go('day');
+    dc.appendChild(b);
+    dc.appendChild(el('div','set-note',
+      '그냥 경기로 가려면 아래로 내려가면 된다. 매번 고르는 게 번거로우면 설정에서 끌 수 있다.'));
+    c.appendChild(dc);
   }
 
   if(ST.events&&ST.events.length){
@@ -18844,6 +19218,19 @@ function renderHome(){
       ec.appendChild(row);
     });
     c.appendChild(ec);
+  }
+
+  /* 너는 이런 감독이다 — 내가 한 짓을 세상이 보고 있다.
+     숨기면 의미가 없다. 무엇 때문에 붙었고 뭐가 달라지는지 같이 깐다. */
+  {
+    const tags=(typeof repTags==='function')?repTags():[];
+    if(tags.length){
+      const rc=el('div','card');
+      rc.innerHTML='<div class="card-h">너는 이런 감독이다</div>'+
+        '<div class="rep-line">'+tags.map(t=>'<span class="rep-tag">'+t.k+'</span>').join('')+'</div>'+
+        tags.map(t=>'<div class="rep-d"><b>'+t.k+'</b> — '+t.d+'<br>· '+t.e+'</div>').join('');
+      c.appendChild(rc);
+    }
   }
 
   const rain=ST.events&&ST.events.some(e=>e.type==='rain'||e.type==='postpone');
@@ -33398,6 +33785,25 @@ function renderMore(){
       : '내 자리로 오는 공은 경기당 네댓 번이다. 수비가 좋을수록 글러브가 닿는 범위가 넓다.'));
   }
 
+  /* 경기 당일 — 하루를 살 것인가, 바로 경기로 갈 것인가 */
+  {
+    const dn2=el('p','muted');
+    dn2.innerHTML='<br><b>경기 당일</b> — 아침·단톡방·차·몸풀기를 거쳐 경기로 간다. '+
+      '고른 것이 컨디션과 다음 주에 남는다.';
+    pl.appendChild(dn2);
+    const dRow2=el('div','btn-row');
+    [[true,'하루를 산다'],[false,'바로 경기로']].forEach(([v,lab])=>{
+      const b=el('button','btn'+((dayOn()===v)?' primary':''),lab);
+      b.onclick=()=>{ ST.dayMode=v; saveGame(true); renderMore();
+        toast(v?'아침부터 시작한다':'경기 준비 화면으로 바로 간다'); };
+      dRow2.appendChild(b);
+    });
+    pl.appendChild(dRow2);
+    pl.appendChild(el('div','set-note', dayOn()
+      ? '아침 · 단톡방 · 차 · 몸풀기 네 마디다. 한 마디에 십 초면 끝난다.'
+      : '「이번 주 시작」을 누르면 곧바로 경기 준비 화면으로 간다.'));
+  }
+
   /* 부상 — 선수 모드에서만 */
   if(isPlayerMode()){
     const iv=el('p','muted');
@@ -34934,7 +35340,11 @@ function allstarPlay(B){
 const PAPER_NAME='우완좌완 일보';
 /* 조사 — 게임 안에서는 「이(가)」 로 퉁쳐도 말투가 사니까 괜찮은데,
    **신문은 다르다.** 「김선호은(는)」 이 1면에 박히면 신문 같지가 않다.
-   받침을 보고 고른다. 한글이 아니면 뒤엣것을 쓴다.                */
+   받침을 보고 고른다. 한글이 아니면 뒤엣것을 쓴다.
+   [주의] 「그날」을 만들다가 같은 이름으로 josa(w,a,b) 를 하나 더 선언했다.
+   **선언은 뒤엣것이 이긴다** — 이게 파일 아래쪽이라 새로 만든 게 통째로
+   죽었고, 세 번째 인자가 undefined 로 나갔다. 조사가 필요하면 이걸 쓴다.
+   (CLAUDE.md 「같은 이름으로 함수를 두 번 쓰면 뒤엣것이 이긴다」)      */
 function josa(w, pair){
   const t=String(w||'');
   if(!t) return pair[1];
@@ -36109,7 +36519,8 @@ const VIEWS={home:renderHome,squad:renderSquad,lineup:renderLineup,kakao:renderK
   tutorial:renderTutorial,player:renderPlayer,hall:renderHall,whatif:renderWhatIf,
   role:renderRole,slots:renderSlots,start:renderStart,mode:renderMode,hs:renderHS,
   glog:renderGlog,rosters:renderRosters,front:renderFront,draft:renderDraft,
-  entry:renderEntry,cal:renderCal,trainplay:renderTrainPlay,allstar:renderAllstar};
+  entry:renderEntry,cal:renderCal,trainplay:renderTrainPlay,allstar:renderAllstar,
+  day:renderDay};
 /* 선수 모드면 감독 전용 탭을 아예 안 보이게 한다.
    눌러도 막히긴 하지만, 있는데 안 되는 것보다 없는 게 낫다. */
 function paintTabs(){
@@ -36269,6 +36680,8 @@ function normalizeState(){
   if(typeof ST.tradeRound!=='number')ST.tradeRound=-99;
   if(ST.myTrain && !PM_TRAIN.some(x=>x.id===ST.myTrain)) ST.myTrain=null;
   if(!ST.myTrain) ST.myTrain='team';                // [v2.65.0] 기본은 팀 훈련
+  if(!ST.rep)ST.rep={games:0,bunt:0,steal:0,hook:0,anger:0,calm:0,care:0,starts:{}};
+  if(!ST.rep.starts)ST.rep.starts={};
   if(!ST.names)ST.names={};
   us.players.forEach(p=>{ ST.names[p.id]=p.name; });
   if(!ST.lgPit)ST.lgPit={};
