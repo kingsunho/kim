@@ -8134,8 +8134,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.8.0';
-const APP_VERSION_NOTE = '수비·주루는 화면을 덮는다 — 스크롤이 없다';
+const APP_VERSION = '3.8.1';
+const APP_VERSION_NOTE = '포수 송구는 나가는 길이 하나다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8156,6 +8156,10 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.8.1', t:'포수 송구는 나가는 길이 하나다', items:[
+    '[제보] "도루 저지해도 1루에 있다던데" — 포수 송구 화면에서 「알아서 하게 둔다」 로 나가면 도루를 굴리지 않은 채 창만 닫혔다. 반 초 동안 주자가 1루에 그대로 서 있는 것처럼 보인다. 이제 어느 버튼으로 나가든 굴리고 · 결과를 보여주고 · 닫는다',
+    '엔진은 멀쩡했다. 245번 물어보고 91번 저지한 판을 다 훑었는데 아웃인데 주자가 1루에 남은 경우는 0번이다 — 화면이 아직 안 따라간 것이었다',
+  ]},
   {v:'3.8.0', t:'수비·주루는 화면을 덮는다 — 스크롤이 없다', items:[
     '[제보] "수비상황되면 원래 하고 있던 화면에서 스크롤이 올라가는 바람에 수비 조이스틱까지 내리기 개빡세서 개빡침 (그 준비완료 누르면 스크롤이 맨 위로 올라감)"',
     '두 번째 시도다. 지난번엔 화면을 잠그면서 원래 스크롤 위치를 음수로 박아두는 방식으로 고쳤는데, 아이폰에서는 그래도 튀었다. 애초에 페이지 스크롤에 기대는 게 잘못이었다 — 공이 날아오는 2초 안에 조이스틱을 찾아 내려야 하는 화면이면 그건 스크롤할 화면이 아니다',
@@ -28833,8 +28837,11 @@ function renderThrow(box, d){
   goB.addEventListener('pointerdown',(ev)=>{ if(ev&&ev.preventDefault)ev.preventDefault(); start(); });
   box._cleanup=()=>{ done2=true; if(sc)sc.stop(); };
   const skip=el('button','pl-skip','알아서 하게 둔다');
-  skip.onclick=()=>{ if(done2)return; done2=true; if(sc)sc.stop();
-    LIVE.applyDecision('thr:hold'); decDone(box); };
+  /* [주의] 여기만 fire() 를 안 타고 창을 바로 닫고 있었다. 그러면 도루가
+     아직 안 굴러간 채로 화면이 돌아가서, 반 초 동안 **주자가 1루에 그대로
+     서 있는 것처럼** 보인다. 「도루 저지해도 1루에 있다」 가 그거다.
+     나가는 길은 하나로 모은다 — 굴리고, 보여주고, 닫는다. */
+  skip.onclick=()=>fire(false);
   w.appendChild(skip);
   box.appendChild(w);
 }
