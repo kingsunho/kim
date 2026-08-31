@@ -2130,6 +2130,26 @@ td.dimc{color:var(--dm);text-align:left}
 .pk-pot{font-size:10px;color:var(--dim);display:flex;align-items:center;gap:4px}
 /* 선수 모드에서 별 자리에 들어가는 한 줄. 별을 빼고 빈 칸으로 두면 어색하다 */
 .pk-even{font-size:10px;color:var(--dim);letter-spacing:-.2px}
+/* 주간 리그 */
+.wk-cond{display:flex;gap:7px;margin-top:10px}
+.wk-cond i{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:9px;
+  padding:8px 4px;text-align:center;font-style:normal}
+.wk-cond i b{display:block;font-size:12.5px;color:#e2eaf5;font-weight:800}
+.wk-cond i u{display:block;font-size:9.5px;color:var(--dim);text-decoration:none;margin-top:2px}
+.wk-best{font-size:17px;font-weight:800;color:var(--gold);margin:6px 0 2px}
+.wk-board{margin:8px 0 10px}
+.wk-row{display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:9px;
+  background:var(--panel2);border:1px solid var(--line);margin-bottom:5px}
+.wk-row.me{border-color:var(--gold);background:rgba(201,162,39,.10)}
+.wk-i{width:18px;font-size:11px;color:var(--dim);font-weight:800;text-align:center}
+.wk-n{flex:0 0 66px;font-size:12.5px;font-weight:800;color:#e2eaf5}
+.wk-n em{font-size:9.5px;color:var(--gold);font-style:normal}
+.wk-s{flex:1;font-size:11px;color:var(--dim)}
+.wk-p{font-size:12px;font-weight:800;color:var(--gold)}
+.wk-in{width:100%;box-sizing:border-box;min-height:56px;margin:4px 0 8px;padding:9px;
+  border-radius:9px;background:#11161d;border:1px solid #3a4453;
+  color:var(--ink);font-size:11.5px;resize:vertical}
+.wk-in::placeholder{color:#5a6472}
 .pk-role{font-size:10.5px;color:#a9b4c2;margin-top:5px}
 .gdate{font-size:11.5px;color:var(--gold);margin:4px 0 6px;font-weight:600}
 .daterow{display:flex;align-items:center;gap:8px;margin:7px 0 2px;flex-wrap:wrap}
@@ -8134,8 +8154,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.9.0';
-const APP_VERSION_NOTE = '포수는 도루 저지만 하지 않는다';
+const APP_VERSION = '3.10.0';
+const APP_VERSION_NOTE = '주간 리그 — 팀원 전원이 같은 상대를 만난다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8156,6 +8176,16 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.10.0', t:'주간 리그 — 팀원 전원이 같은 상대를 만난다', items:[
+    '여태 팀원 열넷이 각자 폰에서 따로 돌리고 끝났다. 서로 뭘 했는지 몰랐다. 실존 인물 열넷이라는 이 게임의 유일한 무기를 한 번도 안 쓰고 있었다',
+    '<b>이번 주 대결</b>이 생겼다. 월요일 0시에 그 주의 상대·구장·날씨가 정해지고, <b>팀원 전원이 같은 상대와 같은 공</b>을 받는다. 실제 달력 기준이라 누가 언제 열어도 같은 조건이다',
+    '핵심은 <b>시드가 주에 고정</b>되어 있다는 것이다. 같은 라인업으로 다시 돌리면 결과가 똑같다 — 점수를 올리려면 타순·로테이션·전술을 바꿔야 한다. 「같은 상대, 같은 공, 어떻게 짜야 이기나」가 이번 주 숙제다',
+    '몇 번이든 다시 도전할 수 있고 제일 좋은 판 하나가 남는다',
+    '끝나면 <b>짧은 코드</b>가 나온다 (WWZW34-송승민-16-2-16-0-QU). 단톡방에 붙이면 끝이다. 남이 올린 코드를 붙여넣으면 순위표에 들어간다 — 여러 개를 한꺼번에 넣어도 된다',
+    '점수는 승패가 제일 크고 그다음이 득실차다. 져도 잘 싸우면 점수가 남는다. 코드를 손대면 체크섬에서 막힌다',
+    '서버는 안 쓴다. 순위표는 브라우저에 따로 저장돼서 판을 지워도 남는다',
+    '[버그] 수비 화면이 떴는데 보복구(빈볼)로 타석이 끝나던 것. 「내 자리로 타구가 온다」고 보여줘 놓고 몸에 맞는 공으로 끝나면 약속을 깬 것이다. 336번 중 2번 새어 나왔다 — 수비 장면이 뜬 타석에서는 보복구를 한 타석 미룬다',
+  ]},
   {v:'3.9.0', t:'포수는 도루 저지만 하지 않는다', items:[
     '[제보] "그리고 뭐 도루저지밖에 없냐" — 맞는 말이다. 4부 리그 포수가 제일 많이 하는 일은 도루 저지가 아니다',
     '<b>원바운드 블로킹</b> — 폭투·포일이 나려는 순간 멈추고 물어본다. 「몸으로 막는다」는 웬만하면 세우고, 「달려들어 잡는다」는 완벽하게 잡거나 뒤로 크게 흘린다. 칸마다 성공률을 숫자로 깐다 — 수비 능력치가 그대로 들어간다',
@@ -12348,7 +12378,12 @@ LiveGame.prototype.stepPA = function(){
        나오고, 안 맞혀도 상대가 움츠러든다.
        [균형] 경기당 한 번뿐이고, 우리가 수비일 때만이다. 리그 전체
        사사구가 흔들리지 않게 확률을 낮게 잡는다.                    */
+    /* [주의] 수비 화면을 띄운 타석에서는 보복구를 안 던진다.
+       화면은 「내 자리로 타구가 온다」 고 보여줬는데 몸에 맞는 공으로
+       끝나면 그건 약속을 깬 것이다 — 실측 336번 중 2번 새어 나왔다.
+       보복구는 경기당 한 번뿐이라 한 타석 미뤄도 없어지지 않는다.  */
     if(this.friction.hbp && !this.friction.hit2 && def.isUser
+       && this._defShown!==this.paSeq
        && this.inning>=2 && rng()<0.10){
       this.friction.hit2=true;
       this.friction.log.push('brush');
@@ -17381,6 +17416,14 @@ function renderStart(){
   row('\u{1F4C1}', has?'세이브 슬롯':'새로 시작',
       has?'다른 선수를 키우거나 다른 판을 이어서 한다':'감독으로 할지 선수로 할지 고른다',
       ()=>go('slots'));
+  /* [문제] 팀원 열넷이 각자 폰에서 따로 돌리고 끝난다. 서로 뭘 했는지 모른다.
+     매주 같은 상대를 주고 결과를 코드로 주고받게 한다 — 이게 다시 켜는 이유다. */
+  {
+    const n0=wkNo(), S0=wkSetup(n0), b0=wkSlot(n0).cur.best;
+    row('\u{1F3C6}', '이번 주 대결 · '+n0+'주차',
+      S0.oppName+' · '+(b0?wkLine(b0):'아직 안 했다')+' — 팀원 전원이 같은 상대다',
+      ()=>go('weekly'));
+  }
   row('\u{2699}', '설정', '소리 · 타석 시작 · 자동 교체 · 세이브 코드', ()=>go('more'));
   row('\u{2753}', '이건 무슨 게임인가', '규칙과 화면 설명', ()=>{ ST.tutStep=0; go('tutorial'); });
 
@@ -18104,6 +18147,231 @@ function renderHomePlayer(){
 }
 
 /* ---------- 홈 ---------- */
+/* =========================================================
+   주간 리그 — 같은 판을 다 같이 돈다
+   ---------------------------------------------------------
+   [문제] 팀원 열넷이 각자 폰에서 따로 돌리고 끝난다. 서로 뭘 했는지
+   모른다. 실존 인물 열넷이라는 이 게임의 유일한 무기를 한 번도 안 썼다.
+
+   그래서 **매주 같은 조건**을 준다. 월요일 0시에 그 주의 상대·구장·
+   날씨가 정해지고, 팀원 전원이 같은 상대를 만난다. 끝나면 결과가
+   짧은 코드로 나온다 — 단톡방에 붙이면 순위표가 그려진다.
+
+   서버는 안 쓴다. 코드 교환으로 충분하다.
+     · 몇 번이든 다시 도전할 수 있고 **제일 좋은 판 하나**가 남는다
+       (그래야 "한 번만 더" 가 생긴다)
+     · 주가 바뀌면 새 상대가 온다
+   ========================================================= */
+/* 2026-01-05 는 월요일이다. 여기서부터 주를 센다 —
+   실제 달력 기준이라 팀원 전원이 같은 주 번호를 본다. */
+const WK_EPOCH = Date.UTC(2026,0,5,0,0,0) - 9*3600*1000;   // 한국시간 월요일 0시
+function wkNo(now){
+  const t=(now==null?Date.now():now);
+  return Math.max(0, Math.floor((t-WK_EPOCH)/(7*24*3600*1000)));
+}
+function wkRng(n){ return makeRng(((n+1)*2654435761 ^ 0x77655321)>>>0); }
+/* 그 주의 조건. 누가 언제 열어도 같은 값이 나온다. */
+function wkSetup(n){
+  const r=wkRng(n);
+  const opps=TEAMS.filter(t=>t.id!=='wwzw');
+  const opp=opps[(r()*opps.length)|0];
+  const park=PARKS[(r()*PARKS.length)|0];
+  const wx=['clear','clear','hot','wind','cloud'][(r()*5)|0];
+  const homeUs=r()<0.5;
+  return {n, opp:opp.id, oppName:opp.name, park:park.id, parkName:park.name,
+          wx, homeUs, seed:((n+1)*7919+13)>>>0};
+}
+const WK_WX={clear:'맑음', hot:'더움', wind:'바람', cloud:'흐림'};
+/* 점수 — 이기는 게 제일 크고, 그다음이 득실차다.
+   같은 승리면 크게 이긴 쪽이 위다. 지더라도 잘 싸우면 점수가 남는다. */
+function wkScore(r){
+  if(!r) return 0;
+  const win=(r.us>r.them)?1:((r.us===r.them)?0.5:0);
+  return Math.round(win*10000 + (r.us-r.them)*100 + r.us*3 + (r.h||0));
+}
+function wkLine(r){
+  if(!r) return '아직 안 했다';
+  return (r.us>r.them?'승':(r.us===r.them?'무':'패'))+' '+r.us+':'+r.them+
+         ' · '+(r.h||0)+'안타'+(r.hr?' · '+r.hr+'홈런':'');
+}
+/* 결과 코드 — 단톡방에 붙일 한 줄.
+   WWZW<주차>-<이름>-<우리>-<상대>-<안타>-<홈런>-<체크섬>
+   짧아야 한다. 길면 아무도 안 붙인다.                         */
+function wkSum(str){
+  let h=0; for(let i=0;i<str.length;i++) h=(h*31+str.charCodeAt(i))>>>0;
+  return (h%1296).toString(36).toUpperCase().padStart(2,'0');
+}
+function wkEncode(n, name, r){
+  const body=[n, name, r.us, r.them, r.h||0, r.hr||0].join('-');
+  return 'WWZW'+body+'-'+wkSum(body);
+}
+function wkDecode(txt){
+  const m=String(txt||'').trim().match(/WWZW(\d+)-([^-]+)-(\d+)-(\d+)-(\d+)-(\d+)-([0-9A-Z]{2})/);
+  if(!m) return null;
+  const body=[m[1],m[2],m[3],m[4],m[5],m[6]].join('-');
+  if(wkSum(body)!==m[7]) return null;
+  return {n:+m[1], name:m[2], us:+m[3], them:+m[4], h:+m[5], hr:+m[6]};
+}
+/* 순위표는 세이브가 아니라 브라우저에 따로 둔다 — 판을 지워도 남는다 */
+const WK_KEY='wwzw_week';
+function wkLoad(){
+  try{ const raw=localStorage.getItem(WK_KEY); if(!raw) return {};
+       const d=JSON.parse(raw); return (d&&typeof d==='object')?d:{}; }catch(e){ return {}; }
+}
+function wkSave(d){ try{ localStorage.setItem(WK_KEY, JSON.stringify(d)); }catch(e){} }
+/* 그 주 칸. 주가 바뀌면 새로 만든다 — 지난 주 것은 그대로 둔다(기록이다). */
+function wkSlot(n){
+  const d=wkLoad();
+  const k='w'+n;
+  if(!d[k]) d[k]={best:null, tries:0, board:[]};
+  return {all:d, k, cur:d[k]};
+}
+function wkPut(n, r, name){
+  const S=wkSlot(n);
+  S.cur.tries=(S.cur.tries||0)+1;
+  if(!S.cur.best || wkScore(r)>wkScore(S.cur.best)) S.cur.best={...r, name};
+  wkSave(S.all);
+  return S.cur;
+}
+function wkAddBoard(n, rec){
+  const S=wkSlot(n);
+  S.cur.board=(S.cur.board||[]).filter(x=>x.name!==rec.name);
+  S.cur.board.push(rec);
+  wkSave(S.all);
+  return S.cur;
+}
+
+/* 그 주의 한 판을 굴린다.
+   [핵심] **시드가 주에 고정돼 있다.** 같은 라인업으로 다시 돌리면 같은
+   결과가 나온다 — 점수를 올리려면 타순·로테이션·전술을 바꿔야 한다.
+   그게 이 모드의 재미다. "같은 상대, 같은 공, 어떻게 짜야 이기나."   */
+function wkPlay(n){
+  const S=wkSetup(n);
+  const us=TBYID['wwzw'], opp=TBYID[S.opp];
+  if(!opp) return null;
+  const line=(Array.isArray(ST.lineup)&&ST.lineup.length===9)
+    ? ST.lineup.map(x=>({id:x.id,pos:x.pos})) : aiLineup(us);
+  const rot=(Array.isArray(ST.rotation)&&ST.rotation.length)
+    ? ST.rotation.slice() : aiRotation(us);
+  const park=PARKS.find(x=>x.id===S.park)||PARKS[0];
+  const tac=ST.tactics||{bat:'normal',run:'normal',hook:'normal'};
+  const r=simGame(S.homeUs?us:opp, S.homeUs?opp:us, {
+    rng:makeRng(S.seed), innings:7, park:park.park||park,
+    awayLineup:S.homeUs?aiLineup(opp):line, awayRotation:S.homeUs?aiRotation(opp):rot,
+    homeLineup:S.homeUs?line:aiLineup(opp), homeRotation:S.homeUs?rot:aiRotation(opp),
+    homeTactics:S.homeUs?tac:null, awayTactics:S.homeUs?null:tac,
+  });
+  const mine=S.homeUs?r.home:r.away, thm=S.homeUs?r.away:r.home;
+  let hr=0;
+  const ids=new Set(line.map(x=>x.id));
+  Object.keys(r.box||{}).forEach(id=>{ if(ids.has(id)) hr+=(r.box[id].hr||0); });
+  return {us:mine.runs, them:thm.runs, h:mine.hits, hr, mercy:!!r.mercy};
+}
+
+function renderWeekly(){
+  const c=$('#view'); c.innerHTML='';
+  const n=wkNo();
+  const S=wkSetup(n);
+  const slot=wkSlot(n).cur;
+  const meName=(function(){ const p=TBYID['wwzw'].players.find(x=>x.id===(ST.playerId||MYID));
+    return p?p.name:'나'; })();
+
+  const head=el('div','card');
+  head.innerHTML='<div class="card-h">이번 주 대결 · '+n+'주차</div>'+
+    '<p class="muted">팀원 전원이 <b>같은 상대와 같은 공</b>을 받는다. '+
+    '월요일 0시에 새 상대가 온다.</p>'+
+    '<div class="wk-cond"><i><b>'+S.oppName+'</b><u>상대</u></i>'+
+      '<i><b>'+S.parkName.replace('야구장','')+'</b><u>구장</u></i>'+
+      '<i><b>'+(WK_WX[S.wx]||'맑음')+'</b><u>날씨</u></i>'+
+      '<i><b>'+(S.homeUs?'홈':'원정')+'</b><u>우리</u></i></div>';
+  c.appendChild(head);
+
+  const my=el('div','card');
+  my.innerHTML='<div class="card-h">내 기록</div>'+
+    '<div class="wk-best">'+wkLine(slot.best)+'</div>'+
+    '<p class="muted">'+(slot.best
+      ? '점수 <b>'+wkScore(slot.best)+'</b> · '+(slot.tries||0)+'번 해봤다'
+      : '아직 안 했다. 지금 라인업 그대로 한 판 붙는다')+'</p>'+
+    '<p class="muted">같은 공이 온다 — <b>타순·로테이션·전술을 바꿔야</b> 점수가 오른다.</p>';
+  const go1=el('button','btn primary', slot.best?'다시 붙는다':'붙어본다');
+  go1.onclick=()=>{
+    const r=wkPlay(n);
+    if(!r){ toast('상대를 못 찾았다'); return; }
+    const before=slot.best?wkScore(slot.best):-1;
+    const cur=wkPut(n, r, meName);
+    const sc=wkScore(r);
+    toast(sc>before ? ('최고 기록! '+wkLine(r)) : (wkLine(r)+' — 기록은 그대로'));
+    renderWeekly();
+  };
+  my.appendChild(go1);
+  if(slot.best){
+    const cp=el('button','btn','단톡방에 붙일 코드 복사');
+    cp.onclick=()=>{
+      const code=wkEncode(n, meName, slot.best);
+      const ta=document.createElement('textarea');
+      ta.value=code; ta.style.position='fixed'; ta.style.left='-9999px';
+      document.body.appendChild(ta); ta.select();
+      let ok=false; try{ ok=document.execCommand('copy'); }catch(e){}
+      document.body.removeChild(ta);
+      if(!ok && navigator.clipboard) navigator.clipboard.writeText(code);
+      toast('복사됨 — '+code);
+    };
+    my.appendChild(cp);
+    my.appendChild(el('div','set-note','코드: '+wkEncode(n, meName, slot.best)));
+  }
+  c.appendChild(my);
+
+  /* 순위표 — 내 기록 + 붙여넣은 남의 기록 */
+  const bd=el('div','card');
+  bd.appendChild(el('div','card-h','순위표'));
+  const rows=(slot.board||[]).slice();
+  if(slot.best) rows.push({...slot.best, name:meName, mine:true});
+  const seen={}; const uniq=[];
+  rows.sort((a,b)=>wkScore(b)-wkScore(a)).forEach(x=>{
+    if(seen[x.name]) return; seen[x.name]=1; uniq.push(x);
+  });
+  if(!uniq.length){
+    bd.appendChild(el('p','muted','아직 아무도 없다. 한 판 하고 코드를 단톡방에 올려라.'));
+  } else {
+    const t=el('div','wk-board');
+    uniq.forEach((x,i)=>{
+      const r=el('div','wk-row'+(x.mine?' me':''));
+      r.innerHTML='<span class="wk-i">'+(i+1)+'</span>'+
+        '<span class="wk-n">'+x.name+(x.mine?' <em>나</em>':'')+'</span>'+
+        '<span class="wk-s">'+wkLine(x)+'</span>'+
+        '<span class="wk-p">'+wkScore(x)+'</span>';
+      t.appendChild(r);
+    });
+    bd.appendChild(t);
+  }
+  bd.appendChild(el('div','set-note',
+    '단톡방에서 받은 코드를 아래에 붙여라. 여러 개를 한꺼번에 넣어도 된다.'));
+  const ta2=el('textarea','wk-in');
+  ta2.placeholder='WWZW34-이건-12-5-15-1-XX';
+  bd.appendChild(ta2);
+  const add=el('button','btn','붙여넣은 코드 넣기');
+  add.onclick=()=>{
+    const lines=String(ta2.value||'').split(/[\s,]+/).filter(Boolean);
+    let ok=0, bad=0, old2=0;
+    lines.forEach(L=>{
+      const rec=wkDecode(L);
+      if(!rec){ bad++; return; }
+      if(rec.n!==n){ old2++; return; }
+      wkAddBoard(n, rec); ok++;
+    });
+    ta2.value='';
+    toast(ok?(ok+'명 추가'+(bad?' · '+bad+'개는 못 읽음':'')+(old2?' · '+old2+'개는 지난 주':''))
+            :(old2?'지난 주 코드다':'코드를 못 읽었다'));
+    renderWeekly();
+  };
+  bd.appendChild(add);
+  c.appendChild(bd);
+
+  const back=el('button','btn','← 홈');
+  back.onclick=()=>go('home');
+  c.appendChild(back);
+}
+
 function renderHome(){
   /* [제보] "선수모드인데도 감독모드랑 너무 섞여서 감독모드 그 자체" */
   /* [제보] "시상식 보고 다음시즌 시작하라는데 시상식이 안나온데
@@ -36093,7 +36361,8 @@ const VIEWS={home:renderHome,squad:renderSquad,lineup:renderLineup,kakao:renderK
   tutorial:renderTutorial,player:renderPlayer,hall:renderHall,whatif:renderWhatIf,
   role:renderRole,slots:renderSlots,start:renderStart,mode:renderMode,hs:renderHS,
   glog:renderGlog,rosters:renderRosters,front:renderFront,draft:renderDraft,
-  entry:renderEntry,cal:renderCal,trainplay:renderTrainPlay,allstar:renderAllstar};
+  entry:renderEntry,cal:renderCal,trainplay:renderTrainPlay,allstar:renderAllstar,
+  weekly:renderWeekly};
 /* 선수 모드면 감독 전용 탭을 아예 안 보이게 한다.
    눌러도 막히긴 하지만, 있는데 안 되는 것보다 없는 게 낫다. */
 function paintTabs(){
