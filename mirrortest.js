@@ -140,7 +140,9 @@ setTimeout(async()=>{
 
   console.log('\n[수비 판단 시간]');
   const src=ev("renderDefPlay.toString()");
-  const m=src.match(/flyMs\s*=\s*Math\.round\(\(inf\?(\d+):(\d+)\)\+mDraw\*\(inf\?(\d+):(\d+)\)\)/);
+  /* [v3.7.0] 직선타 계수(* (isLD?0.62:1))가 붙어서 식이 길어졌다.
+     보는 건 기준 시간 두 개다 — 괄호 안만 느슨하게 읽는다. */
+  const m=src.match(/flyMs\s*=\s*Math\.round\(\(?\(inf\?(\d+):(\d+)\)\+mDraw\*\(inf\?(\d+):(\d+)\)/);
   console.log('   내야 '+(m?m[1]:'?')+'ms + 거리*'+(m?m[3]:'?')+' · 외야 '+(m?m[2]:'?')+'ms + 거리*'+(m?m[4]:'?'));
   T('내야 판단 시간이 2초는 넘는다', ()=>!!m && parseInt(m[1],10)>=2000);
   T('외야 판단 시간이 2.5초는 넘는다', ()=>!!m && parseInt(m[2],10)>=2500);

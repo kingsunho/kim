@@ -403,9 +403,11 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
     '두 번째에서 섰어도 첫 판단으로 늘린 2루타는 남는다');
 
   console.log('\n[준비 턴 · 고교 주루]');
-  T(ev("/준비 됐다/.test(renderThrow.toString())"),
+  /* [v3.9.0] renderThrow 가 세 갈래(도루·블로킹·파울플라이)로 갈렸다.
+     도루 쪽 본문은 renderSteal 이다. */
+  T(ev("/준비 됐다/.test(renderSteal.toString())"),
     '포수 송구에도 「준비 됐다」 가 있다 (누를 때까지 주자가 안 뛴다)');
-  T(ev("/block:'end'/.test(renderThrow.toString())"),
+  T(ev("/block:'end'/.test(renderSteal.toString())"),
     '아래쪽을 맞춰 끌어온다 — 폰에서 스크롤이 올라가 장면을 놓치던 것');
   T(ev("!/const rd=LIVE.detectDecision\\(\\)/.test(hsRunLive.toString())"+
        " && /showDecision\\(\\{kind:'lead'\\}\\)/.test(hsRunLive.toString())"),
