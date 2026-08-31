@@ -78,6 +78,33 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
   T(ev("ST.helpSeen && ST.helpSeen['def:IF']===1"), '한 번 읽은 건 세이브에 남는다');
   await wait(3800);
 
+  console.log('\n[화면을 덮는 판 — 스크롤이 없다]');
+  /* [제보] "수비상황되면 스크롤이 올라가는 바람에 조이스틱까지 내리기 개빡세서
+             개빡침 (그 준비완료 누르면 스크롤이 맨 위로 올라감)"
+     손가락으로 조종하는 판단은 화면을 덮어서 스크롤 자체를 없앤다. */
+  setup();
+  ev("ST.helpSeen={'def:IF':1,'def:OF':1,'def:C':1,'run':1}");
+  ev("showDecision({kind:'defplay', ang:-18, pos:'SS'})"); await wait(80);
+  T(d.getElementById('decision').classList.contains('sheet'), '수비는 판으로 뜬다');
+  T(!d.body.classList.contains('pl-lock'), '판이면 body 를 잠그지 않는다');
+  ev("(function(){const b=[...document.querySelectorAll('#decision .lead-b')].find(x=>/준비/.test(x.textContent)); if(b)b.click();})()");
+  await wait(80);
+  T(!d.body.classList.contains('pl-lock'),
+    '준비를 눌러도 body 를 안 잠근다 — 아이폰이 맨 위로 튀던 원인이었다');
+  ev("decDone(document.getElementById('decision'))"); await wait(80);
+  T(!d.getElementById('decision').classList.contains('sheet'), '닫으면 판이 걷힌다');
+
+  setup();
+  ev("showDecision({kind:'throw', what:'sb'})"); await wait(80);
+  T(d.getElementById('decision').classList.contains('sheet'), '포수 송구도 판으로 뜬다');
+  setup();
+  ev("showDecision({kind:'lead'})"); await wait(80);
+  T(d.getElementById('decision').classList.contains('sheet'), '주루도 판으로 뜬다');
+  setup();
+  ev("showDecision({kind:'swing', label:'타이밍'})"); await wait(80);
+  T(!d.getElementById('decision').classList.contains('sheet'),
+    '타석은 그대로다 — 마운드 화면은 페이지 안에 있다');
+
   console.log('\n[수비 — 직접 조종]');
   setup();
   ev("showDecision({kind:'defplay', ang:-18, pos:'SS'})"); await wait(150);
