@@ -2155,6 +2155,22 @@ td.dimc{color:var(--dm);text-align:left}
   border-radius:999px;padding:3px 9px}
 .rep-d{font-size:11px;color:var(--dim);line-height:1.6;margin-top:6px}
 .rep-d b{color:#e2eaf5}
+/* 매니저 */
+.mgr-st{display:flex;gap:7px;margin-top:9px}
+.mgr-st i{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:9px;
+  padding:8px 4px;text-align:center;font-style:normal}
+.mgr-st i b{display:block;font-size:15px;color:var(--gold);font-weight:800}
+.mgr-st i u{display:block;font-size:9.5px;color:var(--dim);text-decoration:none;margin-top:2px}
+/* [손봄] 한 줄에 셋을 나란히 놨더니 가운데 설명이 세 줄로 말렸다.
+   설명은 통째로 한 줄 쓰고, 숫자는 그 아래 오른쪽에 붙인다. */
+.mgr-row{padding:8px 0;border-bottom:1px solid var(--line)}
+.mgr-row:last-child{border-bottom:0}
+.mgr-row b{font-size:12px;color:var(--gold);margin-right:7px}
+.mgr-row span{font-size:11.5px;color:#c8d2e0}
+.mgr-row u{display:block;font-size:10.5px;color:var(--dim);text-decoration:none;
+  text-align:right;margin-top:3px}
+.mgr-in{width:100%;box-sizing:border-box;margin-top:6px;padding:11px;border-radius:9px;
+  background:#11161d;border:1px solid #3a4453;color:var(--ink);font-size:14px}
 
 .pk-role{font-size:10.5px;color:#a9b4c2;margin-top:5px}
 .gdate{font-size:11.5px;color:var(--gold);margin:4px 0 6px;font-weight:600}
@@ -4904,10 +4920,23 @@ function applyWeekEvents(ST,evts){
         us.players.forEach(q=>ST.morale[q.id]=Math.max(10,(ST.morale[q.id]||70)-2));
         break;
       case 'nogear':
-        ST.gearLevel=2;
+        /* 매니저가 장비를 보고 있으면 통째로 없어지는 일은 잘 안 난다 */
+        if(typeof mgrHas==='function' && mgrHas()
+           && Math.random() < Math.min(0.75, (mgrStat('care')-30)*0.012)){
+          ST.gearLevel=1;
+          ST.notices.push({type:'mgr',title:(ST.mgr.name||'매니저')+josa(ST.mgr.name||'매니저',['이','가'])+' 챙겨왔다',
+            body:'장비가 통째로 빠질 뻔했는데 매니저가 미리 실어놨다.',
+            effect:'장비 상태 — 없음 → 부족'});
+        } else ST.gearLevel=2;
         break;
       case 'noscout':
-        ST.scoutBlocked=true;
+        /* 기록형이면 스코어북이 있으니 상대 정보가 아주 없지는 않다 */
+        if(typeof mgrHas==='function' && mgrHas()
+           && Math.random() < Math.min(0.80, (mgrStat('rec')-30)*0.013)){
+          ST.notices.push({type:'mgr',title:(ST.mgr.name||'매니저')+'의 스코어북',
+            body:'분석 자료는 안 왔는데 매니저가 적어둔 게 있다.',
+            effect:'상대 정보 유지'});
+        } else ST.scoutBlocked=true;
         break;
       case 'snipe':
         us.players.forEach(q=>ST.morale[q.id]=Math.max(10,(ST.morale[q.id]||70)-5));
@@ -8171,8 +8200,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.11.1';
-const APP_VERSION_NOTE = '변경 내역 카드에 글자가 새던 것';
+const APP_VERSION = '3.12.0';
+const APP_VERSION_NOTE = '경기가 끝나야 하루가 끝난다 · 매니저가 생겼다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8193,6 +8222,17 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.12.0', t:'경기가 끝나야 하루가 끝난다 · 매니저가 생겼다', items:[
+    '<b>하루의 뒷부분이 생겼다.</b> 지난 판에는 경기 전까지만 있었다. 이제 경기가 끝나면 저녁이 이어진다 — 14:30 주차장에서 어떻게 할지, 23:00 자기 전 단톡방에 뭐라고 쓸지',
+    '<b>경기 끝</b> — 회식 간다(사기 크게 오르고 컨디션은 내려간다) · 그냥 헤어진다(다음 주 몸이 낫다) · 오늘 제일 마음 상한 사람이랑 둘이 한잔한다(그 사람 불만이 확 풀린다)',
+    '<b>자기 전</b> — 오늘 잘한 사람 칭찬하기 · 다독이기 · 한소리 하기 · 읽고 말기. <b>한소리는 진 날에만 뜬다.</b> 이긴 날에 화내는 감독은 없다',
+    '평판 「다혈질」이 실제로 붙을 수 있는 자리가 여기다. 여태 조건만 있고 오를 데가 없었다',
+    '<b>매니저가 생겼다.</b> 공 줍고 물 채우고 스코어북 적는 사람이다. 선수가 아니라 경기에는 안 나간다. 25만원에 데려오고 매주 3만원이 나간다 — 운영비가 바닥나면 알아서 그만둔다',
+    '세 갈래로 뽑는다. <b>기록형</b>은 김한규가 분석 자료를 안 넘겨도 스코어북이 있어서 상대 정보가 살아난다. <b>살림형</b>은 주간 회복을 올리고 장비가 통째로 없어지는 사고를 막는다. <b>눈치형</b>은 못 나온다는 사람에게 <b>대신 전화를 돌린다</b> — 내가 안 뛰어도 되니 컨디션이 안 깎인다',
+    '같이 다니면 는다. 경기를 치를 때마다 조금씩 오르고 88에서 멈춘다. 아침에 「오늘 물 넉넉히 챙겼어요」 한마디도 한다',
+    '선수 열넷은 실존 인물이지만 <b>매니저는 지어낸 사람</b>이다. 이름은 직접 붙인다',
+    '설정 → 매니저에서 데려오고 내보낸다',
+  ]},
   {v:'3.11.1', t:'변경 내역 카드에 글자가 새던 것', items:[
     '지난 판 변경 내역에 빈 줄을 하나 넣었는데 그게 카드에서 빈 항목으로 찍혔다. 뺐다',
   ]},
@@ -13711,6 +13751,63 @@ const el = (t,c,x)=>{const e=document.createElement(t); if(c)e.className=c; if(x
      한 사람만 계속 쓰면   → 나머지가 쌓인다
    숫자를 숨기지 않는다 — 홈에 「너는 이런 감독이다」 한 줄로 깐다.
    ========================================================= */
+/* =========================================================
+   매니저 — 도와주는 사람
+   ---------------------------------------------------------
+   [요청] "매니저도 추가할까? 도와주는 역할"
+
+   4부 리그 팀에도 매니저가 있는 데가 있다. 공 줍고, 물 채우고,
+   스코어북 적고, 못 나온다는 사람한테 전화를 돌린다.
+   **선수가 아니다** — 능력치도 다르고 하는 일도 다르다.
+
+   [주의] 선수 열넷은 실존 인물이다. 매니저는 **지어낸 사람**이고
+   이름도 직접 붙인다. 실존 인물 이름은 안 쓴다.
+
+   세 가지를 한다.
+     기록  상대를 읽는다      — 스카우팅이 살아난다. 김한규가 자료를 안 넘겨도 된다
+     살림  물·장비를 챙긴다   — 경기 후 컨디션이 덜 빠지고 장비가 덜 상한다
+     눈치  사람을 본다        — 못 나온다는 사람에게 대신 전화를 돌리고, 터지기 전에 알려준다
+
+   같이 다니면 는다. 시즌을 넘겨도 남는다.                        */
+const MGR_COST = 25;          // 데려올 때 드는 돈 (만원)
+const MGR_KEEP = 3;           // 매주 나가는 돈
+const MGR_CAND = [
+  {k:'rec', n:'기록형', d:'스코어북을 놓지 않는다. 상대 투수 버릇까지 적어 온다',
+   s:{rec:62, care:38, eye:40}},
+  {k:'car', n:'살림형', d:'아이스박스부터 챙긴다. 장비 상태를 늘 보고 있다',
+   s:{rec:36, care:64, eye:42}},
+  {k:'eye', n:'눈치형', d:'누가 삐졌는지 제일 먼저 안다. 전화도 잘 돌린다',
+   s:{rec:38, care:42, eye:64}},
+];
+function mgr(){ return (ST && ST.mgr) ? ST.mgr : null; }
+function mgrHas(){ return !!mgr(); }
+function mgrStat(k){ const m=mgr(); return m ? (m.s[k]||40) : 0; }
+/* 능력치를 배수로. 매니저가 없으면 전부 1 이다. */
+function mgrMul(what){
+  const m=mgr(); if(!m) return 1;
+  if(what==='cond')   return 1 + (mgrStat('care')-40)*0.0045;   // 경기 후 컨디션 회복
+  if(what==='gear')   return 1 - (mgrStat('care')-40)*0.0060;   // 장비 손상
+  if(what==='scout')  return 1 + (mgrStat('rec') -40)*0.0060;
+  return 1;
+}
+/* 매니저가 대신 전화를 돌린다 — 성공 확률 */
+function mgrCallOdds(){
+  const m=mgr(); if(!m) return 0;
+  return Math.max(0.15, Math.min(0.80, 0.30+(mgrStat('eye')-40)*0.0090));
+}
+/* 같이 다니면 는다. 경기가 끝날 때마다 조금씩. */
+function mgrGrow(){
+  const m=mgr(); if(!m) return;
+  m.g=(m.g||0)+1;
+  const k=['rec','care','eye'][m.g%3];
+  if(m.s[k]<88 && Math.random()<0.45) m.s[k]=Math.min(88, m.s[k]+1);
+}
+function mgrLine(){
+  const m=mgr(); if(!m) return null;
+  return m.name+' · 기록 '+Math.round(m.s.rec)+' · 살림 '+Math.round(m.s.care)+
+         ' · 눈치 '+Math.round(m.s.eye)+(m.g?(' · '+m.g+'경기째'):'');
+}
+
 const REP_KEYS=['bunt','steal','hook','anger','calm','care','favor'];
 function repOf(){
   if(!ST) return null;
@@ -14044,6 +14141,7 @@ function newSeason(){
     bossTalk:null, bossTalkCount:0, bossTalkAt:-99, valuePrev:{},  // 감독 면담·몸값
     tutDone:false, tutStep:0,                              // 튜토리얼
     rep:{games:0,bunt:0,steal:0,hook:0,anger:0,calm:0,care:0,starts:{}},  // 평판
+    mgr:null,                                              // 매니저 (없으면 null)
     posTrain:{}, trainPos:null, trainStreak:0,             // 포지션 적응 훈련
     trainRain:false, trainPush:false,
     bond:(function(){const o={};TBYID['wwzw'].players.forEach(p=>o[p.id]=50);return o;})(),
@@ -14732,14 +14830,31 @@ function toast(m){const t=$('#toast');if(!t)return;t.textContent=m;t.classList.a
    [주의] 하루를 건너뛸 수 있어야 한다. 매주 여섯 번 누르는 게
    귀찮은 사람도 있다. 설정에서 끄면 예전처럼 바로 경기로 간다.  */
 const DAY_STEPS=['morning','kakao','car','warmup'];
+/* 경기가 끝나고 나서의 하루. 여기가 있어야 하루가 닫힌다.
+   [주의] 화를 내는 선택지가 여기 말고는 없다 — 평판 「다혈질」이
+   실제로 붙을 수 있는 유일한 자리다. */
+const NIGHT_STEPS=['after','night'];
 function dayOn(){ return !ST || ST.dayMode!==false; }
 function daySlot(){
   if(!ST.day) ST.day={step:0, picks:{}, log:[], done:false};
   if(!ST.day.picks) ST.day.picks={};
   if(!ST.day.log) ST.day.log=[];
+  if(ST.day.night==null) ST.day.night=-1;
+  if(!ST.day.nlog) ST.day.nlog=[];
   return ST.day;
 }
-function dayReset(){ ST.day={step:0, picks:{}, log:[], done:false}; }
+function dayReset(){ ST.day={step:0, picks:{}, log:[], done:false,
+                             night:-1, nlog:[], ndone:false}; }
+/* 저녁이 열려 있나 — 경기가 끝나면 night 가 0 이 된다 */
+function nightPending(){
+  return dayOn() && ST.day && ST.day.night>=0 && !ST.day.ndone;
+}
+function nightOpen(){
+  const D=daySlot();
+  if(D.night==null||D.night<0){ D.night=0; D.nlog=[]; D.ndone=false; }
+}
+function nightNote(t){ const D=daySlot(); if(!D.nlog)D.nlog=[]; D.nlog.push(t);
+  if(D.nlog.length>6) D.nlog=D.nlog.slice(-6); }
 /* 오늘 아직 하루가 안 끝났나 */
 function dayPending(){ return dayOn() && ST.weekDone && !(ST.day&&ST.day.done); }
 function dayNote(t){ const D=daySlot(); D.log.push(t); if(D.log.length>8) D.log=D.log.slice(-8); }
@@ -14773,8 +14888,10 @@ function dayRiders(){
 
 /* ---------- 하루 화면 ---------- */
 function renderDay(){
-  const c=$('#view'); c.innerHTML='';
   const D=daySlot();
+  /* 경기가 끝났으면 저녁이다 */
+  if(D.done && nightPending()) return renderNight();
+  const c=$('#view'); c.innerHTML='';
   const me=ST.playerId||MYID;
   const meP=TBYID['wwzw'].players.find(x=>x.id===me);
   const step=DAY_STEPS[D.step];
@@ -14813,6 +14930,10 @@ function renderDay(){
 
   if(step==='morning'){
     const hot=(ST.weather==='hot'||ST.weather==='humid');
+    if(mgrHas() && !D.picks.mgrHi){
+      D.picks.mgrHi=1;
+      dayNote('<b>'+(ST.mgr.name||'매니저')+':</b> "오늘 물 넉넉히 챙겼어요. 아이스박스도요"');
+    }
     pick('07:20 · 아침',
       '눈을 떴다. '+(hot?'벌써 덥다. 오늘 밖에 서 있을 생각을 하니 아득하다.'
         :'창밖은 '+wxN+'이다.')+' 경기까지 네 시간 남았다.',
@@ -14837,20 +14958,29 @@ function renderDay(){
     pick('09:10 · 단톡방',
       '<b>'+outs.length+'명</b>이 못 온다고 올렸다 — '+nm+'.<br>'+
       '읽고 넘길 수도 있고, 전화를 돌려볼 수도 있다.',
-      [{t:'전화를 돌린다', d:'한 명쯤은 마음을 바꾼다 · 내 컨디션 −2 · 평판 「인간적」',
+      [{t:mgrHas()?((ST.mgr.name||'매니저')+'에게 맡긴다'):'전화를 돌린다',
+        d:mgrHas()
+          ? '내가 안 뛰어도 된다 · 성공 '+Math.round(mgrCallOdds()*100)+'% · 내 컨디션 그대로'
+          : '한 명쯤은 마음을 바꾼다 · 내 컨디션 −2 · 평판 「인간적」',
         f:()=>{
           repBump('care');
-          dayCond(me,-2);
+          /* 매니저가 있으면 내가 안 뛰어도 된다 — 눈치가 좋을수록 잘 데려온다 */
+          const byMgr=mgrHas();
+          if(!byMgr) dayCond(me,-2);
+          const odds=byMgr?mgrCallOdds():0.55;
           /* 정말로 한 명이 돌아온다 — 충성도가 높은 사람부터 */
           const back=outs.slice().sort((a,b)=>
             ((META[b]&&META[b].loyal)||50)-((META[a]&&META[a].loyal)||50))[0];
-          if(back && Math.random()<0.55){
+          if(back && Math.random()<odds){
             delete ST.absent[back];
             if(ST.pendingAbsent) delete ST.pendingAbsent[back];
             dayBond(back,6); dayCond(back,-4);
-            dayNote('<b>'+nameOf(back)+josa(nameOf(back),['이','가'])+' 나오기로 했다.</b> "형이 전화까지 하는데 가야지"');
+            dayNote('<b>'+nameOf(back)+josa(nameOf(back),['이','가'])+' 나오기로 했다.</b> '+
+              (byMgr?'"매니저가 전화까지 했는데 가야지"':'"형이 전화까지 하는데 가야지"'));
           } else {
-            dayNote('<b>전화를 돌렸다.</b> 다들 사정이 있었다. 그래도 고맙다는 말은 들었다');
+            dayNote(byMgr
+              ? '<b>'+(ST.mgr.name||'매니저')+josa(ST.mgr.name||'매니저',['이','가'])+' 다 돌렸다.</b> 오늘은 안 됐다. 그래도 다들 미안해했다'
+              : '<b>전화를 돌렸다.</b> 다들 사정이 있었다. 그래도 고맙다는 말은 들었다');
             outs.forEach(id=>dayBond(id,2));
           }
         }},
@@ -14910,6 +15040,228 @@ function renderDay(){
   }
 }
 
+/* ---------- 매니저 화면 ----------
+   [주의] 선수 열넷은 실존 인물이지만 매니저는 **지어낸 사람**이다.
+   이름을 직접 붙이게 한다 — 실존 인물 이름을 넣는 건 막지 않지만
+   기본값은 비워둔다.                                              */
+function renderMgr(){
+  const c=$('#view'); c.innerHTML='';
+  const m=mgr();
+
+  if(m){
+    const card=el('div','card');
+    card.innerHTML='<div class="card-h">매니저 · '+m.name+'</div>'+
+      '<p class="muted">'+(MGR_CAND.find(x=>x.k===m.k)||{d:''}).d+'</p>'+
+      '<div class="mgr-st">'+
+        '<i><b>'+Math.round(m.s.rec)+'</b><u>기록</u></i>'+
+        '<i><b>'+Math.round(m.s.care)+'</b><u>살림</u></i>'+
+        '<i><b>'+Math.round(m.s.eye)+'</b><u>눈치</u></i></div>'+
+      '<div class="set-note">'+(m.g||0)+'경기째 · 매주 '+MGR_KEEP+'만원</div>';
+    c.appendChild(card);
+
+    const eff=el('div','card');
+    eff.appendChild(el('div','card-h','뭘 해주고 있나'));
+    const rows=[
+      ['기록', '상대 자료가 안 와도 스코어북이 있다',
+       Math.round(Math.min(0.80,(mgrStat('rec')-30)*0.013)*100)+'% 로 막는다'],
+      ['살림', '물·아이스박스를 챙기고 장비를 본다',
+       '주간 회복 ×'+mgrMul('cond').toFixed(2)+' · 장비 사고 '+
+       Math.round(Math.min(0.75,(mgrStat('care')-30)*0.012)*100)+'% 로 막는다'],
+      ['눈치', '못 나온다는 사람에게 대신 전화를 돌린다',
+       '성공 '+Math.round(mgrCallOdds()*100)+'%'],
+    ];
+    rows.forEach(r=>{
+      const row=el('div','mgr-row');
+      row.innerHTML='<b>'+r[0]+'</b><span>'+r[1]+'</span><u>'+r[2]+'</u>';
+      eff.appendChild(row);
+    });
+    eff.appendChild(el('div','set-note','같이 다니면 는다. 경기를 치를 때마다 조금씩 오른다.'));
+    c.appendChild(eff);
+
+    const out=el('div','card');
+    out.appendChild(el('div','card-h','내보내기'));
+    out.appendChild(el('p','muted','매주 '+MGR_KEEP+'만원이 나간다. 부담되면 정리할 수 있다.'));
+    const ob=el('button','btn danger','매니저를 내보낸다');
+    ob.onclick=()=>{ if(!confirm(m.name+josa(m.name,['을','를'])+' 내보낼까? 쌓인 경험은 사라진다.')) return;
+      ST.mgr=null; saveGame(true); toast('매니저가 그만뒀다'); renderMgr(); };
+    out.appendChild(ob);
+    c.appendChild(out);
+
+    const back=el('button','btn','← 돌아가기');
+    back.onclick=()=>go('more');
+    c.appendChild(back);
+    return;
+  }
+
+  const head=el('div','card');
+  head.innerHTML='<div class="card-h">매니저를 구한다</div>'+
+    '<p class="muted">공 줍고 물 채우고 스코어북 적는 사람이다. '+
+    '<b>선수가 아니다</b> — 경기에는 안 나간다.<br>'+
+    '데려오는 데 '+MGR_COST+'만원 · 매주 '+MGR_KEEP+'만원이 나간다. '+
+    '지금 운영비 '+Math.round(ST.budget||0)+'만원.</p>';
+  c.appendChild(head);
+
+  const nameBox=el('div','card');
+  nameBox.appendChild(el('div','card-h','이름'));
+  nameBox.appendChild(el('p','muted','지어낸 사람이다. 부르고 싶은 이름을 적어라. 최대 6자.'));
+  const inp=el('input','mgr-in');
+  inp.type='text'; inp.maxLength=6; inp.placeholder='예: 유나';
+  nameBox.appendChild(inp);
+  c.appendChild(nameBox);
+
+  MGR_CAND.forEach(k=>{
+    const card=el('div','card');
+    card.innerHTML='<div class="card-h">'+k.n+'</div><p class="muted">'+k.d+'</p>'+
+      '<div class="mgr-st">'+
+        '<i><b>'+k.s.rec+'</b><u>기록</u></i>'+
+        '<i><b>'+k.s.care+'</b><u>살림</u></i>'+
+        '<i><b>'+k.s.eye+'</b><u>눈치</u></i></div>';
+    const b=el('button','btn primary','이 사람으로 ('+MGR_COST+'만원)');
+    b.onclick=()=>{
+      if((ST.budget||0)<MGR_COST){ toast('운영비가 모자란다'); return; }
+      const nm=String(inp.value||'').trim().slice(0,6);
+      if(!nm){ toast('이름을 먼저 적어라'); inp.focus(); return; }
+      ST.budget=Math.max(0,(ST.budget||0)-MGR_COST);
+      ST.mgr={name:nm, k:k.k, s:{...k.s}, g:0};
+      saveGame(true);
+      toast(nm+josa(nm,['이','가'])+' 합류했다');
+      renderMgr();
+    };
+    card.appendChild(b);
+    c.appendChild(card);
+  });
+
+  const back=el('button','btn','← 돌아가기');
+  back.onclick=()=>go('more');
+  c.appendChild(back);
+}
+
+/* ---------- 저녁 ----------
+   경기가 끝났다고 하루가 끝난 게 아니다. 회식에 갈지, 누구랑 한잔할지,
+   밤에 단톡방에 뭐라고 쓸지가 다음 주를 정한다.
+   [주의] **화를 내는 선택지는 여기밖에 없다.** 평판 「다혈질」이 실제로
+   붙을 수 있는 유일한 자리다. 반대로 다독이면 「calm」 이 쌓인다.       */
+function renderNight(){
+  const c=$('#view'); c.innerHTML='';
+  const D=daySlot();
+  const me=ST.playerId||MYID;
+  const step=NIGHT_STEPS[D.night];
+  if(!step){ D.ndone=true; saveGame(true); go('home'); return; }
+
+  const res=(ST.glog&&ST.glog.length)?ST.glog[ST.glog.length-1]:null;
+  const won=!!(res && res.us>res.them);
+  const tie=!!(res && res.us===res.them);
+  const sc=res?(res.us+':'+res.them):'';
+
+  const head=el('div','card day-head');
+  head.innerHTML='<div class="day-t">경기가 끝났다</div>'+
+    '<div class="card-h">'+(won?'이겼다':(tie?'비겼다':'졌다'))+(sc?' '+sc:'')+'</div>'+
+    '<div class="day-bar">'+NIGHT_STEPS.map((k,i)=>
+      '<i class="'+(i<D.night?'on':(i===D.night?'now':''))+'"></i>').join('')+'</div>';
+  c.appendChild(head);
+
+  if((D.nlog||[]).length){
+    const lg=el('div','card day-log');
+    D.nlog.slice(-3).forEach(t=>{ const r=el('div','day-l'); r.innerHTML=t; lg.appendChild(r); });
+    c.appendChild(lg);
+  }
+
+  const box=el('div','card');
+  const pick=(title, body, opts)=>{
+    box.innerHTML='<div class="day-time">'+title+'</div><p class="day-b">'+body+'</p>';
+    opts.forEach(o=>{
+      if(o.hide) return;
+      const b=el('button','day-opt');
+      b.innerHTML='<span>'+o.t+'</span><i>'+o.d+'</i>';
+      b.onclick=()=>{ o.f(); D.night++; saveGame(true); renderNight(); };
+      box.appendChild(b);
+    });
+    c.appendChild(box);
+  };
+
+  if(step==='after'){
+    const cost=(typeof PARTY_COST!=='undefined')?PARTY_COST:15;
+    /* 오늘 제일 마음이 상한 사람 — 둘이 한잔할 상대 */
+    const sore=TBYID['wwzw'].players
+      .filter(p=>p.id!==me && ST.unhappy && ST.unhappy[p.id] && ST.unhappy[p.id].level>0)
+      .sort((a,b)=>(ST.unhappy[b.id].level)-(ST.unhappy[a.id].level))[0];
+    pick('14:30 · 경기 끝',
+      (won?'이겼다. 다들 얼굴이 폈다.':(tie?'비겼다. 애매한 표정들이다.':'졌다. 짐 싸는 손이 무겁다.'))+
+      '<br>주차장에서 다들 눈치를 본다. 오늘 어떻게 할까.',
+      [{t:'회식 간다', d:'운영비 '+cost+'만원 · 팀 사기 크게 오른다 · 컨디션은 내려간다',
+        hide:(ST.budget||0)<cost,
+        f:()=>{
+          repBump('care');
+          ST.budget=Math.max(0,(ST.budget||0)-cost);
+          TBYID['wwzw'].players.forEach(p=>{
+            ST.morale[p.id]=Math.min(100,(ST.morale[p.id]||70)+9);
+            dayCond(p.id,-5);
+            if(ST.unhappy&&ST.unhappy[p.id]&&ST.unhappy[p.id].level>0&&Math.random()<0.45)
+              ST.unhappy[p.id].level--;
+          });
+          ST.partyDone=true; ST.canParty=false;
+          nightNote('<b>다 같이 갔다.</b> 늦게까지 있었다. 내일 몸은 알 바 아니다');
+        }},
+       {t:'그냥 헤어진다', d:'다음 주 컨디션이 낫다',
+        f:()=>{ dayCond('*',3); ST.partyDone=true; ST.canParty=false;
+          nightNote('<b>주차장에서 헤어졌다.</b> 다들 집에 일찍 갔다'); }},
+       {t:sore?(sore.name+josa(sore.name,['이랑','랑'])+' 둘이 한잔한다'):'둘이 한잔할 사람은 없다',
+        d:sore?'그 사람 마음이 풀린다 · 평판 「인간적」':'오늘은 다들 괜찮아 보인다',
+        f:()=>{
+          repBump('care');
+          if(sore){
+            dayBond(sore.id,10);
+            ST.morale[sore.id]=Math.min(100,(ST.morale[sore.id]||70)+14);
+            if(ST.unhappy[sore.id]) ST.unhappy[sore.id].level=Math.max(0,ST.unhappy[sore.id].level-2);
+            if(ST.spark&&ST.spark[sore.id]) ST.spark[sore.id].n=0;
+            nightNote('<b>'+sore.name+josa(sore.name,['이','가'])+' 오래 얘기했다.</b> 마음이 좀 풀린 것 같다');
+          } else {
+            dayCond(me,2);
+            nightNote('<b>혼자 한잔했다.</b> 오늘 경기를 다시 돌려봤다');
+          }
+          ST.partyDone=true; ST.canParty=false;
+        }}]);
+    return;
+  }
+
+  if(step==='night'){
+    /* 오늘 제일 잘한 사람과 제일 못한 사람 — 실제 박스스코어에서 뽑는다 */
+    const us=TBYID['wwzw'];
+    let best=null, worst=null, bv=-99, wv=99;
+    us.players.forEach(p=>{
+      const b=(ST.bat&&ST.bat[p.id])||null; if(!b||!b.pa) return;
+      const g=(res&&res.line&&res.line[p.id])||null;
+      const v=g?((g.h||0)*2+(g.rbi||0)-(g.k||0)*0.5):null;
+      if(v==null) return;
+      if(v>bv){ bv=v; best=p; }
+      if(v<wv){ wv=v; worst=p; }
+    });
+    if(!best) best=us.players.find(p=>p.id!==me)||null;
+    if(!worst) worst=best;
+    pick('23:00 · 자기 전',
+      '단톡방이 아직 안 꺼졌다. 오늘 얘기가 오간다.<br>'+
+      '한마디 쓸까, 그냥 읽고 말까.',
+      [{t:best?(best.name+' 칭찬한다'):'오늘 잘한 사람을 칭찬한다',
+        d:'사기가 오른다 · 평판 「인간적」',
+        f:()=>{ repBump('care');
+          if(best){ ST.morale[best.id]=Math.min(100,(ST.morale[best.id]||70)+10); dayBond(best.id,4); }
+          nightNote('<b>'+(best?best.name:'')+' 얘기를 썼다.</b> "오늘 니가 다 했다"'); }},
+       {t:'다독인다', d:'가라앉은 사람들이 좀 낫다 · 다혈질이 안 붙는다',
+        f:()=>{ repBump('calm');
+          us.players.forEach(p=>{ if(ST.unhappy&&ST.unhappy[p.id]&&ST.unhappy[p.id].level>0
+            && Math.random()<0.3) ST.unhappy[p.id].level--; });
+          nightNote('<b>"다음에 잘하면 된다"</b> 라고 썼다. 몇 명이 하트를 눌렀다'); }},
+       {t:'한소리 한다', d:'당장은 정신이 든다 · 사기 하락 · 평판 「다혈질」',
+        hide:won,
+        f:()=>{ repBump('anger');
+          us.players.forEach(p=>{ ST.morale[p.id]=Math.max(10,(ST.morale[p.id]||70)-6); });
+          nightNote('<b>긴 글을 썼다.</b> 읽씹이 몇 개 보인다'); }},
+       {t:'읽고 만다', d:'아무 일도 없다',
+        f:()=>{ nightNote('<b>읽고 껐다.</b> 오늘은 그냥 잤다'); }}]);
+    return;
+  }
+}
+
 /* ---------- 주간 ---------- */
 function runWeek(){
   if(!ST.notices)ST.notices=[];
@@ -14940,10 +15292,23 @@ function runWeek(){
     const m=META[p.id];
     let rec=(m&&m.traits.includes('성실'))?11:7;
     if(m&&m.traits.includes('안방마님'))rec+=3;   // 궂은일을 해도 몸이 버틴다
+    /* 매니저가 물·아이스박스를 챙기면 몸이 더 돌아온다 */
+    if(typeof mgrMul==='function') rec=rec*mgrMul('cond');
     ST.cond[p.id]=Math.min(100,ST.cond[p.id]+rec+((rng()*7)|0)-3);
     ST.morale[p.id]=Math.max(10,Math.min(100,ST.morale[p.id]+(ST.morale[p.id]<70?2:-1)));
   });
   ST.mittMissing=false; ST.scoutBlocked=false;
+  /* 매니저 주급. 운영비가 바닥나면 알아서 그만둔다 —
+     돈이 없는데 계속 붙어 있으면 그게 더 이상하다. */
+  if(mgrHas()){
+    if((ST.budget||0)>=MGR_KEEP){ ST.budget-=MGR_KEEP; }
+    else {
+      const nm=ST.mgr.name||'매니저';
+      ST.mgr=null;
+      ST.notices.push({type:'mgr',title:nm+josa(nm,['이','가'])+' 그만뒀다',
+        body:'운영비가 바닥나서 이번 주 급여를 못 줬다.', effect:'매니저 없음'});
+    }
+  }
   /* [요청] "감독모드는 2군이 있으면 안되고 (…) 선수모드에서만.
              선수모드에선 실제 야구같은거지"
      맞는 말이다. 감독 모드는 열넷을 데리고 굴리는 동네 야구다 —
@@ -19182,6 +19547,18 @@ function renderHome(){
      [주의] 예전엔 여기서 return 해서 홈을 통째로 막았다. 그러면 오늘 상대도
      못 보고, 나간 선수 안내 같은 다른 카드도 같이 사라진다. **게이트가 아니라
      안내다** — 건너뛰고 바로 경기로 가는 길은 아래에 그대로 열어둔다. */
+  /* 경기가 끝났는데 저녁이 남아 있으면 그게 먼저다 */
+  if(nightPending()){
+    const nc=el('div','card');
+    nc.innerHTML='<div class="card-h">오늘 저녁</div>'+
+      '<p class="muted">경기는 끝났다. 회식에 갈지, 밤에 뭐라고 쓸지가 남았다.</p>';
+    const nb=el('button','btn primary','저녁으로');
+    nb.onclick=()=>go('day');
+    nc.appendChild(nb);
+    nc.appendChild(el('div','set-note','건너뛰려면 그냥 아래로 내려가면 된다.'));
+    c.appendChild(nc);
+  }
+
   if(dayPending()){
     const dc=el('div','card');
     const D=daySlot();
@@ -30957,6 +31334,9 @@ function commitGame(res,usSide,thSide,uSlots){
   }
 
   ST.canParty = won;
+  /* 하루가 아직 안 닫혔다 — 저녁을 연다 */
+  if(typeof nightOpen==='function' && typeof dayOn==='function' && dayOn()) nightOpen();
+  if(typeof mgrGrow==='function') mgrGrow();       // 같이 다니면 는다
   /* [요청] "이전 경기 결과랑 경기 내용 볼 수 있게" */
   glogPush(sch,res,usSide,thSide,uIds,gRot);
   /* [요청] "단톡방 자랑카드도 만들고"
@@ -33787,6 +34167,19 @@ function renderMore(){
       : '내 자리로 오는 공은 경기당 네댓 번이다. 수비가 좋을수록 글러브가 닿는 범위가 넓다.'));
   }
 
+  /* 매니저 — 도와주는 사람 */
+  {
+    const mn=el('p','muted');
+    mn.innerHTML='<br><b>매니저</b> — 공 줍고 물 채우고 스코어북 적는 사람이다. '+
+      (mgrHas()? ('지금 '+mgrLine()) : '아직 없다. '+MGR_COST+'만원이면 구할 수 있다.');
+    pl.appendChild(mn);
+    const mRow=el('div','btn-row');
+    const mb=el('button','btn'+(mgrHas()?'':' primary'), mgrHas()?'매니저 보기':'매니저를 구한다');
+    mb.onclick=()=>go('mgr');
+    mRow.appendChild(mb);
+    pl.appendChild(mRow);
+  }
+
   /* 경기 당일 — 하루를 살 것인가, 바로 경기로 갈 것인가 */
   {
     const dn2=el('p','muted');
@@ -36522,7 +36915,7 @@ const VIEWS={home:renderHome,squad:renderSquad,lineup:renderLineup,kakao:renderK
   role:renderRole,slots:renderSlots,start:renderStart,mode:renderMode,hs:renderHS,
   glog:renderGlog,rosters:renderRosters,front:renderFront,draft:renderDraft,
   entry:renderEntry,cal:renderCal,trainplay:renderTrainPlay,allstar:renderAllstar,
-  day:renderDay};
+  day:renderDay,mgr:renderMgr};
 /* 선수 모드면 감독 전용 탭을 아예 안 보이게 한다.
    눌러도 막히긴 하지만, 있는데 안 되는 것보다 없는 게 낫다. */
 function paintTabs(){
@@ -36682,6 +37075,8 @@ function normalizeState(){
   if(typeof ST.tradeRound!=='number')ST.tradeRound=-99;
   if(ST.myTrain && !PM_TRAIN.some(x=>x.id===ST.myTrain)) ST.myTrain=null;
   if(!ST.myTrain) ST.myTrain='team';                // [v2.65.0] 기본은 팀 훈련
+  if(ST.mgr===undefined)ST.mgr=null;
+  if(ST.mgr&&!ST.mgr.s)ST.mgr=null;              // 형태가 깨졌으면 없던 걸로
   if(!ST.rep)ST.rep={games:0,bunt:0,steal:0,hook:0,anger:0,calm:0,care:0,starts:{}};
   if(!ST.rep.starts)ST.rep.starts={};
   if(!ST.names)ST.names={};

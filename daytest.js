@@ -132,6 +132,106 @@ setTimeout(async()=>{
     ev("josa('김인규',['을','를'])")==='를' && ev("josa('송승민',['을','를'])")==='을');
   T('한글이 아니면 뒤엣것', ()=>ev("josa('A',['을','를'])")==='를');
 
+  console.log('\n[저녁 — 경기가 끝나야 하루가 닫힌다]');
+  ev(`(function(){
+    if(!ST.weekDone) runWeek();
+    ST.budget=200; ST.mgr=null;
+    daySlot().done=true; nightOpen();
+    ST.glog=[{us:3,them:7,line:{}}];
+    const ps=TBYID['wwzw'].players;
+    ST.unhappy={}; ST.unhappy[ps[4].id]={level:2,streak:0};
+    ST.rep={games:0,bunt:0,steal:0,hook:0,anger:0,calm:0,care:0,starts:{}};
+  })()`);
+  w.go('home'); await wait(140);
+  T('홈에 저녁 카드가 뜬다', ()=>/오늘 저녁/.test(txt()));
+  const nb=[...d.querySelectorAll('#view .btn')].find(x=>/저녁으로/.test(x.textContent));
+  T('저녁으로 들어간다', ()=>!!nb);
+  if(nb){ nb.click(); await wait(160); }
+  T('경기 끝 마디가 나온다', ()=>/14:30/.test(txt()));
+  T('회식 · 헤어짐 · 둘이 한잔 세 갈래다', ()=>{
+    const o=[...d.querySelectorAll('#view .day-opt span')].map(x=>x.textContent).join('|');
+    return /회식 간다/.test(o) && /그냥 헤어진다/.test(o) && /둘이 한잔/.test(o);
+  });
+  /* 진 경기라 「한소리 한다」가 떠야 한다 — 평판 「다혈질」이 붙을 유일한 자리다 */
+  d.querySelectorAll('#view .day-opt')[1].click(); await wait(150);
+  T('밤 마디로 넘어간다', ()=>/23:00/.test(txt()));
+  T('졌으면 「한소리 한다」가 있다', ()=>
+    [...d.querySelectorAll('#view .day-opt span')].some(x=>/한소리/.test(x.textContent)));
+  const angryBtn=[...d.querySelectorAll('#view .day-opt')]
+    .find(b=>/한소리/.test(b.textContent));
+  if(angryBtn) angryBtn.click(); await wait(150);
+  T('화를 내면 「anger」가 쌓인다 — 여기 말고는 오를 자리가 없다', ()=>ev("ST.rep.anger")>0);
+  T('저녁이 닫힌다', ()=>ev("!!(ST.day&&ST.day.ndone)"));
+  T('저녁 로그가 남는다', ()=>ev("((ST.day&&ST.day.nlog)||[]).length")===2);
+  T('이겼으면 「한소리 한다」가 안 뜬다', ()=>{
+    ev("daySlot().ndone=false; ST.day.night=1; ST.glog=[{us:9,them:1,line:{}}];");
+    w.go('day');
+    return ![...d.querySelectorAll('#view .day-opt span')].some(x=>/한소리/.test(x.textContent));
+  });
+
+  console.log('\n[매니저 — 도와주는 사람]');
+  ev("ST.mgr=null; ST.budget=200;");
+  w.go('mgr'); await wait(150);
+  T('영입 화면이 뜬다', ()=>/매니저를 구한다/.test(txt()));
+  T('후보가 셋이다', ()=>(txt().match(/기록형|살림형|눈치형/g)||[]).length===3);
+  T('선수가 아니라고 못 박는다', ()=>/선수가 아니다/.test(txt()));
+  const b1=[...d.querySelectorAll('#view .btn')].find(x=>/이 사람으로/.test(x.textContent));
+  if(b1) b1.click(); await wait(100);
+  T('이름을 안 적으면 안 뽑힌다', ()=>ev("ST.mgr")===null);
+  const inp=d.querySelector('#view .mgr-in');
+  if(inp) inp.value='유나';
+  const bs=[...d.querySelectorAll('#view .btn')].filter(x=>/이 사람으로/.test(x.textContent));
+  if(bs[1]) bs[1].click(); await wait(150);
+  T('이름을 적으면 합류한다', ()=>ev("mgrHas()")===true);
+  T('돈이 나간다', ()=>ev("ST.budget")===200-ev("MGR_COST"));
+  T('살림형은 회복을 올린다', ()=>ev("mgrMul('cond')")>1);
+  T('살림형은 장비 사고를 줄인다', ()=>ev("mgrMul('gear')")<1);
+  T('보유 화면에 뭘 해주는지 나온다', ()=>{ w.go('mgr'); return /뭘 해주고 있나/.test(txt()); });
+  T('같이 다니면 는다', ()=>{
+    const a=ev("ST.mgr.s.care");
+    ev("for(let i=0;i<60;i++) mgrGrow();");
+    return ev("ST.mgr.s.care")>=a && ev("ST.mgr.g")===60;
+  });
+  T('88 을 넘지 않는다', ()=>{
+    ev("ST.mgr.s={rec:88,care:88,eye:88}; for(let i=0;i<40;i++) mgrGrow();");
+    return ev("Math.max(ST.mgr.s.rec,ST.mgr.s.care,ST.mgr.s.eye)")<=88;
+  });
+  T('주급이 매주 나간다', ()=>{
+    ev("ST.budget=100; ST.mgr={name:'유나',k:'car',s:{rec:36,care:64,eye:42},g:0}; runWeek();");
+    return ev("ST.budget")<=100-ev("MGR_KEEP") && ev("mgrHas()");
+  });
+  T('돈이 없으면 그만둔다', ()=>{
+    ev("ST.budget=1; runWeek();");
+    /* runWeek 이 notices 를 events 로 옮긴다 — 「이번 주 소식」에 뜬다 */
+    return !ev("mgrHas()") &&
+      ev("((ST.events||[]).concat(ST.notices||[])).some(n=>/그만뒀다/.test(n.title||''))");
+  });
+  T('매니저가 있으면 단톡방에서 대신 돌린다', ()=>{
+    ev(`(function(){
+      ST.budget=200; ST.mgr={name:'유나',k:'eye',s:{rec:38,care:42,eye:70},g:3};
+      dayReset(); ST.day.step=1; ST.absent={};
+      ST.absent[TBYID['wwzw'].players[2].id]='야근';
+    })()`);
+    w.go('day');
+    return [...d.querySelectorAll('#view .day-opt span')].some(x=>/유나에게 맡긴다/.test(x.textContent));
+  });
+  T('맡기면 내 컨디션이 안 깎인다', ()=>{
+    const me=ev("ST.playerId||MYID");
+    ev("ST.cond['"+me+"']=70;");
+    d.querySelectorAll('#view .day-opt')[0].click();
+    return ev("ST.cond['"+me+"']")===70;
+  });
+  T('매니저가 없으면 예전처럼 내가 돌린다', ()=>{
+    ev(`(function(){
+      ST.mgr=null; dayReset(); ST.day.step=1; ST.absent={};
+      ST.absent[TBYID['wwzw'].players[2].id]='야근';
+    })()`);
+    w.go('day');
+    return [...d.querySelectorAll('#view .day-opt span')].some(x=>/^전화를 돌린다$/.test(x.textContent));
+  });
+  T('매니저가 없으면 배수가 전부 1', ()=>
+    ev("ST.mgr=null; mgrMul('cond')")===1 && ev("mgrMul('gear')")===1 && ev("mgrCallOdds()")===0);
+
   console.log('\n[예외]');
   T('콘솔 예외 없음', ()=>errs.filter(x=>typeof x==='string'&&/Error|not a function|not defined/.test(x)).length===0);
 
