@@ -126,18 +126,67 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
     ST.myFarm=0;
     return (!a && b<-1000) ? '출전 불가 · 라인업 제외' : '!'+a+'/'+b;
   })()`));
-  T('2군에서 치면 올라온다', ()=>ev(`(function(){
-    ST.myFarm=1; ST.farmMe={g:1,ab:10,h:4};   // 4할
+  /* [요청] "2군 경기 수를 두지말고 2군에서 잘하면 콜업 1군에서 못하면 강등"
+     기간이 사라졌다. 타율이 기준을 넘기는 **그 주에** 올라온다.
+     [주의] 콜업에 주전 보장은 안 붙는다 — "왜 올라오자마자 주전보장
+     3경기가 된거야" 를 받고 뺐다. 예전 검사는 그걸 아직 요구하고 있었다. */
+  T('2군에서 기준을 넘기면 그 주에 올라온다', ()=>ev(`(function(){
+    ST.myFarm=1; ST.farmBar=0.280; ST.farmMe={g:4,ab:16,h:7};   // .438
     ST.round=10; ST.farmMove=-99;
     var ms=farmWeek(makeRng(999));
-    return (ST.myFarm===0 && ST.myGuarantee>=3 && ms.some(function(m){return /콜업/.test(m.title);}))
-      ? '올라왔다 · 주전 보장 '+ST.myGuarantee : '!'+ST.myFarm+'/'+ST.myGuarantee+'/'+JSON.stringify(ms.map(function(m){return m.title;}));
+    return (ST.myFarm===0 && ms.some(function(m){return /콜업/.test(m.title);}))
+      ? '올라왔다' : '!'+ST.myFarm+'/'+JSON.stringify(ms.map(function(m){return m.title;}));
+  })()`));
+  T('콜업에 주전 보장은 안 붙는다', ()=>ev("(ST.myGuarantee||0)===0")
+    ? '보장 없음 — 자리는 뺏는 거다' : '!보장이 붙었다');
+  /* 직접 친 주는 그 기록만 쓴다(farmDone) — 여기서는 계속 못 친 기록을
+     들고 있게 해서 「기간이 지나서」 올라오는 길이 없는지만 본다.     */
+  T('못 치면 몇 주가 지나도 안 올라온다 (기간이 없다)', ()=>ev(`(function(){
+    ST.myFarm=1; ST.farmBar=0.300; ST.round=14; ST.farmMove=-99;
+    ST.farmDone=0; ST.farmDoneSeen=0;
+    for(var i=0;i<8;i++){
+      ST.farmMe={g:4+i,ab:20+i*4,h:Math.round((20+i*4)*0.14)};   // 계속 1할4푼
+      ST.farmDone=i+1;                       // 내가 직접 친 주 — 가짜 타석 안 붙는다
+      farmWeek(makeRng(1000+i));
+      if(ST.myFarm<=0) break;
+    }
+    var r=ST.myFarm;
+    ST.myFarm=0; ST.farmMe=null; ST.farmDone=0; ST.farmDoneSeen=0;
+    return r>0 ? '여덟 주를 굴려도 그대로 2군' : '!기간이 차서 올라왔다';
+  })()`));
+  T('반대로 잘 치면 그 주에 바로 올라온다 (오래 있을 필요 없다)', ()=>ev(`(function(){
+    ST.myFarm=1; ST.farmBar=0.300; ST.round=14; ST.farmMove=-99;
+    ST.farmMe={g:4,ab:13,h:6}; ST.farmDone=9; ST.farmDoneSeen=8;   // .462 · 첫 판정
+    var ms=farmWeek(makeRng(4242));
+    var up=(ST.myFarm===0);
+    ST.myFarm=0; ST.farmMe=null; ST.farmDone=0; ST.farmDoneSeen=0;
+    return up ? '13타석 .462 — 한 주 만에 콜업' : '!'+ST.myFarm;
+  })()`));
+  T('표본이 모자라면 아직 판단하지 않는다', ()=>ev(`(function(){
+    ST.myFarm=1; ST.farmBar=0.280; ST.farmMe={g:1,ab:4,h:4};    // 4타수 4안타
+    ST.round=10; ST.farmMove=-99; ST.farmDone=1; ST.farmDoneSeen=1;
+    var ms=farmWeek(makeRng(31337));
+    var r=(ST.myFarm>0);
+    ST.myFarm=0; ST.farmMe=null;
+    return r ? '10할이어도 타석 수를 채워야 한다' : '!네 타석에 올려버렸다';
+  })()`));
+  T('오래 있으면 기준이 조금씩 내려간다', ()=>ev(`(function(){
+    ST.farmBar=0.300;
+    var a=farmReady({ab:12,h:3});      // .250 — 열두 타석에는 모자란다
+    var b=farmReady({ab:60,h:15});     // .250 — 예순 타석이면 기준이 내려와 있다
+    return (!a && b) ? '12타석 .250 안 됨 → 60타석 .250 통과' : '!'+a+'/'+b;
   })()`));
   T('2군에 있는 동안 진행 상황이 뜬다', ()=>ev(`(function(){
-    ST.myFarm=3; ST.farmMe={g:0,ab:0,h:0}; ST.round=12; ST.farmMove=-99;
+    ST.myFarm=1; ST.farmBar=0.280; ST.farmMe={g:0,ab:0,h:0}; ST.round=12; ST.farmMove=-99;
+    ST.farmDone=0; ST.farmDoneSeen=0;
     var ms=farmWeek(makeRng(777));
     ST.myFarm=0; ST.farmMe=null;
-    return ms.some(function(m){return /2군/.test(m.title);}) ? ms[0].title+' — '+ms[0].body : '!안 뜬다';
+    return ms.some(function(m){return /2군/.test(m.title);}) ? ms[0].title+' — '+ms[0].effect : '!안 뜬다';
+  })()`));
+  T('내려갈 때도 기간이 아니라 기준을 받는다', ()=>ev(`(function(){
+    var src=farmWeek.toString();
+    return (src.indexOf('ST.myFarm=1')>0 && src.indexOf('ST.farmBar=')>0
+            && src.indexOf('ST.myFarm--')<0) ? '주를 안 센다' : '!아직 주를 센다';
   })()`));
 
   console.log('\n[새로고침해도 남는다]');
@@ -260,17 +309,24 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
            pending:null,eff:{},picks:[],picked:{}};
     ST.hs.bat.g=7; ST.hs.bat.pa=22; ST.hs.bat.ab=20; ST.hs.bat.h=2;   // 1할
     hsGraduate();
-    return ST.myFarm>0 ? ST.myFarm+'주 2군' : '!바로 1군이다';
+    return ST.myFarm>0 ? ('2군에서 시작 · 기준 '+fmt3(ST.farmBar)) : '!바로 1군이다';
   })()`));
-  T('고교를 잘 보내면 바로 1군이다', ()=>ev(`(function(){
+  /* [결정 유지] "2군 안걸치고 왜 바로 1군 온거지?" — 누구든 2군을 거친다.
+     잘 보냈으면 **기준이 낮아서** 한두 주면 올라온다. 안 거치는 길은 없다.
+     예전 검사는 바로 1군을 요구하고 있었다 — 그 결정 전에 쓴 것이다.  */
+  T('고교를 잘 보내면 2군 기준이 낮다 (그래도 2군은 거친다)', ()=>ev(`(function(){
     ST.myRatings=null; ST.myRatingsOK=false; ST.myFarm=0; ST.myGuarantee=0;
     ST.hs={i:0,done:false,res:[],bat:blankBat(),pit:blankPit(),moments:[],
            pending:null,eff:{},picks:[],picked:{}};
     ST.hs.bat.g=7; ST.hs.bat.pa=30; ST.hs.bat.ab=26; ST.hs.bat.h=11;  // 4할2푼
     ST.hs.bat.d2=4; ST.hs.bat.hr=3; ST.hs.bat.bb=4; ST.hs.bat.sb=4; ST.hs.bat.d3=2;
     hsGraduate();
-    return (ST.myFarm===0 && ST.myGuarantee>=3) ? '바로 1군 · 주전 보장 '+ST.myGuarantee
-      : '!'+ST.myFarm+'주 2군';
+    var good=ST.farmBar;
+    ST.hs.bat.h=2; ST.hs.bat.ab=20; ST.myRatings=null; ST.myRatingsOK=false;
+    hsGraduate();
+    var bad=ST.farmBar;
+    return (ST.myFarm>0 && good<bad) ? ('잘 보내면 '+fmt3(good)+' · 못 보내면 '+fmt3(bad))
+      : '!'+ST.myFarm+'/'+good+'/'+bad;
   })()`));
   T('2군 팀이 아홉을 채운다', ()=>ev(`(function(){
     ST.farm=[]; farmFill(9); ST.myFarm=3; ST.farmMe={g:0,ab:0,h:0};
@@ -314,20 +370,37 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
     return (good.n>bad.n && good.n>=10 && bad.n<0)
       ? '3안타 홈런 승리 +'+good.n+' vs 무안타 실책 패배 '+bad.n : '!'+good.n+'/'+bad.n;
   })()`));
-  T('훈련이 코인을 쓴다', ()=>ev(`(function(){
-    ST.coin=10; ST.myTrain='bat'; ST.myFarm=0;
+  /* [주의] 코인은 **살 때** 빠진다(trainBuy). applyMyTrain 은 산 것을
+     몸에 붙일 뿐이다 — 예전 검사는 붙일 때 빠지는 줄 알고 있었다.   */
+  T('훈련을 사면 그 자리에서 코인이 빠진다', ()=>ev(`(function(){
+    ST.coin=40; ST.myTrainQ=[]; ST.myTrain=null; ST.myFarm=0;
+    var cost=trainCost(pmTrainDef('bat'));
     var before=ST.coin;
-    applyMyTrain();
-    return (ST.coin===before-trainCost(pmTrainDef('bat')))
-      ? before+' → '+ST.coin : '!'+before+'→'+ST.coin;
+    var err=trainBuy('bat');
+    return (!err && ST.coin===before-cost && trainQueue().length===1)
+      ? before+' → '+ST.coin+' (타격 '+cost+'코인)' : '!'+err+'/'+before+'→'+ST.coin;
   })()`));
-  T('코인이 모자라면 못 한다', ()=>ev(`(function(){
-    ST.coin=1; ST.myTrain='bat';
+  T('무르면 돌려받는다', ()=>ev(`(function(){
+    var before=ST.coin;
+    var cost=trainCost(pmTrainDef('bat'));
+    trainRefund(0);
+    return (ST.coin===before+cost && trainQueue().length===0)
+      ? '돌려받았다' : '!'+before+'→'+ST.coin;
+  })()`));
+  T('코인이 모자라면 못 산다', ()=>ev(`(function(){
+    ST.coin=1; ST.myTrainQ=[]; ST.myTrain=null;
+    var err=trainBuy('bat');
+    return (err && /코인이/.test(err) && trainQueue().length===0)
+      ? err : '!'+err;
+  })()`));
+  T('산 것이 다음 주에 몸에 붙는다', ()=>ev(`(function(){
+    ST.coin=40; ST.myTrainQ=[]; ST.myTrain=null; ST.myFarm=0;
     var p=TBYID['wwzw'].players.find(function(x){return x.id==='ksh';});
-    var before=p.pow;
+    var before=p.con;
+    trainBuy('bat');
     applyMyTrain();
-    return (p.pow===before && /모자라/.test(ST.myTrainLog||''))
-      ? ST.myTrainLog : '!'+ST.myTrainLog;
+    return (p.con>before) ? '컨택 '+before.toFixed(1)+' → '+p.con.toFixed(1)
+      : '!'+before+'→'+p.con;
   })()`));
   T('쉬는 건 공짜다', ()=>ev("trainCost(pmTrainDef('rest'))===0"));
   T('0 밑으로는 안 내려간다', ()=>ev("(function(){ST.coin=1;coinAdd(-99);return ST.coin===0;})()"));

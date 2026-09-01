@@ -1086,11 +1086,38 @@ body.pl-lock{position:fixed;left:0;right:0;width:100%;overflow:hidden;overscroll
   background:#0d1117;overflow:hidden;overscroll-behavior:contain;
   padding:calc(6px + env(safe-area-inset-top)) 10px calc(8px + env(safe-area-inset-bottom))}
 #decision.sheet .pl-wrap{display:flex;flex-direction:column;height:100%;min-height:0;padding:0}
+/* [제보] "도루 그 칸땜에 그 그라운드가 안보이고 도루 뛰어서 성공했는지도 안보임"
+   판단창은 **머리 / 그라운드 / 조작** 세 칸이다. 그런데 .defbox 가
+   overflow-y:auto 였다. 화면이 짧으면(사파리 주소창이 있는 아이폰)
+   그라운드가 스크롤 안쪽으로 밀려 들어갔다 — 손가락은 아래 버튼에
+   있는데 눈으로 볼 것이 위로 숨는다.
+   이제 그라운드가 **남는 높이를 전부 먹고** 조작은 바닥에 붙는다.
+   스크롤은 아예 없앤다. 세 칸이 다 보이거나, 아무것도 안 보이거나다. */
 #decision.sheet .defbox{flex:1;min-height:0;display:flex;flex-direction:column;
-  margin-top:7px;overflow-y:auto;overscroll-behavior:contain}
-#decision.sheet .runstage{flex:0 1 auto;margin:6px 0;display:flex;
-  align-items:center;justify-content:center;min-height:0}
-#decision.sheet .runcv{width:auto;max-width:100%;max-height:42vh}
+  margin-top:7px;overflow:hidden;overscroll-behavior:contain}
+#decision.sheet .runstage{flex:1 1 auto;margin:6px 0;display:flex;
+  align-items:center;justify-content:center;min-height:60px;position:relative}
+#decision.sheet .runcv{width:auto;max-width:100%;height:100%;max-height:100%}
+/* 나머지는 제 높이만 먹는다 — 눌러야 할 것이 줄어들면 안 된다 */
+#decision.sheet .rb-t,#decision.sheet .rb-bar,#decision.sheet .rb-note,
+#decision.sheet .rb-row,#decision.sheet .lead-grid,#decision.sheet .baserow,
+#decision.sheet .joywrap,#decision.sheet .help-b{flex:0 0 auto}
+/* [버그 이력] 처음 설명 카드의 「알겠다」 가 width:100% 라, 세로 flex 안에서
+   위아래로도 늘어나 **화면 절반짜리 초록 덩어리**가 됐다. */
+#decision.sheet .pl-wrap>.rb-b{flex:0 0 auto}
+/* 판정은 그라운드 **위에** 얹는다. 글줄로 두면 아래로 밀려서 안 보인다 */
+.rb-verdict{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.92);
+  z-index:3;display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:9px 20px;border-radius:13px;background:rgba(9,12,16,.90);
+  border:2px solid var(--gold);color:var(--gold);max-width:86%;
+  pointer-events:none;opacity:0;transition:opacity .13s,transform .13s}
+.rb-verdict.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.rb-verdict.out{color:#7fc48f;border-color:#7fc48f}
+.rb-verdict.safe{color:#e08a70;border-color:#e08a70}
+.rb-verdict>b{display:block;font-size:27px;font-weight:900;letter-spacing:-.6px;
+  line-height:1.1;white-space:nowrap}
+.rb-verdict>span{display:block;font-size:11.5px;font-weight:700;color:var(--dim);
+  letter-spacing:0;line-height:1.35;text-align:center}
 #decision.sheet .joywrap{margin:7px 0 2px}
 #decision.sheet .joy{width:104px;height:104px}
 #decision.sheet .bat-info{margin-top:5px}
@@ -8208,8 +8235,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.13.0';
-const APP_VERSION_NOTE = '상대 팀도 색깔이 생겼다 · 매니저가 하루 종일 붙어 다닌다';
+const APP_VERSION = '3.14.0';
+const APP_VERSION_NOTE = '뜬공은 잡으면 아웃 · 2군에 형기가 없어졌다 · 훈련이 어려워졌다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8230,6 +8257,24 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.14.0', t:'뜬공은 잡으면 아웃 · 2군에 형기가 없어졌다 · 훈련이 어려워졌다', items:[
+    '<b>뜬공은 잡는 순간 아웃이다.</b> 여태 공중에서 잡아놓고도 베이스를 골라 던져야 아웃 처리가 됐다. 그건 야구가 아니다. 이제 공이 떠 있을 때 잡으면 거기서 끝난다 — 던질 데가 없으면 버튼도 안 뜬다',
+    '주자가 2·3루에 있을 때만 <b>태그업 막는 송구</b>를 짧게 물어본다. 「안 던진다」 를 눌러도 아웃은 이미 잡은 거다',
+    '<b>「공 근처만 가면 다 잡은 판정」 을 고쳤다.</b> 닿는 거리를 픽셀로 재고 있었는데 화면에 원근이 들어가 있다 — 같은 26픽셀이 내야에서는 9.7m 인데 <b>외야에서는 22m</b> 였다. 외야수가 22m 안에만 들어가면 다 잡았다. 이제 미터로 잰다',
+    '내야는 예전 그대로(9.7m)고 외야만 절반으로 줄었다. 대신 <b>확실히 잡는 거리</b>를 따로 뒀다 — 원이 두 개다. 안쪽 원에 넣으면 호수비, 바깥 원에 걸치면 겨우 잡는다',
+    '뜬공은 공을 쫓는 게 아니라 떨어질 자리로 가는 것이다. <b>낙구 지점을 점선으로 찍어 준다</b>. 남은 거리도 그 자리 배율로 다시 잰다 — 외야에서 실제보다 짧게 나오던 것',
+    '<b>도루 판단창에서 그라운드가 안 보이던 것.</b> 화면이 짧으면(사파리 주소창 있는 아이폰) 그라운드가 스크롤 안쪽으로 밀려 들어갔다. 이제 그라운드가 남는 높이를 전부 먹고 버튼은 바닥에 붙는다. 스크롤이 없다',
+    '<b>도루가 성공했는지 안 보이던 것.</b> 아웃/세이프를 맨 윗줄과 맨 아랫줄에만 적고 있었다. 이제 <b>그라운드 한가운데에 크게</b> 뜬다. 밀릴 데가 없다',
+    '<b>2군에 기간이 없어졌다.</b> 여태 2군은 몇 주짜리 형기였다 — 4주를 받으면 4할을 쳐도 4주를 채웠고, 1할을 쳐도 4주 뒤엔 올라왔다. 그건 2군이 아니라 대기실이다',
+    '이제 <b>타율이 기준을 넘기는 그 주에 올라온다.</b> 12타석은 봐야 판단하고, 오래 있으면 기준이 조금씩 내려간다(스무 타석마다 2푼, 2할까지)',
+    '드래프트 순번은 기간이 아니라 <b>기준의 높이</b>를 정한다 — 앞 순번은 .230 만 쳐도 올리고 끝자락은 .330 을 쳐야 부른다. 누구든 2군은 거친다',
+    '내려갈 때도 기간이 아니라 기준을 받는다. 1군에서 못 친 만큼 기준이 조금 높다',
+    '실존 선수의 2군도 같다. 주를 세지 않고 2군 성적으로 올라온다',
+    '<b>2군인데 1군 라인업에 들어가던 것.</b> 아홉이 안 되면 로스터 전원으로 되돌리고 있었는데 그 안에 2군이 그대로 있었다. 이제 2군은 맨 뒤로 민다 — 부상·결장자를 먼저 쓰고, 정말 수가 없을 때만 선다',
+    '<b>훈련 세션이 너무 쉬웠다.</b> 초록 칸이 <b>항상 한가운데</b> 있어서 몇 번 해보면 박자를 외워 열 개를 다 맞혔다. 그건 실력이 아니라 암기다. 이제 칸이 <b>매번 다른 자리</b>에 서고, 폭이 좁아지고, 뒤로 갈수록 더 빨라진다',
+    '능력치가 높을수록 칸이 넓어지는 건 그대로다 — 키우면 실제로 쉬워진다. 컨택 20 이면 7%, 80 이면 16%',
+    '훈련 값도 위쪽을 세웠다. 초반(20~45)은 거의 그대로고, 60 이 넘어가면 한 칸에 11~36코인이다. 「1군 벽」 이 능력치에만 있는 게 아니라 값에도 있다',
+  ]},
   {v:'3.13.0', t:'상대 팀도 색깔이 생겼다 · 매니저가 하루 종일 붙어 다닌다', items:[
     '<b>상대 23팀에 감독 성향이 붙었다.</b> 여태 상대는 능력치만 달랐지 벤치는 다 똑같이 굴렸다. 도루가 극단적인 팀도 실제로는 안 뛰었다. 이제 「뛰는 팀」은 정말로 뛰고 「골라 나감」은 정말로 초구를 안 친다',
     '성향은 여덟 가지다 — 뛰는 팀 · 안 뛰는 팀 · 한 방 노림 · 막 휘두른다 · 골라 나감 · 맞히는 팀 · 단타 위주 · 색깔 없음. 지어낸 게 아니라 그 팀 2026시즌 실제 기록에서 뽑았다',
@@ -11297,6 +11342,7 @@ LiveGame.prototype.consumePlayMods = function(off, def){
      답을 했든(=_defPlay) 창이 도중에 닫혔든 상관없다.
      [제보] "수비하라고 준비해서 가고 있었는데 삼진 나오거나" */
   const shown=(this._defShown===this.paSeq) && def.isUser;
+  const wasAir=!!this._defAir; this._defAir=false;   // 한 타석짜리다. 여기서 지운다
   if(shown){
     this._defShown=-1;
     const mp=this._defShownPos||((typeof myPos==='function')?myPos():null);
@@ -11307,7 +11353,9 @@ LiveGame.prototype.consumePlayMods = function(off, def){
        잡은 타구가 35% 확률로 「뜬공 아웃 (중앙 102m)」 으로 적혔다.
        비거리까지 그 플래그를 따라가니 장면과 기록이 통째로 어긋났다. */
     out={...(out||{}), inPlay:true,
-         defGb: (typeof DEF_INFIELD!=='undefined' && mp) ? (DEF_INFIELD.indexOf(mp)>=0) : null,
+         /* 공중에서 잡았으면 자리와 상관없이 뜬공이다 (내야 팝플라이 포함) */
+         defGb: wasAir ? false
+                : ((typeof DEF_INFIELD!=='undefined' && mp) ? (DEF_INFIELD.indexOf(mp)>=0) : null),
          /* 내 글러브 앞까지 온 타구가 3루타나 그라운드 홈런이 될 수는 없다.
             [제보] "수비해서 송구 했는데 3루타" — 내야는 2루타까지,
             외야는 3루타까지. 담장을 넘는 일은 없다. */
@@ -14222,7 +14270,7 @@ function newSeason(){
     unhappy:{}, spark:{}, career:{}, teamCareer:null, milestones:[], firsts:{}, weather:'clear',
     playoff:null, form:{}, hall:[], awardBonus:{}, awardSnap:null, awardReply:null,
     ultimatum:{}, broken:{}, leftPlayers:carriedLeft, signedIds:carriedSigned, noCar:{},
-    farm:carriedFarm, myFarm:0, farmMe:null, farmMove:-99, farmReal:{},
+    farm:carriedFarm, myFarm:0, farmMe:null, farmMove:-99, farmReal:{}, farmBar:0.280,
     trades:[], tradeRound:-99,
     /* 감독은 시즌이 바뀌어도 그대로 간다 — 물려받았으면 계속 그 사람이다 */
     coachPid:(typeof ST!=='undefined'&&ST&&ST.coachPid)?ST.coachPid:null,
@@ -14550,7 +14598,21 @@ function myLineupBias(pid){
 function recommendLineup(){
   const t=TBYID['wwzw'];
   const pool=t.players.filter(p=>isAvailable(p.id));
-  const use=pool.length>=9?pool:t.players;
+  /* [제보] "2군인데 왜 1군들 라인업에 들어가고"
+     아홉이 안 되면 **로스터 전원**으로 되돌리고 있었다. 그 안에 2군에
+     내려둔 사람이 그대로 들어 있어서, 화면에는 「2군」 이라고 붙어 있는
+     사람이 4번을 쳤다. 몰수패를 막으려고 둔 길인데 거짓말이 됐다.
+     2군은 **맨 뒤로 민다** — 부상·결장자를 먼저 쓰고, 정말 다른 수가
+     없을 때만 선다. 그리고 그럴 상황이면 farmWeek 이 그 주에 진짜로
+     콜업을 한다(healthy<11).                                       */
+  const inFarm=(id)=>((typeof isFarmed==='function' && isFarmed(id))
+    || ((ST&&(ST.myFarm||0)>0) && id===((ST&&ST.playerId)||MYID)));
+  let use=pool;
+  if(use.length<9){
+    const hurt=t.players.filter(p=>!isAvailable(p.id) && !inFarm(p.id));
+    use=pool.concat(hurt);
+  }
+  if(use.length<9) use=t.players;      // 마지막 — 몰수패보다는 낫다
   const sc=p=>p.con*1.1+p.pow*0.9+p.eye*0.7+p.spd*0.5
     +(ST&&ST.cond?(ST.cond[p.id]-70)*0.25:0)
     +myLineupBias(p.id);        // 감독과 한 약속이 여기서 갈린다
@@ -15898,17 +15960,19 @@ function farmRealWeek(rng){
     const pr=Math.max(0.12,Math.min(0.68, 0.22+(((p&&p.con)||45)-40)*0.0070));
     let h=0; for(let i=0;i<ab;i++) if(rng()<pr) h++;
     rec.g++; rec.ab+=ab; rec.h+=h;
-    rec.weeks--;
-    if(rec.weeks<=0){
-      const avg=rec.ab?rec.h/rec.ab:0;
-      const up=avg>=0.280;
+    /* [요청] 여기도 기간이 아니라 성적이다. 2군에서 쳐야 올라온다.
+       실존 선수 기준은 2할8푼 고정 — 내 기준(드래프트 순번)과 다르다. */
+    const avg=rec.ab?rec.h/rec.ab:0;
+    const ease=Math.min(0.060, Math.floor(rec.ab/20)*0.020);
+    const need=Math.max(0.220, 0.280-ease);
+    if(rec.ab>=FARM_MIN_AB && avg>=need){
       delete R[pid];
-      if(up) ST.morale[pid]=Math.min(100,(ST.morale[pid]||70)+12);
+      ST.morale[pid]=Math.min(100,(ST.morale[pid]||70)+12);
       msgs.push({type:'farm', title:`${nameOf(pid)} 1군 복귀`,
-        body:(cid?nameOf(cid):'감독')+`: "`+
-          (up?`2군에서 ${rec.ab}타수 ${rec.h}안타 쳤다. 올라와라"`
-             :`이제 됐다. 다시 해보자"`),
-        effect: up?'감각을 찾아왔다':'복귀 — 아직은 봐야 안다'});
+        body:(cid?nameOf(cid):'감독')+`: "2군에서 ${rec.ab}타수 ${rec.h}안타 (${fmt3(avg)}) 쳤다. 올라와라"`,
+        effect:'감각을 찾아왔다'});
+    } else {
+      rec.weeks=(rec.weeks||0)+1;      // 몇 주째인지만 센다. 형기가 아니다
     }
   });
   return msgs;
@@ -15986,7 +16050,6 @@ function farmWeek(rng){
 
   /* 내가 2군에 있으면 — 올라갈 때가 됐나 */
   if((ST.myFarm||0)>0){
-    ST.myFarm--;
     const mine=ST.farmMe||{g:0,ab:0,h:0};
     /* [버그] 2군 경기를 **직접 쳤는데도** 여기서 가짜 타석을 또 굴려
        기록에 얹고 있었다. 내가 4타수 3안타를 치고 와도 그 위에 3타수
@@ -16004,25 +16067,28 @@ function farmWeek(rng){
       mine.g++; mine.ab+=ab; mine.h+=h;
     }
     ST.farmMe=mine;
-    if(ST.myFarm<=0){
-      ST.myFarm=0;
-      const avg=mine.ab?mine.h/mine.ab:0;
-      const up=avg>=0.280;
-      ST.farmMe=null;
+    /* 기간이 없다 — **친 만큼** 올라간다 */
+    const avg=mine.ab?mine.h/mine.ab:0;
+    const bar=farmBar();
+    const ease=Math.min(0.080, Math.floor(mine.ab/20)*0.020);
+    const need=Math.max(0.200, bar-ease);
+    if(farmReady(mine)){
+      ST.myFarm=0; ST.farmMe=null;
       /* [제보] "왜 올라오자마자 주전보장 3경기가 된거야"
          맞는 말이다. 올려주는 것까지가 감독의 일이고, 자리는 내가
          뺏는 거다. 콜업에 보장을 안 붙인다.                       */
-      msgs.push({type:'farm', title: up?'1군 콜업':'1군 복귀',
-        body: (cid?nameOf(cid):'감독')+`: "`+
-          (up?`2군에서 ${mine.ab}타수 ${mine.h}안타. 올라와라. 자리는 니가 만들어라"`
-             :`이제 됐다. 다시 해보자"`),
+      msgs.push({type:'farm', title:'1군 콜업',
+        body:(cid?nameOf(cid):'감독')+`: "2군에서 ${mine.ab}타수 ${mine.h}안타 (${fmt3(avg)}). 올라와라. 자리는 니가 만들어라"`,
         effect:'1군 등록 — 라인업은 매주 다시 짠다'});
     } else {
-      msgs.push({type:'farm', title:`2군 ${ST.myFarm+1}주차`,
+      const left=Math.max(0, FARM_MIN_AB-mine.ab);
+      msgs.push({type:'farm', title:'2군 — 아직이다',
         body:(playedSelf?`직접 친 기록으로 센다`:`이번 주 ${ab}타수 ${h}안타`)+
           ` · 누적 ${mine.ab}타수 ${mine.h}안타`+
-          (mine.ab?` (${fmt3(mine.h/mine.ab)})`:''),
-        effect:`2할8푼을 넘기면 올라간다 · 남은 ${ST.myFarm}주`});
+          (mine.ab?` (${fmt3(avg)})`:''),
+        effect: left>0 ? (`${FARM_MIN_AB}타석은 봐야 판단한다 — ${left}타석 남았다`)
+                       : (`${fmt3(need)} 을 넘기면 그 주에 올린다`+
+                          (ease>0?` (오래 있어서 기준이 ${fmt3(bar)}에서 내려왔다)`:''))});
     }
     return msgs;
   }
@@ -16068,11 +16134,14 @@ function farmWeek(rng){
     if(isPlayerMode() && (ST.myGuarantee||0)<=0 && !(ST.injury&&ST.injury[me])){
       const b=ST.bat[me]||blankBat();
       if(b.ab>=14 && b.h/b.ab < 0.190 && rng()<0.45){
-        ST.myFarm=2; ST.farmMe={g:0,ab:0,h:0}; ST.farmMove=ST.round;
+        /* 내려갈 때 기준을 정한다 — 1군에서 못 친 만큼 조금 높다.
+           기간은 없다. 2군에서 그 타율을 치면 그 주에 올라온다.     */
+        ST.farmBar=Math.max(0.260, Math.min(0.330, 0.280+(0.190-b.h/b.ab)*0.8));
+        ST.myFarm=1; ST.farmMe={g:0,ab:0,h:0}; ST.farmMove=ST.round;
         ST.morale[me]=Math.max(10,(ST.morale[me]||70)-16);
         msgs.push({type:'farm', title:'2군행',
           body:(cid?nameOf(cid):'감독')+`: "${fmt3(b.h/b.ab)} 다. 2군에서 좀 치고 와라"`,
-          effect:'2주간 1군 경기에 안 나간다 · 2할8푼을 넘기면 올라온다'});
+          effect:`기간은 없다 — 2군에서 ${FARM_MIN_AB}타석 이상 ${fmt3(ST.farmBar)} 을 치면 올라온다`});
         return msgs;
       }
     }
@@ -16342,7 +16411,7 @@ function farmLiveStart(){
   FARM_B=B; ST.farmPlaying=true;
   const c=$('#view'); c.innerHTML='';
   const head=el('div','card');
-  head.innerHTML='<div class="hs-yr">2군 · 남은 '+(ST.myFarm||0)+'주</div>'+
+  head.innerHTML='<div class="hs-yr">2군 · 콜업 기준 '+fmt3(farmBar())+'</div>'+
     '<div class="card-h">2군 경기</div>'+
     '<div class="hs-kind">'+B.us.name+' vs '+B.foe.name+' · '+FARM_INN+'이닝</div>';
   c.appendChild(head);
@@ -17756,15 +17825,17 @@ function hsGraduate(){
     /* 99년생이면 이건이 내 동기다 — 팀을 만든 어른이 나를 뽑는다.
        그 사람은 첫 주에 이건에게 넘기고 빠진다. */
     ST.founderOn=!!entryCoach().founder;
-    const wk=entryFarmWeeks(ST.entryDraft.myNo);
+    const bar=entryFarmBar(ST.entryDraft.myNo);
     ST.notices=ST.notices||[];
-    ST.myFarm=wk; ST.farmMe={g:0,ab:0,h:0}; ST.farmDone=0; ST.farmDoneSeen=0;
+    ST.farmBar=bar;
+    ST.myFarm=1; ST.farmMe={g:0,ab:0,h:0};
+    ST.farmDone=0; ST.farmDoneSeen=0;
     ST.notices.push({type:'farm',
       title:ST.entryDraft.year+' 드래프트 — 전체 '+ST.entryDraft.myNo+'순위',
       body:'우완좌완이 '+ST.entryDraft.myRound+'라운드 '+ST.entryDraft.myIn+'순위로 불렀다. '+
-        (wk<=1?'앞 순번이라 한 주만 2군에서 보고 올린다.'
-              :wk+'주 동안 2군에서 친다.'),
-      effect:'2할8푼을 넘기면 올라간다 · 주전 보장은 없다'});
+        '2군에서 시작한다. 기간은 없다 — '+fmt3(bar)+' 을 치면 그 주에 올린다.'+
+        (bar<=0.240?' 앞 순번이라 기준이 낮다. 한두 주면 올라온다.':''),
+      effect:'2군 '+FARM_MIN_AB+'타석 이상 · 타율 '+fmt3(bar)+' 넘기면 콜업 · 주전 보장은 없다'});
   }
   return out;
 }
@@ -18943,10 +19014,16 @@ function renderHomePlayer(){
     const fc=el('div','card');
     fc.appendChild(el('div','card-h','2군'));
     const mine=ST.farmMe||{g:0,ab:0,h:0};
+    const _bar=farmBar();
+    const _ease=Math.min(0.080, Math.floor((mine.ab||0)/20)*0.020);
+    const _need=Math.max(0.200, _bar-_ease);
+    const _left=Math.max(0, FARM_MIN_AB-(mine.ab||0));
     fc.appendChild(Object.assign(el('div','mystatus out'),{innerHTML:
-      '<div class="ms-big">2군 — 남은 '+ST.myFarm+'주</div>'+
+      '<div class="ms-big">2군 — 기준 '+fmt3(_need)+'</div>'+
       '<div class="ms-sub">'+(mine.ab?mine.ab+'타수 '+mine.h+'안타 ('+fmt3(mine.h/mine.ab)+')':'아직 안 뛰었다')+'</div>'+
-      '<div class="ms-why">2할8푼을 넘기면 올라간다</div>'}));
+      '<div class="ms-why">'+(_left>0
+        ? (FARM_MIN_AB+'타석은 봐야 판단한다 — '+_left+'타석 남았다')
+        : '기간은 없다. 이 타율을 넘기는 주에 올라간다')+'</div>'}));
     if(ST.farmLast){
       const L=ST.farmLast;
       fc.appendChild(Object.assign(el('div','trn-last'),{innerHTML:
@@ -22274,7 +22351,7 @@ function coachNoteFor(pid){
   /* 왜 뺐는지 — 제일 앞에 */
   if(inj) bits.push('부상 — '+inj.name+' '+injLenText(inj.games));
   else if(ab) bits.push('결장 — '+ab);
-  else if(pid===me && (ST.myFarm||0)>0) bits.push('2군 — 남은 '+ST.myFarm+'주');
+  else if(pid===me && (ST.myFarm||0)>0) bits.push('2군 — 콜업 기준 '+fmt3(farmBar()));
   else if(pid===me && (ST.myBenched||0)>0) bits.push('약속을 못 지켰다 — 남은 '+ST.myBenched+'경기');
   else if(!(ST.lineup||[]).some(x=>x.id===pid)){
     /* 라인업에 없다. 감독이 본 근거를 대준다 */
@@ -25416,6 +25493,19 @@ function psMtoPx(m, park, ang){
   const rate=(Fpx-PS_IN_PX)/Math.max(1,(F-PS_IN_M));   // 외야 1m 당 픽셀
   return PS_IN_PX+(m-PS_IN_M)*rate;
 }
+/* 그 지점에서 1미터가 몇 픽셀인가.
+   [제보] "플라이 뭐 그냥 공 근처가면 다잡은판정이고"
+   화면은 원근이 들어가 있어서 **내야 1픽셀과 외야 1픽셀의 값이 다르다.**
+   내야는 1px = 0.37m 인데 외야는 1px = 0.85m 다. 그런데 포구 판정은
+   픽셀로 재고 있었다 — 같은 26픽셀이 내야에서는 9.7m, **외야에서는
+   22m** 였다. 야수가 22m 안에만 들어가면 다 잡은 것으로 쳤다.
+   거리를 잴 일이 있으면 여기를 거친다.                            */
+function psPxPerM(park, ang, m){
+  const P=park||psPark();
+  if(m<=PS_IN_M) return PS_IN_PX/PS_IN_M;
+  const F=fenceAt(P,ang), Fpx=F/PS_MPP;
+  return Math.max(0.35, (Fpx-PS_IN_PX)/Math.max(1,(F-PS_IN_M)));
+}
 function psScene(d){
   let s=(d.seq*2654435761)>>>0;
   const rng=()=>{ s=(s*1664525+1013904223)>>>0; return s/4294967296; };
@@ -25759,7 +25849,7 @@ function renderGame(){
       card.appendChild(el('div','card-h','오늘은 안 나간다'));
       card.appendChild(Object.assign(el('div','mystatus out'),{innerHTML:
         '<div class="ms-big">'+(farm?'2군':(inj?inj.name:'결장'))+'</div>'+
-        '<div class="ms-sub">'+(farm?('1군 경기에 못 나간다 · 남은 '+ST.myFarm+'주')
+        '<div class="ms-sub">'+(farm?('1군 경기에 못 나간다 · 콜업 기준 '+fmt3(farmBar()))
           :(inj?(injLenText(inj.games)+' 결장'):('사유 — '+why)))+'</div>'+
         '<div class="ms-why">구장에 안 갔다. 결과는 나중에 단톡으로 본다</div>'}));
       c.appendChild(card);
@@ -29478,12 +29568,25 @@ function renderDefPlay(box, d){
      쫓아가기까지 손이 그 안에 안 들어온다 — 준비 버튼을 눌러도 마찬가지다.
      비행 시간을 내야 2.3~2.9초 · 외야 3.1~4.0초로 늘리고,
      닿는 거리와 발도 조금 얹는다. 잡히면 아웃이라 시간이 곧 난이도다. */
-  const REACH = 16+dv*0.22;
+  /* 닿는 거리는 **미터로** 잡고 그 자리 배율로 픽셀로 바꾼다.
+     내야는 예전과 같은 9.7m 언저리고, 외야는 22m → 9.7m 로 줄었다.
+     [주의] 그렇다고 어렵기만 해지면 안 된다 — 「수비 지금 속도면
+     너무 빡세다」 를 겪은 적이 있다. 그래서 **닿는 거리 안쪽에
+     확실히 잡는 거리(grab)를 따로 뒀다.** 대충 붙으면 손은 대지만
+     깨끗하지 않고, 정확히 들어가야 깨끗하다.                       */
+  const REACH_M = 6.0+dv*0.082;          // 수비45 → 9.7m
+  const GRAB_M  = REACH_M*0.42;          // 수비45 → 4.1m · 이 안이면 깨끗하다
+  const pxPerM  = (typeof psPxPerM==='function')?psPxPerM(park, d.ang, mDraw):1.65;
+  const REACH = REACH_M*pxPerM;
+  const GRAB  = GRAB_M*pxPerM;
   const SPEED = 50+sv*0.66+dv*0.34;
 
   /* 판정이 나면 같은 캔버스 위에 결과를 재생한다 — 새 창을 안 띄운다 */
-  const finish=(q, where, tq)=>{
+  const finish=(q, where, tq, air)=>{
     if(picked)return; picked=true;
+    /* 공중에서 잡았으면 **뜬공**이다. 여태 기록의 땅볼/뜬공을 내 수비
+       자리로만 갈랐다 — 내야수가 잡은 팝플라이가 땅볼 아웃으로 남았다. */
+    LIVE._defAir = !!air;
     /* [요청] "뭐 수비하다가 타구를 맞는다거나 뭐등등"
        손이 안 닿아서 놓친 공일수록 몸에 맞는다. 잘 잡으면 거의 안 맞는다.
        내야가 외야보다 위험하다 — 타구가 빠르고 바운드가 튄다.      */
@@ -29518,19 +29621,22 @@ function renderDefPlay(box, d){
     : (dir+'으로 온다 — 쫓아가라');
   try{
     sc=defScene(stage, {park, ang:d.ang, m:mDraw, pos, flyMs,
-      reach:REACH, speed:SPEED, arm:av,
+      reach:REACH, grab:GRAB, pxPerM, speed:SPEED, arm:av,
       bases:(LIVE.bases||[null,null,null]).slice(),
       hasFirst:!!LIVE.bases[0], outs:LIVE.outs,
       onTick:(msg)=>{ if(note && msg) note.innerHTML=msg; },
-      onPhase:(ph, list)=>{
+      /* tag 가 참이면 **아웃은 이미 잡은** 상태다 — 태그업만 막는 송구라
+         「안 던진다」 가 같이 뜬다. 그냥 두면 뜬공 아웃으로 끝난다. */
+      onPhase:(ph, list, tag)=>{
         if(ph!=='throw') return;
         joyWrap.style.display='none';
         baseRow.style.display='';
         baseRow.innerHTML='';
         (list||[]).forEach(t=>{
-          const b=el('button','base-b'+(t.b===2&&LIVE.bases[0]?' hot':''));
-          b.innerHTML='<span>'+t.label+'</span>'+
-            (t.b===2&&LIVE.bases[0]?'<i>병살 노린다</i>':'<i>여기로 던진다</i>');
+          const b=el('button','base-b'+(!tag&&t.b===2&&LIVE.bases[0]?' hot':''));
+          b.innerHTML='<span>'+t.label+'</span><i>'+
+            (tag?'태그업 막는다'
+               :((t.b===2&&LIVE.bases[0])?'병살 노린다':'여기로 던진다'))+'</i>';
           const fire=(ev)=>{ if(ev&&ev.preventDefault)ev.preventDefault();
             if(sc&&sc.throwTo) sc.throwTo(t.b);
             baseRow.querySelectorAll('button').forEach(x=>{x.disabled=true;});
@@ -29539,10 +29645,21 @@ function renderDefPlay(box, d){
           b.onclick=fire;
           baseRow.appendChild(b);
         });
+        if(tag){
+          const nb=el('button','base-b stay');
+          nb.innerHTML='<span>안 던진다</span><i>뜬공 아웃으로 끝낸다</i>';
+          const fire2=(ev)=>{ if(ev&&ev.preventDefault)ev.preventDefault();
+            baseRow.querySelectorAll('button').forEach(x=>{x.disabled=true;});
+            baseRow.style.opacity='.4';
+            if(sc&&sc.noThrow) sc.noThrow(); };
+          nb.addEventListener('pointerdown', fire2);
+          nb.onclick=fire2;
+          baseRow.appendChild(nb);
+        }
       },
       onTitle:(t2,col)=>{ const t=box2.querySelector('.rb-t');
         if(t){ t.textContent=t2; if(col) t.style.color=col; } },
-      onDone:(q, where, tq)=>finish(q, where, tq)});
+      onDone:(q, where, tq, air)=>finish(q, where, tq, air)});
   }catch(e){ sc=null; }
   if(!sc){
     /* 캔버스가 없는 환경(테스트 등) — 능력치대로 알아서 잡고 1루로 */
@@ -29608,8 +29725,18 @@ function defScene(host, o){
      송구 원이 줄어드는 시간(1.4초)과 견줘도 여유가 생긴다.       */
   const RUN_MS=3000;
 
+  /* 이 타구가 포물선을 그리나 — ballAt 의 z 조건과 **같은 식**을 쓴다.
+     두 군데서 따로 쓰면 화면에서는 떠가는데 판정은 땅볼이 된다.     */
+  const isFly = (o.m>40);
+  const GRAB = (o.grab!=null)?o.grab:(o.reach*0.42);
+  const MPP  = (o.pxPerM&&o.pxPerM>0)?(1/o.pxPerM):PS_MPP;   // 이 자리 1px 이 몇 m
   let fx=home.x, fy=home.y, tx=home.x, ty=home.y;
-  let best=9999, stop=false, phase='chase', caught=false;
+  let best=9999, stop=false, phase='chase', caught=false, airOut=false;
+  /* [주의] 뜬공을 채점할 때 **공까지의 거리**를 쓰면 안 된다.
+     공은 아직 날아오는 중이라, 낙구 지점에 정확히 서 있어도 그 순간
+     거리는 딱 「닿는 거리」다 — 완벽하게 자리를 잡아도 최저 등급이
+     나왔다. 뜬공은 **낙구 지점까지 얼마나 붙었나**로 잰다.        */
+  let bestLand=9999;
   let catchAt=0, throwAt=0, tgt=null, q=0, tq=0;
   const t0=Date.now();
   let last=t0;
@@ -29657,7 +29784,7 @@ function defScene(host, o){
     if(o.onTick) o.onTick('공이 '+bestB.label+'로 간다');
     /* 2루 송구는 병살을 노린 것이다 — 엔진이 그렇게 받는다 */
     const where=(bestB.b===2 && o.hasFirst)?'at:lead':'at:first';
-    setTimeout(()=>{ if(o.onDone) o.onDone(q, where, tq); }, 520);
+    setTimeout(()=>{ if(o.onDone) o.onDone(q, where, tq, airOut); }, 520);
   };
   /* 캔버스를 눌러도 되고 아래 버튼을 눌러도 된다 — 같은 일을 한다 */
   const tapBase=(ev)=>{
@@ -29723,18 +29850,51 @@ function defScene(host, o){
     fy=Math.max(8, Math.min(PSH-8, fy));
     const b=ballAt(Math.min(now, phase==='chase'?now:catchAt));
     const near=Math.hypot(b.x-fx, b.y-fy);
+    const dLand=Math.hypot(land.x-fx, land.y-fy);
     if(phase==='chase'){
-      if(now>=o.flyMs*0.55) best=Math.min(best, near);
+      if(now>=o.flyMs*0.55){ best=Math.min(best, near); bestLand=Math.min(bestLand, dLand); }
       /* 공에 닿았다 — 그 자리에서 송구 단계로 */
       if(near<=o.reach && now>=o.flyMs*0.85){
-        q=Math.max(0.55, Math.min(1, 1-best/Math.max(1,o.reach*2.1)));
-        caught=true; phase='throw'; catchAt=now;
-        if(o.onTitle) o.onTitle(q>=0.86?'잡았다 — 호수비!':'잡았다','#7fc48f');
-        if(o.onTick) o.onTick('<b>어디로 던질까.</b> 늦을수록 송구가 나빠진다');
-        if(o.onPhase) o.onPhase('throw', throwables());
+        /* 확실히 잡는 거리(grab) 안이면 1, 겨우 닿는 끝이면 0.55.
+           그 사이는 비례해서 깎는다 — 대충 붙은 것과 정확히 들어간 것을
+           같은 포구로 치던 게 「공 근처가면 다 잡은 판정」이었다.      */
+        /* 뜬공은 낙구 지점 기준, 굴러온 공은 공 기준으로 잰다 */
+        const air0=(isFly && now < o.flyMs);
+        const dd0=air0?Math.min(dLand,bestLand):best;
+        const over=Math.max(0, dd0-GRAB)/Math.max(1,(o.reach-GRAB));
+        q=Math.max(0.55, Math.min(1, 1-over*0.45));
+        caught=true; catchAt=now;
+        /* [제보] "플라이볼도 뭐 송구해야 아웃이되네"
+           맞는 말이다. **공중에서 잡은 뜬공은 그 순간 아웃이다.**
+           베이스를 골라 던져야 아웃이 되던 건 야구가 아니다.
+           공이 아직 떠 있을 때(now<flyMs) 잡았으면 여기서 끝낸다.
+           손끝에 겨우 걸렸어도 잡은 건 잡은 거다 — q 를 올려서
+           엔진이 무조건 아웃으로 받게 한다(defForce 문턱 0.84).     */
+        if(air0){
+          airOut=true; q=Math.max(0.88, q);
+          if(o.onTitle) o.onTitle(over<=0.15?'잡았다 — 호수비!':'잡았다 — 아웃!','#7fc48f');
+          /* 주자가 2·3루에 있으면 태그업이 남는다. 그때만 물어본다 */
+          const tagUp = !!((o.bases&&(o.bases[1]||o.bases[2])) && (o.outs||0)<2);
+          if(!tagUp){
+            phase='flyout';
+            if(o.onTick) o.onTick('<b>뜬공 아웃.</b> 던질 데가 없다');
+            setTimeout(()=>{ if(o.onDone) o.onDone(q, 'def:none', null, true); }, 620);
+          } else {
+            phase='throw';
+            if(o.onTick) o.onTick('<b>아웃은 잡았다.</b> 주자가 태그업한다 — 던질까');
+            if(o.onPhase) o.onPhase('throw', throwables(), true);
+          }
+        } else {
+          phase='throw';
+          if(o.onTitle) o.onTitle(q>=0.92?'잡았다 — 호수비!':'잡았다','#7fc48f');
+          if(o.onTick) o.onTick('<b>어디로 던질까.</b> 늦을수록 송구가 나빠진다');
+          if(o.onPhase) o.onPhase('throw', throwables());
+        }
       } else if(now>=total){
-        q=Math.max(0,Math.min(1,1-best/Math.max(1,o.reach*2.1)));
-        caught=(q>=0.5);
+        const over2=Math.max(0, best-GRAB)/Math.max(1,(o.reach-GRAB));
+        q=(best<=o.reach) ? Math.max(0.55, 1-over2*0.45)
+                          : Math.max(0, 0.5-(best-o.reach)/Math.max(1,o.reach)*0.5);
+        caught=(best<=o.reach);
         if(caught){ phase='throw'; catchAt=now;
           if(o.onTitle) o.onTitle('잡았다','#7fc48f');
           if(o.onTick) o.onTick('<b>어디로 던질까.</b> 늦을수록 송구가 나빠진다');
@@ -29748,10 +29908,17 @@ function defScene(host, o){
       }
     }
     /* 송구 단계에서 시간이 너무 흐르면 알아서 1루로 */
-    if(phase==='throw' && now-catchAt>1900){
-      tq=0.05; tgt={b:1,label:'1루'}; throwAt=now; phase='throw2';
-      if(o.onTitle) o.onTitle('늦었다 — 1루로','#e08a70');
-      setTimeout(()=>{ if(o.onDone) o.onDone(q,'at:first',tq); }, 480);
+    if(phase==='throw' && now-catchAt>(airOut?1400:1900)){
+      if(airOut){
+        /* 태그업을 안 막았다 — 그래도 타자는 이미 아웃이다 */
+        phase='flyout';
+        if(o.onTitle) o.onTitle('안 던졌다 — 아웃','#7fc48f');
+        setTimeout(()=>{ if(o.onDone) o.onDone(q,'def:none',null,true); }, 460);
+      } else {
+        tq=0.05; tgt={b:1,label:'1루'}; throwAt=now; phase='throw2';
+        if(o.onTitle) o.onTitle('늦었다 — 1루로','#e08a70');
+        setTimeout(()=>{ if(o.onDone) o.onDone(q,'at:first',tq); }, 480);
+      }
     }
 
     g.setTransform(2,0,0,2,0,0);
@@ -29773,6 +29940,15 @@ function defScene(host, o){
     if(phase==='chase'){
       g.strokeStyle='rgba(255,255,255,.30)'; g.lineWidth=1.5;
       g.beginPath(); g.moveTo(HX,HY); g.lineTo(b.x,b.y); g.stroke();
+      /* 뜬공이면 떨어질 자리를 찍어 준다 — 여기로 가라는 뜻이다 */
+      if(isFly && now<o.flyMs){
+        g.strokeStyle='rgba(255,209,92,.75)'; g.lineWidth=1.6;
+        g.setLineDash([3,3]);
+        g.beginPath(); g.arc(land.x,land.y,7,0,Math.PI*2); g.stroke();
+        g.setLineDash([]);
+        g.beginPath(); g.moveTo(land.x-4,land.y); g.lineTo(land.x+4,land.y);
+        g.moveTo(land.x,land.y-4); g.lineTo(land.x,land.y+4); g.stroke();
+      }
       psBall(g,b.x,b.y,b.z);
     } else if(phase==='throw'){
       psBall(g,fx,fy-2,0);
@@ -29788,9 +29964,14 @@ function defScene(host, o){
     }
     /* 내 야수 + 글러브 범위 */
     if(phase==='chase'){
-      g.strokeStyle=(near<o.reach)?'rgba(127,196,143,.85)':'rgba(255,209,92,.55)';
-      g.lineWidth=(near<o.reach)?2.2:1.5;
+      /* 바깥 원 = 손이 닿는 데까지 · 안쪽 원 = 깨끗하게 잡는 데.
+         안쪽에 넣어야 호수비다. 눈으로 보이니까 목표가 생긴다.   */
+      g.strokeStyle=(near<o.reach)?'rgba(127,196,143,.75)':'rgba(255,209,92,.45)';
+      g.lineWidth=(near<o.reach)?2:1.4;
       g.beginPath(); g.arc(fx,fy,o.reach,0,Math.PI*2); g.stroke();
+      g.strokeStyle=(near<=GRAB)?'rgba(127,196,143,1)':'rgba(233,228,216,.35)';
+      g.lineWidth=(near<=GRAB)?2.4:1.2;
+      g.beginPath(); g.arc(fx,fy,GRAB,0,Math.PI*2); g.stroke();
     }
     const moving=(phase==='chase' && Math.hypot(dir.x,dir.y)>0.08);
     man(fx,fy,PS_UNI.us,moving,fx<HX);
@@ -29816,10 +29997,17 @@ function defScene(host, o){
     }
     if(phase==='chase' && !toldChase && now>o.flyMs*0.5){ toldChase=true; }
     if(phase==='chase'){
-      const mLeft=Math.round(near*PS_MPP);
-      plate(near<o.reach?'붙었다'
-            :(moving?(mLeft+'m 남았다'):'아래 조이스틱을 밀어라'),
-            near<o.reach?'#7fc48f':(moving?'#e9e4d8':'#ffd15c'), 14);
+      /* [제보] 남은 거리도 평평한 배율로 적고 있었다 — 외야에서는
+         실제보다 짧게 나왔다. 그 자리 배율로 잰다.               */
+      /* 뜬공은 공을 쫓는 게 아니라 **떨어질 자리로** 가는 것이다.
+         그래서 공중일 때는 낙구 지점까지 남은 거리를 적는다.       */
+      const air1=(isFly && now<o.flyMs);
+      const dNow=air1?dLand:near;
+      const mLeft=Math.max(1,Math.round(dNow*MPP));
+      plate(dNow<=GRAB?(air1?'딱 밑이다':'붙었다')
+            :(dNow<o.reach?'손은 닿는다'
+            :(moving?(mLeft+'m 남았다'):'아래 조이스틱을 밀어라')),
+            dNow<=GRAB?'#7fc48f':(dNow<o.reach?'#ffd15c':(moving?'#e9e4d8':'#ffd15c')), 14);
     } else if(phase==='result' && verdictTxt){
       plate(verdictTxt, verdictCol, 19);
     }
@@ -29836,9 +30024,17 @@ function defScene(host, o){
     phase='result';
     setTimeout(()=>{ if(done)done(); }, 1200);
   };
+  /* 태그업을 안 막기로 했다 — 타자는 이미 아웃이다 */
+  const noThrow=()=>{
+    if(phase!=='throw'||!airOut) return;
+    phase='flyout';
+    if(o.onTitle) o.onTitle('안 던졌다 — 아웃','#7fc48f');
+    if(o.onTick) o.onTick('주자는 한 베이스 갔다. 아웃은 아웃이다');
+    setTimeout(()=>{ if(o.onDone) o.onDone(q,'def:none',null,true); }, 420);
+  };
   return { stop:()=>{ stop=true; }, el:cv,
     setDir:(x,y)=>{ dir={x:x||0,y:y||0}; },
-    throwTo,
+    throwTo, noThrow,
     ring:()=>ringOf(Date.now()-t0),
     phase:()=>phase,
     verdictInfo:()=>verdictTxt,
@@ -29983,6 +30179,11 @@ function renderSteal(box, d){
   const box2=el('div','defbox');
   box2.innerHTML='<div class="rb-t">뛴다 — 던질 건가</div>';
   const stage=el('div','runstage'); box2.appendChild(stage);
+  /* [제보] "도루 뛰어서 성공했는지도 안보임"
+     아웃인지 세이프인지를 맨 위 글줄(rb-t)과 맨 아래 설명(rb-note)에만
+     적고 있었다. 둘 다 그라운드 바깥이라 화면이 짧으면 밀려서 안 보인다.
+     **그라운드 한가운데에 얹는다.** 여기는 밀릴 데가 없다.        */
+  const vd=el('div','rb-verdict'); stage.appendChild(vd);
   box2.appendChild(Object.assign(el('div','rb-bar'),{innerHTML:'<i></i>'}));
   box2.appendChild(el('div','rb-note','던지면 잡을 확률이 오른다 · 빠뜨리면 3루까지 준다'));
   const row=el('div','rb-row');
@@ -29999,13 +30200,17 @@ function renderSteal(box, d){
       if(sc)sc.stop();
       const line=(evs||[]).map(e=>String(e.text||'')).find(x=>/도루/.test(x))||'';
       const out=/실패/.test(line);
+      const big = line ? (out?'잡았다 — 아웃!':'세이프') : '뛰지 않았다';
       if(t){
         t.textContent = line?(out?'아웃!':'세이프'):(r?(r.raw||r.label):'');
         t.style.color = line?(out?'#7fc48f':'#e08a70'):'';
       }
       const nt=box2.querySelector('.rb-note');
-      if(nt) nt.textContent = line || '뛰지 않았다';
-      setTimeout(fin, line?1300:500);
+      if(nt) nt.textContent = line || '주자가 안 뛰었다';
+      /* 그라운드 위에 크게 — 이건 못 놓친다 */
+      vd.className='rb-verdict on'+(line?(out?' out':' safe'):'');
+      vd.innerHTML='<b>'+big+'</b>'+(line?'<span>'+line+'</span>':'');
+      setTimeout(fin, line?1700:700);
     });
   };
   const b1=el('button','rb-b stay','안 던진다');
@@ -32055,7 +32260,11 @@ function coinsForGame(res, won, tie){
    [균형] 졸업이 26~50 이라 초반은 2~3코인이다 — 한 경기에 두 번도 산다.
    팀 주전 구간(60~87)에 들어가면 8~23 이라 몇 경기를 모아야 한다.
    그게 「1군 벽」 이 능력치에만 있는 게 아니라 값에도 있다는 뜻이다. */
-const TRAIN_PRICE=[[35,2],[45,3],[55,5],[65,8],[75,12],[85,17],[999,23]];
+/* [제보] "훈련 난이도가 너무쉬운데"
+   세션이 늘 S 였으니 코인이 남아돌았고, 값표도 위쪽이 완만해서 두 시즌이면
+   70대에 닿았다. 세션을 어렵게 만든 만큼 위쪽 값도 같이 세운다 —
+   초반(20~45)은 거의 그대로라 시작이 답답해지지는 않는다.        */
+const TRAIN_PRICE=[[35,2],[45,4],[55,7],[65,11],[75,17],[85,25],[999,36]];
 /* 이 훈련이 지금 건드리는 구간이 얼마인가 */
 function trainLevel(t){
   if(!t || !t.g) return 40;
@@ -35156,13 +35365,38 @@ function entryDraftBuild(gAvg){
           myIn:((myNo-1)%teams)+1, near, mates:mateRows, teams};
 }
 /* 지명 순번이 2군 기간을 정한다 — 감독의 기대치가 그대로 시간이 된다 */
-function entryFarmWeeks(myNo){
-  if(myNo<=10) return 1;
-  if(myNo<=30) return 2;
-  if(myNo<=60) return 4;
-  if(myNo<=90) return 6;
-  return 8;
+/* [요청] "2군 경기 수를 두지말고 2군에서 잘하면 콜업 1군에서 못하면
+           강등이 맞는거야"
+   맞는 말이다. 여태 2군은 **몇 주짜리 형기**였다. 4주를 받으면 2군에서
+   4할을 쳐도 4주를 채워야 올라왔고, 1할을 쳐도 4주 뒤엔 올라왔다.
+   그건 2군이 아니라 대기실이다.
+   이제 기간이 없다. **타율이 기준을 넘으면 그 주에 올라온다.**
+   드래프트 순번은 기간이 아니라 **기준의 높이**를 정한다 —
+   앞 순번은 조금만 쳐도 올려 보고, 뒷 순번은 확실히 쳐야 부른다.  */
+function entryFarmBar(myNo){
+  /* [결정 유지] "2군 안걸치고 왜 바로 1군 온거지?" — **누구든 2군을 거친다.**
+     앞 순번이라고 건너뛰지 않는다. 대신 기준이 낮아서 한두 주면 올라온다. */
+  if(myNo<=10) return 0.230;
+  if(myNo<=30) return 0.260;
+  if(myNo<=60) return 0.290;
+  if(myNo<=90) return 0.310;
+  return 0.330;
 }
+/* 지금 내 콜업 기준. 옛 세이브(기준이 없던 판)는 2할8푼으로 본다 */
+function farmBar(){
+  const b=(ST&&ST.farmBar!=null)?ST.farmBar:0.280;
+  return Math.max(0.200, Math.min(0.400, b));
+}
+/* 올라갈 만큼 쳤나 — 표본이 모자라면 아직 판단할 수 없다.
+   [주의] 못 치면 영영 못 올라오는 건 게임이 아니다. 오래 있으면
+   기준이 조금씩 내려간다 — 스무 타석마다 2푼씩, 2할까지만. */
+function farmReady(rec){
+  const ab=(rec&&rec.ab)||0;
+  if(ab<FARM_MIN_AB) return false;
+  const ease=Math.min(0.080, Math.floor(ab/20)*0.020);
+  return (rec.h/ab) >= Math.max(0.200, farmBar()-ease);
+}
+const FARM_MIN_AB = 12;        // 이만큼은 쳐봐야 안다
 function renderEntry(){
   const c=$('#view'); c.innerHTML='';
   const E=ST&&ST.entryDraft;
@@ -35215,14 +35449,15 @@ function renderEntry(){
     c.appendChild(mc);
   }
 
-  const wk=entryFarmWeeks(E.myNo);
+  const bar=entryFarmBar(E.myNo);
   const nx=el('div','card');
   nx.innerHTML='<div class="card-h">그래서 어디서 시작하나</div>'+
     '<p class="muted">'+
-    (wk<=1?'<b>한 주만 2군에서 본다.</b> 앞 순번이라 감독이 빨리 보고 싶어 한다.'
-          :'<b>'+wk+'주 동안 2군에서 친다.</b> '+
-           (E.myNo>90?'끝자락에 불렸다 — 여기서부터 올라가는 거다.'
-                     :'순번만큼 기다린다. 2할8푼을 넘기면 올라간다.'))+
+    '<b>2군에서 시작한다. 기간은 없다.</b> '+
+    '2군에서 '+FARM_MIN_AB+'타석 이상 <b>'+fmt3(bar)+'</b> 을 치면 그 주에 올린다. '+
+    (bar<=0.240?'앞 순번이라 기준이 제일 낮다 — 한두 주면 올라온다.'
+     :E.myNo>90?'끝자락에 불렸다 — 기준이 제일 높다. 여기서부터 올라가는 거다.'
+     :'순번이 늦을수록 기준이 높다.')+
     '<br>1군 자리는 보장이 없다. <b>자리는 뺏는 거다.</b></p>';
   c.appendChild(nx);
 
@@ -35406,7 +35641,15 @@ function trainGrade(hit){
   if(hit>=4) return {g:'B', coin:4,  c:'#c9a227', say:'그럭저럭'};
   return {g:'C', coin:1, c:'#e08a70', say:'오늘은 안 됐다'};
 }
-/* 판정 폭 — 능력치가 높을수록 넓다. 20 이면 16% · 70 이면 27% */
+/* 판정 폭 — 능력치가 높을수록 넓다.
+   [제보] "훈련 난이도가 너무쉬운데"
+   맞는 말이다. 문제는 폭이 아니라 **초록 칸이 항상 한가운데 있었다**는
+   것이다. 마커는 늘 끝에서 출발하고 칸은 늘 정중앙이라, 몇 번 해보면
+   박자를 외워서 열 개를 다 맞힌다. 그건 실력이 아니라 암기다.
+     · 칸이 **매번 다른 자리**에 선다 (trainZoneAt)
+     · 폭을 좁힌다 — 40이면 21% → 13%
+     · 뒤로 갈수록 더 빨라진다
+   능력치가 높을수록 넓어지는 건 그대로다. 키우면 쉬워져야 한다.   */
 function trainZone(def0){
   const me=(typeof ST!=='undefined'&&ST)?(ST.playerId||MYID):MYID;
   const p=TBYID['wwzw'].players.find(x=>x.id===me);
@@ -35415,7 +35658,14 @@ function trainZone(def0){
     if(def0.pit) v=(p.pitch&&p.pitch[def0.stat]!=null)?p.pitch[def0.stat]:35;
     else v=(p[def0.stat]!=null)?p[def0.stat]:40;
   }
-  return {v:Math.round(v), w:Math.max(11, Math.min(30, 12+v*0.22))};
+  return {v:Math.round(v), w:Math.max(5, Math.min(19, 4+v*0.18))};
+}
+/* 이번 시도에 초록 칸이 설 자리(왼쪽 %) — 매번 다르다.
+   [주의] 끝에 딱 붙으면 마커가 방향을 트는 자리라 오히려 쉬워진다.
+   양쪽 8% 는 비워둔다.                                            */
+function trainZoneAt(w, rnd){
+  const lo=8, hi=Math.max(lo, 100-w-8);
+  return lo + (typeof rnd==='number'?rnd:Math.random())*(hi-lo);
 }
 function trainSessionDef(id){ return TRAIN_SESSIONS.find(x=>x.id===id)||null; }
 function trainSessionDone(){ return (ST&&ST.trainSessAt===((ST.seasonNo||1)*100+(ST.round||0))); }
@@ -35434,7 +35684,8 @@ function renderTrainPlay(){
     '<b style="color:#c9a227">B 4개↑ +4</b> · <b style="color:#e08a70">C +1</b><br>'+
     '<b>공짜다.</b> 번 코인으로 능력치 훈련을 사면 된다. 주에 한 번.<br>'+
     '타자는 배팅·펑고, 투수는 불펜, 이도류는 셋 다 할 수 있다.<br>'+
-    '<span class="dimx">판정 폭은 그 능력치를 탄다 — 컨택이 높으면 배팅 훈련이 쉽다.</span></p>';
+    '<span class="dimx">초록 칸은 <b>매번 다른 자리</b>에 서고 뒤로 갈수록 빨라진다. '+
+    '판정 폭은 그 능력치를 탄다 — 컨택이 높으면 배팅 훈련이 쉽다.</span></p>';
   c.appendChild(head);
 
   if(trainSessionDone()){
@@ -35478,9 +35729,11 @@ function trainRun(def0){
   box.appendChild(bar);
   const zone=bar.querySelector('.tp-zone');
   const mk=bar.querySelector('.tp-mk');
-  zone.style.left=(50-z.w/2)+'%';
-  zone.style.width=z.w+'%';
-  const note=el('div','tp-note','초록 칸에서 눌러라');
+  let zLo=50-z.w/2;                       // 이번 시도의 초록 칸 왼쪽. 매번 바뀐다
+  const placeZone=()=>{ zLo=trainZoneAt(z.w);
+    zone.style.left=zLo+'%'; zone.style.width=z.w+'%'; };
+  placeZone();
+  const note=el('div','tp-note','초록 칸에서 눌러라 — 칸은 매번 자리가 바뀐다');
   box.appendChild(note);
   const dots=el('div','tp-dots');
   box.appendChild(dots);
@@ -35509,8 +35762,10 @@ function trainRun(def0){
   };
   const nextTry=()=>{
     if(tryN>=TRAIN_TRIES){ finish(); return; }
-    /* 뒤로 갈수록 빨라진다 — 열 개를 다 맞히기는 쉽지 않아야 한다 */
-    speed=0.85+tryN*0.13;
+    /* 뒤로 갈수록 빨라진다 — 열 개를 다 맞히기는 쉽지 않아야 한다.
+       칸도 매번 옮긴다. 박자를 외울 수가 없다.                    */
+    speed=1.15+tryN*0.22;
+    placeZone();
     pos=dir>0?0:100;
     running=true;
     note.textContent=(tryN+1)+'/'+TRAIN_TRIES+' — 초록 칸에서';
@@ -35520,7 +35775,7 @@ function trainRun(def0){
   const tap=()=>{
     if(!running){ nextTry(); return; }
     stop();
-    const lo=50-z.w/2, hi=50+z.w/2;
+    const lo=zLo, hi=zLo+z.w;
     const ok=(pos>=lo && pos<=hi);
     marks[tryN]=ok; tryN++;
     hit+=ok?1:0;

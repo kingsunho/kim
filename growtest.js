@@ -53,8 +53,18 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
       p.con=28; p.pow=28; var cheap=trainCost(t);
       p.con=70; p.pow=70; var dear=trainCost(t);
       p.con=c0; p.pow=w0;
-      return cheap===2 && dear===12 && dear>cheap*4;
-    })()`), '컨택 28 은 2코인 · 컨택 70 은 12코인 (여섯 배)');
+      return cheap===2 && dear===17 && dear>cheap*6;
+    })()`), '컨택 28 은 2코인 · 컨택 70 은 17코인 (여덟 배)');
+  /* [요청] "훈련 난이도가 너무쉬운데" — v3.14.0 에서 위쪽 값을 세웠다.
+     초반은 그대로고 60 이 넘어가야 비싸진다. 그 모양만 본다.       */
+  T(ev(`(function(){
+      var p=TBYID['wwzw'].players.find(function(x){return x.id==='ksh'});
+      var t=pmTrainDef('bat'), c0=p.con, w0=p.pow, out=[];
+      [30,45,60,75,90].forEach(function(v){ p.con=v; p.pow=v; out.push(trainCost(t)); });
+      p.con=c0; p.pow=w0;
+      for(var i=1;i<out.length;i++) if(out[i]<=out[i-1]) return false;
+      return out[0]<=2 && out[4]>=30;
+    })()`), '값이 구간마다 계속 오른다 — 30 은 2코인, 90 은 30코인 넘는다');
   T(ev("(function(){ return trainCost(pmTrainDef('rest'))===0; })()"),
     '쉬는 건 그대로 공짜다');
   T(ev(`(function(){
@@ -100,13 +110,21 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
     '졸업치를 내렸다 — 뛴 몫 6 · 성적 몫 18 (예전 10 · 26)');
   T(ev("HS_BASE+HS_GRAD_PLAY+HS_GRAD_PERF")===44,
     '3년을 완벽하게 보내도 44 다 (팀 주전은 60~87)');
-  /* [v2.96.0] 2군 기간을 정하는 자리가 hsGraduate 의 if 사슬에서
-     **입단 드래프트 순번**으로 옮겨갔다 — 고교 성적 → 지명 순번 →
-     2군 기간. 검사도 그쪽을 본다. */
-  T(ev("entryFarmWeeks(1)===1 && Math.min.apply(null,[1,10,30,60,90,120].map(entryFarmWeeks))===1"),
-    '제일 잘해도 2군을 한 주는 거친다');
-  T(ev("/entryFarmWeeks/.test(hsGraduate.toString())"),
-    '2군 기간을 지명 순번이 정한다');
+  /* [v2.96.0] 2군을 정하는 자리가 hsGraduate 의 if 사슬에서 **입단 드래프트
+     순번**으로 옮겨갔다 — 고교 성적 → 지명 순번 → 2군.
+     [v3.14.0] 순번이 정하는 것이 **기간에서 기준으로** 바뀌었다.
+     "2군 경기 수를 두지말고 2군에서 잘하면 콜업" — 형기가 없어졌다. */
+  T(ev("Math.min.apply(null,[1,10,30,60,90,120].map(entryFarmBar))>0"),
+    '제일 잘해도 2군은 거친다 (기준이 낮을 뿐이다)');
+  T(ev(`(function(){
+      var b=[1,20,50,80,120].map(entryFarmBar);
+      for(var i=1;i<b.length;i++) if(b[i]<b[i-1]) return false;
+      return b[0]<b[b.length-1];
+    })()`), '순번이 늦을수록 콜업 기준이 높다');
+  T(ev("/entryFarmBar/.test(hsGraduate.toString())"),
+    '2군 콜업 기준을 지명 순번이 정한다');
+  T(ev("farmWeek.toString().indexOf('ST.myFarm--')<0 && /farmReady/.test(farmWeek.toString())"),
+    '주를 세지 않는다 — 타율이 기준을 넘겨야 올라온다');
   T(ev("hsGraduate.toString().indexOf('주전 보장은 없다')>0"),
     '졸업하면서 주전 보장을 안 준다');
   T(ev("farmWeek.toString().indexOf('주전 보장')<0"),
@@ -278,6 +296,28 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
       p.con=c0;
       return hi>lo+8;
     })()`), '컨택이 높으면 초록 칸이 넓다 (훈련도 능력치를 탄다)');
+  /* [제보] "훈련 난이도가 너무쉬운데"
+     칸이 늘 정중앙이라 박자를 외우면 열 개를 다 맞혔다 — 실측 100% S.
+     칸이 매번 옮겨 다니고, 폭이 좁아지고, 뒤로 갈수록 빨라진다.     */
+  T(ev("/trainZoneAt/.test(renderTrainPlay.toString()) || /trainZoneAt/.test(trainRun.toString())"),
+    '초록 칸이 매번 다른 자리에 선다 (박자를 못 외운다)');
+  T(ev(`(function(){
+      var seen={}, w=12;
+      for(var i=0;i<200;i++) seen[Math.round(trainZoneAt(w))]=1;
+      return Object.keys(seen).length>20;
+    })()`), '자리가 실제로 흩어진다');
+  T(ev(`(function(){
+      var w=12, lo=1e9, hi=-1e9;
+      for(var i=0;i<400;i++){ var x=trainZoneAt(w); if(x<lo)lo=x; if(x>hi)hi=x; }
+      return lo>=8-0.5 && hi+w<=100-8+0.5;
+    })()`), '양쪽 끝에는 안 붙는다 (마커가 되돌아가는 자리라 오히려 쉽다)');
+  T(ev(`(function(){
+      var p=TBYID['wwzw'].players.find(function(x){return x.id==='ksh'});
+      var c0=p.con; p.con=40; var w=trainZone(trainSessionDef('bat')).w; p.con=c0;
+      return w<15;                       // 예전은 20.8%
+    })()`), '판정 폭이 예전보다 좁다 (컨택 40 기준 21% → 12%)');
+  T(ev("/speed=1\\.15\\+tryN\\*0\\.22/.test(trainRun.toString())"),
+    '뒤로 갈수록 더 빨라진다');
   T(ev(`(function(){
       ST.role='bat';
       var ok=TRAIN_SESSIONS.filter(trainSessionAllowed).map(function(t){return t.id});
