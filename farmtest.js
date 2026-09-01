@@ -405,6 +405,99 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   T('쉬는 건 공짜다', ()=>ev("trainCost(pmTrainDef('rest'))===0"));
   T('0 밑으로는 안 내려간다', ()=>ev("(function(){ST.coin=1;coinAdd(-99);return ST.coin===0;})()"));
 
+  /* [제보] "2군인데 왜 단톡방으로 버튼이 있고 단톡방 버튼을 누르면
+             2군 경기 진행안하고 1군 결과만 보기 누르고 다음주로 넘어가지네
+             가끔 라인업에 껴있기도하네"                              */
+  console.log('\n[2군일 때 홈이 어디로 보내나]');
+  const inFarm=(played)=>ev(`(function(){
+    ST.mode='player'; ST.playerId='ksh'; MYID='ksh';
+    ST.myFarm=1; ST.farmBar=0.280; ST.farmMe={g:0,ab:0,h:0};
+    ST.weekDone=true; ST.announced=false; ST.lineupDirty=false;
+    ST.round=3; ST.events=[]; ST.absent={}; ST.injury={};
+    ST.farmDone=${played?1:0}; ST.farmDoneSeen=0;
+    var st=nextStepInfo();
+    return st? (st.label+' | '+(st.sub||'')) : '!없다';
+  })()`);
+  T('2군인데 아직 안 쳤으면 「2군 경기」 로 보낸다', ()=>{
+    const r=inFarm(false);
+    return /2군 경기/.test(r) ? r : '!'+r;
+  });
+  T('단톡방(1군 라인업 발표)으로 안 보낸다', ()=>{
+    const r=inFarm(false);
+    return !/단톡방/.test(r) ? '안 보낸다' : '!'+r;
+  });
+  T('2군 경기를 치고 나면 그때 1군 결과로 보낸다', ()=>{
+    const r=inFarm(true);
+    return /1군 결과/.test(r) ? r : '!'+r;
+  });
+  T('2군이면 「그날」(아침·단톡방·차·구장)을 안 연다', ()=>ev(`(function(){
+    ST.myFarm=1; ST.weekDone=true; ST.day={step:0,picks:{},log:[],done:false,night:-1,nlog:[],ndone:false};
+    var a=dayPending();
+    ST.myFarm=0;
+    var b=dayPending();
+    ST.myFarm=0; ST.day=null;
+    return (!a && b) ? '2군이면 안 열리고 1군이면 열린다' : '!'+a+'/'+b;
+  })()`));
+  T('홈 「오늘」 칸이 2군 경기 입구가 된다', ()=>ev(`(function(){
+    ST.myFarm=1; ST.farmMe={g:0,ab:0,h:0}; ST.weekDone=true; ST.announced=true;
+    ST.farmDone=0; ST.farmDoneSeen=0;
+    ST.schedule[ST.round].played=false;
+    renderHomePlayer();
+    var t=document.querySelector('#view').textContent;
+    var tap=document.querySelectorAll('#view .mystatus.tapon').length;
+    ST.myFarm=0;
+    return (/2군 경기다/.test(t) && tap>0) ? '눌러서 경기장으로' : '!'+tap+'/'+t.slice(0,60);
+  })()`));
+  /* [주의] 강등은 로스터 13명 이상 + 확률 45% + 3주 쿨다운이라 한 번
+     굴려서는 안 난다. 조건을 매번 다시 깔고 충분히 굴린다 — 안 그러면
+     앞 검사가 로스터를 줄여놨을 때 간헐로 실패한다.                */
+  T('내려보내면 그 자리에서 라인업에서 빠진다', ()=>ev(`(function(){
+    ST.myFarm=0; ST.myGuarantee=0; ST.myBenched=0; ST.injury={}; ST.absent={};
+    ST.farm=[]; farmFill(12);
+    ST.farm.slice(0,4).forEach(function(p){ p.up=true; });
+    applyFarm();
+    var down=false;
+    for(var i=0;i<80;i++){
+      ST.bat['ksh']={...blankBat(), ab:30, h:3, pa:32};   // 1할
+      ST.lineup=recommendLineup(); applyDHRule();
+      if(!ST.lineup.some(function(x){return x.id==='ksh';}))
+        ST.lineup[0]={id:'ksh', pos:'C'};
+      ST.round=12; ST.farmMove=-99;
+      farmWeek(makeRng(500+i));
+      if((ST.myFarm||0)>0){ down=true; break; }
+    }
+    if(!down) return '!강등이 안 났다 (로스터 '+TBYID['wwzw'].players.length+'명)';
+    var inLine=(ST.lineup||[]).some(function(x){return x.id==='ksh';});
+    ST.myFarm=0; ST.farmMe=null; ST.absent={};
+    return !inLine ? '타순에서 빠졌다' : '!아직 타순에 있다';
+  })()`));
+  T('아홉이 안 되면 거짓말 대신 진짜로 콜업한다', ()=>ev(`(function(){
+    ST.myFarm=1; ST.farmMe={g:0,ab:0,h:0}; ST.round=15; ST.farmMove=-99;
+    ST.farmDone=0; ST.farmDoneSeen=0;
+    /* 나 빼고 전부 결장시킨다 */
+    var us=TBYID['wwzw']; ST.absent={};
+    us.players.forEach(function(p){ if(p.id!=='ksh') ST.absent[p.id]='사정'; });
+    var ms=farmWeek(makeRng(31337));
+    var up=(ST.myFarm===0);
+    ST.absent={}; ST.myFarm=0; ST.farmMe=null;
+    return (up && ms.some(function(m){return /콜업/.test(m.title);}))
+      ? '급하게 올렸다' : '!'+ST.myFarm;
+  })()`));
+  T('2군이면 저녁(회식·자기 전 단톡방)도 안 연다', ()=>ev(`(function(){
+    ST.myFarm=1; ST.day={step:0,picks:{},log:[],done:true,night:-1,nlog:[],ndone:false};
+    nightOpen(); var a=nightPending();
+    ST.myFarm=0; nightOpen(); var b=nightPending();
+    ST.myFarm=0; ST.day=null;
+    return (!a && b) ? '2군이면 안 열리고 1군이면 열린다' : '!'+a+'/'+b;
+  })()`));
+  T('2군인 나는 라인업 후보에서 빠진다', ()=>ev(`(function(){
+    ST.myFarm=1; ST.absent={}; ST.injury={};
+    var lu=recommendLineup();
+    var inL=lu.some(function(x){return x.id==='ksh';});
+    ST.myFarm=0;
+    return !inL ? '후보에 없다' : '!끼어 있다';
+  })()`));
+
   console.log('\n[화면]');
   T('선수단 화면에 2군이 뜬다', ()=>ev(`(function(){
     go('squad');

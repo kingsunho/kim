@@ -8235,8 +8235,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.14.0';
-const APP_VERSION_NOTE = '뜬공은 잡으면 아웃 · 2군에 형기가 없어졌다 · 훈련이 어려워졌다';
+const APP_VERSION = '3.14.1';
+const APP_VERSION_NOTE = '2군이면 2군 경기부터 — 1군 흐름으로 새던 것을 막았다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8257,6 +8257,15 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.14.1', t:'2군이면 2군 경기부터 — 1군 흐름으로 새던 것을 막았다', items:[
+    '<b>2군인데 「단톡방으로」 버튼이 뜨던 것.</b> 홈에서 제일 큰 버튼(다음 걸음)이 2군을 아예 안 보고 있었다. 그래서 라인업 발표 → 1군 결과 → 다음 주로 그냥 흘러갔고, 내 2군 경기는 한 번도 안 뜬 채 감독이 대신 굴린 가짜 타석만 쌓였다',
+    '이제 2군에 있으면 <b>「2군 경기 ▸」 가 먼저</b> 뜬다. 치고 나야 「1군 결과 보러 ▸」 로 넘어간다',
+    '<b>홈 「오늘」 칸도 2군 경기 입구가 된다.</b> 눌러서 바로 경기장으로 간다 — 콜업 기준과 지금 타율이 같이 뜬다',
+    '경기 화면까지 흘러왔어도 되돌아갈 길을 뒀다. 2군 경기를 안 쳤으면 「내 2군 경기부터 ▸」 가 「결과만 본다」 위에 선다',
+    '<b>2군이면 「그날」(아침 · 단톡방 · 차 · 구장)을 안 연다.</b> 그 하루는 통째로 1군 경기 날이다 — 단톡방은 1군 결장자에게 전화 돌리는 자리고, 차는 1군 경기장에 태워 가는 것이고, 몸풀기는 그 경기 전이다. 2군에 있으면 나는 거기 없다. 저녁(회식·자기 전)도 같은 이유로 안 연다',
+    '<b>2군인데 라인업에 껴 있던 것.</b> 내려보내면서 타순에서 빼지를 않았다. 이미 짜둔 라인업에 이름이 그대로 남아 있어서 2군에 있는 사람이 4번을 쳤다. 이제 내려가는 순간 타순·로테이션에서 빠지고 감독이 다시 짠다',
+    '<b>아홉이 안 되면 거짓말 대신 진짜로 부른다.</b> 인원이 모자라면 라인업이 마지막 수단으로 로스터 전원을 쓰는데 거기 2군인 내가 끼어 있었다. 그럴 형편이면 성적과 상관없이 콜업한다 — 화면에 「2군」 이라고 붙은 사람이 경기를 뛰는 일은 없다',
+  ]},
   {v:'3.14.0', t:'뜬공은 잡으면 아웃 · 2군에 형기가 없어졌다 · 훈련이 어려워졌다', items:[
     '<b>뜬공은 잡는 순간 아웃이다.</b> 여태 공중에서 잡아놓고도 베이스를 골라 던져야 아웃 처리가 됐다. 그건 야구가 아니다. 이제 공이 떠 있을 때 잡으면 거기서 끝난다 — 던질 데가 없으면 버튼도 안 뜬다',
     '주자가 2·3루에 있을 때만 <b>태그업 막는 송구</b>를 짧게 물어본다. 「안 던진다」 를 눌러도 아웃은 이미 잡은 거다',
@@ -15023,13 +15032,23 @@ function nightPending(){
   return dayOn() && ST.day && ST.day.night>=0 && !ST.day.ndone;
 }
 function nightOpen(){
+  /* 2군에 있으면 그 경기 주차장에 내가 없다 — 저녁도 안 연다.
+     낮(dayPending)을 막아놓고 저녁만 열면 앞뒤가 안 맞는다.       */
+  if(ST && (ST.myFarm||0)>0) return;
   const D=daySlot();
   if(D.night==null||D.night<0){ D.night=0; D.nlog=[]; D.ndone=false; }
 }
 function nightNote(t){ const D=daySlot(); if(!D.nlog)D.nlog=[]; D.nlog.push(t);
   if(D.nlog.length>6) D.nlog=D.nlog.slice(-6); }
 /* 오늘 아직 하루가 안 끝났나 */
-function dayPending(){ return dayOn() && ST.weekDone && !(ST.day&&ST.day.done); }
+/* [제보] "2군인데 왜 단톡방으로 버튼이 있고"
+   「그날」 은 통째로 **1군 경기 날**이다 — 단톡방은 1군 결장자에게 전화를
+   돌리는 자리고, 차는 1군 경기장에 태워 가는 것이고, 몸풀기는 그 경기
+   전이다. 2군에 있으면 나는 거기 없다. 하루를 안 연다.            */
+function dayPending(){
+  if(ST && (ST.myFarm||0)>0) return false;
+  return dayOn() && ST.weekDone && !(ST.day&&ST.day.done);
+}
 function dayNote(t){ const D=daySlot(); D.log.push(t); if(D.log.length>8) D.log=D.log.slice(-8); }
 /* 컨디션을 건드린다. 한 사람만, 또는 전원. */
 function dayCond(id, n){
@@ -15977,6 +15996,12 @@ function farmRealWeek(rng){
   });
   return msgs;
 }
+/* 이번 주 내 2군 경기를 직접 쳤나.
+   farmWeek 이 「가짜 타석을 얹을지」 를 정할 때 쓰는 것과 같은 식이다 —
+   두 군데서 따로 쓰면 화면과 기록이 어긋난다.                      */
+function farmPlayedThisWeek(){
+  return (ST&&(ST.farmDone||0)>(ST.farmDoneSeen||0));
+}
 function farmAvg(p){ return p.ab? p.h/p.ab : 0; }
 /* 2군 선수의 '지금 값어치' — 콜업 순서를 정한다 */
 function farmScore(p){
@@ -16050,6 +16075,23 @@ function farmWeek(rng){
 
   /* 내가 2군에 있으면 — 올라갈 때가 됐나 */
   if((ST.myFarm||0)>0){
+    /* [제보] "가끔 라인업에 껴있기도하네"
+       아홉이 안 되면 라인업이 마지막 수단으로 로스터 전원을 쓴다 —
+       거기 2군인 내가 끼어 있었다. 화면에는 「2군」 이라고 붙은 사람이
+       4번을 쳤다. 그럴 형편이면 **거짓말 대신 진짜로 부른다.**
+       (isAvailable 이 2군인 나를 이미 빼고 세니, 9 미만이면 나 없이는
+        경기가 안 된다는 뜻이다)                                    */
+    {
+      const healthy=us.players.filter(x=>isAvailable(x.id)).length;
+      if(healthy<9){
+        ST.myFarm=0; ST.farmMe=null; ST.farmMove=ST.round;
+        ST.lineupDirty=true; ST.announced=false;
+        msgs.push({type:'farm', title:'급하게 콜업',
+          body:(cid?nameOf(cid):'감독')+': "사람이 없다. 올라와라"',
+          effect:'출전 가능 '+healthy+'명 — 아홉이 안 된다 · 성적과 상관없는 콜업'});
+        return msgs;
+      }
+    }
     const mine=ST.farmMe||{g:0,ab:0,h:0};
     /* [버그] 2군 경기를 **직접 쳤는데도** 여기서 가짜 타석을 또 굴려
        기록에 얹고 있었다. 내가 4타수 3안타를 치고 와도 그 위에 3타수
@@ -16138,7 +16180,20 @@ function farmWeek(rng){
            기간은 없다. 2군에서 그 타율을 치면 그 주에 올라온다.     */
         ST.farmBar=Math.max(0.260, Math.min(0.330, 0.280+(0.190-b.h/b.ab)*0.8));
         ST.myFarm=1; ST.farmMe={g:0,ab:0,h:0}; ST.farmMove=ST.round;
+        ST.farmDone=0; ST.farmDoneSeen=0;
         ST.morale[me]=Math.max(10,(ST.morale[me]||70)-16);
+        /* [제보] "가끔 라인업에 껴있기도하네"
+           내려보내면서 **타순에서 빼지를 않았다.** 이미 짜둔 라인업에
+           내 이름이 그대로 남아 있으니, 2군에 있는 사람이 4번을 쳤다.
+           farmDownReal 은 이걸 하고 있었는데 내 쪽만 빠져 있었다.   */
+        if(ST.lineup) ST.lineup=ST.lineup.filter(x=>x.id!==me);
+        if(Array.isArray(ST.gameRotation)) ST.gameRotation=ST.gameRotation.filter(x=>x!==me);
+        if(ST.lineup && ST.lineup.length<9
+           && TBYID['wwzw'].players.filter(q=>isAvailable(q.id)).length>=9){
+          ST.lineup=recommendLineup();
+          if(typeof applyDHRule==='function') applyDHRule();
+        }
+        ST.announced=false; ST.lineupDirty=true;   // 감독이 다시 짜서 올린다
         msgs.push({type:'farm', title:'2군행',
           body:(cid?nameOf(cid):'감독')+`: "${fmt3(b.h/b.ab)} 다. 2군에서 좀 치고 와라"`,
           effect:`기간은 없다 — 2군에서 ${FARM_MIN_AB}타석 이상 ${fmt3(ST.farmBar)} 을 치면 올라온다`});
@@ -18868,6 +18923,21 @@ function renderHomePlayer(){
     today.appendChild(el('div','card-h','오늘'));
     if(!ST.weekDone){
       today.appendChild(el('div','pm-wait','아직 이번 주가 시작 안 됐다'));
+    } else if((ST.myFarm||0)>0){
+      /* [제보] "2군인데 왜 단톡방으로 버튼이 있고"
+         「오늘」 은 눈이 제일 먼저 가는 칸이다. 2군이면 여기가
+         1군 라인업이 아니라 **내 2군 경기** 자리여야 한다.        */
+      const played=farmPlayedThisWeek();
+      const fbx=el('div','mystatus out'+(played?'':' tapon'));
+      const mine=ST.farmMe||{g:0,ab:0,h:0};
+      fbx.innerHTML='<div class="ms-big">2군</div>'+
+        '<div class="ms-sub">'+(played
+          ? '이번 주 2군 경기는 끝났다'
+          : '오늘은 2군 경기다 — 눌러서 경기장으로')+'</div>'+
+        '<div class="ms-why">1군에는 안 나간다 · 콜업 기준 '+fmt3(farmBar())+
+          (mine.ab?(' · 지금 '+fmt3(mine.h/mine.ab)+' ('+mine.ab+'타수)'):'')+'</div>';
+      if(!played) fbx.onclick=()=>farmLiveStart();
+      today.appendChild(fbx);
     } else if(!ST.announced){
       today.appendChild(el('div','pm-wait','라인업 발표 전이다. 내가 나가는지 아직 모른다'));
     } else {
@@ -24142,6 +24212,22 @@ function nextStepInfo(){
      「인원부터 채워라」로 나오면 **선수가 할 수 있는 게 하나도 없다.**
      「인원부터 채워라」는 홈으로 되돌리는 버튼이라 아예 제자리걸음이었다.
      감독이 할 일은 감독이 하게 두고, 나는 경기장으로 간다.          */
+  /* [제보] "2군인데 왜 단톡방으로 버튼이 있고 단톡방 버튼을 누르면
+             2군 경기 진행안하고 1군 결과만 보기 누르고 다음주로 넘어가지네"
+     맞는 말이다. 여기가 홈에서 제일 큰 버튼인데 **2군을 아예 안 보고
+     있었다.** 그래서 라인업 발표 → 1군 결과 → 다음 주로 그냥 흘러갔고,
+     내 2군 경기는 한 번도 안 뜬 채 감독이 대신 굴린 가짜 타석만 쌓였다.
+     2군에 있으면 **내 경기가 먼저다.**                            */
+  if(typeof isPlayerMode==='function' && isPlayerMode() && (ST.myFarm||0)>0){
+    const fhead=opp?('2군 · 콜업 기준 '+fmt3(farmBar())):null;
+    if(!farmPlayedThisWeek())
+      return {head:fhead, label:'2군 경기 ▸',
+        sub:'1군에는 안 나간다. 여기서 치는 성적이 콜업을 정한다',
+        run:()=>farmLiveStart()};
+    return {head:fhead, label:'1군 결과 보러 ▸',
+      sub:'2군 경기는 끝났다 — 1군은 결과만 본다',
+      run:()=>{ pmAutoManage(); saveGame(true); go('game'); }};
+  }
   if(typeof isPlayerMode==='function' && isPlayerMode()){
     if(avail<9) return {head, label:'그래도 경기장으로 ▸',
       sub:`출전 가능 ${avail}명 — 아홉이 안 되면 몰수패다. 감독이 알아서 할 일이다`,
@@ -25859,7 +25945,18 @@ function renderGame(){
          못 찾고 null 을 물었고, runLive() 가 빈 DOM 위에서 죽었다.
          스테이지를 여기서 직접 깔아준다.                              */
       const stA=el('div','stage'); stA.id='stage';
-      const b=el('button','btn primary','결과만 본다 ▸');
+      /* [제보] "단톡방 버튼을 누르면 2군 경기 진행안하고 1군 결과만 보기
+                 누르고 다음주로 넘어가지네"
+         여기까지 흘러와도 되돌아갈 길이 있어야 한다. 2군 경기를 아직
+         안 쳤으면 **그게 먼저다.**                                */
+      if(farm && !farmPlayedThisWeek()){
+        const fb2=el('button','btn primary','내 2군 경기부터 ▸');
+        fb2.onclick=()=>farmLiveStart();
+        c.appendChild(fb2);
+        c.appendChild(el('div','set-note',
+          '2군 경기를 안 치면 감독이 알아서 굴린 기록으로 콜업을 판단한다.'));
+      }
+      const b=el('button','btn'+((farm&&!farmPlayedThisWeek())?'':' primary'),'결과만 본다 ▸');
       b.onclick=()=>{
         b.disabled=true;
         if(LIVE && LIVE.over && LIVE.round===ST.round){ showResult(); return; }
