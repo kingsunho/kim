@@ -498,6 +498,78 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
     return !inL ? '후보에 없다' : '!끼어 있다';
   })()`));
 
+  /* [제보] "1,2군에 14, 15살은 왜있냐"
+     나이는 화면에서 ST.year - born 으로 센다. 그런데 2군 선수의 born 을
+     farmMeta 가 **2026 에서 거꾸로** 잡고 있었다. 선수 모드는 입단한
+     해(2018~2019)부터라, 스물한 살이 2019-2005 = 열네 살로 찍혔다.    */
+  console.log('\n[나이]');
+  T('2군 선수가 명단 나이와 화면 나이가 같다', ()=>ev(`(function(){
+    ST.year=2019; ST.farm=[]; farmFill(9); normalizeState();
+    ST.farm.slice(0,4).forEach(function(p){p.up=true;}); applyFarm();
+    var bad=ST.farm.filter(function(p){ return ageOf(p.id)!==p.age; });
+    return bad.length ? ('!'+bad.map(function(p){return p.name+' 명단'+p.age+'/화면'+ageOf(p.id);}).join(', '))
+      : ST.farm.length+'명 전부 일치';
+  })()`));
+  T('스무 살 밑이 없다', ()=>ev(`(function(){
+    var young=ST.farm.filter(function(p){ return ageOf(p.id)<20; });
+    return young.length ? '!'+young.map(function(p){return p.name+' '+ageOf(p.id)+'살';}).join(', ')
+      : '제일 어린 사람 '+Math.min.apply(null,ST.farm.map(function(p){return ageOf(p.id);}))+'살';
+  })()`));
+  T('1군에 올라와도 나이가 그대로다', ()=>ev(`(function(){
+    var up=TBYID['wwzw'].players.filter(function(p){return p.farm;});
+    if(!up.length) return '!올라온 사람이 없다';
+    var bad=up.filter(function(p){
+      var f=ST.farm.find(function(x){return x.id===p.id;});
+      return !f || ageOf(p.id)!==f.age; });
+    return bad.length? '!'+bad.length+'명 어긋난다' : up.length+'명 전부 일치';
+  })()`));
+  T('태어난 해가 명단에 같이 저장된다 (세이브를 타고 넘어간다)', ()=>ev(`(function(){
+    var no=ST.farm.filter(function(p){ return typeof p.born!=='number'; });
+    return no.length ? '!'+no.length+'명 빠져 있다' : '전부 있다';
+  })()`));
+  T('시즌이 넘어가면 같이 한 살 먹는다', ()=>ev(`(function(){
+    var p=ST.farm[0], a0=ageOf(p.id);
+    ST.year++; p.age++;                       // newSeason 이 하는 것과 같다
+    var a1=ageOf(p.id);
+    ST.year--; p.age--;
+    return (a1===a0+1) ? (a0+'살 → '+a1+'살') : '!'+a0+'/'+a1;
+  })()`));
+  T('옛 세이브(태어난 해가 없는 판)도 메워준다', ()=>ev(`(function(){
+    ST.year=2019;
+    ST.farm.forEach(function(p){ delete p.born; });
+    normalizeState();
+    var bad=ST.farm.filter(function(p){ return typeof p.born!=='number' || ageOf(p.id)!==p.age; });
+    return bad.length ? '!'+bad.length+'명 아직 어긋난다' : '전부 메웠다';
+  })()`));
+  T('전역 복귀는 나이를 보고 한다 (열다섯 살은 군대를 안 갔다)', ()=>ev(`(function(){
+    var y0=ST.year, d0=ST.discharged, s0=ST.seasonNo;
+    ST.discharged=false; ST.seasonNo=3;
+    ST.year=2021; var early=checkDischarge(ST);      // 2006년생 → 15살
+    ST.discharged=false;
+    ST.year=2028; var ok=checkDischarge(ST);         // 22살
+    ST.year=y0; ST.discharged=d0; ST.seasonNo=s0;
+    return (!early && ok) ? '15살엔 안 오고 22살에 온다' : '!'+(!!early)+'/'+(!!ok);
+  })()`));
+  T('몸값도 그 해 기준으로 나이를 센다', ()=>ev(
+    "!/2026-\\(meta\\?meta\\.born/.test(String(playerValue))"));
+  /* 이걸 쫓다가 같이 나온 것 — 새 시즌 연도를 2026 에서 다시 계산하고
+     있었다. 선수 모드는 2018~2019 에서 시작하는데 한 시즌 넘기면
+     2027 로 아홉 해가 건너뛰었다. 나이도 같이 뛴다.                */
+  T('새 시즌 연도가 2026 에서 다시 계산되지 않는다', ()=>{
+    const src=ev("String(renderHome)")+ev("String(nextStepInfo)");
+    return !/year:2026\+/.test(html) ? '2026 고정이 없다' : '!아직 박혀 있다';
+  });
+  T('시즌을 넘겨도 연도가 한 해씩만 간다', ()=>ev(`(function(){
+    var y=2019, n=1, out=[];
+    for(var i=0;i<4;i++){                       // newSeason 이 쓰는 것과 같은 식
+      var year0=y-(n-1);
+      n=n+1; y=year0+n-1;
+      out.push(n+'년차 '+y);
+    }
+    return out.join(' · ')==='2년차 2020 · 3년차 2021 · 4년차 2022 · 5년차 2023'
+      ? out.join(' · ') : '!'+out.join(' · ');
+  })()`));
+
   console.log('\n[화면]');
   T('선수단 화면에 2군이 뜬다', ()=>ev(`(function(){
     go('squad');

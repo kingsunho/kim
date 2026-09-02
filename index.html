@@ -3709,7 +3709,9 @@ function playerValue(p, meta, st){
     if(meta.traits.includes('리더'))v*=1.06;
     if(meta.traits.includes('좌완'))v*=1.12;
   }
-  const age=2026-(meta?meta.born:1999);
+  /* [주의] 여기만 2026 이 박혀 있었다. 선수 모드는 입단한 해부터라
+     스물한 살 유망주가 스물여덟으로 계산돼서 몸값이 깎였다.       */
+  const age=seasonYear()-(meta?meta.born:1999);
   if(age<=21)v*=1.15; else if(age>=30)v*=0.85;
   /* 성적에 따른 실시간 변동.
      경기를 치를수록 반영 폭이 커진다(표본이 쌓이니까).
@@ -5581,10 +5583,18 @@ function migrateSignedIds(S){
 }
 
 /* ================= 전역 복귀 ================= */
+const SJM_BORN=2006;               // META['sjm'] 과 같은 값. 여기서도 쓴다
 function checkDischarge(ST){
   // 3년차(3시즌째) 개막에 송정민 전역
   if(ST.seasonNo<3) return null;
   if(ST.discharged) return null;
+  /* [제보] "1,2군에 14, 15살은 왜있냐"
+     선수 모드는 **입단한 해**(99년생이면 2018)부터 시작한다. 그러면
+     3년차가 2021 이고, 2006년생인 송정민은 그때 열다섯이다 —
+     전역할 나이가 아니라 중학생이다. 시즌 수만 보면 안 된다.
+     **나이도 같이 본다.** 스무 살은 돼야 군대를 갔다 온 것이 된다.
+     (2026 기준으로는 3년차가 2028 이라 스물둘 — 예전과 똑같이 온다) */
+  if(seasonYear()-SJM_BORN < 20) return null;
   if(!addDischarged(ST)){ ST.discharged=true; return null; }
   ST.discharged=true;
   return {type:'discharge',title:'송정민 전역 복귀',
@@ -8236,8 +8246,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.14.2';
-const APP_VERSION_NOTE = '아웃 표시가 두 칸이었다 — 2아웃이 꽉 찬 것으로 보였다';
+const APP_VERSION = '3.14.3';
+const APP_VERSION_NOTE = '2군에 중학생이 있던 것 — 태어난 해를 2026에서 거꾸로 잡고 있었다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8258,6 +8268,15 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.14.3', t:'2군에 중학생이 있던 것 — 태어난 해를 2026에서 거꾸로 잡고 있었다', items:[
+    '<b>1·2군에 열넷·열다섯 살이 있던 것을 고쳤다.</b> 나이는 화면에서 「그 해 − 태어난 해」 로 센다. 그런데 2군 선수의 <b>태어난 해를 2026에서 거꾸로</b> 잡고 있었다 — 선수 모드는 <b>입단한 해</b>(99년생이면 2018)부터 시작하니까, 스물한 살이 2019−2005 = <b>열네 살</b>로 찍혔다. 명단에는 21살, 화면에는 14살이었다',
+    '이제 2군 선수를 만들 때 <b>태어난 해를 그 자리에서 박아 명단에 같이 저장한다.</b> 시즌이 넘어가면 같이 한 살씩 먹는다',
+    '나이와 태어난 해를 따로 들고 있으면 언젠가 어긋난다. <b>태어난 해 하나만 정답</b>으로 두고 나이는 거기서 뽑는다',
+    '2군 아이디는 시즌마다 돌려 쓰는데, 화면 정보(META)는 세이브에 안 들어가서 매번 다시 만든다. 그래서 <b>새 시즌에 다른 사람이 같은 아이디를 받으면 낡은 나이가 남았다</b> — 명단을 먼저 보게 고쳤다',
+    '<b>송정민 전역 복귀도 나이를 보고 한다.</b> 3년차에 무조건 오게 돼 있었는데, 선수 모드 3년차는 2021이고 송정민은 2006년생이라 그때 <b>열다섯 살</b>이다. 중학생이 전역할 수는 없다. 스물한 살은 돼야 돌아온다',
+    '몸값 계산에도 2026이 박혀 있었다. 스물한 살 유망주가 스물여덟으로 계산돼서 값이 깎이고 있었다',
+    '옛 세이브도 불러올 때 메워준다',
+  ]},
   {v:'3.14.2', t:'아웃 표시가 두 칸이었다 — 2아웃이 꽉 찬 것으로 보였다', items:[
     '<b>「투수로 하면 2명만 잡으면 이닝이 바뀐다」 를 고쳤다.</b> 진짜로 그렇게 보였다 — 스코어보드가 아웃 점을 <b>두 개만</b> 그리고 있었다. 0아웃 ○○ · 1아웃 ●○ · 2아웃 <b>●●</b>. 두 칸이 꽉 차 보이는데 바로 다음 아웃에 이닝이 바뀌니, 두 명만 잡으면 끝나는 게임으로 보였다',
     '엔진은 멀쩡했다. 반이닝을 끝내는 자리 열세 군데가 전부 3아웃 기준이고, 실제로 재봐도 매 이닝 3아웃에 끝난다. <b>화면만 한 칸이 모자랐다</b> — 3아웃이 되는 순간 이닝이 넘어가니 「●●●」 이 화면에 뜬 적이 한 번도 없었다',
@@ -15841,6 +15860,12 @@ function makeFarmPlayer(rng, tag){
     id:tag, name:nm, farm:true,
     bats: rng()<0.20?'L':'R',
     throws: rng()<0.12?'L':'R',
+    /* [제보] "1,2군에 14, 15살은 왜있냐"
+       나이(age)만 들고 있고 **태어난 해는 farmMeta 가 2026 에서 거꾸로
+       계산**하고 있었다. 그런데 화면 나이는 ST.year - born 이다.
+       선수 모드는 입단한 해(2018~2019)에서 시작하니 스물한 살이
+       2019-2005 = **열네 살**로 찍혔다. 태어난 해를 만들 때 박아서
+       명단에 같이 저장한다 — 그래야 시즌이 넘어가도 같이 나이를 먹는다. */
     age: 20+((rng()*14)|0),
     con:sp(13), pow:sp(15), eye:sp(11), spd:sp(14), def:sp(12), arm:sp(12),
     pos: main===sub?[main]:[main,sub],
@@ -15852,6 +15877,7 @@ function makeFarmPlayer(rng, tag){
     stf:sp(14), ctl:sp(13), sta:sp(12),
     g:0, ab:0, h:0, d2:0, hr:0, rbi:0, bb:0, k:0,   // 2군 성적
   };
+  p.born = seasonYear() - p.age;
   if(isP) p.pitch={stf:p.stf, ctl:p.ctl, sta:p.sta};
   return p;
 }
@@ -15887,8 +15913,11 @@ function farmMeta(p){
   if(p.pitch) pos.P=54;
   if(p.throws==='L') LEFTY_BLOCKED.forEach(k=>pos[k]=0);
   return {
-    born:2026-(p.age||26), speech:'jon', throws:p.throws||'R', car:false,
-    school:'-', drink:1, attend:0.80, loyal:60, pot:p.age<=24?6:3,
+    /* 태어난 해는 명단(ST.farm)에 적혀 있는 것을 쓴다. 없으면(옛 세이브)
+       지금 연도에서 거꾸로 잡는다 — 2026 을 박아 쓰면 안 된다.      */
+    born:(p.born!=null)?p.born:(seasonYear()-(p.age||26)),
+    speech:'jon', throws:p.throws||'R', car:false,
+    school:'-', drink:1, attend:0.80, loyal:60, pot:(p.age||26)<=24?6:3,
     traits:['2군'], friends:[], rival:null, coach:{}, pos,
     desc:'2군에서 올라왔다'
   };
@@ -15910,6 +15939,8 @@ function applyFarm(){
     if(np.sIQ==null) delete np.sIQ;
     us.players.push(np);
     META[p.id]=META[p.id]||farmMeta(p);
+    /* 명단(ST.farm)이 정답이다 — 먼저 만들어진 META 가 낡았을 수 있다 */
+    if(META[p.id] && typeof p.born==='number') META[p.id].born=p.born;
     if(ST.names) ST.names[p.id]=p.name;
     ST.bat[p.id]=ST.bat[p.id]||blankBat();
     if(ST.lgBat) ST.lgBat[p.id]=ST.lgBat[p.id]||blankBat();
@@ -19793,8 +19824,14 @@ function renderHome(){
           feats:(ST.feats||[]).filter(f=>(f.season||1)===(ST.seasonNo||1)).length,
           bat, pit});
       }
+      /* [제보] "1,2군에 14, 15살은 왜있냐" 를 쫓다가 같이 나왔다.
+         새 시즌 연도를 **2026+시즌수** 로 다시 계산하고 있었다.
+         선수 모드는 입단한 해(99년생이면 2018)에서 시작하는데, 한 시즌만
+         넘기면 2018 → 2027 로 아홉 해가 건너뛰었다. 나이도 같이 뛴다.
+         **1년차가 몇 년이었는지**를 지금 값에서 거꾸로 잡아서 거기에 더한다. */
+      const year0=(ST.year||2026)-((ST.seasonNo||1)-1);
       const keep={career:ST.career,teamCareer:ST.teamCareer,milestones:ST.milestones,firsts:ST.firsts,
-        seasonNo:(ST.seasonNo||1)+1,discharged:ST.discharged,playerId:ST.playerId,
+        seasonNo:(ST.seasonNo||1)+1,discharged:ST.discharged,playerId:ST.playerId, year0,
         ratings:{}, budget:ST.budget, seasonLog:log, feats:ST.feats||[],
         hall:ST.hall||[], awardBonus:ST.awardBonus||{}, gear:ST.gear||{}, playSec:ST.playSec||0,
         dev:ST.dev||null};
@@ -19834,7 +19871,7 @@ function renderHome(){
       ST=newSeason();
       Object.assign(ST,{career:keep.career,teamCareer:keep.teamCareer,milestones:keep.milestones,
         firsts:keep.firsts,seasonNo:keep.seasonNo,discharged:keep.discharged,playerId:keep.playerId,
-        year:2026+keep.seasonNo-1, budget:Math.round(keep.budget*0.4+120),
+        year:keep.year0+keep.seasonNo-1, budget:Math.round(keep.budget*0.4+120),
         hall:keep.hall, awardBonus:keep.awardBonus, gear:keep.gear, playSec:keep.playSec,
         seasonLog:keep.seasonLog, feats:keep.feats,
         dev:keep.dev||{pts:0,games:0,trains:0,minTick:0}});
@@ -35422,10 +35459,24 @@ function founderHandover(rng){
    [감독 모드는 그대로 2026 이다] 거기는 2026시즌 실측을 재현하는 판이라
    연도를 옮기면 그 전제가 무너진다.
    [나이] 그래서 나이도 2026 고정이 아니라 그 해 기준으로 센다.     */
+/* 지금이 몇 년인가. ageOf 도 여기를 쓰고, 사람을 새로 만들 때도 여기를 쓴다.
+   [주의] 2026 을 그대로 박아 쓰면 안 된다 — 선수 모드는 **입단한 해**부터
+   시작해서 99년생이면 2018 이다.                                    */
+function seasonYear(){
+  return (typeof ST!=='undefined'&&ST&&ST.year)?ST.year:2026;
+}
 function ageOf(pid){
+  /* [주의] 2군 명단(ST.farm)이 먼저다. META 는 세이브에 안 들어가서
+     매번 다시 만드는데, **아이디를 돌려 쓰기 때문에** 새 시즌에 다른
+     사람이 같은 아이디를 받으면 낡은 META 가 그대로 남는다. 그때
+     명단은 스물다섯인데 화면은 열여덟이 됐다. 명단이 정답이다.     */
+  const f=(typeof ST!=='undefined'&&ST&&Array.isArray(ST.farm))
+    ? ST.farm.find(x=>x&&x.id===pid) : null;
+  if(f && typeof f.born==='number') return seasonYear()-f.born;
+  if(f && typeof f.age==='number') return f.age;
   const m=(typeof META!=='undefined')?META[pid]:null;
-  const y=(typeof ST!=='undefined'&&ST&&ST.year)?ST.year:2026;
-  return y-((m&&m.born)||1999);
+  if(m && m.born) return seasonYear()-m.born;
+  return seasonYear()-1999;
 }
 function entryDraftYear(){
   const me=(typeof ST!=='undefined'&&ST)?(ST.playerId||MYID):MYID;
@@ -37636,6 +37687,20 @@ function normalizeState(){
   ST.farmPlaying=false;
   /* [v2.76.0] 2군 */
   if(!Array.isArray(ST.farm))ST.farm=[];
+  /* [제보] "1,2군에 14, 15살은 왜있냐"
+     옛 세이브의 2군 선수에는 태어난 해가 없다. 그러면 farmMeta 가
+     2026 에서 거꾸로 잡았고, 화면 나이는 ST.year 기준이라 선수 모드
+     (2018~2019 시작)에서 일곱 살씩 어려 보였다. 여기서 메워준다 —
+     명단에 적힌 나이가 맞는 나이다.                                */
+  ST.farm.forEach(p=>{
+    if(!p) return;
+    if(typeof p.age!=='number' || !isFinite(p.age)) p.age=26;
+    if(typeof p.born!=='number' || !isFinite(p.born)) p.born=(ST.year||2026)-p.age;
+    /* [주의] 정답은 **태어난 해** 하나다. 나이는 거기서 뽑는다.
+       둘을 따로 들고 있으면 언젠가 어긋난다 — 실제로 화면(born 기준)과
+       2군 명단(age 기준)이 일곱 살 차이 난 적이 있다.               */
+    else p.age=(ST.year||2026)-p.born;
+  });
   if(typeof ST.myFarm!=='number')ST.myFarm=0;
   if(ST.farmMe===undefined)ST.farmMe=null;
   if(typeof ST.farmMove!=='number')ST.farmMove=-99;
