@@ -342,7 +342,7 @@ button{font-family:inherit;cursor:pointer}
 .sb-team{display:flex;flex-direction:column;align-items:center;flex:1;gap:5px}
 .sb-team span{font-size:11px;color:var(--dim);text-align:center}
 .sb-team b{font-size:30px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums}
-.sb-mid{font-size:11px;color:var(--gold);width:78px;text-align:center;font-weight:700}
+.sb-mid{font-size:11px;color:var(--gold);width:96px;text-align:center;font-weight:700}
 .feed{background:var(--panel);border:1px solid var(--line);border-radius:13px;
   margin-top:11px;padding:11px;max-height:290px;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .fl{font-size:12.5px;padding:5px 3px;border-bottom:1px solid rgba(42,50,61,.5);color:#c3ccd7}
@@ -1545,7 +1545,8 @@ table.hl-tbl td.hl-o{color:#c98a80}
 .base.on{background:var(--gold);border-color:var(--gold)}
 .b2{top:0;left:0}.b3{bottom:0;left:0}.b1{top:0;right:0}
 .bh{bottom:0;right:0;background:#39414c}
-.sb-mid .sb-out{font-size:11px;color:var(--clay);letter-spacing:2px;margin-top:3px}
+.sb-mid .sb-out{font-size:11px;color:var(--clay);letter-spacing:1.5px;margin-top:3px;white-space:nowrap}
+.sb-mid .sb-out i{font-style:normal;letter-spacing:0;font-size:10px;margin-left:2px}
 
 /* 판단 */
 .decision{display:none;margin-top:11px}
@@ -8235,8 +8236,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.14.1';
-const APP_VERSION_NOTE = '2군이면 2군 경기부터 — 1군 흐름으로 새던 것을 막았다';
+const APP_VERSION = '3.14.2';
+const APP_VERSION_NOTE = '아웃 표시가 두 칸이었다 — 2아웃이 꽉 찬 것으로 보였다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8257,6 +8258,13 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.14.2', t:'아웃 표시가 두 칸이었다 — 2아웃이 꽉 찬 것으로 보였다', items:[
+    '<b>「투수로 하면 2명만 잡으면 이닝이 바뀐다」 를 고쳤다.</b> 진짜로 그렇게 보였다 — 스코어보드가 아웃 점을 <b>두 개만</b> 그리고 있었다. 0아웃 ○○ · 1아웃 ●○ · 2아웃 <b>●●</b>. 두 칸이 꽉 차 보이는데 바로 다음 아웃에 이닝이 바뀌니, 두 명만 잡으면 끝나는 게임으로 보였다',
+    '엔진은 멀쩡했다. 반이닝을 끝내는 자리 열세 군데가 전부 3아웃 기준이고, 실제로 재봐도 매 이닝 3아웃에 끝난다. <b>화면만 한 칸이 모자랐다</b> — 3아웃이 되는 순간 이닝이 넘어가니 「●●●」 이 화면에 뜬 적이 한 번도 없었다',
+    '이제 빈 칸까지 세 개다 — <b>○○○ → ●○○ → ●●○</b>. 한 칸이 남아 있는 게 눈에 보인다',
+    '점만 세다 헷갈리지 않게 <b>숫자도 같이 적는다</b> — 「●●○ 2아웃」',
+    '스코어보드와 마운드 화면 두 군데가 같은 함수(outDots)를 쓴다. 예전엔 같은 식을 두 벌 써놔서 한쪽만 고치면 어긋날 자리였다',
+  ]},
   {v:'3.14.1', t:'2군이면 2군 경기부터 — 1군 흐름으로 새던 것을 막았다', items:[
     '<b>2군인데 「단톡방으로」 버튼이 뜨던 것.</b> 홈에서 제일 큰 버튼(다음 걸음)이 2군을 아예 안 보고 있었다. 그래서 라인업 발표 → 1군 결과 → 다음 주로 그냥 흘러갔고, 내 2군 경기는 한 번도 안 뜬 채 감독이 대신 굴린 가짜 타석만 쌓였다',
     '이제 2군에 있으면 <b>「2군 경기 ▸」 가 먼저</b> 뜬다. 치고 나야 「1군 결과 보러 ▸」 로 넘어간다',
@@ -26499,6 +26507,18 @@ function resumeLive(){
   runLive();
 }
 
+/* 아웃 점 — 세 칸이다.
+   [제보] "왜 모드하는데 투수로 하면 2명만 잡으면 이닝이 바뀌냐"
+   진짜로 그렇게 보였다. **점을 두 개만 그리고 있었다** —
+     0아웃 ○○ · 1아웃 ●○ · 2아웃 ●● ← 꽉 찬 것처럼 보인다
+   그 상태에서 세 번째 아웃이 나면 그 즉시 반이닝이 끝나니, 화면에
+   3아웃이 뜬 적이 한 번도 없다. 두 개를 채우면 이닝이 바뀌는 게임으로
+   보인 것이다. 엔진은 멀쩡했다 — 세 개를 다 세고 있었다.
+   이제 빈 칸을 하나 더 둔다: ○○○ → ●○○ → ●●○.               */
+function outDots(n){
+  const o=Math.max(0, Math.min(3, n|0));
+  return '●'.repeat(o)+'○'.repeat(Math.max(0, 3-o));
+}
 function updateLiveUI(){
   if(!LIVE)return;
   const us=LIVE.userIsHome?LIVE.home:LIVE.away;
@@ -26506,7 +26526,8 @@ function updateLiveUI(){
   const a=$('#sb-us'),b=$('#sb-them'),i=$('#sb-inn'),o=$('#sb-out');
   if(a)a.textContent=us.runs; if(b)b.textContent=th.runs;
   if(i)i.textContent=`${LIVE.inning}회 ${LIVE.half===0?'초':'말'}`;
-  if(o)o.textContent='●'.repeat(LIVE.outs)+'○'.repeat(Math.max(0,2-LIVE.outs));
+  /* 점만 보고 세는 사람이 헷갈리지 않게 숫자도 같이 적는다 */
+  if(o)o.innerHTML=outDots(LIVE.outs)+'<i>'+Math.min(3,LIVE.outs)+'아웃</i>';
   ['bs1','bs2','bs3'].forEach((id,k)=>{const e=$('#'+id);if(e)e.classList.toggle('on',!!LIVE.bases[k]);});
   paintNpBar();
 }
@@ -28505,7 +28526,7 @@ function mvScore(mound){
     t.innerHTML=`<i class="mvt-dia"><u class="d2${on(1)}"></u><u class="d3${on(2)}"></u>`+
       `<u class="d1${on(0)}"></u></i>`+
       `<b>${LIVE.inning}회 ${LIVE.half===0?'초':'말'}</b>`+
-      `<span class="mvt-o">${'●'.repeat(LIVE.outs)}${'○'.repeat(Math.max(0,2-LIVE.outs))}</span>`;
+      `<span class="mvt-o">${outDots(LIVE.outs)}</span>`;
   }
 }
 /* 공을 날린다. 구종에 따라 늦게 휜다.

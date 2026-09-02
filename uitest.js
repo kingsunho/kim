@@ -289,6 +289,36 @@ const txt=()=>d.querySelector('#view').textContent;
     return /swg-mark/.test(src) ? '눈금 표시' : '!없다';
   });
 
+  /* [제보] "왜 모드하는데 투수로 하면 2명만 잡으면 이닝이 바뀌냐"
+     아웃 점을 **두 개만** 그리고 있었다 — 2아웃이면 ●● 라 꽉 찬 것으로
+     보이고, 3아웃이 나는 순간 반이닝이 끝나니 3아웃 화면을 볼 수가 없었다.
+     엔진은 멀쩡했다(항상 3아웃에 끝난다). 세 칸으로 고친다.        */
+  console.log('\n[아웃 표시]');
+  T('빈 칸까지 세 개다', ()=>{
+    const a=ev("outDots(0)"), b=ev("outDots(1)"), c=ev("outDots(2)");
+    return (a==='○○○'&&b==='●○○'&&c==='●●○') ? a+' → '+b+' → '+c : '!'+a+'/'+b+'/'+c;
+  });
+  T('2아웃이 꽉 찬 것으로 안 보인다 (빈 칸이 남는다)',
+    ()=>/○/.test(ev("outDots(2)")) ? '●●○ — 한 칸 남았다' : '!●● 로 보인다');
+  T('3아웃도 칸을 안 넘긴다', ()=>{
+    const r=ev("outDots(3)"), r2=ev("outDots(9)");
+    return (r==='●●●'&&r2==='●●●') ? '●●●' : '!'+r+'/'+r2;
+  });
+  T('스코어보드에 숫자도 같이 적는다', ()=>{
+    const src=ev("String(updateLiveUI)");
+    return (/outDots\(LIVE\.outs\)/.test(src) && /아웃/.test(src))
+      ? '●●○ 2아웃' : '!숫자가 없다';
+  });
+  T('두 군데(스코어보드·마운드)가 같은 함수를 쓴다', ()=>{
+    const n=(html.match(/outDots\(LIVE\.outs\)/g)||[]).length;
+    return n>=2 ? n+'군데' : '!'+n+'군데뿐이다';
+  });
+  T('점을 직접 그리는 자리가 안 남아 있다',
+    ()=>!/repeat\(Math\.max\(0,\s*2-/.test(html) ? '없다' : '!두 칸짜리가 남아 있다');
+  T('엔진은 3아웃에 반이닝을 끝낸다 (여기는 원래 맞았다)',
+    ()=>{ const n=(html.match(/this\.outs>=3/g)||[]).length;
+      return n>=8 ? n+'군데 전부 3아웃 기준' : '!'+n; });
+
   console.log(errs.length?`\n❌ ${errs.length}건`:'\n✅ 이상 없음');
   process.exit(errs.length?1:0);
 })();
