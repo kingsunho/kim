@@ -520,7 +520,7 @@ button{font-family:inherit;cursor:pointer}
 /* 내가 고른 선수 관련 플레이 강조 */
 .fl.me{border-left:2px solid var(--gold);padding-left:7px;background:rgba(201,162,39,.07)}
 .fl.meline{color:var(--gold);font-weight:800;font-size:12px;letter-spacing:-.2px}
-/* 고진선 특수 이벤트 */
+/* 신성호 특수 이벤트 */
 .fl.gojin{color:#ffb4a8;font-weight:700;border-left:2px solid #7a3b34;padding-left:7px;
   background:rgba(122,59,52,.12)}
 .fl.fric{color:#ffd08a;font-weight:700;border-left:2px solid #7a5b28;padding-left:7px;
@@ -2278,10 +2278,10 @@ td.dimc{color:var(--dm);text-align:left}
 </nav>
 <script>
 /* 자동 생성: 실제 리그 데이터 */
-const REALDATA={"rosters":{"lgrnd":[{"name":"차상준","no":99,"pos":["C"],"pitcher":false},{"name":"김도균","no":53,"pos":["2B"],"pitcher":false},{"name":"최준","no":0,"pos":["CF"],"pitcher":false},{"name":"김익주","no":43,"pos":["1B"],"pitcher":false},{"name":"안동선","no":78,"pos":["3B"],"pitcher":false},{"name":"김원형","no":59,"pos":["DH"],"pitcher":false},{"name":"신병현","no":23,"pos":["LF"],"pitcher":false},{"name":"나은엽","no":35,"pos":["RF"],"pitcher":false},{"name":"전종근","no":25,"pos":["SS"],"pitcher":false},{"name":"이강원","no":17,"pos":["P"],"pitcher":true}],"blackcats":[{"name":"신우종","no":85,"pos":["RF"],"pitcher":false},{"name":"이철승","no":22,"pos":["RF"],"pitcher":false},{"name":"윤제호","no":7,"pos":["2B"],"pitcher":false},{"name":"심승용","no":13,"pos":["3B"],"pitcher":false},{"name":"이재철","no":0,"pos":["SS"],"pitcher":false},{"name":"김성진","no":88,"pos":["C"],"pitcher":false},{"name":"김선욱","no":25,"pos":["CF"],"pitcher":false},{"name":"유승철","no":10,"pos":["1B"],"pitcher":false},{"name":"이현규","no":99,"pos":["LF"],"pitcher":false},{"name":"이재화","no":94,"pos":["3B"],"pitcher":false},{"name":"김영규","no":28,"pos":["DH"],"pitcher":false},{"name":"김준호","no":38,"pos":["P"],"pitcher":true},{"name":"권오택","no":11,"pos":["P"],"pitcher":true}],"sew":[{"name":"이흥제","no":30,"pos":["CF"],"pitcher":false},{"name":"이준명","no":33,"pos":["1B"],"pitcher":false},{"name":"이정현","no":42,"pos":["LF"],"pitcher":false},{"name":"고봉균","no":3,"pos":["SS"],"pitcher":false},{"name":"박정완","no":21,"pos":["C"],"pitcher":false},{"name":"송명진","no":99,"pos":["P"],"pitcher":true},{"name":"김준섭","no":88,"pos":["3B"],"pitcher":false},{"name":"김준겸","no":90,"pos":["RF"],"pitcher":false},{"name":"김현덕","no":72,"pos":["2B"],"pitcher":false},{"name":"김정훈","no":13,"pos":["2B"],"pitcher":false}],"js":[{"name":"이지원","no":49,"pos":["3B"],"pitcher":false},{"name":"홍현기","no":1515,"pos":["C"],"pitcher":false},{"name":"강윤선","no":36,"pos":["LF"],"pitcher":false},{"name":"이강연","no":69,"pos":["P"],"pitcher":true},{"name":"조완수","no":13,"pos":["DH"],"pitcher":false},{"name":"오승철","no":55,"pos":["SS"],"pitcher":false},{"name":"고광범","no":19,"pos":["1B"],"pitcher":false},{"name":"이만기","no":41,"pos":["1B"],"pitcher":false},{"name":"황성빈","no":6,"pos":["2B"],"pitcher":false},{"name":"이대영","no":17,"pos":["P"],"pitcher":true},{"name":"이우람","no":35,"pos":["RF"],"pitcher":false},{"name":"고동균","no":14,"pos":["CF"],"pitcher":false}],"ilgu":[{"name":"장진석","no":7,"pos":["CF"],"pitcher":false},{"name":"이지찬","no":51,"pos":["LF"],"pitcher":false},{"name":"조준범","no":21,"pos":["3B"],"pitcher":false},{"name":"조남훈","no":47,"pos":["C"],"pitcher":false},{"name":"현세환","no":24,"pos":["1B"],"pitcher":false},{"name":"최유락","no":27,"pos":["RF"],"pitcher":false},{"name":"윤선재","no":22,"pos":["SS"],"pitcher":false},{"name":"박승환","no":10,"pos":["DH"],"pitcher":false},{"name":"김수환","no":29,"pos":["C"],"pitcher":false},{"name":"임천규","no":16,"pos":["2B"],"pitcher":false}],"winners":[{"name":"이홍순","no":91,"pos":["LF"],"pitcher":false},{"name":"김철홍","no":7,"pos":["SS"],"pitcher":false},{"name":"정진수","no":11,"pos":["1B"],"pitcher":false},{"name":"박병우","no":10,"pos":["CF"],"pitcher":false},{"name":"정민근","no":29,"pos":["C"],"pitcher":false},{"name":"간선민","no":15,"pos":["2B"],"pitcher":false},{"name":"김차군","no":1,"pos":["3B"],"pitcher":false},{"name":"유영석","no":17,"pos":["RF"],"pitcher":false},{"name":"정광민","no":25,"pos":["DH"],"pitcher":false},{"name":"유효준","no":22,"pos":["DH"],"pitcher":false},{"name":"정경수","no":66,"pos":["P"],"pitcher":true}],"typhoon":[{"name":"최정수","no":7,"pos":["2B"],"pitcher":false},{"name":"강기원","no":28,"pos":["LF"],"pitcher":false},{"name":"황민원","no":23,"pos":["SS"],"pitcher":false},{"name":"김동욱","no":44,"pos":["1B"],"pitcher":false},{"name":"안희왕","no":20,"pos":["3B"],"pitcher":false},{"name":"정운구","no":0,"pos":["C"],"pitcher":false},{"name":"김준형","no":37,"pos":["RF"],"pitcher":false},{"name":"임경수","no":50,"pos":["DH"],"pitcher":false},{"name":"정대철","no":14,"pos":["P"],"pitcher":true},{"name":"이희찬","no":9,"pos":["CF"],"pitcher":false}],"onekill":[{"name":"이윤구","no":3,"pos":["SS"],"pitcher":false},{"name":"김수열","no":99,"pos":["LF"],"pitcher":false},{"name":"김지원","no":27,"pos":["CF"],"pitcher":false},{"name":"홍연성","no":15,"pos":["C"],"pitcher":false},{"name":"김영신","no":21,"pos":["3B"],"pitcher":false},{"name":"장우영","no":17,"pos":["RF"],"pitcher":false},{"name":"문형준","no":7,"pos":["2B"],"pitcher":false},{"name":"김종명","no":16,"pos":["1B"],"pitcher":false},{"name":"장우진","no":50,"pos":["1B"],"pitcher":false},{"name":"모현일","no":29,"pos":["P"],"pitcher":true},{"name":"김태균","no":11,"pos":["RF"],"pitcher":false}],"revenger":[{"name":"권동우","no":48,"pos":["RF"],"pitcher":false},{"name":"염상수","no":28,"pos":["2B"],"pitcher":false},{"name":"서영호","no":99,"pos":["DH"],"pitcher":false},{"name":"박인용","no":35,"pos":["3B","P"],"pitcher":true},{"name":"주정환","no":52,"pos":["3B"],"pitcher":false},{"name":"이재철","no":38,"pos":["SS"],"pitcher":false},{"name":"송영석","no":11,"pos":["LF"],"pitcher":false},{"name":"윤민호","no":14,"pos":["CF"],"pitcher":false},{"name":"최상용","no":1,"pos":["LF"],"pitcher":false},{"name":"이주원","no":10,"pos":["C"],"pitcher":false},{"name":"최창희","no":55,"pos":["2B","P"],"pitcher":true},{"name":"염상철","no":17,"pos":["1B"],"pitcher":false}],"goodguys":[{"name":"이의연","no":17,"pos":["SS"],"pitcher":false},{"name":"권태기","no":3,"pos":["P"],"pitcher":true},{"name":"김후정","no":23,"pos":["1B"],"pitcher":false},{"name":"김의식","no":5,"pos":["LF"],"pitcher":false},{"name":"윤인열","no":24,"pos":["3B"],"pitcher":false},{"name":"박관순","no":44,"pos":["C"],"pitcher":false},{"name":"이동원","no":21,"pos":["RF"],"pitcher":false},{"name":"전성민","no":14,"pos":["2B"],"pitcher":false},{"name":"김충국","no":33,"pos":["CF"],"pitcher":false}],"daeyang":[{"name":"윤선준","no":45,"pos":["SS"],"pitcher":false},{"name":"박창호","no":1,"pos":["1B"],"pitcher":false},{"name":"김종열 중견","no":0,"pos":["DH"]},{"name":"유병선","no":99,"pos":["P"],"pitcher":true},{"name":"박수호","no":21,"pos":["3B"],"pitcher":false},{"name":"홍우영","no":76,"pos":["LF"],"pitcher":false},{"name":"김의용","no":5,"pos":["2B"],"pitcher":false},{"name":"김진국","no":84,"pos":["RF"],"pitcher":false},{"name":"김경철","no":17,"pos":["C"],"pitcher":false}],"ansanutd":[{"name":"윤한국","no":17,"pos":["SS"],"pitcher":false},{"name":"김동일","no":19,"pos":["2B"],"pitcher":false},{"name":"최성하","no":23,"pos":["2B"],"pitcher":false},{"name":"고진선","no":77,"pos":["1B","P"],"pitcher":true},{"name":"김현철","no":10,"pos":["C"],"pitcher":false},{"name":"윤승민","no":18,"pos":["3B"],"pitcher":false},{"name":"JONESCHAR","no":6,"pos":["RF"],"pitcher":false},{"name":"정재철","no":9,"pos":["RF","P"],"pitcher":true},{"name":"김민규","no":14,"pos":["CF"],"pitcher":false},{"name":"구본석","no":52,"pos":["LF"],"pitcher":false},{"name":"선덕재","no":27,"pos":["DH"],"pitcher":false}],"pirates":[{"name":"원종선","no":77,"pos":["SS"],"pitcher":false},{"name":"제호준","no":14,"pos":["3B"],"pitcher":false},{"name":"고승철","no":38,"pos":["RF"],"pitcher":false},{"name":"최준수","no":94,"pos":["C"],"pitcher":false},{"name":"김현희","no":17,"pos":["CF"],"pitcher":false},{"name":"이홍주","no":11,"pos":["1B"],"pitcher":false},{"name":"주재형","no":25,"pos":["LF"],"pitcher":false},{"name":"김승일","no":99,"pos":["2B"],"pitcher":false},{"name":"김재용","no":36,"pos":["P"],"pitcher":true},{"name":"노종훈","no":10,"pos":["P"],"pitcher":true}]},"pitchers":{"sasin":[{"name":"이희철","era":0.88,"ip":8,"k":9,"w":2},{"name":"이재성","era":4.2,"ip":21.2,"k":13,"w":5}],"action":[{"name":"백승우","era":2.23,"ip":37.2,"k":61,"w":4}],"corad":[{"name":"김태환","era":2.78,"ip":22.2,"k":null,"w":7}],"challengers":[{"name":"이준호","era":2.8,"ip":5,"k":null,"w":1},{"name":"한규성","era":4.5,"ip":9.1,"k":null,"w":1},{"name":"강태헌","era":6.56,"ip":16,"k":null,"w":4}],"js":[{"name":"강신형","era":3.39,"ip":20.2,"k":null,"w":3},{"name":"이강연","era":5.25,"ip":4,"k":4,"w":null},{"name":"이대영","era":null,"ip":null,"k":null,"w":null}],"daeyang":[{"name":"주우태","era":4.2,"ip":5,"k":null,"w":1},{"name":"유병선","era":6.5,"ip":15,"k":null,"w":null,"note":"아리랑볼"}],"winners":[{"name":"정경수","era":5.25,"ip":56,"k":null,"w":9}],"chigo":[{"name":"백지민","era":5.35,"ip":17,"k":null,"w":5}],"ilgu":[{"name":"김수환","era":5.37,"ip":43,"k":null,"w":5}],"lgrnd":[{"name":"이강원","era":10.5,"ip":4,"k":6,"w":null}],"blackcats":[{"name":"김준호","era":4.67,"ip":3,"k":5,"w":null},{"name":"권오택","era":null,"ip":null,"k":null,"w":null}],"sew":[{"name":"송명진","era":144.12,"ip":0.34,"k":0,"w":null}],"onekill":[{"name":"모현일","era":17.5,"ip":2,"k":2,"w":null}],"typhoon":[{"name":"정대철","era":null,"ip":null,"k":null,"w":null}],"revenger":[{"name":"박인용","era":null,"ip":null,"k":null,"w":null},{"name":"최창희","era":null,"ip":null,"k":null,"w":null}],"goodguys":[{"name":"권태기","era":11.18,"ip":20,"k":null,"w":null,"note":"사사구 36개"}],"ansanutd":[{"name":"고진선","era":7.99,"ip":23,"k":34,"w":null,"note":"좌완 100~110 · 퀵모션 빠름"},{"name":"정재철","era":4.67,"ip":20,"k":null,"w":null,"note":"우완 80~85 아리랑"}],"pirates":[{"name":"김재용","era":4.91,"ip":35.2,"k":null,"w":null,"note":"오버핸드 85km · WHIP 1.68"},{"name":"노종훈","era":12.6,"ip":5,"k":null,"w":null,"note":"구원"},{"name":"최동길","era":11.72,"ip":14.1,"note":"사이드암 75~80"}]}};
-const REAL_FIRSTS_PLAYER={"1호타석":{"player":"이건","game":1,"date":"2026-02-22","inning":1,"result":"중견수 플라이","note":"구단 1호 아웃이기도 하다"},"1호출루":{"player":"김상훈","game":1,"date":"2026-02-22","inning":1,"result":"볼넷","note":"1호 볼넷과 동일"},"1호볼넷":{"player":"김상훈","game":1,"date":"2026-02-22","inning":1,"result":"","note":""},"1호실책출루":{"player":"김한규","game":1,"date":"2026-02-22","inning":1,"result":"좌익수 실책","note":""},"1호도루":{"player":"유지효","game":1,"date":"2026-02-22","inning":1,"result":"유격수 땅볼 출루 후 도루","note":""},"1호피삼진":{"player":"김인규","game":1,"date":"2026-02-22","inning":1,"result":"","note":""},"1호주루사":{"player":"김한규","game":1,"date":"2026-02-22","inning":1,"result":"주자아웃","note":""},"1호안타":{"player":"권혁준","game":1,"date":"2026-02-22","inning":2,"result":"유격수 방향 안타(내야안타)","note":"시즌 타율 .100으로 마감한 선수가 구단 1호 안타 주인공"},"1호장타":{"player":"김선호","game":1,"date":"2026-02-22","inning":2,"result":"좌익수 3루타","note":"구단 1호 3루타와 동일"},"1호3루타":{"player":"김선호","game":1,"date":"2026-02-22","inning":2,"result":"","note":""},"1호득점":{"player":"권혁준","game":1,"date":"2026-02-22","inning":2,"result":"","note":""},"1호타점":{"player":"김선호","game":1,"date":"2026-02-22","inning":2,"result":"","note":""},"1호선발투수":{"player":"김준희","game":1,"date":"2026-02-22","inning":null,"result":"","note":""},"1호탈삼진":{"player":"김준희","game":1,"date":"2026-02-22","inning":null,"result":"","note":""},"1호볼넷허용":{"player":"김준희","game":1,"date":"2026-02-22","inning":null,"result":"","note":""},"1호패전투수":{"player":"김준희","game":1,"date":"2026-02-22","inning":null,"result":"3이닝 10피안타 13실점 5자책 6사사구","note":""},"1호구원등판":{"player":"유지효","game":1,"date":"2026-02-22","inning":null,"result":"0이닝 4실점 4자책 4사사구 — 아웃카운트 0개","note":""},"1호사구":{"player":"김인규","game":2,"date":"2026-03-29","inning":1,"result":"","note":""},"1호낫아웃":{"player":"이민혁","game":2,"date":"2026-03-29","inning":1,"result":"","note":""},"1호2루타":{"player":"김상훈","game":2,"date":"2026-03-29","inning":2,"result":"좌익수 2루타","note":"1호 경기에는 팀 2루타가 없었다. 리그 2루타 1위 팀의 시작점"},"1호도루자":{"player":"이건","game":2,"date":"2026-03-29","inning":1,"result":"우중간 안타 후 도루 성공, 이어 도루자","note":""},"1호보크유도":{"player":"우완좌완 투수진(실책성)","game":2,"date":"2026-03-29","inning":null,"result":"","note":"우리 투수가 범한 보크. 블랙캣츠 김선욱 진루"},"1호승리투수":{"player":"송승민","game":3,"date":"2026-04-12","inning":null,"result":"2.1이닝 3피안타 4실점 1자책 4사사구 3탈삼진","note":""},"1호대타":{"player":"이승민","game":6,"date":"2026-05-24","inning":4,"result":"우전안타","note":"1호 대타가 곧 1호 대타 안타"},"1호완투":{"player":"송정민","game":6,"date":"2026-05-24","inning":null,"result":"5이닝 10피안타 8실점 5자책 9탈삼진 (패)","note":""},"1호무자책완투":{"player":"송승민","game":7,"date":"2026-06-14","inning":null,"result":"5이닝 3피안타 1실점 0자책 2사사구 10탈삼진","note":""},"1호두자릿수탈삼진":{"player":"송승민","game":7,"date":"2026-06-14","inning":null,"result":"","note":""},"1호병살타":{"player":"정민수","game":7,"date":"2026-06-14","inning":5,"result":"","note":""},"1호홈런":{"player":"김선호","game":9,"date":"2026-07-12","inning":3,"result":"좌측 그라운드(인정) 홈런","note":"시즌 팀 유일 홈런. 담장을 넘어간 타구는 시즌 내내 0개"},"1호완투승":{"player":"송정민","game":8,"date":"2026-06-21","inning":null,"result":"4이닝 4피안타 5실점 4자책","note":""}};
-const REAL_FIRSTS_TEAM={"1호승리":{"date":"2026-04-12","game":3,"detail":"SEW KOREA 16:5","note":"구단 1호 승리"},"1호두자릿수득점경기":{"date":"2026-04-12","game":3,"detail":"16득점","note":""},"1호두자릿수안타경기":{"date":"2026-07-12","game":9,"detail":"15안타","note":"시즌 최다 안타 경기이면서 끝내기 패"},"1호콜드패":{"date":"2026-07-19","game":10,"detail":"굿가이즈 2:9","note":""},"1호연승":{"date":"2026-08-09 ~ 08-16","game":null,"detail":"12·13차전","note":""},"1호홈경기승리":{"date":"2026-06-21","game":8,"detail":"7:5","note":""}};
-const REAL_GAMELOG=[{"no":1,"date":"2026-02-22","vs":"LGRnD","park":"배나물","home":false,"rf":8,"ra":19,"result":"L","wp":null,"lp":"김준희","oppP":"이강원"},{"no":2,"date":"2026-03-29","vs":"블랙캣츠","park":"신길","home":true,"rf":5,"ra":14,"result":"L","wp":null,"lp":"이건","oppP":"김준호"},{"no":3,"date":"2026-04-12","vs":"SEW KOREA","park":"신길","home":false,"rf":16,"ra":5,"result":"W","wp":"송승민","lp":null,"oppP":"송명진"},{"no":4,"date":"2026-04-26","vs":"JS Logistics","park":"신길","home":true,"rf":6,"ra":11,"result":"L","wp":null,"lp":"김준희","oppP":"이강연"},{"no":5,"date":"2026-05-17","vs":"일구이무","park":"성곡","home":false,"rf":3,"ra":24,"result":"L","wp":null,"lp":"김인규","oppP":null},{"no":6,"date":"2026-05-24","vs":"위너스","park":"성곡","home":false,"rf":3,"ra":8,"result":"L","wp":null,"lp":"송정민","oppP":null},{"no":7,"date":"2026-06-14","vs":"태풍야구단","park":"배나물","home":false,"rf":6,"ra":1,"result":"W","wp":"송승민","lp":null,"oppP":null},{"no":8,"date":"2026-06-21","vs":"ONEKILL SLUGGER","park":"신길","home":true,"rf":7,"ra":5,"result":"W","wp":"송정민","lp":null,"oppP":"모현일"},{"no":9,"date":"2026-07-12","vs":"Revenger 레볼루션 Club","park":"성곡","home":true,"rf":12,"ra":13,"result":"L","wp":null,"lp":"이건","oppP":null},{"no":10,"date":"2026-07-19","vs":"굿가이즈","park":"배나물","home":true,"rf":2,"ra":9,"result":"L","wp":null,"lp":"김한규","oppP":null},{"no":11,"date":"2026-07-26","vs":"대양윈스","park":"신길","home":false,"rf":5,"ra":18,"result":"L","wp":null,"lp":"김한규","oppP":null},{"no":12,"date":"2026-08-09","vs":"안산유나이티드","park":"신길","home":true,"rf":10,"ra":3,"result":"W","wp":"송정민","lp":null,"oppP":null},{"no":13,"date":"2026-08-16","vs":"팀 파이어리츠 단원","park":"배나물","home":false,"rf":12,"ra":2,"result":"W","wp":"송승민","lp":null,"oppP":null}];
+const REALDATA={"rosters":{"lgrnd":[{"name":"남민","no":99,"pos":["C"],"pitcher":false},{"name":"백재현","no":53,"pos":["2B"],"pitcher":false},{"name":"최도영","no":0,"pos":["CF"],"pitcher":false},{"name":"장건희","no":43,"pos":["1B"],"pitcher":false},{"name":"염재현","no":78,"pos":["3B"],"pitcher":false},{"name":"임호준","no":59,"pos":["DH"],"pitcher":false},{"name":"홍규성","no":23,"pos":["LF"],"pitcher":false},{"name":"천민호","no":35,"pos":["RF"],"pitcher":false},{"name":"윤민석","no":25,"pos":["SS"],"pitcher":false},{"name":"남정후","no":17,"pos":["P"],"pitcher":true}],"blackcats":[{"name":"허명석","no":85,"pos":["RF"],"pitcher":false},{"name":"홍진","no":22,"pos":["RF"],"pitcher":false},{"name":"성건희","no":7,"pos":["2B"],"pitcher":false},{"name":"양지훈","no":13,"pos":["3B"],"pitcher":false},{"name":"곽진","no":0,"pos":["SS"],"pitcher":false},{"name":"정원준","no":88,"pos":["C"],"pitcher":false},{"name":"양준","no":25,"pos":["CF"],"pitcher":false},{"name":"임지훈","no":10,"pos":["1B"],"pitcher":false},{"name":"천영웅","no":99,"pos":["LF"],"pitcher":false},{"name":"구승엽","no":94,"pos":["3B"],"pitcher":false},{"name":"곽재영","no":28,"pos":["DH"],"pitcher":false},{"name":"강규현","no":38,"pos":["P"],"pitcher":true},{"name":"윤호준","no":11,"pos":["P"],"pitcher":true}],"sew":[{"name":"원세진","no":30,"pos":["CF"],"pitcher":false},{"name":"명영웅","no":33,"pos":["1B"],"pitcher":false},{"name":"최진","no":42,"pos":["LF"],"pitcher":false},{"name":"남규현","no":3,"pos":["SS"],"pitcher":false},{"name":"도민","no":21,"pos":["C"],"pitcher":false},{"name":"권영수","no":99,"pos":["P"],"pitcher":true},{"name":"임건희","no":88,"pos":["3B"],"pitcher":false},{"name":"윤성진","no":90,"pos":["RF"],"pitcher":false},{"name":"조상수","no":72,"pos":["2B"],"pitcher":false},{"name":"신영웅","no":13,"pos":["2B"],"pitcher":false}],"js":[{"name":"문세영","no":49,"pos":["3B"],"pitcher":false},{"name":"홍건희","no":1515,"pos":["C"],"pitcher":false},{"name":"허건","no":36,"pos":["LF"],"pitcher":false},{"name":"신승현","no":69,"pos":["P"],"pitcher":true},{"name":"석승엽","no":13,"pos":["DH"],"pitcher":false},{"name":"표세영","no":55,"pos":["SS"],"pitcher":false},{"name":"이지훈","no":19,"pos":["1B"],"pitcher":false},{"name":"양현우","no":41,"pos":["1B"],"pitcher":false},{"name":"노건","no":6,"pos":["2B"],"pitcher":false},{"name":"문승호","no":17,"pos":["P"],"pitcher":true},{"name":"남준","no":35,"pos":["RF"],"pitcher":false},{"name":"염현종","no":14,"pos":["CF"],"pitcher":false}],"ilgu":[{"name":"천규현","no":7,"pos":["CF"],"pitcher":false},{"name":"성상수","no":51,"pos":["LF"],"pitcher":false},{"name":"배종민","no":21,"pos":["3B"],"pitcher":false},{"name":"옥호준","no":47,"pos":["C"],"pitcher":false},{"name":"문승현","no":24,"pos":["1B"],"pitcher":false},{"name":"옥규현","no":27,"pos":["RF"],"pitcher":false},{"name":"조민호","no":22,"pos":["SS"],"pitcher":false},{"name":"권재우","no":10,"pos":["DH"],"pitcher":false},{"name":"윤대호","no":29,"pos":["C"],"pitcher":false},{"name":"신건","no":16,"pos":["2B"],"pitcher":false}],"winners":[{"name":"천율","no":91,"pos":["LF"],"pitcher":false},{"name":"김주환","no":7,"pos":["SS"],"pitcher":false},{"name":"고호","no":11,"pos":["1B"],"pitcher":false},{"name":"양광현","no":10,"pos":["CF"],"pitcher":false},{"name":"차율","no":29,"pos":["C"],"pitcher":false},{"name":"서유찬","no":15,"pos":["2B"],"pitcher":false},{"name":"한현우","no":1,"pos":["3B"],"pitcher":false},{"name":"원주환","no":17,"pos":["RF"],"pitcher":false},{"name":"정빈","no":25,"pos":["DH"],"pitcher":false},{"name":"남민석","no":22,"pos":["DH"],"pitcher":false},{"name":"하솔","no":66,"pos":["P"],"pitcher":true}],"typhoon":[{"name":"신현종","no":7,"pos":["2B"],"pitcher":false},{"name":"심진혁","no":28,"pos":["LF"],"pitcher":false},{"name":"주원","no":23,"pos":["SS"],"pitcher":false},{"name":"최세진","no":44,"pos":["1B"],"pitcher":false},{"name":"한찬","no":20,"pos":["3B"],"pitcher":false},{"name":"유율","no":0,"pos":["C"],"pitcher":false},{"name":"구진","no":37,"pos":["RF"],"pitcher":false},{"name":"손민석","no":50,"pos":["DH"],"pitcher":false},{"name":"지명석","no":14,"pos":["P"],"pitcher":true},{"name":"차호","no":9,"pos":["CF"],"pitcher":false}],"onekill":[{"name":"권기주","no":3,"pos":["SS"],"pitcher":false},{"name":"현원준","no":99,"pos":["LF"],"pitcher":false},{"name":"구규현","no":27,"pos":["CF"],"pitcher":false},{"name":"곽창우","no":15,"pos":["C"],"pitcher":false},{"name":"유태양","no":21,"pos":["3B"],"pitcher":false},{"name":"채찬","no":17,"pos":["RF"],"pitcher":false},{"name":"표세진","no":7,"pos":["2B"],"pitcher":false},{"name":"신시환","no":16,"pos":["1B"],"pitcher":false},{"name":"변정우","no":50,"pos":["1B"],"pitcher":false},{"name":"전정후","no":29,"pos":["P"],"pitcher":true},{"name":"현재환","no":11,"pos":["RF"],"pitcher":false}],"revenger":[{"name":"곽규","no":48,"pos":["RF"],"pitcher":false},{"name":"신건우","no":28,"pos":["2B"],"pitcher":false},{"name":"양현","no":99,"pos":["DH"],"pitcher":false},{"name":"윤정호","no":35,"pos":["3B","P"],"pitcher":true},{"name":"오광현","no":52,"pos":["3B"],"pitcher":false},{"name":"곽진","no":38,"pos":["SS"],"pitcher":false},{"name":"권건우","no":11,"pos":["LF"],"pitcher":false},{"name":"천건","no":14,"pos":["CF"],"pitcher":false},{"name":"지건우","no":1,"pos":["LF"],"pitcher":false},{"name":"도기주","no":10,"pos":["C"],"pitcher":false},{"name":"방광현","no":55,"pos":["2B","P"],"pitcher":true},{"name":"손종민","no":17,"pos":["1B"],"pitcher":false}],"goodguys":[{"name":"한인성","no":17,"pos":["SS"],"pitcher":false},{"name":"안규","no":3,"pos":["P"],"pitcher":true},{"name":"임재영","no":23,"pos":["1B"],"pitcher":false},{"name":"강기훈","no":5,"pos":["LF"],"pitcher":false},{"name":"권상원","no":24,"pos":["3B"],"pitcher":false},{"name":"최규성","no":44,"pos":["C"],"pitcher":false},{"name":"홍광현","no":21,"pos":["RF"],"pitcher":false},{"name":"표민석","no":14,"pos":["2B"],"pitcher":false},{"name":"곽현우","no":33,"pos":["CF"],"pitcher":false}],"daeyang":[{"name":"강기범","no":45,"pos":["SS"],"pitcher":false},{"name":"성기주","no":1,"pos":["1B"],"pitcher":false},{"name":"손율","no":0,"pos":["DH"]},{"name":"심승엽","no":99,"pos":["P"],"pitcher":true},{"name":"옥기주","no":21,"pos":["3B"],"pitcher":false},{"name":"오재환","no":76,"pos":["LF"],"pitcher":false},{"name":"유준영","no":5,"pos":["2B"],"pitcher":false},{"name":"송석","no":84,"pos":["RF"],"pitcher":false},{"name":"염기범","no":17,"pos":["C"],"pitcher":false}],"ansanutd":[{"name":"심재영","no":17,"pos":["SS"],"pitcher":false},{"name":"문현우","no":19,"pos":["2B"],"pitcher":false},{"name":"원열","no":23,"pos":["2B"],"pitcher":false},{"name":"신성호","no":77,"pos":["1B","P"],"pitcher":true},{"name":"허승호","no":10,"pos":["C"],"pitcher":false},{"name":"최상현","no":18,"pos":["3B"],"pitcher":false},{"name":"JOHNSON","no":6,"pos":["RF"],"pitcher":false},{"name":"손빈","no":9,"pos":["RF","P"],"pitcher":true},{"name":"지동원","no":14,"pos":["CF"],"pitcher":false},{"name":"오상원","no":52,"pos":["LF"],"pitcher":false},{"name":"김상현","no":27,"pos":["DH"],"pitcher":false}],"pirates":[{"name":"황승우","no":77,"pos":["SS"],"pitcher":false},{"name":"심세영","no":14,"pos":["3B"],"pitcher":false},{"name":"장민석","no":38,"pos":["RF"],"pitcher":false},{"name":"옥동원","no":94,"pos":["C"],"pitcher":false},{"name":"조승현","no":17,"pos":["CF"],"pitcher":false},{"name":"서건","no":11,"pos":["1B"],"pitcher":false},{"name":"최영웅","no":25,"pos":["LF"],"pitcher":false},{"name":"현수빈","no":99,"pos":["2B"],"pitcher":false},{"name":"천상수","no":36,"pos":["P"],"pitcher":true},{"name":"심태양","no":10,"pos":["P"],"pitcher":true}]},"pitchers":{"sasin":[{"name":"전진혁","era":0.88,"ip":8,"k":9,"w":2},{"name":"석인성","era":4.2,"ip":21.2,"k":13,"w":5}],"action":[{"name":"백승현","era":2.23,"ip":37.2,"k":61,"w":4}],"corad":[{"name":"차창우","era":2.78,"ip":22.2,"k":null,"w":7}],"challengers":[{"name":"구승호","era":2.8,"ip":5,"k":null,"w":1},{"name":"허진","era":4.5,"ip":9.1,"k":null,"w":1},{"name":"한영수","era":6.56,"ip":16,"k":null,"w":4}],"js":[{"name":"남현우","era":3.39,"ip":20.2,"k":null,"w":3},{"name":"신승현","era":5.25,"ip":4,"k":4,"w":null},{"name":"문승호","era":null,"ip":null,"k":null,"w":null}],"daeyang":[{"name":"양솔","era":4.2,"ip":5,"k":null,"w":1},{"name":"심승엽","era":6.5,"ip":15,"k":null,"w":null,"note":"아리랑볼"}],"winners":[{"name":"하솔","era":5.25,"ip":56,"k":null,"w":9}],"chigo":[{"name":"박상원","era":5.35,"ip":17,"k":null,"w":5}],"ilgu":[{"name":"윤대호","era":5.37,"ip":43,"k":null,"w":5}],"lgrnd":[{"name":"남정후","era":10.5,"ip":4,"k":6,"w":null}],"blackcats":[{"name":"강규현","era":4.67,"ip":3,"k":5,"w":null},{"name":"윤호준","era":null,"ip":null,"k":null,"w":null}],"sew":[{"name":"권영수","era":144.12,"ip":0.34,"k":0,"w":null}],"onekill":[{"name":"전정후","era":17.5,"ip":2,"k":2,"w":null}],"typhoon":[{"name":"지명석","era":null,"ip":null,"k":null,"w":null}],"revenger":[{"name":"윤정호","era":null,"ip":null,"k":null,"w":null},{"name":"방광현","era":null,"ip":null,"k":null,"w":null}],"goodguys":[{"name":"안규","era":11.18,"ip":20,"k":null,"w":null,"note":"사사구 36개"}],"ansanutd":[{"name":"신성호","era":7.99,"ip":23,"k":34,"w":null,"note":"좌완 100~110 · 퀵모션 빠름"},{"name":"손빈","era":4.67,"ip":20,"k":null,"w":null,"note":"우완 80~85 아리랑"}],"pirates":[{"name":"천상수","era":4.91,"ip":35.2,"k":null,"w":null,"note":"오버핸드 85km · WHIP 1.68"},{"name":"심태양","era":12.6,"ip":5,"k":null,"w":null,"note":"구원"},{"name":"정상원","era":11.72,"ip":14.1,"note":"사이드암 75~80"}]}};
+const REAL_FIRSTS_PLAYER={"1호타석":{"player":"이건","game":1,"date":"2026-02-22","inning":1,"result":"중견수 플라이","note":"구단 1호 아웃이기도 하다"},"1호출루":{"player":"김상훈","game":1,"date":"2026-02-22","inning":1,"result":"볼넷","note":"1호 볼넷과 동일"},"1호볼넷":{"player":"김상훈","game":1,"date":"2026-02-22","inning":1,"result":"","note":""},"1호실책출루":{"player":"김한규","game":1,"date":"2026-02-22","inning":1,"result":"좌익수 실책","note":""},"1호도루":{"player":"유지효","game":1,"date":"2026-02-22","inning":1,"result":"유격수 땅볼 출루 후 도루","note":""},"1호피삼진":{"player":"김인규","game":1,"date":"2026-02-22","inning":1,"result":"","note":""},"1호주루사":{"player":"김한규","game":1,"date":"2026-02-22","inning":1,"result":"주자아웃","note":""},"1호안타":{"player":"권혁준","game":1,"date":"2026-02-22","inning":2,"result":"유격수 방향 안타(내야안타)","note":"시즌 타율 .100으로 마감한 선수가 구단 1호 안타 주인공"},"1호장타":{"player":"김선호","game":1,"date":"2026-02-22","inning":2,"result":"좌익수 3루타","note":"구단 1호 3루타와 동일"},"1호3루타":{"player":"김선호","game":1,"date":"2026-02-22","inning":2,"result":"","note":""},"1호득점":{"player":"권혁준","game":1,"date":"2026-02-22","inning":2,"result":"","note":""},"1호타점":{"player":"김선호","game":1,"date":"2026-02-22","inning":2,"result":"","note":""},"1호선발투수":{"player":"김준희","game":1,"date":"2026-02-22","inning":null,"result":"","note":""},"1호탈삼진":{"player":"김준희","game":1,"date":"2026-02-22","inning":null,"result":"","note":""},"1호볼넷허용":{"player":"김준희","game":1,"date":"2026-02-22","inning":null,"result":"","note":""},"1호패전투수":{"player":"김준희","game":1,"date":"2026-02-22","inning":null,"result":"3이닝 10피안타 13실점 5자책 6사사구","note":""},"1호구원등판":{"player":"유지효","game":1,"date":"2026-02-22","inning":null,"result":"0이닝 4실점 4자책 4사사구 — 아웃카운트 0개","note":""},"1호사구":{"player":"김인규","game":2,"date":"2026-03-29","inning":1,"result":"","note":""},"1호낫아웃":{"player":"이민혁","game":2,"date":"2026-03-29","inning":1,"result":"","note":""},"1호2루타":{"player":"김상훈","game":2,"date":"2026-03-29","inning":2,"result":"좌익수 2루타","note":"1호 경기에는 팀 2루타가 없었다. 리그 2루타 1위 팀의 시작점"},"1호도루자":{"player":"이건","game":2,"date":"2026-03-29","inning":1,"result":"우중간 안타 후 도루 성공, 이어 도루자","note":""},"1호보크유도":{"player":"우완좌완 투수진(실책성)","game":2,"date":"2026-03-29","inning":null,"result":"","note":"우리 투수가 범한 보크. 박동원 나이츠 양준 진루"},"1호승리투수":{"player":"송승민","game":3,"date":"2026-04-12","inning":null,"result":"2.1이닝 3피안타 4실점 1자책 4사사구 3탈삼진","note":""},"1호대타":{"player":"이승민","game":6,"date":"2026-05-24","inning":4,"result":"우전안타","note":"1호 대타가 곧 1호 대타 안타"},"1호완투":{"player":"송정민","game":6,"date":"2026-05-24","inning":null,"result":"5이닝 10피안타 8실점 5자책 9탈삼진 (패)","note":""},"1호무자책완투":{"player":"송승민","game":7,"date":"2026-06-14","inning":null,"result":"5이닝 3피안타 1실점 0자책 2사사구 10탈삼진","note":""},"1호두자릿수탈삼진":{"player":"송승민","game":7,"date":"2026-06-14","inning":null,"result":"","note":""},"1호병살타":{"player":"정민수","game":7,"date":"2026-06-14","inning":5,"result":"","note":""},"1호홈런":{"player":"김선호","game":9,"date":"2026-07-12","inning":3,"result":"좌측 그라운드(인정) 홈런","note":"시즌 팀 유일 홈런. 담장을 넘어간 타구는 시즌 내내 0개"},"1호완투승":{"player":"송정민","game":8,"date":"2026-06-21","inning":null,"result":"4이닝 4피안타 5실점 4자책","note":""}};
+const REAL_FIRSTS_TEAM={"1호승리":{"date":"2026-04-12","game":3,"detail":"정우영 서울 16:5","note":"구단 1호 승리"},"1호두자릿수득점경기":{"date":"2026-04-12","game":3,"detail":"16득점","note":""},"1호두자릿수안타경기":{"date":"2026-07-12","game":9,"detail":"15안타","note":"시즌 최다 안타 경기이면서 끝내기 패"},"1호콜드패":{"date":"2026-07-19","game":10,"detail":"양의지 브라더스 2:9","note":""},"1호연승":{"date":"2026-08-09 ~ 08-16","game":null,"detail":"12·13차전","note":""},"1호홈경기승리":{"date":"2026-06-21","game":8,"detail":"7:5","note":""}};
+const REAL_GAMELOG=[{"no":1,"date":"2026-02-22","vs":"구자욱 연구소","park":"배나물","home":false,"rf":8,"ra":19,"result":"L","wp":null,"lp":"김준희","oppP":"남정후"},{"no":2,"date":"2026-03-29","vs":"박동원 나이츠","park":"신길","home":true,"rf":5,"ra":14,"result":"L","wp":null,"lp":"이건","oppP":"강규현"},{"no":3,"date":"2026-04-12","vs":"정우영 서울","park":"신길","home":false,"rf":16,"ra":5,"result":"W","wp":"송승민","lp":null,"oppP":"권영수"},{"no":4,"date":"2026-04-26","vs":"이정후 상사","park":"신길","home":true,"rf":6,"ra":11,"result":"L","wp":null,"lp":"김준희","oppP":"신승현"},{"no":5,"date":"2026-05-17","vs":"안우진 야구단","park":"성곡","home":false,"rf":3,"ra":24,"result":"L","wp":null,"lp":"김인규","oppP":null},{"no":6,"date":"2026-05-24","vs":"원태인 이글스","park":"성곡","home":false,"rf":3,"ra":8,"result":"L","wp":null,"lp":"송정민","oppP":null},{"no":7,"date":"2026-06-14","vs":"곽빈 스톰","park":"배나물","home":false,"rf":6,"ra":1,"result":"W","wp":"송승민","lp":null,"oppP":null},{"no":8,"date":"2026-06-21","vs":"한유섬 장타단","park":"신길","home":true,"rf":7,"ra":5,"result":"W","wp":"송정민","lp":null,"oppP":"전정후"},{"no":9,"date":"2026-07-12","vs":"문보경 복수단","park":"성곡","home":true,"rf":12,"ra":13,"result":"L","wp":null,"lp":"이건","oppP":null},{"no":10,"date":"2026-07-19","vs":"양의지 브라더스","park":"배나물","home":true,"rf":2,"ra":9,"result":"L","wp":null,"lp":"김한규","oppP":null},{"no":11,"date":"2026-07-26","vs":"김혜성 형제","park":"신길","home":false,"rf":5,"ra":18,"result":"L","wp":null,"lp":"김한규","oppP":null},{"no":12,"date":"2026-08-09","vs":"강백호 유니온","park":"신길","home":true,"rf":10,"ra":3,"result":"W","wp":"송정민","lp":null,"oppP":null},{"no":13,"date":"2026-08-16","vs":"팀 노시환","park":"배나물","home":false,"rf":12,"ra":2,"result":"W","wp":"송승민","lp":null,"oppP":null}];
 const REAL_SEASON={"record":"5승 8패","rf":95,"ra":132,"rfg":7.31,"rag":10.15,"batting":[{"name":"송승민","avg":0.667,"ops":1.75,"wrcPlus":328},{"name":"정민수","avg":0.556,"ops":1.23,"wrcPlus":108},{"name":"이건","avg":0.517,"ops":1.346,"wrcPlus":133,"sb":13,"k":1},{"name":"김선호","avg":0.515,"ops":1.355,"wrcPlus":197,"sb":11,"cs":0,"h":17,"rbi":15,"r":17,"k":7,"e":8},{"name":"김인규","avg":0.429,"ops":1.107,"wrcPlus":140},{"name":"유지효","avg":0.412,"ops":0.921,"wrcPlus":120},{"name":"김선우","avg":0.364,"ops":0.788,"wrcPlus":125},{"name":"김한규","avg":0.318,"ops":0.763,"wrcPlus":62},{"name":"김상훈","avg":0.286,"ops":0.876,"wrcPlus":122,"k":7},{"name":"우진혁","avg":0.273,"ops":0.701,"wrcPlus":50},{"name":"김준희","avg":0.211,"ops":0.611,"wrcPlus":83},{"name":"이승민","avg":0.2,"ops":0.573,"wrcPlus":45},{"name":"권혁준","avg":0.1,"ops":0.35,"wrcPlus":25},{"name":"이민혁","avg":0,"ops":0,"wrcPlus":0}],"pitching":[{"name":"송승민","g":5,"ip":"14.2","ipDec":14.667,"h":18,"r":15,"er":6,"bb":17,"k":28,"era":2.86,"w":3,"l":0,"kbb":1.65,"grade":"에이스. 팀 승리 5경기 중 3경기 승리투수"},{"name":"송정민","g":4,"ip":"16.2","ipDec":16.667,"h":19,"r":17,"er":13,"bb":23,"k":29,"era":5.46,"w":2,"l":1,"kbb":1.26,"grade":"2선발. 승리 2회 모두 완투. 입대로 시즌아웃"},{"name":"김한규","g":3,"ip":"8.0","ipDec":8,"h":13,"r":25,"er":8,"bb":16,"k":7,"era":7,"w":0,"l":2,"kbb":0.44,"grade":"자책 기준으로는 3위. 실점 25 중 자책 8 = 수비 붕괴가 원인"},{"name":"김준희","g":3,"ip":"6.0","ipDec":6,"h":16,"r":26,"er":16,"bb":17,"k":9,"era":18.67,"w":0,"l":2,"kbb":0.53},{"name":"이건","g":4,"ip":"7.1","ipDec":7.333,"h":14,"r":23,"er":20,"bb":21,"k":9,"era":19.09,"w":0,"l":2,"kbb":0.43,"grade":"이닝당 사사구 2.9개. 마운드 자원 아님"},{"name":"이승민","g":1,"ip":"1.0","ipDec":1,"h":2,"r":5,"er":4,"bb":4,"k":1,"era":28,"w":0,"l":0,"kbb":0.25},{"name":"유지효","g":2,"ip":"0.2","ipDec":0.667,"h":0,"r":9,"er":5,"bb":10,"k":0,"era":52.5,"w":0,"l":0,"kbb":0,"grade":"피안타 0개인데 ERA 52.50. 전부 사사구"},{"name":"김인규","g":2,"ip":"0.2","ipDec":0.667,"h":4,"r":12,"er":9,"bb":10,"k":2,"era":94.5,"w":0,"l":1,"kbb":0.2,"grade":"리그 공식 기록 94.51과 일치 — 판독 검증 통과"}],"aceRank":[{"rank":5,"name":"송승민","team":"우완좌완","era":2.86,"ip":"14.2","k":28,"w":3},{"rank":13,"name":"송정민","team":"우완좌완","era":5.46,"ip":"16.2","w":2},{"rank":15,"name":"김한규","team":"우완좌완","era":7,"ip":"8.0","w":0}],"coreRule":{"name":"공짜진루 지수","formula":"볼넷허용 + 도루허용 + 폭투","winBand":"<= 14","lossBand":">= 16","accuracy":"13경기 무예외","subRule":"K/BB가 절대 볼넷량보다 중요. 삼진이 있으면 볼넷 9개 줘도 3자책으로 막힘","sbRule":"2루 송구 금지 (저지율 3% → 기대값 음수). 예외: 3루 도루 / 주자 크게 흔들림"}};
 
 </script>
@@ -2457,72 +2457,72 @@ const WWZW = [
    t = [kTend, bbTend, sbTend, babipTend, powTend]  (실제 기록 역산)
 */
 const LEAGUE_DEFS = [
-  {id:'sasin',name:'사신',ops:1.283,avg:.454,t:[0.80,1.12,0.99,1.17,1.82],err:0.85,
-   stars:[['오범근',2.083],['김도현',1.583],['기상무',1.416],['이희철',1.404],['유남규',1.271],['장동민',1.10],['장동혁',0.994],['이영일',0.833],['이세현',0.634]],
-   aces:[['사신 1선발',62,55,60],['사신 2선발',48,42,50]]},
-  {id:'js',name:'JS Logistics',ops:1.131,avg:.439,t:[0.52,0.92,1.14,1.05,1.14],err:0.90,
-   stars:[['이지원',1.870],['진현일',1.727],['강신형',1.129],['오승철',1.126],['이강연',0.95],['강윤선',0.820],['홍우영',0.663]],
+  {id:'sasin',name:'김도영 클럽',ops:1.283,avg:.454,t:[0.80,1.12,0.99,1.17,1.82],err:0.85,
+   stars:[['도지훈',2.083],['손재영',1.583],['손규성',1.416],['전진혁',1.404],['주빈',1.271],['손정후',1.10],['지건희',0.994],['주결',0.833],['오성호',0.634]],
+   aces:[['김도영 클럽 1선발',62,55,60],['김도영 클럽 2선발',48,42,50]]},
+  {id:'js',name:'이정후 상사',ops:1.131,avg:.439,t:[0.52,0.92,1.14,1.05,1.14],err:0.90,
+   stars:[['문세영',1.870],['송찬',1.727],['남현우',1.129],['표세영',1.126],['신승현',0.95],['허건',0.820],['오재환',0.663]],
    aces:[['JS 1선발',58,58,60],['JS 2선발',45,45,48]]},
-  {id:'lgrnd',name:'LGRnD',ops:1.074,avg:.423,t:[0.86,0.71,0.67,1.10,0.99],err:1.00,
-   stars:[['김도균',1.293],['김익주',1.055],['조기업',1.00],['전종근',0.98],['김원형',0.419]],
-   aces:[['LGRnD 1선발',55,52,58],['LGRnD 2선발',42,40,45]]},
-  {id:'goodguys',name:'굿가이즈',ops:1.040,avg:.403,t:[0.51,0.91,1.68,0.98,0.86],err:1.00,
-   stars:[['김의식',1.652],['이동원',1.151],['권태기',1.136],['김후정',1.05],['이의연',0.95],['윤인열',0.85],['김충국',0.725],['박관순',0.70]],
-   aces:[['권태기',52,22,60],['굿가이즈 2선발',40,38,45]]},
-  {id:'winners',name:'위너스',ops:1.071,avg:.394,t:[1.02,0.91,1.35,1.06,1.25],err:1.00,
-   stars:[['이승준',1.825],['박병우',1.481],['유영석',1.170],['김철홍',1.124],['이홍순',1.00],['정진수',0.929],['간선민',0.899],['김차군',0.829],['정민근',0.80]],
-   aces:[['위너스 1선발',56,50,58],['위너스 2선발',44,42,48]]},
-  {id:'ytt',name:'YTT아르마다',ops:1.029,avg:.394,t:[0.89,1.04,0.82,1.05,0.73],err:1.05,
-   stars:[['유용대',1.935],['홍성욱',1.263],['김동환',1.009],['황성언',0.952],['정수민',0.927],['유성희',0.811],['윤종원',0.730],['오상훈',0.620]],
+  {id:'lgrnd',name:'구자욱 연구소',ops:1.074,avg:.423,t:[0.86,0.71,0.67,1.10,0.99],err:1.00,
+   stars:[['백재현',1.293],['장건희',1.055],['구규',1.00],['윤민석',0.98],['임호준',0.419]],
+   aces:[['구자욱 연구소 1선발',55,52,58],['구자욱 연구소 2선발',42,40,45]]},
+  {id:'goodguys',name:'양의지 브라더스',ops:1.040,avg:.403,t:[0.51,0.91,1.68,0.98,0.86],err:1.00,
+   stars:[['강기훈',1.652],['홍광현',1.151],['안규',1.136],['임재영',1.05],['한인성',0.95],['권상원',0.85],['곽현우',0.725],['최규성',0.70]],
+   aces:[['안규',52,22,60],['양의지 브라더스 2선발',40,38,45]]},
+  {id:'winners',name:'원태인 이글스',ops:1.071,avg:.394,t:[1.02,0.91,1.35,1.06,1.25],err:1.00,
+   stars:[['천원준',1.825],['양광현',1.481],['원주환',1.170],['김주환',1.124],['천율',1.00],['고호',0.929],['서유찬',0.899],['한현우',0.829],['차율',0.80]],
+   aces:[['원태인 이글스 1선발',56,50,58],['원태인 이글스 2선발',44,42,48]]},
+  {id:'ytt',name:'문동주 함대',ops:1.029,avg:.394,t:[0.89,1.04,0.82,1.05,0.73],err:1.05,
+   stars:[['한솔',1.935],['전상수',1.263],['곽현',1.009],['조병철',0.952],['채민수',0.927],['하성민',0.811],['채원',0.730],['노성민',0.620]],
    aces:[['YTT 1선발',54,50,56],['YTT 2선발',42,40,46]]},
-  {id:'ansanutd',name:'안산유나이티드',ops:1.102,avg:.387,t:[0.97,1.21,0.95,1.04,1.31],err:1.15,
-   stars:[['고진선',1.964],['김민규',1.775],['윤승민',1.510],['권석',1.139],['김동일',1.077],['윤한국',0.95],['엄성환',0.742],['최성하',0.55]],
-   aces:[['고진선',68,48,62],['정재철',38,50,50]]},
-  {id:'pirates',name:'팀 파이어리츠',ops:1.070,avg:.386,t:[1.10,1.36,0.98,1.10,1.03],err:1.20,
-   stars:[['제호준',1.587],['원종선',1.260],['조휘수',1.171],['윤지훈',1.05],['이홍주',1.035],['최준수',0.894],['조하운',0.85],['김승일',0.799],['고승철',0.60]],
-   aces:[['김재용',56,44,62],['최동길',34,32,45]]},
-  {id:'chigo',name:'안산치고받고',ops:0.983,avg:.386,t:[1.18,0.82,1.10,1.10,0.66],err:1.05,
-   stars:[['이효식',1.189],['장태웅',1.122],['김건희',0.968],['함형균',1.00],['김경환',0.864]],
+  {id:'ansanutd',name:'강백호 유니온',ops:1.102,avg:.387,t:[0.97,1.21,0.95,1.04,1.31],err:1.15,
+   stars:[['신성호',1.964],['지동원',1.775],['최상현',1.510],['백건우',1.139],['문현우',1.077],['심재영',0.95],['황준',0.742],['원열',0.55]],
+   aces:[['신성호',68,48,62],['손빈',38,50,50]]},
+  {id:'pirates',name:'팀 노시환',ops:1.070,avg:.386,t:[1.10,1.36,0.98,1.10,1.03],err:1.20,
+   stars:[['심세영',1.587],['황승우',1.260],['천지훈',1.171],['원현우',1.05],['서건',1.035],['옥동원',0.894],['전진',0.85],['현수빈',0.799],['장민석',0.60]],
+   aces:[['천상수',56,44,62],['정상원',34,32,45]]},
+  {id:'chigo',name:'최정 타격단',ops:0.983,avg:.386,t:[1.18,0.82,1.10,1.10,0.66],err:1.05,
+   stars:[['곽민',1.189],['전인성',1.122],['노주환',0.968],['문율',1.00],['염성진',0.864]],
    aces:[['치고받고 1선발',48,46,55],['치고받고 2선발',38,38,45]]},
-  {id:'corad',name:'코래드컴',ops:1.009,avg:.384,t:[0.93,1.27,1.06,1.04,0.69],err:1.05,
-   stars:[['박두선',1.375],['김태환',1.158],['김헌중',1.121],['서두현',0.793]],
+  {id:'corad',name:'박세웅 컴퍼니',ops:1.009,avg:.384,t:[0.93,1.27,1.06,1.04,0.69],err:1.05,
+   stars:[['허민',1.375],['차창우',1.158],['백재환',1.121],['현진',0.793]],
    aces:[['코래드 1선발',50,48,55],['코래드 2선발',38,40,45]]},
-  {id:'challengers',name:'안산챌린저스',ops:0.952,avg:.373,t:[0.76,0.80,0.94,0.95,0.80],err:1.10,
-   stars:[['강태헌',0.982],['김재광',0.869],['한철희',0.804],['노준수',0.90],['송락효',0.536]],
+  {id:'challengers',name:'송성문 도전자들',ops:0.952,avg:.373,t:[0.76,0.80,0.94,0.95,0.80],err:1.10,
+   stars:[['한영수',0.982],['성세진',0.869],['하훈',0.804],['남건',0.90],['유세영',0.536]],
    aces:[['챌린저스 1선발',46,44,52],['챌린저스 2선발',36,36,44]]},
-  {id:'daeyang',name:'대양트윈스',ops:0.986,avg:.367,t:[0.76,1.14,0.83,0.95,0.89],err:1.10,
-   stars:[['윤선준',1.349],['김진국',1.192],['김종열',1.081],['박창호',1.056],['김경철',0.969],['박수호',0.814],['김의용',0.85],['유병선',0.573]],
-   aces:[['유병선',30,52,58],['대양 2선발',40,40,48]]},
-  {id:'typhoon',name:'태풍야구단',ops:0.951,avg:.364,t:[1.20,0.74,0.91,1.03,0.81],err:1.10,
-   stars:[['정대철',1.288],['강기원',1.005],['김동욱',0.997],['박주영',1.05],['최정수',0.90],['정운구',0.88],['양남규',0.752],['황민원',0.70]],
+  {id:'daeyang',name:'김혜성 형제',ops:0.986,avg:.367,t:[0.76,1.14,0.83,0.95,0.89],err:1.10,
+   stars:[['강기범',1.349],['송석',1.192],['손율',1.081],['성기주',1.056],['염기범',0.969],['옥기주',0.814],['유준영',0.85],['심승엽',0.573]],
+   aces:[['심승엽',30,52,58],['대양 2선발',40,40,48]]},
+  {id:'typhoon',name:'곽빈 스톰',ops:0.951,avg:.364,t:[1.20,0.74,0.91,1.03,0.81],err:1.10,
+   stars:[['지명석',1.288],['심진혁',1.005],['최세진',0.997],['곽인성',1.05],['신현종',0.90],['유율',0.88],['조건우',0.752],['주원',0.70]],
    aces:[['태풍 1선발',46,44,54],['태풍 2선발',36,38,44]]},
-  {id:'ilgu',name:'일구이무',ops:1.032,avg:.350,t:[1.36,1.21,0.80,1.06,1.12],err:1.10,
-   stars:[['최유락',1.758],['현세환',1.470],['이지찬',1.350],['장진석',1.278],['조남훈',0.972],['성준영',0.806],['윤선재',0.662],['박승환',0.555],['임천규',0.410]],
-   aces:[['일구이무 1선발',52,48,56],['일구이무 2선발',40,40,46]]},
-  {id:'revenger',name:'Revenger 레볼루션',ops:0.907,avg:.338,t:[1.00,1.08,1.00,0.93,0.67],err:1.15,
-   stars:[['염상수',1.152],['최상용',0.979],['주정환',0.868],['최창희',0.803],['염상철',0.462]],
+  {id:'ilgu',name:'안우진 야구단',ops:1.032,avg:.350,t:[1.36,1.21,0.80,1.06,1.12],err:1.10,
+   stars:[['옥규현',1.758],['문승현',1.470],['성상수',1.350],['천규현',1.278],['옥호준',0.972],['장기주',0.806],['조민호',0.662],['권재우',0.555],['신건',0.410]],
+   aces:[['안우진 야구단 1선발',52,48,56],['안우진 야구단 2선발',40,40,46]]},
+  {id:'revenger',name:'문보경 복수단',ops:0.907,avg:.338,t:[1.00,1.08,1.00,0.93,0.67],err:1.15,
+   stars:[['신건우',1.152],['지건우',0.979],['오광현',0.868],['방광현',0.803],['손종민',0.462]],
    aces:[['레볼루션 1선발',44,42,52],['레볼루션 2선발',34,36,42]]},
-  {id:'action',name:'액션',ops:0.917,avg:.336,t:[1.16,1.14,0.54,0.95,0.78],err:1.15,
-   stars:[['박재현',1.562],['백승우',1.169],['한종훈',0.95],['김연호',0.902],['이용호',0.808],['박철',0.661]],
-   aces:[['액션 1선발',44,44,52],['액션 2선발',34,36,42]]},
-  {id:'walkerz',name:'WalkerZ',ops:0.920,avg:.332,t:[1.45,0.84,1.07,1.00,0.93],err:1.15,
-   stars:[['전용현',1.686],['강현석',1.497],['이진우',0.976],['조우철',0.90],['김남혁',0.867],['이현호',0.470],['정윤도',0.392]],
-   aces:[['WalkerZ 1선발',46,42,52],['WalkerZ 2선발',34,34,42]]},
-  {id:'myball',name:'마이볼',ops:0.886,avg:.326,t:[0.94,0.92,1.12,0.86,0.84],err:1.15,
-   stars:[['이동윤',1.000],['민경석',0.995],['성진수',0.899],['박상준',0.789]],
-   aces:[['마이볼 1선발',42,42,50],['마이볼 2선발',32,34,42]]},
-  {id:'onekill',name:'ONEKILL SLUGGER',ops:0.881,avg:.316,t:[0.99,1.00,1.14,0.84,0.95],err:1.15,
-   stars:[['고진석',1.352],['이윤구',1.178],['문형준',1.081],['홍연성',0.887],['김수열',0.80],['김종명',0.75]],
+  {id:'action',name:'박찬호 무브',ops:0.917,avg:.336,t:[1.16,1.14,0.54,0.95,0.78],err:1.15,
+   stars:[['신율',1.562],['백승현',1.169],['주준',0.95],['전상원',0.902],['옥한별',0.808],['양기범',0.661]],
+   aces:[['박찬호 무브 1선발',44,44,52],['박찬호 무브 2선발',34,36,42]]},
+  {id:'walkerz',name:'손아섭 러너스',ops:0.920,avg:.332,t:[1.45,0.84,1.07,1.00,0.93],err:1.15,
+   stars:[['차기범',1.686],['천준영',1.497],['허석',0.976],['방훈',0.90],['손도현',0.867],['양민수',0.470],['원원',0.392]],
+   aces:[['손아섭 러너스 1선발',46,42,52],['손아섭 러너스 2선발',34,34,42]]},
+  {id:'myball',name:'오지환 나인',ops:0.886,avg:.326,t:[0.94,0.92,1.12,0.86,0.84],err:1.15,
+   stars:[['곽기훈',1.000],['조규성',0.995],['도광현',0.899],['이수빈',0.789]],
+   aces:[['오지환 나인 1선발',42,42,50],['오지환 나인 2선발',32,34,42]]},
+  {id:'onekill',name:'한유섬 장타단',ops:0.881,avg:.316,t:[0.99,1.00,1.14,0.84,0.95],err:1.15,
+   stars:[['성빈',1.352],['권기주',1.178],['표세진',1.081],['곽창우',0.887],['현원준',0.80],['신시환',0.75]],
    aces:[['ONEKILL 1선발',42,40,50],['ONEKILL 2선발',32,34,42]]},
-  {id:'sew',name:'SEW KOREA',ops:0.820,avg:.308,t:[1.04,0.88,0.66,0.84,0.61],err:1.20,
-   stars:[['이준명',1.356],['이정현',0.667],['이흥제',0.60]],
+  {id:'sew',name:'정우영 서울',ops:0.820,avg:.308,t:[1.04,0.88,0.66,0.84,0.61],err:1.20,
+   stars:[['명영웅',1.356],['최진',0.667],['원세진',0.60]],
    aces:[['SEW 1선발',40,40,48],['SEW 2선발',30,32,40]]},
-  {id:'boss',name:'보스',ops:0.855,avg:.298,t:[1.10,1.10,1.59,0.83,0.81],err:1.15,
-   stars:[['최원종',1.251],['정영식',0.945],['김명관',0.938],['김영식',0.885],['노광인',0.865],['김치영',0.646]],
-   aces:[['보스 1선발',42,40,50],['보스 2선발',32,34,42]]},
-  {id:'blackcats',name:'블랙캣츠',ops:0.839,avg:.287,t:[1.20,1.09,0.83,0.82,0.74],err:1.20,
-   stars:[['이재철',1.289],['심승용',1.185],['김선욱',0.868],['윤제호',0.80],['이재화',0.65],['이현규',0.606],['유승철',0.202]],
-   aces:[['블랙캣츠 1선발',40,38,48],['블랙캣츠 2선발',30,32,40]]},
+  {id:'boss',name:'고영표 캡틴',ops:0.855,avg:.298,t:[1.10,1.10,1.59,0.83,0.81],err:1.15,
+   stars:[['박주환',1.251],['강율',0.945],['지재환',0.938],['주진혁',0.885],['옥명석',0.865],['홍현우',0.646]],
+   aces:[['고영표 캡틴 1선발',42,40,50],['고영표 캡틴 2선발',32,34,42]]},
+  {id:'blackcats',name:'박동원 나이츠',ops:0.839,avg:.287,t:[1.20,1.09,0.83,0.82,0.74],err:1.20,
+   stars:[['곽진',1.289],['양지훈',1.185],['양준',0.868],['성건희',0.80],['구승엽',0.65],['천영웅',0.606],['임지훈',0.202]],
+   aces:[['박동원 나이츠 1선발',40,38,48],['박동원 나이츠 2선발',30,32,40]]},
 ];
 
 const WWZW_TEND = { id:'wwzw', name:'우완좌완', ops:0.982, avg:.378,
@@ -2549,8 +2549,8 @@ function genName(rng,used){
   }
   const n='선수'+((rng()*9000+1000)|0); used.add(n); return n;
 }
-/* '사신 1선발' 같은 자리표 이름을 실제 이름처럼 바꿔준다.
-   실측 기록이 있는 투수(권태기·고진선·김재용…)는 실명이라 그대로 둔다. */
+/* '○○ 1선발' 같은 자리표 이름을 실제 이름처럼 바꿔준다.
+   실측 기록이 있는 투수(안규·신성호·천상수…)는 이름이 박혀 있어 그대로 둔다. */
 function aceName(raw, rng, used){
   const n=String(raw||'');
   if(!n || /\d\s*선발$/.test(n) || used.has(n)) return genName(rng,used);
@@ -6007,7 +6007,7 @@ function buildKakaoPre(ST){
           `${park.note}. 참고해라`],rng),mood:'ok'});
       }
       if(ST.oppEvent&&rng()<0.75)uniqPush(msgs,{who:an.id,text:ST.oppEvent.body,mood:'ok'});
-      // 안산유나이티드전이면 고진선을 미리 경고한다.
+      // 유니온전이면 신성호을 미리 경고한다.
       // 김한규가 언해피 3단계 이상이면 분석 자체를 안 하므로 이 정보도 못 본다.
       if(opp.id==='ansanutd')
         uniqPush(msgs,{who:an.id,text:pickFresh(GOJIN_SCOUT,'GOJIN_SCOUT',rng),mood:'ok'});
@@ -8246,8 +8246,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.14.3';
-const APP_VERSION_NOTE = '2군에 중학생이 있던 것 — 태어난 해를 2026에서 거꾸로 잡고 있었다';
+const APP_VERSION = '3.15.0';
+const APP_VERSION_NOTE = '상대 팀·상대 선수 이름을 전부 가명으로 바꿨다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8268,6 +8268,14 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.15.0', t:'상대 팀·상대 선수 이름을 전부 가명으로 바꿨다', items:[
+    '<b>이 링크가 어디로 퍼질지 모른다.</b> 그래서 상대 팀 이름과 상대 팀 선수 이름을 <b>전부 가명으로 바꿨다</b> — 팀 22개, 사람 211명이다. 실제로 같이 뛰는 사람들 이름이 파일에 박힌 채로 돌아다니면 안 된다',
+    '<b>팀 이름은 KBO 선수 이름을 붙였다.</b> 김도영 클럽 · 이정후 상사 · 구자욱 연구소 · 양의지 브라더스 · 원태인 이글스 · 문동주 함대 · 강백호 유니온 · 팀 노시환 · 최정 타격단 · 박세웅 컴퍼니 · 송성문 도전자들 · 김혜성 형제 · 곽빈 스톰 · 안우진 야구단 · 문보경 복수단 · 박찬호 무브 · 손아섭 러너스 · 오지환 나인 · 한유섬 장타단 · 정우영 서울 · 고영표 캡틴 · 박동원 나이츠',
+    '상대 선수 이름은 <b>게임이 원래 쓰던 이름 생성기</b>로 새로 뽑았다. 성·이름 풀이 같아서 결이 안 튄다. 등번호와 포지션은 그대로다',
+    '<b>기록은 하나도 안 건드렸다.</b> 팀 OPS·타율·성향, 투수 방어율과 이닝, 우리 열넷의 능력치, 실제 13경기 전적 — 전부 그대로다. 바뀐 건 이름표뿐이다',
+    '상대 에이스 특수 이벤트(자기 팀 실책에 화내고 우리 벤치에 시비 거는 그 투수)도 이름만 바꿔서 그대로 살아 있다 — <b>강백호 유니온의 신성호</b>다',
+    '<b>우리 팀 열넷과 송정민은 그대로다.</b> 이 게임은 그 사람들 이야기라서 바꿀 수가 없다',
+  ]},
   {v:'3.14.3', t:'2군에 중학생이 있던 것 — 태어난 해를 2026에서 거꾸로 잡고 있었다', items:[
     '<b>1·2군에 열넷·열다섯 살이 있던 것을 고쳤다.</b> 나이는 화면에서 「그 해 − 태어난 해」 로 센다. 그런데 2군 선수의 <b>태어난 해를 2026에서 거꾸로</b> 잡고 있었다 — 선수 모드는 <b>입단한 해</b>(99년생이면 2018)부터 시작하니까, 스물한 살이 2019−2005 = <b>열네 살</b>로 찍혔다. 명단에는 21살, 화면에는 14살이었다',
     '이제 2군 선수를 만들 때 <b>태어난 해를 그 자리에서 박아 명단에 같이 저장한다.</b> 시즌이 넘어가면 같이 한 살씩 먹는다',
@@ -10530,34 +10538,34 @@ function checkPromises(ST, starters, playedIds, absentIds){
 }
 
 /* =========================================================
-   고진선 특수 이벤트 (안산유나이티드전 한정)
+   신성호 특수 이벤트 (유니온전 한정)
    ---------------------------------------------------------
-   실제 2026-08-09 안산유나이티드전(10:3 승)에서 있었던 일 기반이다.
-   상대 에이스 고진선(ERA 7.99, 좌완 100~110)은 자기 팀 실책에
+   실제 2026-08-09 강백호 유니온전(10:3 승)에서 있었던 일 기반이다.
+   상대 에이스 신성호(ERA 7.99, 좌완 100~110)은 자기 팀 실책에
    대놓고 화를 내고, 지고 있으면 상대 벤치에 시비를 걸었다.
    경기 중 발동은 LiveGame 이 하고, 사기·컨디션·단톡 뒷수습은
    applyGojin 이 commitGame 에서 처리한다.
    ========================================================= */
 const GOJIN_THROW=[      // 자기 팀 실책에 공 패대기
-  '고진선이 공을 그라운드에 패대기쳤다',
-  '고진선이 글러브를 집어던지고 하늘을 봤다',
-  '고진선이 마운드에서 뭐라고 소리쳤다. 자기 팀 야수한테다',
+  '신성호이 공을 그라운드에 패대기쳤다',
+  '신성호이 글러브를 집어던지고 하늘을 봤다',
+  '신성호이 마운드에서 뭐라고 소리쳤다. 자기 팀 야수한테다',
 ];
 const GOJIN_THROW_AFTER=[
-  '안산 벤치가 조용해졌다',
+  '유니온 벤치가 조용해졌다',
   '실책한 야수가 고개를 못 든다',
-  '안산 더그아웃 분위기가 가라앉았다',
+  '유니온 더그아웃 분위기가 가라앉았다',
 ];
 const GOJIN_CLEAR=[      // 벤치클리어링
-  '고진선이 우리 벤치 쪽을 보고 뭐라고 했다',
-  '고진선이 마운드에서 우리 더그아웃을 손가락질했다',
-  '고진선이 삼진 잡고 우리 벤치 쪽으로 포효했다',
+  '신성호이 우리 벤치 쪽을 보고 뭐라고 했다',
+  '신성호이 마운드에서 우리 더그아웃을 손가락질했다',
+  '신성호이 삼진 잡고 우리 벤치 쪽으로 포효했다',
 ];
 const GOJIN_MOCK=[       // 무안타 타자 놀리기
-  ['고진선이 ${n} 보고 "오늘 하나도 못 쳤죠?" 한다','mock'],
-  ['고진선이 ${n}한테 배트 좀 바꾸라고 한다','mock'],
-  ['고진선이 ${n} 타석 들어오자 대놓고 웃었다','mock'],
-  ['고진선이 ${n}더러 "그 스윙으로 되겠냐"고 한다','mock'],
+  ['신성호이 ${n} 보고 "오늘 하나도 못 쳤죠?" 한다','mock'],
+  ['신성호이 ${n}한테 배트 좀 바꾸라고 한다','mock'],
+  ['신성호이 ${n} 타석 들어오자 대놓고 웃었다','mock'],
+  ['신성호이 ${n}더러 "그 스윙으로 되겠냐"고 한다','mock'],
 ];
 /* 놀림 받은 선수가 단톡방에서 대는 핑계 */
 const GOJIN_EXCUSE=[
@@ -10582,13 +10590,13 @@ const GOJIN_CLEAR_MSG=[
 ];
 /* 사전 경고 (분석가가 미리 알려준다) */
 const GOJIN_SCOUT=[
-  '안산 고진선 조심해라. 좌완인데 퀵모션 빠르다. 그리고 성격이 좀 있다',
-  '고진선 ERA는 7.99인데 삼진은 34개다. 맞으면 크게 맞고 안 맞으면 아예 안 맞는다',
-  '오늘 고진선 나온다. 자기 팀 실책 나오면 대놓고 화내는 스타일이니 신경 쓰지 마라',
-  '고진선은 지고 있으면 시비 건다. 말려들지 마라',
+  '유니온 신성호 조심해라. 좌완인데 퀵모션 빠르다. 그리고 성격이 좀 있다',
+  '신성호 ERA는 7.99인데 삼진은 34개다. 맞으면 크게 맞고 안 맞으면 아예 안 맞는다',
+  '오늘 신성호 나온다. 자기 팀 실책 나오면 대놓고 화내는 스타일이니 신경 쓰지 마라',
+  '신성호은 지고 있으면 시비 건다. 말려들지 마라',
 ];
 
-/* 경기 결과에 실린 고진선 이벤트를 사기·컨디션·단톡에 반영한다.
+/* 경기 결과에 실린 신성호 이벤트를 사기·컨디션·단톡에 반영한다.
    반환값은 단톡방(경기 후)에 붙일 메시지 배열.                      */
 function applyGojin(ST, gj){
   const msgs=[];
@@ -10597,7 +10605,7 @@ function applyGojin(ST, gj){
 
   if(gj.threw){
     msgs.push({who:'khg',type:'notice',
-      text:'고진선이 자기 팀 실책에 공을 패대기쳤다\n안산 사기 하락 · 우리 타격 소폭 상승'});
+      text:'신성호이 자기 팀 실책에 공을 패대기쳤다\n유니온 사기 하락 · 우리 타격 소폭 상승'});
   }
   if(gj.cleared){
     // 양 팀 컨디션이 깎이지만 우리 사기는 오히려 오른다
@@ -10711,7 +10719,7 @@ function bondLabel(v){
 /* =========================================================
    경기 중 마찰 · 팀 사기 이벤트 (상대 무관)
    ---------------------------------------------------------
-   고진선(안산유나이티드 전용)과 별개로, 어느 팀 상대로든 일어난다.
+   신성호(강백호 유니온 전용)과 별개로, 어느 팀 상대로든 일어난다.
    실제로 술 마시고 온 김인규가 시비가 붙거나,
    김한규가 벤치클리어링 한복판에 서 있거나 하는 일이 있었다.
    ========================================================= */
@@ -10895,15 +10903,15 @@ function LiveGame(cfg){
   this.away = mk(cfg.away, cfg.awayLineup, cfg.awayRotation, cfg.awayTactics, cfg.awayCond, !cfg.userIsHome);
   this.home = mk(cfg.home, cfg.homeLineup, cfg.homeRotation, cfg.homeTactics, cfg.homeCond, cfg.userIsHome);
   this.sides = [this.away, this.home];
-  /* 안산유나이티드전 한정 — 고진선 특수 이벤트.
+  /* 유니온전 한정 — 신성호 특수 이벤트.
      실제로 그 팀 에이스가 자기 팀 실책에 화내고 상대 벤치에 시비를 걸었다.
-     로스터에 고진선이 실제로 있어야 발동한다.                          */
+     로스터에 신성호이 실제로 있어야 발동한다.                          */
   const opT=(this.userIsHome?this.away:this.home).team;
   const hasGo = opT && opT.id==='ansanutd' &&
-    ((opT.players||[]).some(x=>x.name==='고진선')||(opT.pitchers||[]).some(x=>x.name==='고진선'));
+    ((opT.players||[]).some(x=>x.name==='신성호')||(opT.pitchers||[]).some(x=>x.name==='신성호'));
   this.gojin = hasGo ? {log:[],mocked:[],threw:false,cleared:false} : null;
   this.gojinUs = 1;      // 우리 팀 BABIP 배수 (패대기·벤치클리어링 여파)
-  this.gojinOpp = 1;     // 안산 BABIP 배수
+  this.gojinOpp = 1;     // 유니온 BABIP 배수
   this.gojinWake = {};   // 각성 예약 {pid:true} — 두 명이 동시에 예약될 수 있다
   this.highlights = [];  // 이닝별 주요 장면 (2루타·3루타·홈런·도루자·병살타)
   this.feats = [];       // 박스스코어만으로는 못 잡는 진기록 (만루홈런·끝내기)
@@ -12493,7 +12501,7 @@ LiveGame.prototype.stepPA = function(){
     if(bf.spd) batE.spd = Math.min(80, bat.spd*bf.spd);
     if(bf.all){ batE.con=bat.con*bf.all; batE.pow=bat.pow*bf.all; batE.spd=bat.spd*bf.all; }
   }
-  /* ---- 고진선 이벤트 ---- 순서 중요: 각성 판정을 놀림보다 먼저 해야
+  /* ---- 신성호 이벤트 ---- 순서 중요: 각성 판정을 놀림보다 먼저 해야
      이번 타석이 아니라 '다음 타석'에 버프가 붙는다.                    */
   if(this.gojin){
     if(off.isUser && this.gojinWake[bat.id]){
@@ -12513,7 +12521,7 @@ LiveGame.prototype.stepPA = function(){
         this.log.push({t:'gojin',text:`${bat.name}이(가) 배트를 고쳐 잡았다`}); }
       else this.log.push({t:'gojin',text:`${bat.name}이(가) 아무 말도 못 했다`});
     }
-    // 안산이 3점 이상 지고 있으면 시비를 건다 → 벤치클리어링 (경기당 1회)
+    // 유니온이 3점 이상 지고 있으면 시비를 건다 → 벤치클리어링 (경기당 1회)
     if(!this.gojin.cleared && this.inning>=3
        && (this.oppSide().runs - this.userSide().runs) <= -3 && rng()<0.10){
       this.gojin.cleared=true;
@@ -12625,7 +12633,7 @@ LiveGame.prototype.stepPA = function(){
     parkE={...this.park, babip:this.park.babip*0.92,
            d2:this.park.d2*1.18, err:this.park.err*1.06};
   }
-  // 고진선 이벤트 여파 — 공격 중인 쪽에 해당하는 배수를 곱한다
+  // 신성호 이벤트 여파 — 공격 중인 쪽에 해당하는 배수를 곱한다
   const gjM = (off.isUser ? this.gojinUs : this.gojinOpp)
             * (off.isUser ? this.fricUs : this.fricOpp)
             * (off.isUser ? (this.mgr.boost||1) : 1);
@@ -12783,7 +12791,7 @@ LiveGame.prototype.stepPA = function(){
     events.push({cls:'err', text: (efid
       ? `${bat.name} ${POSNAMES[(this.lastErr||{}).pos]||''} ${nameInSide(efid,def)} 실책으로 출루`
       : `${bat.name} 상대 실책 출루`)+bbTag(bb)});
-    // 안산 야수가 실책하면 고진선이 폭발한다 (경기당 1회)
+    // 유니온 야수가 실책하면 신성호이 폭발한다 (경기당 1회)
     if(this.gojin && !this.gojin.threw && !def.isUser && rng()<0.65){
       this.gojin.threw=true;
       this.gojin.log.push('throw');
@@ -28813,7 +28821,7 @@ function topKmh(pit){
   const top = raw<=KNEE ? raw
             : CEIL-(CEIL-KNEE)*Math.exp(-(raw-KNEE)/(CEIL-KNEE));
   /* [제보] "근데 우리 팀이 구속은 제일 빠른 편이긴 해"
-     실제 상대 팀 스피드건 기록은 안산유나이티드 고진선이 100~110,
+     실제 상대 팀 스피드건 기록은 강백호 유니온 신성호가 100~110,
      나머지는 75~85 짜리 아리랑볼도 많다. 상대는 111 위로 안 올린다.
      상대 투수는 구위가 높아도 제구·변화구로 막는 유형으로 본다.      */
   const ours=!!(pit&&pit.id&&TBYID['wwzw'].pitchers.some(p=>p.id===pit.id));
@@ -33082,7 +33090,7 @@ function renderScout(){
 
   /* [제보] "스카우트에 투수가 안 뜬다" — t.players 만 돌아서 그랬다.
      상대 팀 투수는 t.pitchers 에 따로 있다. 로스터에 야수로도 올라 있는
-     투타 겸업(고진선·박인용 등)은 위에 이미 나오니 이름으로 걸러낸다. */
+     투타 겸업(신성호·윤정호 등)은 위에 이미 나오니 이름으로 걸러낸다. */
   const pit=(t.pitchers||[]).filter(q=>!t.players.some(x=>x.name===q.name));
   if(pit.length){
     const pc=el('div','card');
@@ -33583,7 +33591,7 @@ function leagueBase(){
    WAR 의 대체수준은 "한 명 빠졌을 때 공짜로 메우는 수준" 이지 "전원을
    그걸로 채웠을 때" 가 아니라서, 그대로 쓰면 모두의 WAR 이 부풀어 오른다.
 
-   그래서 **이 리그 하위 3팀(SEW KOREA · 마이볼 · 보스)** 을 기준으로 삼았다.
+   그래서 **이 리그 하위 3팀(정우영 서울 · 오지환 나인 · 고영표 캡틴)** 을 기준으로 삼았다.
    실측 승률 .182 — 22경기로 치면 4승이다. 진짜로 존재하는 팀 중 제일 아래고,
    "이보다 못하면 팀이라고 부르기 어렵다" 는 선이라 대체수준으로 자연스럽다.
      타자 : 타석당 0.1779점 (리그평균 0.2497) → 타석당 -0.0718
