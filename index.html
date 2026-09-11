@@ -1380,6 +1380,14 @@ body.pl-lock #view{touch-action:none}
 /* 노림수 — 타석의 첫 번째 층 */
 .aim{margin:8px 0 2px}
 .aim-l{font-size:10.5px;color:var(--dm);margin-bottom:4px}
+/* [참고] 마구마구 「타격노림분석」 — 상대가 어디로 던지는지를 타석 전에
+   깔아준다. 구종 배분은 이미 있었고, 코스가 없었다.               */
+.aim-zone{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin:7px 0 0}
+.aim-zone i{font-style:normal;text-align:center;padding:6px 0;border-radius:5px;
+  font-size:11px;font-weight:900;color:#cfd6e0;border:1px solid var(--line)}
+.aim-zone i.top{color:#ffd15c;border-color:rgba(201,162,39,.55)}
+.aim-zc{display:flex;justify-content:space-between;font-size:9.5px;
+  color:var(--dim);margin:3px 2px 0}
 .aim-mix{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;margin:0 0 5px}
 .aim-mix u{text-decoration:none;font-size:10px;color:#8b95a3}
 .aim-mix u b{color:#cfe0ee;font-weight:800}
@@ -1872,7 +1880,17 @@ table.hl-tbl td.hl-o{color:#c98a80}
 .tn-c .tn-no{color:#e08a70}
 .trn-last{font-size:12px;color:#9fb0c4;line-height:1.6;margin:4px 0 8px}
 .trn-last b{color:#e2eaf5}
-.joywrap{display:flex;justify-content:center;margin:10px 0 2px}
+/* [참고] 마구마구는 조이스틱 반대쪽에 점프 버튼이 있다. 엄지 두 개를
+   따로 쓰는 배치다 — 왼손은 이동, 오른손은 동작.                    */
+.joywrap{display:flex;justify-content:center;align-items:center;gap:22px;margin:10px 0 2px}
+.divb{width:74px;height:74px;border-radius:50%;flex:0 0 auto;
+  background:radial-gradient(circle at 38% 32%,#3a4553,#232b36);
+  border:2px solid #4a5665;color:#e9e4d8;font-size:12.5px;font-weight:900;
+  line-height:1.15;letter-spacing:-.4px;touch-action:none;user-select:none}
+.divb u{display:block;font-style:normal;text-decoration:none;
+  font-size:9px;font-weight:700;color:#8b95a3;margin-top:2px}
+.divb:active,.divb.on{border-color:var(--gold);color:var(--gold);transform:scale(.95)}
+.divb:disabled{opacity:.38}
 .joy{position:relative;width:112px;height:112px;border-radius:50%;
   background:radial-gradient(circle,#1b222c 0%,#141a22 70%);
   border:2px solid #2a323d;touch-action:none;
@@ -1883,7 +1901,19 @@ table.hl-tbl td.hl-o{color:#c98a80}
 .joy .joy-t{position:absolute;left:0;right:0;bottom:-19px;text-align:center;
   font-size:10.5px;color:#6f7c8c;text-decoration:none}
 /* 송구할 베이스 — 조이스틱 자리에 갈아 끼운다. 필드를 안 가린다 */
-.baserow{display:flex;gap:7px;margin:12px 0 2px}
+/* [참고] 마구마구 수비 UI — 송구 버튼이 **실제 베이스 자리**에 놓여 있다.
+   가로 일렬이면 「1루 2루 3루 홈」 을 글자로 읽고 눌러야 한다. 수비는
+   1~2초 싸움이라 읽을 시간이 없다. 자리로 놓으면 안 읽고 누른다.
+   가운데(마운드 자리)는 「안 던진다」 가 쓴다.
+   [높이] 송구 단계에서는 조이스틱이 숨으니(112px) 늘어나는 만큼 상쇄된다. */
+.baserow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin:10px 0 2px}
+.baserow .base-b{padding:9px 3px}
+.baserow .base-b span{font-size:14px}
+.baserow .base-b[data-b="2"]{grid-column:2;grid-row:1}
+.baserow .base-b[data-b="3"]{grid-column:1;grid-row:2}
+.baserow .base-b[data-b="1"]{grid-column:3;grid-row:2}
+.baserow .base-b[data-b="0"]{grid-column:2;grid-row:3}
+.baserow .base-b.stay{grid-column:2;grid-row:2;opacity:.9}
 .base-b{flex:1;padding:13px 4px;border-radius:11px;background:var(--panel2);
   border:1px solid #2a323d;color:#e2eaf5;touch-action:manipulation;
   -webkit-tap-highlight-color:transparent}
@@ -8246,8 +8276,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.14.3';
-const APP_VERSION_NOTE = '2군에 중학생이 있던 것 — 태어난 해를 2026에서 거꾸로 잡고 있었다';
+const APP_VERSION = '3.15.0';
+const APP_VERSION_NOTE = '수비는 이름표와 몸 날리기 · 타석엔 상대가 던지는 자리';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8268,6 +8298,15 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.15.0', t:'수비는 이름표와 몸 날리기 · 타석엔 상대가 던지는 자리', items:[
+    '<b>야수마다 등번호와 이름이 붙었다.</b> 여태 그라운드에 사람 그림만 있어서 「저 사람이 2루수인가 유격수인가」 를 알 수가 없었다. 내 야수는 금색이라 한눈에 갈린다. 교체가 있었으면 교체된 사람 이름이 뜬다',
+    '<b>송구 버튼이 실제 베이스 자리로 갔다.</b> 2루는 위, 3루는 왼쪽, 1루는 오른쪽, 홈은 아래. 여태 가로 일렬이라 「1루 2루 3루 홈」 을 글자로 읽고 눌러야 했는데, 수비는 1~2초 싸움이라 읽을 시간이 없다. 자리로 놓으면 안 읽고 누른다',
+    '<b>네 베이스를 항상 띄운다.</b> 못 던지는 곳은 죽여서 보여준다 — 자리가 매번 그대로라 손이 외운다. 예전엔 던질 수 있는 것만 그려서 상황마다 버튼이 움직였다',
+    '<b>「몸 날리기」 가 생겼다.</b> 조이스틱 옆이다. 0.45초 동안 닿는 거리가 1.6배가 되는 대신 그 사이 못 움직이고, 헛치면 0.35초 더 못 일어난다. 여태 수비는 쫓아가는 것 하나뿐이라 손이 늦으면 만회할 방법이 없었다',
+    '<b>타석에 상대가 어디로 던지는지가 뜬다.</b> 구종 배분(직구 66% · 슬라이더 9%) 밑에 아홉 칸 히트맵이 깔린다. 제일 많이 던지는 자리가 금색이다',
+    '<b>그리고 그 숫자는 진짜다.</b> 여태 존 안 코스는 완전 균등 난수였다 — 어디든 똑같이 11%씩. 이제 엔진이 그 표를 그대로 굴린다. 화면에 「낮은 바깥 25%」 라고 적혀 있으면 실제로 25% 온다',
+    '코스 성향은 지어낸 게 아니라 투수한테서 나온다 — <b>제구가 좋을수록 낮게</b> 모으고(제구 25면 아랫줄 26%, 제구 70이면 52%), <b>같은 손 맞대결이면 바깥으로</b> 흘리고, 한복판은 덜 던진다. 나머지는 투수 id 로 고정이라 같은 투수는 언제 만나도 같은 버릇이다',
+  ]},
   {v:'3.14.3', t:'2군에 중학생이 있던 것 — 태어난 해를 2026에서 거꾸로 잡고 있었다', items:[
     '<b>1·2군에 열넷·열다섯 살이 있던 것을 고쳤다.</b> 나이는 화면에서 「그 해 − 태어난 해」 로 센다. 그런데 2군 선수의 <b>태어난 해를 2026에서 거꾸로</b> 잡고 있었다 — 선수 모드는 <b>입단한 해</b>(99년생이면 2018)부터 시작하니까, 스물한 살이 2019−2005 = <b>열네 살</b>로 찍혔다. 명단에는 21살, 화면에는 14살이었다',
     '이제 2군 선수를 만들 때 <b>태어난 해를 그 자리에서 박아 명단에 같이 저장한다.</b> 시즌이 넘어가면 같이 한 살씩 먹는다',
@@ -28981,6 +29020,32 @@ function moundResult(mound,text,color,big){
    컨택 87 · 상대 구위 45 · 노림수 적중(선구안 60) →  타이밍 ±0.23초
    컨택 40 · 상대 구위 80 · 노림수 실패           →  타이밍 ±0.07초
    같은 공이 사람에 따라 세 배 넓어진다. 그게 능력치다.               */
+/* 이 투수가 존 어디로 던지나 — 3×3 가중치. 합이 1이다.
+   [참고] 마구마구 「타격노림분석」 — 타석 전에 상대가 어디로 던지는지를
+   4분면 %로 깔아준다. 우리는 존이 원래 3×3 이라 아홉 칸으로 간다.
+   [주의] **화면에 적는 값과 실제로 던지는 값이 같아야 한다.**
+   여태 존 안 코스는 완전 균등 난수였다(bx=(rng()*3)|0). 그 상태로
+   히트맵만 붙이면 그건 거짓말이다. nextPitch 가 이 표를 그대로 굴린다.
+     x: 0 몸쪽 · 1 가운데 · 2 바깥   (화면은 타자 기준 왼쪽이 몸쪽)
+     y: 0 높은 · 1 가운데 · 2 낮은                                   */
+function pitchZoneW(pit, batLeft){
+  const ctl=(pit&&pit.ctl!=null)?pit.ctl:40;
+  /* 제구가 좋을수록 낮게 모은다. 나쁘면 공이 떠서 위로 흩어진다 */
+  const lowB=Math.max(-0.30, Math.min(0.50, (ctl-38)*0.020));
+  /* 같은 손 맞대결이면 바깥으로 흘려 던진다 */
+  const same=(((typeof throwHandOf==='function')?throwHandOf(pit):'R')==='L')===!!batLeft;
+  const h=(typeof oppHash==='function')?oppHash(String((pit&&(pit.id||pit.name))||'p')):7;
+  const outB=Math.max(-0.10, Math.min(0.60,
+    (same?0.40:0.12) + ((((h>>>5)%17)-8)*0.018)));   // 개인 버릇은 id 로 고정
+  const w=[];
+  for(let y=0;y<3;y++) for(let x=0;x<3;x++){
+    let v=(1+lowB*(y-1))*(1+outB*(x-1));
+    if(x===1&&y===1) v*=0.68;            // 한복판은 덜 던진다 — 맞으니까
+    w.push(Math.max(0.04,v));
+  }
+  const t=w.reduce((a,b)=>a+b,0);
+  return w.map(v=>v/t);
+}
 function batWindows(bat, pit, guess){
   const con=(bat&&bat.con)||40, eye=(bat&&bat.eye)||40;
   const stf=(pit&&pit.stf)||40;
@@ -29097,6 +29162,25 @@ function renderSwing(box, d){
         `<u>${PITCH_TYPES[k].n} <b>${Math.round(v*100)}%</b></u>`).join('')+
         `<i>변화구 통틀어 ${Math.round(breakShare(myP)*100)}%</i>`;
       aim.appendChild(mm);
+    }
+    /* 코스 히트맵 — 구종이 하나뿐인 투수여도 코스 버릇은 있다 */
+    {
+      const W = pitchZoneW(myP, bat && bat.bats === 'L');
+      const mx = Math.max.apply(null, W);
+      const zz = el('div', 'aim-zone');
+      zz.innerHTML = W.map(function(v){
+        var a = 0.10 + (v / mx) * 0.42;          // 많이 던지는 칸일수록 진하다
+        /* [주의] 'rgba(' 를 이어붙이기로 쪼개면 lintcheck 가 함수 호출로
+           읽어서 「선언 안 된 함수」로 잡는다. 온전한 리터럴로 만든다. */
+        var bg = 'rgba(201,162,39,A)'.replace('A', a.toFixed(3));
+        return '<i class="' + (v >= mx - 0.0001 ? 'top' : '') +
+          '" style="background:' + bg + '">' +
+          Math.round(v * 100) + '%</i>';
+      }).join('');
+      aim.appendChild(zz);
+      const lg = el('div', 'aim-zc');
+      lg.innerHTML = '<span>← 몸쪽</span><span>이 투수가 던지는 자리</span><span>바깥 →</span>';
+      aim.appendChild(lg);
     }
     const row=el('div','aim-row');
     [['fast','빠른공'],['break','변화구'],['none','안 노린다']].forEach(([k,n])=>{
@@ -29372,7 +29456,13 @@ function renderSwing(box, d){
     /* 제구가 나쁘면 존 밖으로 빠진다 — 그게 '볼'이다 */
     const ctlOk=LIVE.rng() < Math.max(0.30,Math.min(0.86,(myP.ctl+18)/78));
     inZone=ctlOk;
-    if(ctlOk){ bx=(LIVE.rng()*3)|0; by=(LIVE.rng()*3)|0; }
+    if(ctlOk){
+      /* 균등 난수가 아니라 **화면에 깔아준 성향표**대로 뽑는다 */
+      const W=pitchZoneW(myP, bat && bat.bats==='L');
+      let r=LIVE.rng(), i=0;
+      while(i<8 && r>W[i]){ r-=W[i]; i++; }
+      bx=i%3; by=(i/3)|0;
+    }
     else { const side=(LIVE.rng()*4)|0;
       bx=side===0?-1:(side===1?3:(LIVE.rng()*3)|0);
       by=side===2?-1:(side===3?3:(LIVE.rng()*3)|0); }
@@ -29652,6 +29742,20 @@ function renderDefPlay(box, d){
   const joy=el('div','joy');
   joy.innerHTML='<i class="joy-k"></i><u class="joy-t">이동</u>';
   joyWrap.appendChild(joy);
+  /* 다이빙 — 못 잡을 공에 몸을 날린다. 헛치면 못 일어난다 */
+  const divB=el('button','divb');
+  divB.innerHTML='몸 날리기<u>닿는 거리 ↑</u>';
+  const doDive=(ev)=>{
+    if(ev&&ev.preventDefault)ev.preventDefault();
+    if(!sc||!sc.dive) return;
+    if(sc.dive()){
+      divB.classList.add('on');
+      setTimeout(()=>divB.classList.remove('on'), 450);
+    }
+  };
+  divB.addEventListener('pointerdown', doDive);
+  divB.onclick=doDive;
+  joyWrap.appendChild(divB);
   box2.appendChild(joyWrap);
   /* [요청] "수비할때도 그 베이스 버튼두어서 송가 바로 가능하게"
      잡고 나면 조이스틱 자리가 **베이스 버튼**으로 바뀐다.
@@ -29712,6 +29816,31 @@ function renderDefPlay(box, d){
      조이스틱과 베이스 버튼이 손에 닿는 게 먼저다 — 아래를 맞춘다. */
   setTimeout(()=>{ try{ box.scrollIntoView({block:'end',behavior:'smooth'}); }catch(e){} },30);
 
+  /* 그라운드에 붙일 이름표 — 오늘 그 자리에 실제로 선 사람이다.
+     [주의] 라인업이 아니라 LIVE 의 slots 를 본다. 교체가 있었으면
+     교체된 사람이 서 있어야 맞다.                                  */
+  const fieldNames=(function(){
+    const out={};
+    try{
+      (def.slots||[]).forEach(sl=>{
+        const q=def.team.players.find(x=>x.id===sl.id);
+        if(!q) return;
+        out[sl.pos]=(q.no!=null?(q.no+' '):'')+q.name;
+      });
+      /* 지명타자를 쓰면 투수가 타순(slots)에 없다 — 마운드만 이름표가
+         비어 있었다. 지금 던지는 사람을 따로 넣는다.                 */
+      if(!out.P){
+        const cp=LIVE.curPitcher(def);
+        if(cp){
+          /* team.pitchers 에는 등번호가 없다 — 로스터에서 찾아온다 */
+          const pr=def.team.players.find(x=>x.id===cp.id);
+          const no=(pr&&pr.no!=null)?pr.no:null;
+          out.P=(no!=null?(no+' '):'')+cp.name;
+        }
+      }
+    }catch(e){}
+    return out;
+  })();
   const dv=p?p.def:45, sv=p?p.spd:45, av=p?p.arm:45;
   const park=LIVE.park;
   const u=battedU(LIVE.paSeq);
@@ -29775,7 +29904,7 @@ function renderDefPlay(box, d){
     ? (dir+'으로 직선타! — 순식간이다')
     : (dir+'으로 온다 — 쫓아가라');
   try{
-    sc=defScene(stage, {park, ang:d.ang, m:mDraw, pos, flyMs,
+    sc=defScene(stage, {park, ang:d.ang, m:mDraw, pos, flyMs, names:fieldNames,
       reach:REACH, grab:GRAB, pxPerM, speed:SPEED, arm:av,
       bases:(LIVE.bases||[null,null,null]).slice(),
       hasFirst:!!LIVE.bases[0], outs:LIVE.outs,
@@ -29787,17 +29916,27 @@ function renderDefPlay(box, d){
         joyWrap.style.display='none';
         baseRow.style.display='';
         baseRow.innerHTML='';
-        (list||[]).forEach(t=>{
-          const b=el('button','base-b'+(!tag&&t.b===2&&LIVE.bases[0]?' hot':''));
+        /* [참고] 마구마구는 **네 베이스를 항상 띄워두고** 못 던지는 곳만
+           죽여놓는다. 자리가 매번 그대로라 손이 외운다 — 급할 때 그게 전부다.
+           우리는 던질 수 있는 것만 그려서, 상황마다 버튼 위치가 바뀌었다. */
+        const ALL=[{b:2,label:'2루'},{b:3,label:'3루'},{b:1,label:'1루'},{b:0,label:'홈'}];
+        ALL.forEach(t=>{
+          const ok=(list||[]).some(x=>x.b===t.b);
+          const b=el('button','base-b'+(ok&&!tag&&t.b===2&&LIVE.bases[0]?' hot':''));
+          b.setAttribute('data-b', String(t.b));     // 다이아몬드 자리를 이걸로 잡는다
+          b.disabled=!ok;
           b.innerHTML='<span>'+t.label+'</span><i>'+
-            (tag?'태그업 막는다'
-               :((t.b===2&&LIVE.bases[0])?'병살 노린다':'여기로 던진다'))+'</i>';
-          const fire=(ev)=>{ if(ev&&ev.preventDefault)ev.preventDefault();
-            if(sc&&sc.throwTo) sc.throwTo(t.b);
-            baseRow.querySelectorAll('button').forEach(x=>{x.disabled=true;});
-            baseRow.style.opacity='.4'; };
-          b.addEventListener('pointerdown', fire);
-          b.onclick=fire;
+            (!ok ? '주자 없음'
+               : (tag?'태그업 막는다'
+               : ((t.b===2&&LIVE.bases[0])?'병살 노린다':'여기로 던진다')))+'</i>';
+          if(ok){
+            const fire=(ev)=>{ if(ev&&ev.preventDefault)ev.preventDefault();
+              if(sc&&sc.throwTo) sc.throwTo(t.b);
+              baseRow.querySelectorAll('button').forEach(x=>{x.disabled=true;});
+              baseRow.style.opacity='.4'; };
+            b.addEventListener('pointerdown', fire);
+            b.onclick=fire;
+          }
           baseRow.appendChild(b);
         });
         if(tag){
@@ -29849,6 +29988,22 @@ function renderDefPlay(box, d){
      ④ 같은 캔버스에서 결과까지 재생한다
 
    주자를 전부 그린다. 누가 어디 있는지 안 보이면 어디로 던질지 알 수가 없다. */
+/* 야수 머리 위 이름표.
+   [참고] 마구마구는 야수마다 등번호+이름이 붙어 있다. 누가 어디 서 있는지,
+   내가 누구인지가 한눈에 보인다. 우리는 사람 그림만 있어서 금색 화살표로
+   나만 표시했는데, 그러면 「저 사람이 2루수인가 유격수인가」 를 모른다.  */
+function psLabel(g,x,y,txt,gold){
+  if(!txt) return;
+  g.font='700 7.5px system-ui,-apple-system,sans-serif';
+  const w=g.measureText(txt).width+7;
+  g.fillStyle='rgba(9,12,16,.78)';
+  if(g.roundRect){ g.beginPath(); g.roundRect(x-w/2,y-6,w,10,3); g.fill(); }
+  else g.fillRect(x-w/2,y-6,w,10);
+  g.fillStyle=gold?'#ffd15c':'#cfd6e0';
+  g.textAlign='center'; g.textBaseline='middle';
+  g.fillText(txt,x,y-1);
+  g.textAlign='left'; g.textBaseline='alphabetic';
+}
 function defScene(host, o){
   const cv=document.createElement('canvas');
   cv.className='runcv defcv';
@@ -29883,6 +30038,16 @@ function defScene(host, o){
   /* 이 타구가 포물선을 그리나 — ballAt 의 z 조건과 **같은 식**을 쓴다.
      두 군데서 따로 쓰면 화면에서는 떠가는데 판정은 땅볼이 된다.     */
   const isFly = (o.m>40);
+  /* [참고] 마구마구 수비에는 조이스틱 말고 **점프 버튼**이 따로 있다.
+     우리는 쫓아가는 것 하나뿐이라, 손이 늦으면 그냥 진다 — 만회할 동사가
+     없다. 다이빙을 둔다.
+       · 0.45초 동안 닿는 거리가 1.6배 (깨끗하게 잡는 거리도 1.35배)
+       · 대신 그 사이 못 움직이고, 놓치면 0.35초 더 못 일어난다
+     타이밍을 맞히면 못 잡을 공을 잡고, 헛 다이빙하면 확실히 놓친다.   */
+  const DIVE_MS=450, DIVE_LAG=350;
+  let diveAt=-9999;
+  const diving=(now)=>(now-diveAt)>=0 && (now-diveAt)<DIVE_MS;
+  const lagging=(now)=>(now-diveAt)>=DIVE_MS && (now-diveAt)<DIVE_MS+DIVE_LAG;
   const GRAB = (o.grab!=null)?o.grab:(o.reach*0.42);
   const MPP  = (o.pxPerM&&o.pxPerM>0)?(1/o.pxPerM):PS_MPP;   // 이 자리 1px 이 몇 m
   let fx=home.x, fy=home.y, tx=home.x, ty=home.y;
@@ -29992,7 +30157,7 @@ function defScene(host, o){
     const now=Date.now()-t0;
     const dt=Math.min(0.06,(Date.now()-last)/1000); last=Date.now();
     /* 내 야수 — 아래 조이스틱을 민 방향으로. 많이 밀수록 빠르다 */
-    if(phase==='chase'){
+    if(phase==='chase' && !diving(now) && !lagging(now)){
       const dd=Math.hypot(dir.x,dir.y);
       if(dd>0.08){
         const v=Math.min(1,dd);
@@ -30009,14 +30174,16 @@ function defScene(host, o){
     if(phase==='chase'){
       if(now>=o.flyMs*0.55){ best=Math.min(best, near); bestLand=Math.min(bestLand, dLand); }
       /* 공에 닿았다 — 그 자리에서 송구 단계로 */
-      if(near<=o.reach && now>=o.flyMs*0.85){
+      const RE=diving(now)?o.reach*1.60:o.reach;
+      const GR=diving(now)?GRAB*1.35:GRAB;
+      if(near<=RE && now>=o.flyMs*0.85){
         /* 확실히 잡는 거리(grab) 안이면 1, 겨우 닿는 끝이면 0.55.
            그 사이는 비례해서 깎는다 — 대충 붙은 것과 정확히 들어간 것을
            같은 포구로 치던 게 「공 근처가면 다 잡은 판정」이었다.      */
         /* 뜬공은 낙구 지점 기준, 굴러온 공은 공 기준으로 잰다 */
         const air0=(isFly && now < o.flyMs);
         const dd0=air0?Math.min(dLand,bestLand):best;
-        const over=Math.max(0, dd0-GRAB)/Math.max(1,(o.reach-GRAB));
+        const over=Math.max(0, dd0-GR)/Math.max(1,(RE-GR));
         q=Math.max(0.55, Math.min(1, 1-over*0.45));
         caught=true; catchAt=now;
         /* [제보] "플라이볼도 뭐 송구해야 아웃이되네"
@@ -30050,6 +30217,7 @@ function defScene(host, o){
         q=(best<=o.reach) ? Math.max(0.55, 1-over2*0.45)
                           : Math.max(0, 0.5-(best-o.reach)/Math.max(1,o.reach)*0.5);
         caught=(best<=o.reach);
+        if(diving(now)&&!caught) q=Math.max(0,q-0.06);   // 헛 다이빙은 더 깎는다
         if(caught){ phase='throw'; catchAt=now;
           if(o.onTitle) o.onTitle('잡았다','#7fc48f');
           if(o.onTick) o.onTick('<b>어디로 던질까.</b> 늦을수록 송구가 나빠진다');
@@ -30078,11 +30246,13 @@ function defScene(host, o){
 
     g.setTransform(2,0,0,2,0,0);
     psField(g,P);
-    /* 나머지 야수 */
+    /* 나머지 야수 — 이름표를 같이 단다 */
     Object.keys(PS_POS).forEach(kk=>{
       if(kk===o.pos) return;
       const qq=psPosOf(kk,P);
       man(qq.x,qq.y,PS_UNI.us,false,qq.x<HX);
+      const nm=(o.names&&o.names[kk])||null;
+      if(nm) psLabel(g,qq.x,qq.y-9,nm,false);
     });
     /* 주자 전부 — 누가 어디 있는지 보여야 어디로 던질지 안다 */
     const rk=Math.min(1, now/RUN_MS);
@@ -30121,12 +30291,19 @@ function defScene(host, o){
     if(phase==='chase'){
       /* 바깥 원 = 손이 닿는 데까지 · 안쪽 원 = 깨끗하게 잡는 데.
          안쪽에 넣어야 호수비다. 눈으로 보이니까 목표가 생긴다.   */
-      g.strokeStyle=(near<o.reach)?'rgba(127,196,143,.75)':'rgba(255,209,92,.45)';
-      g.lineWidth=(near<o.reach)?2:1.4;
-      g.beginPath(); g.arc(fx,fy,o.reach,0,Math.PI*2); g.stroke();
-      g.strokeStyle=(near<=GRAB)?'rgba(127,196,143,1)':'rgba(233,228,216,.35)';
-      g.lineWidth=(near<=GRAB)?2.4:1.2;
-      g.beginPath(); g.arc(fx,fy,GRAB,0,Math.PI*2); g.stroke();
+      const dvOn=diving(now);
+      const RE2=dvOn?o.reach*1.60:o.reach, GR2=dvOn?GRAB*1.35:GRAB;
+      g.strokeStyle=dvOn?'rgba(255,209,92,.95)'
+        :((near<RE2)?'rgba(127,196,143,.75)':'rgba(255,209,92,.45)');
+      g.lineWidth=dvOn?2.6:((near<RE2)?2:1.4);
+      g.beginPath(); g.arc(fx,fy,RE2,0,Math.PI*2); g.stroke();
+      g.strokeStyle=(near<=GR2)?'rgba(127,196,143,1)':'rgba(233,228,216,.35)';
+      g.lineWidth=(near<=GR2)?2.4:1.2;
+      g.beginPath(); g.arc(fx,fy,GR2,0,Math.PI*2); g.stroke();
+      if(lagging(now)){                     // 넘어져 있다 — 못 움직인다
+        g.strokeStyle='rgba(224,138,112,.8)'; g.lineWidth=1.6;
+        g.beginPath(); g.arc(fx,fy,GRAB*0.8,0,Math.PI*2); g.stroke();
+      }
     }
     const moving=(phase==='chase' && Math.hypot(dir.x,dir.y)>0.08);
     man(fx,fy,PS_UNI.us,moving,fx<HX);
@@ -30135,6 +30312,8 @@ function defScene(host, o){
       g.strokeStyle='rgba(255,209,92,.9)'; g.lineWidth=2;
       g.beginPath(); g.moveTo(fx,fy-20); g.lineTo(fx-4,fy-26); g.lineTo(fx+4,fy-26);
       g.closePath(); g.stroke();
+      const mine=(o.names&&o.names[o.pos])||null;
+      if(mine) psLabel(g,fx,fy-9,mine,true);
     }
     /* 송구 단계 — 베이스 위에 원. 늦을수록 작아진다(정확도 미터) */
     if(phase==='throw'){
@@ -30189,6 +30368,13 @@ function defScene(host, o){
   };
   return { stop:()=>{ stop=true; }, el:cv,
     setDir:(x,y)=>{ dir={x:x||0,y:y||0}; },
+    dive:()=>{ if(phase!=='chase') return false;
+      const n2=Date.now()-t0;
+      if(diving(n2)||lagging(n2)) return false;   // 연타 금지
+      diveAt=n2; dir={x:0,y:0};
+      if(o.onTick) o.onTick('<b>몸을 날렸다!</b>');
+      return true; },
+    canDive:()=>{ const n2=Date.now()-t0; return phase==='chase'&&!diving(n2)&&!lagging(n2); },
     throwTo, noThrow,
     ring:()=>ringOf(Date.now()-t0),
     phase:()=>phase,
