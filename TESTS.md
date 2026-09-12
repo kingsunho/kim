@@ -17,7 +17,7 @@ for f in lintcheck verify vernotetest mgrtest kakaotest careertest nametest \
          awardtest kingtest savediet loadtest sorttest phototest bgmtest \
          iostest galaxytest compattest boxtest pcardtest feattest \
          unhappytest hometest namecheck smoketest fixtest recruittest \
-         traintest2 vartest wltest advtest dectest2 subtest resumetest ruletest pitchbug deptest pitchtest playtest swaptest vartest2 rottest qualtest mgm2test zonetest; do
+         traintest2 vartest wltest advtest dectest2 subtest resumetest ruletest pitchbug deptest pitchtest playtest swaptest vartest2 rottest qualtest mgm2test zonetest papertest; do
   printf "%-13s " $f
   if [ "$f" = "verify" ]; then node verify.js index.html >/dev/null 2>&1 && echo OK || echo FAIL
   else node $f.js >/dev/null 2>&1 && echo OK || echo FAIL; fi
@@ -97,8 +97,98 @@ node soaktest.js
 | `exiletest` | 내쫓은 선수가 상대 팀 로스터·라인업에 들어가는지 · 새로고침 후에도 유지되는지 |
 | `wartest` | WAR 상수를 엔진에서 다시 재서 검증 · 투타 분리·합산 · 표본 표시 |
 | `opptest` | 상대 23팀 감독 성향 — 실제 기록에서 뽑히는지 · 색깔대로 실제로 굴리는지 · 지시의 절반만 먹이는지(lean) · 리그 득점이 안 흔들리는지 · 스카우팅 카드가 매니저 「기록」만큼 길어지는지 · 매니저가 하루에 다섯 번 나오는지(그 화면에 바로) |
+| `papertest` | 신문 — 풀 크기 · 14주 돌렸을 때 안 겹치는 정도 · 생성 기사(상대 프리뷰·날씨·부상·폼·2군·방어율·최근 흐름)가 실제 상태에서 나오는가 · 기록실이 확정 기록뿐인가 · 연예면에 실명이 없는가 |
 | `mgm2test` | 마구마구 2막 — 주루 판단창이 2루·3루에서도 뜨는가(`myRunBase`) · 번트 방향(3루쪽/1루쪽)이 실제로 다른 결과를 내는가 · 구종별 구속과 체력 식이 한 군데인가 · 인게임 라인업 패널 |
 | `arttest` | 브라우저가 있어야 되는 검사 — 파츠 시트 알파 · 뼈 뒤집기 · 통짜 그림(타자·투수) · 베이스 좌표 · 다리 이음매 · 만약에 라인스코어 겹침 — **크로미움 필요** |
+
+## 창이 화면보다 길면 그건 조작이 아니다 (3.17.0)
+
+[제보] "지금 너무 불편한게 많아서 인게임이"
+
+말이 막연해서 **재는 것부터** 했다. 390×820 폰(아이폰 기준)에서 판단창
+높이와 주요 버튼의 문서상 좌표를 뽑았다.
+
+| 창 | 높이 | 화면 밖 | 문제 |
+|---|---|---|---|
+| 타석 | 1088px | 268px | **[스윙] 이 문서 1210px** — 야구장에서 400px 아래 |
+| 마운드 | 933px | 113px | 존 아홉 칸까지 600px 스크롤 |
+| 주루 | 820px | 0 | sheet 라 이미 괜찮았다 |
+| 수비 | 820px | 0 | 〃 |
+
+타석이 최악이었다. **공이 날아오는 걸 보면서 스윙을 누르는 게 물리적으로
+불가능했다.** 타이밍 게임인데.
+
+고친 방식은 **단계로 가르는 것**이다.
+
+- 고르는 동안(`phase==='ready'`) — 예전 그대로. 스크롤해서 다 본다.
+  공은 [준비 됐다 ▶] 를 눌러야 온다
+- 공이 오는 동안(`phase==='pitch'`~`judge`~2막) — `focusOn(true)` 가
+  `#decision` 에 `.sheet.swf` 를 걸고 머리말·노림수·작전·번트를 접는다.
+  야구장 · 게이지 · 버튼 두 개만 남는다
+
+**손이 바쁜 순간과 머리가 바쁜 순간은 다른 화면이어야 한다.**
+
+마운드는 통째로 `DEC_SHEET` 에 넣었다. 대신 sheet 는 `position:fixed` 라
+**바깥의 「🔄 투수 교체」 버튼에 손이 안 닿는다** — 판 안에 하나 더 뒀다
+(예전에 "투수교체가 안 돼서 답답하다" 를 겪은 자리다).
+
+### 여기서 밟은 함정 둘
+
+**`.mound` 는 `padding-top:56.25%` 로 비율을 잡는다 — 너비가 높이를 정한다.**
+sheet 안에서 `flex:1` 로 늘렸더니 370×**669** 가 됐다. 캔버스가 세로로
+늘어나 그림이 찌그러진다. 야구장은 제 비율로 두고 남는 높이는 위아래로
+나눈다. 빈 곳이 남아도 찌그러진 그림보다 낫다.
+
+**`insertBefore(chase, skip)` 이 터졌다.** `skip` 을 `botRow` 안으로
+옮겼더니 더 이상 `w` 의 자식이 아니었다. DOM 을 재배치하면 그 노드를
+기준점으로 쓰던 코드를 같이 찾아라.
+
+## 첫 화면에 실리는 바이트 (3.17.0)
+
+`loadtest` 의 「대기화면이 곧바로 뜬다」 는 **`<head>` 스타일시트 끝까지의
+바이트 수**를 잰다. 1Mbps 에서 1.2초 안에 뭐라도 보여야 한다는 기준이다.
+
+이 파일은 스타일시트가 `<head>` 에 하나뿐이라, **CSS 를 한 줄 넣을 때마다
+첫 화면이 그만큼 늦어진다.** 이번에 경기 화면 CSS 를 6KB 넣었더니 151KB →
+154KB 가 됐다(원래도 빨간 줄이었다).
+
+경기 화면과 신문 CSS 는 **대기화면·입장화면과 아무 상관이 없다.** 그래서
+대기화면 뒤에 `<style>` 을 하나 더 두고 거기로 내렸다 — 148KB 가 됐다.
+
+**화면에만 쓰는 CSS 는 그 화면 가까이 둬라.** 뒤쪽이라 같은 셀렉터면
+이쪽이 이기는데, jsdom 이 특이도를 무시하고 소스 순서만 보니 오히려
+테스트와 실제가 같아진다.
+
+## 풀을 키우는 것과 안 겹치게 뽑는 것은 다르다 (3.17.0)
+
+[요청] "신문 내용도 더 다양하게"
+
+풀부터 키웠다 — 연예 10→25 · 사회 10→25 · 기록실 15→31 · 광고 7→16.
+그런데 재보니 **열네 주에 스물여덟 번을 뽑아도 서로 다른 기사가 열일곱
+개뿐**이었다. 매주 난수로 뽑으니 3주 전에 읽은 게 또 나온다.
+
+```js
+for(let i=0;i<2 && pool.length;i++) ent.push(pool.splice((rng()*pool.length)|0,1)[0]);
+```
+
+한 호 안에서만 안 겹칠 뿐, 호끼리는 아무 상관이 없다.
+
+`newsSlice(pool, n, round, key)` 로 바꿨다 — 시즌마다 한 번 섞어두고
+**주차 순서대로 잘라 쓴다.** 풀을 한 바퀴 돌 때까지 같은 기사가 안 나온다.
+14주 측정값이 17종 → **25종(풀 전체)** 이 됐다.
+
+`papertest` 가 이 숫자를 직접 센다. 풀만 키우고 뽑는 법을 안 고치면
+용량만 늘어난 것이다.
+
+**그리고 생성 기사가 진짜 다양성이다.** 지어낸 풀은 결국 다 읽는다.
+신문이 살아 있다는 느낌은 **내가 한 일이 기사로 돌아올 때** 난다 —
+이번 주 상대 프리뷰 · 우리 마운드 방어율 · 부상자 · 폼 · 2군 · 최근
+흐름 · 날씨. 여덟 종을 더 넣었고 단신 칸도 7→12로 늘렸다
+(새로 만든 기사가 잘려 나가면 만든 보람이 없다).
+
+**[함정] 날씨 id 를 딴 데 또 적지 마라.** `rain` 이라고 썼는데 실제
+id 는 `rainy` 여서 기사가 한 번도 안 떴다. `WEATHERS` 를 읽어서 쓴다.
+`papertest` 가 열한 가지를 전부 돌려본다.
 
 ## 만들어놓고 못 닿는 길 (3.16.0)
 

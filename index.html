@@ -429,13 +429,7 @@ button{font-family:inherit;cursor:pointer}
 .spb i{display:block;font-style:normal;font-size:9.5px;color:#8e9bb0;line-height:1.3;margin-top:2px}
 .spb.on i{color:#c9a227}
 .pl-skip.bunt{border-color:#3f6a4e;color:#9fd0ae}
-/* 번트 방향 — 마구마구 「3루번트 · 1루번트」 자리.
-   [주의] .spb 를 그대로 쓰되 초록으로만 갈랐다. 이름을 새로 파면
-   lintcheck 가 잡는 중복 셀렉터가 늘기만 한다.                      */
-.bunt-t{font-size:11px;color:#8e9bb0;margin:9px 0 0;text-align:center}
-.bunt-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:5px 0 4px}
-.spb.bunt{border-color:#3f6a4e;color:#9fd0ae}
-.spb.bunt i{color:#7d9a89}
+
 /* ================= 훈련 세션 =================
    타이밍 바 하나로 네 종목을 다 굴린다. 폰에서 손가락 하나면 되고,
    판정 폭(초록 칸)이 그 능력치를 그대로 탄다. */
@@ -502,6 +496,8 @@ button{font-family:inherit;cursor:pointer}
 .pp-sec{margin:14px 0 7px;font-size:11px;font-weight:900;letter-spacing:4px;
   color:#6b6252;border-bottom:1px solid #16130e;padding-bottom:3px}
 .pp-br{margin:0;padding-left:16px}
+
+
 .pp-br li{font-size:12px;line-height:1.7;color:#3a3327;margin-bottom:3px;word-break:keep-all}
 .pp-br b{color:#16130e}
 .pp-e{padding:7px 0;border-bottom:1px dotted #cbc0a8}
@@ -1092,7 +1088,7 @@ body.pl-lock{position:fixed;left:0;right:0;width:100%;overflow:hidden;overscroll
   position:fixed;inset:0;z-index:70;margin:0;border:0;border-radius:0;
   background:#0d1117;overflow:hidden;overscroll-behavior:contain;
   padding:calc(6px + env(safe-area-inset-top)) 10px calc(8px + env(safe-area-inset-bottom))}
-#decision.sheet .pl-wrap{display:flex;flex-direction:column;height:100%;min-height:0;padding:0}
+#decision.sheet .pl-wrap{display:flex;flex-direction:column;height:100%;min-height:0;padding:0;overflow-y:auto;overscroll-behavior:contain}
 /* [제보] "도루 그 칸땜에 그 그라운드가 안보이고 도루 뛰어서 성공했는지도 안보임"
    판단창은 **머리 / 그라운드 / 조작** 세 칸이다. 그런데 .defbox 가
    overflow-y:auto 였다. 화면이 짧으면(사파리 주소창이 있는 아이폰)
@@ -1125,9 +1121,10 @@ body.pl-lock{position:fixed;left:0;right:0;width:100%;overflow:hidden;overscroll
   line-height:1.1;white-space:nowrap}
 .rb-verdict>span{display:block;font-size:11.5px;font-weight:700;color:var(--dim);
   letter-spacing:0;line-height:1.35;text-align:center}
+
 #decision.sheet .joywrap{margin:7px 0 2px}
 #decision.sheet .joy{width:104px;height:104px}
-#decision.sheet .bat-info{margin-top:5px}
+#decision.sheet .bat-info{margin-top:5px;padding:6px 8px}
 #decision.sheet .pl-skip{margin-top:7px}
 body.pl-lock #view{touch-action:none}
 .pl-warn{font-size:12px;font-weight:800;color:#ffd15c;margin:6px 0 0;text-align:center}
@@ -1154,7 +1151,7 @@ body.pl-lock #view{touch-action:none}
   color:#8b95a3;font-size:12px;padding:9px 0;border-radius:9px}
 /* ===== 포수 뒤 시점 중계 화면 (스피리츠 풍) ===== */
 .mound{position:relative;width:100%;padding-top:56.25%;border-radius:12px;overflow:hidden;
-  border:1px solid #2a323d;background:#12232f}
+  border:1px solid #2a323d;background:#12232f;transition:transform .16s ease-out}
 .mv-cv{position:absolute;left:0;top:0;width:100%;height:100%;display:block}
 /* 외야 전광판 글자 — 캔버스에 그리면 한글이 뭉개져서 DOM 으로 얹는다 */
 /* [제보] "아이폰 사파리인데 점수판 아직도 겹쳐"
@@ -1265,6 +1262,7 @@ body.pl-lock #view{touch-action:none}
   55%{transform:translate(-50%,-50%) scale(1.22)}
   100%{transform:translate(-50%,-50%) scale(1)}}
 .mound.impact{animation:shake .34s}
+
 @keyframes shake{0%,100%{transform:translate(0,0)}
   20%{transform:translate(-4px,2px)}45%{transform:translate(4px,-2px)}
   70%{transform:translate(-2px,-1px)}}
@@ -1398,8 +1396,7 @@ body.pl-lock #view{touch-action:none}
 .aim-mix{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;margin:0 0 5px}
 .aim-mix u{text-decoration:none;font-size:10px;color:#8b95a3}
 .aim-mix u b{color:#cfe0ee;font-weight:800}
-.aim-mix u em{font-style:normal;color:#ffd15c;font-weight:800;margin-left:3px}
-.aim-mix u em::after{content:'km/h';font-size:8px;color:#8b7b45;margin-left:1px}
+
 .aim-mix i{font-style:normal;font-size:10px;color:#6f7c8c;margin-left:auto}
 .aim-row{display:flex;gap:5px}
 .aim-row button{flex:1;background:#161b22;border:1px solid #2a323d;border-radius:8px;
@@ -1476,12 +1473,7 @@ body.pl-lock #view{touch-action:none}
   border-radius:8px;color:#cfd8e3;font-size:11.5px;font-weight:700;padding:9px 4px}
 .ptype button.on{border-color:#e8762c;color:#fff;background:#241a12}
 .ptype button i{display:block;font-style:normal;font-size:9.5px;color:#8b95a3;margin-top:2px}
-/* 구종별 구속 — 마구마구 버튼처럼 숫자를 크게 박는다 */
-.ptype button b{display:block;font-size:14px;font-weight:900;color:#ffd15c;
-  line-height:1.15;margin-top:1px}
-.ptype button b::after{content:'km/h';font-size:8px;font-weight:700;color:#8b7b45;
-  margin-left:2px;letter-spacing:-.2px}
-.ptype button.on b{color:#ffb768}
+
 .ot-adv b{display:block;font-size:12px;color:var(--or2)}
 .ot-adv span{display:block;font-size:11px;color:var(--dm);line-height:1.5;margin-top:2px}
 .ot-tr{display:flex;gap:8px;align-items:baseline;padding:4px 9px;font-size:11px}
@@ -1818,41 +1810,7 @@ table.hl-tbl td.hl-o{color:#c98a80}
    #livectl 의 flex-wrap 은 그대로 둔다 — 버튼이 길어지면 줄이 넘어간다. */
 #livectl{flex-wrap:wrap}
 .np-bar{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:9px 0 0}
-/* 라인업 열기 — 스코어보드 밑 한 줄 */
-.lu-open{display:block;width:100%;margin:7px 0 0;padding:8px;border-radius:9px;
-  background:#141a22;border:1px solid #2a323d;color:#9fb0c4;font-size:11.5px;font-weight:700}
-/* 라인업 카드 — 마구마구 오른쪽 패널 자리 */
-.lg-card{background:#111721;border:1px solid #253040;border-radius:11px;
-  padding:10px 10px 6px;margin:9px 0 0}
-.lg-card.def{border-color:#2a3340;opacity:.92}
-.lg-h{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
-.lg-h b{font-size:13.5px;color:#e2eaf5;font-weight:800}
-.lg-h span{font-size:11px;color:#ffd15c;font-weight:700}
-.lg-h em{font-style:normal;margin-left:auto;font-size:10px;color:#7d8899;
-  border:1px solid #2f3a48;border-radius:4px;padding:1px 5px}
-.lg-p{margin:7px 0 2px;padding:6px 8px;background:#0e131b;border-radius:8px;
-  border:1px solid #222c39}
-.lg-p u{text-decoration:none;font-size:9.5px;color:#7d8899;margin-right:5px}
-.lg-p b{font-size:12.5px;color:#cfe0ee;font-weight:800}
-.lg-p i{display:block;font-style:normal;font-size:10px;color:#8e9bb0;margin-top:2px}
-.lg-p span{display:block;font-size:10px;color:#7d8899;margin-top:1px}
-.lg-tb{margin-top:5px}
-.lg-r{display:grid;grid-template-columns:16px 30px 1fr 15px;gap:5px;
-  align-items:baseline;padding:5px 3px;border-top:1px solid #1c2531}
-.lg-r u{text-decoration:none;font-size:10.5px;color:#6f7c8c;font-weight:800}
-.lg-r em{font-style:normal;font-size:9.5px;color:#8e9bb0;
-  border:1px solid #2a3340;border-radius:3px;padding:1px 0;text-align:center}
-.lg-r b{font-size:12px;color:#c3ccd7;font-weight:700}
-.lg-r b s{text-decoration:none;color:#6f7c8c;font-size:10px}
-.lg-r span{font-size:10px;color:#7d8899;text-align:center}
-.lg-r span.lh{color:#e8a35c}
-.lg-r i{grid-column:3 / span 2;font-style:normal;font-size:9.5px;color:#6f7c8c;margin-top:-2px}
-.lg-r.now{background:rgba(201,162,39,.12);border-radius:6px}
-.lg-r.now b{color:#ffd15c}
-.lg-r.now u{color:#ffd15c}
-.lg-r.next b{color:#dbe4ef}
-.lg-r.me b::after{content:'내 선수';font-size:8.5px;color:#7fc48f;margin-left:5px;
-  border:1px solid rgba(127,196,143,.45);border-radius:3px;padding:0 3px}
+
 .np-cell{background:var(--panel);border:1px solid var(--line);border-radius:9px;
   padding:6px 7px;text-align:center;font-size:11px;color:var(--dim);min-width:0}
 .np-cell.on{border-color:var(--gold);background:rgba(201,162,39,.10)}
@@ -2322,6 +2280,133 @@ td.dimc{color:var(--dm);text-align:left}
   },1400);
 })();
 </script>
+
+<!-- [성능] 첫 화면 스타일시트는 <head> 하나에 다 들어 있다. 거기 넣은
+     바이트는 **대기화면이 뜨기 전에** 전부 받아야 한다(loadtest 가 이걸
+     잰다 — 1Mbps 에서 1.2초 안에 뭐라도 보여야 한다는 기준이다).
+     아래 규칙들은 전부 **경기 화면과 신문** 것이라 대기화면·입장화면과
+     아무 상관이 없다. 그래서 대기화면 뒤로 내렸다.
+     [주의] 여기가 뒤쪽이라 같은 셀렉터면 **이쪽이 이긴다.** jsdom 은
+     특이도를 무시하고 소스 순서만 보니 오히려 예측대로 굴러간다.   -->
+<style>
+/* 번트 방향 — 마구마구 「3루번트 · 1루번트」 자리.
+   [주의] .spb 를 그대로 쓰되 초록으로만 갈랐다. 이름을 새로 파면
+   lintcheck 가 잡는 중복 셀렉터가 늘기만 한다.                      */
+.bunt-t{font-size:11px;color:#8e9bb0;margin:9px 0 0;text-align:center}
+.bunt-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:5px 0 4px}
+.spb.bunt{border-color:#3f6a4e;color:#9fd0ae}
+.spb.bunt i{color:#7d9a89}
+/* 구종별 구속 — 마구마구 버튼처럼 숫자를 크게 박는다 */
+.ptype button b{display:block;font-size:14px;font-weight:900;color:#ffd15c;
+  line-height:1.15;margin-top:1px}
+.ptype button b::after{content:'km/h';font-size:8px;font-weight:700;color:#8b7b45;
+  margin-left:2px;letter-spacing:-.2px}
+.ptype button.on b{color:#ffb768}
+.aim-mix u em{font-style:normal;color:#ffd15c;font-weight:800;margin-left:3px}
+.aim-mix u em::after{content:'km/h';font-size:8px;color:#8b7b45;margin-left:1px}
+/* 라인업 열기 — 스코어보드 밑 한 줄 */
+.lu-open{display:block;width:100%;margin:7px 0 0;padding:8px;border-radius:9px;
+  background:#141a22;border:1px solid #2a323d;color:#9fb0c4;font-size:11.5px;font-weight:700}
+/* 라인업 카드 — 마구마구 오른쪽 패널 자리 */
+.lg-card{background:#111721;border:1px solid #253040;border-radius:11px;
+  padding:10px 10px 6px;margin:9px 0 0}
+.lg-card.def{border-color:#2a3340;opacity:.92}
+.lg-h{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+.lg-h b{font-size:13.5px;color:#e2eaf5;font-weight:800}
+.lg-h span{font-size:11px;color:#ffd15c;font-weight:700}
+.lg-h em{font-style:normal;margin-left:auto;font-size:10px;color:#7d8899;
+  border:1px solid #2f3a48;border-radius:4px;padding:1px 5px}
+.lg-p{margin:7px 0 2px;padding:6px 8px;background:#0e131b;border-radius:8px;
+  border:1px solid #222c39}
+.lg-p u{text-decoration:none;font-size:9.5px;color:#7d8899;margin-right:5px}
+.lg-p b{font-size:12.5px;color:#cfe0ee;font-weight:800}
+.lg-p i{display:block;font-style:normal;font-size:10px;color:#8e9bb0;margin-top:2px}
+.lg-p span{display:block;font-size:10px;color:#7d8899;margin-top:1px}
+.lg-tb{margin-top:5px}
+.lg-r{display:grid;grid-template-columns:16px 30px 1fr 15px;gap:5px;
+  align-items:baseline;padding:5px 3px;border-top:1px solid #1c2531}
+.lg-r u{text-decoration:none;font-size:10.5px;color:#6f7c8c;font-weight:800}
+.lg-r em{font-style:normal;font-size:9.5px;color:#8e9bb0;
+  border:1px solid #2a3340;border-radius:3px;padding:1px 0;text-align:center}
+.lg-r b{font-size:12px;color:#c3ccd7;font-weight:700}
+.lg-r b s{text-decoration:none;color:#6f7c8c;font-size:10px}
+.lg-r span{font-size:10px;color:#7d8899;text-align:center}
+.lg-r span.lh{color:#e8a35c}
+.lg-r i{grid-column:3 / span 2;font-style:normal;font-size:9.5px;color:#6f7c8c;margin-top:-2px}
+.lg-r.now{background:rgba(201,162,39,.12);border-radius:6px}
+.lg-r.now b{color:#ffd15c}
+.lg-r.now u{color:#ffd15c}
+.lg-r.next b{color:#dbe4ef}
+.lg-r.me b::after{content:'내 선수';font-size:8.5px;color:#7fc48f;margin-left:5px;
+  border:1px solid rgba(127,196,143,.45);border-radius:3px;padding:0 3px}
+/* 마운드 아래 두 버튼 — 교체와 자동. 화면 전체 판이라 바닥에 붙인다 */
+.pit-bot{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.pit-bot .pl-skip{margin-top:7px}
+#decision.sheet .pit-bot{flex:0 0 auto}
+#decision.sheet .zwrap{flex:0 0 auto;margin-top:5px}
+#decision.sheet .ptype{flex:0 0 auto;margin:6px 0 0}
+/* 마운드 판은 넣을 게 많다 — 머리말 · 야구장 · 구종 다섯 · 존 아홉 칸 ·
+   유인구 넷 · 교체. 화면이 짧으면(사파리 주소창) 그래도 넘친다.
+   그때는 **판 안에서만** 스크롤한다. 예전처럼 스코어보드까지 딸려
+   올라가는 600px 스크롤이 아니라 몇십 px 이다.
+   한 칸씩 줄여서 웬만한 폰은 스크롤 없이 들어가게 맞췄다.        */
+#decision.sheet .ptype button{padding:7px 4px;font-size:11px}
+#decision.sheet .ptype button b{font-size:13px}
+#decision.sheet .zwrap .zgrid{flex:0 0 148px}
+#decision.sheet .zgrid button{font-size:10px}
+#decision.sheet .chase-row button{padding:7px 3px}
+#decision.sheet .bat-info .bi-r,#decision.sheet .bat-info .bi-t{font-size:10px}
+#decision.sheet .pl-t{font-size:14px}
+#decision.sheet .chase{margin-top:4px}
+.zhelp{margin-top:5px}
+.zhelp>summary{cursor:pointer;color:#7d8899;font-size:10.5px;list-style:none}
+.zhelp>summary::-webkit-details-marker{display:none}
+.zhelp>summary::before{content:'▸ ';color:#5f6b7a}
+.zhelp[open]>summary::before{content:'▾ '}
+/* 타석 집중 모드(.swf) — 공이 오는 동안은 야구장이 화면을 먹는다.
+   [제보] "지금 너무 불편한게 많아서 인게임이"
+   재보니 타석 판단창이 폰에서 1088px 인데 화면은 820px 이었다.
+   스윙 버튼이 야구장에서 400px 아래 — 공을 보면서 누를 수가 없었다.
+   [주의] .mound 는 padding-top:56.25% 로 비율을 잡는다(너비가 높이를
+   정한다). 여기서는 반대로 **높이가 남는 만큼** 먹어야 하니
+   padding 을 풀고 aspect-ratio 로 바꾼다. 가로가 넘치면 max-width 가
+   잡아준다 — .runcv 와 같은 수법이다.                              */
+/* [주의] .mound 는 padding-top:56.25% 로 비율을 잡는다 — **너비가 높이를
+   정한다.** 여기서 flex:1 로 늘리면 높이만 커지고 캔버스가 세로로
+   늘어나 그림이 찌그러진다(370×669 로 재봤다). 그러니 야구장은 제
+   비율 그대로 두고, **남는 높이는 위아래로 나눠** 가운데에 모은다.
+   빈 곳이 남아도 찌그러진 그림보다 낫다.                           */
+/* 야구장 + 게이지 + 버튼을 한 덩어리로 묶어서 **화면 가운데 조금 아래**
+   에 둔다. 남는 높이를 버튼과 야구장 사이로 벌려놨더니 그 사이가
+   휑해서, 눈이 공에서 버튼으로 갈 때 한참 건너가야 했다.
+   폰은 엄지가 바닥에 있으니 덩어리를 아래로 내려서 잡는다.        */
+#decision.sheet.swf .pl-wrap{justify-content:flex-end;padding-bottom:3vh}
+#decision.sheet.swf .mound{flex:0 0 auto}
+#decision.sheet.swf .swg{flex:0 0 auto;height:17px;margin:10px 0 6px}
+#decision.sheet.swf .swnote{flex:0 0 auto;min-height:18px;font-size:12px}
+#decision.sheet.swf .pl-act{flex:0 0 auto;position:static;margin-top:14px;background:none}
+#decision.sheet.swf .pl-act button{padding:26px 6px;font-size:18px}
+#decision.sheet.swf .runbox{flex:1;min-height:0;display:flex;flex-direction:column}
+/* 공 오는 중 머리말 — 한 줄 */
+/* 규칙 설명은 접어둔다 — 첫 판에나 읽지 백 번째 공에는 자리만 먹는다 */
+
+.swf-h{display:flex;align-items:baseline;gap:9px;padding:0 2px 7px;flex-wrap:wrap}
+.swf-h b{font-size:20px;font-weight:900;color:#ffd15c;letter-spacing:-.5px}
+.swf-h span{font-size:11.5px;color:#8e9bb0}
+.swf-h span u{text-decoration:none;color:#ffd15c;font-weight:800}
+.swf-h em{font-style:normal;margin-left:auto;font-size:11px;color:#cfd8e3;
+  border:1px solid #3a4553;border-radius:5px;padding:2px 7px}
+/* 임팩트 카메라 — 홈플레이트 쪽(아래 가운데)을 축으로 당긴다.
+   .mound 는 overflow:hidden 이라 넘치는 가장자리는 알아서 잘린다. */
+.mound.punch{transform:scale(1.085)}
+.mv-flash.big{background:radial-gradient(circle at 50% 72%,
+  rgba(255,255,255,.95),rgba(255,209,92,.55) 26%,rgba(232,118,44,.20) 48%,transparent 70%)}
+/* 독자 투고 — 신문 독자란처럼 인용부호와 서명 */
+.pp-vo{list-style:none;margin:6px 0 0;padding:0}
+.pp-vo li{font-size:12.5px;line-height:1.65;padding:6px 0;border-bottom:1px dotted rgba(0,0,0,.22);
+  font-style:italic}
+.pp-vo li span{display:block;font-style:normal;font-size:11px;opacity:.7;text-align:right;margin-top:2px}
+</style>
 <div id="lock">
   <div class="lock-box">
     <div class="lock-t">우완좌완 야구 매니저</div>
@@ -8348,8 +8433,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.16.0';
-const APP_VERSION_NOTE = '2루·3루에서도 주루 · 번트는 방향을 고른다 · 구종마다 구속 · 라인업 보기';
+const APP_VERSION = '3.17.0';
+const APP_VERSION_NOTE = '공 올 때는 야구장만 남는다 · 스윙이 보인다 · 신문이 두 배';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8370,6 +8455,18 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.17.0', t:'공 올 때는 야구장만 남는다 · 스윙이 보인다 · 신문이 두 배', items:[
+    '[제보] "지금 너무 불편한게 많아서 인게임이" — 재봤다. 폰(390×820)에서 <b>타석 판단창이 1088px</b> 이었다. 화면은 820px 이다. 그래서 <b>[스윙] 버튼이 야구장에서 400px 아래</b> 에 있었다 — 공이 날아오는 걸 보면서 스윙을 누르는 게 물리적으로 불가능했다',
+    '이제 <b>공이 오는 동안에는 화면에 야구장과 버튼 두 개만 남는다.</b> 꽉 차고, 스크롤이 없고, 버튼이 엄지 닿는 자리에 크게 있다. 카운트와 내가 고른 노림수는 맨 위에 한 줄로',
+    '<b>고르는 동안에는 예전 그대로다.</b> 노림수·코스 히트맵·작전·번트를 다 펼쳐놓고 천천히 본다. 공은 [준비 됐다 ▶] 를 눌러야 온다. 손이 바쁜 순간과 머리가 바쁜 순간을 갈랐다',
+    '<b>마운드도 화면을 꽉 채운다.</b> 여기는 873px 이었는데 스코어보드 밑에 붙어 있어서, 구종을 고르고 존 아홉 칸까지 내려가는 데 <b>600px 을 스크롤</b> 해야 했다. 공 하나 던질 때마다. 매번 뜨던 네 줄짜리 규칙 설명은 접었고(「코스는 어떻게 고르나 ▸」), 투수 교체 버튼도 판 안으로 들어왔다',
+    '<b>스윙이 보인다.</b> [요청] "삼진 고유모션을 하라는게 아니라 스윙이 저렇게 나와야된다는거였음" — 예전 배트 잔상은 흰색에 투명도 0.12 라 <b>있는지도 몰랐다</b>. 호를 크게 키우고, 배트 날이 지나간 선을 굵게 긋고, 속도선 세 줄을 얹었다',
+    '<b>그리고 색으로 갈린다.</b> 정타면 <b style="color:#ffd15c">금색</b> 이 번쩍하고, 헛스윙이면 흐린 회청색이다 — 바람만 갈랐다는 게 보인다. 스윙하는 동안 타자가 커지고, 제대로 걸리면 <b>화면이 한 번 당겨진다</b>',
+    '<b>신문이 두 배가 됐다.</b> 연예 10→25 · 사회 10→25 · 기록실 15→31 · 광고 7→16 꼭지. <b>독자 투고</b> 칸도 새로 생겼다 (14꼭지) — "회비 안 내고 경기만 나오는 사람, 어떻게 해야 하나요" 같은',
+    '더 중요한 건 <b>뽑는 방식</b> 이다. 여태 매주 난수로 뽑아서, 열네 주에 스물여덟 번을 뽑아도 서로 다른 기사가 <b>열일곱 개뿐</b> 이었다. 3주 전에 읽은 게 또 나온다는 뜻이다. 이제 시즌마다 한 번 섞어두고 주차 순서대로 잘라 쓴다 — 풀을 한 바퀴 다 돌 때까지 같은 기사가 안 나온다',
+    '<b>내가 한 일이 기사로 돌아온다.</b> 새 기사 여덟 종을 넣었다 — <b>이번 주 상대 프리뷰</b>(팀 타율·OPS·성향·선발), <b>우리 마운드 방어율 선두</b> 와 혹사 경고, <b>리그 타점·도루 선두</b>, <b>부상자 명단</b>, <b>감각이 올라온 선수 / 슬럼프</b>, <b>2군에서 치고 있는 선수</b>, <b>최근 다섯 경기 흐름</b>, <b>이번 주 날씨</b>',
+    '단신 칸도 일곱에서 열둘로 늘렸다. 새로 만든 기사가 잘려 나가면 만든 보람이 없다',
+  ]},
   {v:'3.16.0', t:'2루·3루에서도 주루 · 번트는 방향을 고른다 · 구종마다 구속 · 라인업 보기', items:[
     '<b>2루·3루에 나가 있어도 주루를 물어본다.</b> 여태 <b>1루에 있을 때만</b> 창이 떴다. 2루에서 3루를 훔치는 것도, 3루에서 뜬공에 태그업할지 정하는 것도 화면이 아예 안 나왔다는 뜻이다. 안타 치고 2루까지 가면 그 다음부터는 구경만 했다',
     '더 억울한 건 <b>그 기능이 이미 다 만들어져 있었다</b>는 것이다. 2루 칸(3루 도루)도 3루 칸(태그업)도, 엔진의 3루 도루 굴림도 희생플라이 확률도 전부 있었는데 <b>창을 띄우는 조건 세 군데가 전부 「1루에 있을 때」로 남아 있어서</b> 한 번도 안 굴렀다. 조건을 한 군데(myRunBase)로 모았다',
@@ -26983,7 +27080,15 @@ function runLive(){
    (테스트에서 「리드 화면이 안 뜬다」로 간헐 재현됐다. 실제로도 난다) */
 let DEC_TOKEN=0;
 /* 화면을 덮는 판으로 띄우는 판단들 — 전부 손가락으로 조종하는 것이다 */
-const DEC_SHEET=['defplay','throw','lead'];
+/* 화면을 꽉 채우고 스크롤을 없애는 판단창.
+   [제보] "지금 너무 불편한게 많아서 인게임이"
+   마운드도 여기 넣었다 — 폰에서 873px 짜리 창이 스코어보드 아래에
+   붙어 있어서, 구종을 고르고 존 아홉 칸까지 내려가는 데 600px 을
+   스크롤해야 했다. 공 하나 던질 때마다.
+   타석(swing)은 목록에 없다 — **고르는 동안은** 정보를 다 펼쳐야 해서
+   스크롤이 있는 게 맞고, **공이 오는 동안만** renderSwing 이 스스로
+   sheet 를 켠다(focusOn).                                          */
+const DEC_SHEET=['defplay','throw','lead','pitch'];
 
 function decDone(box, tok){
   if(tok!=null && box && box._decTok!==tok) return;   // 이미 다음 판단창 것이다
@@ -28538,12 +28643,26 @@ const MV_BAT_NO=[134.1, 295.1, 47];
    [제보] "스윙 버튼을 눌러도 배트가 움직이는 게 안 보인다"
    판정(타이밍·위치)은 원래부터 제대로 돌고 있었다. 눈에 안 보였을 뿐이다.
    [t, 몸 회전, 앞으로 밀기, 배트 잔상 진하기] — t 는 0~1 진행도    */
+/* [요청] "삼진 고유모션을 하라는게 아니라 **스윙이 저렇게 나와야된다**는
+   거였음" — 마구마구 타격 사진 이야기다. 거기서 눈에 남는 건 세 가지다.
+     ① 배트가 화면을 가로지르는 **큰 호**를 그린다
+     ② 그 호에 **색이 있다** (잘 맞으면 번쩍한다)
+     ③ 치는 순간 화면이 **한 번 당겨진다** (카메라가 들어온다)
+   우리 그림은 포수 뒤 넓은 화면이라 타자가 작다. 타자를 키우는 건
+   그림을 새로 그리는 일이니, 대신 **스윙하는 동안만 타자가 커지고
+   (zoom) 화면이 살짝 당겨지게** 했다. 그 0.44초만 카메라가 들어온다.  */
 function mvSwingPose(t){
-  if(t<=0)   return {rot:0,     push:0,    blur:0};
-  if(t<0.22) { const k=t/0.22;       return {rot:-0.08*k, push:-0.8*k, blur:0}; }
-  if(t<0.50) { const k=(t-0.22)/0.28;return {rot:-0.08+0.34*k, push:-0.8+3.6*k, blur:Math.min(1,k*2.2)}; }
-  if(t<0.78) { const k=(t-0.50)/0.28;return {rot:0.26+0.06*k, push:2.8+0.6*k, blur:1-k*0.55}; }
-  const k=(t-0.78)/0.22;             return {rot:0.32-0.32*k, push:3.4-3.4*k, blur:0.45*(1-k)};
+  if(t<=0)   return {rot:0,     push:0,    blur:0, zoom:1};
+  /* zoom — 뒤로 감을 때 살짝 작아졌다가 임팩트에서 제일 크다 */
+  const zoomAt=(k)=>1+0.20*k;
+  if(t<0.22) { const k=t/0.22;
+    return {rot:-0.08*k, push:-0.8*k, blur:0, zoom:1-0.03*k}; }
+  if(t<0.50) { const k=(t-0.22)/0.28;
+    return {rot:-0.08+0.34*k, push:-0.8+3.6*k, blur:Math.min(1,k*2.2), zoom:0.97+0.23*k}; }
+  if(t<0.78) { const k=(t-0.50)/0.28;
+    return {rot:0.26+0.06*k, push:2.8+0.6*k, blur:1-k*0.55, zoom:zoomAt(1-k*0.55)}; }
+  const k=(t-0.78)/0.22;
+  return {rot:0.32-0.32*k, push:3.4-3.4*k, blur:0.45*(1-k), zoom:1+0.09*(1-k)};
 }
 /* 완성된 그림 한 장을 그대로 놓는다.
    (x,y) 가 디딘 발, 크기는 MV_FIG_H.
@@ -28552,8 +28671,9 @@ function mvFig(g,pose,x,y,u,flip,o){
   const k=MV_FIG_OF[pose]; if(!k) return false;
   const img=mvFigFor(u); if(!img) return false;
   const F=MV_FIGS[k], A=MV_FIG_ANCH[k], h=MV_FIG_H[k];
-  const sc=h/F[3], dir=flip?-1:1;
   const S=(pose==='swing')?mvSwingPose((o&&o.swT)||0):null;
+  /* 스윙하는 동안만 타자가 커진다 — 디딘 발을 축으로 위로 자란다 */
+  const sc=(h/F[3])*((S&&S.zoom)?S.zoom:1), dir=flip?-1:1;
   g.save();
   g.translate(x + (S?S.push*dir:0), y);
   if(S&&S.rot) g.rotate(S.rot*dir);
@@ -28570,29 +28690,52 @@ function mvFig(g,pose,x,y,u,flip,o){
     g.fillText(String(o.no), 0, 0);
     g.restore();
   }
-  /* 배트가 지나간 자리 — 스윙 중에만 */
-  if(S&&S.blur>0.02) mvBatSweep(g,F,A,S.blur);
+  /* 배트가 지나간 자리 — 스윙 중에만. 잘 맞을수록 밝고 금색이다 */
+  if(S&&S.blur>0.02) mvBatSweep(g,F,A,S.blur,(o&&o.swQ!=null)?o.swQ:null);
   g.restore();
   mvShadow(g,x,y,h*0.62);
   return true;
 }
 /* 배트 잔상. 두 손이 모인 자리에서 존을 훑고 앞으로 나간다 (그림 픽셀) */
-function mvBatSweep(g,F,A,a){
+function mvBatSweep(g,F,A,a,q){
   const gx=260-A[0]*F[2], gy=212-F[3];        // 흰 장갑 중심 (새 그림에서 다시 쟀다)
   /* r 은 그립에서 배트 끝까지의 길이다. 새 그림은 배트가 더 길게 뻗어
      있어서(그립 212 → 끝 0) 235 로는 잔상이 배트보다 짧게 돌았다.     */
   const r=251, D=Math.PI/180;
-  const grd=g.createRadialGradient(gx,gy,r*0.32,gx,gy,r);
-  grd.addColorStop(0,'rgba(255,255,255,0)');
-  grd.addColorStop(0.66,'rgba(255,255,255,'+(0.12*a).toFixed(3)+')');
-  grd.addColorStop(0.94,'rgba(255,255,255,'+(0.40*a).toFixed(3)+')');
-  grd.addColorStop(1,'rgba(255,255,255,0)');
+  /* [요청] 스윙이 마구마구처럼 보여야 한다.
+     예전 잔상은 흰색에 알파 0.12~0.40 이라 **있는지도 몰랐다.**
+     세게 키우고, **얼마나 잘 맞았는지로 색을 가른다.**
+       정타(q≥0.72) — 금색이 번쩍한다
+       맞힘         — 흰색
+       헛스윙       — 흐린 회청색. 바람만 갈랐다는 게 보여야 한다
+     q 가 없으면(다른 화면에서 부를 때) 흰색 기본값이다.           */
+  const solid=(q!=null&&q>=0.72), whiff=(q!=null&&q<0.18);
+  const C = solid ? '255,209,92' : (whiff ? '150,170,200' : '255,255,255');
+  const M = solid ? 1.35 : (whiff ? 0.55 : 1);
+  const A1=(0.30*a*M), A2=(0.85*a*M);
+  const grd=g.createRadialGradient(gx,gy,r*0.30,gx,gy,r*1.02);
+  grd.addColorStop(0,'rgba('+C+',0)');
+  grd.addColorStop(0.62,'rgba('+C+','+A1.toFixed(3)+')');
+  grd.addColorStop(0.93,'rgba('+C+','+A2.toFixed(3)+')');
+  grd.addColorStop(1,'rgba('+C+',0)');
   g.fillStyle=grd;
   g.beginPath(); g.moveTo(gx,gy);
-  g.arc(gx,gy,r, -46*D, -178*D, true);        // 뒤쪽 어깨 위 → 머리 위 → 앞으로
+  g.arc(gx,gy,r*1.02, -40*D, -190*D, true);   // 뒤쪽 어깨 위 → 머리 위 → 앞으로
   g.closePath(); g.fill();
-  g.strokeStyle='rgba(255,255,255,'+(0.5*a).toFixed(3)+')'; g.lineWidth=9;
-  g.beginPath(); g.arc(gx,gy,r*0.93, -56*D, -170*D, true); g.stroke();
+  /* 배트 날이 지나간 선 — 굵게 한 줄, 그 안에 밝은 심 한 줄 */
+  g.lineCap='round';
+  g.strokeStyle='rgba('+C+','+(0.72*a*M).toFixed(3)+')'; g.lineWidth=16;
+  g.beginPath(); g.arc(gx,gy,r*0.94, -48*D, -182*D, true); g.stroke();
+  g.strokeStyle='rgba(255,255,255,'+(0.85*a*(solid?1:0.7)).toFixed(3)+')'; g.lineWidth=5;
+  g.beginPath(); g.arc(gx,gy,r*0.94, -52*D, -176*D, true); g.stroke();
+  /* 속도선 — 호를 따라 짧게 세 줄. 이게 있어야 '빠르다' 가 읽힌다 */
+  g.lineWidth=3;
+  for(let i=0;i<3;i++){
+    const rr=r*(0.62+i*0.15);
+    g.strokeStyle='rgba('+C+','+(0.45*a*M*(1-i*0.22)).toFixed(3)+')';
+    g.beginPath(); g.arc(gx,gy,rr, (-70-i*14)*D, (-150+i*10)*D, true); g.stroke();
+  }
+  g.lineCap='butt';
 }
 /* ===== [ART:END] ===== */
 
@@ -28625,7 +28768,7 @@ let MV_OK=null;                     // 캔버스를 쓸 수 있는 환경인가 
 function mvPaint(mound, o){
   const cv=mound&&mound.querySelector('.mv-cv'); if(!cv) return;
   /* 상태는 캔버스를 못 그리는 환경에서도 남긴다 — 나중에 다시 그릴 때 쓴다 */
-  const st=mound._mv=Object.assign(mound._mv||{pit:'idle',bat:'stand',pitLeft:false,batLeft:false,batNo:null,swT:0},o||{});
+  const st=mound._mv=Object.assign(mound._mv||{pit:'idle',bat:'stand',pitLeft:false,batLeft:false,batNo:null,swT:0,swQ:null},o||{});
   if(MV_OK===false) return;
   let g=null; try{ g=cv.getContext&&cv.getContext('2d'); }catch(e){ g=null; }
   if(!g){ MV_OK=false; return; }
@@ -28658,7 +28801,7 @@ function mvPaint(mound, o){
   /* 타자는 타석 박스 한가운데에 발을 놓는다. 우타는 3루쪽(화면 왼쪽),
      좌타는 1루쪽(화면 오른쪽) — 포수 뒤에서 본 기준이다.            */
   const bx=st.batLeft?MV_BOXC[1]:MV_BOXC[0];
-  if(!mvFig(g, st.bat, bx, MV_BOXC[2], ou, !!st.batLeft, {no:st.batNo, swT:st.swT}))
+  if(!mvFig(g, st.bat, bx, MV_BOXC[2], ou, !!st.batLeft, {no:st.batNo, swT:st.swT, swQ:st.swQ}))
     mvGuy(g, bx, MV_BOXC[2]-2, 80, ou, st.bat, !st.batLeft);
 }
 
@@ -29116,11 +29259,18 @@ function mvSpeed(mound, kmh){
   e.innerHTML=`<b>${kmh}</b><span>km/h</span>`;
   e.classList.remove('on'); void e.offsetWidth; e.classList.add('on');
 }
-/* 잘 맞았을 때 — 섬광 한 방 */
-function mvImpact(mound){
+/* 잘 맞았을 때 — 섬광 한 방 + 카메라가 한 번 들어온다.
+   [요청] "스윙이 저렇게 나와야된다" — 마구마구는 맞는 순간 화면이
+   확 당겨진다. 캔버스 안쪽을 당기면 그 위에 얹힌 DOM(스트라이크 존 ·
+   포수 미트 · 공)이 같이 안 움직여서 자리가 어긋난다. 그래서 **판
+   전체(.mound)를 CSS 로 통째로 키운다** — 안에 있는 게 전부 같은
+   비율로 커지니 어긋날 데가 없다.                                  */
+function mvImpact(mound, q){
   if(!mound) return;
   const f=el('div','mv-flash'); mound.appendChild(f);
-  mound.classList.add('impact');
+  if(q!=null && q>=0.88) f.classList.add('big');   // 제대로 걸렸다
+  mound.classList.add('impact','punch');
+  setTimeout(()=>{ mound.classList.remove('punch'); }, 330);
   setTimeout(()=>{ if(f.parentNode)f.parentNode.removeChild(f);
     mound.classList.remove('impact'); },420);
 }
@@ -29128,7 +29278,10 @@ function mvImpact(mound){
 /* [제보] "스윙 버튼을 눌러도 배트가 휘둘러지는 게 안 보인다"
    준비 → 뒤로 감기 → 존을 훑는다 → 팔로스루 → 다시 준비.
    0.44초 동안 매 프레임 다시 그린다. 이게 있어야 내가 쳤는지 알 수 있다. */
-function mvSwing(mound){
+/* q — 얼마나 잘 맞았나(0~1). 잔상 색과 화면 당김이 이걸 탄다.
+   스윙을 시작할 때는 아직 판정 전이라 모를 수 있다. 그때는 null 로
+   부르고, judge 가 정해지면 mvSwingQ() 로 한 번 더 알려준다.       */
+function mvSwing(mound, q){
   if(!mound) return;
   const DUR=440, t0=Date.now();
   if(mound._swRaf){ try{cancelAnimationFrame(mound._swRaf);}catch(e){} mound._swRaf=0; }
@@ -29140,10 +29293,16 @@ function mvSwing(mound){
         ? requestAnimationFrame(step) : setTimeout(step,33);
     } else {
       mound._swRaf=0;
-      mvPaint(mound,{bat:'stand', swT:0});
+      mvPaint(mound,{bat:'stand', swT:0, swQ:null});
     }
   };
+  mvPaint(mound,{swQ:(q==null?null:q)});
   step();
+}
+/* 판정이 난 뒤에 잔상 색만 바꿔 끼운다 — 스윙은 그대로 돌고 있다 */
+function mvSwingQ(mound, q){
+  if(!mound||!mound._mv) return;
+  mound._mv.swQ=(q==null?null:q);
 }
 /* 그 타석이 어떻게 끝났는지 중계 화면에 그대로 보여준다.
    [제보] "뭐 던지거나 쳤을 때 그것 땜에 어떻게 되었는지가 안 나온다"
@@ -29351,6 +29510,7 @@ function renderSwing(box, d){
      방향은 시프트가 있는 판이라 값이 있다 — 당기면 세게 가지만 시프트에
      걸리고, 밀면 빈 쪽으로 간다.                                    */
   const hasRun=!!(LIVE.bases[0]||LIVE.bases[1]||LIVE.bases[2]);
+  let buntT=null, buntRow=null;          // 집중 모드에서 접으려면 잡아둬야 한다
   const sprayRow=el('div','spray-row');
   let sprayPick=null;
   [[null,'평소대로','치는 대로 간다'],
@@ -29382,9 +29542,10 @@ function renderSwing(box, d){
     const gOf=(k3,k1)=>Math.max(0.15,Math.min(0.90,
       (0.52+(bcon-46)*0.0055-(bdv-46)*0.0045+k3-k1)*brm));
     const safe1=Math.max(0.05,Math.min(0.42,0.06+(bspd-40)*0.016));
-    const bl2=el('div','bunt-row');
+    const bl2=el('div','bunt-row'); buntRow=bl2;
     const bl2t=el('div','bunt-t',
       sq3?'번트를 댄다 — 3루쪽이면 스퀴즈다':'번트를 댄다 — 어디로 굴릴 건가');
+    buntT=bl2t;
     w.appendChild(bl2t);
     [['3b','3루쪽으로',
       (sq3?'3루 주자가 들어온다':'앞 주자가 간다')+' · 잘 대기 '+Math.round(gOf(0.07,0)*100)+'%'],
@@ -29477,6 +29638,18 @@ function renderSwing(box, d){
      양쪽 정보량을 맞춘다.                                             */
   const drawHead=()=>{
     const c=LIVE.count();
+    /* 공이 오는 중에는 **눈이 찾을 것을 줄인다.** 카운트 · 상황 · 내가
+       고른 노림수 한 줄. 나머지는 지금 못 바꾸는 것들이라 읽을 이유가
+       없다 — 읽을 게 많으면 공을 놓친다.                            */
+    if(phase==='pitch'||phase==='judge'){
+      head.innerHTML='<div class="swf-h">'+
+        '<b>'+c.b+'-'+c.s+'</b>'+
+        '<span>'+LIVE.inning+'회 '+LIVE.outs+'아웃</span>'+
+        '<span>'+myP.name+(curKmh?(' <u>'+curKmh+'km/h</u>'):'')+'</span>'+
+        '<em>'+(aimSel==='fast'?'빠른공 노림':(aimSel==='break'?'변화구 노림':'안 노린다'))+'</em>'+
+        '</div>';
+      return;
+    }
     const guessNow=(aimSel==='none')?'none':'hit';
     const W=batWindows(bat,myP,guessNow);
     const Wm=batWindows(bat,myP,(aimSel==='none')?'none':'miss');
@@ -29550,6 +29723,32 @@ function renderSwing(box, d){
      성공/실패 판정은 stretchRun 이 주력·상대 수비·늦은 정도로 한다.
      그래야 기록이 화면과 안 어긋난다.                              */
   /* 타석 화면을 치우고/되돌리는 것 — 1막(askRun)과 2막(showRun)이 같이 쓴다 */
+  /* [제보] "지금 너무 불편한게 많아서 인게임이"
+     재봤다. 390×820 폰에서 타석 판단창이 **1088px** 였다. 화면은 820 이다.
+     그래서 [스윙] 버튼이 문서 1210px 자리에 있었다 — **공이 날아오는
+     야구장을 보면서 스윙 버튼을 누르는 게 물리적으로 불가능했다.**
+     노림수 고르고, 히트맵 보고, 작전 고르고, 번트까지 한 화면에 다
+     쌓아뒀으니 그럴 수밖에 없다.
+
+     주루·수비는 이미 이 문제를 풀었다(v3.14.0 의 sheet 모드) —
+     **화면을 꽉 채우고 스크롤을 없앤다.** 타석도 같은 길로 간다.
+     다만 타석은 고를 게 많아서 통째로 sheet 로 두면 정보를 못 넣는다.
+     그래서 **단계로 가른다.**
+       고르는 동안(ready) — 예전 그대로. 스크롤해서 다 본다. 공은 안 온다
+       공이 오는 동안(pitch~judge~2막) — 야구장 · 게이지 · 버튼 두 개만.
+                                          꽉 차고 스크롤이 없다
+     손이 바쁜 순간에 눈이 찾을 것을 줄이는 게 핵심이다.             */
+  const focusOn=(on)=>{
+    try{
+      box.classList.toggle('sheet', !!on);
+      box.classList.toggle('swf', !!on);
+      /* head 는 안 숨긴다 — 대신 drawHead 가 한 줄짜리로 바꿔 그린다.
+         카운트와 내가 고른 노림수는 공 오는 중에도 봐야 한다.      */
+      [aim, sprayRow, auto, buntT, buntRow].forEach(e=>{
+        if(e) e.style.display = on ? 'none' : '';
+      });
+    }catch(e){}
+  };
   const hideBat=()=>{ mv.style.display='none'; gauge.style.display='none';
     acts.style.display='none'; auto.style.display='none'; aim.style.display='none'; };
   const showBat=()=>{ mv.style.display=''; gauge.style.display='';
@@ -29750,6 +29949,7 @@ function renderSwing(box, d){
     const l=mv.querySelector('.lbl');
     if(l) l.innerHTML=`<b>${myP.name}</b>${handTag(myP)}<u class="np">${LIVE.pitchCount(myP.id)+1}구</u>`;
     phase='pitch'; take.disabled=false; swingB.disabled=false; drawAim(); drawHead();
+    focusOn(true);                      // 야구장과 버튼 두 개만 남긴다
     plLock(true);                       // 공이 오는 동안 화면이 밀리면 안 된다
     windup(mv,()=>{
       if(done||resolved)return;
@@ -29828,7 +30028,10 @@ function renderSwing(box, d){
       else { kind='contact';
         pre=(q>=0.75?'정타!!':(q>=0.55?'잘 맞았다':'맞혔다'));
         col='#7fc48f'; }
-      if(q>=0.72) mvImpact(mv);
+      /* 배트 잔상 색을 판정에 맞춘다 — 스윙은 아직 돌고 있다.
+         금색이면 정타, 흐린 회청색이면 바람만 갈랐다는 뜻이다.    */
+      mvSwingQ(mv, q);
+      if(q>=0.72) mvImpact(mv, q);
       /* 크게 돌린 스윙 — 허리·옆구리가 여기서 간다 */
       if(q>=0.80 && isMine) LIVE.rollMyInjury('스윙', 1.3);
     }
@@ -29917,6 +30120,7 @@ function renderSwing(box, d){
   const ready=(n)=>{
     if(done||resolved)return;
     phase='ready'; take.disabled=true; swingB.disabled=true;
+    focusOn(false);                     // 다시 고르는 단계 — 정보를 펼친다
     let cnt=n;
     drawAim(); drawHead();
     if((ST&&ST.batReady)!=='auto'){
@@ -31259,7 +31463,31 @@ function renderPitch(box, d){
   const g=el('div','zgrid'); wrap.appendChild(g);
   const info=el('div','zinfo'); wrap.appendChild(info);
   w.appendChild(wrap);
-  const skip=el('button','pl-skip','알아서 던지게 둔다'); w.appendChild(skip);
+  /* [주의] 이 창이 sheet(화면 전체) 가 되면서 바깥의 「🔄 투수 교체」
+     버튼에 손이 안 닿는다. 여기 하나 둔다 — 예전에 "투수교체가 안 돼서
+     답답하다" 를 겪은 자리다. 작전 횟수를 안 쓴다.                 */
+  const botRow=el('div','pit-bot');
+  const pchg=el('button','pl-skip');
+  const sd0=LIVE.userSide();
+  if(!LIVE.hasNextPitcher(sd0)){ pchg.textContent='🔄 남은 투수 없음'; pchg.disabled=true; }
+  else {
+    pchg.textContent='🔄 교체 → '+LIVE.curPitcherNext(sd0);
+    pchg.onclick=()=>{
+      if(busy||resolved) return;
+      const outN=LIVE.curPitcher(sd0).name, outI=LIVE.curPitcher(sd0).id;
+      const hadDH=sd0.slots.some(x=>x.pos==='DH');
+      LIVE.applyDecision('pchange');
+      flushLog(); updateLiveUI(); try{ paintLiveCtl(); }catch(e){}
+      draw();
+      try{ pchg.textContent = LIVE.hasNextPitcher(sd0)
+        ? ('🔄 교체 → '+LIVE.curPitcherNext(sd0)) : '🔄 남은 투수 없음';
+        pchg.disabled=!LIVE.hasNextPitcher(sd0); }catch(e){}
+      toast(pchangeToast(sd0,outN,hadDH,outI));
+    };
+  }
+  const skip=el('button','pl-skip','알아서 던지게 둔다');
+  botRow.appendChild(pchg); botRow.appendChild(skip);
+  w.appendChild(botRow);
   box.appendChild(w);
 
   const NAMES=[['높은 몸쪽','높은 가운데','높은 바깥'],
@@ -31291,7 +31519,7 @@ function renderPitch(box, d){
     const play=(LIVE&&LIVE._lastPlay)||null;
     if(!play){ setTimeout(doneCb, r?(r.big?1150:850):260); return; }
     /* 존과 구종 줄은 접는다 — 이제 고를 게 없다 */
-    wrap.style.display='none'; tRow.style.display='none'; skip.style.display='none';
+    wrap.style.display='none'; tRow.style.display='none'; botRow.style.display='none';
     const box2=el('div','runbox');
     box2.innerHTML='<div class="rb-t"></div>';
     const t=box2.querySelector('.rb-t');
@@ -31354,21 +31582,23 @@ function renderPitch(box, d){
     const fTxt = fK<=0 ? '팔이 아직 가볍다'
       : (fK<0.4 ? '슬슬 무거워진다' : (fK<0.8 ? '많이 지쳤다 — 공이 몰린다' : '팔이 안 올라간다'));
     const fCol = fK<=0?'#7fc48f':(fK<0.4?'#c9a227':'#e08a70');
+    /* [제보] "지금 너무 불편한게 많아서 인게임이" — 머리말이 네 줄이었다.
+       구위·제구와 체력을 한 줄로 합친다. 아래 창이 화면 밖으로 나가는
+       것보다는 한 줄에 붙여 읽는 게 낫다.                           */
     head.innerHTML=`<div class="pl-t">투구 · ${c.b}볼 ${c.s}스트라이크</div>
       <div class="pl-sub">${LIVE.inning}회 ${LIVE.outs}아웃 ·
         마운드 <b style="color:#e2eaf5">${p.name}</b> (구위 ${Math.round(fStf)}${
           fK>0?`<i style="color:${fCol}">↓${Math.round(p.stf-fStf)}</i>`:''} 제구 ${Math.round(fCtl)}${
-          fK>0?`<i style="color:${fCol}">↓${Math.round(p.ctl-fCtl)}</i>`:''})</div>
-      <div class="pl-sub">체력 ${fSta} · ${fOuts}아웃째 —
-        <b style="color:${fCol}">${fTxt}</b></div>
+          fK>0?`<i style="color:${fCol}">↓${Math.round(p.ctl-fCtl)}</i>`:''})
+        · 체력 ${fSta} · ${fOuts}아웃째 <b style="color:${fCol}">${fTxt}</b></div>
       ${bat?`<div class="bat-info">
         <div class="bi-top"><b>${ord>=0?`${ord+1}번 `:''}${bat.name}</b>
           <em class="${bat.bats==='L'?'lh':''}">${bat.bats==='L'?'좌타':'우타'}</em></div>
         <div class="bi-r">컨택 ${Math.round(bat.con)} · 파워 ${Math.round(bat.pow)} · 선구 ${Math.round(bat.eye)} · 주루 ${Math.round(bat.spd)}</div>
         <div class="bi-t">오늘 ${todayS}</div></div>`:''}
-      <div class="pl-sub">${c.b===3?'<b style="color:#e08a70">3볼이다. 하나만 더 빠지면 볼넷</b>'
-         :(c.s===2?'<b style="color:#7fc48f">2스트라이크. 유인구를 던져볼 만하다</b>'
-         :'구종과 코스를 고르면 던진다.')} 제구 성공률 약 ${sharp}%.</div>`;
+      <div class="pl-sub">${c.b===3?'<b style="color:#e08a70">3볼 — 하나만 더 빠지면 볼넷</b> · '
+         :(c.s===2?'<b style="color:#7fc48f">2스트라이크 — 유인구를 던져볼 만하다</b> · '
+         :'')}제구 성공률 약 ${sharp}%</div>`;
     const cb=mv.querySelector('#cnt'); if(cb) cb.innerHTML=`<b>${c.b}</b>-<b>${c.s}</b>`;
     const lb=mv.querySelector('.lbl');
     if(lb) lb.innerHTML=`<b>${p.name}</b>${handTag(p)}`;
@@ -31386,14 +31616,22 @@ function renderPitch(box, d){
       b2.onclick=()=>{ if(busy)return; type=k; draw(); };
       tRow.appendChild(b2);
     });
+    /* [제보] "지금 너무 불편한게 많아서 인게임이"
+       390×820 폰에서 이 창이 933px 이었다 — 구종 버튼과 존 아홉 칸을
+       같이 보려면 스크롤을 해야 했다. 범인은 **매 공마다 다시 뜨는
+       네 줄짜리 설명문**이었다. 「한가운데는 맞기 쉽다」 는 첫 판에나
+       필요한 말이지 백 번째 공에는 자리만 먹는다.
+       맞대결과 제구처럼 **이 공마다 달라지는 것**만 남기고, 나머지
+       규칙 설명은 접어서 「?」 로 뺀다.                              */
     info.innerHTML=(bat?`<b style="color:#7fc48f">${p.name}(${throwHandOf(p)==='L'?'좌':'우'}투)</b> vs `+
         `<b>${bat.name}(${bat.bats==='L'?'좌':'우'}타)</b> — `+
         (pitchHand(p,bat)>0?'변화구가 <b>바깥으로</b> 흘러 나간다':'변화구가 <b>몸쪽으로</b> 파고든다')+'<br>':'')+
-      `<b style="color:#e08a70">한가운데</b>는 넣기 쉽지만 맞기도 쉽다.<br>
-      <b style="color:#7fc48f">구석·낮은 코스</b>는 어렵지만 타자가 잘 못 친다.<br>
-      빠지면 <b>볼</b>이다. 변화구는 위력적이지만 더 자주 빠진다.<br>
-      제구 ${p.ctl} — ${p.ctl>=45?'웬만하면 들어간다':(p.ctl>=30?'가끔 몰린다':'자주 빠진다')}`+
-      ` · 최고 <b>${Math.round(topKmh(p))}km/h</b>`;
+      `제구 ${p.ctl} — ${p.ctl>=45?'웬만하면 들어간다':(p.ctl>=30?'가끔 몰린다':'자주 빠진다')}`+
+      ` · 최고 <b>${Math.round(topKmh(p))}km/h</b>`+
+      `<details class="zhelp"><summary>코스는 어떻게 고르나</summary>`+
+      `<b style="color:#e08a70">한가운데</b>는 넣기 쉽지만 맞기도 쉽다. `+
+      `<b style="color:#7fc48f">구석·낮은 코스</b>는 어렵지만 타자가 잘 못 친다. `+
+      `빠지면 <b>볼</b>이다. 변화구는 위력적이지만 더 자주 빠진다.</details>`;
     try{ chaseHint(); }catch(e){}
     try{ buildZone(!!(bat&&bat.bats==='L')); }catch(e){}
   };
@@ -31578,7 +31816,9 @@ function renderPitch(box, d){
     crow.appendChild(b3);
   });
   chase.appendChild(crow);
-  w.insertBefore(chase, skip);      // 존 바로 아래에 붙인다
+  /* [주의] skip 은 이제 botRow 안에 있다 — w 의 자식이 아니라서
+     insertBefore(chase, skip) 이 터진다. 줄 앞에 넣는다.          */
+  w.insertBefore(chase, botRow);    // 존 바로 아래에 붙인다
   /* [제보] "유인구 던지는 것도 뭔가 이유가 있었으면 좋겠다"
      지금 던지면 속을지 아닐지를 숫자로 보여준다. 그래야 고를 이유가 생긴다. */
   const chaseHint=()=>{
@@ -36849,6 +37089,38 @@ const NEWS_ENT=[
    '한 마리 2만 4천원. 단톡방마다 같은 얘기가 돈다.'],
   ['배우 문세진, 어깨 수술 후 복귀 "던지는 역은 이제 대역 쓴다"',
    '촬영 중 무리한 송구 장면이 원인이었다고 밝혔다.'],
+  /* [요청] "신문 내용도 더 다양하게" — 열 꼭지로 24주를 돌리면
+     시즌 중반부터는 읽었던 기사만 나온다. 풀을 두 배 넘게 늘렸다. */
+  ['트로트 가수 배정후, 구장 앞 붕어빵 노점에서 목격… "줄 서서 샀다"',
+   '사장님은 "누군지 몰랐다"고 했다. 두 봉지를 사갔다.'],
+  ['「9회말 2아웃」 오디션 프로그램 첫 방송… 야구 예능 또 하나',
+   '탈락자가 배트를 내려놓고 나가는 연출을 두고 말이 많다.'],
+  ['개그맨 조기범, 첫 안타 신고… "번트였는데 안타로 적혔다"',
+   '기록원은 "3루수가 늦었다"고 설명했다.'],
+  ['유튜버 「야구말고」 100만 돌파… 정작 야구 영상은 셋뿐',
+   '나머지는 국밥과 편의점 리뷰다.'],
+  ['배우 한도윤 "야구 드라마 찍고 어깨가 남았다"… 시즌2 확정',
+   '촬영 전 3개월을 던졌다고 한다.'],
+  ['아이돌 세븐하츠 리더, 사회인야구 연습장에서 포착',
+   '"취미로 시작했는데 어깨가 아프다"고 했다.'],
+  ['「끝내기 사랑」 마지막 회 18.2%… 결말은 무승부였다',
+   '시청자 게시판이 하루 종일 시끄러웠다.'],
+  ['치킨 프랜차이즈, 야구팀 후원 중단… "본사 사정"',
+   '지역 리그 네 팀이 유니폼 스폰서를 잃었다.'],
+  ['배우 유세라, 시구 연습 영상 화제… "이건 진짜다"',
+   '슬로우로 보면 팔이 제대로 돈다는 평이 많다.'],
+  ['라디오 DJ 교체… 후임은 야구 해설 출신',
+   '첫 방송에서 사연 대신 타율 얘기를 40분 했다.'],
+  ['웹툰 「4부리그」 연재 시작… 실화 기반이라는데',
+   '작가가 실제로 사회인야구를 뛴다고 한다.'],
+  ['국밥집 사장 아들, 프로 지명… "가게는 계속 한다"',
+   '단골 팀들이 현수막을 걸어줬다.'],
+  ['예능 「주말엔 야구」 폐지… 시청률보다 섭외가 문제였다',
+   '출연진 절반이 주말에 경기가 있었다.'],
+  ['가수 임하늘, 구장 인근 카페 오픈… 사인볼 전시',
+   '"야구 좋아하는 사람이 많이 왔으면" 이라고 했다.'],
+  ['영화 「마지막 이닝」 손익분기 돌파… 야구 영화는 안 된다더니',
+   '관객의 절반이 30~40대 남성이었다.'],
 ];
 /* 광고 — 신문에는 광고가 있어야 신문 같다 */
 const NEWS_AD=[
@@ -36859,6 +37131,15 @@ const NEWS_AD=[
   ['💊 어깨엔 관절환', '던지고 나서 팔이 안 올라가는 당신께'],
   ['📸 경기 촬영 대행', '한 경기 5만원 · 하이라이트 편집 포함'],
   ['🏟 실내 연습장 신규 오픈', '피칭 머신 6대 · 첫 방문 무료'],
+  ['🦴 정형외과 스포츠클리닉', '주말 진료 · 어깨 초음파 당일 판독'],
+  ['👕 유니폼 제작소', '마킹 포함 한 벌 3만 8천 · 10벌 이상 할인'],
+  ['🍺 뒤풀이 전문 호프', '단체 20인 이상 안주 서비스 · 노래방 기기 있음'],
+  ['🧢 모자 자수 5천원', '팀 로고 · 등번호 · 당일 수령'],
+  ['⚾ 중고 배트 삽니다', '알루미늄 · 우드 · 상태 무관 방문 매입'],
+  ['🚿 24시 사우나', '경기 끝나고 들르세요 · 야구팀 단체 할인'],
+  ['📋 심판 파견', '공인 2급 · 한 경기 4만원 · 주말 예약제'],
+  ['🥤 이온음료 박스 단위', '한 상자 1만 2천 · 구장까지 배송'],
+  ['🏥 도수치료 전문', '허리 · 옆구리 · 스윙하다 삐끗한 분'],
 ];
 /* 기록실 — **진짜 기록**이다.
    [요청] "kbo mlb선수는 열애설이 아니라 진짜 기록을 적어주자고"
@@ -36882,6 +37163,22 @@ const NEWS_KBO=[
   ['놀란 라이언 통산 5714탈삼진','두 번째와 800개 넘게 차이 난다.'],
   ['조 디마지오 56경기 연속 안타 (1941)','80년 넘게 안 깨졌다.'],
   ['릭키 헨더슨 통산 1406도루','2위와 460개 차이다.'],
+  ['이만수 타율·홈런·타점 3관왕 (1984)','KBO 첫 트리플 크라운이었다.'],
+  ['해태 타이거즈 한국시리즈 통산 9전 9승','올라가면 한 번도 안 졌다.'],
+  ['이대호 9경기 연속 홈런 (2010)','세계 최초 기록이다.'],
+  ['정민철 노히트노런 (1997)','한화 시절, 27명을 상대했다.'],
+  ['송진우 통산 210승','KBO 최다승이다. 210이닝이 아니라 210승이다.'],
+  ['양준혁 통산 2318안타','17년 동안 한 해도 3할 밑으로 안 떨어진 적이 있다.'],
+  ['이정후 데뷔 시즌 179안타 (2017)','고졸 신인 최다 안타였다.'],
+  ['김광현 · 양현종 통산 150승 돌파','같은 세대 둘이 같이 넘겼다.'],
+  ['강정호 아시아 유격수 최초 40홈런 (2014)','그 포지션에서 나온 숫자가 아니었다.'],
+  ['박병호 2년 연속 50홈런 (2014-15)','KBO에서 이걸 한 건 혼자다.'],
+  ['페드로 마르티네스 평균자책 1.74 (2000)','리그 평균이 4.91이던 해였다.'],
+  ['그렉 매덕스 통산 볼넷 999개 · 5008이닝','9이닝당 1.8개다.'],
+  ['행크 애런 통산 2297타점','홈런보다 이 기록이 더 안 깨진다는 말이 있다.'],
+  ['칼 립켄 주니어 2632경기 연속 출장','17년 동안 하루도 안 빠졌다.'],
+  ['놀란 라이언 통산 노히트노런 7회','두 번째로 많은 사람이 4회다.'],
+  ['토니 그윈 통산 타율 .338 · 삼진 434개','20년 동안 삼진이 한 시즌 최다 34개였다.'],
 ];
 /* 사회 · 생활면 — [요청] "막 뭐 정치적인거든 뭐든 상관없으니깐 예능적
    요소 다섞어버려". 신문이 신문 같으려면 야구만 있으면 안 된다.
@@ -36899,6 +37196,41 @@ const NEWS_LIFE=[
   ['재활용 분리배출 과태료 상향… "구장 쓰레기도 예외 없다"','경기 후 정리를 두고 팀마다 규칙을 만드는 중이다.'],
   ['지역 도서관, 야간 개방 시범 운영','자정까지 연다. 시험기간엔 자리가 없다고 한다.'],
   ['전기요금 동결 결정… 실내 연습장 업주들 "그나마 다행"','겨울 난방비가 관건이라는 반응이다.'],
+  ['하천변 산책로 정비 완료… 러닝 인구 늘었다','구장 두 곳이 그 길에 붙어 있다.'],
+  ['「쓰레기 되가져가기」 캠페인… 구장마다 현수막','치우는 사람이 정해져 있지 않은 게 문제라는 지적이다.'],
+  ['주차난 심화… 구장 앞 불법주차 단속 강화','토요일 오전에 집중 단속한다고 한다.'],
+  ['최저임금 인상… 아르바이트 줄인 가게들','경기 끝나고 가던 집 두 곳이 브레이크타임을 늘렸다.'],
+  ['미세먼지 나쁨 사흘째… 야외 활동 자제 권고','리그는 예정대로 진행한다고 공지했다.'],
+  ['동네 병원 야간진료 확대… 주말 정형외과 두 곳','다친 날 바로 갈 데가 생겼다는 반응.'],
+  ['구청, 생활체육 동호회 지원금 신청 접수','팀당 최대 80만원. 서류가 까다롭다는 말이 많다.'],
+  ['폭우 예보에 주말 일정 조정 논의','작년에도 두 주를 통째로 밀었다.'],
+  ['지하철 연장 개통 확정… 2029년','구장 가는 길이 20분 줄어든다.'],
+  ['치과 임플란트 가격 공시제 시행','파울팁 맞은 사람이 검색을 많이 한다고 한다.'],
+  ['시립체육관 리모델링… 겨울 실내훈련 공백','두 달간 다른 데를 알아봐야 한다.'],
+  ['동네 마트 폐업… 30년 만에','경기 전에 음료 사던 곳이다. 자리엔 무인점포가 들어온다.'],
+  ['청년 창업 지원 확대… 야구용품점도 대상','작년에 두 곳이 이걸 받고 열었다.'],
+  ['불법 현수막 단속… 팀 모집 공고도 걸린다','지정 게시대만 쓰라는 안내가 나갔다.'],
+  ['배달앱 수수료 인하 요구 확산','뒤풀이 대신 시켜 먹는 팀이 늘어난 탓도 있다.'],
+];
+/* 독자 투고 — [요청] "신문 내용도 더 다양하게"
+   진짜 지역 신문에는 독자란이 있다. 사회인야구 하는 사람들이 실제로
+   단톡방에서 하는 말을 그대로 옮겨 적은 톤으로 간다. 존댓말이다 —
+   신문에 보내는 글이니까.                                          */
+const NEWS_VOICE=[
+  ['주말 구장 대관, 추첨 좀 공정하게 해주세요','안산 · 3년째 못 뽑힌 사람'],
+  ['9명 겨우 채워 나갔더니 상대가 12명이더군요','군포 · 인원난에 시달리는 총무'],
+  ['회비 안 내고 경기만 나오는 사람, 어떻게 해야 하나요','시흥 · 이름 밝히기 곤란'],
+  ['다치고 나서 알았습니다. 스트레칭 5분이 제일 싸다는 걸','안산 · 옆구리 나간 4번타자'],
+  ['심판 없이 하는 경기, 이제 그만합시다','수원 · 스트라이크존 때문에 싸운 날'],
+  ['나이 마흔에 처음 배트 잡았는데 늦지 않았습니다','안양 · 첫 안타 친 아저씨'],
+  ['단톡방 공지 좀 읽읍시다. 세 번씩 올리게 하지 마세요','부천 · 총무 3년차'],
+  ['비 오면 미리 알려주세요. 구장까지 가서 돌아왔습니다','안산 · 왕복 두 시간'],
+  ['우리 팀은 국밥집이 응원단입니다','안산 · 사장님께 감사'],
+  ['4부라고 무시하지 마세요. 우리도 진심입니다','화성 · 리그 8년차'],
+  ['글러브 길들이는 법 좀 알려주세요','광명 · 새 글러브가 안 접히는 사람'],
+  ['야구 시작하고 몸무게 6kg 빠졌습니다','안산 · 다이어트 성공'],
+  ['아들이랑 캐치볼하려고 시작했는데 제가 더 빠졌습니다','군포 · 40대 가장'],
+  ['벤치에만 있는 사람 마음도 좀 헤아려주세요','익명 · 올해 3타석'],
 ];
 const NEWS_FORTUNE=[
   ['오늘의 운세 · 쥐띠','초구를 노려라. 기다리면 카운트가 몰린다.'],
@@ -36914,6 +37246,22 @@ const NEWS_FORTUNE=[
   ['오늘의 운세 · 개띠','몸이 무겁다. 쉬는 것도 훈련이다.'],
   ['오늘의 운세 · 돼지띠','국밥은 이긴 날 먹어야 맛있다.'],
 ];
+/* 풀에서 이번 호 몫을 잘라 온다.
+   시즌마다 한 번 섞고(시드는 시즌 번호라 몇 번을 열어도 같다) 주차
+   순서대로 n개씩 가져간다. 난수로 매주 뽑는 것과 달리 **풀을 한 바퀴
+   돌 때까지 같은 기사가 다시 안 나온다.**                          */
+function newsSlice(pool, n, round, key){
+  const a=(pool||[]).slice();
+  if(!a.length) return [];
+  const sd=(typeof rvSeedOf==='function')
+    ? rvSeedOf('paper|'+key+'|'+(((ST&&ST.seasonNo)||1)))
+    : 12345;
+  const rg=makeRng(sd);
+  for(let i=a.length-1;i>0;i--){ const j=(rg()*(i+1))|0; const t=a[i]; a[i]=a[j]; a[j]=t; }
+  const out=[];
+  for(let i=0;i<n;i++) out.push(a[((round*n)+i)%a.length]);
+  return out;
+}
 /* 이번 호 — 시드는 시즌·주차다. 같은 주는 몇 번을 열어도 같은 신문이다 */
 function newsIssue(){
   if(!ST) return null;
@@ -37094,6 +37442,135 @@ function newsIssue(){
           (A.derby&&A.derby.champ?` 전날 홈런더비는 ${A.derby.champ}이(가) 가져갔다.`:'')});
     }
   }
+  /* [요청] "신문 내용도 더 다양하게"
+     아래는 전부 **이 판에서 진짜로 일어난 것**에서 뽑는다. 지어낸 풀을
+     늘리는 것도 다양성이지만, 신문이 살아 있다는 느낌은 내가 한 일이
+     기사로 돌아올 때 나온다.                                       */
+  /* ① 이번 주 상대 — 프리뷰. 붙기 전에 뭘 조심해야 하는지 */
+  {
+    const nx=(ST.schedule||[])[ST.round||0];
+    const ot=nx?TBYID[nx.opp]:null;
+    const od=ot?LEAGUE_DEFS.find(d=>d.id===ot.id):null;
+    if(ot && od){
+      const tend=od.t||[1,1,1,1,1];
+      const mark=[];
+      if(tend[4]>=1.20) mark.push('장타가 무섭다');
+      if(tend[2]>=1.25) mark.push('뛴다 — 포수가 바쁘다');
+      if(tend[1]>=1.05) mark.push('볼넷을 잘 골라낸다');
+      if(tend[0]<=0.70) mark.push('삼진을 잘 안 당한다');
+      if((od.err||1)>=1.15) mark.push('수비가 흔들린다');
+      if(!mark.length) mark.push('특별히 튀는 데가 없다');
+      const ace=(od.aces&&od.aces[0])?od.aces[0]:null;
+      subs.push({h:`이번 주 상대 ${ot.name} — 팀 타율 ${fmt3(od.avg)} · OPS ${od.ops.toFixed(3)}`,
+        b:`${nx.homeGame?'홈':'원정'} 경기다. ${mark.join(' · ')}. `+
+          (ace?`마운드는 ${ace[0]}(구위 ${ace[1]} 제구 ${ace[2]})가 유력하다.`:'')});
+    }
+  }
+  /* ② 우리 팀 마운드 — 방어율 선두와 혹사 */
+  {
+    const us2=TBYID['wwzw'];
+    const rows=(us2.pitchers||[]).map(p=>({p, s:(ST.pit||{})[p.id]||null}))
+      .filter(x=>x.s && (x.s.outs||0)>=6)
+      .map(x=>({...x, era:(x.s.er*27)/Math.max(1,x.s.outs), ip:x.s.outs/3}))
+      .sort((a,b)=>a.era-b.era);
+    if(rows.length){
+      const t1=rows[0];
+      subs.push({h:`우완좌완 마운드 ${t1.p.name} 방어율 ${t1.era.toFixed(2)}`,
+        b:`${ipStr({outs:t1.s.outs})}이닝 ${t1.s.k}탈삼진 ${t1.s.bb}볼넷. `+
+          (rows[1]?`${rows[1].p.name}(${rows[1].era.toFixed(2)})가 뒤를 잇는다.`:'팀에서 던진 사람이 하나뿐이다.')});
+      /* 혹사 — 한 사람이 팀 이닝의 절반을 넘게 던지면 그게 기사다 */
+      const tot=rows.reduce((a,x)=>a+x.s.outs,0);
+      const most=rows.slice().sort((a,b)=>b.s.outs-a.s.outs)[0];
+      if(tot>0 && most.s.outs/tot>=0.52 && most.s.outs>=18)
+        briefs.push({h:`${most.p.name} 홀로 팀 이닝의 ${Math.round(most.s.outs/tot*100)}%`,
+          b:`${ipStr({outs:most.s.outs})}이닝. 4부 리그에서 이 정도면 어깨가 남아나지 않는다는 말이 나온다.`});
+    }
+  }
+  /* ③ 리그 홈런·타점·도루 — 타율만 있으면 야구가 반쪽이다 */
+  {
+    const all2=[];
+    TEAMS.forEach(t=>{ (t.players||[]).forEach(p=>{
+      const b=(ST.lgBat||{})[p.id]||((t.id==='wwzw')?((ST.bat||{})[p.id]):null);
+      if(b && (b.pa||b.ab)) all2.push({t, p, b});
+    }); });
+    if(all2.length){
+      const rbi=all2.slice().sort((a,b)=>(b.b.rbi||0)-(a.b.rbi||0))[0];
+      if(rbi && rbi.b.rbi) briefs.push({h:'타점 선두',
+        b:`${rbi.p.name}(${rbi.t.name}) ${rbi.b.rbi}타점.`});
+      const sb=all2.slice().sort((a,b)=>(b.b.sb||0)-(a.b.sb||0))[0];
+      if(sb && sb.b.sb) briefs.push({h:'도루 선두',
+        b:`${sb.p.name}(${sb.t.name}) ${sb.b.sb}개${sb.b.cs?` (실패 ${sb.b.cs})`:''}. 발이 무기인 리그다.`});
+    }
+  }
+  /* ④ 부상자 명단 — 사회인야구는 이게 순위보다 중요하다 */
+  {
+    const hurt=[];
+    (TBYID['wwzw'].players||[]).forEach(p=>{
+      const iv=(ST.injury||{})[p.id];
+      if(iv && iv.games>0) hurt.push(`${p.name}(${iv.name} · ${iv.games}주)`);
+    });
+    if(hurt.length) briefs.push({h:`우완좌완 부상자 ${hurt.length}명`,
+      b:hurt.join(' · ')+' — 이 리그에서 제일 무서운 건 상대가 아니라 몸이다.'});
+  }
+  /* ⑤ 요즘 폼 — 누가 올라와 있고 누가 죽어 있나 */
+  {
+    const hot=[], cold=[];
+    (TBYID['wwzw'].players||[]).forEach(p=>{
+      const tg=(typeof formTag==='function')?formTag(p.id):'';
+      if(tg===FORM_HOT) hot.push(p.name);
+      else if(tg===FORM_COLD) cold.push(p.name);
+    });
+    if(hot.length) briefs.push({h:`감각이 올라온 선수 — ${hot.slice(0,4).join(' · ')}`,
+      b:'연속으로 맞히고 있다. 라인업을 짤 때 앞으로 당길 만하다.'});
+    if(cold.length) briefs.push({h:`방망이가 안 도는 선수 — ${cold.slice(0,4).join(' · ')}`,
+      b:'슬럼프다. 훈련을 붙이거나 한 주 쉬게 하는 것도 방법이다.'});
+  }
+  /* ⑥ 2군 — 누가 올라올 준비가 됐나 */
+  {
+    /* [주의] 2군 기록은 따로 있는 게 아니라 **ST.farm 항목 자체**가
+       ab·h 를 들고 있다(farmSlot). 딴 데서 찾지 마라.              */
+    const fm=(Array.isArray(ST.farm)?ST.farm:[])
+      .filter(f=>f && !f.up && (f.ab||0)>=6)
+      .map(f=>({f, avg:f.h/f.ab}))
+      .sort((a,b)=>b.avg-a.avg);
+    if(fm.length){
+      const t1=fm[0].f;
+      briefs.push({h:`2군 ${t1.name} 타율 ${fmt3(fm[0].avg)}`,
+        b:`${t1.ab}타수 ${t1.h}안타. `+
+          ((typeof farmReady==='function' && farmReady(t1))
+            ? '콜업 기준을 넘겼다 — 1군에서 부를 만하다.'
+            : '아직 콜업 기준에는 못 미친다.')});
+    }
+  }
+  /* ⑦ 최근 흐름 — 다섯 경기 */
+  {
+    const done2=(ST.schedule||[]).filter(x=>x&&x.played&&x.result);
+    if(done2.length>=3){
+      const last5=done2.slice(-5);
+      const w=last5.filter(x=>x.result.us>x.result.them).length;
+      const l=last5.filter(x=>x.result.us<x.result.them).length;
+      const rf=last5.reduce((a,x)=>a+x.result.us,0), ra=last5.reduce((a,x)=>a+x.result.them,0);
+      briefs.push({h:`최근 ${last5.length}경기 ${w}승 ${last5.length-w-l>0?(last5.length-w-l)+'무 ':''}${l}패`,
+        b:`득점 ${rf} · 실점 ${ra}. `+
+          (rf>ra ? '방망이는 터지는데 마운드가 아쉽다는 말이 나온다.'
+                 : (w>l ? '점수는 안 나는데 이기고 있다. 야구가 원래 그렇다.'
+                        : '둘 다 안 된다. 뭐라도 바꿔야 한다는 분위기다.'))});
+    }
+  }
+  /* ⑧ 날씨 — 주말 경기가 이걸로 갈린다 */
+  if(ST.weather && typeof WEATHERS!=='undefined'){
+    /* [주의] 날씨 목록은 WEATHERS 한 군데에 있다. 여기서 또 적으면
+       id 를 틀리게 쓴다(rain 이라고 썼다가 안 뜬 적이 있다 — 실제
+       id 는 rainy 다). 원본을 읽고 한 줄 덧붙이기만 한다.          */
+    const wx=WEATHERS.find(w=>w.id===ST.weather);
+    if(wx){
+      const tail = wx.cancel ? ` 취소될 수도 있다 — 단톡방을 확인해라.`
+        : (wx.err>=1.08 ? ' 실책이 늘어나는 날씨다.'
+        : (wx.risk ? ` ${wx.risk} 조심해라.`
+        : (wx.babip<0.98 ? ' 타구가 안 뻗는다.' : '')));
+      briefs.push({h:'이번 주 날씨 — '+wx.name, b:wx.desc+tail});
+    }
+  }
   /* 팀 살림 — 돈 있는 팀이 사람을 데려간다 */
   {
     const rich=TEAMS.filter(t=>t&&teamWealth(t.id)===2).slice(0,3).map(t=>t.name);
@@ -37117,18 +37594,18 @@ function newsIssue(){
     b:'리그에 큰 소식이 없었다. 기자도 쉬었다.'});
 
   const pick=(a)=>a[(rng()*a.length)|0];
-  /* 연예면 두 꼭지 */
-  const ent=[];
-  const pool=NEWS_ENT.slice();
-  for(let i=0;i<2 && pool.length;i++) ent.push(pool.splice((rng()*pool.length)|0,1)[0]);
-  /* 기록실 두 꼭지 — 진짜 기록이다 */
-  const rec=[];
-  const rpool=NEWS_KBO.slice();
-  for(let i=0;i<2 && rpool.length;i++) rec.push(rpool.splice((rng()*rpool.length)|0,1)[0]);
-  /* 사회 · 생활면 두 꼭지 */
-  const life=[];
-  const lpool=NEWS_LIFE.slice();
-  for(let i=0;i<2 && lpool.length;i++) life.push(lpool.splice((rng()*lpool.length)|0,1)[0]);
+  const rd=(ST.round||0);
+  /* [요청] "신문 내용도 더 다양하게"
+     풀을 키우는 것만으로는 부족했다 — **매주 난수로 뽑으면** 열네 주에
+     스물여덟 번을 뽑아도 서로 다른 기사는 열일곱 개뿐이었다(재봤다).
+     3주 전에 읽은 기사가 또 나온다는 뜻이다.
+     그래서 시즌마다 한 번 섞어두고 **주차 순서대로 잘라 쓴다.**
+     한 바퀴를 다 돌 때까지 같은 기사가 안 나온다. 시즌이 바뀌면 다시
+     섞이니 작년과 순서도 다르다.                                   */
+  const ent=newsSlice(NEWS_ENT, 2, rd, 'ent');
+  const rec=newsSlice(NEWS_KBO, 2, rd, 'rec');     // 기록실 — 진짜 기록이다
+  const life=newsSlice(NEWS_LIFE, 2, rd, 'life');
+  const voice=newsSlice(NEWS_VOICE, 3, rd, 'voice');  // 진짜 지역 신문엔 독자란이 있다
 
   return {
     name:PAPER_NAME,
@@ -37136,9 +37613,13 @@ function newsIssue(){
     no:((ST.seasonNo||1)-1)*24+((ST.round||0)+1),
     /* 1면 아래 기사는 넉넉히 — 팀 타율 1위 같은 게 잘려나가면
        「우완좌완 신문」 이라는 말이 무색해진다 */
-    lead:lead[0], subs:lead.slice(1,3).concat(subs).slice(0,5),
-    briefs:briefs.slice(0,7),
-    ent, rec, life, ad:pick(NEWS_AD), fortune:pick(NEWS_FORTUNE),
+    /* [요청] "신문 내용도 더 다양하게" — 생성 기사를 여덟 개 더 넣었는데
+       단신 칸이 일곱 개에서 잘리면 새로 만든 게 화면에 안 나온다.
+       신문은 어차피 스크롤해서 읽는 것이다. 넉넉히 싣는다.        */
+    lead:lead[0], subs:lead.slice(1,3).concat(subs).slice(0,6),
+    briefs:briefs.slice(0,12),
+    ent, rec, life, voice,
+    ad:newsSlice(NEWS_AD, 1, rd, 'ad')[0], fortune:pick(NEWS_FORTUNE),
   };
 }
 /* 신문을 띄운다. 홈에서 주가 바뀔 때 한 번, 더보기에서 언제든 */
@@ -37163,6 +37644,9 @@ function showPaper(){
     N.ent.map(x=>'<div class="pp-e"><h3>'+x[0]+'</h3><p>'+x[1]+'</p></div>').join('')+
     '<div class="pp-sec">사회 · 생활</div>'+
     (N.life||[]).map(x=>'<div class="pp-e"><h3>'+x[0]+'</h3><p>'+x[1]+'</p></div>').join('')+
+    ((N.voice&&N.voice.length)?
+      '<div class="pp-sec">독자 투고</div><ul class="pp-vo">'+
+      N.voice.map(x=>'<li>"'+x[0]+'"<span>— '+x[1]+'</span></li>').join('')+'</ul>' : '')+
     '<div class="pp-bot">'+
       '<div class="pp-ad"><b>'+N.ad[0]+'</b><span>'+N.ad[1]+'</span></div>'+
       '<div class="pp-for"><b>'+N.fortune[0]+'</b><span>'+N.fortune[1]+'</span></div>'+

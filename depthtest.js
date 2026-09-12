@@ -361,8 +361,12 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
     '고교 성적이 좋을수록 앞 순번이다');
   T(ev("entryPickNo(1.0)<=3 && entryPickNo(0)>=100"),
     '폭격하면 최상위, 대충 보내면 끝자락이다');
-  T(ev("entryFarmWeeks(1)===1 && entryFarmWeeks(120)===8"),
-    '순번이 곧 2군 기간이다 — 앞 순번은 한 주, 끝자락은 여덟 주');
+  /* [바뀜 v3.14.0] "2군 경기 수를 두지말고 2군에서 잘하면 콜업
+     1군에서 못하면 강등이 맞는거야" — 그래서 entryFarmWeeks(기간)가
+     없어지고 entryFarmBar(콜업 타율 기준)로 갔다. 앞 순번일수록
+     기준이 낮다(=빨리 올라온다). 테스트도 같이 옮긴다.            */
+  T(ev("entryFarmBar(1)<entryFarmBar(120) && entryFarmBar(1)===0.230 && entryFarmBar(120)===0.330"),
+    '순번이 곧 콜업 기준이다 — 앞 순번은 2할3푼, 끝자락은 3할3푼');
   T(ev(`(function(){
       ST.playerId='ksh'; MYID='ksh';
       var E=entryDraftBuild(0.9);
