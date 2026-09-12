@@ -429,6 +429,13 @@ button{font-family:inherit;cursor:pointer}
 .spb i{display:block;font-style:normal;font-size:9.5px;color:#8e9bb0;line-height:1.3;margin-top:2px}
 .spb.on i{color:#c9a227}
 .pl-skip.bunt{border-color:#3f6a4e;color:#9fd0ae}
+/* 번트 방향 — 마구마구 「3루번트 · 1루번트」 자리.
+   [주의] .spb 를 그대로 쓰되 초록으로만 갈랐다. 이름을 새로 파면
+   lintcheck 가 잡는 중복 셀렉터가 늘기만 한다.                      */
+.bunt-t{font-size:11px;color:#8e9bb0;margin:9px 0 0;text-align:center}
+.bunt-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:5px 0 4px}
+.spb.bunt{border-color:#3f6a4e;color:#9fd0ae}
+.spb.bunt i{color:#7d9a89}
 /* ================= 훈련 세션 =================
    타이밍 바 하나로 네 종목을 다 굴린다. 폰에서 손가락 하나면 되고,
    판정 폭(초록 칸)이 그 능력치를 그대로 탄다. */
@@ -1391,6 +1398,8 @@ body.pl-lock #view{touch-action:none}
 .aim-mix{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;margin:0 0 5px}
 .aim-mix u{text-decoration:none;font-size:10px;color:#8b95a3}
 .aim-mix u b{color:#cfe0ee;font-weight:800}
+.aim-mix u em{font-style:normal;color:#ffd15c;font-weight:800;margin-left:3px}
+.aim-mix u em::after{content:'km/h';font-size:8px;color:#8b7b45;margin-left:1px}
 .aim-mix i{font-style:normal;font-size:10px;color:#6f7c8c;margin-left:auto}
 .aim-row{display:flex;gap:5px}
 .aim-row button{flex:1;background:#161b22;border:1px solid #2a323d;border-radius:8px;
@@ -1467,6 +1476,12 @@ body.pl-lock #view{touch-action:none}
   border-radius:8px;color:#cfd8e3;font-size:11.5px;font-weight:700;padding:9px 4px}
 .ptype button.on{border-color:#e8762c;color:#fff;background:#241a12}
 .ptype button i{display:block;font-style:normal;font-size:9.5px;color:#8b95a3;margin-top:2px}
+/* 구종별 구속 — 마구마구 버튼처럼 숫자를 크게 박는다 */
+.ptype button b{display:block;font-size:14px;font-weight:900;color:#ffd15c;
+  line-height:1.15;margin-top:1px}
+.ptype button b::after{content:'km/h';font-size:8px;font-weight:700;color:#8b7b45;
+  margin-left:2px;letter-spacing:-.2px}
+.ptype button.on b{color:#ffb768}
 .ot-adv b{display:block;font-size:12px;color:var(--or2)}
 .ot-adv span{display:block;font-size:11px;color:var(--dm);line-height:1.5;margin-top:2px}
 .ot-tr{display:flex;gap:8px;align-items:baseline;padding:4px 9px;font-size:11px}
@@ -1803,6 +1818,41 @@ table.hl-tbl td.hl-o{color:#c98a80}
    #livectl 의 flex-wrap 은 그대로 둔다 — 버튼이 길어지면 줄이 넘어간다. */
 #livectl{flex-wrap:wrap}
 .np-bar{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:9px 0 0}
+/* 라인업 열기 — 스코어보드 밑 한 줄 */
+.lu-open{display:block;width:100%;margin:7px 0 0;padding:8px;border-radius:9px;
+  background:#141a22;border:1px solid #2a323d;color:#9fb0c4;font-size:11.5px;font-weight:700}
+/* 라인업 카드 — 마구마구 오른쪽 패널 자리 */
+.lg-card{background:#111721;border:1px solid #253040;border-radius:11px;
+  padding:10px 10px 6px;margin:9px 0 0}
+.lg-card.def{border-color:#2a3340;opacity:.92}
+.lg-h{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+.lg-h b{font-size:13.5px;color:#e2eaf5;font-weight:800}
+.lg-h span{font-size:11px;color:#ffd15c;font-weight:700}
+.lg-h em{font-style:normal;margin-left:auto;font-size:10px;color:#7d8899;
+  border:1px solid #2f3a48;border-radius:4px;padding:1px 5px}
+.lg-p{margin:7px 0 2px;padding:6px 8px;background:#0e131b;border-radius:8px;
+  border:1px solid #222c39}
+.lg-p u{text-decoration:none;font-size:9.5px;color:#7d8899;margin-right:5px}
+.lg-p b{font-size:12.5px;color:#cfe0ee;font-weight:800}
+.lg-p i{display:block;font-style:normal;font-size:10px;color:#8e9bb0;margin-top:2px}
+.lg-p span{display:block;font-size:10px;color:#7d8899;margin-top:1px}
+.lg-tb{margin-top:5px}
+.lg-r{display:grid;grid-template-columns:16px 30px 1fr 15px;gap:5px;
+  align-items:baseline;padding:5px 3px;border-top:1px solid #1c2531}
+.lg-r u{text-decoration:none;font-size:10.5px;color:#6f7c8c;font-weight:800}
+.lg-r em{font-style:normal;font-size:9.5px;color:#8e9bb0;
+  border:1px solid #2a3340;border-radius:3px;padding:1px 0;text-align:center}
+.lg-r b{font-size:12px;color:#c3ccd7;font-weight:700}
+.lg-r b s{text-decoration:none;color:#6f7c8c;font-size:10px}
+.lg-r span{font-size:10px;color:#7d8899;text-align:center}
+.lg-r span.lh{color:#e8a35c}
+.lg-r i{grid-column:3 / span 2;font-style:normal;font-size:9.5px;color:#6f7c8c;margin-top:-2px}
+.lg-r.now{background:rgba(201,162,39,.12);border-radius:6px}
+.lg-r.now b{color:#ffd15c}
+.lg-r.now u{color:#ffd15c}
+.lg-r.next b{color:#dbe4ef}
+.lg-r.me b::after{content:'내 선수';font-size:8.5px;color:#7fc48f;margin-left:5px;
+  border:1px solid rgba(127,196,143,.45);border-radius:3px;padding:0 3px}
 .np-cell{background:var(--panel);border:1px solid var(--line);border-radius:9px;
   padding:6px 7px;text-align:center;font-size:11px;color:var(--dim);min-width:0}
 .np-cell.on{border-color:var(--gold);background:rgba(201,162,39,.10)}
@@ -3038,6 +3088,28 @@ function sfRoll(G, rng){
   if(G.box[me]) G.box[me].cs=(G.box[me].cs||0);
   G.log.push({t:'play', cls:'out', text:`${G.nameOf(me)} 태그업 — 홈에서 아웃`});
   return false;
+}
+/* 내가 지금 어느 베이스에 나가 있나 — 주루 판단창을 띄울 자리다.
+   -1 이면 안 띄운다.
+
+   [버그 이력] "2루 3루 열어주고 3루에있을때 약간 희생플라이 하는경우
+   있잖아 그때 뛸건지 말지도" 를 받아서
+     · renderLead 에 2루 칸(3루 도루)과 3루 칸(태그업)을 다 만들고
+     · applyDecision 에 _runPlan3 · _tagPlan 을 붙이고
+     · 엔진에 3루 도루 굴림과 sfRoll 까지 넣었는데
+   정작 **창을 띄우는 조건 세 군데가 전부 `bases[0]===me && !bases[1]`**
+   로 남아 있었다. 1루에 있을 때만 열리니 2루·3루 길은 한 번도 안 굴렀다.
+   만들어놓고 못 닿는 길이 제일 억울하다 — 조건을 여기 한 군데로 모은다.
+
+   앞 베이스가 차 있으면 갈 데가 없으니 안 묻는다("앞에 베이스에 주자
+   있으면 안나와도 되긴해"). 3루는 갈 데가 아니라 태그업이라 앞을 안 보고,
+   대신 2아웃이면 뜬공에 이닝이 끝나니 물어봐야 소용이 없다.          */
+function myRunBase(G, me){
+  if(!G || !me || !G.bases) return -1;
+  if(G.bases[0]===me) return G.bases[1] ? -1 : 0;
+  if(G.bases[1]===me) return G.bases[2] ? -1 : 1;
+  if(G.bases[2]===me) return (G.outs<2) ? 2 : -1;
+  return -1;
 }
 /* 반이닝 시작 — 실책 장부를 비운다 */
 function newErrLedger(){ return {outs:0, roe:{}}; }
@@ -8276,8 +8348,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.15.0';
-const APP_VERSION_NOTE = '수비는 이름표와 몸 날리기 · 타석엔 상대가 던지는 자리';
+const APP_VERSION = '3.16.0';
+const APP_VERSION_NOTE = '2루·3루에서도 주루 · 번트는 방향을 고른다 · 구종마다 구속 · 라인업 보기';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8298,6 +8370,20 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.16.0', t:'2루·3루에서도 주루 · 번트는 방향을 고른다 · 구종마다 구속 · 라인업 보기', items:[
+    '<b>2루·3루에 나가 있어도 주루를 물어본다.</b> 여태 <b>1루에 있을 때만</b> 창이 떴다. 2루에서 3루를 훔치는 것도, 3루에서 뜬공에 태그업할지 정하는 것도 화면이 아예 안 나왔다는 뜻이다. 안타 치고 2루까지 가면 그 다음부터는 구경만 했다',
+    '더 억울한 건 <b>그 기능이 이미 다 만들어져 있었다</b>는 것이다. 2루 칸(3루 도루)도 3루 칸(태그업)도, 엔진의 3루 도루 굴림도 희생플라이 확률도 전부 있었는데 <b>창을 띄우는 조건 세 군데가 전부 「1루에 있을 때」로 남아 있어서</b> 한 번도 안 굴렀다. 조건을 한 군데(myRunBase)로 모았다',
+    '이제 <b>2루에서는 「3루로 뛴다」</b> 를 고를 수 있다. 성공하면 뜬공 하나로 들어온다. 대신 3루 도루는 훨씬 어렵다 — 포수가 짧게 던지고 3루수는 태그만 하면 된다',
+    '<b>3루에서는 뜬공이 뜨기 전에 태그업을 정한다.</b> 「깊으면 뛴다」 를 고르면 55%로 들어오고 얕으면 홈에서 죽는다. 「안 뛴다」 면 안 뛴다. 실제로도 3루 코치가 공이 뜨기 전에 정해놓는 것이다',
+    '<b>번트가 방향으로 갈렸다.</b> 「번트를 댄다」 버튼 하나였던 게 <b>3루쪽 · 1루쪽</b> 둘이 됐다. 마구마구 타석 화면이 「3루번트 · 1루번트 · 스윙」 인 걸 보고 가져왔다',
+    '<b>3루쪽</b> 은 3루수가 자리를 비우고 달려 나와야 한다 — 주자가 가기 쉽다. 3루에 주자가 있으면 이게 곧 <b>스퀴즈</b> 다. 대신 나는 1루에서 잡힌다. 내 아웃을 주고 주자를 보내는, 교과서대로',
+    '<b>1루쪽</b> 은 1루수가 나오고 투수·2루수가 1루를 커버한다. 한 박자 늦으면 <b>그대로 내야안타</b> 다 — 발이 빠르면 이게 제일 남는 장사다. 대신 투수가 바로 집으면 선행 주자가 잡힌다. 주자를 보내려면 3루쪽, 내가 살려면 1루쪽',
+    '성공률은 화면에 그대로 깐다. 컨택·발·상대 수비를 다 보고 계산한 진짜 숫자다',
+    '<b>구종 버튼마다 구속이 박혔다.</b> 직구 115 · 슬라이더 107 · 커브 92 — 마구마구처럼. 여태 「최고 115km/h」 한 줄뿐이라 커브가 얼마나 느린지를 알 수가 없었다. 타석에서도 상대 구종별 구속이 배분 옆에 뜬다 — 직구 110 에 커브 88 이면 22km/h 차이고, 그 간격이 곧 노림수의 값이다',
+    '<b>지치면 그 숫자가 내려간다.</b> 이닝이 쌓여 팔이 무거워지면 구위가 깎이는데, 이제 구속도 같이 떨어지고 릴리스 순간에 뜨는 숫자도 같다. 「팔이 안 올라간다」 가 글자가 아니라 눈에 보인다',
+    '<b>양 팀 라인업을 언제든 볼 수 있다.</b> 점수판 밑 「📋 양 팀 라인업 보기」. 타순·포지션·등번호·좌우타·오늘 성적이 아홉 명 다 나오고, 지금 타석이 금색이다. 상대 투수의 이닝·투구수·피안타도 같이',
+    '번트를 댈지 뛸지는 <b>뒤에 누가 있느냐</b> 로 갈린다. 4번이 대기 중이면 아웃을 주고 주자를 보내는 게 맞고 9번이면 내가 살아야 하는데, 여태 화면에는 지금 타석 한 명만 있었다 — 작전을 고르라면서 고를 근거를 안 준 셈이었다',
+  ]},
   {v:'3.15.0', t:'수비는 이름표와 몸 날리기 · 타석엔 상대가 던지는 자리', items:[
     '<b>야수마다 등번호와 이름이 붙었다.</b> 여태 그라운드에 사람 그림만 있어서 「저 사람이 2루수인가 유격수인가」 를 알 수가 없었다. 내 야수는 금색이라 한눈에 갈린다. 교체가 있었으면 교체된 사람 이름이 뜬다',
     '<b>송구 버튼이 실제 베이스 자리로 갔다.</b> 2루는 위, 3루는 왼쪽, 1루는 오른쪽, 홈은 아래. 여태 가로 일렬이라 「1루 2루 3루 홈」 을 글자로 읽고 눌러야 했는데, 수비는 1~2초 싸움이라 읽을 시간이 없다. 자리로 놓으면 안 읽고 누른다',
@@ -11577,20 +11663,42 @@ LiveGame.prototype.setRunPlan = function(plan){ this._runPlan=plan||null; };
    **기습번트**로 살아 나가기도 한다 — 사회인야구에선 이게 꽤 먹힌다.
    [주의] 이건 감독의 「번트 지시」(작전)가 아니라 **내가 타석에서
    직접 대는 것**이다. 선수 모드에서 쓰는 길이다.                  */
-LiveGame.prototype.buntResult = function(bat, def, rng){
+/* [참고] 마구마구 인게임 사진 — 타석 아래에 「3루번트 · 1루번트 · 스윙」이
+   나란히 있다. 번트는 대는 것보다 **어디로 굴리느냐**가 본론이다.
+
+   [야구] 3루쪽으로 굴리면 3루수가 자리를 비우고 달려 나와야 한다.
+          그러면 앞 주자가 가기 쉽다 — 진루타가 확실해진다.
+          2루 주자한테는 3루가 비고, 3루 주자한테는 이게 곧 스퀴즈다.
+          대신 타자는 1루에서 잡힌다. 내 아웃을 주고 주자를 보내는, 교과서.
+          1루쪽으로 굴리면 1루수가 나오고 투수·2루수가 1루를 커버한다.
+          커버가 한 박자 늦으면 **그대로 내야안타**다 — 발이 빠르면 이게
+          제일 남는 장사다. 대신 투수가 바로 집으면 선행 주자가 잡힌다.
+   그래서 고르는 이유가 갈린다: 주자를 보내려면 3루쪽, 내가 살려면 1루쪽.
+
+   [주의] dir 이 없을 때는 **예전 숫자 그대로** 굴러야 한다. 옛 세이브와
+   자동 진행이 이 길로 오고, 발이 느리면 난수를 아예 안 뽑던 것까지 같다. */
+LiveGame.prototype.buntResult = function(bat, def, rng, dir){
   const dv=(def&&def._slotDef!=null)?def._slotDef:46;
   const spd=(bat.spd||45), con=(bat.con||45);
+  const to3=(dir==='3b'), to1=(dir==='1b');
   /* 번트를 자주 대면 상대가 앞으로 나와 선다 — 평판이 확률에 붙는다 */
   const rm=(typeof repMul==='function')?repMul('bunt'):1;
-  const good=clamp((0.52+(con-46)*0.0055-(dv-46)*0.0045)*rm, 0.18, 0.88);
+  const good=clamp((0.52+(con-46)*0.0055-(dv-46)*0.0045
+                    +(to3?0.07:0)+(to1?-0.04:0))*rm, 0.15, 0.90);
   if(rng()<good){
-    /* 기습번트 — 발이 빠르면 가끔 그대로 산다 */
-    if(spd>=56 && rng()<clamp((spd-50)*0.013, 0.02, 0.24))
-      return {type:'1B', gb:true, bunt:'hit'};
-    return {type:'OUT', gb:true, bunt:'sac'};
+    /* 기습번트 — 발이 빠르면 그대로 산다. 1루쪽이 제일 잘 먹힌다 */
+    const safeP = to1 ? clamp(0.06+(spd-40)*0.016, 0.05, 0.42)
+                : to3 ? clamp((spd-52)*0.010, 0, 0.14)
+                : (spd>=56 ? clamp((spd-50)*0.013, 0.02, 0.24) : 0);
+    if(safeP>0 && rng()<safeP)
+      return {type:'1B', gb:true, bunt:'hit', bdir:dir||null};
+    return {type:'OUT', gb:true, bunt:'sac', bdir:dir||null};
   }
-  if(rng()<0.35) return {type:'OUT', gb:false, bunt:'pop'};   // 팝플라이 — 주자 못 간다
-  return {type:'OUT', gb:true, bunt:'fail'};                   // 앞 주자가 잡혔다
+  /* 못 댔다. 3루쪽은 앞 주자를 잡기 어려워서 팝플라이로 끝나는 쪽이 많고,
+     1루쪽은 투수가 바로 집어서 선행 주자가 잡히는 쪽이 많다.          */
+  if(rng()<(to3?0.48:(to1?0.26:0.35)))
+    return {type:'OUT', gb:false, bunt:'pop', bdir:dir||null};   // 팝플라이 — 주자 못 간다
+  return {type:'OUT', gb:true, bunt:'fail', bdir:dir||null};     // 앞 주자가 잡혔다
 };
 LiveGame.prototype.runPickoff = function(back){
   const rid=this.bases[0]; if(!rid || this.over) return null;
@@ -12062,9 +12170,9 @@ LiveGame.prototype.detectDecision = function(){
      && typeof isPlayerMode==='function' && isPlayerMode()
      && askModeOf('run')!=='off'
      && (askModeOf('run')!=='key' || this.keyMoment())
-     && this.outs<3 && this.bases[0] && !this.bases[1]){
+     && this.outs<3){
     const meR=this.myId||(ST&&ST.playerId);
-    if(meR && this.bases[0]===meR) return {kind:'lead'};
+    if(myRunBase(this, meR)>=0) return {kind:'lead'};
   }
 
   /* [제보] "자꾸 내선수만 플레이해야하는데 같은팀 공격할때 감독 지휘하는게 뜸
@@ -12641,16 +12749,12 @@ LiveGame.prototype.stepPA = function(){
      [주의] 아무리 체력이 나빠도 2이닝(6아웃) 전에는 안 지친다 —
      첫 회부터 무너지면 마운드에 서는 재미가 없다.                  */
   {
-    const sta=(pit.sta!=null)?pit.sta:40;
-    const lim=Math.max(6, Math.round(4+(sta-22)*0.19));
-    const fadeAt=Math.max(6, Math.round(lim*0.75));
-    const over=(pl.outs||0)-fadeAt;
-    if(over>0){
-      const k=Math.min(1, over/Math.max(4, lim-fadeAt+4));
-      const dStf=k*(15-Math.max(0,Math.min(7,(sta-30)*0.15)));
-      const dCtl=k*(9 -Math.max(0,Math.min(4,(sta-30)*0.09)));
-      pitE={...pit, stf:Math.max(12,pit.stf-dStf), ctl:Math.max(10,pit.ctl-dCtl)};
-      this._pitFade={outs:pl.outs, k, stf:Math.round(dStf), ctl:Math.round(dCtl)};
+    /* 식은 pitFade() 한 군데에 있다 — 화면도 구속도 같은 걸 본다 */
+    const fd=pitFade(pit, pl.outs||0);
+    if(fd.k>0){
+      pitE={...pit, stf:fd.stf, ctl:fd.ctl};
+      this._pitFade={outs:pl.outs, k:fd.k,
+        stf:Math.round(fd.dStf), ctl:Math.round(fd.dCtl)};
     } else this._pitFade=null;
   }
   if(pit.heatFade && pl.outs>=6){
@@ -12684,7 +12788,8 @@ LiveGame.prototype.stepPA = function(){
      삼진이 나오면 안 된다. 그래서 컨택하면 인플레이 결과만 나오게 하고,
      볼넷·삼진은 카운트가 찼을 때만 나오게 못 박는다.                    */
   let res;
-  if(this._myBunt){ this._myBunt=false; res=this.buntResult(bat, def, rng); }
+  if(this._myBunt){ const bd=this._myBuntDir; this._myBunt=false; this._myBuntDir=null;
+    res=this.buntResult(bat, def, rng, bd); }
   else if(this._forceRes){ res=this._forceRes; this._forceRes=null; }
   else {
     /* 오늘 심판 — 넓으면 삼진이 늘고 볼넷이 줄고, 좁으면 반대다.
@@ -12898,19 +13003,23 @@ LiveGame.prototype.stepPA = function(){
     }
     else if(res.bunt){
       bl.sh=(bl.sh||0)+1;
+      /* 어디로 굴렸는지를 중계에 남긴다 — 고른 보람이 있어야 한다 */
+      const bdw=res.bdir==='3b'?'3루쪽 ':(res.bdir==='1b'?'1루쪽 ':'');
       if(res.bunt==='sac'){
-        /* 진루타 — 앞 주자부터 한 베이스씩 간다 */
+        /* 진루타 — 앞 주자부터 한 베이스씩 간다.
+           3루에 주자가 있었으면 이게 곧 **스퀴즈**다 — 그렇게 부른다. */
+        const sq=!!this.bases[2];
         for(let b=2;b>=0;b--){ if(!this.bases[b]) continue;
           if(b===2){ score(this.bases[2],true); bl.rbi++; this.bases[2]=null; }
           else { this.bases[b+1]=this.bases[b]; this.bases[b]=null; } }
-        events.push({text:`${bat.name} 희생번트 — 주자를 보냈다`,cls:'out'});
+        events.push({text:`${bat.name} ${bdw}${sq?'스퀴즈 — 3루 주자가 들어왔다':'희생번트 — 주자를 보냈다'}`,cls:'out'});
       } else if(res.bunt==='pop'){
-        events.push({text:`${bat.name} 번트 팝플라이 — 주자 못 갔다`,cls:'out'});
+        events.push({text:`${bat.name} ${bdw}번트 팝플라이 — 주자 못 갔다`,cls:'out'});
       } else {
         /* 앞 주자가 잡혔다. 타자는 1루에 산다 */
         for(let b=2;b>=0;b--){ if(this.bases[b]){ this.bases[b]=null; break; } }
         this.bases[0]=bat.id; onBase(bat.id);
-        events.push({text:`${bat.name} 번트 실패 — 앞 주자가 잡혔다`,cls:'out'});
+        events.push({text:`${bat.name} ${bdw}번트 실패 — 앞 주자가 잡혔다`,cls:'out'});
       }
       if(this.outs>=3){ this.endHalf(); return this.endEarly(events); }
     }
@@ -12961,7 +13070,12 @@ LiveGame.prototype.stepPA = function(){
         if(this.outs<3){ adv(rng()<advOdds?2:1,true); this.bases[0]=bat.id; onBase(bat.id); }
       } else {
         adv(rng()<advOdds?2:1,true);this.bases[0]=bat.id; onBase(bat.id);
-        events.push({text:`${bat.name} 안타${bbTag(bb)}`,cls:'hit'});
+        /* 번트를 굴려서 산 거면 그렇게 적는다 — 「안타」 한 글자로는
+           1루쪽으로 굴린 보람이 안 보인다.                          */
+        const bh=(res.bunt==='hit')
+          ? (res.bdir==='3b'?'3루쪽 기습번트 안타':(res.bdir==='1b'?'1루쪽 기습번트 안타':'기습번트 안타'))
+          : '안타';
+        events.push({text:`${bat.name} ${bh}${bbTag(bb)}`,cls:'hit'});
       }
     }
     else if(res.type==='2B'){bl.d2++;adv(2,true);this.bases[1]=bat.id; onBase(bat.id);
@@ -13348,8 +13462,14 @@ LiveGame.prototype.applyDecision = function(choice){
   }
   /* ---- 직접 플레이 ---- */
   /* 내가 타석에서 직접 번트를 댄다 — 감독의 「번트 지시」와 다르다 */
-  if(choice==='mybunt'){ this._myBunt=true; this._lastPlayPA=this.paSeq;
-    this.log.push({t:'sub',text:'번트 자세를 잡는다'}); return; }
+  if(typeof choice==='string' && choice.indexOf('mybunt')===0){
+    this._myBunt=true;
+    /* 'mybunt:3b' · 'mybunt:1b' · 그냥 'mybunt'(방향 없음) */
+    this._myBuntDir=(choice.length>7)?choice.slice(7):null;
+    this._lastPlayPA=this.paSeq;
+    this.log.push({t:'sub',text:'번트 자세를 잡는다'+
+      (this._myBuntDir==='3b'?' — 3루쪽':(this._myBuntDir==='1b'?' — 1루쪽':''))});
+    return; }
   if(typeof choice==='string' && choice.indexOf('swing:')===0){
     this._swingQ=Math.max(0,Math.min(1,parseFloat(choice.slice(6))||0));
     this._lastPlayPA=this.paSeq;
@@ -16595,12 +16715,12 @@ function farmRunLive(){
                (고교라서 안나오나)"
        고교라서 안 나온 게 맞다. 고교·2군 진행에는 **주루 분기가 아예
        없었다.** 치고 나가도 다음 타자만 보고 있었다는 뜻이다.
-       ("앞에 베이스에 주자있으면 안나와도 되긴해" — 그건 엔진이
-        이미 그렇게 본다. 2루가 비어 있을 때만 묻는다)              */
+       ("앞에 베이스에 주자있으면 안나와도 되긴해" — myRunBase 가
+        그걸 본다. 이제 1루뿐 아니라 2루·3루에 있어도 물어본다)     */
     if(off.isUser && LIVE.paSeq!==LIVE._lastRunPA
        && typeof askModeOf==='function' && askModeOf('run')!=='off'
        && (askModeOf('run')!=='key' || LIVE.keyMoment())
-       && LIVE.outs<3 && LIVE.bases[0]===me && !LIVE.bases[1]){
+       && LIVE.outs<3 && myRunBase(LIVE, me)>=0){
       /* [제보] "고교때는 주루플레이가 안나와서 주루 스탯을 모르겠네"
          진짜였다. 여기서 detectDecision() 을 불렀는데, 그 함수는 **다음
          타자의 스윙**을 먼저 돌려준다(감독 모드는 남의 타석도 물어보니까).
@@ -17758,12 +17878,12 @@ function hsRunLive(){
                (고교라서 안나오나)"
        고교라서 안 나온 게 맞다. 고교·2군 진행에는 **주루 분기가 아예
        없었다.** 치고 나가도 다음 타자만 보고 있었다는 뜻이다.
-       ("앞에 베이스에 주자있으면 안나와도 되긴해" — 그건 엔진이
-        이미 그렇게 본다. 2루가 비어 있을 때만 묻는다)              */
+       ("앞에 베이스에 주자있으면 안나와도 되긴해" — myRunBase 가
+        그걸 본다. 이제 1루뿐 아니라 2루·3루에 있어도 물어본다)     */
     if(off.isUser && LIVE.paSeq!==LIVE._lastRunPA
        && typeof askModeOf==='function' && askModeOf('run')!=='off'
        && (askModeOf('run')!=='key' || LIVE.keyMoment())
-       && LIVE.outs<3 && LIVE.bases[0]===me && !LIVE.bases[1]){
+       && LIVE.outs<3 && myRunBase(LIVE, me)>=0){
       /* [제보] "고교때는 주루플레이가 안나와서 주루 스탯을 모르겠네"
          진짜였다. 여기서 detectDecision() 을 불렀는데, 그 함수는 **다음
          타자의 스윙**을 먼저 돌려준다(감독 모드는 남의 타석도 물어보니까).
@@ -26528,6 +26648,12 @@ function buildLiveStage(){
   /* [요청] "인게임 중에 실시간 투구수" — 스코어보드 바로 밑.
      빈 껍데기만 만들어 두고 내용은 updateLiveUI 가 매 타석 다시 채운다. */
   const npb=el('div','np-bar'); npb.id='np-bar'; stage.appendChild(npb);
+  /* [참고] 마구마구는 라인업이 화면에 늘 떠 있다. 폰은 그럴 자리가 없으니
+     한 줄짜리 버튼으로 두고 누르면 편다. 감독 모드든 선수 모드든,
+     고교든 2군이든 똑같이 보인다 — 라인업은 누구나 볼 수 있는 거다. */
+  const lub=el('button','lu-open','📋 양 팀 라인업 보기');
+  lub.onclick=()=>{ try{ openLineupSheet(); }catch(e){} };
+  stage.appendChild(lub);
   /* [요청] "야구 같은 요소는 다넣어야해" — **오늘 심판**.
      [야구] 심판마다 스트존이 다르다. 넓으면 투수가 편하고 좁으면
      볼넷이 쏟아진다. 4부 리그는 그 편차가 더 크다. 안 보여주면
@@ -26646,6 +26772,73 @@ function paintNpBar(){
   });
 }
 
+/* 경기 중 라인업 — 양 팀 타순을 언제든 펼쳐 본다.
+   [참고] 마구마구 인게임 사진 — 화면 오른쪽에 아홉 명이 포지션·등번호·
+   좌우타까지 붙어서 늘 떠 있고, 그 아래 Pitcher / Batter 카드가 따로 있다.
+
+   [왜 필요한가] 번트를 댈지 도루를 뛸지는 **다음에 누가 나오느냐**로
+   갈린다. 4번이 대기 중이면 아웃을 주고 주자를 보내는 게 맞고, 9번이면
+   내가 살아야 한다. 여태 우리 화면에는 지금 타석 한 명만 있었다 —
+   작전을 고르라면서 고를 근거를 안 준 셈이다.
+   상대 라인업도 같이 깐다. 어차피 야구장에선 라인업 카드를 다 본다.  */
+function lineupRows(sd, cur){
+  const out=[];
+  (sd.slots||[]).forEach((sl,i)=>{
+    const q=(sd.team.players||[]).find(x=>x.id===sl.id);
+    if(!q) return;
+    const b=(LIVE.box&&LIVE.box[q.id])||null;
+    const today=(b&&b.pa)
+      ? (b.ab+'타수 '+b.h+'안타'+(b.hr?' 홈런'+b.hr:'')+(b.bb+b.hbp?' '+(b.bb+b.hbp)+'사사구':''))
+      : '첫 타석';
+    out.push({i, pos:sl.pos, no:(q.no!=null?q.no:jerseyNo(q.id)), name:q.name,
+      left:(q.bats==='L'), today,
+      now:(i===cur), next:(i===((cur+1)%9)),
+      me:(q.id===(LIVE.myId||(typeof ST!=='undefined'&&ST?ST.playerId:null)))});
+  });
+  return out;
+}
+function lineupCard(sd, isDef){
+  const cur=(sd.order||0)%9;
+  const c=el('div','lg-card'+(isDef?' def':''));
+  const pit=LIVE.curPitcher(sd);
+  const pb=(pit&&LIVE.pbox&&LIVE.pbox[pit.id])||null;
+  let h='<div class="lg-h"><b>'+sd.team.name+'</b>'+
+    '<span>'+(sd.runs||0)+'점 '+(sd.hits||0)+'안타</span>'+
+    '<em>'+(isDef?'수비 중':'공격 중')+'</em></div>';
+  if(pit){
+    h+='<div class="lg-p"><u>투수</u><b>'+pit.name+'</b>'+
+      '<i>구위 '+Math.round(liveStf(pit))+' · 제구 '+Math.round(pit.ctl)+
+      ' · 최고 '+typeKmh(pit,'ff')+'km/h</i>'+
+      (pb?'<span>'+ipStr({outs:pb.outs||0})+'이닝 '+(pb.np||0)+'구 · '+
+        (pb.h||0)+'피안타 '+(pb.r||0)+'실점 '+(pb.k||0)+'삼진</span>':'')+'</div>';
+  }
+  c.innerHTML=h;
+  const tb=el('div','lg-tb');
+  lineupRows(sd,cur).forEach(r=>{
+    const row=el('div','lg-r'+(r.now?' now':'')+(r.next?' next':'')+(r.me?' me':''));
+    row.innerHTML='<u>'+(r.i+1)+'</u>'+
+      '<em>'+(POSNAMES[r.pos]||r.pos)+'</em>'+
+      '<b>'+(r.no!=null?('<s>'+r.no+'</s> '):'')+r.name+'</b>'+
+      '<span class="'+(r.left?'lh':'')+'">'+(r.left?'좌':'우')+'</span>'+
+      '<i>'+r.today+'</i>';
+    tb.appendChild(row);
+  });
+  c.appendChild(tb);
+  return c;
+}
+function openLineupSheet(){
+  if(!LIVE) return;
+  const body=$('#sheet-body'); if(!body) return;
+  body.innerHTML='';
+  $('#sheet-title').textContent='라인업 — '+LIVE.inning+'회 '+(LIVE.half===0?'초':'말');
+  body.appendChild(el('div','sheet-note',
+    '금색이 지금 타석이고 그 아래가 다음 타자다. '+
+    '번트를 댈지 뛸지는 뒤에 누가 있느냐로 갈린다.'));
+  /* 공격 중인 팀을 위에 둔다 — 지금 궁금한 쪽이 위다 */
+  body.appendChild(lineupCard(LIVE.off(), false));
+  body.appendChild(lineupCard(LIVE.def(), true));
+  $('#sheet').classList.add('open');
+}
 /* 공수 교대를 화면 한가운데에 한 번 크게 알린다.
    직접 지휘일 때만 — 자동 진행은 한 번에 다 굴려서 의미가 없다. */
 function innFlash(text){
@@ -28840,6 +29033,36 @@ function doArgue(bottle, bar, redraw){
 
    송승민 구위 60 → 115, 김준희 구위 54 → 112. 두 점을 지나는 직선이다.
    구위 20대 투수는 95 언저리, 상대 팀 아리랑볼 투수는 더 낮게 나온다.   */
+/* 경기 중 지친 정도 — 구위·제구가 얼마나 깎였나.
+   [주의] 이 식이 **세 군데에 따로** 적혀 있었다 — 엔진(stepPA) · 투구
+   화면 머리말 · 그리고 이제 구속. 한 군데만 고치면 화면에 적힌 숫자와
+   실제로 굴러가는 값이 갈라진다. 버튼에 106 이라 써놓고 릴리스에
+   112 가 뜨면 그건 거짓말이다(v3.15.0 코스 히트맵과 같은 원칙).
+   그래서 여기 하나로 모으고 셋 다 이걸 부른다.                      */
+function pitFade(pit, outs){
+  const sta=(pit&&pit.sta!=null)?pit.sta:40;
+  const s0=(pit&&pit.stf!=null)?pit.stf:40, c0=(pit&&pit.ctl!=null)?pit.ctl:40;
+  const lim=Math.max(6, Math.round(4+(sta-22)*0.19));
+  const fadeAt=Math.max(6, Math.round(lim*0.75));
+  const over=(outs||0)-fadeAt;
+  if(over<=0) return {k:0, lim, fadeAt, dStf:0, dCtl:0, stf:s0, ctl:c0};
+  const k=Math.min(1, over/Math.max(4, lim-fadeAt+4));
+  const dStf=k*(15-Math.max(0,Math.min(7,(sta-30)*0.15)));
+  const dCtl=k*( 9-Math.max(0,Math.min(4,(sta-30)*0.09)));
+  return {k, lim, fadeAt, dStf, dCtl,
+          stf:Math.max(12, s0-dStf), ctl:Math.max(10, c0-dCtl)};
+}
+/* 지금 이 순간의 구위 — 이 경기에서 몇 아웃을 잡았는지를 보고 깎는다 */
+function liveStf(pit){
+  let v=(pit&&pit.stf!=null)?pit.stf:30;
+  try{
+    if(typeof LIVE!=='undefined' && LIVE && LIVE.pbox && pit && pit.id){
+      const pb=LIVE.pbox[pit.id];
+      if(pb) v=pitFade(pit, pb.outs||0).stf;
+    }
+  }catch(e){}
+  return v;
+}
 function topKmh(pit){
   const stf=(pit&&pit.stf)||30;
   /* [제보] "구속이 130키로나 나오면 안된다. 사회인야구 특성상 115 정도 던지면
@@ -28858,12 +29081,29 @@ function topKmh(pit){
   const ours=!!(pit&&pit.id&&TBYID['wwzw'].pitchers.some(p=>p.id===pit.id));
   return ours ? top : Math.min(top, 111);
 }
+/* 이 구종의 최고 구속.
+   [참고] 마구마구 인게임 사진 — 구종 버튼마다 구속이 박혀 있다
+   (S-커브 99 · C체인지업 119 · V투심 101 · 포심 115 · 슬라이더 102 · 싱커 97).
+   숫자가 없으면 「빠른공이냐 변화구냐」가 말로만 남는다. 직구 112에
+   커브 90이면 22km/h 차이 — 그 간격이 곧 노림수의 값이다.
+
+   stfNow 를 주면 **지금 이 순간의 구위**로 계산한다. 이닝이 쌓이면
+   엔진이 구위를 깎는데(renderPitch 의 fStf), 그때 이 숫자도 같이
+   떨어져야 「팔이 무거워진다」가 글자가 아니라 눈에 보인다.
+   [주의] topKmh 는 우리 팀인지를 id 로 본다 — id 를 빼먹으면 상대
+   투수 취급이라 111 에서 잘린다.                                   */
+function typeKmh(pit, type, stfNow){
+  const T=PITCH_TYPES[type]||PITCH_TYPES.ff;
+  const base={id:(pit&&pit.id), stf:(stfNow==null)?liveStf(pit):stfNow};
+  return Math.round(topKmh(base)*T.spd);
+}
 /* 그 공 하나의 구속. 매번 다르다 — 최고 구속은 어쩌다 한 번 나온다.
    [제보] "구속이 너무 다 똑같이 나온다. 랜덤이어야 되는데"            */
 function pitchKmh(pit, type, rng){
   const T=PITCH_TYPES[type]||PITCH_TYPES.ff;
   const r=rng||Math.random;
-  const top=topKmh(pit);
+  /* 지친 만큼 느려진다 — 구종 버튼에 적힌 숫자와 릴리스 표시가 같아야 한다 */
+  const top=topKmh({id:(pit&&pit.id), stf:liveStf(pit)});
   // 여덟 번에 한 번쯤 최고 구속 근처, 보통은 2~7 낮다
   const off=(r()<0.12)?(r()*1.6):(2+r()*5);
   return Math.round((top-off)*T.spd);
@@ -29126,13 +29366,39 @@ function renderSwing(box, d){
     sprayRow.appendChild(b);
   });
   w.appendChild(sprayRow);
+  /* [참고] 마구마구 인게임 사진 — 타석 아래가 「3루번트 · 1루번트 · 스윙」
+     이다. 번트는 대는 것보다 **어디로 굴리느냐**가 본론이라, 버튼 하나로
+     퉁치면 야구가 아니라 그냥 「아웃 하나 주기」 버튼이 된다.
+       3루쪽 — 3루수가 자리를 비우고 나온다. 주자가 가기 쉽다.
+                3루에 주자가 있으면 이게 곧 스퀴즈다.
+       1루쪽 — 1루수가 나오고 커버가 늦으면 내가 산다. 발이 재산이다.
+     성공률은 buntResult 가 쓰는 식을 그대로 계산해서 깐다 — 화면 숫자와
+     실제로 굴리는 값이 달라지면 안 된다(v3.15.0 코스 히트맵과 같은 원칙). */
   if(hasRun && LIVE.outs<2){
-    const bnt=el('button','pl-skip bunt');
-    bnt.innerHTML='번트를 댄다 — 주자를 보낸다';
-    bnt.onclick=()=>{ if(done||resolved)return;
-      if(anim)anim.stop();
-      endPA('번트','#9fb0c4', false, showRun, 'mybunt'); };
-    w.appendChild(bnt);
+    const sq3=!!LIVE.bases[2];
+    const bdv=(function(){ try{ return (def&&def._slotDef!=null)?def._slotDef:46; }catch(e){ return 46; } })();
+    const bcon=(bat&&bat.con)||45, bspd=(bat&&bat.spd)||45;
+    const brm=(typeof repMul==='function')?repMul('bunt'):1;
+    const gOf=(k3,k1)=>Math.max(0.15,Math.min(0.90,
+      (0.52+(bcon-46)*0.0055-(bdv-46)*0.0045+k3-k1)*brm));
+    const safe1=Math.max(0.05,Math.min(0.42,0.06+(bspd-40)*0.016));
+    const bl2=el('div','bunt-row');
+    const bl2t=el('div','bunt-t',
+      sq3?'번트를 댄다 — 3루쪽이면 스퀴즈다':'번트를 댄다 — 어디로 굴릴 건가');
+    w.appendChild(bl2t);
+    [['3b','3루쪽으로',
+      (sq3?'3루 주자가 들어온다':'앞 주자가 간다')+' · 잘 대기 '+Math.round(gOf(0.07,0)*100)+'%'],
+     ['1b','1루쪽으로',
+      '내가 살 수 있다 '+Math.round(safe1*100)+'% · 잘 대기 '+Math.round(gOf(0,0.04)*100)+'%']
+    ].forEach(([k,n,d2])=>{
+      const b=el('button','spb bunt');
+      b.innerHTML='<span>'+n+'</span><i>'+d2+'</i>';
+      b.onclick=()=>{ if(done||resolved)return;
+        if(anim)anim.stop();
+        endPA('번트 — '+n,'#9fb0c4', false, showRun, 'mybunt:'+k); };
+      bl2.appendChild(b);
+    });
+    w.appendChild(bl2);
   }
   const auto=el('button','pl-skip','알아서 치게 둔다');
   w.appendChild(auto);
@@ -29158,8 +29424,11 @@ function renderSwing(box, d){
     if(hasBreak){
       const mix=pitchMix(myP);
       const mm=el('div','aim-mix');
+      /* 배분 옆에 **구속**을 같이 깐다. 직구 112 / 커브 90 을 보고
+         고르는 것과 「빠른공이냐 변화구냐」만 보고 찍는 건 다르다. */
       mm.innerHTML=mix.map(([k,v])=>
-        `<u>${PITCH_TYPES[k].n} <b>${Math.round(v*100)}%</b></u>`).join('')+
+        `<u>${PITCH_TYPES[k].n} <b>${Math.round(v*100)}%</b>`+
+        `<em>${typeKmh(myP,k)}</em></u>`).join('')+
         `<i>변화구 통틀어 ${Math.round(breakShare(myP)*100)}%</i>`;
       aim.appendChild(mm);
     }
@@ -30644,13 +30913,17 @@ function renderLead(box, d){
   const pickOf=(lead)=>Math.max(0.02, Math.min(0.92,
     (0.30+lead*0.24)-(spd-45)*0.004-(iq-45)*0.0045));
 
+  /* [버그 이력] 머리말이 「주루 · 1루」로 **박혀 있었다.** 2루·3루 칸을
+     만들어두고도 트리거가 1루만 열어줬으니 그동안은 티가 안 났다.
+     이제 세 군데 다 열리니 서 있는 자리를 그대로 적는다.           */
+  const baseNm=base3?'3루':(base2?'2루':'1루');
   const head=el('div');
-  head.innerHTML='<div class="pl-t">주루 · 1루</div>'+
+  head.innerHTML='<div class="pl-t">주루 · '+baseNm+'</div>'+
     '<div class="pl-sub">'+LIVE.inning+'회 '+LIVE.outs+'아웃 · 투수 '+
       '<b style="color:#e2eaf5">'+pit.name+'</b> '+
       '<b style="color:#ffd15c">'+LIVE.pitchCount(pit.id)+'구</b>'+
       (cat?' · 포수 '+cat.name+' (어깨 '+Math.round(cat.arm)+' 수비 '+Math.round(cat.def)+')':'')+'</div>'+
-    (p?'<div class="bat-info"><div class="bi-top"><b>'+p.name+'</b><em>1루 주자</em></div>'+
+    (p?'<div class="bat-info"><div class="bi-top"><b>'+p.name+'</b><em>'+baseNm+' 주자</em></div>'+
        '<div class="bi-r">발 '+Math.round(spd)+' · 주루 센스 '+Math.round(iq)+
        ' · 올해 도루 '+(((LIVE.box[me]||{}).sb)||0)+'개 (실패 '+(((LIVE.box[me]||{}).cs)||0)+')</div></div>':'');
   w.appendChild(head);
@@ -30811,8 +31084,11 @@ function renderLead(box, d){
   } else buildRow();
 
   try{
+    /* [주의] 견제는 runPickoff 가 **1루 주자만** 굴린다(bases[0]).
+       2루·3루에서 그 길을 열면 아무 일도 안 일어나면서 「살았다」만
+       뜬다 — 그럴 바엔 안 부르는 게 맞다.                          */
     sc=leadScene(stage, {park:LIVE.park, lead:1,
-      onPick:()=>onPick(),
+      onPick:base1?(()=>onPick()):null,
       onEnd:()=>{ if(!done2) fin(lead===0?'run:hug':(lead>=2?'run:lead':'run:normal'), null, null); }});
   }catch(e){ sc=null; }
   if(!sc){
@@ -31073,11 +31349,8 @@ function renderPitch(box, d){
     const fq=(LIVE.pbox&&LIVE.pbox[p.id])||null;
     const fOuts=fq?(fq.outs||0):0;
     const fSta=(p.sta!=null)?p.sta:40;
-    const fLim=Math.max(6, Math.round(4+(fSta-22)*0.19));
-    const fAt=Math.max(6, Math.round(fLim*0.75));
-    const fK=fOuts>fAt ? Math.min(1,(fOuts-fAt)/Math.max(4,fLim-fAt+4)) : 0;
-    const fStf=Math.max(12, p.stf - fK*(15-Math.max(0,Math.min(7,(fSta-30)*0.15))));
-    const fCtl=Math.max(10, p.ctl - fK*( 9-Math.max(0,Math.min(4,(fSta-30)*0.09))));
+    const fd=pitFade(p, fOuts);
+    const fK=fd.k, fStf=fd.stf, fCtl=fd.ctl;
     const fTxt = fK<=0 ? '팔이 아직 가볍다'
       : (fK<0.4 ? '슬슬 무거워진다' : (fK<0.8 ? '많이 지쳤다 — 공이 몰린다' : '팔이 안 올라간다'));
     const fCol = fK<=0?'#7fc48f':(fK<0.4?'#c9a227':'#e08a70');
@@ -31108,7 +31381,8 @@ function renderPitch(box, d){
     tRow.innerHTML='';
     ars.forEach(k=>{
       const b2=el('button',k===type?'on':'');
-      b2.innerHTML=`${PITCH_TYPES[k].n}<i>${DE[k]||''}</i>`;
+      /* 체력이 빠진 지금 구위(fStf)로 뽑는다 — 던질수록 숫자가 내려간다 */
+      b2.innerHTML=`${PITCH_TYPES[k].n}<b>${typeKmh(p,k,fStf)}</b><i>${DE[k]||''}</i>`;
       b2.onclick=()=>{ if(busy)return; type=k; draw(); };
       tRow.appendChild(b2);
     });

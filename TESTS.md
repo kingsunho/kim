@@ -17,7 +17,7 @@ for f in lintcheck verify vernotetest mgrtest kakaotest careertest nametest \
          awardtest kingtest savediet loadtest sorttest phototest bgmtest \
          iostest galaxytest compattest boxtest pcardtest feattest \
          unhappytest hometest namecheck smoketest fixtest recruittest \
-         traintest2 vartest wltest advtest dectest2 subtest resumetest ruletest pitchbug deptest pitchtest playtest swaptest vartest2 rottest qualtest; do
+         traintest2 vartest wltest advtest dectest2 subtest resumetest ruletest pitchbug deptest pitchtest playtest swaptest vartest2 rottest qualtest mgm2test zonetest; do
   printf "%-13s " $f
   if [ "$f" = "verify" ]; then node verify.js index.html >/dev/null 2>&1 && echo OK || echo FAIL
   else node $f.js >/dev/null 2>&1 && echo OK || echo FAIL; fi
@@ -97,7 +97,68 @@ node soaktest.js
 | `exiletest` | 내쫓은 선수가 상대 팀 로스터·라인업에 들어가는지 · 새로고침 후에도 유지되는지 |
 | `wartest` | WAR 상수를 엔진에서 다시 재서 검증 · 투타 분리·합산 · 표본 표시 |
 | `opptest` | 상대 23팀 감독 성향 — 실제 기록에서 뽑히는지 · 색깔대로 실제로 굴리는지 · 지시의 절반만 먹이는지(lean) · 리그 득점이 안 흔들리는지 · 스카우팅 카드가 매니저 「기록」만큼 길어지는지 · 매니저가 하루에 다섯 번 나오는지(그 화면에 바로) |
+| `mgm2test` | 마구마구 2막 — 주루 판단창이 2루·3루에서도 뜨는가(`myRunBase`) · 번트 방향(3루쪽/1루쪽)이 실제로 다른 결과를 내는가 · 구종별 구속과 체력 식이 한 군데인가 · 인게임 라인업 패널 |
 | `arttest` | 브라우저가 있어야 되는 검사 — 파츠 시트 알파 · 뼈 뒤집기 · 통짜 그림(타자·투수) · 베이스 좌표 · 다리 이음매 · 만약에 라인스코어 겹침 — **크로미움 필요** |
+
+## 만들어놓고 못 닿는 길 (3.16.0)
+
+이 판에서 제일 비싼 버그였다. **기능이 없는 게 아니라, 닿는 문이 잠겨
+있었다.**
+
+「2루 3루 열어주고 3루에있을때 약간 희생플라이 하는경우 있잖아 그때
+뛸건지 말지도」 를 받아서 전부 만들었다 —
+
+- `renderLead` 에 2루 칸(3루 도루)과 3루 칸(태그업)
+- `applyDecision` 에 `_runPlan3` · `_tagPlan`
+- 엔진에 3루 도루 굴림(`stepPA`)과 희생플라이 확률(`sfRoll`)
+
+그런데 **판단창을 띄우는 조건 세 군데가 전부** 이렇게 남아 있었다.
+
+```js
+&& LIVE.outs<3 && LIVE.bases[0]===me && !LIVE.bases[1]
+```
+
+1루에 있을 때만 열린다. 2루·3루 코드는 한 줄도 안 굴렀다. 테스트도
+`renderLead` 안을 직접 부르니까 다 초록이었다. **렌더러를 직접 부르는
+테스트는 「닿을 수 있는가」 를 검사하지 않는다.**
+
+이제 조건이 `myRunBase(G, me)` 한 군데다. 이 함수가 -1 을 돌려주면 안
+띄운다.
+
+| 어디 | 언제 묻나 |
+|---|---|
+| 1루 | 2루가 비어 있을 때 (갈 데가 있어야 한다) |
+| 2루 | 3루가 비어 있을 때 |
+| 3루 | 2아웃이 아닐 때 (뜬공이면 이닝이 끝나니 태그업이 의미가 없다) |
+
+**새 기능을 붙였으면 「그 화면이 실제로 뜨는가」 를 따로 검사해라.**
+`mgm2test` 는 렌더러가 아니라 `myRunBase` 와 **트리거에 남은 옛 조건
+개수**를 센다.
+
+```js
+const old=(src.match(/bases\[0\]===me && !LIVE\.bases\[1\]/g)||[]).length;
+```
+
+`posFit` 이 두 번 선언돼서 포지션 훈련이 스물다섯 판 동안 죽어 있던 것과
+같은 종류다 — 코드는 멀쩡한데 아무도 안 부른다.
+
+## 화면에 적힌 숫자는 진짜여야 한다 — 식은 한 군데에 (3.16.0)
+
+v3.15.0 의 코스 히트맵에서 배운 것이 그대로 또 나왔다.
+
+구종 버튼에 구속을 박으려고 보니 **체력 계산식이 세 군데에 따로** 있었다.
+
+- 엔진(`stepPA`) — 구위·제구를 실제로 깎는 곳
+- 투구 화면 머리말 — 「팔이 무거워진다」 를 보여주는 곳
+- 그리고 새로 붙일 구속
+
+한 군데만 고치면 버튼에 106 이라 써놓고 릴리스에 112 가 뜬다. 그건
+거짓말이다. `pitFade(pit, outs)` 하나로 모으고 셋 다 그걸 부른다.
+`mgm2test` 가 **식이 소스에 몇 번 나오는지를 센다** —
+
+```js
+const dup=(src.match(/Math\.round\(4\+\(sta-22\)\*0\.19\)/g)||[]).length;  // 1 이어야 한다
+```
 
 ## 「돈다」는 도박이 아니다 (2.72.0)
 
