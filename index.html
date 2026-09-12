@@ -2296,6 +2296,233 @@ td.dimc{color:var(--dm);text-align:left}
 })();
 </script>
 
+<!-- 가로 모드 — [요청] "그냥 핸드폰은 가로모드만 가능하게해서 이런 느낌으로"
+     마구마구가 그렇다. 야구 화면은 가로로 봐야 타자·마운드·존이 한눈에
+     들어온다. 세로로는 셋 중 하나가 늘 잘린다.                          -->
+<style>
+/* 세로로 잡고 있으면 돌리라고 한다. 손에 쥔 폰(터치)에서만 뜬다 —
+   PC 로 창을 세로로 줄여 보는 경우까지 막을 이유는 없다.
+   [주의] 회전 잠금을 켜 둔 사람도 있다. 게임이 통째로 막히면 그건
+   버그와 다를 게 없어서, 작게 「그냥 세로로 볼래」 를 남겼다.        */
+#rotate{position:fixed;inset:0;z-index:200;display:none;flex-direction:column;
+  align-items:center;justify-content:center;gap:16px;background:#0d1015;
+  padding:28px;text-align:center}
+html.needland #rotate{display:flex}
+#rotate .rt-ic{font-size:46px;line-height:1;animation:rtSpin 2.4s ease-in-out infinite}
+@keyframes rtSpin{0%,42%{transform:rotate(0)}58%,100%{transform:rotate(-90deg)}}
+#rotate b{font-size:17px;font-weight:800;color:#e2eaf5}
+#rotate p{margin:0;font-size:12.5px;color:#8e9bb0;line-height:1.7}
+#rotate .rt-x{background:none;border:0;color:#5f6b7a;font-size:11.5px;
+  text-decoration:underline;padding:8px}
+/* ----- 가로일 때 뼈대 ----- */
+html.land body{max-width:none;padding-bottom:56px}
+html.land .topbar{padding:7px 14px}
+html.land .topbar h1{font-size:13.5px}
+html.land .tabbar{max-width:none;padding:3px 10px calc(3px + env(safe-area-inset-bottom))}
+html.land .tab{flex-direction:row;gap:5px;font-size:11px;padding:6px 2px}
+html.land .tab .ic{font-size:13px}
+/* 가로는 폭이 남고 높이가 모자란다 — 카드를 두 줄로 흘린다 */
+html.land #view{column-gap:12px;padding:0 12px}
+
+/* ================= 가로 로비 (3번째 사진 그대로) =================
+   위 띠 · 왼쪽 아이콘 줄 · 가운데 캐릭터 · 오른쪽 배너 · 큰 노란 버튼.
+   세로에서는 안 그린다(renderHomePlayer 가 가로일 때만 얹는다).     */
+.lob{margin:0 0 12px}
+.lob-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  background:linear-gradient(180deg,#182131,#121821);
+  border:1px solid #2a3444;border-radius:11px;padding:7px 11px}
+.lob-top b{font-size:15px;font-weight:900;color:#e2eaf5}
+.lob-lv{font-size:10px;font-weight:800;color:#0d1015;background:var(--gold);
+  border-radius:4px;padding:2px 6px}
+.lob-role{font-size:11px;color:#8e9bb0}
+.lob-cur{font-style:normal;font-size:11.5px;font-weight:700;color:#cfe0ee;
+  background:rgba(8,14,22,.55);border:1px solid #2a3444;border-radius:6px;padding:2px 7px}
+.lob-cur:first-of-type{margin-left:auto}
+.lob-mid{display:grid;grid-template-columns:64px 1fr 168px;gap:10px;margin-top:9px;
+  align-items:stretch}
+/* 왼쪽 아이콘 줄 */
+.lob-left{display:flex;flex-direction:column;gap:6px}
+.lob-ic{position:relative;background:#141b24;border:1px solid #2a3444;border-radius:10px;
+  padding:6px 2px;color:#c3ccd7;display:flex;flex-direction:column;align-items:center;gap:2px}
+.lob-ic u{text-decoration:none;font-size:17px;line-height:1}
+.lob-ic span{font-size:9.5px;font-weight:700}
+.lob-ic em{position:absolute;right:3px;top:3px;font-style:normal;font-size:8.5px;
+  font-weight:800;color:#0d1015;background:#e0584e;border-radius:7px;padding:0 4px}
+/* 가운데 캐릭터 — 연습장에 서 있는 그 자리 */
+.lob-ch{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;padding:8px 6px;border-radius:12px;
+  background:radial-gradient(120% 90% at 50% 108%,#2f6b3a 0%,#1d3a28 42%,#141b24 78%);
+  border:1px solid #2a3444}
+.lob-av{width:78px;height:104px;border-radius:10px;overflow:hidden;
+  border:2px solid rgba(255,209,92,.55);background:#101a29}
+.lob-av>*{display:block;width:100%;height:100%;object-fit:cover}
+.lob-nm{font-size:15px;font-weight:900;color:#fff;margin-top:3px}
+.lob-sub{font-size:11px;color:#ffd15c;font-weight:700}
+.lob-sub2{font-size:10.5px;color:#9fb0c4}
+/* 오른쪽 배너 두 장 */
+.lob-right{display:flex;flex-direction:column;gap:7px}
+.lob-bn{flex:1;text-align:left;border-radius:11px;padding:8px 10px;
+  background:linear-gradient(135deg,#2a3a55,#18212e);border:1px solid #33415a;color:#cfd8e3}
+.lob-bn.alt{background:linear-gradient(135deg,#3a2f26,#211a14);border-color:#4a3a2a}
+.lob-bn b{display:block;font-size:11px;color:#ffd15c;font-weight:800}
+.lob-bn span{display:block;font-size:13.5px;font-weight:800;color:#e2eaf5;margin-top:2px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lob-bn i{display:block;font-style:normal;font-size:10px;color:#8e9bb0;margin-top:2px}
+/* 제일 큰 노란 버튼 — 사진의 「입장하기」 */
+.lob-go{display:block;width:100%;margin-top:9px;border-radius:12px;padding:11px 12px;
+  background:linear-gradient(180deg,#ffd15c,#e8a32c);border:2px solid #fff0c2;
+  color:#2a1d05;box-shadow:0 5px 16px rgba(232,163,44,.28)}
+.lob-go b{display:block;font-size:19px;font-weight:900;letter-spacing:-.4px}
+.lob-go span{display:block;font-size:11.5px;font-weight:800;color:#5a4210;margin-top:2px}
+.lob-go i{display:block;font-style:normal;font-size:10.5px;color:#6d5316;margin-top:1px}
+
+/* 가로 폰은 높이가 390px 남짓뿐이다 — 로비 한 판이 **한 화면에** 들어와야
+   한다. 「입장하기」 가 탭바에 잘려서 안 보이면 로비가 아니다.
+   위 띠와 큰 버튼은 제 높이를 먹고, 남는 높이를 가운데가 가져간다.   */
+html.land .lob{display:flex;flex-direction:column;gap:8px;margin:0 0 12px;
+  height:calc(100vh - 116px);height:calc(100dvh - 116px);
+  min-height:226px;max-height:360px}
+html.land .lob-top{flex:0 0 auto;padding:6px 10px}
+html.land .lob-top b{font-size:14px}
+html.land .lob-mid{flex:1 1 auto;min-height:0;margin:0}
+html.land .lob-ch{min-height:0;overflow:hidden;padding:6px}
+html.land .lob-av{height:52%;width:auto;aspect-ratio:3 / 4;max-height:none}
+html.land .lob-nm{font-size:14px;margin-top:2px}
+html.land .lob-left{overflow:hidden}
+html.land .lob-ic{flex:1;min-height:0;justify-content:center}
+html.land .lob-ic u{font-size:15px}
+html.land .lob-bn{padding:6px 9px}
+html.land .lob-bn span{font-size:12.5px}
+html.land .lob-go{flex:0 0 auto;margin:0;padding:8px 12px}
+html.land .lob-go b{font-size:17px}
+html.land .lob-go span{font-size:11px}
+html.land .lob-go i{font-size:10px}
+
+/* ================= 가로 인게임 (움짤 그대로) =================
+   [요청] 마구마구 모바일 타석 화면 움짤. 배치가 이렇다 —
+     · 야구장이 **화면 전체**를 먹는다. 테두리도 여백도 없다
+     · 왼쪽에 타자, 가운데에 스트라이크 존, 저 멀리 투수
+     · **오른쪽 아래에 동그란 조작 버튼**이 모여 있다 (가운데 큰 스윙,
+       둘레에 도루·번트). 엄지가 닿는 자리다
+     · 위쪽에 얇은 스코어 띠, 왼쪽 위에 베이스 다이아몬드
+     · 아래 가운데에 타이밍 게이지
+   전부 야구장 **위에 떠 있다.** 화면을 나눠 쓰지 않는다.          */
+html.land #decision.sheet.swf{padding:0}
+html.land #decision.sheet.swf .pl-wrap{position:relative;padding:0;display:block;
+  height:100%;overflow:hidden}
+/* 야구장 — 화면 전체. 가로는 16:9 보다 넓어서 위아래를 자른다 */
+html.land #decision.sheet.swf .mound{position:absolute;inset:0;width:100%;height:100%;
+  max-height:none;min-height:0;margin:0;border:0;border-radius:0;overflow:hidden}
+html.land #decision.sheet.swf .mound .mv-cv{width:100%;height:auto;left:0;top:50%;
+  transform:translateY(-50%)}
+/* 머리말은 왼쪽 위에 띄운다 */
+html.land #decision.sheet.swf .pl-wrap>div:first-child{position:absolute;left:10px;top:8px;
+  z-index:6;max-width:52%}
+html.land #decision.sheet.swf .swf-h{padding:0;background:rgba(8,14,22,.62);
+  border-radius:8px;padding:4px 9px}
+/* 타이밍 게이지 — 아래 가운데 */
+html.land #decision.sheet.swf .swg{position:absolute;left:50%;bottom:12px;width:42%;
+  transform:translateX(-50%);margin:0;z-index:6;height:15px}
+html.land #decision.sheet.swf .swnote{position:absolute;left:50%;bottom:32px;
+  transform:translateX(-50%);margin:0;z-index:6;width:60%;
+  text-shadow:0 1px 3px rgba(0,0,0,.9)}
+/* ----- 오른쪽 아래 조작 뭉치 ----- */
+html.land #decision.sheet.swf .pl-act{position:absolute;right:14px;bottom:14px;
+  width:auto;margin:0;padding:0;background:none;z-index:7;
+  display:flex;align-items:flex-end;gap:10px}
+html.land #decision.sheet.swf .pl-act button{border-radius:50%;padding:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  box-shadow:0 4px 14px rgba(0,0,0,.45)}
+html.land #decision.sheet.swf .pl-hit{width:72px;height:72px;font-size:13px;
+  background:rgba(20,26,34,.86);border:2px solid rgba(224,138,112,.65)}
+html.land #decision.sheet.swf .pl-swing{width:112px;height:112px;font-size:22px;
+  background:rgba(47,122,88,.90);border:3px solid #ffd15c}
+html.land #decision.sheet.swf .pl-swing i{display:block;font-style:normal;font-size:9.5px;
+  font-weight:700;opacity:.85;margin-top:2px}
+/* 번트는 스윙 왼쪽 아래에 작게 — 움짤도 그 자리다.
+   공이 오는 동안에도 댈 수 있다(실제 야구도 그렇다) */
+html.land #decision.sheet.swf .bunt-t{display:none!important}
+html.land #decision.sheet.swf .bunt-row{position:absolute;right:130px;bottom:100px;
+  display:flex!important;gap:8px;margin:0;width:auto;z-index:7;grid-template-columns:none}
+html.land #decision.sheet.swf .bunt-row .spb{width:62px;height:62px;border-radius:50%;
+  padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:rgba(20,30,24,.86);border:2px solid rgba(63,106,78,.85);
+  box-shadow:0 4px 14px rgba(0,0,0,.45)}
+html.land #decision.sheet.swf .bunt-row .spb span{font-size:12px}
+html.land #decision.sheet.swf .bunt-row .spb i{font-size:8px;line-height:1.15;margin-top:1px;
+  max-width:56px;overflow:hidden}
+/* 라인스코어는 위 오른쪽, 얇게 */
+html.land #decision.sheet.swf .mv-board{left:auto;right:8px;width:30%;top:2%;height:24%}
+html.land #decision.sheet.swf .who{bottom:auto;top:8px;right:8px;display:none}
+/* HUD 가 왼쪽 위에서 셋이 겹쳤다 — 투수 이름은 머리말에 이미 있다 */
+html.land #decision.sheet.swf .mound .lbl{display:none}
+html.land #decision.sheet.swf .pl-wrap>div:first-child{left:auto;right:auto;
+  left:124px;top:6px;max-width:46%}
+/* 구속 표시가 오른쪽 아래 스윙 버튼 뒤로 들어갔다 — 왼쪽 아래로 */
+html.land #decision.sheet.swf .mv-spd{top:auto;bottom:12px;right:auto;left:12px}
+/* 번트 동그라미는 이름만 — 62px 안에 설명까지 넣으면 글자가 터진다.
+   숫자는 고르는 단계(왼쪽 판)에서 이미 봤다 */
+html.land #decision.sheet.swf .bunt-row .spb i{display:none}
+html.land #decision.sheet.swf .bunt-row .spb{width:66px;height:66px}
+
+/* ---- 가로 · 고르는 단계 (마구마구 PC 화면 배치) ----
+   [참고] 1번 사진 — 왼쪽에 「투구코스분석」, 오른쪽에 라인업·선수 카드,
+   가운데는 야구장. 우리도 똑같이 나눈다:
+     왼쪽  — 이 투수가 던지는 자리(히트맵) · 구종 배분
+     오른쪽 — 노림수 · 작전(밀어/당겨) · 번트 · 준비 됐다
+     가운데 — 야구장. 가려지지 않는다                                */
+html.land #decision.sheet:not(.swf) .pl-wrap{position:relative;padding:0;display:block;
+  height:100%;overflow:hidden}
+html.land #decision.sheet:not(.swf) .mound{position:absolute;inset:0;width:100%;height:100%;
+  max-height:none;min-height:0;margin:0;border:0;border-radius:0;overflow:hidden}
+html.land #decision.sheet:not(.swf) .mound .mv-cv{width:100%;height:auto;left:0;top:50%;
+  transform:translateY(-50%)}
+/* 머리말 — 위 가운데 한 줄 띠. 왼쪽 판을 먹으면 안 된다 */
+html.land #decision.sheet:not(.swf) .pl-wrap>div:first-child{position:absolute;
+  left:248px;right:164px;top:5px;z-index:6;
+  background:rgba(8,14,22,.80);border-radius:8px;padding:5px 9px;
+  max-height:34%;overflow:auto}
+html.land #decision.sheet:not(.swf) .pl-t{font-size:12.5px}
+html.land #decision.sheet:not(.swf) .bat-info{margin-top:4px;padding:4px 7px}
+/* 머리말은 야구장 위에 떠 있다 — 투수를 덜 가리게 두 줄로 줄인다.
+   창 넓이 안내(bwin)와 긴 사용법은 왼쪽 판에서 이미 다 보인다.     */
+html.land #decision.sheet:not(.swf) .bwin{display:none}
+html.land #decision.sheet:not(.swf) .pl-wrap>div:first-child .pl-sub:last-child{display:none}
+/* 왼쪽 — 「투구코스분석」 (1번 사진 그 자리다). 노림수와 준비 버튼까지 여기 */
+html.land #decision.sheet:not(.swf) .aim{position:absolute;left:6px;top:5px;bottom:5px;
+  z-index:6;width:236px;overflow:auto;overscroll-behavior:contain;margin:0;
+  background:rgba(8,14,22,.82);border-radius:10px;padding:7px 9px}
+html.land #decision.sheet:not(.swf) .aim-zone i{padding:5px 0;font-size:10px}
+html.land #decision.sheet:not(.swf) .aim-go{padding:10px 0;font-size:14px}
+/* 오른쪽 — 작전. 아래에서 위로 쌓는다(번트가 없는 판도 자리가 안 흔들린다) */
+html.land #decision.sheet:not(.swf) .pl-skip{position:absolute;right:6px;bottom:6px;
+  width:152px;margin:0;z-index:7;padding:7px 0;font-size:11px}
+html.land #decision.sheet:not(.swf) .pl-act{position:absolute;right:6px;bottom:44px;
+  width:152px;margin:0;padding:0;background:none;z-index:7;display:flex;gap:5px}
+html.land #decision.sheet:not(.swf) .pl-act button{flex:1;padding:11px 2px;font-size:13px}
+html.land #decision.sheet:not(.swf) .bunt-row{position:absolute;right:6px;bottom:100px;
+  width:152px;grid-template-columns:1fr 1fr;gap:5px;margin:0;z-index:7}
+html.land #decision.sheet:not(.swf) .bunt-row .spb{padding:5px 3px}
+html.land #decision.sheet:not(.swf) .bunt-row .spb i{font-size:8px;line-height:1.2}
+/* 「번트를 댄다 — 3루쪽이면 스퀴즈다」 는 152px 안에서 두 줄로 터진다.
+   버튼에 3루쪽·1루쪽이 이미 적혀 있으니 가로에서는 뺀다 (움짤도 버튼뿐) */
+html.land #decision.sheet:not(.swf) .bunt-t{display:none}
+html.land #decision.sheet:not(.swf) .spray-row{position:absolute;right:6px;top:5px;
+  width:152px;grid-template-columns:1fr;gap:4px;margin:0;z-index:7}
+html.land #decision.sheet:not(.swf) .spray-row .spb{padding:5px 4px}
+html.land #decision.sheet:not(.swf) .spray-row .spb i{font-size:8.5px}
+/* 가운데 아래 — 게이지와 한 줄 조언 */
+html.land #decision.sheet:not(.swf) .swg{position:absolute;left:252px;right:168px;bottom:8px;
+  width:auto;margin:0;z-index:6}
+html.land #decision.sheet:not(.swf) .swnote{position:absolute;left:252px;right:168px;bottom:26px;
+  margin:0;z-index:6;text-shadow:0 1px 3px rgba(0,0,0,.9)}
+html.land #decision.sheet:not(.swf) .mv-board{display:none}
+html.land #decision.sheet:not(.swf) .who{display:none}
+html.land #decision.sheet:not(.swf) .mound .lbl{display:none}
+html.land #decision.sheet:not(.swf) .mv-top{left:250px}
+
+html.land #view>.card,html.land #view>.hero,html.land #view>.warn{max-width:100%}
+</style>
 <!-- [성능] 첫 화면 스타일시트는 <head> 하나에 다 들어 있다. 거기 넣은
      바이트는 **대기화면이 뜨기 전에** 전부 받아야 한다(loadtest 가 이걸
      잰다 — 1Mbps 에서 1.2초 안에 뭐라도 보여야 한다는 기준이다).
@@ -2406,12 +2633,11 @@ td.dimc{color:var(--dm);text-align:left}
   padding-top:0;height:auto;width:100%;overflow:hidden}
 #decision.sheet.swf .mound .mv-cv{width:auto;height:100%;left:50%;
   transform:translateX(-50%)}
-/* [주의] 좌우를 자르면 캔버스가 판보다 **2배 넘게** 넓어진다. 존은
-   판 너비의 %로 놓여 있어서 그대로 두면 혼자만 쪼그라든다 — 보기에도
-   작고, 공이 흩어지는 범위(존 폭 × 0.303)까지 같이 좁아진다.
-   높이는 판과 캔버스가 같으니 **높이 기준**으로 다시 잡는다.
-   캔버스 기준 존 폭 65/480 → 높이로 환산하면 31% 다.               */
-#decision.sheet.swf .szone{height:31%;width:auto;padding-top:0;aspect-ratio:0.776}
+/* [주의] 좌우를 자르면 캔버스가 판보다 2배 넘게 넓어진다. 존을 판
+   너비의 %로 두면 혼자만 쪼그라든다 — 보기에도 작고, 공이 흩어지는
+   범위(존 폭 × 0.303)까지 좁아진다.
+   이제 **fitZone() 이 캔버스를 재서 px 로 앉힌다.** 여기서 %로 다시
+   건드리면 그 계산을 덮어쓴다 — 손대지 마라.                      */
 #decision.sheet.swf .swg{flex:0 0 auto;height:17px;margin:10px 0 6px}
 #decision.sheet.swf .swnote{flex:0 0 auto;min-height:18px;font-size:12px}
 #decision.sheet.swf .pl-act{flex:0 0 auto;position:static;margin-top:14px;background:none}
@@ -2459,6 +2685,12 @@ td.dimc{color:var(--dm);text-align:left}
   </div>
 </div>
 <div id="toast"></div>
+<div id="rotate">
+  <div class="rt-ic">📱</div>
+  <b>가로로 돌려주세요</b>
+  <p>야구 화면은 가로로 봐야<br>타자 · 마운드 · 스트라이크 존이 한눈에 들어옵니다.</p>
+  <button class="rt-x" id="rot-x">그냥 세로로 볼래</button>
+</div>
 <nav class="tabbar">
   <button class="tab on" data-v="home"><span class="ic">&#9713;</span>홈</button>
   <button class="tab" data-v="squad"><span class="ic">&#9787;</span>선수단</button>
@@ -8463,8 +8695,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.18.0';
-const APP_VERSION_NOTE = '카메라를 타자 어깨 뒤로 — 야구장이 화면을 꽉 채운다';
+const APP_VERSION = '3.19.0';
+const APP_VERSION_NOTE = '가로 모드 — 인게임도 로비도 마구마구 배치로';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8485,6 +8717,16 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.19.0', t:'가로 모드 — 인게임도 로비도 마구마구 배치로', items:[
+    '[요청] "그냥 핸드폰은 가로모드만 가능하게해서 이런 느낌으로 가던가" · "메인로비 화면도 내가 3번째 보낸 사진 느낌으로 해" — 마구마구 모바일 움짤과 로비 사진을 그대로 따라갔다',
+    '<b>폰을 세로로 잡으면 가로로 돌리라고 안내한다.</b> 야구 화면은 가로로 봐야 타자 · 마운드 · 스트라이크 존이 한눈에 들어온다. 세로로는 셋 중 하나가 늘 잘린다. (회전 잠금을 켜 둔 사람도 있어서 「그냥 세로로 볼래」 는 작게 남겨뒀다 — 게임이 통째로 막히면 그건 버그와 다를 게 없다)',
+    '<b>가로 타석 — 야구장이 화면 전체다.</b> 왼쪽에 타자, 가운데에 스트라이크 존, 저 멀리 투수. 테두리도 여백도 없다',
+    '<b>조작은 오른쪽 아래 동그라미로 모였다.</b> 가운데 큰 <b>스윙</b>, 그 옆에 <b>지켜본다</b>, 위에 <b>3루쪽 · 1루쪽 번트</b>. 엄지가 닿는 자리다 — 움짤 그 배치 그대로',
+    '<b>고르는 동안에는 화면이 셋으로 갈린다.</b> 왼쪽에 「이 투수가 던지는 자리」(코스 히트맵 · 구종 배분 · 노림수 · 준비 됐다), 가운데는 야구장, 오른쪽에 작전(밀어/당겨 · 번트). 마구마구 PC 화면이 그렇게 생겼다',
+    '<b>메인 로비를 새로 짰다.</b> 위에 년차 · 이름 · 재화(코인 · 운영비 · 주차), 왼쪽에 아이콘 줄(신문 · 순위 · 소식 · 기록), 가운데에 내 캐릭터가 연습장에 서 있고, 오른쪽에 배너 두 장(다음 경기 · 지난 경기). 그 아래 제일 큰 노란 버튼이 <b>이번 주 시작</b> 이다',
+    '로비는 <b>한 화면에 딱 들어간다.</b> 스크롤을 내리면 예전 카드들이 그대로 따라온다 — 로비를 예쁘게 하려고 정보를 버리면 그건 개선이 아니다',
+    '<b>스트라이크 존이 이제 캔버스를 직접 잰다.</b> 세로는 좌우를, 가로는 위아래를 잘라내는데 존만 판 기준 %로 놓여 있으면 어긋난다 — <b>보이는 자리와 판정하는 자리가 갈리면</b> 예전에 겪은 「화면에선 한가운데인데 볼로 불린다」 가 그대로 재현된다. 이제 화면을 어떻게 자르든 존은 홈플레이트 위에 정확히 얹힌다',
+  ]},
   {v:'3.18.0', t:'카메라를 타자 어깨 뒤로 — 야구장이 화면을 꽉 채운다', items:[
     '[제보] "너무 짜치는데 이런 느낌이 안나" — 마구마구 타석 화면 넉 장을 다시 놓고 봤다. 공통점은 하나였다. <b>카메라가 타자 어깨 뒤에 바짝 붙어 있다.</b> 타자가 화면의 절반을 먹고, 투수는 저 멀리 작고, 스트라이크 존이 그 사이에 크게 떠 있다',
     '우리 그림은 정반대였다. <b>구장 전체가 나오는 넓은 그림</b> — 외야 담장 · 도시 스카이라인 · 전광판 · 야수 넷 · 1·3루 베이스까지 다 나오고, 정작 타자는 화면 높이의 3분의 1이었다. 정보는 많은데 「내가 타석에 서 있다」 는 느낌이 안 난다. 미니어처 디오라마였다',
@@ -19172,8 +19414,112 @@ function pmGoalBars(){
   }
   return box;
 }
+/* ================= 가로 로비 =================
+   [요청] "메인로비 화면도 내가 3번째 보낸 사진 느낌으로 해"
+   마구마구 로비 사진 그대로 나눈다 —
+     위   : 레벨 · 이름 · 재화 (골드/운영비/코인)
+     왼쪽 : 작은 아이콘 세로줄 (출석 · 이벤트 · 혜택 자리)
+     가운데: 캐릭터가 서 있다. 그 아래 이름과 오늘 성적
+     오른쪽: 배너 카드 두 장 (픽업선수 영입 · 마구패스 자리)
+     아래 : 제일 큰 노란 버튼 「입장하기」
+     맨 아래: 구단관리 · 라인업 · 선수성장 · 상점 … (우리는 탭바가 그거다)
+   [주의] 이건 **가로일 때 맨 위에 한 판**을 얹는 것이다. 그 아래로는
+   예전 카드들이 그대로 따라온다 — 로비를 예쁘게 하려고 정보를 버리면
+   그건 개선이 아니다.                                             */
+function lobbyStage(){
+  if(!ST) return null;
+  const me=ST.playerId||MYID;
+  const p=TBYID['wwzw'].players.find(x=>x.id===me);
+  const b=ST.bat[me]||blankBat();
+  const st=ST.stand['wwzw']||{w:0,l:0,t:0};
+  const role=(typeof isPlayerMode==='function' && !isPlayerMode()) ? '감독'
+    : (ST.role==='pit'?'투수':(ST.role==='two'?'투수 겸 타자'
+      :(ST.myPos?(POSNAMES[ST.myPos]||'타자'):'타자')));
+  const nx=(ST.schedule||[])[ST.round||0];
+  const opp=nx?TBYID[nx.opp]:null;
+  const step=(typeof nextStepInfo==='function')?nextStepInfo():null;
+
+  const w=el('div','lob');
+  /* --- 위 띠 --- */
+  const top=el('div','lob-top');
+  top.innerHTML='<span class="lob-lv">'+(ST.seasonNo||1)+'년차</span>'+
+    '<b>'+(p?p.name:nameOf(me))+'</b>'+
+    '<span class="lob-role">'+role+'</span>'+
+    '<i class="lob-cur">🪙 '+(typeof coinSlot==='function'?coinSlot():0)+'</i>'+
+    '<i class="lob-cur">💰 '+Math.round(ST.budget||0)+'만원</i>'+
+    '<i class="lob-cur">📅 '+(ST.round||0)+'주차</i>';
+  w.appendChild(top);
+
+  const mid=el('div','lob-mid');
+  /* --- 왼쪽 아이콘 줄 --- */
+  const left=el('div','lob-left');
+  const nNew=((ST.notices||[]).length)|0;
+  [['📰','신문',()=>{ try{ showPaper(); }catch(e){} }, 0],
+   ['🏆','순위',()=>go('stand'), 0],
+   ['🔔','소식',()=>{ const t=document.querySelector('#view .news-card,#view .card');
+      if(t) t.scrollIntoView({behavior:'smooth',block:'center'}); }, nNew],
+   ['📊','기록',()=>go('stats'), 0]
+  ].forEach(([ic,nm,fn2,badge])=>{
+    const bt=el('button','lob-ic');
+    bt.innerHTML='<u>'+ic+'</u><span>'+nm+'</span>'+(badge?'<em>'+badge+'</em>':'');
+    bt.onclick=fn2;
+    left.appendChild(bt);
+  });
+  mid.appendChild(left);
+
+  /* --- 가운데 캐릭터 --- */
+  const ch=el('div','lob-ch');
+  ch.innerHTML='<div class="lob-av">'+
+    ((typeof avatarHTML==='function')?avatarHTML(me):'')+'</div>'+
+    '<div class="lob-nm">'+(p?p.name:nameOf(me))+'</div>'+
+    '<div class="lob-sub">'+
+      (b.pa ? ('타율 '+(b.ab?fmt3(b.h/b.ab):'-')+' · '+b.h+'안타 · '+b.rbi+'타점')
+            : '아직 타석에 안 섰다')+'</div>'+
+    '<div class="lob-sub2">팀 '+st.w+'승 '+st.l+'패'+(st.t?' '+st.t+'무':'')+
+      ' · 리그 '+leagueRank('wwzw')+'위</div>';
+  mid.appendChild(ch);
+
+  /* --- 오른쪽 배너 --- */
+  const right=el('div','lob-right');
+  if(opp){
+    const c1=el('button','lob-bn');
+    c1.innerHTML='<b>'+(nx.round||'')+'차전 · '+(nx.homeGame?'홈':'원정')+'</b>'+
+      '<span>'+opp.name+'</span>'+
+      '<i>'+(nx.played?'경기 끝':'아직 안 치렀다')+'</i>';
+    c1.onclick=()=>go('game');
+    right.appendChild(c1);
+  }
+  {
+    const c2=el('button','lob-bn alt');
+    const prev=(ST.schedule||[]).filter(x=>x&&x.played&&x.result).slice(-1)[0];
+    c2.innerHTML='<b>지난 경기</b>'+
+      (prev ? '<span>'+(TBYID[prev.opp]||{name:'?'}).name+'</span><i>'+
+              prev.result.us+' : '+prev.result.them+' '+
+              (prev.result.us>prev.result.them?'승':(prev.result.us<prev.result.them?'패':'무'))+'</i>'
+            : '<span>아직 없다</span><i>첫 경기를 기다린다</i>');
+    c2.onclick=()=>go('stats');
+    right.appendChild(c2);
+  }
+  mid.appendChild(right);
+  w.appendChild(mid);
+
+  /* --- 제일 큰 버튼 («입장하기» 자리) --- */
+  if(step){
+    const cta=el('button','lob-go');
+    cta.innerHTML='<b>'+step.label+'</b>'+
+      (step.head?'<span>'+step.head+'</span>':'')+
+      (step.sub?'<i>'+step.sub+'</i>':'');
+    cta.onclick=()=>{ try{ step.run(); }catch(e){} };
+    w.appendChild(cta);
+  }
+  return w;
+}
 function renderHomePlayer(){
   const c=$('#view'); c.innerHTML='';
+  /* 가로면 로비 한 판을 맨 위에 얹는다 — 그 아래는 예전 카드 그대로다 */
+  if(document.documentElement.classList.contains('land')){
+    try{ const lb=lobbyStage(); if(lb) c.appendChild(lb); }catch(e){}
+  }
   const me=ST.playerId||MYID;
   const p=TBYID['wwzw'].players.find(x=>x.id===me);
   const st=ST.stand['wwzw']||{w:0,l:0,t:0};
@@ -19524,6 +19870,10 @@ function renderHome(){
      새 시즌 시작은 감독이 하는 일이 아니라 그냥 그 판의 마무리다. */
   if(isPlayerMode() && ST && ST.schedule && !ST.seasonOver) return renderHomePlayer();
   const c=$('#view'); c.innerHTML='';
+  /* 가로면 로비 한 판을 맨 위에 — 감독 모드도 같은 화면이다 */
+  if(document.documentElement.classList.contains('land')){
+    try{ const lb=lobbyStage(); if(lb) c.appendChild(lb); }catch(e){}
+  }
   const st=ST.stand['wwzw'];
   const played=ST.schedule.filter(s=>s.played).length;
   const us=TBYID['wwzw'];
@@ -28989,10 +29339,55 @@ function moundView(opts){
   mvPaint(m,{pitLeft:!!o.pitLeft, batLeft:!!o.batLeft, usDef:!!o.usDef,
              batNo:(o.batNo==null?null:o.batNo), pit:'idle', bat:'stand'});
   mvScore(m);
+  watchZone(m);                  // 존을 캔버스에 맞춰 앉히고, 크기가 바뀌면 다시
   return m;
 }
 /* 외야 전광판 · 상단 띠에 지금 점수를 넣는다.
    [요청] "야구장 전광판 제대로 그리고 거기에 실시간 점수 이름 들어가게"   */
+/* 스트라이크 존을 **캔버스 실제 사각형**에 맞춰 앉힌다.
+   [왜 필요한가] 존은 캔버스에 그린 게 아니라 그 위에 얹은 DOM 이다.
+   판(.mound) 너비의 % 로 놓으면, 캔버스가 판과 크기가 다를 때 어긋난다 —
+     세로 화면: 캔버스를 높이에 맞추고 **좌우**를 자른다 (캔버스가 더 넓다)
+     가로 화면: 캔버스를 너비에 맞추고 **위아래**를 자른다 (캔버스가 더 높다)
+   어긋나면 「화면에선 한가운데인데 볼로 불린다」 가 그대로 재현된다.
+   그래서 %를 버리고 **캔버스를 재서 px 로** 놓는다. throwBall 도 cellOf 도
+   존의 실제 사각형을 읽으니 전부 이 하나만 맞으면 따라온다.
+
+   숫자는 카메라(MV_CAM)에서 나온 값이다 —
+     가운데 y = scr(216)/270 = 0.641   ·   폭 = 0.10 * MV_CAM = 0.135
+     높이는 예전부터 폭의 1.289배(실제 스트라이크 존 비율)             */
+const SZ_CY=0.641, SZ_W=0.135, SZ_HW=1.289;
+function fitZone(mound){
+  if(!mound) return;
+  const cv=mound.querySelector('.mv-cv'), z=mound.querySelector('#szone');
+  if(!cv||!z) return;
+  const mb=mound.getBoundingClientRect(), cb=cv.getBoundingClientRect();
+  if(!cb.width||!cb.height||!mb.width) return;
+  const w=cb.width*SZ_W, h=w*SZ_HW;
+  const cx=(cb.left-mb.left)+cb.width*0.5;
+  const cy=(cb.top -mb.top )+cb.height*SZ_CY;
+  z.style.left=(cx-w/2).toFixed(1)+'px';
+  z.style.top =(cy-h/2).toFixed(1)+'px';
+  z.style.width=w.toFixed(1)+'px';
+  z.style.height=h.toFixed(1)+'px';
+  z.style.paddingTop='0';
+  z.style.transform='none';
+}
+/* 판 크기가 바뀌면(돌리거나, 집중 모드로 들어가거나) 다시 맞춘다 */
+function watchZone(mound){
+  if(!mound || mound._zw) return;
+  mound._zw=1;
+  const go=()=>{ try{ fitZone(mound); }catch(e){} };
+  go();
+  try{
+    if(typeof ResizeObserver==='function'){
+      const ro=new ResizeObserver(go); ro.observe(mound); mound._zro=ro;
+    }
+  }catch(e){}
+  /* ResizeObserver 가 없는 환경(테스트 등)도 돌아가게 몇 번 더 */
+  setTimeout(go,60); setTimeout(go,260);
+  try{ window.addEventListener('resize', go); }catch(e){}
+}
 function mvScore(mound){
   if(!LIVE) return;
   const b=mound.querySelector('#mvboard');
@@ -29841,7 +30236,13 @@ function renderSwing(box, d){
      손이 바쁜 순간에 눈이 찾을 것을 줄이는 게 핵심이다.             */
   const focusOn=(on)=>{
     try{
-      box.classList.toggle('sheet', !!on);
+      /* [요청] 마구마구 움짤 — 가로에서는 **고르는 동안에도** 야구장이
+         화면 전체다. 코스 분석은 왼쪽, 노림수·작전은 오른쪽으로 떠 있고
+         공이 오면 그 둘만 사라진다(=swf). 세로는 예전 그대로 —
+         고를 때는 스크롤되는 판, 공이 올 때만 전체 화면이다.       */
+      const land=(typeof document!=='undefined' &&
+        document.documentElement.classList.contains('land'));
+      box.classList.toggle('sheet', !!on || land);
       box.classList.toggle('swf', !!on);
       /* head 는 안 숨긴다 — 대신 drawHead 가 한 줄짜리로 바꿔 그린다.
          카운트와 내가 고른 노림수는 공 오는 중에도 봐야 한다.      */
@@ -39114,6 +39515,33 @@ function bootFailed(e){
   }
 }
 
+/* ================= 화면 방향 =================
+   [요청] "그냥 핸드폰은 가로모드만 가능하게해서 이런 느낌으로 가던가"
+   마구마구가 그렇다. 야구 화면은 가로로 봐야 타자 · 마운드 · 스트라이크
+   존이 한눈에 들어온다. 세로로는 셋 중 하나가 늘 잘린다.
+
+   [주의] screen.orientation.lock() 은 전체화면일 때만 먹고 iOS 사파리는
+   아예 없다. 그래서 **잠그는 게 아니라 안내한다.**
+   손에 쥔 폰(터치 · 좁은 화면)에서만 뜬다 — PC 로 창을 세로로 줄여 보는
+   경우까지 막을 이유는 없다.
+   [주의] 회전 잠금을 켜 둔 사람도 있다. 게임이 통째로 막히면 그건
+   버그와 다를 게 없어서 「그냥 세로로 볼래」 를 작게 남겼다.       */
+let ORIENT_SKIP=false;
+function isPhone(){
+  try{
+    if(window.matchMedia && matchMedia('(pointer:coarse)').matches) return true;
+  }catch(e){}
+  return Math.min(window.innerWidth, window.innerHeight) <= 500;
+}
+function applyOrient(){
+  try{
+    const land = window.innerWidth > window.innerHeight;
+    const H=document.documentElement;
+    H.classList.toggle('land', land);
+    /* 세로 안내 — 폰이고, 세로고, 아직 「그냥 볼래」 를 안 눌렀을 때 */
+    H.classList.toggle('needland', !land && isPhone() && !ORIENT_SKIP);
+  }catch(e){}
+}
 async function boot(){
   paintVersionBadge();          // 뭐가 실패하든 버전은 먼저 보이게
   setupGate();
@@ -39148,6 +39576,13 @@ async function boot(){
   window.addEventListener('pagehide',()=>{ if(ST)saveGame(true); });
   $$('.tab').forEach(b=>b.onclick=()=>go(b.dataset.v));
   paintTabs();
+  /* 방향 — 처음 한 번 + 돌릴 때마다 */
+  applyOrient();
+  window.addEventListener('resize', applyOrient);
+  try{ if(screen&&screen.orientation&&screen.orientation.addEventListener)
+    screen.orientation.addEventListener('change', applyOrient); }catch(e){}
+  { const rx=$('#rot-x');
+    if(rx) rx.onclick=()=>{ ORIENT_SKIP=true; applyOrient(); }; }
   $('#sheet-close').onclick=closeSheet;
   $('#sheet-bg').onclick=closeSheet;
   /* 선수 이름 클릭 — #view 에 한 번만 걸어두면 어느 화면이든 동작한다.

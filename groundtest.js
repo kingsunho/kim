@@ -100,10 +100,21 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
   setup();
   ev("showDecision({kind:'lead'})"); await wait(80);
   T(d.getElementById('decision').classList.contains('sheet'), '주루도 판으로 뜬다');
+  /* [바뀜 v3.19.0] "핸드폰은 가로모드만 가능하게해서 이런 느낌으로"
+     가로에서는 타석도 **화면 전체**다(마구마구 배치 — 왼쪽 코스분석,
+     가운데 야구장, 오른쪽 작전). 세로는 예전 그대로 — 고를 때는 페이지
+     안에서 스크롤하고, 공이 올 때만 전체 화면으로 바뀐다.          */
   setup();
+  ev("document.documentElement.classList.remove('land')");
   ev("showDecision({kind:'swing', label:'타이밍'})"); await wait(80);
   T(!d.getElementById('decision').classList.contains('sheet'),
-    '타석은 그대로다 — 마운드 화면은 페이지 안에 있다');
+    '세로 타석은 페이지 안이다 — 고를 게 많아 스크롤이 있어야 한다');
+  setup();
+  ev("document.documentElement.classList.add('land')");
+  ev("showDecision({kind:'swing', label:'타이밍'})"); await wait(80);
+  T(d.getElementById('decision').classList.contains('sheet'),
+    '가로 타석은 화면 전체를 쓴다');
+  ev("document.documentElement.classList.remove('land')");
 
   console.log('\n[수비 — 직접 조종]');
   setup();

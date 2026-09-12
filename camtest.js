@@ -24,7 +24,22 @@ const T=(ok,n,extra)=>{console.log((ok?'  ✅ ':'  ❌ ')+n+(extra?' :: '+extra:
   await p.goto('file://'+process.cwd()+'/index.html');
   await p.waitForTimeout(1200);
 
-  console.log('[카메라 상수]');
+  console.log('[세로로 잡으면 돌리라고 한다]');
+  /* [요청] "그냥 핸드폰은 가로모드만 가능하게" — 이 창은 390×820,
+     손에 쥔 폰 크기다. 세로면 안내가 떠야 한다.                    */
+  const R1=await p.evaluate(()=>{ ORIENT_SKIP=false; applyOrient();
+    const r=document.getElementById('rotate');
+    return {need:document.documentElement.classList.contains('needland'),
+            disp:r?getComputedStyle(r).display:'없다'}; });
+  T(R1.need && R1.disp!=='none', '세로로 잡으면 「가로로 돌려주세요」 가 뜬다', R1.disp);
+  const R2=await p.evaluate(()=>{ const x=document.getElementById('rot-x'); if(x) x.click();
+    return {need:document.documentElement.classList.contains('needland'),
+            disp:getComputedStyle(document.getElementById('rotate')).display}; });
+  /* 회전 잠금을 켜 둔 사람도 있다. 통째로 막으면 그건 버그와 다를 게 없다 */
+  T(!R2.need && R2.disp==='none',
+    '「그냥 세로로 볼래」 를 누르면 안 막는다 — 회전 잠금을 켠 사람도 있다');
+
+  console.log('\n[카메라 상수]');
   const C=await p.evaluate(()=>({cam:MV_CAM, cx:MV_CAM_X, cy:MV_CAM_Y,
     bat:MV_FIG_H.bat, pit:MV_FIG_H.pit, mound:MV_MOUND.y, plate:MV_PLATE.y,
     W:MVW, H:MVH, boxc:MV_BOXC[2]}));
@@ -117,6 +132,61 @@ const T=(ok,n,extra)=>{console.log((ok?'  ✅ ':'  ❌ ')+n+(extra?' :: '+extra:
     '잘라내도 존은 캔버스 기준으로 같은 크기다',
     '캔버스의 '+(F.zOfCv*100).toFixed(1)+'% (판 기준으론 '+(F.zOfBox*100).toFixed(1)+'%)');
   T(Math.abs(F.zx-0.5)<0.01, '잘라내도 존은 홈플레이트 위에 있다', (F.zx*100).toFixed(1)+'%');
+
+  console.log('\n[가로 모드 — 움짤 배치]');
+  /* [요청] "그냥 핸드폰은 가로모드만 가능하게해서 이런 느낌으로 가던가"
+     움짤 배치: 야구장이 화면 전체 · 왼쪽 타자 · 가운데 존 ·
+     오른쪽 아래에 동그란 조작 버튼.                                */
+  await p.setViewportSize({width:844, height:390});
+  await p.waitForTimeout(250);
+  const L=await p.evaluate(()=>{
+    applyOrient();
+    return new Promise(r=>setTimeout(()=>{
+      const H=document.documentElement;
+      const st=document.createElement('div');
+      st.id='decision'; st.className='decision on sheet swf';
+      st.style.cssText='position:fixed;inset:0';
+      /* [주의] 실제 판은 **머리말 div 가 첫 자식**이고 야구장이 그다음이다.
+         가로 CSS 에 `.pl-wrap>div:first-child` (머리말을 왼쪽 위로 띄우는
+         규칙)가 있어서, 머리말 없이 야구장만 넣으면 야구장이 그 규칙을
+         맞아 엉뚱한 자리로 간다. 구조를 실제와 같게 만든다.         */
+      st.innerHTML='<div class="pl-wrap"><div class="swf-h"></div></div>';
+      document.body.appendChild(st);
+      const mv=moundView({batLeft:false, usDef:false});
+      st.querySelector('.pl-wrap').appendChild(mv);
+      /* 조작 버튼 두 개를 실제와 같은 클래스로 얹는다 */
+      const acts=document.createElement('div'); acts.className='pl-act';
+      acts.innerHTML='<button class="pl-hit">지켜본다</button>'+
+        '<button class="pl-swing">스윙<i>공이 올 때</i></button>';
+      st.querySelector('.pl-wrap').appendChild(acts);
+      setTimeout(()=>{
+        const box=st.getBoundingClientRect();
+        const mb=mv.getBoundingClientRect();
+        const cv=mv.querySelector('.mv-cv').getBoundingClientRect();
+        const z=mv.querySelector('#szone').getBoundingClientRect();
+        const sw=st.querySelector('.pl-swing').getBoundingClientRect();
+        r({land:H.classList.contains('land'),
+           full:(mb.width>=box.width-2 && mb.height>=box.height-2),
+           cvW:cv.width, cvH:cv.height, boxW:box.width, boxH:box.height,
+           zOfCv:z.width/cv.width, zx:(z.left+z.width/2-box.left)/box.width,
+           zy:(z.top+z.height/2-box.top)/box.height,
+           swR:Math.round(sw.width), swSq:Math.abs(sw.width-sw.height)<4,
+           swRight:(box.right-sw.right), swBot:(box.bottom-sw.bottom)});
+      },140);
+    },120));
+  });
+  T(L.land, '가로로 잡으면 land 가 켜진다');
+  T(L.full, '야구장이 화면 전체를 먹는다 (테두리도 여백도 없다)',
+    Math.round(L.boxW)+'×'+Math.round(L.boxH));
+  T(L.cvH>L.boxH*1.05, '가로는 16:9 보다 넓어서 캔버스 위아래를 자른다',
+    '캔버스 높이 '+Math.round(L.cvH)+' vs 화면 '+Math.round(L.boxH));
+  T(Math.abs(L.zOfCv-0.10*C.cam)<0.015,
+    '위아래를 잘라도 존은 캔버스 기준으로 같은 크기다', (L.zOfCv*100).toFixed(1)+'%');
+  T(Math.abs(L.zx-0.5)<0.02 && L.zy>0.3 && L.zy<0.8,
+    '존이 화면 가운데에 떠 있다', 'x '+(L.zx*100).toFixed(0)+'% · y '+(L.zy*100).toFixed(0)+'%');
+  T(L.swSq && L.swR>=90, '스윙이 큰 동그라미다', L.swR+'px');
+  T(L.swRight<60 && L.swBot<60, '스윙이 오른쪽 아래 구석에 있다 — 엄지 자리다',
+    '오른쪽 '+Math.round(L.swRight)+'px · 아래 '+Math.round(L.swBot)+'px');
 
   console.log('\n[깨진 데 없나]');
   T(boom.length===0, '브라우저 예외 없음', boom.slice(0,2).join(' / ')||'없음');
