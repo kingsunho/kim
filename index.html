@@ -1161,9 +1161,18 @@ body.pl-lock #view{touch-action:none}
       안쪽 크기는 전부 em 이라 같이 줄어든다.
    ② 칸은 min-width:0 · overflow:hidden — 그래도 넘치면 겹치지 말고 잘려라.
    ③ 전광판 자체도 overflow:hidden — 캔버스 위로 새어 나가지 않게.       */
-.mv-board{position:absolute;left:28.6%;top:10.4%;width:42.8%;height:15.6%;
-  padding:1px 3px;display:flex;flex-direction:column;justify-content:center;gap:1px;
-  overflow:hidden;font-size:8px}
+/* [주의] 카메라를 당기면서(MV_CAM) **외야 전광판 그림이 화면 위로
+   잘려 나갔다.** 라인스코어는 그 그림 위에 얹는 DOM 이라, 그대로 두면
+   관중석 한복판에 숫자만 둥둥 뜬다.
+   어차피 지금은 중계 화면 HUD 다 — 위쪽에 제 판을 깔고 올린다.    */
+/* [주의] 카메라를 당기고 나서 이 판이 **투수를 가렸다.** 투수 머리가
+   화면 6% 자리로 올라왔는데 판이 2.5~19.5% 를 먹고 있었다 — 공을
+   던지는 사람이 안 보이면 그건 야구 화면이 아니다.
+   가운데(투수)를 비우고 오른쪽 위 구석으로 몰았다.                */
+.mv-board{position:absolute;left:auto;right:1.5%;width:41%;top:2%;height:15%;
+  padding:2px 4px;display:flex;flex-direction:column;justify-content:center;gap:1px;
+  overflow:hidden;font-size:8px;
+  background:rgba(8,14,22,.74);border:1px solid rgba(120,150,180,.32);border-radius:5px}
 .mvb-r{display:flex;align-items:center;gap:1px;min-width:0;
   font-size:1em;font-weight:800;line-height:1.1;color:#ffd15c;letter-spacing:-.3px}
 .mvb-r span{flex:0 0 30%;min-width:0;color:#cfe0ee;overflow:hidden;white-space:nowrap;
@@ -1212,15 +1221,19 @@ body.pl-lock #view{touch-action:none}
 .hitmitt.wide{border-color:rgba(255,209,92,.62)}
 .hitmitt.tight{border-color:rgba(224,138,112,.60)}
 .bw-m{display:block;font-style:normal;font-size:10px;color:var(--dim);opacity:.8;margin-top:3px}
-.szone{position:absolute;left:50%;top:80%;transform:translate(-50%,-50%);
-  width:10%;padding-top:12.9%;border:2px solid rgba(255,255,255,.5);border-radius:2px}
-.szone i{position:absolute;background:rgba(255,255,255,.16)}
+/* 카메라를 당기면서 존이 화면의 주인공이 됐다 — 마구마구도 여기가
+   제일 또렷하다. 테두리를 밝히고 안쪽에 옅은 판을 깐다.
+   [주의] 크기·위치는 MV_CAM 과 물려 있다. 거기 주석을 봐라.       */
+.szone{position:absolute;left:50%;top:64.1%;transform:translate(-50%,-50%);
+  width:13.5%;padding-top:17.4%;border:2px solid rgba(255,255,255,.78);border-radius:3px;
+  background:rgba(150,190,230,.10);box-shadow:0 0 0 1px rgba(10,16,24,.35),0 2px 10px rgba(0,0,0,.28)}
+.szone i{position:absolute;background:rgba(255,255,255,.26)}
 .szone i.v1{left:33.3%;top:0;bottom:0;width:1px}
 .szone i.v2{left:66.6%;top:0;bottom:0;width:1px}
 .szone i.h1{top:33.3%;left:0;right:0;height:1px}
 .szone i.h2{top:66.6%;left:0;right:0;height:1px}
 .szone.hotcell{box-shadow:0 0 0 2px rgba(232,118,44,.55)}
-.mitt{position:absolute;left:50%;bottom:6.5%;transform:translate(-50%,0);
+.mitt{position:absolute;left:50%;bottom:5%;transform:translate(-50%,0);
   width:18px;height:16px;background:#7a4a28;border:2px solid #a06a3c;
   border-radius:9px 9px 7px 7px;box-shadow:inset -3px -4px 0 rgba(0,0,0,.22)}
 .mitt::before{content:'';position:absolute;left:-5px;top:1px;width:8px;height:13px;
@@ -1415,7 +1428,7 @@ body.pl-lock #view{touch-action:none}
   border:2px solid #ffd15c;opacity:0;pointer-events:none}
 .swtap.on{animation:swtapA .45s ease-out}
 @keyframes swtapA{0%{opacity:1;transform:scale(.45)}100%{opacity:0;transform:scale(1.7)}}
-.mv-spd{position:absolute;right:8px;top:30px;background:rgba(8,14,22,.72);
+.mv-spd{position:absolute;right:8px;top:22%;background:rgba(8,14,22,.72);
   border-radius:7px;padding:3px 8px;color:#cfe0ee;font-size:9px;font-weight:700;
   opacity:0;transform:translateY(-4px);transition:opacity .18s,transform .18s;
   letter-spacing:-.3px}
@@ -1466,8 +1479,10 @@ body.pl-lock #view{touch-action:none}
 .lhp{font-style:normal;font-size:9px;font-weight:800;color:#7fc4d8;
   background:rgba(127,196,216,.16);border-radius:4px;padding:1px 4px;margin-left:4px;
   vertical-align:middle}
-.mitt-tag{position:absolute;left:50%;bottom:6.5%;transform:translate(-50%,0);
-  font-size:8.5px;color:#c9a880;letter-spacing:-.3px;white-space:nowrap}
+/* [주의] 카메라를 당기면서 이 글자가 **스트라이크 존 한복판**에 찍혔다.
+   미트 자리에 붙어 있었는데 그 자리가 이제 존이다. 바닥으로 내린다. */
+.mitt-tag{position:absolute;left:50%;bottom:1%;transform:translate(-50%,0);
+  font-size:8px;color:#c9a880;letter-spacing:-.3px;white-space:nowrap;opacity:.75}
 .ptype{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0 2px}
 .ptype button{flex:1 1 auto;min-width:66px;background:#161b22;border:1px solid #2a323d;
   border-radius:8px;color:#cfd8e3;font-size:11.5px;font-weight:700;padding:9px 4px}
@@ -2371,17 +2386,32 @@ td.dimc{color:var(--dm);text-align:left}
    정한다). 여기서는 반대로 **높이가 남는 만큼** 먹어야 하니
    padding 을 풀고 aspect-ratio 로 바꾼다. 가로가 넘치면 max-width 가
    잡아준다 — .runcv 와 같은 수법이다.                              */
-/* [주의] .mound 는 padding-top:56.25% 로 비율을 잡는다 — **너비가 높이를
-   정한다.** 여기서 flex:1 로 늘리면 높이만 커지고 캔버스가 세로로
-   늘어나 그림이 찌그러진다(370×669 로 재봤다). 그러니 야구장은 제
-   비율 그대로 두고, **남는 높이는 위아래로 나눠** 가운데에 모은다.
-   빈 곳이 남아도 찌그러진 그림보다 낫다.                           */
-/* 야구장 + 게이지 + 버튼을 한 덩어리로 묶어서 **화면 가운데 조금 아래**
-   에 둔다. 남는 높이를 버튼과 야구장 사이로 벌려놨더니 그 사이가
-   휑해서, 눈이 공에서 버튼으로 갈 때 한참 건너가야 했다.
-   폰은 엄지가 바닥에 있으니 덩어리를 아래로 내려서 잡는다.        */
-#decision.sheet.swf .pl-wrap{justify-content:flex-end;padding-bottom:3vh}
-#decision.sheet.swf .mound{flex:0 0 auto}
+/* [제보] "너무 짜치는데 이런 느낌이 안나"
+   야구장을 16:9 그대로 두니 폰 세로 화면에서 높이의 4분의 1밖에 안 됐다.
+   위아래로 시커먼 빈 곳만 남고, 마구마구 사진처럼 **화면이 야구장으로
+   꽉 차는** 느낌이 안 난다.
+
+   [함정] 처음엔 flex:1 로 늘렸다가 370×669 가 됐다 — 캔버스가 세로로
+   늘어나서 그림이 찌그러졌다. 비율을 억지로 바꾸면 안 된다.
+   [답] 늘리는 게 아니라 **자른다.** 캔버스는 제 비율(16:9) 그대로 두되
+   **높이에 맞추고 가로로 넘치게** 해서 좌우를 잘라낸다. 세로로 긴
+   화면에는 세로로 긴 그림이 맞다 — 어차피 잘려 나가는 건 외야 구석과
+   1·3루수뿐이고, 볼 것은 전부 가운데(투수 · 존 · 타자)에 있다.
+
+   [주의] 스트라이크 존·미트는 **판(.mound) 기준 %** 로 놓인다. 캔버스가
+   판보다 넓어져도 가로 한가운데(50%)는 그대로라 홈플레이트 위에 계속
+   얹힌다 — 존은 캔버스에 안 그리고 DOM 으로만 있으니 어긋날 데가 없다. */
+#decision.sheet.swf .pl-wrap{justify-content:flex-end;padding-bottom:2vh}
+#decision.sheet.swf .mound{flex:1 1 auto;min-height:190px;max-height:56vh;
+  padding-top:0;height:auto;width:100%;overflow:hidden}
+#decision.sheet.swf .mound .mv-cv{width:auto;height:100%;left:50%;
+  transform:translateX(-50%)}
+/* [주의] 좌우를 자르면 캔버스가 판보다 **2배 넘게** 넓어진다. 존은
+   판 너비의 %로 놓여 있어서 그대로 두면 혼자만 쪼그라든다 — 보기에도
+   작고, 공이 흩어지는 범위(존 폭 × 0.303)까지 같이 좁아진다.
+   높이는 판과 캔버스가 같으니 **높이 기준**으로 다시 잡는다.
+   캔버스 기준 존 폭 65/480 → 높이로 환산하면 31% 다.               */
+#decision.sheet.swf .szone{height:31%;width:auto;padding-top:0;aspect-ratio:0.776}
 #decision.sheet.swf .swg{flex:0 0 auto;height:17px;margin:10px 0 6px}
 #decision.sheet.swf .swnote{flex:0 0 auto;min-height:18px;font-size:12px}
 #decision.sheet.swf .pl-act{flex:0 0 auto;position:static;margin-top:14px;background:none}
@@ -8433,8 +8463,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.17.0';
-const APP_VERSION_NOTE = '공 올 때는 야구장만 남는다 · 스윙이 보인다 · 신문이 두 배';
+const APP_VERSION = '3.18.0';
+const APP_VERSION_NOTE = '카메라를 타자 어깨 뒤로 — 야구장이 화면을 꽉 채운다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8455,6 +8485,15 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.18.0', t:'카메라를 타자 어깨 뒤로 — 야구장이 화면을 꽉 채운다', items:[
+    '[제보] "너무 짜치는데 이런 느낌이 안나" — 마구마구 타석 화면 넉 장을 다시 놓고 봤다. 공통점은 하나였다. <b>카메라가 타자 어깨 뒤에 바짝 붙어 있다.</b> 타자가 화면의 절반을 먹고, 투수는 저 멀리 작고, 스트라이크 존이 그 사이에 크게 떠 있다',
+    '우리 그림은 정반대였다. <b>구장 전체가 나오는 넓은 그림</b> — 외야 담장 · 도시 스카이라인 · 전광판 · 야수 넷 · 1·3루 베이스까지 다 나오고, 정작 타자는 화면 높이의 3분의 1이었다. 정보는 많은데 「내가 타석에 서 있다」 는 느낌이 안 난다. 미니어처 디오라마였다',
+    '<b>카메라를 홈플레이트 쪽으로 당겼다.</b> 하늘과 스카이라인은 잘려 나가고 마운드·존·타석이 커진다. 타자는 화면 높이의 <b>73%</b> 를 먹고, 투수는 그 3분의 1이다 — 실제로 타자는 카메라에서 1m, 투수는 18m 다',
+    '<b>세로 화면에서는 야구장이 세로로 길어진다.</b> 폰에서 16:9 를 지키면 화면의 4분의 1밖에 안 차서 위아래가 시커멓게 남았다. 이제 <b>좌우를 잘라내고</b> 높이를 꽉 채운다 — 잘려 나가는 건 외야 구석과 1·3루수뿐이고, 볼 것은 전부 가운데(투수 · 존 · 타자)에 있다',
+    '<b>스트라이크 존이 화면의 주인공이 됐다.</b> 테두리를 밝히고 안쪽에 옅은 판을 깔았다. 카메라를 당긴 만큼 존도 같이 커진다 — <b>보이는 자리와 판정하는 자리가 어긋나면 안 된다</b>. 예전에 「화면에선 한가운데인데 볼로 불린다」 를 겪은 자리다',
+    '<b>스윙 잔상이 앞으로 나간다.</b> 여태 뒤쪽 어깨에서 머리 위까지만 돌고 끝나서, 정작 <b>공을 때리고 나가는 팔로스루가 없었다.</b> 배트가 어디로 지나갔는지가 안 보이니 스윙이 아니라 후광처럼 보였다. 존을 훑고 나가는 구간까지 끌고 나간다',
+    '작은 것들 — 전광판 라인스코어는 위쪽 띠로 올렸고(외야 전광판 그림이 잘려 나갔다), 「포수」 글자가 존 한복판에 찍히던 것과 <b>공이 투수 손이 아니라 화면 한가운데 잔디에서 튀어나오던 것</b> 도 같이 고쳤다',
+  ]},
   {v:'3.17.0', t:'공 올 때는 야구장만 남는다 · 스윙이 보인다 · 신문이 두 배', items:[
     '[제보] "지금 너무 불편한게 많아서 인게임이" — 재봤다. 폰(390×820)에서 <b>타석 판단창이 1088px</b> 이었다. 화면은 820px 이다. 그래서 <b>[스윙] 버튼이 야구장에서 400px 아래</b> 에 있었다 — 공이 날아오는 걸 보면서 스윙을 누르는 게 물리적으로 불가능했다',
     '이제 <b>공이 오는 동안에는 화면에 야구장과 버튼 두 개만 남는다.</b> 꽉 차고, 스크롤이 없고, 버튼이 엄지 닿는 자리에 크게 있다. 카운트와 내가 고른 노림수는 맨 위에 한 줄로',
@@ -27352,6 +27391,39 @@ const MV_BOX=[[166,230,62,42],[252,230,62,42]];
 /* 타석 한가운데 (발이 놓이는 자리) */
 const MV_BOXC=[MV_BOX[0][0]+MV_BOX[0][2]/2, MV_BOX[1][0]+MV_BOX[1][2]/2, 262];
 const MV_MOUND={x:240,y:132}, MV_PLATE={x:240,y:250};
+/* ================= 카메라 =================
+   [제보] "너무 짜치는데 이런 느낌이 안나" (마구마구 타석 화면 넉 장)
+
+   사진들을 다시 보면 공통점이 하나다 — **카메라가 타자 어깨 뒤에
+   바짝 붙어 있다.** 타자가 화면의 절반을 먹고, 투수는 저 멀리 작고,
+   스트라이크 존이 그 사이에 크게 떠 있다. 외야도 전광판도 거의 안 보인다.
+
+   우리 그림은 반대였다. **구장 전체가 나오는 넓은 그림** 이라 —
+   외야 담장 · 도시 스카이라인 · 전광판 · 야수 넷 · 1·3루 베이스까지
+   다 나오고, 정작 타자는 화면 높이의 3분의 1이었다. 정보는 많은데
+   「내가 타석에 서 있다」 는 느낌이 안 난다. 미니어처 디오라마다.
+
+   [고치는 법] 좌표를 전부 다시 잡는 건 위험하다 — 필드·담장·베이스·
+   파울선이 전부 이 480×270 좌표에 맞물려 있고, 옮기다 어긋나면
+   「1·3루 베이스가 왜 저기 있냐」 같은 게 또 난다.
+   그래서 **그리던 그대로 그리고 카메라만 당긴다.** 홈플레이트 근처를
+   중심으로 확대하면 바깥(스카이라인·외야 구석)은 알아서 잘려 나가고
+   안쪽은 커진다. 좌표는 한 줄도 안 건드린다.
+
+   [주의] 스트라이크 존·미트·공은 캔버스가 아니라 그 위에 얹은 DOM 이다.
+   같은 비율로 안 키우면 그림과 판정이 어긋난다 — .szone 의 크기·위치를
+   여기 값에 맞춰 CSS 에서 같이 고쳤다. 이 숫자를 바꾸면 거기도 바꿔라.
+     존 중심 y' = CAM_Y + (216 - CAM_Y) * CAM   (원래 top:80%)
+     존 폭      = 10% * CAM                                          */
+/* [함정] 처음엔 화면 한가운데(232)를 축으로 1.5배 했다. 그랬더니
+   **홈플레이트 흙이 통째로 화면 아래로 밀려 나가** 타자가 잔디 위에
+   서 있는 것처럼 보였다. 확대는 축에서 멀수록 많이 밀어낸다 —
+   축이 위에 있으면 아래가 제일 많이 밀린다.
+   축을 **화면 아래(339)** 로 내렸다. 그러면 아래쪽은 거의 안 움직이고
+   위쪽(하늘·스카이라인)이 잘려 나간다. 마침 잘려야 할 게 그쪽이다.
+   배율은 1.35 — 더 당기면 투수 머리가 위로 잘린다. 투수 머리(y≈100)와
+   홈플레이트 흙 아래(y≈290) 가 둘 다 들어오는 제일 센 값이다.       */
+const MV_CAM=1.35, MV_CAM_X=240, MV_CAM_Y=339;
 /* 시점은 포수 뒤다. 마주 보는 투수의 오른팔은 화면 왼쪽에 나온다.
    [버그 이력] 이걸 뒤집어 놔서 우완 투수 열두 명이 전부 좌완 모션이었다. */
 /* ===== [ART:BEGIN] 여기부터 [ART:END] 까지는 art/pose.js 가 통째로 떼어다
@@ -28587,7 +28659,13 @@ const MV_FIG_OF={ idle:'pitw', wind:'pitw', cock:'pitw', rel:'pit', follow:'pit'
    다리를 쫙 벌린 자세라 상자 672 중 사람이 565 였고, 새 그림은 6등신에
    배트가 머리 위로 더 솟아서 사람이 577 이다. 화면 사람 키(77.4px)가
    그대로 유지되도록 맞춘 값이다. art/packfig.js 가 이 계산을 한다.      */
-const MV_FIG_H={ pit:52, pitw:50, bat:90 };
+/* [제보] "너무 짜치는데 이런 느낌이 안나"
+   카메라를 당겨도(MV_CAM) 타자가 투수보다 1.7배밖에 안 크면 여전히
+   멀리서 본 그림이다. 마구마구는 4배쯤 된다 — 타자는 카메라에서
+   1m, 투수는 18m 다. 실제 비율로 가면 그게 맞다.
+   90 → 128. 카메라 1.5 를 곱하면 화면에서 192px(높이의 71%)이 되고
+   발은 아래로 잘려 나간다. 잘리는 게 맞다 — 어깨 뒤 카메라다.   */
+const MV_FIG_H={ pit:46, pitw:44, bat:146 };
 let MV_FIG=null, MV_FIG_OK=false;
 const MV_FIG_TINT={};
 function mvFigInit(){
@@ -28719,21 +28797,27 @@ function mvBatSweep(g,F,A,a,q){
   grd.addColorStop(0.93,'rgba('+C+','+A2.toFixed(3)+')');
   grd.addColorStop(1,'rgba('+C+',0)');
   g.fillStyle=grd;
+  /* [카메라를 당기고 나서 보니] 호가 **머리 위에서 끝나 있었다.**
+     -40° 까지만 돌아서, 뒤쪽 어깨에서 머리 위까지만 그리고 정작
+     **공을 때리고 나가는 앞쪽(팔로스루)이 없었다.** 배트가 어디로
+     지나갔는지가 안 보이니 스윙이 아니라 후광처럼 보인다.
+     앞으로 +25° 까지 끌고 나간다 — 존을 훑고 나가는 그 구간이다. */
   g.beginPath(); g.moveTo(gx,gy);
-  g.arc(gx,gy,r*1.02, -40*D, -190*D, true);   // 뒤쪽 어깨 위 → 머리 위 → 앞으로
+  g.arc(gx,gy,r*1.02, 25*D, -195*D, true);    // 앞(팔로스루) → 머리 위 → 뒤쪽 어깨
   g.closePath(); g.fill();
   /* 배트 날이 지나간 선 — 굵게 한 줄, 그 안에 밝은 심 한 줄 */
   g.lineCap='round';
   g.strokeStyle='rgba('+C+','+(0.72*a*M).toFixed(3)+')'; g.lineWidth=16;
-  g.beginPath(); g.arc(gx,gy,r*0.94, -48*D, -182*D, true); g.stroke();
+  g.beginPath(); g.arc(gx,gy,r*0.94, 18*D, -188*D, true); g.stroke();
   g.strokeStyle='rgba(255,255,255,'+(0.85*a*(solid?1:0.7)).toFixed(3)+')'; g.lineWidth=5;
-  g.beginPath(); g.arc(gx,gy,r*0.94, -52*D, -176*D, true); g.stroke();
+  g.beginPath(); g.arc(gx,gy,r*0.94, 12*D, -182*D, true); g.stroke();
   /* 속도선 — 호를 따라 짧게 세 줄. 이게 있어야 '빠르다' 가 읽힌다 */
   g.lineWidth=3;
+  /* 속도선 — 제일 빠른 구간(존을 훑고 나가는 앞쪽)에 몰아 놓는다 */
   for(let i=0;i<3;i++){
     const rr=r*(0.62+i*0.15);
     g.strokeStyle='rgba('+C+','+(0.45*a*M*(1-i*0.22)).toFixed(3)+')';
-    g.beginPath(); g.arc(gx,gy,rr, (-70-i*14)*D, (-150+i*10)*D, true); g.stroke();
+    g.beginPath(); g.arc(gx,gy,rr, (0-i*12)*D, (-130+i*12)*D, true); g.stroke();
   }
   g.lineCap='butt';
 }
@@ -28776,6 +28860,12 @@ function mvPaint(mound, o){
   mvSheetInit(); mvFigInit();
   g.setTransform(MVS,0,0,MVS,0,0);          // 논리 좌표(480x270) 로 그린다
   g.clearRect(0,0,MVW,MVH);
+  /* 카메라를 당긴다 — 여기서부터 아래는 전부 확대된 좌표계다.
+     지우는 건(clearRect) 당기기 전에 해야 화면 전체가 지워진다.   */
+  g.save();
+  g.translate(MV_CAM_X, MV_CAM_Y);
+  g.scale(MV_CAM, MV_CAM);
+  g.translate(-MV_CAM_X, -MV_CAM_Y);
   mvSky(g); mvCity(g); mvLights(g); mvBoard(g); mvStand(g); mvField(g);
   const home={cap:'#2f5fb0', sh:'#eef2f8', pants:'#dfe4ec', st:'rgba(47,95,176,.35)', gl:'#5b3a1e'};
   const away=mvOppUniform();
@@ -28795,7 +28885,11 @@ function mvPaint(mound, o){
   // 포수 — 존 뒤에 앉는다
   /* 포수는 화면에서 제일 앞이라 제일 커야 한다. 대신 아래가 잘려 나가게
      내려 앉힌다 — 머리가 스트라이크 존을 가리면 안 된다.            */
-  mvGuy(g,MV_PLATE.x,MVH+50,76,du,'catch',false);
+  /* [주의] 카메라를 당기고 나서 포수를 올려 앉혔더니 **머리가 정확히
+     스트라이크 존 자리에 왔다.** 어깨 뒤 카메라에서 포수는 화면 제일
+     아래에 헬멧만 보이는 게 맞다(마구마구도 아예 안 보인다).
+     다시 내린다 — 아래 테두리만 잡아준다.                        */
+  mvGuy(g,MV_PLATE.x,MVH+58,80,du,'catch',false);
   /* 타자 — 통짜 그림. 그림이 우타(화면 왼쪽에 서서 오른쪽을 본다)라
      좌타일 때만 뒤집는다. */
   /* 타자는 타석 박스 한가운데에 발을 놓는다. 우타는 3루쪽(화면 왼쪽),
@@ -28803,6 +28897,7 @@ function mvPaint(mound, o){
   const bx=st.batLeft?MV_BOXC[1]:MV_BOXC[0];
   if(!mvFig(g, st.bat, bx, MV_BOXC[2], ou, !!st.batLeft, {no:st.batNo, swT:st.swT, swQ:st.swQ}))
     mvGuy(g, bx, MV_BOXC[2]-2, 80, ou, st.bat, !st.batLeft);
+  g.restore();                              // 카메라 끝
 }
 
 /* ---------- 팀마다 다른 유니폼 색 ----------
@@ -28962,7 +29057,13 @@ function throwBall(mound, type, opts){
   if(zs){ const zb=zs.getBoundingClientRect();
     if(zb.width){ zx=zb.left+zb.width/2-box.left; zy=zb.top+zb.height/2-box.top;
                   zw=zb.width; zh=zb.height; } }
-  const sx=W*0.5, sy=H*0.49;      // 마운드 릴리스 지점
+  /* 마운드 릴리스 지점.
+     [주의] 0.49 는 **카메라를 당기기 전** 마운드 자리였다(MV_MOUND.y=132
+     → 132/270). 카메라(MV_CAM)가 들어오면서 마운드가 화면 22% 로
+     올라갔는데 이 값을 안 고치면 **공이 투수 손이 아니라 화면 한가운데
+     잔디에서 튀어나온다.** 카메라 식으로 다시 뽑은 값이다:
+       (MV_CAM_Y + (132 - MV_CAM_Y)*MV_CAM) / 270 = 0.22                */
+  const sx=W*0.5, sy=H*0.22;
   const cxv=(o.cx==null?1:o.cx), cyv=(o.cy==null?1:o.cy);
   /* 0.303 — 세 칸(0,1,2)은 존 안(±0.303)에 들어가고
      빠진 공(-1,3)은 존 밖(±0.606 > 반폭 0.5)으로 나간다.               */

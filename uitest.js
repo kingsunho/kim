@@ -185,15 +185,15 @@ const txt=()=>d.querySelector('#view').textContent;
 
   console.log('\n[타자·존 비율]');
   T('존이 타자보다 작다', ()=>{
-    /* 화면(480x270) 기준 — 존 폭 10%(48px) · 높이 12.9%of폭(62px),
-       타자 키 80px. 예전엔 존 96px > 타자 62px 이라 뒤집혀 있었다. */
-    const css=ev("document.querySelector('style')?'':''"); // (스타일은 아래 문자열로 검사)
+    /* [바뀜 v3.18.0] 예전엔 타자 키를 80 으로 박아놨는데, 카메라를
+       당기면서(MV_CAM) 타자가 앞으로 나와 146 이 됐다. 숫자를 박지 말고
+       **그때그때 읽는다.** 존도 카메라 배율이 이미 들어간 값이다.   */
     const html=ev("document.documentElement.innerHTML");
     const m=html.match(/\.szone\{[^}]*width:([\d.]+)%;padding-top:([\d.]+)%/);
     if(!m) return '!존 크기를 못 읽는다';
     const zw=480*Number(m[1])/100, zh=480*Number(m[2])/100;
-    const bat=80;
-    return (zh<bat && zw<bat) ? `존 ${zw.toFixed(0)}x${zh.toFixed(0)} < 타자 ${bat}` : `!존 ${zw}x${zh}`;
+    const bat=Number(ev("MV_FIG_H.bat"))*Number(ev("MV_CAM"));   // 화면에 찍히는 키
+    return (zh<bat && zw<bat) ? `존 ${zw.toFixed(0)}x${zh.toFixed(0)} < 타자 ${bat.toFixed(0)}` : `!존 ${zw}x${zh} / 타자 ${bat}`;
   });
   T('존 가로:세로가 실제 비율(1:1.3)에 가깝다', ()=>{
     const html=ev("document.documentElement.innerHTML");
@@ -201,12 +201,17 @@ const txt=()=>d.querySelector('#view').textContent;
     const r=Number(m[2])/Number(m[1]);
     return (r>1.15&&r<1.45) ? `1 : ${r.toFixed(2)}` : `!1 : ${r.toFixed(2)}`;
   });
-  T('투수는 타자의 절반쯤이다', ()=>{
-    /* v2.35.0 부터 완성 포즈 그림이라 키가 MV_FIG_H 에 있다 */
+  T('투수가 타자보다 한참 작다 — 어깨 뒤 카메라다', ()=>{
+    /* v2.35.0 부터 완성 포즈 그림이라 키가 MV_FIG_H 에 있다.
+       [바뀜 v3.18.0] "너무 짜치는데 이런 느낌이 안나" — 넓은 그림에서
+       어깨 뒤 카메라로 옮기면서 타자가 앞으로 나왔다. 예전 45% 는
+       「멀리서 본 그림」의 비율이다. 실제로는 타자가 카메라에서 1m,
+       투수는 18m 라 훨씬 더 벌어지는 게 맞다(마구마구도 4배쯤 된다).
+       너무 벌어져도 투수가 점이 되니 25~45% 안에 둔다.             */
     const pit=Number(ev("MV_FIG_H.pit"));
     const bat=Number(ev("MV_FIG_H.bat"));
     const r=pit/bat;
-    return (r>0.4&&r<0.68) ? `투수 ${pit} / 타자 ${bat} = ${(r*100).toFixed(0)}%` : `!${pit}/${bat}`;
+    return (r>0.25&&r<0.45) ? `투수 ${pit} / 타자 ${bat} = ${(r*100).toFixed(0)}%` : `!${pit}/${bat}`;
   });
   T('공이 존보다 훨씬 작다', ()=>{
     const html=ev("document.documentElement.innerHTML");
