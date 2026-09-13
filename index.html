@@ -1277,6 +1277,11 @@ body.pl-lock #view{touch-action:none}
 .mound .who-st u b{color:#ffd15c;font-size:10px;margin-left:2px}
 .mound .who-rec{display:none;font-style:normal;font-size:9px;color:#cfd8e3;
   font-weight:700;margin-top:1px}
+/* 플레이 성향 — 답지 게임처럼 선수마다 유형이 붙는다 */
+.mound .who-ty{display:none;font-style:normal;font-size:8.5px;font-weight:800;
+  color:#0d1015;background:var(--gold);border-radius:4px;padding:1px 5px;margin-top:2px;
+  width:fit-content}
+html.land #decision.sheet .who-ty{display:block}
 .mound .res{position:absolute;left:50%;top:63%;transform:translate(-50%,-50%);
   font-size:19px;font-weight:900;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.75);
   opacity:0;transition:opacity .16s}
@@ -3131,6 +3136,47 @@ function buildAllTeams(){
 /* ---------- 타석 ---------- */
 /* mods — 특성처럼 타자 개인에게만 붙는 배수. 안 넘기면 아무 일도 안 한다.
    {k:삼진배수, pow:장타배수}                                            */
+/* ================= 플레이 성향 =================
+   [요청] "플레이 성향도 저렇게 해줘야지" — 답지 영상의 타자 카드에는
+   파워 9 · 컨택 9 · 스피드 11 이 붙어 있고, 그 게임은 선수마다 **유형**이
+   있다. 우리는 능력치 숫자만 있고 「이 사람이 어떤 타자인가」 가 없었다.
+
+   유형은 지어내지 않고 **능력치에서 뽑는다.** 그래야 훈련해서 파워를
+   올리면 유형이 실제로 바뀐다 — 라벨만 붙이는 건 장식이다.
+
+   그리고 **판정에 실제로 먹인다.** 파워형은 홈런도 삼진도 늘고,
+   교타형은 삼진이 줄고 장타가 준다. 말만 하고 안 먹이면 그것도 장식이다.
+   [주의] 배수는 리그 전체로 보면 서로 상쇄되게 잡았다 — verify.js 의
+   6개 지표가 움직이면 안 된다. 바꿨으면 반드시 다시 재라.          */
+const PSTYLES={
+  power :{n:'파워형',   d:'크게 친다. 홈런도 삼진도 많다',        k:1.09, bb:1.00, bip:0.98, pow:1.11},
+  contact:{n:'교타형',  d:'맞히는 데 강하다. 장타는 적다',        k:0.94, bb:1.00, bip:1.03, pow:0.92},
+  speed :{n:'호타준족', d:'치고 뛴다. 빗맞아도 산다',            k:0.97, bb:1.00, bip:1.05, pow:1.03},
+  slap  :{n:'똑딱이',   d:'툭 대고 발로 산다. 담장은 못 넘긴다',  k:0.92, bb:1.00, bip:1.07, pow:0.86},
+  eye   :{n:'선구안형', d:'골라 나간다. 볼넷이 많다',             k:0.97, bb:1.14, bip:0.99, pow:0.98},
+  glove :{n:'수비형',   d:'글러브로 먹고산다. 방망이는 덤',       k:1.02, bb:1.00, bip:0.98, pow:0.95},
+  plain :{n:'평범',     d:'튀는 데 없이 무난하다',                k:1.00, bb:1.00, bip:1.00, pow:1.00},
+};
+/* 능력치에서 유형을 뽑는다. 팀 평균(46) 대비 얼마나 튀는지를 본다 */
+function styleOf(p){
+  if(!p) return 'plain';
+  /* [요청] "내 선수의 플레이 스타일을 내가 고른다"
+     고른 게 있으면 능력치보다 그게 먼저다. 고른 대로 실제로 굴러가야
+     고른 값이 있다 — 판정(simPA) · 타석 창(batWindows) · 카드에 다 먹는다. */
+  try{
+    if(typeof ST!=='undefined' && ST && ST.myStyle && ST.myStyle!=='auto'
+       && p.id===(ST.playerId||MYID) && PSTYLES[ST.myStyle]) return ST.myStyle;
+  }catch(e){}
+  const pow=(p.pow||45)-46, con=(p.con||45)-46, spd=(p.spd||45)-46,
+        eye=(p.eye||45)-46, def=(p.def||45)-46;
+  const best=[['power',pow*1.00],['contact',con*0.92],['speed',(spd*0.62+pow*0.48)],
+    ['slap',(spd*0.70+con*0.52-Math.max(0,pow)*0.85)],['eye',eye*0.88],
+    ['glove',(def*0.80-Math.max(0,con)*0.55)]]
+    .sort((a,b)=>b[1]-a[1])[0];
+  return (best[1]>=7) ? best[0] : 'plain';   // 어중간하면 평범이다
+}
+function styleName(p){ return (PSTYLES[styleOf(p)]||PSTYLES.plain).n; }
+function styleDef(p){ return PSTYLES[styleOf(p)]||PSTYLES.plain; }
 function simPA(bat,pit,offTeam,defTeam,rng,tac,cond,park,mods){
   const m=offTeam.mean;
   mods = mods || {};
@@ -3154,7 +3200,10 @@ function simPA(bat,pit,offTeam,defTeam,rng,tac,cond,park,mods){
 
   const dFactor = Math.exp(-((defTeam._slotDef!=null?defTeam._slotDef:defTeam.mean.def)-46)*0.006);
 
+  /* 플레이 성향 — 라벨이 아니라 판정에 실제로 먹는다 */
+  const PS=(typeof styleDef==='function')?styleDef(bat):null;
   let tK=1, tBB=1, tBip=1, tPow=1;
+  if(PS){ tK*=PS.k; tBB*=PS.bb; tBip*=PS.bip; tPow*=PS.pow; }
   if(tac.bat==='patient'){ tK=1.18; tBB=1.45; tBip=0.97; }
   else if(tac.bat==='aggressive'){ tK=0.86; tBB=0.58; tBip=1.03; tPow=1.06; }
   else if(tac.bat==='contact'){ tK=0.74; tBB=0.92; tBip=1.02; tPow=0.86; }
@@ -8715,8 +8764,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.19.1';
-const APP_VERSION_NOTE = '발밑 고리 · 타자 카드 · 공 화살표 — 받은 영상대로';
+const APP_VERSION = '3.20.0';
+const APP_VERSION_NOTE = '선수마다 플레이 성향 · 내 성향은 내가 고른다 · 끊김 없는 타석';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8737,6 +8786,16 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.20.0', t:'선수마다 플레이 성향 · 내 성향은 내가 고른다 · 끊김 없는 타석', items:[
+    '<b>선수마다 플레이 성향이 붙는다.</b> 파워형 · 교타형 · 호타준족 · 똑딱이 · 선구안형 · 수비형 · 평범. 여태 능력치 숫자만 있고 「이 사람이 어떤 타자인가」 가 없었다',
+    '성향은 지어낸 게 아니라 <b>능력치에서 뽑는다.</b> 훈련해서 파워를 올리면 평범 → 파워형으로 <b>실제로 바뀐다</b>. 어중간하면 평범이다 — 아무한테나 유형을 주지 않는다',
+    '<b>그리고 판정에 진짜로 먹는다.</b> 같은 능력치라도 파워형은 삼진 732 홈런 7, 교타형은 삼진 628 홈런 3 이다(3000타석 재본 값). 라벨만 붙이는 건 장식이다',
+    '<b>타석 손끝에도 온다.</b> 파워형은 타이밍 창이 넓고 자리 허용이 좁다 — 크게 돌리니 맞으면 크고 빗나가면 헛친다. 선구안형은 반대로 코스를 잘 맞힌다',
+    '<b>내 성향은 내가 고른다.</b> 더보기 → 「내 플레이 성향」 에서 <b>적극적으로 휘두른다 · 골라 나간다 · 발로 산다 · 능력치대로</b> 중에 고른다. 고르면 능력치보다 그게 먼저다',
+    '<b>타석이 끊기지 않는다.</b> 이제 기본이 「계속 굴러간다」 다 — 한 공이 끝나면 <b>0.4초 뒤에 바로 다음 공</b>이 온다. 실제 타석이 그렇다. 투수가 내가 준비될 때까지 기다려주지 않는다',
+    '천천히 고르고 싶으면 더보기 → 타석 시작 → 「내가 누르면」 으로 되돌릴 수 있다',
+    '타자 카드에 성향이 금색 딱지로 붙는다',
+  ]},
   {v:'3.19.1', t:'발밑 고리 · 타자 카드 · 공 화살표 — 받은 영상대로', items:[
     '<b>타자와 투수 발밑에 빛나는 고리</b>가 깔린다. 지금 누구 차례인지가 한눈에 들어오고, 사람이 잔디에 붙어 있는 게 보인다',
     '<b>타자 카드에 능력치가 붙었다.</b> 등번호 · 이름 · <b>파워 · 컨택 · 스피드</b> · 시즌 타율과 홈런. 가로에서는 펼쳐서 보여준다',
@@ -14878,7 +14937,7 @@ function newSeason(){
     playPit:(typeof ST!=='undefined'&&ST&&ST.playPit)?ST.playPit:PLAY_KEY,
     sceneMode:(typeof ST!=='undefined'&&ST&&ST.sceneMode)?ST.sceneMode:'key',
     /* 타석에 서면 언제 공이 오나 — 'me' 내가 누르면 · 'auto' 3초 세고 */
-    batReady:(typeof ST!=='undefined'&&ST&&ST.batReady)?ST.batReady:'me',
+    batReady:(typeof ST!=='undefined'&&ST&&ST.batReady)?ST.batReady:'auto',
     pitchWait:{}, luView:'list', depMode:'now',
     appVer:APP_VERSION,
     dev:{pts:0,games:0,trains:0,minTick:0},
@@ -29946,11 +30005,12 @@ function moundWho(mound,pid,role){
   const ab=(sb&&sb.ab)||0;
   const line = ab ? `타율 ${fmt3(sb.h/ab)} · 홈런 ${sb.hr||0}`
     : (tb&&tb.pa ? `오늘 ${tb.ab}타수 ${tb.h}안타` : '기록 없음');
+  const sty = p ? `<em class="who-ty">${styleName(p)}</em>` : '';
   const st2 = p ? `<u>파워 <b>${Math.round(p.pow)}</b></u>`+
       `<u>컨택 <b>${Math.round(p.con)}</b></u>`+
       `<u>스피드 <b>${Math.round(p.spd)}</b></u>` : '';
   box.innerHTML=`<div class="who-av">${avatarHTML(pid)}</div>
-    <div class="who-n">${no}${nm}<span>${role||''}</span>
+    <div class="who-n">${no}${nm}<span>${role||''}</span>${sty}
       <em class="who-st">${st2}</em>
       <em class="who-rec">${line}</em></div>`;
 }
@@ -30016,15 +30076,23 @@ function pitchZoneW(pit, batLeft){
   const t=w.reduce((a,b)=>a+b,0);
   return w.map(v=>v/t);
 }
+/* 성향이 손끝에도 와야 한다.
+   적극적으로 휘두르면(파워형) 타이밍 창은 넓고 자리 허용은 좁다 —
+   크게 돌리니 맞으면 크고 빗나가면 헛친다. 골라 나가는 쪽은 반대다.
+   [주의] PSW 라는 이름은 이미 쓰고 있다(원근 화면 폭). 겹치면 뒤엣것이
+   이긴다 — CLAUDE.md 「같은 이름을 두 번 쓰지 마라」. BATSTY 로 간다. */
+const BATSTY={power:{t:1.10,l:0.92}, contact:{t:0.96,l:1.10}, slap:{t:0.96,l:1.08},
+              eye:{t:0.95,l:1.09}, speed:{t:1.03,l:1.00}, glove:{t:0.98,l:0.98}};
 function batWindows(bat, pit, guess){
   const con=(bat&&bat.con)||40, eye=(bat&&bat.eye)||40;
   const stf=(pit&&pit.stf)||40;
+  const pw=BATSTY[(typeof styleOf==='function')?styleOf(bat):'plain']||{t:1,l:1};
   const conF=0.72+con/100*0.62;            // 컨택 40 → 0.97 · 87 → 1.26
   const stfF=1.24-stf/100*0.48;            // 구위 30 → 1.10 · 80 → 0.86
   const gT=(guess==='hit')?(1+eye/100*0.55):((guess==='miss')?0.62:1);
   const gL=(guess==='hit')?1.15:((guess==='miss')?0.80:1);
-  return { tw:0.135*conF*stfF*gT,          // 타이밍 창 — 비행시간 대비 비율
-           lw:1.55*conF*gL };              // 위치 허용 오차 — 존 칸 단위
+  return { tw:0.135*conF*stfF*gT*pw.t,     // 타이밍 창 — 비행시간 대비 비율
+           lw:1.55*conF*gL*pw.l };         // 위치 허용 오차 — 존 칸 단위
 }
 
 /* 왜 그렇게 됐는지 한 줄. 빨랐는지 늦었는지를 알려줘야 다음에 고친다. */
@@ -30712,7 +30780,7 @@ function renderSwing(box, d){
       if(cnt>0){
         const l=mv.querySelector('.lbl');
         if(l) l.innerHTML=`<b>${myP.name}</b> 투구 준비 · ${cnt}`;
-        cnt--; cntT=setTimeout(tick,620); return;
+        cnt--; cntT=setTimeout(tick,380); return;   // 끊기지 않게 짧게
       }
       cntT=null; nextPitch();
     };
@@ -30725,7 +30793,7 @@ function renderSwing(box, d){
     : '천천히 골라라. [준비 됐다 ▶] 를 눌러야 공이 온다';
   drawAim(); paint();
   paintMitt(mv,bat,myP,(aimSel==='none')?'none':'hit',true);
-  ready(3);                     // 바로 '투구 준비 · 3' 이 뜨게. 빈 화면을 안 보여준다
+  ready(2);                     // 첫 공만 한 박자. 그 뒤로는 ready(2) 로 계속 굴러간다
   box._cleanup=()=>{ done=true; resolved=true; if(anim)anim.stop();
     const rb=w.querySelector('.runbox'); if(rb&&rb._stop) rb._stop(); };
 }
@@ -35966,21 +36034,48 @@ function renderMore(){
 
   /* 타석 시작 — 언제 공이 오나
      [제보] "타자할 때 준비 됐다 이거 눌러야 투수가 공 던지는 걸로 해줘" */
+  /* [요청] "내 선수의 플레이 스타일을 내가 고른다"
+     고르면 판정·타석 창·카드에 전부 먹는다. 「능력치대로」 면 지금
+     능력치에서 알아서 뽑는다(파워가 오르면 파워형이 된다).        */
+  {
+    const ps=el('p','muted');
+    ps.innerHTML='<br><b>내 플레이 성향</b> — 어떤 타자로 뛸 건가. '+
+      '고른 대로 <b>실제로 다르게 굴러간다</b> (삼진·볼넷·장타 비율, 타석 판정 창).';
+    pl.appendChild(ps);
+    const cur=ST.myStyle||'auto';
+    const row=el('div','spray-row');
+    [['auto','능력치대로','지금 능력치에서 알아서'],
+     ['power','적극적으로 휘두른다','장타↑ 삼진↑ · 타이밍 창 넓다'],
+     ['eye','골라 나간다','볼넷↑ 삼진↓ · 코스를 잘 맞힌다'],
+     ['speed','발로 산다','빗맞아도 산다 · 도루'],
+    ].forEach(([k,nm,d])=>{
+      const b=el('button','spb'+(cur===k?' on':''));
+      b.innerHTML='<span>'+nm+'</span><i>'+d+'</i>';
+      b.onclick=()=>{ ST.myStyle=k; saveGame(true); renderMore();
+        toast(k==='auto'?'능력치대로 간다':nm); };
+      row.appendChild(b);
+    });
+    pl.appendChild(row);
+    const me0=TBYID['wwzw'].players.find(x=>x.id===(ST.playerId||MYID));
+    if(me0) pl.appendChild(el('div','set-note',
+      '지금 내 성향 — '+styleName(me0)+' · '+styleDef(me0).d));
+  }
   const br=el('p','muted');
   br.innerHTML='<br><b>타석 시작</b> — 직접 타석에 들어갔을 때 '+
-    '<b>언제 공이 오는지</b> 정한다. 노림수를 고를 시간이 모자라면 「내가 누르면」 으로 둬라.';
+    '<b>언제 공이 오는지</b> 정한다. 기본은 <b>계속 굴러간다</b> 다 — '+
+    '한 공이 끝나면 바로 다음 공이 온다. 노림수를 고를 시간이 모자라면 「내가 누르면」 으로 둬라.';
   pl.appendChild(br);
   const brRow=el('div','btn-row');
-  [['me','내가 누르면'],['auto','3초 세고 자동']].forEach(([k,nm])=>{
-    const b=el('button','btn'+(((ST.batReady||'me')===k)?' primary':''),nm);
+  [['auto','계속 굴러간다'],['me','내가 누르면']].forEach(([k,nm])=>{
+    const b=el('button','btn'+(((ST.batReady||'auto')===k)?' primary':''),nm);
     b.onclick=()=>{ ST.batReady=k; saveGame(true); renderMore();
-      toast(k==='me'?'「준비 됐다」 를 눌러야 던진다':'3초 세고 알아서 던진다'); };
+      toast(k==='me'?'「준비 됐다」 를 눌러야 던진다':'끊지 않고 계속 던진다'); };
     brRow.appendChild(b);
   });
   pl.appendChild(brRow);
-  pl.appendChild(el('div','set-note',(ST.batReady||'me')==='me'
+  pl.appendChild(el('div','set-note',(ST.batReady||'auto')==='me'
     ? '타석에 서면 공이 안 온다. 노림수를 고르고 「준비 됐다 ▶」 를 눌러야 던진다. 급할 것 없다.'
-    : '타석에 서면 3·2·1 을 세고 알아서 던진다. 「안 기다리고 바로」 로 건너뛸 수 있다.'));
+    : '한 공이 끝나면 바로 다음 공이 온다. 실제 타석이 그렇다 — 투수가 내가 준비될 때까지 기다려주지 않는다.'));
 
   /* 수비 — 선수 모드에서만.
      [요청] "수비는 이건 선택해야함 전체 공오는거 수비 다할건지

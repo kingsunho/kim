@@ -17,7 +17,7 @@ for f in lintcheck verify vernotetest mgrtest kakaotest careertest nametest \
          awardtest kingtest savediet loadtest sorttest phototest bgmtest \
          iostest galaxytest compattest boxtest pcardtest feattest \
          unhappytest hometest namecheck smoketest fixtest recruittest \
-         traintest2 vartest wltest advtest dectest2 subtest resumetest ruletest pitchbug deptest pitchtest playtest swaptest vartest2 rottest qualtest mgm2test zonetest papertest; do
+         traintest2 vartest wltest advtest dectest2 subtest resumetest ruletest pitchbug deptest pitchtest playtest swaptest vartest2 rottest qualtest mgm2test zonetest papertest stytest; do
   printf "%-13s " $f
   if [ "$f" = "verify" ]; then node verify.js index.html >/dev/null 2>&1 && echo OK || echo FAIL
   else node $f.js >/dev/null 2>&1 && echo OK || echo FAIL; fi
@@ -97,6 +97,7 @@ node soaktest.js
 | `exiletest` | 내쫓은 선수가 상대 팀 로스터·라인업에 들어가는지 · 새로고침 후에도 유지되는지 |
 | `wartest` | WAR 상수를 엔진에서 다시 재서 검증 · 투타 분리·합산 · 표본 표시 |
 | `opptest` | 상대 23팀 감독 성향 — 실제 기록에서 뽑히는지 · 색깔대로 실제로 굴리는지 · 지시의 절반만 먹이는지(lean) · 리그 득점이 안 흔들리는지 · 스카우팅 카드가 매니저 「기록」만큼 길어지는지 · 매니저가 하루에 다섯 번 나오는지(그 화면에 바로) |
+| `stytest` | 플레이 성향 — 능력치에서 유형이 뽑히는가 · 훈련하면 유형이 바뀌는가 · **라벨이 아니라 simPA·batWindows 에 실제로 먹는가**(같은 능력치로 3000타석 굴려 비교) · 내가 고른 게 능력치를 이기는가 · 타석이 끊김 없이 굴러가는가 |
 | `camtest` | 카메라(MV_CAM) — 투수 머리·홈플레이트 흙이 다 들어오는가 · 타자가 화면의 절반을 넘는가 · **존과 릴리스 지점이 카메라 식과 맞는가**(보이는 자리 = 판정하는 자리) · 세로/가로 어느 쪽으로 잘라도 존이 캔버스 기준으로 같은 크기인가 · 가로 배치(야구장 전체 · 오른쪽 아래 동그란 스윙) · 세로일 때 「가로로 돌려주세요」 가 뜨고 빠져나갈 수 있는가 — **크로미움 필요** |
 | `papertest` | 신문 — 풀 크기 · 14주 돌렸을 때 안 겹치는 정도 · 생성 기사(상대 프리뷰·날씨·부상·폼·2군·방어율·최근 흐름)가 실제 상태에서 나오는가 · 기록실이 확정 기록뿐인가 · 연예면에 실명이 없는가 |
 | `mgm2test` | 마구마구 2막 — 주루 판단창이 2루·3루에서도 뜨는가(`myRunBase`) · 번트 방향(3루쪽/1루쪽)이 실제로 다른 결과를 내는가 · 구종별 구속과 체력 식이 한 군데인가 · 인게임 라인업 패널 |
