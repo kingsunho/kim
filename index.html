@@ -2341,80 +2341,6 @@ html.land .tab .ic{font-size:13px}
 /* 가로는 폭이 남고 높이가 모자란다 — 카드를 두 줄로 흘린다 */
 html.land #view{column-gap:12px;padding:0 12px}
 
-/* ================= 가로 로비 (3번째 사진 그대로) =================
-   위 띠 · 왼쪽 아이콘 줄 · 가운데 캐릭터 · 오른쪽 배너 · 큰 노란 버튼.
-   세로에서는 안 그린다(renderHomePlayer 가 가로일 때만 얹는다).     */
-.lob{margin:0 0 12px}
-.lob-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;
-  background:linear-gradient(180deg,#182131,#121821);
-  border:1px solid #2a3444;border-radius:11px;padding:7px 11px}
-.lob-top b{font-size:15px;font-weight:900;color:#e2eaf5}
-.lob-lv{font-size:10px;font-weight:800;color:#0d1015;background:var(--gold);
-  border-radius:4px;padding:2px 6px}
-.lob-role{font-size:11px;color:#8e9bb0}
-.lob-cur{font-style:normal;font-size:11.5px;font-weight:700;color:#cfe0ee;
-  background:rgba(8,14,22,.55);border:1px solid #2a3444;border-radius:6px;padding:2px 7px}
-.lob-cur:first-of-type{margin-left:auto}
-.lob-mid{display:grid;grid-template-columns:64px 1fr 168px;gap:10px;margin-top:9px;
-  align-items:stretch}
-/* 왼쪽 아이콘 줄 */
-.lob-left{display:flex;flex-direction:column;gap:6px}
-.lob-ic{position:relative;background:#141b24;border:1px solid #2a3444;border-radius:10px;
-  padding:6px 2px;color:#c3ccd7;display:flex;flex-direction:column;align-items:center;gap:2px}
-.lob-ic u{text-decoration:none;font-size:17px;line-height:1}
-.lob-ic span{font-size:9.5px;font-weight:700}
-.lob-ic em{position:absolute;right:3px;top:3px;font-style:normal;font-size:8.5px;
-  font-weight:800;color:#0d1015;background:#e0584e;border-radius:7px;padding:0 4px}
-/* 가운데 캐릭터 — 연습장에 서 있는 그 자리 */
-.lob-ch{display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;padding:8px 6px;border-radius:12px;
-  background:radial-gradient(120% 90% at 50% 108%,#2f6b3a 0%,#1d3a28 42%,#141b24 78%);
-  border:1px solid #2a3444}
-.lob-av{width:78px;height:104px;border-radius:10px;overflow:hidden;
-  border:2px solid rgba(255,209,92,.55);background:#101a29}
-.lob-av>*{display:block;width:100%;height:100%;object-fit:cover}
-.lob-nm{font-size:15px;font-weight:900;color:#fff;margin-top:3px}
-.lob-sub{font-size:11px;color:#ffd15c;font-weight:700}
-.lob-sub2{font-size:10.5px;color:#9fb0c4}
-/* 오른쪽 배너 두 장 */
-.lob-right{display:flex;flex-direction:column;gap:7px}
-.lob-bn{flex:1;text-align:left;border-radius:11px;padding:8px 10px;
-  background:linear-gradient(135deg,#2a3a55,#18212e);border:1px solid #33415a;color:#cfd8e3}
-.lob-bn.alt{background:linear-gradient(135deg,#3a2f26,#211a14);border-color:#4a3a2a}
-.lob-bn b{display:block;font-size:11px;color:#ffd15c;font-weight:800}
-.lob-bn span{display:block;font-size:13.5px;font-weight:800;color:#e2eaf5;margin-top:2px;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.lob-bn i{display:block;font-style:normal;font-size:10px;color:#8e9bb0;margin-top:2px}
-/* 제일 큰 노란 버튼 — 사진의 「입장하기」 */
-.lob-go{display:block;width:100%;margin-top:9px;border-radius:12px;padding:11px 12px;
-  background:linear-gradient(180deg,#ffd15c,#e8a32c);border:2px solid #fff0c2;
-  color:#2a1d05;box-shadow:0 5px 16px rgba(232,163,44,.28)}
-.lob-go b{display:block;font-size:19px;font-weight:900;letter-spacing:-.4px}
-.lob-go span{display:block;font-size:11.5px;font-weight:800;color:#5a4210;margin-top:2px}
-.lob-go i{display:block;font-style:normal;font-size:10.5px;color:#6d5316;margin-top:1px}
-
-/* 가로 폰은 높이가 390px 남짓뿐이다 — 로비 한 판이 **한 화면에** 들어와야
-   한다. 「입장하기」 가 탭바에 잘려서 안 보이면 로비가 아니다.
-   위 띠와 큰 버튼은 제 높이를 먹고, 남는 높이를 가운데가 가져간다.   */
-html.land .lob{display:flex;flex-direction:column;gap:8px;margin:0 0 12px;
-  height:calc(100vh - 116px);height:calc(100dvh - 116px);
-  min-height:226px;max-height:360px}
-html.land .lob-top{flex:0 0 auto;padding:6px 10px}
-html.land .lob-top b{font-size:14px}
-html.land .lob-mid{flex:1 1 auto;min-height:0;margin:0}
-html.land .lob-ch{min-height:0;overflow:hidden;padding:6px}
-html.land .lob-av{height:52%;width:auto;aspect-ratio:3 / 4;max-height:none}
-html.land .lob-nm{font-size:14px;margin-top:2px}
-html.land .lob-left{overflow:hidden}
-html.land .lob-ic{flex:1;min-height:0;justify-content:center}
-html.land .lob-ic u{font-size:15px}
-html.land .lob-bn{padding:6px 9px}
-html.land .lob-bn span{font-size:12.5px}
-html.land .lob-go{flex:0 0 auto;margin:0;padding:8px 12px}
-html.land .lob-go b{font-size:17px}
-html.land .lob-go span{font-size:11px}
-html.land .lob-go i{font-size:10px}
-
 /* ================= 가로 인게임 (움짤 그대로) =================
    [요청] 마구마구 모바일 타석 화면 움짤. 배치가 이렇다 —
      · 야구장이 **화면 전체**를 먹는다. 테두리도 여백도 없다
@@ -2564,6 +2490,127 @@ html.land #view>.card,html.land #view>.hero,html.land #view>.warn{max-width:100%
 .spb.bunt{border-color:#3f6a4e;color:#9fd0ae}
 .spb.bunt i{color:#7d9a89}
 /* 구종별 구속 — 마구마구 버튼처럼 숫자를 크게 박는다 */
+/* ================= 로비 — 받은 사진 그대로 =================
+   [요청] "메인화면도 이런느낌으로 하라니깐" (마구마구 메인 사진)
+
+   사진의 뼈대는 이렇다 —
+     · 화면 **전체가 야구장**이다. 카드 배경색이 아니라 진짜 구장 그림
+     · 그 위에 캐릭터가 **크게** 서 있다 (화면 높이의 절반 넘게)
+     · 위에 얇은 띠 — 등급 · 이름 · 진행 막대 · 재화 세 칸
+     · 왼쪽에 작은 아이콘 줄, 오른쪽 위에 배너 두 장
+     · 오른쪽 아래에 **제일 큰 노란 버튼** (「입장하기」)
+   전부 구장 **위에 떠 있다.** 화면을 칸으로 나눠 쓰지 않는다.
+
+   [왜 되나] 야구장을 새로 그린 게 아니다. 경기에서 쓰는 마운드 뷰의
+   painter 여섯 개(mvSky·mvCity·mvLights·mvBoard·mvStand·mvField)를
+   **선수 없이** 부른 것뿐이다. 그래서 구장(ST.park)을 옮기거나 날씨가
+   바뀌면 로비 배경도 같이 바뀐다 — 따로 맞출 게 없다.
+
+   [주의] 이 규칙들은 경기 화면 것이라 **머리말 스타일시트에 두면 안 된다.**
+   거기 넣은 바이트는 대기화면이 뜨기 전에 다 받아야 하고(loadtest),
+   지금 149KB 로 150KB 기준에 1KB 밖에 안 남아 있다.               */
+.lob{position:relative;overflow:hidden;border-radius:14px;border:1px solid #2a3444;
+  background:#0f1620;margin:0 0 12px;isolation:isolate;aspect-ratio:16 / 7}
+/* 구장 — 판을 정확히 채운다. 캔버스 비율은 lobbyPaint 가 판을 재서
+   맞춰놨다(늘리는 게 아니라 논리 높이를 줄여서). 여기서 %로 다시
+   건드리면 그 계산을 덮어써서 사람이 납작해진다 — 손대지 마라 */
+.lob-cv{position:absolute;inset:0;width:100%;height:100%;display:block}
+/* 위아래를 눌러야 글자가 읽힌다 — 가운데(캐릭터 자리)는 안 건드린다 */
+.lob::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:linear-gradient(180deg,rgba(6,10,16,.60) 0%,rgba(6,10,16,.08) 22%,
+    rgba(6,10,16,0) 46%,rgba(6,10,16,.34) 84%,rgba(6,10,16,.58) 100%)}
+/* ----- 위 띠 ----- */
+.lob-top{position:absolute;left:8px;right:8px;top:7px;z-index:4;
+  display:flex;align-items:center;gap:7px;
+  background:rgba(9,14,22,.62);border:1px solid rgba(96,116,146,.34);
+  border-radius:11px;padding:5px 10px;backdrop-filter:blur(3px)}
+.lob-top b{font-size:14.5px;font-weight:900;color:#fff}
+/* 사진은 위 띠의 동그란 얼굴로 간다 — 사진의 프로필 자리다.
+   가운데는 캔버스가 그리는 **전신 타자**가 선다 */
+.lob-face{flex:0 0 auto;width:24px;height:24px;border-radius:50%;overflow:hidden;
+  border:1.5px solid rgba(255,209,92,.7);background:#101a29;display:block}
+.lob-face>*{display:block;width:100%;height:100%;object-fit:cover}
+.lob-lv{font-size:10px;font-weight:800;color:#0d1015;background:var(--gold);
+  border-radius:4px;padding:2px 6px;flex:0 0 auto}
+.lob-role{font-size:10.5px;color:#a9b8c9;flex:0 0 auto}
+/* 진행 막대 — 사진의 MP 자리다. 시즌이 얼마나 갔나 */
+.lob-mp{flex:0 0 88px;height:7px;border-radius:4px;background:rgba(0,0,0,.5);
+  border:1px solid rgba(120,140,170,.32);overflow:hidden}
+.lob-mp>i{display:block;height:100%;width:0;
+  background:linear-gradient(90deg,#3fa564,#7fd39a)}
+.lob-cur{font-style:normal;font-size:11px;font-weight:700;color:#e6eef7;
+  background:rgba(8,14,22,.55);border:1px solid rgba(96,116,146,.34);
+  border-radius:6px;padding:2px 7px;flex:0 0 auto;white-space:nowrap}
+.lob-cur.c1{margin-left:auto}
+/* ----- 왼쪽 아이콘 줄 ----- */
+.lob-left{position:absolute;left:8px;top:44px;z-index:4;
+  display:flex;flex-direction:column;gap:5px;width:clamp(46px,4.2vw,62px)}
+.lob-ic{position:relative;background:rgba(9,14,22,.66);
+  border:1px solid rgba(96,116,146,.34);border-radius:10px;padding:5px 2px;
+  color:#e2eaf5;display:flex;flex-direction:column;align-items:center;gap:1px;
+  backdrop-filter:blur(3px)}
+.lob-ic u{text-decoration:none;font-size:16px;line-height:1}
+.lob-ic span{font-size:9px;font-weight:700}
+.lob-ic em{position:absolute;right:2px;top:2px;font-style:normal;font-size:8.5px;
+  font-weight:800;color:#fff;background:#d2544a;border-radius:7px;padding:0 4px}
+/* ----- 이름표 — 캔버스가 세운 타자 발밑에 깔린다 ----- */
+.lob-ch{position:absolute;left:50%;bottom:5px;transform:translateX(-50%);z-index:3;
+  max-width:40%;text-align:center;pointer-events:none}
+.lob-nm{font-size:15px;font-weight:900;color:#fff;
+  text-shadow:0 2px 7px rgba(0,0,0,.95);white-space:nowrap}
+.lob-nm u{text-decoration:none;font-size:11px;font-weight:800;color:#ffd15c}
+.lob-sub{font-size:10.5px;font-weight:800;color:#ffd15c;
+  text-shadow:0 1px 5px rgba(0,0,0,.95);white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.lob-sub2{font-size:9.5px;color:#dbe6f0;text-shadow:0 1px 5px rgba(0,0,0,.95);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* ----- 오른쪽 배너 두 장 ----- */
+.lob-right{position:absolute;right:8px;top:44px;z-index:4;
+  width:min(41%,clamp(150px,15vw,248px));display:flex;flex-direction:column;gap:6px}
+.lob-bn{text-align:left;border-radius:11px;padding:7px 9px;
+  background:linear-gradient(135deg,rgba(44,62,92,.93),rgba(17,25,37,.93));
+  border:1px solid rgba(96,120,158,.5);color:#cfd8e3;backdrop-filter:blur(3px)}
+.lob-bn.alt{background:linear-gradient(135deg,rgba(66,52,38,.93),rgba(30,23,16,.93));
+  border-color:rgba(140,110,74,.5)}
+.lob-bn b{display:block;font-size:10px;color:#ffd15c;font-weight:800}
+.lob-bn span{display:block;font-size:13px;font-weight:800;color:#fff;margin-top:1px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lob-bn i{display:block;font-style:normal;font-size:9.5px;color:#a9b8c9;margin-top:1px}
+/* ----- 오른쪽 아래 제일 큰 버튼 (사진의 「입장하기」) ----- */
+.lob-cta{position:absolute;right:8px;bottom:8px;z-index:5;
+  width:min(41%,clamp(160px,16vw,262px));text-align:center}
+.lob-chip{display:inline-block;font-size:9px;font-weight:800;color:#0d1015;
+  background:#7fd39a;border-radius:999px;padding:1px 8px;margin-bottom:2px}
+.lob-lg{font-size:10px;font-weight:800;color:#e6eef7;margin-bottom:3px;
+  text-shadow:0 1px 5px rgba(0,0,0,.95);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lob-go{display:block;width:100%;border-radius:12px;padding:9px 10px;
+  background:linear-gradient(180deg,#ffd15c,#e8a32c);border:2px solid #fff0c2;
+  color:#2a1d05;box-shadow:0 6px 20px rgba(0,0,0,.5)}
+.lob-go b{display:block;font-size:17px;font-weight:900;letter-spacing:-.4px}
+.lob-go span{display:block;font-size:9.5px;font-weight:800;color:#5a4210;margin-top:1px;
+  line-height:1.25}
+.lob-go i{display:none}
+/* 아래로 더 있다 — 로비가 한 화면을 다 먹으니 알려줘야 한다 */
+.lob-more{position:absolute;left:62px;bottom:4px;z-index:5;
+  font-size:9px;color:rgba(230,238,247,.62);text-shadow:0 1px 4px rgba(0,0,0,.9)}
+
+/* 가로 폰은 높이가 390px 남짓뿐이다 — 로비 한 판이 **한 화면에** 들어와야
+   한다. 「입장하기」 가 탭바에 잘려서 안 보이면 로비가 아니다.        */
+html.land .lob{aspect-ratio:auto;margin:0 0 10px;
+  height:calc(100vh - 112px);height:calc(100dvh - 112px);min-height:216px}
+html.land .lob-top b{font-size:13.5px}
+
+/* 좁은 가로(폰)에서는 글자를 한 단계 줄인다 — 배너 제목이 잘리면 소용없다 */
+@media (max-width:900px){
+  .lob-right,.lob-cta{width:34%}
+  .lob-bn span{font-size:12px}
+  .lob-nm{font-size:13.5px}
+  .lob-go b{font-size:15.5px}
+  .lob-left{width:46px}
+  .lob-ic u{font-size:14px}
+  .lob-ic span{font-size:8.5px}
+}
 /* ================= 가로 · 투구 판 · 2막 =================
    [제보] "장난하냐 화면짤리는거?" — 가로에서 투구 판이 통째로 못 쓰게 됐다.
    세로 배치(머리말 → 야구장 → 구종 → 존 → 교체)를 그대로 썼더니
@@ -8879,8 +8926,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.20.1';
-const APP_VERSION_NOTE = '가로에서 화면이 잘리던 것 — 투구 · 주루 · 수비 판을 다시 짰다';
+const APP_VERSION = '3.21.0';
+const APP_VERSION_NOTE = '메인화면이 야구장이 됐다 — 받은 사진 그대로';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8901,6 +8948,15 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.21.0', t:'메인화면이 야구장이 됐다 — 받은 사진 그대로', items:[
+    '<b>메인화면 전체가 야구장이 됐다.</b> 어두운 카드 배경 위에 글자만 얹혀 있던 걸 걷어내고, <b>진짜 구장 그림</b>을 깔았다',
+    '<b>그 위에 내가 크게 서 있다.</b> 등번호를 단 전신 그림이다 — 화면 높이의 6할쯤 된다. 여태 메인에는 얼굴 사진이 엄지손톱만 하게 들어가 있었다',
+    '<b>야구장은 새로 그린 게 아니라 경기에서 쓰는 그 구장이다.</b> 그래서 <b>구장을 옮기면 메인화면 배경도 같이 바뀐다</b> — 베나물·성곡·신길이 다 다르게 보인다. 날씨도 따라온다',
+    '배치도 사진 그대로다 — 위에 얇은 띠(내 사진 · 년차 · 이름 · <b>시즌 진행 막대</b> · 재화), 왼쪽에 아이콘 줄, 오른쪽 위에 배너 두 장, <b>오른쪽 아래에 제일 큰 노란 버튼</b>',
+    '<b>한 화면에 다 들어온다.</b> 가로 폰(844×390)이든 태블릿이든 「이번 주 시작」 이 탭바에 잘리지 않는다',
+    '구장 그림은 <b>화면 비율대로 잘라서</b> 넣는다. 통째로 늘려 채우면 가로로 긴 화면에서 사람이 납작해진다',
+    '이것도 검사를 붙였다 — 캔버스 픽셀을 직접 읽어서 「잔디와 흙이 진짜로 그려졌나 · 비율이 안 틀어졌나 · 구장을 옮기면 배경도 바뀌나」 를 잰다',
+  ]},
   {v:'3.20.1', t:'가로에서 화면이 잘리던 것 — 투구 · 주루 · 수비 판을 다시 짰다', items:[
     '<b>가로로 눕히면 화면이 잘렸다. 내가 깨뜨린 것이고, 고쳤다.</b> 지난 판에서 타석 가로 배치를 넣으면서 그 규칙이 <b>투구 · 주루 · 수비 판까지 같이 맞았다</b>',
     '<b>투구 판이 제일 심했다.</b> 야구장이 화면을 통째로 덮는 바람에 <b>구종 버튼과 존 아홉 칸이 그 뒤로 들어가</b> 눌리지도 않았다. 공을 어디로 던질지 고를 수가 없었다',
@@ -19634,6 +19690,67 @@ function pmGoalBars(){
    [주의] 이건 **가로일 때 맨 위에 한 판**을 얹는 것이다. 그 아래로는
    예전 카드들이 그대로 따라온다 — 로비를 예쁘게 하려고 정보를 버리면
    그건 개선이 아니다.                                             */
+/* 로비 배경 — **경기에서 쓰는 그 야구장이다.**
+   새로 그린 게 아니라 마운드 뷰 painter 여섯 개를 부르고, 그 위에 타자
+   그림을 하나 세운 것뿐이다. 구장(ST.park)을 옮기거나 날씨(ST.weather)가
+   바뀌면 로비 배경도 같이 바뀐다 — 따로 맞출 게 없다.
+
+   [주의] 캔버스를 **판 비율에 맞춰 잘라** 쓴다. 480×270 을 통째로 늘려
+   넣으면 가로로 긴 로비에서 사람이 납작해진다. 논리 높이(vh)를 판 비율로
+   구하고 위를 LOB_TOPY 만큼 잘라낸다 — 로비에서 하늘은 자리만 먹는다.
+
+   [주의] 캔버스를 못 쓰는 환경(테스트)에서는 조용히 false 를 준다.
+   로비는 그래도 떠야 한다 — 배경만 어두운 판으로 남는다.          */
+/* 잘라내고 시작하는 논리 y. 눈금을 찍어서 재본 구장 구조는 이렇다 —
+     0~100  하늘 · 도시 · 조명탑 · 전광판(21~74)
+   100~126  관중석
+   126~146  외야 담장
+   146~270  잔디 · 베이스 · 내야 흙(215~260) · 홈플레이트(250)
+   가로 로비는 띠가 163px 밖에 안 되니 전부는 못 담는다. 90 에서 끊으면
+   **관중석과 담장이 위에 깔리고 아래는 잔디**다 — 받은 사진이 그 구도다 */
+const LOB_TOPY=90;
+/* 우리 홈 유니폼. mvPaint 의 home 과 같은 값이다 — 거기가 원본이다 */
+const LOB_UNI={cap:'#2f5fb0', sh:'#eef2f8', pants:'#dfe4ec',
+               st:'rgba(47,95,176,.35)', gl:'#5b3a1e'};
+function lobbyPaint(cv){
+  if(!cv||!cv.parentNode) return false;
+  /* MV_OK 는 「이 환경에서 캔버스를 쓸 수 있나」 를 한 번만 보는 깃발이다.
+     마운드 뷰와 같이 쓴다 — 못 쓰는 환경(jsdom)에서 홈 화면을 그릴 때마다
+     getContext 를 다시 찌르면 테스트 콘솔이 그 소리로 덮인다 */
+  if(MV_OK===false) return false;
+  let g=null; try{ g=cv.getContext&&cv.getContext('2d'); }catch(e){ g=null; }
+  if(!g){ MV_OK=false; return false; }
+  MV_OK=true;
+  const box=cv.parentNode.getBoundingClientRect();
+  const W=Math.max(1,box.width), H=Math.max(1,box.height);
+  const vh=Math.max(110, Math.min(MVH, Math.round(MVW*H/W)));
+  const off=Math.max(0, Math.min(MVH-vh, LOB_TOPY));
+  try{
+    if(cv.width!==MVW*MVS || cv.height!==vh*MVS){ cv.width=MVW*MVS; cv.height=vh*MVS; }
+    mvSheetInit(); mvFigInit();
+    g.setTransform(MVS,0,0,MVS,0,0);
+    g.clearRect(0,0,MVW,vh);
+    g.save();
+    g.translate(0,-off);
+    mvSky(g); mvCity(g); mvLights(g); mvBoard(g); mvStand(g); mvField(g);
+    /* 나 — 잔디를 밟고 선다. 등번호는 내 번호다 (그림에 안 박혀 있다) */
+    const me=(ST&&(ST.playerId||MYID))||null;
+    const pl=me?(TBYID['wwzw'].players||[]).find(x=>x.id===me):null;
+    const feet=off+vh*0.84, hgt=vh*0.62, sc=hgt/MV_FIG_H.bat;
+    mvShadow(g, MVW/2, feet, hgt*1.1);
+    g.save(); g.translate(MVW/2, feet); g.scale(sc,sc);
+    mvFig(g,'stand',0,0,LOB_UNI,false,{no:(pl&&pl.no!=null)?pl.no:null});
+    g.restore();
+    g.restore();
+  }catch(e){ try{ g.restore(); }catch(e2){} return false; }
+  return true;
+}
+
+/* ================= 로비 (받은 사진 그대로) =================
+   [요청] "메인화면도 이런느낌으로 하라니깐"
+   야구장이 화면 전체를 먹고, 그 위에 전부 떠 있다 —
+   위 띠 · 왼쪽 아이콘 줄 · 가운데 캐릭터 · 오른쪽 배너 · 오른쪽 아래 큰 버튼.
+   세로에서는 안 그린다(renderHomePlayer 가 가로일 때만 얹는다).     */
 function lobbyStage(){
   if(!ST) return null;
   const me=ST.playerId||MYID;
@@ -19648,17 +19765,37 @@ function lobbyStage(){
   const step=(typeof nextStepInfo==='function')?nextStepInfo():null;
 
   const w=el('div','lob');
-  /* --- 위 띠 --- */
+
+  /* --- 0층: 야구장 --- */
+  const cv=document.createElement('canvas');
+  cv.className='lob-cv'; cv.width=MVW*MVS; cv.height=MVH*MVS;
+  w.appendChild(cv);
+  /* 판 크기를 재야 비율이 나온다 — 붙고 난 다음에 그린다.
+     창 크기가 바뀌면 비율이 달라지니 그때마다 다시 그린다 */
+  setTimeout(()=>{ try{ lobbyPaint(cv); }catch(e){} },0);
+  try{
+    if(typeof ResizeObserver!=='undefined'){
+      const ro=new ResizeObserver(()=>{ try{ lobbyPaint(cv); }catch(e){} });
+      ro.observe(w); w._lobRO=ro;
+    }
+  }catch(e){}
+
+  /* --- 위 띠 — 등급 · 이름 · 진행 막대 · 재화 --- */
+  const total=(ST.schedule||[]).length||1;
+  const done=Math.max(0, Math.min(total, ST.round||0));
   const top=el('div','lob-top');
-  top.innerHTML='<span class="lob-lv">'+(ST.seasonNo||1)+'년차</span>'+
+  top.innerHTML='<span class="lob-face">'+
+      ((typeof avatarHTML==='function')?avatarHTML(me):'')+'</span>'+
+    '<span class="lob-lv">'+(ST.seasonNo||1)+'년차</span>'+
     '<b>'+(p?p.name:nameOf(me))+'</b>'+
     '<span class="lob-role">'+role+'</span>'+
-    '<i class="lob-cur">🪙 '+(typeof coinSlot==='function'?coinSlot():0)+'</i>'+
+    '<span class="lob-mp" title="시즌 '+done+' / '+total+'">'+
+      '<i style="width:'+Math.round(done/total*100)+'%"></i></span>'+
+    '<i class="lob-cur c1">🪙 '+(typeof coinSlot==='function'?coinSlot():0)+'</i>'+
     '<i class="lob-cur">💰 '+Math.round(ST.budget||0)+'만원</i>'+
     '<i class="lob-cur">📅 '+(ST.round||0)+'주차</i>';
   w.appendChild(top);
 
-  const mid=el('div','lob-mid');
   /* --- 왼쪽 아이콘 줄 --- */
   const left=el('div','lob-left');
   const nNew=((ST.notices||[]).length)|0;
@@ -19673,21 +19810,21 @@ function lobbyStage(){
     bt.onclick=fn2;
     left.appendChild(bt);
   });
-  mid.appendChild(left);
+  w.appendChild(left);
 
-  /* --- 가운데 캐릭터 --- */
+  /* --- 가운데 캐릭터 — 잔디를 밟고 크게 선다 --- */
+  /* 이름표 — 그림 발밑에 깔린다. 캐릭터는 캔버스가 그린다 */
   const ch=el('div','lob-ch');
-  ch.innerHTML='<div class="lob-av">'+
-    ((typeof avatarHTML==='function')?avatarHTML(me):'')+'</div>'+
-    '<div class="lob-nm">'+(p?p.name:nameOf(me))+'</div>'+
+  ch.innerHTML='<div class="lob-nm">'+(p?p.name:nameOf(me))+
+      ((p&&p.no!=null)?' <u>'+p.no+'</u>':'')+'</div>'+
     '<div class="lob-sub">'+
       (b.pa ? ('타율 '+(b.ab?fmt3(b.h/b.ab):'-')+' · '+b.h+'안타 · '+b.rbi+'타점')
             : '아직 타석에 안 섰다')+'</div>'+
     '<div class="lob-sub2">팀 '+st.w+'승 '+st.l+'패'+(st.t?' '+st.t+'무':'')+
       ' · 리그 '+leagueRank('wwzw')+'위</div>';
-  mid.appendChild(ch);
+  w.appendChild(ch);
 
-  /* --- 오른쪽 배너 --- */
+  /* --- 오른쪽 배너 두 장 --- */
   const right=el('div','lob-right');
   if(opp){
     const c1=el('button','lob-bn');
@@ -19708,18 +19845,20 @@ function lobbyStage(){
     c2.onclick=()=>go('stats');
     right.appendChild(c2);
   }
-  mid.appendChild(right);
-  w.appendChild(mid);
+  w.appendChild(right);
 
-  /* --- 제일 큰 버튼 («입장하기» 자리) --- */
+  /* --- 오른쪽 아래 제일 큰 버튼 («입장하기» 자리) --- */
   if(step){
-    const cta=el('button','lob-go');
-    cta.innerHTML='<b>'+step.label+'</b>'+
-      (step.head?'<span>'+step.head+'</span>':'')+
-      (step.sub?'<i>'+step.sub+'</i>':'');
-    cta.onclick=()=>{ try{ step.run(); }catch(e){} };
+    const cta=el('div','lob-cta');
+    cta.innerHTML='<div class="lob-chip">진행 가능</div>'+
+      '<div class="lob-lg">'+(step.head||'안산시야구소프트볼협회 4부리그')+'</div>';
+    const go2=el('button','lob-go');
+    go2.innerHTML='<b>'+step.label+'</b>'+(step.sub?'<span>'+step.sub+'</span>':'');
+    go2.onclick=()=>{ try{ step.run(); }catch(e){} };
+    cta.appendChild(go2);
     w.appendChild(cta);
   }
+  w.appendChild(el('div','lob-more','▾ 아래로 더 있다'));
   return w;
 }
 function renderHomePlayer(){
@@ -29421,6 +29560,9 @@ function mvSheetInit(){
 }
 function mvRepaintAll(){
   try{ document.querySelectorAll('.mound').forEach(m=>mvPaint(m)); }catch(e){}
+  /* 로비 야구장도 같은 그림을 쓴다 — 시트가 늦게 오면 여기도 다시 그린다.
+     안 그러면 첫 화면에서 타자만 빠진 텅 빈 구장이 남는다 */
+  try{ document.querySelectorAll('.lob-cv').forEach(c=>lobbyPaint(c)); }catch(e){}
 }
 /* 디버그 모드는 주소에 ?mvdebug=1 을 붙여도 켜진다 — 폰에서 콘솔 없이 보려고.
    임시 도구다. 평소에는 꺼져 있고 그리는 좌표에는 아무 영향이 없다. */

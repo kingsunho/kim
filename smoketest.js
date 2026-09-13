@@ -1,7 +1,12 @@
 const {JSDOM,VirtualConsole}=require('jsdom');
 const html=require('fs').readFileSync(process.argv[2]||'index.html','utf8');
 const errs=[];const vc=new VirtualConsole();
-vc.on('jsdomError',e=>{if(!/scrollTo/.test(e.message))errs.push('JSDOM: '+e.message)});
+/* [주의] jsdom 에는 캔버스가 없다 — getContext 를 부르면 「Not implemented」
+   를 콘솔로 뱉는다. 코드 버그가 아니라 **테스트 환경 사정**이라 거른다.
+   v3.21.0 에서 홈 화면(로비)이 야구장을 그리면서 여기까지 왔다.
+   groundtest · compattest 도 같은 이유로 같은 걸 거른다.            */
+vc.on('jsdomError',e=>{if(!/scrollTo|[Nn]ot implemented|getContext/.test(e.message))
+  errs.push('JSDOM: '+e.message)});
 const dom=new JSDOM(html,{runScripts:'dangerously',pretendToBeVisual:true,url:'https://x.test/',virtualConsole:vc});
 dom.window.scrollTo=()=>{};dom.window.confirm=()=>true;
 const w=dom.window,d=w.document,ev=s=>w.eval(s);
