@@ -1281,7 +1281,7 @@ body.pl-lock #view{touch-action:none}
 .mound .who-ty{display:none;font-style:normal;font-size:8.5px;font-weight:800;
   color:#0d1015;background:var(--gold);border-radius:4px;padding:1px 5px;margin-top:2px;
   width:fit-content}
-html.land #decision.sheet .who-ty{display:block}
+html.land #decision.sheet.dk-swing .who-ty{display:block}
 .mound .res{position:absolute;left:50%;top:63%;transform:translate(-50%,-50%);
   font-size:19px;font-weight:900;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.75);
   opacity:0;transition:opacity .16s}
@@ -2424,71 +2424,71 @@ html.land .lob-go i{font-size:10px}
      · 위쪽에 얇은 스코어 띠, 왼쪽 위에 베이스 다이아몬드
      · 아래 가운데에 타이밍 게이지
    전부 야구장 **위에 떠 있다.** 화면을 나눠 쓰지 않는다.          */
-html.land #decision.sheet.swf{padding:0}
-html.land #decision.sheet.swf .pl-wrap{position:relative;padding:0;display:block;
+html.land #decision.sheet.dk-swing.swf{padding:0}
+html.land #decision.sheet.dk-swing.swf .pl-wrap{position:relative;padding:0;display:block;
   height:100%;overflow:hidden}
 /* 야구장 — 화면 전체. 가로는 16:9 보다 넓어서 위아래를 자른다 */
-html.land #decision.sheet.swf .mound{position:absolute;inset:0;width:100%;height:100%;
+html.land #decision.sheet.dk-swing.swf .mound{position:absolute;inset:0;width:100%;height:100%;
   max-height:none;min-height:0;margin:0;border:0;border-radius:0;overflow:hidden}
-html.land #decision.sheet.swf .mound .mv-cv{width:100%;height:auto;left:0;top:50%;
-  transform:translateY(-50%)}
+html.land #decision.sheet.dk-swing.swf .mound .mv-cv{width:100%;height:auto;left:0;
+  top:auto;bottom:0;transform:none}
 /* 머리말은 왼쪽 위에 띄운다 */
-html.land #decision.sheet.swf .pl-wrap>div:first-child{position:absolute;left:10px;top:8px;
+html.land #decision.sheet.dk-swing.swf .pl-wrap>div:first-child{position:absolute;left:10px;top:8px;
   z-index:6;max-width:52%}
-html.land #decision.sheet.swf .swf-h{padding:0;background:rgba(8,14,22,.62);
+html.land #decision.sheet.dk-swing.swf .swf-h{padding:0;background:rgba(8,14,22,.62);
   border-radius:8px;padding:4px 9px}
 /* 타이밍 게이지 — 아래 가운데 */
-html.land #decision.sheet.swf .swg{position:absolute;left:50%;bottom:12px;width:42%;
+html.land #decision.sheet.dk-swing.swf .swg{position:absolute;left:50%;bottom:12px;width:42%;
   transform:translateX(-50%);margin:0;z-index:6;height:15px}
-html.land #decision.sheet.swf .swnote{position:absolute;left:50%;bottom:32px;
+html.land #decision.sheet.dk-swing.swf .swnote{position:absolute;left:50%;bottom:32px;
   transform:translateX(-50%);margin:0;z-index:6;width:60%;
   text-shadow:0 1px 3px rgba(0,0,0,.9)}
 /* ----- 오른쪽 아래 조작 뭉치 ----- */
-html.land #decision.sheet.swf .pl-act{position:absolute;right:14px;bottom:14px;
+html.land #decision.sheet.dk-swing.swf .pl-act{position:absolute;right:14px;bottom:14px;
   width:auto;margin:0;padding:0;background:none;z-index:7;
   display:flex;align-items:flex-end;gap:10px}
-html.land #decision.sheet.swf .pl-act button{border-radius:50%;padding:0;
+html.land #decision.sheet.dk-swing.swf .pl-act button{border-radius:50%;padding:0;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   box-shadow:0 4px 14px rgba(0,0,0,.45)}
-html.land #decision.sheet.swf .pl-hit{width:72px;height:72px;font-size:13px;
+html.land #decision.sheet.dk-swing.swf .pl-hit{width:72px;height:72px;font-size:13px;
   background:rgba(20,26,34,.86);border:2px solid rgba(224,138,112,.65)}
-html.land #decision.sheet.swf .pl-swing{width:112px;height:112px;font-size:22px;
+html.land #decision.sheet.dk-swing.swf .pl-swing{width:112px;height:112px;font-size:22px;
   background:rgba(47,122,88,.90);border:3px solid #ffd15c}
-html.land #decision.sheet.swf .pl-swing i{display:block;font-style:normal;font-size:9.5px;
+html.land #decision.sheet.dk-swing.swf .pl-swing i{display:block;font-style:normal;font-size:9.5px;
   font-weight:700;opacity:.85;margin-top:2px}
 /* 번트는 스윙 왼쪽 아래에 작게 — 움짤도 그 자리다.
    공이 오는 동안에도 댈 수 있다(실제 야구도 그렇다) */
-html.land #decision.sheet.swf .bunt-t{display:none!important}
-html.land #decision.sheet.swf .bunt-row{position:absolute;right:130px;bottom:100px;
+html.land #decision.sheet.dk-swing.swf .bunt-t{display:none!important}
+html.land #decision.sheet.dk-swing.swf .bunt-row{position:absolute;right:130px;bottom:100px;
   display:flex!important;gap:8px;margin:0;width:auto;z-index:7;grid-template-columns:none}
-html.land #decision.sheet.swf .bunt-row .spb{width:62px;height:62px;border-radius:50%;
+html.land #decision.sheet.dk-swing.swf .bunt-row .spb{width:62px;height:62px;border-radius:50%;
   padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
   background:rgba(20,30,24,.86);border:2px solid rgba(63,106,78,.85);
   box-shadow:0 4px 14px rgba(0,0,0,.45)}
-html.land #decision.sheet.swf .bunt-row .spb span{font-size:12px}
-html.land #decision.sheet.swf .bunt-row .spb i{font-size:8px;line-height:1.15;margin-top:1px;
+html.land #decision.sheet.dk-swing.swf .bunt-row .spb span{font-size:12px}
+html.land #decision.sheet.dk-swing.swf .bunt-row .spb i{font-size:8px;line-height:1.15;margin-top:1px;
   max-width:56px;overflow:hidden}
 /* 라인스코어는 위 오른쪽, 얇게 */
-html.land #decision.sheet.swf .mv-board{left:auto;right:8px;width:30%;top:2%;height:24%}
+html.land #decision.sheet.dk-swing.swf .mv-board{left:auto;right:8px;width:30%;top:2%;height:24%}
 /* [답지] 타자 카드는 능력치(파워·컨택·스피드)와 성적을 같이 보여준다.
    영상은 PC 라 오른쪽 아래가 비어서 거기 놨는데, 우리는 **거기가 조작
    동그라미 자리**다(움짤 배치). 같은 아래 줄의 왼쪽으로 보낸다.   */
-html.land #decision.sheet.swf .who{right:auto;left:8px;bottom:44px;
+html.land #decision.sheet.dk-swing.swf .who{right:auto;left:8px;bottom:44px;
   padding:5px 9px 5px 5px;align-items:flex-start}
-html.land #decision.sheet .who{padding:5px 9px 5px 5px;align-items:flex-start}
-html.land #decision.sheet .who-av{width:38px;height:50px}
-html.land #decision.sheet .who-st{display:flex}
-html.land #decision.sheet .who-rec{display:block}
+html.land #decision.sheet.dk-swing .who{padding:5px 9px 5px 5px;align-items:flex-start}
+html.land #decision.sheet.dk-swing .who-av{width:38px;height:50px}
+html.land #decision.sheet.dk-swing .who-st{display:flex}
+html.land #decision.sheet.dk-swing .who-rec{display:block}
 /* HUD 가 왼쪽 위에서 셋이 겹쳤다 — 투수 이름은 머리말에 이미 있다 */
-html.land #decision.sheet.swf .mound .lbl{display:none}
-html.land #decision.sheet.swf .pl-wrap>div:first-child{left:auto;right:auto;
+html.land #decision.sheet.dk-swing.swf .mound .lbl{display:none}
+html.land #decision.sheet.dk-swing.swf .pl-wrap>div:first-child{left:auto;right:auto;
   left:124px;top:6px;max-width:46%}
 /* 구속 — 타자 카드 위. 오른쪽 아래는 스윙 버튼 자리다 */
-html.land #decision.sheet.swf .mv-spd{top:auto;bottom:104px;right:auto;left:8px}
+html.land #decision.sheet.dk-swing.swf .mv-spd{top:auto;bottom:104px;right:auto;left:8px}
 /* 번트 동그라미는 이름만 — 62px 안에 설명까지 넣으면 글자가 터진다.
    숫자는 고르는 단계(왼쪽 판)에서 이미 봤다 */
-html.land #decision.sheet.swf .bunt-row .spb i{display:none}
-html.land #decision.sheet.swf .bunt-row .spb{width:66px;height:66px}
+html.land #decision.sheet.dk-swing.swf .bunt-row .spb i{display:none}
+html.land #decision.sheet.dk-swing.swf .bunt-row .spb{width:66px;height:66px}
 
 /* ---- 가로 · 고르는 단계 (마구마구 PC 화면 배치) ----
    [참고] 1번 사진 — 왼쪽에 「투구코스분석」, 오른쪽에 라인업·선수 카드,
@@ -2496,55 +2496,55 @@ html.land #decision.sheet.swf .bunt-row .spb{width:66px;height:66px}
      왼쪽  — 이 투수가 던지는 자리(히트맵) · 구종 배분
      오른쪽 — 노림수 · 작전(밀어/당겨) · 번트 · 준비 됐다
      가운데 — 야구장. 가려지지 않는다                                */
-html.land #decision.sheet:not(.swf) .pl-wrap{position:relative;padding:0;display:block;
+html.land #decision.sheet.dk-swing:not(.swf) .pl-wrap{position:relative;padding:0;display:block;
   height:100%;overflow:hidden}
-html.land #decision.sheet:not(.swf) .mound{position:absolute;inset:0;width:100%;height:100%;
+html.land #decision.sheet.dk-swing:not(.swf) .mound{position:absolute;inset:0;width:100%;height:100%;
   max-height:none;min-height:0;margin:0;border:0;border-radius:0;overflow:hidden}
-html.land #decision.sheet:not(.swf) .mound .mv-cv{width:100%;height:auto;left:0;top:50%;
-  transform:translateY(-50%)}
+html.land #decision.sheet.dk-swing:not(.swf) .mound .mv-cv{width:100%;height:auto;left:0;
+  top:auto;bottom:0;transform:none}
 /* 머리말 — 위 가운데 한 줄 띠. 왼쪽 판을 먹으면 안 된다 */
-html.land #decision.sheet:not(.swf) .pl-wrap>div:first-child{position:absolute;
+html.land #decision.sheet.dk-swing:not(.swf) .pl-wrap>div:first-child{position:absolute;
   left:248px;right:164px;top:5px;z-index:6;
   background:rgba(8,14,22,.80);border-radius:8px;padding:5px 9px;
   max-height:34%;overflow:auto}
-html.land #decision.sheet:not(.swf) .pl-t{font-size:12.5px}
-html.land #decision.sheet:not(.swf) .bat-info{margin-top:4px;padding:4px 7px}
+html.land #decision.sheet.dk-swing:not(.swf) .pl-t{font-size:12.5px}
+html.land #decision.sheet.dk-swing:not(.swf) .bat-info{margin-top:4px;padding:4px 7px}
 /* 머리말은 야구장 위에 떠 있다 — 투수를 덜 가리게 두 줄로 줄인다.
    창 넓이 안내(bwin)와 긴 사용법은 왼쪽 판에서 이미 다 보인다.     */
-html.land #decision.sheet:not(.swf) .bwin{display:none}
-html.land #decision.sheet:not(.swf) .pl-wrap>div:first-child .pl-sub:last-child{display:none}
+html.land #decision.sheet.dk-swing:not(.swf) .bwin{display:none}
+html.land #decision.sheet.dk-swing:not(.swf) .pl-wrap>div:first-child .pl-sub:last-child{display:none}
 /* 왼쪽 — 「투구코스분석」 (1번 사진 그 자리다). 노림수와 준비 버튼까지 여기 */
-html.land #decision.sheet:not(.swf) .aim{position:absolute;left:6px;top:5px;bottom:5px;
+html.land #decision.sheet.dk-swing:not(.swf) .aim{position:absolute;left:6px;top:5px;bottom:5px;
   z-index:6;width:236px;overflow:auto;overscroll-behavior:contain;margin:0;
   background:rgba(8,14,22,.82);border-radius:10px;padding:7px 9px}
-html.land #decision.sheet:not(.swf) .aim-zone i{padding:5px 0;font-size:10px}
-html.land #decision.sheet:not(.swf) .aim-go{padding:10px 0;font-size:14px}
+html.land #decision.sheet.dk-swing:not(.swf) .aim-zone i{padding:5px 0;font-size:10px}
+html.land #decision.sheet.dk-swing:not(.swf) .aim-go{padding:10px 0;font-size:14px}
 /* 오른쪽 — 작전. 아래에서 위로 쌓는다(번트가 없는 판도 자리가 안 흔들린다) */
-html.land #decision.sheet:not(.swf) .pl-skip{position:absolute;right:6px;bottom:6px;
+html.land #decision.sheet.dk-swing:not(.swf) .pl-skip{position:absolute;right:6px;bottom:6px;
   width:152px;margin:0;z-index:7;padding:7px 0;font-size:11px}
-html.land #decision.sheet:not(.swf) .pl-act{position:absolute;right:6px;bottom:44px;
+html.land #decision.sheet.dk-swing:not(.swf) .pl-act{position:absolute;right:6px;bottom:44px;
   width:152px;margin:0;padding:0;background:none;z-index:7;display:flex;gap:5px}
-html.land #decision.sheet:not(.swf) .pl-act button{flex:1;padding:11px 2px;font-size:13px}
-html.land #decision.sheet:not(.swf) .bunt-row{position:absolute;right:6px;bottom:100px;
+html.land #decision.sheet.dk-swing:not(.swf) .pl-act button{flex:1;padding:11px 2px;font-size:13px}
+html.land #decision.sheet.dk-swing:not(.swf) .bunt-row{position:absolute;right:6px;bottom:100px;
   width:152px;grid-template-columns:1fr 1fr;gap:5px;margin:0;z-index:7}
-html.land #decision.sheet:not(.swf) .bunt-row .spb{padding:5px 3px}
-html.land #decision.sheet:not(.swf) .bunt-row .spb i{font-size:8px;line-height:1.2}
+html.land #decision.sheet.dk-swing:not(.swf) .bunt-row .spb{padding:5px 3px}
+html.land #decision.sheet.dk-swing:not(.swf) .bunt-row .spb i{font-size:8px;line-height:1.2}
 /* 「번트를 댄다 — 3루쪽이면 스퀴즈다」 는 152px 안에서 두 줄로 터진다.
    버튼에 3루쪽·1루쪽이 이미 적혀 있으니 가로에서는 뺀다 (움짤도 버튼뿐) */
-html.land #decision.sheet:not(.swf) .bunt-t{display:none}
-html.land #decision.sheet:not(.swf) .spray-row{position:absolute;right:6px;top:5px;
+html.land #decision.sheet.dk-swing:not(.swf) .bunt-t{display:none}
+html.land #decision.sheet.dk-swing:not(.swf) .spray-row{position:absolute;right:6px;top:5px;
   width:152px;grid-template-columns:1fr;gap:4px;margin:0;z-index:7}
-html.land #decision.sheet:not(.swf) .spray-row .spb{padding:5px 4px}
-html.land #decision.sheet:not(.swf) .spray-row .spb i{font-size:8.5px}
+html.land #decision.sheet.dk-swing:not(.swf) .spray-row .spb{padding:5px 4px}
+html.land #decision.sheet.dk-swing:not(.swf) .spray-row .spb i{font-size:8.5px}
 /* 가운데 아래 — 게이지와 한 줄 조언 */
-html.land #decision.sheet:not(.swf) .swg{position:absolute;left:252px;right:168px;bottom:8px;
+html.land #decision.sheet.dk-swing:not(.swf) .swg{position:absolute;left:252px;right:168px;bottom:8px;
   width:auto;margin:0;z-index:6}
-html.land #decision.sheet:not(.swf) .swnote{position:absolute;left:252px;right:168px;bottom:26px;
+html.land #decision.sheet.dk-swing:not(.swf) .swnote{position:absolute;left:252px;right:168px;bottom:26px;
   margin:0;z-index:6;text-shadow:0 1px 3px rgba(0,0,0,.9)}
-html.land #decision.sheet:not(.swf) .mv-board{display:none}
-html.land #decision.sheet:not(.swf) .who{right:164px;bottom:8px}
-html.land #decision.sheet:not(.swf) .mound .lbl{display:none}
-html.land #decision.sheet:not(.swf) .mv-top{left:250px}
+html.land #decision.sheet.dk-swing:not(.swf) .mv-board{display:none}
+html.land #decision.sheet.dk-swing:not(.swf) .who{right:164px;bottom:8px}
+html.land #decision.sheet.dk-swing:not(.swf) .mound .lbl{display:none}
+html.land #decision.sheet.dk-swing:not(.swf) .mv-top{left:250px}
 
 html.land #view>.card,html.land #view>.hero,html.land #view>.warn{max-width:100%}
 </style>
@@ -2564,6 +2564,121 @@ html.land #view>.card,html.land #view>.hero,html.land #view>.warn{max-width:100%
 .spb.bunt{border-color:#3f6a4e;color:#9fd0ae}
 .spb.bunt i{color:#7d9a89}
 /* 구종별 구속 — 마구마구 버튼처럼 숫자를 크게 박는다 */
+/* ================= 가로 · 투구 판 · 2막 =================
+   [제보] "장난하냐 화면짤리는거?" — 가로에서 투구 판이 통째로 못 쓰게 됐다.
+   세로 배치(머리말 → 야구장 → 구종 → 존 → 교체)를 그대로 썼더니
+   야구장이 **판 너비의 56.25%** 를 먹었다. 1980px 폭이면 1114px 이다.
+   그 아래로 밀린 구종 버튼이 y=1275, 존 아홉 칸이 y=1346 — 화면(920)
+   밖이다. 눈에 안 보이는 게 아니라 **누를 수가 없었다.**
+   가로에서는 나눈다: 왼쪽 야구장 · 오른쪽 구종·존·교체.
+
+   [주의] 야구장은 **아래에 붙여서 하늘을 자른다** — 타석 판과 같다.
+   격자 칸은 늘 16:9 보다 옆으로 넓어서(609×275 면 2.21:1) 늘려 채우면
+   선수가 납작해진다. 볼 것은 전부 아래(존·포수·타자)에 몰려 있으니
+   위를 자르는 쪽이 맞다.
+   존(#szone)은 fitZone() 이 **캔버스 rect 를 재서** 앉히니 잘려도
+   홈플레이트 위에 그대로 붙어 있는다.                               */
+html.land #decision.sheet.dk-pitch{padding:6px 8px}
+html.land #decision.sheet.dk-pitch .pl-wrap{display:grid;height:100%;min-height:0;
+  overflow:hidden;padding:0;gap:5px 8px;
+  grid-template-columns:minmax(0,1fr) clamp(206px,25vw,330px);
+  grid-template-rows:auto auto minmax(0,1fr) auto auto}
+html.land #decision.sheet.dk-pitch .pl-wrap>div:first-child{grid-column:1/3;grid-row:1;min-width:0}
+html.land #decision.sheet.dk-pitch .mound{grid-column:1;grid-row:3/6;position:relative;
+  width:100%;height:100%;padding-top:0;margin:0;max-height:none;min-height:0;overflow:hidden}
+html.land #decision.sheet.dk-pitch .mound .mv-cv{position:absolute;left:0;
+  top:auto;bottom:0;width:100%;height:auto;transform:none}
+/* 구종은 **위에 한 줄로** 눕힌다. 오른쪽 칸에 세워두면 90px 을 먹어서
+   존 아홉 칸이 한 칸 34px 까지 쪼그라들었다 — 손가락으로 못 누른다.
+   여기가 제일 많이 누르는 자리라 존이 제일 커야 한다 */
+html.land #decision.sheet.dk-pitch .ptype{grid-column:1/3;grid-row:2;margin:0;flex-wrap:nowrap}
+html.land #decision.sheet.dk-pitch .ptype{gap:4px}
+html.land #decision.sheet.dk-pitch .ptype button{padding:4px 2px;font-size:9.5px;
+  min-width:52px;line-height:1.15}
+html.land #decision.sheet.dk-pitch .ptype button b{font-size:11px;margin-top:0}
+/* 설명(어디로 휘는지)은 남긴다 — "모르고 던지면 재미가 없다" 는 게
+   구종을 고르게 만든 이유다. 작게 줄이기만 한다 */
+html.land #decision.sheet.dk-pitch .ptype button i{font-size:8px;line-height:1.2;margin-top:0}
+/* 존 아홉 칸 — 칸이 정사각이라 가로폭이 곧 높이다. 화면 높이로 묶어야
+   납작한 가로 화면에서 아래가 안 잘린다 */
+html.land #decision.sheet.dk-pitch .zwrap{grid-column:2;grid-row:3;margin:0;min-height:0;
+  flex-direction:column;align-items:stretch;justify-content:flex-start;gap:4px;overflow:hidden}
+/* 칸이 정사각이라 가로폭이 곧 높이다. 화면 높이로 한 번 묶고,
+   그래도 남는 줄이 모자라면 max-height 로 눌러서 아홉 칸을 다 보인다 */
+html.land #decision.sheet.dk-pitch .zwrap .zgrid{flex:0 1 auto;margin:0 auto;
+  width:min(100%,34vh);max-width:100%;max-height:calc(100% - 30px);
+  grid-template-rows:repeat(3,minmax(0,1fr))}
+html.land #decision.sheet.dk-pitch .zwrap .zinfo{flex:0 0 auto;font-size:9.5px;line-height:1.35;
+  max-height:26px;overflow:hidden}
+/* [버그 이력] 유인구 줄(.chase)을 안 세워놨더니 격자가 제멋대로 다섯째
+   줄을 만들어서, 존 아홉 칸 자리가 121px 로 쪼그라들고 아래가 잘렸다.
+   오른쪽 칸에 들어가는 것은 **하나도 빠짐없이** 자리를 박아야 한다 */
+html.land #decision.sheet.dk-pitch .chase{grid-column:2;grid-row:4;margin:0}
+html.land #decision.sheet.dk-pitch .pit-bot{grid-column:2;grid-row:5;margin:0}
+/* 라인스코어가 가운데라 투수를 덮었다 — 타석 판처럼 오른쪽으로 보낸다 */
+html.land #decision.sheet.dk-pitch .mv-board{left:auto;right:6px;top:2%;width:34%;height:26%}
+html.land #decision.sheet.dk-pitch .pit-bot .pl-skip{margin:0;padding:6px 3px;font-size:10px}
+/* 머리말은 눕힌다 — 세로로 넉 줄이면 야구장 자리가 안 남는다 */
+html.land #decision.sheet.dk-pitch .pl-t,html.land #decision.sheet.dk-lead .pl-t,
+html.land #decision.sheet.dk-defplay .pl-t,html.land #decision.sheet.dk-throw .pl-t{
+  display:inline;font-size:11.5px;margin-right:9px}
+html.land #decision.sheet.dk-pitch .pl-sub,html.land #decision.sheet.dk-lead .pl-sub,
+html.land #decision.sheet.dk-defplay .pl-sub,html.land #decision.sheet.dk-throw .pl-sub{
+  display:inline;font-size:10px;margin:0 9px 0 0;line-height:1.35}
+/* 유인구 줄과 교체 줄도 납작하게 — 여기서 아낀 만큼 존 아홉 칸이 커진다.
+   손가락으로 누르는 건 존이다. 존이 제일 커야 한다 */
+html.land #decision.sheet.dk-pitch .chase{margin:0}
+html.land #decision.sheet.dk-pitch .chase .chb{padding:5px 2px;font-size:10px}
+html.land #decision.sheet.dk-pitch .chase .ch-h{font-size:9px;line-height:1.3;margin:0 0 3px}
+html.land #decision.sheet.dk-pitch .chase .ch-h i{font-size:9px}
+html.land #decision.sheet.dk-pitch .bat-info,html.land #decision.sheet.dk-lead .bat-info,
+html.land #decision.sheet.dk-defplay .bat-info,html.land #decision.sheet.dk-throw .bat-info{
+  display:inline-flex;gap:8px;align-items:baseline;margin:0;padding:2px 8px;vertical-align:middle}
+html.land #decision.sheet.dk-pitch .bat-info>div,html.land #decision.sheet.dk-lead .bat-info>div,
+html.land #decision.sheet.dk-defplay .bat-info>div,
+html.land #decision.sheet.dk-throw .bat-info>div{display:inline}
+/* 2막 — 내가 던진 공이 어디로 갔나. 야구장은 접고 다이아몬드가 판을 다 쓴다.
+   [주의] 세로에서는 마운드 밑에 이어 붙지만, 가로에서 그러면 격자 칸이
+   겹쳐서 다이아몬드가 야구장 위에 덧그려진다                        */
+html.land #decision.sheet.dk-pitch.dk-replay .mound{display:none}
+html.land #decision.sheet.dk-pitch .runbox{grid-column:1/3;grid-row:3/6;margin:0;
+  min-height:0;display:flex;flex-direction:column;padding:8px 10px}
+/* 조작 덩어리 — 세로에서는 그냥 위아래 그대로 (묶이기 전과 같다) */
+.dbx-ctl{display:flex;flex-direction:column}
+#decision.sheet .defbox>.dbx-ctl,#decision.sheet .runbox>.dbx-ctl{flex:0 0 auto}
+/* 가로 — 그라운드 왼쪽, 조작 오른쪽. 세 칸을 쌓으면 390px 에 안 들어간다 */
+html.land #decision.sheet .defbox.dbx-split,
+html.land #decision.sheet .runbox.dbx-split{display:grid;
+  grid-template-columns:minmax(0,1fr) clamp(196px,28vw,330px);
+  grid-template-rows:auto minmax(0,1fr);gap:4px 10px;padding:8px 10px;margin-top:6px}
+html.land #decision.sheet .defbox.dbx-split>.rb-t,
+html.land #decision.sheet .runbox.dbx-split>.rb-t{grid-column:1/3;grid-row:1}
+html.land #decision.sheet .defbox.dbx-split>.runstage,
+html.land #decision.sheet .runbox.dbx-split>.runstage{grid-column:1;grid-row:2;margin:0;min-height:0}
+/* [버그 이력] 가운데 맞춤(justify-content:center)은 내용이 칸보다 길면
+   **위로 넘쳐서** 첫 줄이 칸 위로 빠져나간다 — 스크롤로도 못 따라간다.
+   리드 판에서 설명 줄이 y=61 (칸은 149 부터) 로 나가 있었다.
+   safe 를 붙이면 넘칠 때만 위 맞춤으로 돌아간다                     */
+html.land #decision.sheet .defbox.dbx-split>.dbx-ctl,
+html.land #decision.sheet .runbox.dbx-split>.dbx-ctl{grid-column:2;grid-row:2;min-height:0;gap:4px;
+  justify-content:safe center;overflow-y:auto;overscroll-behavior:contain}
+/* 덩어리 안에서는 제 높이만 먹는다 — 눌러야 할 것이 줄면 안 된다 */
+html.land #decision.sheet .dbx-ctl>*{flex:0 0 auto;margin-top:0;margin-bottom:0}
+html.land #decision.sheet .dbx-ctl .rb-note{margin-bottom:3px;font-size:9.5px;line-height:1.35}
+/* 고르는 버튼도 납작하게 — 세 개 네 개가 한 칸에 다 보여야 고른다 */
+html.land #decision.sheet .dbx-ctl .lead-grid{gap:4px;margin-top:0}
+html.land #decision.sheet .dbx-ctl .lead-b{padding:5px 8px;border-radius:9px}
+html.land #decision.sheet .dbx-ctl .lead-b span{font-size:12px}
+html.land #decision.sheet .dbx-ctl .lead-b i{font-size:9.5px;margin-top:1px;line-height:1.22}
+html.land #decision.sheet .dbx-ctl .lead-b u{font-size:9.5px;margin-top:2px}
+html.land #decision.sheet .dbx-ctl .lead-b.danger{font-size:13px;padding:9px 8px}
+/* 타석 2막 — .pl-wrap 이 가로에서는 block 이라 .runbox 가 그냥 글줄로
+   쌓였다. 야구장 위를 덮게 띄운다. 안 그러면 다이아몬드 아래가 잘린다 */
+html.land #decision.sheet.dk-swing.swf .runbox{position:absolute;inset:0;margin:0;z-index:9;
+  display:flex;flex-direction:column;border-radius:0;padding:8px 12px;
+  background:rgba(8,12,18,.95)}
+html.land #decision.sheet.dk-swing.swf .runstage{flex:1 1 auto;min-height:0;margin:4px 0}
+html.land #decision.sheet .runcv{width:auto;height:100%;max-width:100%;max-height:100%}
 .ptype button b{display:block;font-size:14px;font-weight:900;color:#ffd15c;
   line-height:1.15;margin-top:1px}
 .ptype button b::after{content:'km/h';font-size:8px;font-weight:700;color:#8b7b45;
@@ -8764,8 +8879,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.20.0';
-const APP_VERSION_NOTE = '선수마다 플레이 성향 · 내 성향은 내가 고른다 · 끊김 없는 타석';
+const APP_VERSION = '3.20.1';
+const APP_VERSION_NOTE = '가로에서 화면이 잘리던 것 — 투구 · 주루 · 수비 판을 다시 짰다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8786,6 +8901,15 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.20.1', t:'가로에서 화면이 잘리던 것 — 투구 · 주루 · 수비 판을 다시 짰다', items:[
+    '<b>가로로 눕히면 화면이 잘렸다. 내가 깨뜨린 것이고, 고쳤다.</b> 지난 판에서 타석 가로 배치를 넣으면서 그 규칙이 <b>투구 · 주루 · 수비 판까지 같이 맞았다</b>',
+    '<b>투구 판이 제일 심했다.</b> 야구장이 화면을 통째로 덮는 바람에 <b>구종 버튼과 존 아홉 칸이 그 뒤로 들어가</b> 눌리지도 않았다. 공을 어디로 던질지 고를 수가 없었다',
+    '<b>이제 가로 투구 판은 이렇다</b> — 구종은 위에 한 줄, 야구장은 왼쪽, <b>존 아홉 칸 · 유인구 · 투수 교체는 오른쪽</b>. 손가락으로 제일 많이 누르는 존이 제일 크다',
+    '<b>주루 · 수비 판도 옆으로 눕혔다.</b> 그라운드 왼쪽, 고르는 버튼 오른쪽. 세로로 쌓으면 폰 가로는 높이가 390px 뿐이라 <b>고르는 버튼이 화면 밑으로 나갔다</b>',
+    '<b>2막(공이 어디로 갔나)도 안 잘린다.</b> 타석 2막은 화면을 덮는 판으로, 투구 2막은 야구장을 접고 다이아몬드가 판을 다 쓴다',
+    '타석 판 야구장은 <b>아래에 붙여서 하늘만 자른다.</b> 가운데 맞춤이라 위아래를 같이 잘라서 포수와 존 아래가 날아가던 것을 고쳤다',
+    '<b>이런 게 다시 안 생기게 검사를 붙였다.</b> 진짜 브라우저로 폰 가로 · 태블릿 가로를 띄워서 판마다 「눌러야 할 것이 화면 안에 있나 · 무엇에 가려지진 않았나」 를 잰다',
+  ]},
   {v:'3.20.0', t:'선수마다 플레이 성향 · 내 성향은 내가 고른다 · 끊김 없는 타석', items:[
     '<b>선수마다 플레이 성향이 붙는다.</b> 파워형 · 교타형 · 호타준족 · 똑딱이 · 선구안형 · 수비형 · 평범. 여태 능력치 숫자만 있고 「이 사람이 어떤 타자인가」 가 없었다',
     '성향은 지어낸 게 아니라 <b>능력치에서 뽑는다.</b> 훈련해서 파워를 올리면 평범 → 파워형으로 <b>실제로 바뀐다</b>. 어중간하면 평범이다 — 아무한테나 유형을 주지 않는다',
@@ -30387,6 +30511,7 @@ function renderSwing(box, d){
         document.documentElement.classList.contains('land'));
       box.classList.toggle('sheet', !!on || land);
       box.classList.toggle('swf', !!on);
+      box.classList.add('dk-swing');        // 가로 규칙이 타석에만 걸리게
       /* head 는 안 숨긴다 — 대신 drawHead 가 한 줄짜리로 바꿔 그린다.
          카운트와 내가 고른 노림수는 공 오는 중에도 봐야 한다.      */
       [aim, sprayRow, auto, buntT, buntRow].forEach(e=>{
@@ -30440,7 +30565,7 @@ function renderSwing(box, d){
     box2.appendChild(note);
     const row=el('div','rb-row');
     box2.appendChild(row);
-    w.appendChild(box2);
+    w.appendChild(box2); dbxSplit(w);
     const bar=()=>box2.querySelector('.rb-bar > i');
     let sc=null, ended=false;
     const fin=()=>{
@@ -32093,6 +32218,26 @@ function renderBenched(box, d){
   box.appendChild(w);
 }
 
+/* 그라운드가 있는 판(.defbox · .runbox)은 **머리 / 그라운드 / 조작** 세 칸이다.
+   세로에서는 위에서 아래로 쌓으면 됐는데, **가로 폰은 높이가 390px** 뿐이라
+   셋을 쌓으면 조작 칸이 화면 밑으로 나간다 — 수비 판에서 리드 고르는 칸이
+   y=500 까지 밀렸다(화면은 390). 눌러야 할 것이 안 보이는 판이 된다.
+   그래서 그라운드 뒤의 것들을 **한 덩어리(.dbx-ctl)로 묶어서** 가로에서
+   그라운드 오른쪽에 세운다. 세로에서는 묶여 있어도 그냥 위아래 그대로다.
+   [주의] 가로일 때만 묶으면 화면을 돌렸을 때 덩어리가 없다. 늘 묶는다. */
+function dbxSplit(root){
+  if(!root||!root.querySelectorAll) return;
+  root.querySelectorAll('.defbox,.runbox').forEach(bx=>{
+    if(bx.querySelector(':scope>.dbx-ctl')) return;
+    const st=bx.querySelector(':scope>.runstage'); if(!st) return;
+    const ctl=document.createElement('div'); ctl.className='dbx-ctl';
+    let n=st.nextSibling;
+    while(n){ const nx=n.nextSibling; ctl.appendChild(n); n=nx; }
+    if(!ctl.childNodes.length) return;
+    bx.appendChild(ctl); bx.classList.add('dbx-split');
+  });
+}
+
 /* 투구 — 카운트를 보고 구종·코스를 고른다. 타자가 참거나 휘두른다. */
 function renderPitch(box, d){
   const def=LIVE.def(), off=LIVE.off();
@@ -32165,6 +32310,8 @@ function renderPitch(box, d){
     if(!play){ setTimeout(doneCb, r?(r.big?1150:850):260); return; }
     /* 존과 구종 줄은 접는다 — 이제 고를 게 없다 */
     wrap.style.display='none'; tRow.style.display='none'; botRow.style.display='none';
+    try{ chase.style.display='none'; }catch(e){}   // 얘도 접어야 글자가 안 비친다
+    box.classList.add('dk-replay');        // 가로에서 야구장을 접는다
     const box2=el('div','runbox');
     box2.innerHTML='<div class="rb-t"></div>';
     const t=box2.querySelector('.rb-t');
@@ -32172,12 +32319,13 @@ function renderPitch(box, d){
     const stage=el('div','runstage'); box2.appendChild(stage);
     const note=el('div','rb-note','내가 던진 공이 어디로 갔는지 끝까지 본다');
     box2.appendChild(note);
-    w.appendChild(box2);
+    w.appendChild(box2); dbxSplit(w);
     let sc=null, ended=false;
     const fin=()=>{
       if(ended)return; ended=true;
       try{ if(sc)sc.stop(); }catch(e){}
       try{ box2.parentNode&&box2.parentNode.removeChild(box2); }catch(e){}
+      try{ box.classList.remove('dk-replay'); }catch(e){}
       doneCb();
     };
     try{
@@ -32547,6 +32695,13 @@ function showDecision(d){
   box.innerHTML=''; box.classList.add('on');
   /* 손가락으로 조종하는 판단은 화면을 덮는 판으로 — 스크롤을 없앤다 */
   box.classList.toggle('sheet', !!(d && DEC_SHEET.indexOf(d.kind)>=0));
+  /* [버그 이력] 가로 배치를 `#decision.sheet:not(.swf)` 로 걸었더니
+     **투구·주루·수비 판까지 같이 맞았다.** 야구장이 절대 위치로 화면을
+     덮어버려서 구종 버튼과 존 아홉 칸이 그 뒤로 들어갔다 — 투구가
+     통째로 못 쓰는 화면이 됐다.
+     어느 판인지를 클래스로 박아서 **그 판에만** 걸리게 한다.       */
+  ['swing','pitch','lead','defplay','throw','defense','benched']
+    .forEach(k=>box.classList.toggle('dk-'+k, !!(d && d.kind===k)));
   box._decTok=(++DEC_TOKEN);
   /* 처음 보는 자리면 설명을 한 장 깔고, 「알겠다」 를 누르면 그때 시작한다.
      타이머가 도는 판단(포수 송구)도 설명을 읽는 동안에는 안 돌아간다 —
@@ -32567,12 +32722,9 @@ function showDecision(d){
   if(d && (d.kind==='swing'||d.kind==='pitch')){
     setTimeout(()=>{ try{ box.scrollIntoView({block:'center',behavior:'smooth'}); }catch(e){} },30);
   }
-  if(d.kind==='swing'){ renderSwing(box,d); return; }
-  if(d.kind==='pitch'){ renderPitch(box,d); return; }
-  if(d.kind==='defplay'){ renderDefPlay(box,d); return; }
-  if(d.kind==='lead'){ renderLead(box,d); return; }
-  if(d.kind==='benched'){ renderBenched(box,d); return; }
-  if(d.kind==='throw'){ renderThrow(box,d); return; }
+  const DEC_R={swing:renderSwing, pitch:renderPitch, defplay:renderDefPlay,
+                lead:renderLead, benched:renderBenched, throw:renderThrow};
+  if(DEC_R[d.kind]){ DEC_R[d.kind](box,d); dbxSplit(box); return; }
   if(!box._nmWired){ wireNames(box); box._nmWired=true; }   // 이름 눌러 카드 열기
   const us=LIVE.userIsHome?LIVE.home:LIVE.away;
   const th=LIVE.userIsHome?LIVE.away:LIVE.home;

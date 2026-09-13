@@ -144,7 +144,11 @@ const T=(ok,n,extra)=>{console.log((ok?'  ✅ ':'  ❌ ')+n+(extra?' :: '+extra:
     return new Promise(r=>setTimeout(()=>{
       const H=document.documentElement;
       const st=document.createElement('div');
-      st.id='decision'; st.className='decision on sheet swf';
+      /* [주의] dk-swing 이 있어야 가로 배치가 걸린다. showDecision 이
+         판 종류를 클래스로 박아주는데(dk-swing · dk-pitch · dk-lead …),
+         그게 없으면 세로 배치가 그대로 나온다 — 투구·주루 판까지
+         타석 규칙을 맞던 것을 v3.20.1 에서 갈라놓은 자리다.       */
+      st.id='decision'; st.className='decision on sheet swf dk-swing';
       st.style.cssText='position:fixed;inset:0';
       /* [주의] 실제 판은 **머리말 div 가 첫 자식**이고 야구장이 그다음이다.
          가로 CSS 에 `.pl-wrap>div:first-child` (머리말을 왼쪽 위로 띄우는
@@ -187,6 +191,15 @@ const T=(ok,n,extra)=>{console.log((ok?'  ✅ ':'  ❌ ')+n+(extra?' :: '+extra:
   T(L.swSq && L.swR>=90, '스윙이 큰 동그라미다', L.swR+'px');
   T(L.swRight<60 && L.swBot<60, '스윙이 오른쪽 아래 구석에 있다 — 엄지 자리다',
     '오른쪽 '+Math.round(L.swRight)+'px · 아래 '+Math.round(L.swBot)+'px');
+
+  /* 그 dk- 클래스를 **실제로** showDecision 이 박는지도 같이 본다.
+     여기가 어긋나면 위 검사는 통과하는데 게임만 깨진다 */
+  const K=await p.evaluate(()=>{
+    const src=showDecision.toString();
+    return {박나:/classList\.toggle\('dk-'\+k/.test(src),
+      목록:['swing','pitch','lead','defplay','throw'].every(k=>src.indexOf("'"+k+"'")>0)};
+  });
+  T(K.박나 && K.목록, 'showDecision 이 판 종류를 dk- 클래스로 박는다');
 
   console.log('\n[깨진 데 없나]');
   T(boom.length===0, '브라우저 예외 없음', boom.slice(0,2).join(' / ')||'없음');
