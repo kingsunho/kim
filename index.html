@@ -2332,10 +2332,15 @@ html.needland #rotate{display:flex}
 #rotate .rt-x{background:none;border:0;color:#5f6b7a;font-size:11.5px;
   text-decoration:underline;padding:8px}
 /* ----- 가로일 때 뼈대 ----- */
-html.land body{max-width:none;padding-bottom:56px}
+/* [제보] "pc버전 화면이 너무 꽉찬대" — 가로에서 body 를 max-width:none 으로
+   풀어놨더니, 1920 모니터에서 카드 하나가 **1896px** 이 됐다. 왼쪽 끝에 제목,
+   오른쪽 끝에 값이라 눈이 모니터를 가로질러야 한다.
+   이제 본문 폭에 천장을 둔다. 천장은 설정에서 **원하는 만큼** 조절한다
+   (--ui-w · applyUiSize). 폰 가로(844)는 천장보다 좁아서 아무 영향이 없다. */
+html.land body{max-width:var(--ui-w,1180px);margin:0 auto;padding-bottom:56px}
 html.land .topbar{padding:7px 14px}
 html.land .topbar h1{font-size:13.5px}
-html.land .tabbar{max-width:none;padding:3px 10px calc(3px + env(safe-area-inset-bottom))}
+html.land .tabbar{max-width:var(--ui-w,1180px);padding:3px 10px calc(3px + env(safe-area-inset-bottom))}
 html.land .tab{flex-direction:row;gap:5px;font-size:11px;padding:6px 2px}
 html.land .tab .ic{font-size:13px}
 /* 가로는 폭이 남고 높이가 모자란다 — 카드를 두 줄로 흘린다 */
@@ -2490,6 +2495,34 @@ html.land #view>.card,html.land #view>.hero,html.land #view>.warn{max-width:100%
 .spb.bunt{border-color:#3f6a4e;color:#9fd0ae}
 .spb.bunt i{color:#7d9a89}
 /* 구종별 구속 — 마구마구 버튼처럼 숫자를 크게 박는다 */
+/* ================= 화면 크기 (PC) =================
+   [제보] "선수단이랑 훈련화면도 가로배치 같이해주고 지금 pc버전 화면이
+           너무 꽉찬대 크기조절 할 수 있게? 원하는만큼"
+
+   두 가지를 한다 —
+     ① 카드 화면(선수단·훈련·순위·기록·설정 …)을 **두 칸으로 흘린다.**
+        세로로 2276px 짜리 두루마리였던 게 절반으로 준다.
+     ② 본문 폭과 글자 크기를 **설정에서 직접 조절**한다(--ui-w · --ui-zoom).
+
+   [주의] 홈(로비)과 경기 화면에는 안 건다. 그 둘은 `calc(100dvh - …)` 로
+   **한 화면에 딱 맞게** 짜여 있어서, zoom 을 먹이면 100dvh 가 화면보다
+   커져서 「입장하기」 와 스윙 버튼이 화면 밖으로 나간다 — 바로 지난번에
+   고친 그 고장이 다시 난다. 그래서 go() 가 카드 화면에만 .wide-ok 를 붙인다.  */
+html.land #view.wide-ok{columns:var(--ui-col,460px);column-gap:16px;
+  zoom:var(--ui-zoom,1)}
+/* 카드가 칸 경계에서 반토막 나면 안 된다 */
+html.land #view.wide-ok>*{break-inside:avoid;-webkit-column-break-inside:avoid}
+/* 두 칸으로 흐르면 카드 사이 여백이 아래로만 있어야 줄이 안 맞는 티가 덜 난다 */
+html.land #view.wide-ok>.card,html.land #view.wide-ok>.hero,
+html.land #view.wide-ok>.warn{margin-bottom:12px}
+
+/* 설정의 크기 조절 칸 */
+.uisz-r{display:flex;align-items:center;gap:9px;margin:9px 0 2px}
+.uisz-r>span{flex:0 0 66px;font-size:11.5px;color:var(--dim);font-weight:700}
+.uisz-r input[type=range]{flex:1;accent-color:var(--gold);height:22px;min-width:0}
+.uisz-r>b{flex:0 0 62px;text-align:right;font-size:12px;font-weight:800;color:#e2eaf5}
+.uisz-n{font-size:10.5px;color:var(--dim);line-height:1.6;margin:6px 0 0}
+
 /* ================= 로비 — 받은 사진 그대로 =================
    [요청] "메인화면도 이런느낌으로 하라니깐" (마구마구 메인 사진)
 
@@ -8926,8 +8959,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.21.1';
-const APP_VERSION_NOTE = '수비 나갈 때마다 우리 라인업이 통째로 뒤바뀌던 것';
+const APP_VERSION = '3.22.0';
+const APP_VERSION_NOTE = 'PC 화면이 안 꽉 찬다 — 두 칸 배치 · 크기는 내가 정한다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8948,6 +8981,14 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.22.0', t:'PC 화면이 안 꽉 찬다 — 두 칸 배치 · 크기는 내가 정한다', items:[
+    '<b>PC에서 화면이 모니터를 꽉 채우던 것 — 고쳤다.</b> 1920 모니터에서 카드 하나가 <b>1896px</b>이었다. 왼쪽 끝에 제목, 오른쪽 끝에 값이라 눈이 모니터를 가로질러야 했다',
+    '<b>선수단·훈련·순위·기록·설정이 두 칸으로 흐른다.</b> 선수단이 세로 <b>4841px → 2527px</b>, 훈련이 <b>1421px → 736px</b>. 훈련은 이제 스크롤 없이 한 화면에 다 들어온다',
+    '<b>크기는 내가 정한다.</b> 설정 → 「화면 크기」에서 <b>본문 폭</b>과 <b>글자 크기</b>를 민다. 미는 대로 바로 바뀌고, 제일 오른쪽 끝은 <b>꽉 채움</b>이다. 세이브에 남는다',
+    '<b>홈 화면과 경기 화면은 안 건드렸다.</b> 그 둘은 「한 화면에 딱 맞게」 짜여 있어서, 글자를 키우면 「입장하기」와 스윙 버튼이 화면 밖으로 나간다 — 지난번에 고친 그 고장이다',
+    '폰은 원래 화면이 천장보다 좁아서 <b>아무것도 안 바뀐다.</b> 크기 조절 칸도 PC 가로에서만 보인다',
+    '설정 소리 설명에 <b>&lt;br&gt;</b>이 글자 그대로 찍히던 것도 같이 고쳤다',
+  ]},
   {v:'3.21.1', t:'수비 나갈 때마다 우리 라인업이 통째로 뒤바뀌던 것', items:[
     '<b>수비할 때 우리 선수들 이름이 매주 다 바뀌던 것 — 고쳤다.</b> 결장자가 한 명도 없는 주에도 <b>아홉 중 여섯 자리</b>가 뒤섞였다. 포수가 1루로, 1루가 포수로, 유격과 3루가 맞바뀌는 식이다',
     '원인은 선수 모드가 <b>매주 라인업을 처음부터 다시 짰기</b> 때문이다. 지금 누가 어디 서 있는지를 안 보고 적합도 순으로 새로 깔아서, 훈련으로 수치가 1만 움직여도 수비가 통째로 돌아갔다',
@@ -36369,6 +36410,52 @@ function renderMore(){
   rv.appendChild(rvb);
   c.appendChild(rv);
 
+  /* [제보] "지금 pc버전 화면이 너무 꽉찬대 크기조절 할 수 있게? 원하는만큼"
+     PC 가로에서 본문이 모니터를 꽉 채웠다. 폭과 글자 크기를 직접 민다.
+     폰은 원래 화면보다 천장이 넓어서 아무것도 안 바뀐다 — 그래서 가로
+     PC 에서만 보여준다.                                              */
+  if(document.documentElement.classList.contains('land') && window.innerWidth>900){
+    const uz=el('div','card');
+    uz.appendChild(el('div','card-h','화면 크기'));
+    const wRow=el('div','uisz-r');
+    const zRow=el('div','uisz-r');
+    const curW=(ST.uiW!=null?ST.uiW:UI_W_DEF);
+    const curZ=(ST.uiZoom!=null?ST.uiZoom:UI_Z_DEF);
+    wRow.innerHTML='<span>본문 폭</span>'+
+      '<input type="range" id="uiw" min="'+UI_W_MIN+'" max="'+(UI_W_MAX+40)+'" step="20" '+
+      'value="'+(curW>0?Math.min(UI_W_MAX+40,Math.max(UI_W_MIN,curW)):(UI_W_MAX+40))+'">'+
+      '<b id="uiw-v"></b>';
+    zRow.innerHTML='<span>글자 크기</span>'+
+      '<input type="range" id="uiz" min="'+UI_Z_MIN+'" max="'+UI_Z_MAX+'" step="5" '+
+      'value="'+curZ+'">'+
+      '<b id="uiz-v"></b>';
+    uz.appendChild(wRow); uz.appendChild(zRow);
+    const note=el('p','uisz-n');
+    note.innerHTML='밀면 <b>바로</b> 바뀐다. 제일 오른쪽 끝은 <b>꽉 채움</b>이다.<br>'+
+      '글자 크기는 <b>카드 화면</b>(선수단·훈련·순위·기록…)에만 걸린다 — '+
+      '홈 화면과 경기 화면은 한 화면에 딱 맞게 짜여 있어서 키우면 버튼이 밖으로 나간다.';
+    uz.appendChild(note);
+    const reset=el('button','btn','기본값으로 (1180 · 100%)');
+    reset.onclick=()=>{ ST.uiW=UI_W_DEF; ST.uiZoom=UI_Z_DEF; applyUiSize(); saveGame(true); go('more'); };
+    uz.appendChild(reset);
+    c.appendChild(uz);
+    /* 슬라이더를 민다 — 값 표시와 화면을 같이 갱신한다 */
+    const wIn=uz.querySelector('#uiw'), zIn=uz.querySelector('#uiz');
+    const wLb=uz.querySelector('#uiw-v'), zLb=uz.querySelector('#uiz-v');
+    const paint=()=>{
+      const wv=Number(wIn.value), full=(wv>UI_W_MAX);
+      wLb.textContent = full?'꽉 채움':(wv+'px');
+      zLb.textContent = zIn.value+'%';
+      ST.uiW = full?0:wv;
+      ST.uiZoom = Number(zIn.value);
+      applyUiSize();
+    };
+    ['input','change'].forEach(e=>{ wIn.addEventListener(e,paint); zIn.addEventListener(e,paint); });
+    ['change'].forEach(e=>{ wIn.addEventListener(e,()=>saveGame(true));
+                            zIn.addEventListener(e,()=>saveGame(true)); });
+    paint();
+  }
+
   /* 직접 플레이 설정 — 더쇼·스피리츠 같은 조작을 켜고 끈다 */
   const pl=el('div','card');
   pl.appendChild(el('div','card-h','직접 플레이'));
@@ -36807,10 +36894,12 @@ function renderMore(){
       const apply=()=>{ BGM.setVol(r.value/100); if(lab)lab.textContent=r.value; };
       r.oninput=apply; r.onchange=apply;
     },0);
-    sc.appendChild(el('p','muted',
+    /* [버그 이력] el(tag,cls,text) 는 textContent 로 넣는다. 여기에 <br> 를
+       써놔서 화면에 «<br>» 이 글자 그대로 찍혔다. innerHTML 로 넣는다. */
+    sc.appendChild(Object.assign(el('p','muted'),{innerHTML:
       '한 번 끄면 다음에 열어도 꺼진 채로 열린다. 켜두면 계속 켜진다. '+
       '상단 스피커 버튼이나 PC 에서는 M 키로도 바꿀 수 있다.<br>'+
-      '경기 화면에서는 중계에 안 묻히게 저절로 작아진다.'));
+      '경기 화면에서는 중계에 안 묻히게 저절로 작아진다.'}));
     /* 껐을 때도 suspended 로 잡히니까, 켜뒀는데 안 열린 경우만 경고한다 */
     const st=BGM.status();
     if(BGM.on && /suspended|아직/.test(st)){
@@ -39562,6 +39651,26 @@ function renderFront(){
   const hb=el('button','btn','홈으로'); hb.onclick=()=>go('home'); c.appendChild(hb);
 }
 
+/* 두 칸으로 흘려도 되는 화면 — 카드가 세로로 쌓이기만 하는 곳들이다.
+   홈(로비) · 경기 · 훈련 미니게임처럼 **한 화면에 맞춰 짠** 화면은 뺀다. */
+const UI_WIDE_OK={squad:1,lineup:1,train:1,scout:1,stand:1,stats:1,records:1,
+  more:1,kakao:1,rosters:1,glog:1,cal:1,hall:1,recruit:1,meet:1,front:1,
+  draft:1,entry:1,allstar:1,mgr:1,player:1,whatif:1};
+/* 화면 크기 — 본문 폭(px, 0 이면 꽉 채움)과 글자 크기(%) */
+const UI_W_DEF=1180, UI_W_MIN=760, UI_W_MAX=2400;
+const UI_Z_DEF=100,  UI_Z_MIN=80,  UI_Z_MAX=140;
+function applyUiSize(){
+  try{
+    const r=document.documentElement.style;
+    const w=(typeof ST!=='undefined'&&ST&&ST.uiW!=null)?ST.uiW:UI_W_DEF;
+    const z=(typeof ST!=='undefined'&&ST&&ST.uiZoom!=null)?ST.uiZoom:UI_Z_DEF;
+    r.setProperty('--ui-w', (w>0? w+'px' : 'none'));
+    r.setProperty('--ui-zoom', (z/100));
+    /* 폭이 좁으면 두 칸이 되레 답답하다 — 한 칸 폭을 폭에 맞춰 같이 민다 */
+    r.setProperty('--ui-col', ((w>0&&w<980)?'620px':'460px'));
+  }catch(e){}
+}
+
 const VIEWS={home:renderHome,squad:renderSquad,lineup:renderLineup,kakao:renderKakao,
   game:renderGame,train:renderTrain,scout:renderScout,stand:renderStand,stats:renderStats,
   records:renderRecords,pick:renderPick,more:renderMore,meet:renderMeet,recruit:renderRecruit,
@@ -39601,6 +39710,14 @@ function go(v){
   }
   clearInterval(playTimer);
   curView=v;
+  /* 어느 화면인지 CSS 에 알려준다. 카드가 줄줄이 쌓이는 화면만 두 칸으로
+     흘리고 글자 크기를 먹인다 — 홈(로비)과 경기는 한 화면에 딱 맞게
+     짜여 있어서 건드리면 버튼이 화면 밖으로 나간다.                  */
+  try{
+    document.documentElement.dataset.v=v||'';
+    const vw=$('#view');
+    if(vw) vw.classList.toggle('wide-ok', !!UI_WIDE_OK[v]);
+  }catch(e){}
   /* 경기 화면에서는 BGM 을 뒤로 물린다. 중계 소리에 안 묻히게. */
   try{ BGM.duck(v==='game'?0.32:1); }catch(e){}
   paintTabs();
@@ -39668,6 +39785,14 @@ function exiledOn(teamId){
 
 function normalizeState(){
   const us=TBYID['wwzw'];
+  /* 화면 크기 — 옛 세이브에는 없는 값이라 여기서 메운다.
+     0 은 「꽉 채움」이라 == null 로만 걸러야 한다 (|| 를 쓰면 0 이 기본값으로
+     되돌아가서, 꽉 채움을 골라도 다음 판에 풀린다).                 */
+  if(ST.uiW==null)    ST.uiW=UI_W_DEF;
+  if(ST.uiZoom==null) ST.uiZoom=UI_Z_DEF;
+  ST.uiW=Math.max(0, Math.min(UI_W_MAX, ST.uiW|0));
+  ST.uiZoom=Math.max(UI_Z_MIN, Math.min(UI_Z_MAX, ST.uiZoom|0));
+  try{ applyUiSize(); }catch(e){}
   applyLeftPlayers();        // 나간 사람은 계속 나가 있어야 한다
   /* 감독이 로스터에 없으면(나갔거나 옛 세이브) 자리를 비운다 —
      coachId() 가 다음 사람을 뽑아서 다시 채운다. 안 그러면 단톡
@@ -40166,6 +40291,7 @@ async function boot(){
   paintTabs();
   /* 방향 — 처음 한 번 + 돌릴 때마다 */
   applyOrient();
+  applyUiSize();           // 화면 크기(본문 폭·글자)도 처음 한 번 먹인다
   window.addEventListener('resize', applyOrient);
   try{ if(screen&&screen.orientation&&screen.orientation.addEventListener)
     screen.orientation.addEventListener('change', applyOrient); }catch(e){}
