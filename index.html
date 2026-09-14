@@ -8926,8 +8926,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.21.0';
-const APP_VERSION_NOTE = '메인화면이 야구장이 됐다 — 받은 사진 그대로';
+const APP_VERSION = '3.21.1';
+const APP_VERSION_NOTE = '수비 나갈 때마다 우리 라인업이 통째로 뒤바뀌던 것';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8948,6 +8948,15 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.21.1', t:'수비 나갈 때마다 우리 라인업이 통째로 뒤바뀌던 것', items:[
+    '<b>수비할 때 우리 선수들 이름이 매주 다 바뀌던 것 — 고쳤다.</b> 결장자가 한 명도 없는 주에도 <b>아홉 중 여섯 자리</b>가 뒤섞였다. 포수가 1루로, 1루가 포수로, 유격과 3루가 맞바뀌는 식이다',
+    '원인은 선수 모드가 <b>매주 라인업을 처음부터 다시 짰기</b> 때문이다. 지금 누가 어디 서 있는지를 안 보고 적합도 순으로 새로 깔아서, 훈련으로 수치가 1만 움직여도 수비가 통째로 돌아갔다',
+    '이제 <b>지난주 그대로 간다.</b> 감독은 한 주에 <b>한 명만</b> 손본다 — 벤치에 확실히 더 나은 사람이 있을 때만 그 자리 하나를 바꾼다. 나머지 여덟 명은 어제 섰던 자리에 그대로 선다',
+    '<b>한 사람이 마운드와 수비 자리에 동시에 서 있던 것도 고쳤다.</b> 선발이 타순의 야수 자리에 그대로 남아서, 수비 화면 그라운드에 <b>같은 이름이 두 번</b> 뜨고 지명타자는 아예 안 나왔다 — 아홉 자리에 여덟 명이 서 있었다. 상대 팀도 같은 문제가 있었다',
+    '지명타자를 쓰는데 선발이 타순에 남으면 그 사람 자리는 <b>투수</b>다. 지명타자는 그날 사라진다(지명타자 소멸) — 던지는 사람이 제 지명타자일 수는 없다',
+    '결장이 생겨 한 명을 바꿀 때도 <b>그 자리만</b> 바꾼다. 예전엔 한 명 바꿔놓고 아홉 자리를 다시 깔아서 다섯 자리가 같이 움직였다',
+    '이것도 검사를 붙였다 — 열여덟 주를 굴리면서 「결장자가 없는 주에 수비 자리가 움직이나 · 한 사람이 두 자리에 서 있나」 를 잰다',
+  ]},
   {v:'3.21.0', t:'메인화면이 야구장이 됐다 — 받은 사진 그대로', items:[
     '<b>메인화면 전체가 야구장이 됐다.</b> 어두운 카드 배경 위에 글자만 얹혀 있던 걸 걷어내고, <b>진짜 구장 그림</b>을 깔았다',
     '<b>그 위에 내가 크게 서 있다.</b> 등번호를 단 전신 그림이다 — 화면 높이의 6할쯤 된다. 여태 메인에는 얼굴 사진이 엄지손톱만 하게 들어가 있었다',
@@ -15161,8 +15170,13 @@ function autoFixLineup(){
       const rep=pool.find(p=>posFit(p.id,ST.lineup[i].pos)>0)||pool[0];
       if(rep){ ST.lineup[i].id=rep.id; pool.splice(pool.indexOf(rep),1); }
     });
-    // 포지션 적합도 재정리
-    optimizePositions();
+    /* [제보] "수비할때 우리팀 선수들 이름 다바뀜"
+       한 명 바꿔놓고 여기서 optimizePositions() 로 **아홉 자리를 통째로
+       다시 깔았다.** 결장 한 명에 다섯 자리가 움직였다 — 멀쩡히 서 있던
+       사람들까지 자리를 바꿔 앉는다. 대체자는 바로 위에서 이미 그 자리를
+       볼 수 있는 사람으로 골랐으니, 통째로 다시 깔 이유가 없다.
+       깨진 칸(빈 자리·겹친 자리)만 fixLineupPositions 가 메운다.     */
+    fixLineupPositions();
   }
   sanitizeRotation();
 }
@@ -15230,6 +15244,56 @@ function pinMyPos(){
   const hi=L.findIndex((x,i)=>i!==mi && x && x.pos===pos);
   if(hi>=0) L[hi].pos=L[mi].pos;
   L[mi].pos=pos;
+}
+
+/* 라인업이 쓸 수 있는 꼴인가. 아홉 명이고, 사람도 자리도 안 겹쳐야 한다. */
+function lineupBroken(){
+  const L=(typeof ST!=='undefined'&&ST)?ST.lineup:null;
+  if(!Array.isArray(L) || L.length!==9) return true;
+  const ids=new Set(), pos=new Set();
+  for(let i=0;i<L.length;i++){
+    const sl=L[i];
+    if(!sl || !sl.id || !sl.pos) return true;
+    if(ids.has(sl.id)) return true;   ids.add(sl.id);
+    if(pos.has(sl.pos)) return true;  pos.add(sl.pos);
+  }
+  return false;
+}
+
+/* 감독이 한 주에 **한 명만** 손본다.
+   벤치에 확실히 더 나은 사람이 있으면 제일 약한 주전 한 자리를 그 사람으로
+   바꾼다. 자리(pos)는 그대로 두니 나머지 여덟 명은 어제 섰던 데 그대로 선다.
+
+   [왜 한 명인가] 아홉을 매주 다시 까는 게 바로 이번에 고친 버그다.
+   훈련해서 올라온 사람이 영영 못 들어가는 것도 안 되니, 문은 한 칸 열어둔다.
+   차이가 뚜렷할 때만(6 이상) 움직인다 — 도토리 키재기로는 안 바꾼다.   */
+function managerTweak(){
+  if(typeof ST==='undefined' || !ST || !Array.isArray(ST.lineup)) return null;
+  const t=TBYID['wwzw'];
+  const fit=(id,pos)=>(typeof posFit==='function')?posFit(id,pos):1;
+  const ca =(id)=>(typeof effCA==='function')?effCA(id):0;
+  const inLineup=id=>ST.lineup.some(x=>x.id===id);
+  /* [주의] 지명타자를 쓰면 **그날 던질 사람은 타순 밖**이다. 안 걸러내면
+     감독이 선발 투수를 지타 자리에 꽂고, 바로 뒤 fixLineupPositions 가
+     그걸 다시 P 로 되돌린다 — 가만히 있던 수비가 매주 두 자리씩 흔들렸다. */
+  const sp=(typeof gameRotation==='function')?(gameRotation()||[])[0]:(ST.rotation||[])[0];
+  const bench=t.players.filter(q=>isAvailable(q.id) && !inLineup(q.id)
+                                  && !(ST.useDH && q.id===sp)
+                                  && !(typeof isFarm==='function' && isFarm(q.id)));
+  if(!bench.length) return null;
+  let best=null;
+  ST.lineup.forEach((sl,i)=>{
+    if(!isAvailable(sl.id)) return;                 // 결장자는 autoFixLineup 몫이다
+    bench.forEach(q=>{
+      if(sl.pos!=='DH' && fit(q.id,sl.pos)<=0) return;   // 그 자리를 못 보면 안 된다
+      const gain=ca(q.id)-ca(sl.id);
+      if(gain<6) return;
+      if(!best || gain>best.gain) best={i,gain,inId:q.id,outId:sl.id,pos:sl.pos};
+    });
+  });
+  if(!best) return null;
+  ST.lineup[best.i]={id:best.inId, pos:best.pos};
+  return best;
 }
 
 function optimizePositions(){
@@ -15581,7 +15645,15 @@ function recalcTeamDefense(team, slots, gearPenalty){
 }
 
 function aiLineup(team){
-  const s=team.players.slice().sort((a,b)=>(b.con+b.pow+b.eye+b.spd*0.4)-(a.con+a.pow+a.eye+a.spd*0.4));
+  /* [버그 이력] 선발 투수를 타순에서 안 뺐다. 그 팀 최고 타자가 곧
+     에이스이면 **한 사람이 마운드와 야수 자리에 동시에** 들어가서,
+     수비 그라운드에 같은 이름이 두 번 서고 한 자리는 비었다.
+     던질 사람은 빼고 짠다 — 아홉을 못 채울 만큼 얇은 팀이면 그때만
+     어쩔 수 없이 도로 넣는다.                                     */
+  const sp=(team.pitchers&&team.pitchers.length)?aiRotation(team)[0]:null;
+  const pool=(sp && team.players.filter(x=>x.id!==sp).length>=9)
+    ? team.players.filter(x=>x.id!==sp) : team.players;
+  const s=pool.slice().sort((a,b)=>(b.con+b.pow+b.eye+b.spd*0.4)-(a.con+a.pow+a.eye+a.spd*0.4));
   const u=new Set(),o=[];
   for(const p of s){if(o.length>=9)break;const pos=p.pos.find(x=>!u.has(x))||ALLPOS.find(x=>!u.has(x));if(!pos)break;u.add(pos);o.push({id:p.id,pos});}
   // AI도 수비 배치에 따른 손실을 반영 (우리만 최적화 이득 보지 않게)
@@ -16453,10 +16525,36 @@ function runWeek(){
        (야수는 감독이 알아서 — 예전 그대로 ST.useDH 를 안 건드린다)  */
     if(ST.role==='pit')      ST.useDH=true;
     else if(ST.role==='two') ST.useDH=false;
-    ST.lineup=recommendLineup(); optimizePositions(); applyDHRule(); sanitizeRotation();
+    /* [제보] "수비할때 우리팀 선수들 이름 다바뀜"
+       여기서 **매주 라인업을 처음부터 다시 짜고 있었다.** 결장자가 하나도
+       없는 주에도 아홉 중 여섯 명의 수비 자리가 뒤바뀌었다 —
+         포수 송승민 → 지타, 1루 김인규 → 포수, 지타 김상훈 → 1루,
+         3루 유지효 ↔ 유격 김한규
+       optimizePositions() 가 **지금 누가 어디 서 있는지를 안 보고** 매번
+       적합도 순으로 처음부터 다시 깔기 때문이다. 훈련으로 적합도가 1 만
+       움직여도 수비가 통째로 돌아간다. 수비 화면을 열면 내가 세워둔 자리에
+       매주 딴 사람이 서 있었다.
+       감독이 짠다는 건 맞지만, 멀쩡한 수비를 매주 갈아엎는 감독은 없다.
+       이제 **지난주 것을 그대로 들고 간다.** 라인업이 깨졌을 때만 새로 짜고,
+       그 밖에는 감독이 한 주에 한 명만 손본다(managerTweak).
+       못 나오는 사람은 바로 아래 autoFixLineup 이 메운다.            */
+    if(lineupBroken()){ ST.lineup=recommendLineup(); optimizePositions(); }
+    else {
+      const tw=managerTweak();
+      if(tw) evs.push({type:'lineup',pid:tw.inId,
+        title:`${nameOf(tw.inId)} 선발 합류`,
+        body:`${nameOf(tw.outId)} 대신 ${nameOf(tw.inId)}이(가) ${POSNAMES[tw.pos]||tw.pos}(으)로 들어간다.`,
+        effect:'감독이 자리를 하나 바꿨다'});
+    }
+    applyDHRule(); sanitizeRotation();
   }
   // 결장자가 라인업에 있으면 자동 교체
   autoFixLineup();
+  /* 선발이 타순의 야수 자리에 남아 있으면 **그 주 안에** 정리한다.
+     안 그러면 다음 주에 뒤늦게 고쳐지면서, 아무 일도 없던 주에 수비가
+     한 번 더 흔들린다 — 「송승민 유격→투수 · 김한규 지타→유격」 같은 식이다.
+     한 군데서 끝내야 매주 같은 답이 나온다.                          */
+  if(ST.mode==='player'){ try{ resolveStarterField(); }catch(e){} }
   ST.kakao=[]; ST.kakaoPost=[]; ST.partyDone=false; ST.weekDone=true; ST.begAsked={};
   /* 이번 주 「그날」을 새로 연다 — 아침부터 다시 시작한다 */
   if(typeof dayReset==='function') dayReset();
@@ -24060,8 +24158,17 @@ function fixLineupPositions(){
   const spIdx=ST.lineup.findIndex(s=>s.id===sp);
   /* 야수 여덟 자리 + 한 자리. 지명타자를 쓰면 그 한 자리가 DH, 안 쓰면 P 다.
      선발 투수가 타순 안에 있으면 그 한 자리는 그 사람 몫이다.
-     (지타를 쓰는데도 투수가 타순에 있으면 — 결장이 겹친 날이다 — 지타로 친다) */
-  const wantP = !ST.useDH;
+
+     [버그 이력] 지타를 쓰는데 선발이 타순에 있으면 그 사람을 **DH** 로
+     박았다. 그런데 지명타자는 투수 **대신** 치는 자리다 — 던지는 사람이
+     제 지명타자일 수는 없다. 그 바람에 원래 지타이던 사람이 선발이 비운
+     수비 자리로 밀려서, 아무 일도 없는 주에 **매주 두 자리씩** 이름이
+     바뀌었다 (송승민 포수→지타 · 김상훈 지타→포수, 그 다음 주엔 또
+     김인규 1루→포수 …). 우리 에이스가 포수를 겸하는 팀이라 이게 매주 걸렸다.
+     [제보] "수비할때 우리팀 선수들 이름 다바뀜"
+     타순에 남은 선발은 **P** 다. 지명타자는 그날 사라진다(지명타자 소멸) —
+     applyDHRule 도 그 상태를 이제 안 되돌린다.                      */
+  const wantP = !ST.useDH || spIdx>=0;
   const key = wantP?'P':'DH';
   const need=ALLPOS.filter(x=>x!=='DH').concat([key]);
   const used={}, open=[];
@@ -24219,7 +24326,16 @@ function applyDHRule(){
         ST._starterMoved=who;         // 화면에서 안내 문구를 띄우기 위한 표시
       }
       const hasDH=ST.lineup.some(s=>s.pos==='DH');
-      ST.lineup[pIdx].pos = hasDH ? (bestPos(who, freePos(pIdx).filter(x=>x!=='P'))||'RF') : 'DH';
+      /* [버그 이력] 지명타자가 없어진 건 **일부러** 그런 것이다 —
+         선발이 야수도 보던 사람이라 resolveStarterField 가 지타 자리를
+         헐어서 그 수비 자리를 메웠다(지명타자 소멸). 그런데 여기서 그
+         P 자리를 다시 DH 로 되돌리는 바람에, 매주
+           투수 → 지타 → 투수 → 지타
+         로 왔다갔다 하면서 애먼 수비 자리가 둘씩 같이 흔들렸다.
+         [제보] "수비할때 우리팀 선수들 이름 다바뀜"
+         지금 던질 사람이 그 자리에 앉아 있으면 건드리지 않는다.    */
+      if(hasDH) ST.lineup[pIdx].pos = bestPos(who, freePos(pIdx).filter(x=>x!=='P'))||'RF';
+      else if(who!==ST.rotation[0]) ST.lineup[pIdx].pos='DH';
     }
   }
   syncStarter();
@@ -27408,6 +27524,14 @@ function makeLive(){
     }
   }
   sanitizeRotation();
+  /* [제보] "수비할때 우리팀 선수들 이름 다바뀜" — 같이 나온 것.
+     선발 투수가 **타순의 야수 자리에도 그대로 남아** 있으면, 수비 화면
+     그라운드에 그 사람이 마운드와 제 수비 자리에 **두 번** 서고
+     지명타자는 아예 안 나온다 — 아홉 자리에 여덟 명이 서 있는 꼴이다.
+     정리하는 함수(resolveStarterField)는 있었는데 **라인업 화면과 홈
+     카드를 그릴 때만** 불렸다. 그 화면을 안 거치고 경기로 들어가면
+     그대로 샜다. 경기를 만드는 여기서 한 번 더 잠근다.              */
+  try{ if(typeof resolveStarterField==='function') resolveStarterField(); }catch(e){}
   ST.gameRotation=gameRotation();     // 이번 경기 등판 순서 스냅샷
   /* 지명타자를 안 쓰면 타순의 투수 자리에 '실제로 던질 사람'이 앉아야 한다.
      로테이션 1번이 그날 결장이면 타순 투수와 등판 투수가 어긋났었다.     */
