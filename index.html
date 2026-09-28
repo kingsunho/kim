@@ -2422,10 +2422,14 @@ html.land #decision.sheet.dk-swing.swf{padding:0}
 html.land #decision.sheet.dk-swing.swf .pl-wrap{position:relative;padding:0;display:block;
   height:100%;overflow:hidden}
 /* 야구장 — 화면 전체. 가로는 16:9 보다 넓어서 위아래를 자른다 */
+/* [버그 이력 v3.30.0] 판에 기본 padding-top:56.25%(16:9) 가 남아 있어서 판이 화면보다
+   **88px 길었다.** 캔버스는 bottom:0 이라 판 아래에 붙었고 잘린 건 판 아래쪽 —
+   거기 붙는 타자 카드 · 카메라 버튼 · 결과 글씨가 화면 밖으로 나갔다.
+   판을 화면에 맞추고(padding 0) 캔버스는 위에 붙인다. 보이는 그림은 그대로다. */
 html.land #decision.sheet.dk-swing.swf .mound{position:absolute;inset:0;width:100%;height:100%;
-  max-height:none;min-height:0;margin:0;border:0;border-radius:0;overflow:hidden}
+  max-height:none;min-height:0;margin:0;border:0;border-radius:0;overflow:hidden;padding-top:0}
 html.land #decision.sheet.dk-swing.swf .mound .mv-cv{width:100%;height:auto;left:0;
-  top:auto;bottom:0;transform:none}
+  top:0;bottom:auto;transform:none}
 /* 머리말은 왼쪽 위에 띄운다 */
 html.land #decision.sheet.dk-swing.swf .pl-wrap>div:first-child{position:absolute;left:10px;top:8px;
   z-index:6;max-width:52%}
@@ -2478,7 +2482,7 @@ html.land #decision.sheet.dk-swing.swf .mound .lbl{display:none}
 html.land #decision.sheet.dk-swing.swf .pl-wrap>div:first-child{left:auto;right:auto;
   left:124px;top:6px;max-width:46%}
 /* 구속 — 타자 카드 위. 오른쪽 아래는 스윙 버튼 자리다 */
-html.land #decision.sheet.dk-swing.swf .mv-spd{top:auto;bottom:104px;right:auto;left:8px}
+html.land #decision.sheet.dk-swing.swf .mv-spd{top:auto;bottom:128px;right:auto;left:8px}  /* 104 는 타자 카드(등번호)에 걸쳤다 */
 /* 번트 동그라미는 이름만 — 62px 안에 설명까지 넣으면 글자가 터진다.
    숫자는 고르는 단계(왼쪽 판)에서 이미 봤다 */
 html.land #decision.sheet.dk-swing.swf .bunt-row .spb i{display:none}
@@ -2493,9 +2497,9 @@ html.land #decision.sheet.dk-swing.swf .bunt-row .spb{width:66px;height:66px}
 html.land #decision.sheet.dk-swing:not(.swf) .pl-wrap{position:relative;padding:0;display:block;
   height:100%;overflow:hidden}
 html.land #decision.sheet.dk-swing:not(.swf) .mound{position:absolute;inset:0;width:100%;height:100%;
-  max-height:none;min-height:0;margin:0;border:0;border-radius:0;overflow:hidden}
+  max-height:none;min-height:0;margin:0;border:0;border-radius:0;overflow:hidden;padding-top:0}
 html.land #decision.sheet.dk-swing:not(.swf) .mound .mv-cv{width:100%;height:auto;left:0;
-  top:auto;bottom:0;transform:none}
+  top:0;bottom:auto;transform:none}
 /* 머리말 — 위 가운데 한 줄 띠. 왼쪽 판을 먹으면 안 된다 */
 html.land #decision.sheet.dk-swing:not(.swf) .pl-wrap>div:first-child{position:absolute;
   left:248px;right:164px;top:5px;z-index:6;
@@ -2516,10 +2520,14 @@ html.land #decision.sheet.dk-swing:not(.swf) .aim-go{padding:10px 0;font-size:14
 /* 오른쪽 — 작전. 아래에서 위로 쌓는다(번트가 없는 판도 자리가 안 흔들린다) */
 html.land #decision.sheet.dk-swing:not(.swf) .pl-skip{position:absolute;right:6px;bottom:6px;
   width:152px;margin:0;z-index:7;padding:7px 0;font-size:11px}
+/* [제보 v3.30.0] "핸드폰 화면 뭔가 잘리는게 많음" — 고르는 동안 스윙·지켜본다는
+   **잠겨 있는데도** 오른쪽 아래를 먹고, 번트 버튼이 그 위에 반쯤 겹쳐 올라탔다
+   (작은 폰에서 번트 글자가 세 줄이 되면서 키가 컸다). 잠긴 버튼은 공이 올 때
+   (swf) 나오니 고르는 동안에는 접는다. 번트가 그 자리로 내려온다.        */
 html.land #decision.sheet.dk-swing:not(.swf) .pl-act{position:absolute;right:6px;bottom:44px;
-  width:152px;margin:0;padding:0;background:none;z-index:7;display:flex;gap:5px}
+  width:152px;margin:0;padding:0;background:none;z-index:7;display:none;gap:5px}
 html.land #decision.sheet.dk-swing:not(.swf) .pl-act button{flex:1;padding:11px 2px;font-size:13px}
-html.land #decision.sheet.dk-swing:not(.swf) .bunt-row{position:absolute;right:6px;bottom:100px;
+html.land #decision.sheet.dk-swing:not(.swf) .bunt-row{position:absolute;right:6px;bottom:44px;
   width:152px;grid-template-columns:1fr 1fr;gap:5px;margin:0;z-index:7}
 html.land #decision.sheet.dk-swing:not(.swf) .bunt-row .spb{padding:5px 3px}
 html.land #decision.sheet.dk-swing:not(.swf) .bunt-row .spb i{font-size:8px;line-height:1.2}
@@ -2536,7 +2544,10 @@ html.land #decision.sheet.dk-swing:not(.swf) .swg{position:absolute;left:252px;r
 html.land #decision.sheet.dk-swing:not(.swf) .swnote{position:absolute;left:252px;right:168px;bottom:26px;
   margin:0;z-index:6;text-shadow:0 1px 3px rgba(0,0,0,.9)}
 html.land #decision.sheet.dk-swing:not(.swf) .mv-board{display:none}
-html.land #decision.sheet.dk-swing:not(.swf) .who{right:164px;bottom:8px}
+/* 타자 카드는 머리말에 같은 내용(이름·능력치)이 있다 — 고르는 동안에는
+   가운데 아래 게이지·안내 글씨를 덮기만 했다. 공이 올 때(swf) 다시 나온다 */
+html.land #decision.sheet.dk-swing:not(.swf) .who{display:none}
+html.land #decision.sheet.dk-swing:not(.swf) .mv-camb{left:252px;bottom:46px}
 html.land #decision.sheet.dk-swing:not(.swf) .mound .lbl{display:none}
 html.land #decision.sheet.dk-swing:not(.swf) .mv-top{left:250px}
 
@@ -3055,6 +3066,17 @@ html.land .pt-box{margin-left:30vw;width:min(560px,62vw)}
 .dr-me-nm{font-size:18px;font-weight:800}.dr-me-nm u{text-decoration:none;font-size:13px;color:var(--dim);margin-left:4px}
 .dr-me-why{font-size:13.5px;line-height:1.6;margin:8px 0}
 .tip-x{background:var(--panel2);border:0;color:var(--dim)}
+/* [제보 v3.30.0] "핸드폰 화면 비율 제대로 뭔가 잘리는게 많음"
+   viewport-fit=cover 로 화면 끝까지 쓰겠다고 해놓고 **좌우 안전 영역을 한 번도
+   안 비웠다.** 아이폰을 가로로 들면 노치·둥근 모서리가 양옆 44~59px 을 먹는다 —
+   거기 걸친 신문·순위 버튼, 번트·스윙 버튼, 판 가장자리 글씨가 잘려 보였다.
+   테스트 브라우저에는 노치가 없어서(값이 0) 여태 아무 검사에도 안 걸렸다.
+   padding 을 건드리면 판마다 따로 준 여백을 덮어쓰니, 고정된 판은 **left/right**
+   로 안쪽으로 밀고, 흐르는 화면은 body 여백으로 민다. 노치가 없으면 전부 0 이다. */
+html.land body{padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+html.land .tabbar,html.land #updbar{left:env(safe-area-inset-left,0px);right:env(safe-area-inset-right,0px)}
+html.land #decision.sheet,html.land .ps-ov,html.land .ch-ov,html.land .rk-ov,html.land .pt-ov,
+html.land .pp-ov,html.land #sheet{left:env(safe-area-inset-left,0px)!important;right:env(safe-area-inset-right,0px)!important}
 </style>
 <div id="lock">
   <div class="lock-box">
@@ -9143,8 +9165,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.29.0';
-const APP_VERSION_NOTE = '카메라를 돌린다 — 투수 뒤 · 중계 · 포수 뒤';
+const APP_VERSION = '3.30.0';
+const APP_VERSION_NOTE = '폰에서 잘리던 것들 — 노치 · 타석 · 수비 화면';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9165,6 +9187,13 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.30.0', t:'폰에서 잘리던 것들 — 노치 · 타석 · 수비 화면', items:[
+    '<b>아이폰 가로에서 노치·둥근 모서리에 걸려 잘리던 양옆을 비웠다.</b> 버튼·글씨가 이제 화면 안쪽에 선다',
+    '타석 화면 아래쪽(타자 카드 · 카메라 버튼 · 결과 글씨)이 화면 밖으로 밀려나던 걸 고쳤다',
+    '공 오기 전 고르는 화면 — 잠긴 스윙 버튼 위에 번트 버튼이 겹치던 걸 정리했다. 스윙·지켜본다는 공이 올 때 나온다',
+    '수비 · 포수 송구 화면이 「준비 됐다」 누르기 전에 텅 빈 초록 판이던 걸 — 야구장 · 야수 · 주자를 멈춘 그림으로 먼저 보여준다',
+    '구속 표시가 타자 카드 등번호를 덮던 걸 옮겼다',
+  ]},
   {v:'3.29.0', t:'카메라를 돌린다 — 투수 뒤 · 중계 · 포수 뒤', items:[
     '<b>경기 화면 왼쪽 아래 「🎥」 를 누르면 카메라가 바뀐다.</b> 마지막으로 고른 게 다음 타석·투구에도 그대로 간다',
     '투수할 때 — 투수 뒤(기본) · 중계 · 포수 뒤. 투수 뒤·중계는 TV 중계처럼 내 등번호 너머로 타자·포수·심판을 본다',
@@ -34211,6 +34240,7 @@ function renderDefPlay(box, d){
   goRow.appendChild(skip);
   box2.appendChild(goRow);
   box.appendChild(w);
+  let prevCv=null;                  // 누르기 전 멈춘 그림 — start 에서 걷는다
   /* 화면 안으로 끌어오고, 공이 오는 동안에는 스크롤을 잠근다.
      [제보] "조이스틱 누르기가 힘들어" — 가운데 맞춤(center)은 상자가
      화면보다 길면 **아래쪽 조작부를 화면 밖으로 밀어낸다.** 수비는
@@ -34299,6 +34329,7 @@ function renderDefPlay(box, d){
 
   const start=()=>{
   goRow.style.display='none';
+  try{ if(prevCv&&prevCv.parentNode) prevCv.parentNode.removeChild(prevCv); }catch(e){} prevCv=null;
   plLock(true);
   const t0b=box2.querySelector('.rb-t');
   if(t0b) t0b.textContent = isLD
@@ -34367,6 +34398,7 @@ function renderDefPlay(box, d){
   };
   goB.onclick=start;
   goB.addEventListener('pointerdown',(ev)=>{ if(ev&&ev.preventDefault)ev.preventDefault(); start(); });
+  prevCv=psPreview(stage,{park, names:fieldNames, pos, bases:(LIVE.bases||[]).slice()});
   /* 캔버스를 못 쓰는 환경(테스트)에서는 기다리지 않는다 */
   if(!(typeof document!=='undefined' && document.createElement('canvas').getContext
        && document.createElement('canvas').getContext('2d'))) start();
@@ -34404,6 +34436,31 @@ function psLabel(g,x,y,txt,gold){
   g.textAlign='center'; g.textBaseline='middle';
   g.fillText(txt,x,y-1);
   g.textAlign='left'; g.textBaseline='alphabetic';
+}
+/* [제보 v3.30.0] "화면이 제대로 안 나오고" — 「준비 됐다」 를 누르기 전에는 판이
+   **텅 빈 초록 네모**였다. 장면(캔버스)을 누른 뒤에야 만들어서다. 폰에서는 이게
+   화면 반을 먹는다. 누르기 전에도 야구장 · 야수 · 주자를 멈춘 그림으로 깔아 둔다.
+   누르면 진짜 장면이 이 그림을 걷고 그 자리에 선다.                          */
+function psPreview(host, o){
+  try{
+    const cv=document.createElement('canvas');
+    cv.className='runcv defcv ps-prev';
+    cv.width=PSW*2; cv.height=PSH*2;
+    const g=cv.getContext&&cv.getContext('2d'); if(!g) return null;
+    const P=o.park||psPark();
+    g.setTransform(2,0,0,2,0,0);
+    psField(g,P);
+    Object.keys(PS_POS).forEach(kk=>{
+      const qq=psPosOf(kk,P);
+      psMan(g,qq.x,qq.y+7,PS_UNI.us,0,qq.x<160,false);
+      const nm=(o.names&&o.names[kk])||null;
+      if(nm) psLabel(g,qq.x,qq.y-9,nm,kk===o.pos);
+    });
+    const BP=[{x:160,y:236}, PS_B[1], PS_B[2], PS_B[3]];
+    (o.bases||[]).forEach((rid,i)=>{ if(rid&&BP[i+1]) psMan(g,BP[i+1].x,BP[i+1].y+7,PS_UNI.them,0,i>=1,false); });
+    host.appendChild(cv);
+    return cv;
+  }catch(e){ return null; }
 }
 function defScene(host, o){
   const cv=document.createElement('canvas');
@@ -35033,8 +35090,10 @@ function renderSteal(box, d){
   box2.appendChild(goRow);
   row.style.display='none';
   setTimeout(()=>{ try{ box.scrollIntoView({block:'end',behavior:'smooth'}); }catch(e){} },30);
+  let prevT=psPreview(stage,{park:LIVE.park, pos:'C', bases:(LIVE.bases||[]).slice()});   // 누르기 전 멈춘 그림
   const start=()=>{
   goRow.style.display='none';
+  try{ if(prevT&&prevT.parentNode) prevT.parentNode.removeChild(prevT); }catch(e){} prevT=null;
   row.style.display='';
   try{
     sc=groundScene(stage, {mode:'steal', ang:0, dur:2200, park:LIVE.park, myPos:'C',
