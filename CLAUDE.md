@@ -32,6 +32,7 @@ const CHANGELOG=[
 node lintcheck.js          # 선언이 사라진 함수 · 중복 CSS · 중복 키 · 용량
 node verify.js index.html  # 엔진 캘리브레이션 6개 지표
 node soaktest.js           # 풀 시즌을 실제 UI 경로로 완주
+node prosoak.js            # 프로(KBO) 144경기 · 포스트시즌 · 다음 시즌 · 저장/불러오기
 ```
 
 여유가 있으면 기능별 테스트도 같이 (`boxtest` `feattest` `awardtest` `sorttest`

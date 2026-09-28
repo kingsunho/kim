@@ -269,11 +269,14 @@ const txt=()=>d.querySelector('#view').textContent;
     return (has.length===3 && falls) ? '대비책 있음' : `!곡선${has.length} 대비책${falls}`;
   });
   T('구장 셋이 서로 다르게 그려진다', ()=>{
-    const ids=ev("Object.keys(MV_PARKS)");
+    /* [v3.27.0] 프로 구장 9개가 MV_PARKS 에 같이 들어왔다(전부 삼층 관중석이라 모양이 비슷하다).
+       이 검사의 뜻은 「사회인 구장 셋이 서로 다르다」 라서 PARKS 의 셋만 본다. */
+    const ids=ev("PARKS.map(p=>p.id)");
     const keys=['back','stand','board','grass','infieldGrass'];
     const rows=ids.map(id=>keys.map(k=>JSON.stringify(ev(`MV_PARKS['${id}'].${k}`))).join('|'));
     const uniq=new Set(rows).size;
-    return uniq===3 ? `${ids.join(' / ')} 전부 다름` : `!같은 구장이 있다 (${uniq}종)`;
+    const pro=ev("PRO_PARKS.filter(p=>!!MV_PARKS[p.id]).length");
+    return (uniq===3 && pro===9) ? `${ids.join(' / ')} 전부 다름 · 프로 구장 ${pro}개` : `!같은 구장이 있다 (${uniq}종) · 프로 ${pro}`;
   });
   T('구속이 구위·구종을 따라간다', ()=>{
     /* [2.24.0] 구속은 공마다 랜덤이라 한 번 값으로는 못 잰다.
