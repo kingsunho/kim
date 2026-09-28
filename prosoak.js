@@ -91,7 +91,7 @@ const clean=(tag)=>{ const t=(d.getElementById('view')||{}).textContent||'';
   T('불러와도 라인업이 프로 선수다', ()=>ev("(ST.lineup||[]).every(s=>TBYID.wwzw.players.some(p=>p.id===s.id))")?'아홉 전부':'!섞였다');
   ev("go('home')"); clean('불러온 뒤 홈');
 
-  /* [v3.30.0] 명단 버전이 없는 옛 프로 세이브 — 라인업 · 로테이션을 새로 짜야 한다.
+  /* [v3.33.0] 명단 버전이 없는 옛 프로 세이브 — 라인업 · 로테이션을 새로 짜야 한다.
      옛 id 는 빈 자리가 아니라 **다른 사람**을 가리키므로, 순서를 뒤섞은 라인업으로 흉내 낸다 */
   console.log('\n[옛 프로 세이브(명단 9/28 이전)]');
   const old=JSON.parse(snap); delete old.pro.rosterVer;
