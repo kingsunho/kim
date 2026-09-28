@@ -3195,6 +3195,8 @@ html.land .pp-ov,html.land #sheet{left:env(safe-area-inset-left,0px)!important;r
 .kd-cand b em{font-style:normal;font-weight:600;font-size:11.5px;color:var(--dim)}
 .kd-cand span b{display:inline;font-size:inherit;color:var(--gold)}
 .kd-cand{padding:7px 10px;margin:4px 0}
+.mil-res{font-size:12.5px;line-height:1.55;padding:8px 10px;border-radius:8px;margin:8px 0;background:#151a21;border-left:3px solid var(--dim)}
+.mil-res.ok{border-left-color:#6fcf8a}.mil-res.no{border-left-color:#e0706a}
 .kd-phen{border-color:var(--gold);background:rgba(255,200,60,.08)}
 .kd-star{text-decoration:none;display:inline-block;font-size:10.5px;font-weight:900;color:#0e0f11;background:var(--gold);border-radius:5px;padding:1px 6px;vertical-align:middle}
 @media (min-width:600px){ .kd-our .kd-cand{display:inline-block;width:calc(50% - 4px);vertical-align:top;margin:3px 0}
@@ -9290,8 +9292,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.37.0';
-const APP_VERSION_NOTE = '고졸 바로 프로 · 구단 모자 글자 · 괴물 신인';
+const APP_VERSION = '3.38.0';
+const APP_VERSION_NOTE = '병역 — 상무 · 특례 · 현역';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9312,9 +9314,16 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.38.0', t:'병역 — 상무 · 특례 · 현역', items:[
+    '<b>고졸로 바로 프로에 간 사람은 미필이다.</b> 입영 연기는 만 27세 시즌까지 — 그해 겨울까지 해결 못 하면 <b>현역 강제 입대</b>(한 해 야구를 못 하고 몸이 떨어진다)',
+    '<b>상무 — 겨울마다 한 번 지원.</b> 리그 또래 지원자들과 능력치 + 그해 성적으로 줄 세워서 투수 6 · 야수 6명만 붙는다. 붙으면 한 해를 상무 퓨처스에서 뛰고(는다) 1군으로 돌아온다',
+    '<b>병역 특례는 올림픽 동메달 이상 · 아시안게임 금메달만.</b> WBC · 프리미어12 · APBC 는 없다',
+    '복무한 해는 FA 햇수에 안 들어간다. 사회인을 거쳐 입단한 사람은 군필로 본다',
+    '모자 글자 — 호랑이 T · 사자 L · 공룡 D 로 바꿨다. 유니폼 어깨선 · 목 V · 벨트에 팀 보조색을 둘렀다',
+  ]},
   {v:'3.37.0', t:'고졸 바로 프로 · 구단 모자 글자 · 괴물 신인', items:[
     '<b>고교를 졸업하면 진로를 고른다.</b> 바로 KBO 드래프트를 신청하면 고졸 신인으로 하위 라운드(5~10R)에서 불리고 2군부터. 사회인야구(우완좌완)에서 기록을 쌓고 트라이아웃을 보면 실전 보정이 붙어서 상위 라운드(1~4R)까지 노린다',
-    '<b>프로 구단마다 모자 앞 글자가 생겼다.</b> 곰 D · 쌍둥이 T · 호랑이 K · 사자 S · 거인 G · 마법사 W · 공룡 N · 착륙선 L · 독수리 E · 영웅 H. 로고를 베끼진 않고 글자 하나와 팀 색으로만',
+    '<b>프로 구단마다 모자 앞 글자가 생겼다.</b> 곰 D · 쌍둥이 T · 호랑이 T · 사자 L · 거인 G · 마법사 W · 공룡 D · 착륙선 L · 독수리 E · 영웅 H. 로고를 베끼진 않고 글자 하나와 팀 색으로만',
     '<b>쌍둥이 · 곰은 홈 유니폼에 줄무늬(핀스트라이프).</b>',
     '<b>KBO 규정대로 원정 팀은 유색 유니폼.</b> 홈은 흰색, 원정은 팀마다 원정색(회색 · 남색 · 팀 색) — 유색 셔츠 위 번호는 흰 글씨',
     '<b>괴물 신인.</b> 신인 드래프트에 해마다 반쯤 확률로 하나(가끔 둘) — 고졸인데 벌써 1군급, 잠재는 맨 위. 뽑히면 2군을 건너뛰고 바로 1군',
@@ -15604,7 +15613,7 @@ const PRO_PARKS=[
 ];
 const PRO_TEAMS=[
   {key:'kia', name:'광주 호랑이', short:'호랑이', city:'광주', mascot:'범이', park:'gwangju',
-   cap:'#EA0029', sh:'#ffffff', pants:'#eceef2', sub:'#06141F', ltr:'K', aw:'#c8102e',
+   cap:'#EA0029', sh:'#ffffff', pants:'#eceef2', sub:'#06141F', ltr:'T', aw:'#c8102e',
    titles:[1983,1986,1987,1988,1989,1991,1993,1996,1997,2009,2017,2024],
    retired:[[18,'선동훈','투수'],[7,'이종번','유격수']],
    records:['단일 시즌 평균자책점 0.78 — 선동훈 (1993)','단일 시즌 84도루 — 이종번 (1994)','역대 최연소 30-30 — 김도형 (2024)'],
@@ -15628,7 +15637,7 @@ const PRO_TEAMS=[
         ['이태야',44,'R','RP',3.77,31.3,6.6,null,2.8,28,36],['곽도유',0,'L','RP',3.35,28.3,9.0,null,4.3,37,22],
         ['김현순',17,'R','RP',3.75,2,7.1,null,3.5,1,26]]},
   {key:'sam', name:'대구 사자', short:'사자', city:'대구', mascot:'갈기', park:'daegu',
-   cap:'#074CA1', sh:'#ffffff', pants:'#eceef2', sub:'#c0c0c0', ltr:'S', aw:'#1a5cb0',
+   cap:'#074CA1', sh:'#ffffff', pants:'#eceef2', sub:'#c0c0c0', ltr:'L', aw:'#1a5cb0',
    titles:[1985,2002,2005,2006,2011,2012,2013,2014],
    retired:[[10,'양준협','외야수'],[22,'이만서','포수'],[36,'이승연','1루수']],
    records:['단일 시즌 56홈런 — 이승연 (2003)','통합 4연패 (2011~2014)','통산 최다 안타 경쟁 — 양준협 (2318안타)'],
@@ -15747,7 +15756,7 @@ const PRO_TEAMS=[
         ['윤태오',65,'R','RP',4.22,21.7,7.5,null,4.3,24,22],['김영형',20,'R','RP',4.71,5,5.9,null,3.6,5,24],
         ['서준온',41,'R','RP',6.35,3.3,5.6,null,4.4,4,21],['김한종',95,'R','RP',5.39,3,6.4,null,4.1,4,21]]},
   {key:'nc', name:'창원 공룡', short:'공룡', city:'창원', mascot:'쿵쿵이', park:'changwon',
-   cap:'#315288', sh:'#ffffff', pants:'#eceef2', sub:'#AF917B', ltr:'N', lc:'#d8c2a8', aw:'#23406e',
+   cap:'#315288', sh:'#ffffff', pants:'#eceef2', sub:'#AF917B', ltr:'D', lc:'#d8c2a8', aw:'#23406e',
    titles:[2020],
    retired:[],
    records:['40홈런-40도루 — 테임조 (2015)','창단 첫 통합 우승 (2020)','한 시즌 팀 최다 도루 경쟁'],
@@ -16161,7 +16170,10 @@ function proUni(key, away){
   const c=sdRgb(d.cap), A=!!(away&&d.aw);
   return {cap:d.cap, sh:A?d.aw:(d.sh||'#ffffff'), pants:A?(d.awp||'#b9bec7'):(d.pants||'#eceef2'),
     st:'rgba('+c[0]+','+c[1]+','+c[2]+',.30)', gl:'#5b3a1e',
-    ltr:d.ltr||null, lc:d.lc||'#ffffff', pin:(!A&&d.pin)?d.cap:null, trim:A?'#ffffff':null};
+    ltr:d.ltr||null, lc:d.lc||'#ffffff', pin:(!A&&d.pin)?d.cap:null, trim:A?'#ffffff':null,
+    /* [요청] "팀 컬러에 맞게 유니폼도" — 보조색(sub)을 어깨 요크 · 목 V · 벨트에 두른다.
+       원정 회색 셔츠(awp 있음)엔 팀 색, 원정 유색 셔츠엔 흰색 */
+    pip:A?(d.awp?d.cap:'#ffffff'):(d.sub||null)};
 }
 /* 이번 경기 우리가 홈인가 — 중계 중이면 LIVE 에서, 아니면 이번 주 일정에서 */
 function proUsHome(){
@@ -16597,10 +16609,151 @@ function pfResolveFAMove(){
   pfLog('FA 이적 — '+proName(from)+' → '+proName(to));
   return to;
 }
+/* ================= 병역 =================
+   [요청 v3.38.0] "올림픽은 동메달 이상부터가 군면제고 아시안게임은 금메달 나머지 국대는 없고
+   상무는 1년마다 신청할 수 있는데 그 티오에 잘하는 애 있으면 못 뽑히겠지 점수제로 —
+   그 나이때까지 군대 해결 못하면 강제 입대해야함"
+
+   ── 실제 규정(2026-09 확인) ──
+     입영 연령 18~28세. 연기는 최대 만 27세까지(그 해 겨울이 마지막이다).
+     상무(국군체육부대) 야구 — 해마다 한 번 모집, 합격자 열한두 명(2026 여름 11명). 복무 18개월.
+     병역 특례 — 올림픽 3위 이상 · 아시안게임 1위. WBC · 프리미어12 · APBC 는 없다.
+     복무 기간은 FA 등록일수에 안 들어간다.
+
+   ── 게임에서는 ──
+     · 사회인(트라이아웃)을 거쳐 온 사람은 **군필**로 본다 — 스물여섯 넘어 입단했으니
+       그 사이 다녀왔다고 친다. 고졸 바로 입단(route 'hs')만 미필로 시작한다.
+     · 상무 — 겨울마다 한 번 지원. 리그의 21~27세 미필(무작위 절반쯤이 지원)과 **능력치 +
+       올해 성적 점수**로 줄 세워서 투수 6 · 야수 6 만 붙는다. 붙으면 다음 한 해를 상무에서
+       뛴다(퓨처스 — 경기에 나가니 는다). 떨어지면 내년에 다시.
+     · 만 27세 시즌이 끝나고도 미필이면 **현역 강제 입대** — 한 해 야구를 못 한다(떨어진다).
+     · 18개월은 게임에선 「한 시즌 통째로」 다. 돌아오면 다음 시즌 개막부터                */
+const MIL_DEADLINE=27;                 // 이 나이 시즌이 끝나면 더는 못 미룬다
+const MIL_TO={pit:6, bat:6};           // 상무 야구 한 해 합격 — 투수 · 야수
+function milState(){
+  const P=ST.pro; if(!P) return null;
+  if(!P.mil||typeof P.mil!=='object') P.mil={st:(P.route==='hs'?'none':'done'), apply:{}, log:[]};
+  if(P.exempt && P.mil.st==='none') P.mil.st='exempt';
+  if(!P.mil.apply) P.mil.apply={};
+  if(!Array.isArray(P.mil.log)) P.mil.log=[];
+  return P.mil;
+}
+function milNeeds(){ const M=milState(); return !!M && M.st==='none' && !ST.pro.exempt; }
+function milIsPit(){ return ST.role==='pit'; }
+/* 내 점수 — 능력치(pfValue) + 올해 성적(pfSeasonLine) */
+function milMyScore(){
+  const me=ST.playerId||MYID, mp=TBYID.wwzw.players.find(x=>x.id===me)||{};
+  const pit=milIsPit(), base=pit
+    ? pfValue({stf:(mp.pitch||{}).stf||30, ctl:(mp.pitch||{}).ctl||30, sta:(mp.pitch||{}).sta||40})
+    : pfValue(Object.assign({},mp,{stf:null}));
+  let s=0; try{ s=(pit?pfSeasonLine({id:me,stf:1}):pfSeasonLine(Object.assign({id:me},mp))).score||0; }catch(e){}
+  const farm=(ST.myFarm||0)>0;
+  return Math.round(base + clamp(s,-0.3,1.2)*(farm?12:24));
+}
+/* 올해 상무 지원자 — 리그 21~27세(나 빼고)에서 해마다 같은 사람들이 나오게 시드로 */
+function milField(){
+  const y=ST.pro.year, me=ST.playerId||MYID, rng=makeRng(((ST.seed||1)*6151+y*17)>>>0);
+  const pit=milIsPit(), out=[];
+  TEAMS.forEach(t=>{ if(!t.proKey&&t.id!=='wwzw') return;
+    [].concat(t.players||[],t.pitchers||[]).forEach(p=>{
+      if(p.id===me || pfIsPit(p)!==pit) return;
+      const a=pfAge(p); if(a<21||a>MIL_DEADLINE) return;
+      /* 지원하는 건 주로 1군 백업 · 2군 유망주다. 주전급은 아시안게임 · 올림픽 특례를 노리며 버틴다 */
+      const pc=pfPct(p), want=pc<0.5?0.55:(pc<0.8?0.35:0.08);
+      if(rng()>want) return;
+      out.push({name:p.name, team:proKeyOf(t.id), sc:Math.round(pfValue(p)+(rng()-0.5)*24)});
+    }); });
+  return out;
+}
+function milApply(){
+  const M=milState(), y=ST.pro.year;
+  if(!milNeeds()) return null;
+  if(M.apply[y]) return M.apply[y];
+  const mine=milMyScore(), field=milField(), to=milIsPit()?MIL_TO.pit:MIL_TO.bat;
+  const all=field.concat([{me:true, sc:mine}]).sort((a,b)=>b.sc-a.sc);
+  const rank=all.findIndex(x=>x.me)+1, cut=(all[to-1]||{sc:0}).sc;
+  const R={year:y, ok:rank<=to, rank, n:all.length, to, cut, mine, top:all.slice(0,to).map(x=>x.me?'(나)':x.name)};
+  M.apply[y]=R;
+  if(R.ok){ M.pending={kind:'sangmu', year:y}; M.log.push(y+' 상무 합격 ('+rank+'/'+all.length+')');
+    proNews('병역', nameOf(ST.playerId||MYID)+', 상무 야구 합격 — 12월 입대'); }
+  else M.log.push(y+' 상무 탈락 ('+rank+'/'+all.length+' · 합격선 '+cut+')');
+  return R;
+}
+/* 겨울 — 입대하나. 특례가 생겼으면 없던 일. 마감 나이인데 상무가 아니면 현역 */
+function milBegin(){
+  const M=milState(); if(!M) return null;
+  if(ST.pro.exempt || M.st==='exempt'){ if(M.st==='none') M.st='exempt'; M.pending=null; return null; }
+  if(M.st!=='none') return null;
+  if(!M.pending && pfAge({id:ST.playerId||MYID})>=MIL_DEADLINE){
+    M.pending={kind:'active', year:ST.pro.year};
+    M.log.push(ST.pro.year+' 입영 연기 끝 — 현역 입대');
+    proNews('병역', nameOf(ST.playerId||MYID)+', 현역 입대 — 만 28세 입영 연기 한도');
+  }
+  const k=M.pending?M.pending.kind:null; M.pending=null;
+  return k;
+}
+/* 한 해를 군에서 보낸다. 상무는 뛰니까 늘고, 현역은 몸이 떨어진다 */
+function milServe(kind){
+  const M=milState(), me=ST.playerId||MYID, y=ST.pro.year;
+  const R=ST.myRatings||(ST.myRatings={});
+  const rng=makeRng(((ST.seed||1)*977+y)>>>0);
+  const d=kind==='sangmu'?()=>2+Math.round(rng()*3):()=>-(1+Math.round(rng()*2));
+  const chg={};
+  ['con','pow','eye','spd','def','arm'].forEach(k=>{ if(R[k]!=null){ const v=d(); R[k]=Math.round(clamp(R[k]+v,10,90)); chg[k]=v; } });
+  if(R.pitch) ['stf','ctl','sta'].forEach(k=>{ if(R.pitch[k]!=null){ R.pitch[k]=Math.round(clamp(R.pitch[k]+d(),10,90)); } });
+  /* 상무 퓨처스 기록 — 한 줄로 남긴다(history 에는 안 넣는다: FA 등록일수에 안 들어간다) */
+  const line=kind==='sangmu'
+    ? (milIsPit()?('상무 퓨처스 '+(6+((rng()*6)|0))+'승 · 평균자책점 '+(2.4+rng()*2).toFixed(2)):('상무 퓨처스 타율 '+fmt3(0.280+rng()*0.08)+' · '+(4+((rng()*12)|0))+'홈런'))
+    : '현역 복무 — 야구공을 거의 못 잡았다';
+  M.svc={kind, year:y, line, chg};
+  M.st='done';
+  M.log.push(y+' '+(kind==='sangmu'?'상무':'현역')+' 복무 · '+line);
+  proNews('병역', nameOf(me)+' 전역 — '+line);
+}
+/* 시즌 끝 화면 — 병역 카드 */
+function milCard(c, rec, ntState){
+  const M=milState(); if(!M) return;
+  const me=ST.playerId||MYID, age=pfAge({id:me}), y=ST.pro.year;
+  const card=el('div','card mil-card');
+  const head='<div class="card-h">병역</div>';
+  if(M.svc && M.svc.year===y-1){
+    card.innerHTML=head+'<p class="muted">'+(M.svc.kind==='sangmu'?'상무에서 한 해를 뛰고 돌아왔다':'현역 복무를 마치고 돌아왔다')+' — '+M.svc.line+'</p>';
+    c.appendChild(card); return; }
+  if(ST.pro.exempt || M.st==='exempt'){ card.innerHTML=head+'<p class="muted"><b>병역 특례</b> — 군대 걱정은 끝났다.</p>'; c.appendChild(card); return; }
+  if(M.st==='done'){ return; }                             // 군필 — 따로 볼 게 없다
+  const last=age>=MIL_DEADLINE, R=M.apply[y];
+  let h=head+'<p class="muted">미필 · 만 '+age+'세 — 입영 연기는 만 '+MIL_DEADLINE+'세 시즌까지'+
+    (last?' · <b style="color:#e0706a">올겨울이 마지막이다</b>':' ('+(MIL_DEADLINE-age)+'년 남음)')+'.<br>'+
+    '상무 야구는 한 해 투수 '+MIL_TO.pit+' · 야수 '+MIL_TO.bat+'명. 능력치와 올해 성적으로 줄 세운다. '+
+    (ntState==='pending'?'국가대표 대회가 남아 있다 — 올림픽 동메달 · 아시안게임 금이면 특례다. ':'')+'</p>';
+  if(R){
+    h+='<p class="mil-res '+(R.ok?'ok':'no')+'">'+(R.ok?'<b>상무 합격</b> — 지원 '+R.n+'명 중 '+R.rank+'위. 12월에 입대해서 다음 한 해를 상무에서 뛴다.'
+      :'<b>상무 탈락</b> — 지원 '+R.n+'명 중 '+R.rank+'위 (합격선 '+R.cut+'점 · 내 점수 '+R.mine+'점). '+
+        (last?'연기도 끝났다 — <b>현역으로 입대한다.</b>':'내년에 다시 낸다.'))+'</p>';
+    card.innerHTML=h;
+  } else {
+    card.innerHTML=h+(last?'<p class="mil-res no">상무에 떨어지면 현역으로 간다.</p>':'');
+    const b=el('button','btn','상무 지원서 낸다 (올해 한 번) ▸');
+    b.onclick=async()=>{ milApply(); await saveGame(true); proSeasonScreen(rec, ST.pro.lastPost); };
+    card.appendChild(b);
+  }
+  c.appendChild(card);
+}
 function proNextYear(){
   pfWinterAuto();
   try{ pfResolveFAMove(); }catch(e){}
   try{ pfResolveTradeReq(); }catch(e){}
+  /* 입대 — 한 해를 건너뛴다. 그 해 겨울 일(신인 드래프트 · FA · 재계약)은 구단이 알아서 한다 */
+  let mil=null; try{ mil=milBegin(); }catch(e){ mil=null; }
+  if(mil){
+    ST.pro.year++;
+    ST.seasonNo=(ST.seasonNo||1)+1;
+    try{ milServe(mil); }catch(e){}
+    try{ pfSeasonEnd(6); }catch(e){}
+    pfWinterAuto();
+    /* 상무에서 뛰다 왔으면 1군 합류, 현역이면 2군에서 다시 몸을 만든다 */
+    ST.myFarm=(mil==='sangmu')?0:1;
+  }
   ST.pro.year++;
   ST.seasonNo=(ST.seasonNo||1)+1;
   ST.pro.level=(ST.myFarm||0)>0?'2군':'1군';
@@ -16632,6 +16785,7 @@ function proSeasonScreen(rec, ps){
   c.appendChild(mc);
   /* 국가대표 — 그해 대회가 있으면 명단 발표부터. 뽑혔는데 안 치르고 넘어가면 알아서 치른다 */
   let ntState=null; try{ ntState=ntCard(c, rec); }catch(e){ ntState=null; }
+  try{ milCard(c, rec, ntState); }catch(e){}
   try{ pfWinterCard(c, rec); }catch(e){}
   const nb=el('button','btn primary',(rec.year+1)+' 시즌으로 ▸');
   nb.onclick=()=>{ if(ntState==='pending'){ try{ ntPlay(ntEventFor(rec.year), rec.year); }catch(e){} } proNextYear(); };
@@ -16715,7 +16869,7 @@ function ntPool(ev){
   const hitters=[], pitchers=[];
   /* KBO 선수 데이터에는 나이가 없다 — 나이 제한 대회(APBC · 아시안게임)를 위해
      id 로 21~33 세를 고정해서 뽑는다(해마다 한 살씩 먹는다). 나는 진짜 나이다 */
-  const ageOf=(p)=>{ if(p.id===me){ const b=(META[me]&&META[me].born)||2000; return (ST.pro.year||2027)-b; }
+  const ageOf=(p)=>{ if(p.id===me){ try{ return pfAge({id:me}); }catch(e){} const b=(META[me]&&META[me].born)||2000; return (ST.pro.year||2027)-b; }
     if(p.age) return p.age; return 21+(clayHash(String(p.id))%13)+((ST.pro.year||2027)-2027); };
   TEAMS.forEach(t=>{
     (t.players||[]).forEach(p=>{ if(p.pitch&&p.id!==me) return;
@@ -16793,8 +16947,10 @@ function ntPlay(ev, year){
       medal=play(br,'동메달 결정전')?'bronze':null;
     }
   }
+  /* 병역 특례 — [요청 v3.38.0] "올림픽은 동메달 이상, 아시안게임은 금메달, 나머지 국대는 없고"
+     (실제 병역법 시행령 — 올림픽 3위 이상 · 아시안게임 1위. WBC · 프리미어12 · APBC 는 해당 없음) */
   const rec={ev, name:E.name, year, games, medal, my, called:true,
-    exempt:!!(E.ag && medal==='gold')};
+    exempt:!!((E.ag && medal==='gold') || (ev==='olympic' && !!medal))};
   ST.pro.nt=ST.pro.nt||{}; ST.pro.nt[year]=rec;
   if(rec.exempt) ST.pro.exempt=true;          // 병역 특례
   const h=ST.pro.history&&ST.pro.history[ST.pro.history.length-1];
@@ -16827,7 +16983,7 @@ function ntCard(c, rec){
   }
   card.innerHTML='<div class="card-h">국가대표 발탁 — '+E.name+'</div>'+
     '<p class="nt-call">태극마크다. <b>'+nameOf(ST.playerId||MYID)+'</b> — 대표팀 명단에 이름이 올랐다.</p>'+
-    '<p class="muted">'+(E.ag?'금메달이면 병역 특례다. ':'')+'조별 세 경기 · 2승이면 준결승.</p>';
+    '<p class="muted">'+(milNeeds()?(E.ag?'금메달이면 병역 특례다. ':(ev==='olympic'?'동메달 이상이면 병역 특례다. ':'')):'')+'조별 세 경기 · 2승이면 준결승.</p>';
   const b=el('button','btn primary','대회 나간다 ▸');
   b.onclick=()=>{ ntPlay(ev, rec.year); saveGame(true); proSeasonScreen(rec, ST.pro.lastPost); };
   card.appendChild(b);
@@ -33350,12 +33506,13 @@ function sdPal(u){
   /* 유니폼 데이터의 글러브 색(#5b3a1e)은 옛 선화용이라 셀 채색에선 검게 뭉갠다.
      가죽색 쪽으로 끌어올린다 */
   const gl=sdMix(u.gl||'#6b4424','#c98a4a',0.45);
-  const k=t+sh+pt+gl+(u.trim||'');
+  const k=t+sh+pt+gl+(u.trim||'')+(u.pip||'');
   if(SD_PAL[k]) return SD_PAL[k];
   return SD_PAL[k]={
     team:t, teamD:sdMix(t,'#000000',0.38), teamL:sdMix(t,'#ffffff',0.40),
     /* 번호 · 가슴 글씨 — 흰 셔츠엔 팀 색, 원정 유색 셔츠엔 흰색(테두리는 팀 색 짙게) */
     trim:u.trim||t, trimO:u.trim?sdMix(t,'#000000',0.45):'#ffffff',
+    pip:u.pip||u.trim||t, beltC:u.pip||sdMix(t,'#000000',0.38),
     jer:sh, jerD:sdMix(sh,'#5d6a86',0.30),
     pan:pt, panD:sdMix(pt,'#5d6a86',0.32),
     skin:'#fcd9b8', skinD:'#eaa886', blush:'rgba(255,120,120,.38)',
@@ -33576,8 +33733,9 @@ function sdBatter(D,S){
       g.fillStyle=P.jerD; g.beginPath(); g.rect(-30,-60,60,60);
       g.ellipse(4+sx*0.3,-40,15,17,0,0,Math.PI*2); g.fill('evenodd'); },
     ()=>{ sdPin(D,-20,20,-52,-26);
-      g.strokeStyle=P.trim; g.lineWidth=1.3;              // 어깨 요크
+      g.strokeStyle=P.pip; g.lineWidth=1.5;              // 어깨 요크 — 보조색
       g.beginPath(); g.moveTo(-15,-45); g.quadraticCurveTo(0,-43,15,-45); g.stroke();
+      g.strokeStyle=P.trim; g.lineWidth=1.3;
       if(F){ // 앞 — 단추 줄 · 가슴 글씨 · 왼쪽 아래 가슴 번호(KBO 유니폼이 그렇다)
         g.lineWidth=1.1; g.beginPath(); g.moveTo(1,-46); g.lineTo(1,-28); g.stroke();
         g.fillStyle=P.trim; g.beginPath(); mvRR(g,-11,-41,9,3.2,1.4); g.fill();
@@ -33585,8 +33743,8 @@ function sdBatter(D,S){
         if(D.o.no!=null) sdNum(D,-7,-33,8,D.o.no); } });
   /* 등번호 — 팀 색에 흰 테두리(원정 유색 셔츠면 흰 글씨) */
   if(D.o.no!=null && !F) sdNum(D,sx*0.25,-36.5,13,D.o.no);
-  /* 벨트 */
-  sdCel(D,()=>{ g.beginPath(); g.moveTo(-15.5,-30); g.lineTo(15.5,-30); g.lineTo(15.2,-26.4); g.lineTo(-15.2,-26.4); g.closePath(); },P.teamD);
+  /* 벨트 — 보조색 */
+  sdCel(D,()=>{ g.beginPath(); g.moveTo(-15.5,-30); g.lineTo(15.5,-30); g.lineTo(15.2,-26.4); g.lineTo(-15.2,-26.4); g.closePath(); },P.beltC||P.teamD);
   g.restore();
   /* 뒷팔(오른팔) — 카메라 쪽이라 몸통 위에. 팔꿈치가 바깥으로 든다 */
   if(F) frontArm(); else backArm();
@@ -33810,10 +33968,10 @@ function sdFront(D,pose){
       g.beginPath(); g.moveTo(tx+1,-47); g.lineTo(tx+1,hip[1]-1); g.stroke();
       g.fillStyle=P.trim; g.beginPath(); mvRR(g,tx-11,-42,9,3.2,1.4); g.fill();
       g.beginPath(); mvRR(g,tx+3.5,-42,9,3.2,1.4); g.fill();
-      // 목 V
-      g.fillStyle=P.trim; g.beginPath(); g.moveTo(tx-5,-48.5); g.lineTo(tx+6,-48.5); g.lineTo(tx+0.5,-43.5); g.closePath(); g.fill(); });
+      // 목 V — 보조색
+      g.fillStyle=P.pip; g.beginPath(); g.moveTo(tx-5,-48.5); g.lineTo(tx+6,-48.5); g.lineTo(tx+0.5,-43.5); g.closePath(); g.fill(); });
   sdCel(D,()=>{ g.beginPath(); g.moveTo(tx-15.5,hip[1]-3); g.lineTo(tx+15.5,hip[1]-3);
-      g.lineTo(tx+15.3,hip[1]+0.4); g.lineTo(tx-15.3,hip[1]+0.4); g.closePath(); },P.teamD);
+      g.lineTo(tx+15.3,hip[1]+0.4); g.lineTo(tx-15.3,hip[1]+0.4); g.closePath(); },P.beltC||P.teamD);
   /* 팔 — 소매(유니폼) + 언더셔츠(팀 색) */
   const arm=(sh,E,Hd,isGlove)=>{
     sdLimb(D,[sh[0],sh[1],E[0],E[1],Hd[0],Hd[1]],7,P.team,P.teamD);
