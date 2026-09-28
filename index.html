@@ -1265,6 +1265,13 @@ body.pl-lock #view{touch-action:none}
 .mound .cnt b{color:#ffd15c}
 .mound .cnt b+b{color:#e08a70}
 /* 지금 타석·마운드에 선 사람 얼굴 */
+/* [v3.29.0] 카메라 바꾸기 — 판 왼쪽 아래. 투수 뒤 카메라에서는 포수가
+   캔버스에 앞모습으로 앉아 있으니 DOM 미트를 숨긴다 */
+.mv-camb{position:absolute;left:6px;bottom:6px;z-index:6;font-weight:700;font-size:11px;line-height:1;font-family:inherit;
+  color:#e8eef6;background:rgba(8,14,22,.66);border:1px solid rgba(255,255,255,.22);
+  border-radius:14px;padding:6px 9px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.mv-camb:active{background:rgba(255,106,61,.55)}
+.mound.cam-rev .mitt,.mound.cam-rev .mitt-tag{display:none}
 .mound .who{position:absolute;right:8px;bottom:8px;display:flex;align-items:center;gap:6px;
   background:rgba(8,14,22,.72);padding:4px 8px 4px 4px;border-radius:8px}
 .mound .who-av{width:30px;height:40px;border-radius:5px;overflow:hidden;flex:0 0 auto;
@@ -1895,6 +1902,28 @@ table.hl-tbl td.hl-o{color:#c98a80}
 .ms-sub{font-size:12px;color:var(--dim);margin-top:4px}
 .ms-why{font-size:11px;color:var(--dim);opacity:.85;margin-top:7px;
   border-top:1px solid var(--line);padding-top:7px}
+.lu-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin-top:6px}
+.lu-ch{display:flex;align-items:baseline;gap:5px;min-width:0;padding:6px 7px;border-radius:8px;
+  background:rgba(255,255,255,.04);font-size:12.5px}
+.lu-ch u{text-decoration:none;color:var(--dim);font-weight:800;font-size:11px}
+.lu-ch b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.lu-ch em{font-style:normal;color:var(--dim);font-size:10.5px;margin-left:auto;white-space:nowrap}
+.lu-ch.me{background:rgba(201,162,39,.16);box-shadow:inset 0 0 0 1px rgba(201,162,39,.5)}
+.lu-ch.me b{color:var(--gold)}
+.lu-mine{color:var(--gold);font-size:.9em;margin-left:4px}
+.lu-mine.out{color:var(--dim)}
+.hs-pastw>summary{cursor:pointer;list-style:none}
+/* [v3.29.0] 고교 경기 전 — 가로에서는 두 칸으로 나눠 스크롤 없이 */
+html.land #view.hs-pre{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  column-gap:10px;align-items:start;grid-auto-flow:row dense}
+html.land #view.hs-pre>*{grid-column:1;margin-top:0;margin-bottom:6px}
+html.land #view.hs-pre>.lu-card{grid-column:2;grid-row:1/span 3}
+html.land #view.hs-pre>.hs-pastw{grid-column:2;grid-row:4/span 2}
+html.land #view.hs-pre .lu-ch{flex-wrap:wrap;row-gap:1px}
+html.land #view.hs-pre .lu-ch em{margin-left:0;width:100%}
+html.land #view.hs-pre>.hs-prog{margin:4px 0}
+html.land #view.hs-pre .hs-b{margin-top:6px;line-height:1.6}
+.hs-pastw>summary::-webkit-details-marker{display:none}
 .lu-ro{display:flex;align-items:center;gap:8px;padding:7px 2px;
   border-bottom:1px solid rgba(255,255,255,.05);font-size:12.5px}
 .lu-ro:last-child{border-bottom:0}
@@ -2975,14 +3004,16 @@ html.land .tab .ic svg{width:16px;height:16px}
 /* 안내역 한 마디 — 갈색 테두리 판 대신 평평한 판 */
 .tip-box{background:var(--panel);border:0;box-shadow:none}
 /* 가로 홈 — 로비 한 판만. 스크롤이 생기지 않게 높이를 화면에 딱 맞춘다 */
-html.land #view.lob-solo>*:not(.lob){display:none}
-html.land #view.lob-solo>.lob{height:calc(100vh - 100px);height:calc(100dvh - 100px);margin:0}
+/* [v3.29.0] #view 에 달던 표시를 로비 자신에게 옮겼다 — #view 째로 숨기면 로비가 사라진 뒤에도
+   (경기 판을 #view 에 바로 깔 때) 판이 통째로 숨었다. 로비 뒤에 붙은 형제만 숨긴다 */
+html.land .lob.solo~*{display:none}
+html.land .lob.solo{height:calc(100vh - 100px);height:calc(100dvh - 100px);margin:0}
 html.land #view.lob-solo{padding-bottom:0}
 @media (orientation:landscape) and (max-height:500px){
   html.land .topbar{padding:4px 12px}
   html.land .tabbar{padding:1px 8px calc(1px + env(safe-area-inset-bottom))}
   html.land .tab{padding:5px 2px}
-  html.land #view.lob-solo>.lob{height:calc(100vh - 86px);height:calc(100dvh - 86px)}
+  html.land .lob.solo{height:calc(100vh - 86px);height:calc(100dvh - 86px)}
 }
 button.lob-more{background:rgba(14,15,17,.8);border:0;border-radius:999px;padding:4px 10px;font-weight:800;font-size:11px;cursor:pointer}
 /* 프로 면담 컷신 — 인물이 크게 서고 아래에 대사창 */
@@ -9112,8 +9143,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.28.0';
-const APP_VERSION_NOTE = '프로는 면담이다 · 가로 홈은 스크롤 없이 한 화면';
+const APP_VERSION = '3.29.0';
+const APP_VERSION_NOTE = '카메라를 돌린다 — 투수 뒤 · 중계 · 포수 뒤';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9134,6 +9165,15 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.29.0', t:'카메라를 돌린다 — 투수 뒤 · 중계 · 포수 뒤', items:[
+    '<b>경기 화면 왼쪽 아래 「🎥」 를 누르면 카메라가 바뀐다.</b> 마지막으로 고른 게 다음 타석·투구에도 그대로 간다',
+    '투수할 때 — 투수 뒤(기본) · 중계 · 포수 뒤. 투수 뒤·중계는 TV 중계처럼 내 등번호 너머로 타자·포수·심판을 본다',
+    '타석에서 — 포수 뒤(기본) · 어깨 너머(더 가까이) · 중계(투수 등 너머로 나를 본다)',
+    '포수 헬멧이 홈플레이트 위에 크게 올라오던 걸 뺐다. 포수 뒤 화면에서는 미트만 보인다',
+    'PC·태블릿 가로에서 경기 화면 위쪽이 텅 비던 걸 채웠다',
+    '메인 화면은 가로(PC 포함)에서 로비 한 판만 — 나머지는 「자세히 ▾」. 옛 세이브도 같다',
+    '고교 경기 전 화면 — 타순을 세 칸씩 접고, 가로에서는 두 칸으로 나눠서 스크롤 없이 경기 시작이 보인다',
+  ]},
   {v:'3.28.0', t:'프로는 면담이다 · 가로 홈은 스크롤 없이 한 화면', items:[
     '<b>프로에서는 단톡방 대신 불려가서 마주 앉는다.</b> 감독 · 주장 · 선배가 화면에 크게 서서(그 팀 유니폼) 말하고, 끝에 내 대답을 고른다',
     '부르는 때 — 입단 첫 주 · 1군 콜업 · 방망이가 뜨거울 때 · 차갑게 식었을 때 · 팀 5연패 · 가끔 선배가 한마디. 대답은 감독 신뢰 · 사기 · 컨디션에 남고, 「2군에서 감 찾고 오겠습니다」 는 진짜로 내려간다',
@@ -20431,8 +20471,9 @@ function hsPickResult(c, st, cast, year){
 function hsPastList(c){
   const H=hsSlot();
   if(!H.res.length) return;
-  const card=el('div','card');
-  card.appendChild(el('div','card-h','지난 경기'));
+  /* [v3.29.0] 접어 둔다 — 경기 수만큼 길어져서 화면을 밀어냈다 */
+  const card=el('details','card hs-pastw');
+  card.appendChild(el('summary','card-h','지난 경기 '+H.res.length+'개 ▾'));
   H.res.forEach((r,k)=>{
     const st=hsStory()[r.i]||hsStory()[0];
     const row=el('button','hs-past'+(r.won?' w':(r.tie?'':' l')));
@@ -20457,6 +20498,7 @@ function renderHS(){
     H.playing=false;
   }
   const c=$('#view'); c.innerHTML='';
+  c.classList.remove('hs-pre');
   const me=ST.playerId||MYID;
 
   /* ---- 지난 경기 펴보기 (졸업 뒤에도 된다) ---- */
@@ -20618,33 +20660,34 @@ function renderHS(){
   }
 
   /* [제보] "고등학교때 라인업은 왜 안나오냐" — 오늘 내가 몇 번인지부터 */
+  c.classList.add('hs-pre');       // 가로에서는 두 칸 — 왼쪽 이야기·버튼, 오른쪽 타순
   const B=hsBuild(H.i);
   if(B){
     const me2=B.me;
     const k=B.uLine.findIndex(x=>x.id===me2);
-    const my=el('div','mystatus '+(k>=0?'in':'out'));
-    my.innerHTML=(k>=0
-      ? '<div class="ms-big">'+(k+1)+'번 · '+(POSNAMES[B.uLine[k].pos]||B.uLine[k].pos)+'</div>'+
-        '<div class="ms-sub">오늘 이렇게 나간다</div>'
-      : '<div class="ms-big">벤치</div><div class="ms-sub">오늘은 선발이 아니다</div>');
-    c.appendChild(my);
-
-    const lu=el('div','card');
-    lu.appendChild(el('div','card-h', cast.ourSchool+' 오늘 타순'));
+    /* [제보 v3.29.0] "라인업 목록이 길어서 스크롤 내려야" — 아홉 줄 세로 목록 +
+       내 자리 카드가 따로 있어서 경기 시작 버튼이 화면 밖으로 밀려났다.
+       내 자리는 제목 한 줄로 합치고, 타순은 세 칸씩 세 줄(칩)로 접는다. */
+    const pn=pos=>(POSNAMES[pos]||pos);
+    const lu=el('div','card lu-card');
+    const luh=el('div','card-h');
+    luh.innerHTML=cast.ourSchool+' 오늘 타순 '+
+      (k>=0?('<b class="lu-mine">나 '+(k+1)+'번 '+pn(B.uLine[k].pos)+'</b>'):'<b class="lu-mine out">나는 벤치</b>');
+    lu.appendChild(luh);
     const sp=el('div','starter-row');
-    sp.innerHTML='<span>오늘 선발 투수</span><b>'+
+    sp.innerHTML='<span>선발 투수</span><b>'+
       ((function(){ const pid=B.uRot&&B.uRot[0];
         const p=pid?B.us.pitchers.find(x=>x.id===pid):null; return p?p.name:'—'; })())+'</b>';
     lu.appendChild(sp);
+    const grid=el('div','lu-grid');
     B.uLine.forEach((sl,idx)=>{
       const p=B.us.players.find(x=>x.id===sl.id);
-      const row=el('div','lu-ro'+(sl.id===me2?' me':''));
-      row.innerHTML='<span class="lu-o">'+(idx+1)+'</span>'+
-        '<span class="lu-n">'+(p?p.name:sl.id)+
-        (p&&p.grade?'<i class="lu-g">'+p.grade+'학년</i>':'')+'</span>'+
-        '<span class="lu-p">'+(POSNAMES[sl.pos]||sl.pos)+'</span>';
-      lu.appendChild(row);
+      const ch=el('div','lu-ch'+(sl.id===me2?' me':''));
+      ch.innerHTML='<u>'+(idx+1)+'</u><b>'+(p?p.name:sl.id)+'</b><em>'+pn(sl.pos)+
+        (p&&p.grade?' · '+p.grade+'학년':'')+'</em>';
+      grid.appendChild(ch);
     });
+    lu.appendChild(grid);
     c.appendChild(lu);
   }
 
@@ -21290,7 +21333,10 @@ function lobbyStage(){
   const nNew=((ST.notices||[]).length)|0;
   [['📰','신문',()=>{ try{ showPaper(); }catch(e){} }, 0],
    ['🏆','순위',()=>go('stand'), 0],
-   ['🔔','소식',()=>{ const t=document.querySelector('#view .news-card,#view .card');
+   ['🔔','소식',()=>{
+      /* 로비 한 판만 보일 때는 소식 카드가 접혀 있다 — 펴고 나서 간다 */
+      if(!LOB_MORE){ LOB_MORE=true; renderHome(); }
+      const t=document.querySelector('#view .news-card,#view .card');
       if(t) t.scrollIntoView({behavior:'smooth',block:'center'}); }, nNew],
    ['📊','기록',()=>go('stats'), 0]
   ].forEach(([ic,nm,fn2,badge])=>{
@@ -21361,7 +21407,7 @@ function renderHomePlayer(){
     /* [제보] "핸드폰 가로모드 너무 부담스럽게 꽉차고 스크롤 내려야해서 불편"
        가로에서는 로비 한 판만 화면에 둔다 — 아래 카드는 「자세히 ▾」 로 편다.
        다른 화면으로 가면 go() 가 이 표시를 걷는다. */
-    if(!LOB_MORE) c.classList.add('lob-solo');
+    if(!LOB_MORE){ c.classList.add('lob-solo'); const lb0=c.querySelector('.lob'); if(lb0) lb0.classList.add('solo'); }
   }
   const me=ST.playerId||MYID;
   const p=TBYID['wwzw'].players.find(x=>x.id===me);
@@ -21720,6 +21766,11 @@ function renderHome(){
   /* 가로면 로비 한 판을 맨 위에 — 감독 모드도 같은 화면이다 */
   if(document.documentElement.classList.contains('land')){
     try{ const lb=lobbyStage(); if(lb) c.appendChild(lb); }catch(e){}
+    /* [제보 v3.29.0] "메인메뉴는 너무 길어서 스크롤 내려야" — 옛 세이브(감독 모드)와
+       시즌 끝 화면은 여기로 와서 로비 아래 카드 여덟 장이 줄줄이 붙었다.
+       선수 홈과 똑같이 로비 한 판만 두고 나머지는 「자세히 ▾」 로 편다.
+       시즌이 끝났으면 시상식·새 시즌 카드가 주인공이라 접지 않는다. */
+    if(!LOB_MORE && !ST.seasonOver && c.querySelector('.lob')){ c.classList.add('lob-solo'); c.querySelector('.lob').classList.add('solo'); }
   }
   const st=ST.stand['wwzw'];
   const played=ST.schedule.filter(s=>s.played).length;
@@ -29763,6 +29814,43 @@ const MV_MOUND={x:240,y:132}, MV_PLATE={x:240,y:250};
    배율은 1.35 — 더 당기면 투수 머리가 위로 잘린다. 투수 머리(y≈100)와
    홈플레이트 흙 아래(y≈290) 가 둘 다 들어오는 제일 센 값이다.       */
 const MV_CAM=1.35, MV_CAM_X=240, MV_CAM_Y=339;
+/* ================= [v3.29.0] 카메라 여러 대 =================
+   [요청] "컴퓨터 마구마구 느낌을 원하는데 플레이를 카메라 각도도 여러가지
+   가능하게 하자 투수 할때는 투수뒤나 뭐 타자쪽에서 바라보는거나
+   중계카메라 위치나 타자도 각도 여러가지"
+
+   두 종류다.
+     포수 쪽(rev 없음) — 예전 그림 그대로, 당기는 배율(zoom)·축만 다르다.
+     투수 쪽(rev)      — 새 그림. 투수 등 뒤에서 홈을 본다. 투수는 뒷모습,
+                         타자·포수·심판은 앞모습이다(mvPaintRev).
+   rev 카메라의 숫자는 논리 좌표(480×270) 그대로다 —
+     px,py,ph  투수 발·키   plx,ply 홈플레이트   bh 타자 키   zk 존 폭(타자 키 대비)
+   [주의] 스트라이크 존·공은 DOM 이라 mvCamGeom() 이 카메라마다 자리를 계산한다.
+   존이 작아지면 치기 어렵다 — 중계 카메라 존은 실제보다 조금 크게(zk) 잡았다. */
+const MV_CAMS={
+  c:{name:'포수 뒤', zoom:MV_CAM, cx:MV_CAM_X, cy:MV_CAM_Y},
+  n:{name:'어깨 너머', zoom:1.45, cx:240, cy:288},
+  f:{name:'중계', rev:true, px:132, py:322, ph:236, plx:274, ply:180, bh:114, zk:0.31},
+  p:{name:'투수 뒤', rev:true, px:192, py:304, ph:172, plx:274, ply:160, bh:78, zk:0.31}
+};
+/* 타석 · 마운드에서 돌려 볼 수 있는 순서. 맨 앞이 기본이다 */
+const MV_CAM_ORDER={bat:['c','n','f'], pit:['p','f','c']};
+function mvCamPref(mode){
+  const L=MV_CAM_ORDER[mode]||MV_CAM_ORDER.bat;
+  try{ const k=ST&&ST.cam&&ST.cam[mode]; if(k&&L.indexOf(k)>=0) return k; }catch(e){}
+  return L[0];
+}
+/* 카메라 하나가 화면(캔버스 비율 0~1)에 놓는 것들 — 존 · 릴리스 지점 */
+function mvCamGeom(key){
+  const C=MV_CAMS[key]||MV_CAMS.c;
+  if(C.rev){
+    const zw=C.zk*C.bh;
+    return {rev:true, zx:C.plx/MVW, zy:(C.ply-0.30*C.bh)/MVH, zw:zw/MVW,
+            rx:(C.px+22*C.ph/100)/MVW, ry:(C.py-78*C.ph/100)/MVH, rxL:(C.px-22*C.ph/100)/MVW};
+  }
+  const X=v=>(C.cx+(v-C.cx)*C.zoom)/MVW, Y=v=>(C.cy+(v-C.cy)*C.zoom)/MVH;
+  return {rev:false, zx:X(240), zy:Y(216), zw:0.10*C.zoom, rx:X(MV_MOUND.x), ry:Y(MV_MOUND.y), rxL:X(MV_MOUND.x)};
+}
 /* 시점은 포수 뒤다. 마주 보는 투수의 오른팔은 화면 왼쪽에 나온다.
    [버그 이력] 이걸 뒤집어 놔서 우완 투수 열두 명이 전부 좌완 모션이었다. */
 /* ===== [ART:BEGIN] 여기부터 [ART:END] 까지는 art/pose.js 가 통째로 떼어다
@@ -31305,6 +31393,7 @@ function mvSD(g,x,y,h,u,pose,flip,o){
   try{
     if(pose==='stand'||pose==='swing') sdBatter(D, pose==='swing'?sdSwing(o.swT||0):sdSwing(0));
     else if(pose==='catch') sdCatcher(D);
+    else if(pose==='catchF') sdCatcherF(D);
     else sdFront(D,pose);
   }finally{ g.restore(); }
 }
@@ -31392,23 +31481,31 @@ function sdBatter(D,S){
   const g=D.g, P=D.P, tw=S.tw;
   const BL=50;                                   // 배트 길이 — 짧고 굵게(SD)
   const H=[S.hx,S.hy];
-  const pv=sdProj(S.v);
+  /* [v3.29.0] 중계 카메라(투수 뒤)에서는 타자를 **앞에서** 본다. 그림은 좌우를
+     뒤집어서 부르고(mvPaintRev), 깊이(z)만 반대로 돌린다 — 마운드 쪽이 카메라 쪽이다 */
+  const F=!!D.o.front;
+  const V=F?[S.v[0],S.v[1],-S.v[2]]:S.v;
+  const pv=sdProj(V);
   /* 배트가 마운드 쪽(z>0.25)을 보면 몸 저편이다 — 몸통보다 먼저 그린다 */
-  const batBehind = S.v[2]>0.25;
+  const batBehind = V[2]>0.25;
   // 몸 비틀기 — 어깨가 앞(오른쪽)으로 돈다
   const sx=tw*5, hipx=tw*2.2;
   const shL=[-14+sx*0.6,-45], shR=[14+sx,-45];
   if(S.blur>0.03) sdTrail(D,S,BL);
-  /* 앞팔(왼팔) — 몸 저편이라 몸통보다 먼저 */
+  /* 앞팔(왼팔) — 몸 저편이라 몸통보다 먼저. 앞에서 보면 반대로 뒷팔이 저편이다 */
   const eF=sdIK(shR,[H[0]+3,H[1]+1],12,12,-1);
-  sdLimb(D,[shR[0],shR[1],eF[0],eF[1],H[0]+3,H[1]+1],7.2,P.team,P.teamD);
-  if(batBehind) sdBat(D,H,pv,S.v,BL);
+  const eB=sdIK(shL,H,12,12,1);
+  const frontArm=()=>sdLimb(D,[shR[0],shR[1],eF[0],eF[1],H[0]+3,H[1]+1],7.2,P.team,P.teamD);
+  const backArm=()=>{ sdLimb(D,[shL[0],shL[1],eB[0],eB[1],H[0],H[1]],7.6,P.team,P.teamD);
+    sdSleeve(D,[shL[0]+1,shL[1]+1.5],eB,10); };
+  if(F) backArm(); else frontArm();
+  if(batBehind) sdBat(D,H,pv,V,BL);
   /* 다리 — 넓게 벌린다. 휘두르면 뒷발이 돌아서 무릎이 안으로 */
   const kIn=Math.max(0,tw)*6;
   sdLeg(D,[-8+hipx,-26],[-15+kIn,-13],[-16+kIn*0.4,-5],13);
   sdLeg(D,[8+hipx,-26],[15+tw*1.5,-13],[15,-5],13);
-  sdShoe(D,-16+kIn*0.4,0,15,true);
-  sdShoe(D,15,-0.5,15,true);
+  sdShoe(D,-16+kIn*0.4,0,15,!F);
+  sdShoe(D,15,-0.5,15,!F);
   /* 엉덩이 + 몸통 */
   g.save(); g.translate(hipx,0); g.rotate(tw*0.05);
   sdCel(D,()=>{ g.beginPath(); g.moveTo(-15,-30);
@@ -31423,9 +31520,13 @@ function sdBatter(D,S){
       g.fillStyle=P.jerD; g.beginPath(); g.rect(-30,-60,60,60);
       g.ellipse(4+sx*0.3,-40,15,17,0,0,Math.PI*2); g.fill('evenodd'); },
     ()=>{ g.strokeStyle=P.team; g.lineWidth=1.3;              // 어깨 요크
-      g.beginPath(); g.moveTo(-15,-45); g.quadraticCurveTo(0,-43,15,-45); g.stroke(); });
+      g.beginPath(); g.moveTo(-15,-45); g.quadraticCurveTo(0,-43,15,-45); g.stroke();
+      if(F){ // 앞 — 단추 줄 · 가슴 글씨
+        g.lineWidth=1.1; g.beginPath(); g.moveTo(1,-46); g.lineTo(1,-28); g.stroke();
+        g.fillStyle=P.team; g.beginPath(); mvRR(g,-11,-41,9,3.2,1.4); g.fill();
+        g.beginPath(); mvRR(g,3.5,-41,9,3.2,1.4); g.fill(); } });
   /* 등번호 — 팀 색에 흰 테두리 */
-  if(D.o.no!=null){
+  if(D.o.no!=null && !F){
     g.save(); g.translate(sx*0.25,-36.5); g.scale(D.dir,1);
     g.font='900 13px sans-serif'; g.textAlign='center'; g.textBaseline='middle';
     g.lineWidth=2.6; g.strokeStyle='#ffffff'; g.strokeText(String(D.o.no),0,0);
@@ -31436,13 +31537,11 @@ function sdBatter(D,S){
   sdCel(D,()=>{ g.beginPath(); g.moveTo(-15.5,-30); g.lineTo(15.5,-30); g.lineTo(15.2,-26.4); g.lineTo(-15.2,-26.4); g.closePath(); },P.teamD);
   g.restore();
   /* 뒷팔(오른팔) — 카메라 쪽이라 몸통 위에. 팔꿈치가 바깥으로 든다 */
-  const eB=sdIK(shL,H,12,12,1);
-  sdLimb(D,[shL[0],shL[1],eB[0],eB[1],H[0],H[1]],7.6,P.team,P.teamD);
-  sdSleeve(D,[shL[0]+1,shL[1]+1.5],eB,10);
-  /* 머리 */
-  sdBatHead(D,[2+tw*1.2,-74]);
+  if(F) frontArm(); else backArm();
+  /* 머리 — 앞에서 보면 얼굴(헬멧은 모자 크라운으로 대신한다) */
+  if(F) sdFace(D,[2+tw*1.2,-73]); else sdBatHead(D,[2+tw*1.2,-74]);
   /* 손 · 배트 */
-  if(!batBehind) sdBat(D,H,pv,S.v,BL);
+  if(!batBehind) sdBat(D,H,pv,V,BL);
   sdHand(D,H[0]+2.4,H[1]+1.2,4.4,P.white,P.whiteD);
   sdHand(D,H[0],H[1],4.6,P.white,P.whiteD);
 }
@@ -31489,7 +31588,7 @@ function sdTrail(D,S,L){
   for(let i=0;i<=N;i++){
     const tt=Math.max(0.2,t-span*(i/N));
     const Q=(i===0)?S:sdSwing(tt);
-    const pv=sdProj(Q.v);
+    const pv=sdProj(D.o.front?[Q.v[0],Q.v[1],-Q.v[2]]:Q.v);
     out.push([Q.hx+pv[0]*L*1.02, Q.hy+pv[1]*L*1.02]);
     inn.push([Q.hx+pv[0]*L*0.42, Q.hy+pv[1]*L*0.42]);
   }
@@ -31618,7 +31717,8 @@ function sdFront(D,pose){
   if(mirrorGlove){ g.save(); g.scale(-1,1); D.dir=-D.dir; }
   const hip=R.hip;
   /* 다리 — 뒤쪽 다리를 먼저 */
-  const leg=(Lg,foot)=>{ sdLeg(D,Lg[0],Lg[1],Lg[2],12); sdShoe(D,foot[0],foot[1]+0.5,14,false); };
+  const BK=!!D.o.back;          // [v3.29.0] 투수 뒤 카메라 — 등을 본다
+  const leg=(Lg,foot)=>{ sdLeg(D,Lg[0],Lg[1],Lg[2],12); sdShoe(D,foot[0],foot[1]+0.5,14,BK); };
   if(key==='follow'){ leg(R.L,R.fL); leg(R.R,R.fR); }
   else if(R.kick){ leg(R.L,R.fL); }
   else { leg(R.R,R.fR); leg(R.L,R.fL); }
@@ -31630,6 +31730,15 @@ function sdFront(D,pose){
   // 글러브 쪽 팔은 몸 뒤로 가는 때가 있다(cock) — 몸통 앞에 그린다
   // 몸통
   const shL=[tx-14,-45], shR=[tx+14,-45];
+  /* 뒤에서 보면 팔·글러브는 몸통 저편이다 — 몸통보다 먼저 그린다.
+     [처음 그려보니] 가슴 앞 글러브가 **등 한가운데** 붙어 보였다 */
+  if(BK){ const arm0=(sh,E,Hd)=>{ sdLimb(D,[sh[0],sh[1],E[0],E[1],Hd[0],Hd[1]],7,P.team,P.teamD);
+      sdSleeve(D,[sh[0]+(sh[0]<tx?1:-1),sh[1]+1.5],E,9.5); };
+    arm0(shR,R.glv[0],R.glv[1]);
+    if(R.noGlove) sdHand(D,R.glv[1][0],R.glv[1][1],4.2,P.skin,P.skinD);
+    else sdGlove(D,R.gloveAt[0],R.gloveAt[1],(R.glvSz||8),R.glvRot!=null?R.glvRot:(key==='cock'?0.9:0.15));
+    arm0(shL,R.thr[0],R.thr[1]); sdHand(D,R.thr[1][0],R.thr[1][1],4.2,P.skin,P.skinD);
+    if(R.ball) sdBall(D,R.thr[1][0]-1,R.thr[1][1]-3.4,2.6); }
   sdCel(D,()=>{ g.beginPath(); g.moveTo(tx-15,hip[1]-4);
       g.quadraticCurveTo(tx-17,hip[1]+6,tx-8,hip[1]+7); g.lineTo(tx+8,hip[1]+7);
       g.quadraticCurveTo(tx+17,hip[1]+6,tx+15,hip[1]-4); g.closePath(); },P.pan,
@@ -31640,7 +31749,13 @@ function sdFront(D,pose){
     g.quadraticCurveTo(tx-19,-37,tx-15,-47); g.closePath(); };
   sdCel(D,torso,P.jer,()=>{ g.fillStyle=P.jerD; g.beginPath(); g.rect(tx-30,-60,60,60);
       g.ellipse(tx+5,-40,15,17,0,0,Math.PI*2); g.fill('evenodd'); },
-    ()=>{ // 단추 줄 · 가슴 글씨 자리
+    ()=>{ if(BK){ // 등 — 등번호. 글씨는 뒤집힌 그림 안에서도 바로 읽히게
+        if(D.o.no!=null){ g.save(); g.translate(tx,-36); g.scale(D.dir,1);
+          g.font='900 13px sans-serif'; g.textAlign='center'; g.textBaseline='middle';
+          g.lineWidth=2.6; g.strokeStyle='#ffffff'; g.strokeText(String(D.o.no),0,0);
+          g.fillStyle=P.team; g.fillText(String(D.o.no),0,0); g.restore(); }
+        return; }
+      // 단추 줄 · 가슴 글씨 자리
       g.strokeStyle=P.team; g.lineWidth=1.1;
       g.beginPath(); g.moveTo(tx+1,-47); g.lineTo(tx+1,hip[1]-1); g.stroke();
       g.fillStyle=P.team; g.beginPath(); mvRR(g,tx-11,-42,9,3.2,1.4); g.fill();
@@ -31657,7 +31772,8 @@ function sdFront(D,pose){
   /* 와인드업 — 든 무릎은 배 앞으로 온다. 몸통 다음에 그린다 */
   if(R.kick){ g.save(); g.translate(0,-dy*0.5); leg(R.R,R.fR); g.restore(); }
   const head=[tx+(R.lean*6),-73];
-  const drawHead=()=>sdFace(D,head);
+  const drawHead=()=>{ if(BK) sdCapBack(D,head); else sdFace(D,head);
+    if(D.o.mask&&!BK) sdMask(D,head); };
   const glvSz=key==='field'?9.5:(R.glvSz||8);
   const glvArm=()=>{ arm(shR,R.glv[0],R.glv[1],true);
     if(R.noGlove) sdHand(D,R.glv[1][0],R.glv[1][1],4.2,P.skin,P.skinD);
@@ -31665,7 +31781,10 @@ function sdFront(D,pose){
   const thrArm=()=>{ arm(shL,R.thr[0],R.thr[1],false);
     sdHand(D,R.thr[1][0],R.thr[1][1],4.2,P.skin,P.skinD);
     if(R.ball) sdBall(D,R.thr[1][0]-1,R.thr[1][1]-3.4,2.6); };
-  if(key==='rel'){                                   // 던지는 팔이 머리 위로 넘어온다 — 머리 뒤에
+  if(BK){
+    /* 등 — 팔은 이미 그렸다. 공을 머리 위로 넘길 때(rel·cock)만 던지는 팔이 보인다 */
+    drawHead(); if(key==='rel'||key==='cock') thrArm();
+  } else if(key==='rel'){                                   // 던지는 팔이 머리 위로 넘어온다 — 머리 뒤에
     glvArm(); drawHead(); thrArm();
   } else {
     drawHead(); thrArm(); glvArm();
@@ -31785,6 +31904,83 @@ function sdCatcher(D){
   // 마스크 끈
   g.strokeStyle='#2a2a2a'; g.lineWidth=2.2;
   g.beginPath(); g.moveTo(cx-23,cy+4); g.quadraticCurveTo(cx,cy+10,cx+23,cy+4); g.stroke();
+}
+/* ---------- [v3.29.0] 투수 뒤 카메라용 — 뒤통수 · 포수 앞모습 · 마스크 ----------
+   [요청] "플레이를 카메라 각도도 여러가지 … 투수 할때는 투수뒤나 타자쪽에서
+   바라보는거나 중계카메라 위치나" — 중계 카메라는 투수 등 뒤에서 홈을 본다.
+   그러려면 투수는 **뒷모습**, 포수·심판은 **앞모습**이 있어야 한다.       */
+function sdCapBack(D,C){
+  const g=D.g, P=D.P, cx=C[0], cy=C[1];
+  // 목덜미
+  sdCel(D,()=>{ g.beginPath(); g.ellipse(cx,cy+22,12,8,0,0,Math.PI*2); },P.skin,
+    ()=>{ g.fillStyle=P.skinD; g.beginPath(); g.ellipse(cx-4,cy+26,12,6,0,0,Math.PI*2); g.fill(); });
+  // 귀
+  [-1,1].forEach(k=>sdCel(D,()=>{ g.beginPath(); g.ellipse(cx+k*24.5,cy+6,4.8,6,0,0,Math.PI*2); },P.skin,
+    ()=>{ g.fillStyle=P.skinD; g.beginPath(); g.ellipse(cx+k*24,cy+6.5,2.2,3.2,0,0,Math.PI*2); g.fill(); }));
+  // 뒷머리
+  sdCel(D,()=>{ g.beginPath(); g.ellipse(cx,cy+3,24,22,0,0,Math.PI*2); },P.hair,
+    ()=>{ g.fillStyle='rgba(0,0,0,.18)'; g.beginPath(); g.ellipse(cx-6,cy+10,20,14,0,0,Math.PI*2); g.fill();
+      g.strokeStyle=P.hairL; g.lineWidth=1.1; g.beginPath();
+      for(let i=-2;i<=2;i++){ g.moveTo(cx+i*6,cy+8); g.lineTo(cx+i*6.5,cy+20); } g.stroke(); });
+  // 모자 크라운 — 뒤에서 보면 챙이 없고, 뒤 조절끈 구멍이 보인다
+  const crown=()=>{ g.beginPath();
+    g.ellipse(cx,cy-9,27.5,24,0,Math.PI,Math.PI*2);
+    g.quadraticCurveTo(cx+27.5,cy-3,cx+25,cy-1); g.lineTo(cx-25,cy-1);
+    g.quadraticCurveTo(cx-27.5,cy-3,cx-27.5,cy-9); g.closePath(); };
+  sdCel(D,crown,P.team,()=>{
+      g.fillStyle=P.teamD; g.beginPath(); g.rect(cx-40,cy-50,80,60);
+      g.ellipse(cx+6,cy-13,26,22,0,0,Math.PI*2); g.fill('evenodd'); },
+    ()=>{ g.fillStyle='rgba(255,255,255,.35)'; g.beginPath();
+      g.ellipse(cx+10,cy-24,9,4.4,-0.3,0,Math.PI*2); g.fill();
+      g.strokeStyle=P.teamD; g.lineWidth=0.9; g.beginPath();
+      g.moveTo(cx,cy-33); g.quadraticCurveTo(cx+1,cy-18,cx,cy-1); g.stroke(); });
+  sdCel(D,()=>{ g.beginPath(); g.ellipse(cx,cy-3,6.5,4.2,0,Math.PI,Math.PI*2); g.closePath(); },P.hair);
+  g.fillStyle=P.teamD; g.fillRect(cx-7,cy-2.6,14,1.8);
+}
+/* 포수·심판 마스크 — 얼굴 위에 창살 */
+function sdMask(D,C){
+  const g=D.g, cx=C[0], cy=C[1];
+  g.save();
+  g.strokeStyle='#2c313c'; g.lineWidth=2.4; g.lineCap='round';
+  g.beginPath(); g.ellipse(cx,cy+6,20,17,0,Math.PI*1.05,Math.PI*1.95,true); g.stroke();
+  g.lineWidth=1.8; g.beginPath();
+  [0,7,14].forEach(dy=>{ g.moveTo(cx-18,cy+dy); g.lineTo(cx+18,cy+dy); });
+  [-7,7].forEach(dx=>{ g.moveTo(cx+dx,cy-2); g.lineTo(cx+dx*0.8,cy+21); });
+  g.stroke();
+  g.fillStyle='#2c313c'; g.beginPath(); mvRR(g,cx-5,cy+21,10,6,2); g.fill();   // 목 보호대
+  g.restore();
+}
+/* 포수 — 쪼그려 앉은 앞모습. 미트를 가슴 앞으로 내민다 */
+function sdCatcherF(D){
+  const g=D.g, P=D.P;
+  const guard=P.teamD, guardL=P.team;
+  // 다리 — 허벅지는 바깥으로, 정강이 보호대
+  sdLimb(D,[-9,-14,-24,-12],13,P.pan,P.panD);
+  sdLimb(D,[9,-14,24,-12],13,P.pan,P.panD);
+  sdLimb(D,[-24,-12,-21,-2],12,guardL,guard);
+  sdLimb(D,[24,-12,21,-2],12,guardL,guard);
+  sdShoe(D,-21,0,14,false); sdShoe(D,21,0,14,false);
+  // 몸통 — 가슴 보호대
+  const body=()=>{ g.beginPath(); g.moveTo(-17,-44);
+    g.quadraticCurveTo(0,-48,17,-44); g.quadraticCurveTo(20,-28,14,-13);
+    g.quadraticCurveTo(0,-9,-14,-13); g.quadraticCurveTo(-20,-28,-17,-44); g.closePath(); };
+  sdCel(D,body,P.jer);
+  const pad=()=>{ g.beginPath(); g.moveTo(-13,-44);
+    g.quadraticCurveTo(0,-46,13,-44); g.quadraticCurveTo(15,-27,10,-14);
+    g.quadraticCurveTo(0,-11,-10,-14); g.quadraticCurveTo(-15,-27,-13,-44); g.closePath(); };
+  sdCel(D,pad,guardL,()=>{ g.fillStyle=guard; g.beginPath(); g.rect(-30,-60,60,60);
+      g.ellipse(4,-30,12,16,0,0,Math.PI*2); g.fill('evenodd'); },
+    ()=>{ g.strokeStyle='rgba(255,255,255,.28)'; g.lineWidth=1;
+      g.beginPath(); [-36,-28,-20].forEach(y=>{ g.moveTo(-11,y); g.lineTo(11,y); }); g.stroke(); });
+  // 던지는 손 — 오른쪽 무릎 뒤에 숨긴다
+  sdLimb(D,[-15,-42,-21,-30,-17,-22],7,P.team,P.teamD);
+  sdHand(D,-17,-21,3.8,P.skin,P.skinD);
+  // 미트 — 가슴 앞, 투수 쪽으로 편다
+  sdLimb(D,[15,-42,20,-34,9,-34],7,P.team,P.teamD);
+  sdGlove(D,6,-35,11,0.05);
+  // 헬멧 · 마스크
+  const C=[0,-64];
+  sdFace(D,C); sdMask(D,C);
 }
 /* ===== [ART:END] ===== */
 
@@ -32126,16 +32322,18 @@ function mvPaint(mound, o){
   mvSheetInit(); mvFigInit();
   g.setTransform(MVS,0,0,MVS,0,0);          // 논리 좌표(480x270) 로 그린다
   g.clearRect(0,0,MVW,MVH);
-  /* 카메라를 당긴다 — 여기서부터 아래는 전부 확대된 좌표계다.
-     지우는 건(clearRect) 당기기 전에 해야 화면 전체가 지워진다.   */
-  g.save();
-  g.translate(MV_CAM_X, MV_CAM_Y);
-  g.scale(MV_CAM, MV_CAM);
-  g.translate(-MV_CAM_X, -MV_CAM_Y);
-  mvSky(g); mvCity(g); mvLights(g); mvBoard(g); mvStand(g); mvField(g);
   const home=isPro()?proUni(ST.pro.team):{cap:'#2f5fb0', sh:'#eef2f8', pants:'#dfe4ec', st:'rgba(47,95,176,.35)', gl:'#5b3a1e'};
   const away=mvOppUniform();
   const du=st.usDef?home:away, ou=st.usDef?away:home;
+  const CAM=MV_CAMS[st.cam]||MV_CAMS.c;
+  if(CAM.rev){ mvPaintRev(g,st,CAM,du,ou); return; }
+  /* 카메라를 당긴다 — 여기서부터 아래는 전부 확대된 좌표계다.
+     지우는 건(clearRect) 당기기 전에 해야 화면 전체가 지워진다.   */
+  g.save();
+  g.translate(CAM.cx, CAM.cy);
+  g.scale(CAM.zoom, CAM.zoom);
+  g.translate(-CAM.cx, -CAM.cy);
+  mvSky(g); mvCity(g); mvLights(g); mvBoard(g); mvStand(g); mvField(g);
   /* 크기는 실제 중계 화면 비율을 따른다.
      타자(1m 앞) 88px 을 기준으로 투수(18m 뒤)는 45%, 야수는 그 절반.
      [제보] "타자 크기랑 존 크기가 너무 이상적이지가 않잖아"          */
@@ -32156,7 +32354,10 @@ function mvPaint(mound, o){
      스트라이크 존 자리에 왔다.** 어깨 뒤 카메라에서 포수는 화면 제일
      아래에 헬멧만 보이는 게 맞다(마구마구도 아예 안 보인다).
      다시 내린다 — 아래 테두리만 잡아준다.                        */
-  mvGuy(g,MV_PLATE.x,MVH+58,80,du,'catch',false);
+  /* [제보 v3.29.0] "포수 저건 또 왜저러고" — SD 로 바꾸면서 머리가 몸의 절반이
+     되니 **파란 헬멧이 홈플레이트 위에 통째로** 올라왔다. 마구마구처럼 아예
+     안 그린다. 미트(DOM · #cmitt)가 포수 자리를 대신한다.
+     포수를 보고 싶으면 「중계」 카메라 — 거기서는 앞모습으로 앉아 있다.   */
   /* 타자 — 통짜 그림. 그림이 우타(화면 왼쪽에 서서 오른쪽을 본다)라
      좌타일 때만 뒤집는다. */
   /* 타자는 타석 박스 한가운데에 발을 놓는다. 우타는 3루쪽(화면 왼쪽),
@@ -32170,6 +32371,90 @@ function mvPaint(mound, o){
   g.restore();                              // 카메라 끝
 }
 
+/* ---------- [v3.29.0] 투수 뒤 카메라 — 투수 등 너머로 홈을 본다 ----------
+   TV 중계의 기본 화면이다. 투수는 화면 왼쪽 아래에 크게(등번호가 보인다),
+   홈에는 타자·포수·심판이 앞모습으로 선다. 뒤로는 백네트와 관중석.
+   우타자는 **화면 오른쪽**에 선다 — 포수 뒤 카메라와 좌우가 반대다.    */
+const MV_UMP_U={cap:'#1e2129', sh:'#2b303b', pants:'#5a606c', gl:'#333333'};
+function mvRevBg(g,C){
+  const P=mvPark(), rnd=mvRnd(7331);
+  const night=(mvSkyKind()==='night');
+  const bh=C.bh, wallB=C.ply-0.55*bh, wallT=wallB-0.24*bh;
+  // 관중석 — 위로 층층이
+  const sg=g.createLinearGradient(0,0,0,wallT);
+  sg.addColorStop(0,night?'#0c111c':'#27303d'); sg.addColorStop(1,night?'#1a2130':'#3a4454');
+  g.fillStyle=sg; g.fillRect(0,0,MVW,wallT+1);
+  const rows=Math.max(4,Math.round(wallT/9));
+  const tint=['#e8e1d6','#c9d4e6','#f2c9a6','#9fb5cf','#e9e9ef','#d88a7a',P.fence[0]];
+  for(let r=0;r<rows;r++){
+    const y=wallT-(r+1)*(wallT/rows), hh=wallT/rows;
+    g.fillStyle=r%2?'rgba(255,255,255,.035)':'rgba(0,0,0,.10)'; g.fillRect(0,y,MVW,hh);
+    const sz=Math.max(1.4,hh*0.34);
+    for(let x=rnd()*6;x<MVW;x+=sz*1.9+rnd()*3){
+      if(rnd()<0.18) continue;
+      g.fillStyle=tint[(rnd()*tint.length)|0]; g.globalAlpha=0.55+rnd()*0.35;
+      g.fillRect(x,y+hh*0.25+rnd()*hh*0.2,sz,sz*1.3);
+    }
+    g.globalAlpha=1;
+  }
+  // 백네트 · 광고판
+  g.fillStyle=P.fence[1]; g.fillRect(0,wallT,MVW,wallB-wallT);
+  g.fillStyle=P.fence[0]; g.fillRect(0,wallT,MVW,(wallB-wallT)*0.72);
+  g.fillStyle='rgba(255,255,255,.10)';
+  for(let x=10;x<MVW;x+=96){ g.fillRect(x,wallT+(wallB-wallT)*0.18,70,(wallB-wallT)*0.36); }
+  g.fillStyle=P.fenceTop; g.fillRect(0,wallT-1.5,MVW,1.5);
+  g.strokeStyle='rgba(255,255,255,.07)'; g.lineWidth=0.5;           // 그물
+  g.beginPath(); for(let x=0;x<MVW;x+=5){ g.moveTo(x,0); g.lineTo(x,wallT); } g.stroke();
+  // 흙(백스톱 앞) → 잔디
+  g.fillStyle=P.dirt[0]; g.fillRect(0,wallB,MVW,MVH-wallB);
+  const gy=C.ply+0.18*bh;
+  const gg=g.createLinearGradient(0,gy,0,MVH);
+  gg.addColorStop(0,P.grass[0]); gg.addColorStop(1,P.grass[1]);
+  g.fillStyle=gg; g.fillRect(0,gy,MVW,MVH-gy);
+  g.fillStyle='rgba(255,255,255,.05)';                                 // 잔디 결
+  for(let i=0;i<8;i++){ const y0=gy+i*(MVH-gy)/8*1.0; if(i%2) g.fillRect(0,y0,MVW,(MVH-gy)/8); }
+  // 홈 흙 원
+  g.fillStyle=P.dirt[1]; g.beginPath(); g.ellipse(C.plx,C.ply+0.05*bh,bh*1.75,bh*0.42,0,0,Math.PI*2); g.fill();
+  g.fillStyle=P.dirt[0]; g.globalAlpha=0.5; g.beginPath(); g.ellipse(C.plx,C.ply-0.02*bh,bh*1.4,bh*0.25,0,0,Math.PI*2); g.fill(); g.globalAlpha=1;
+  // 파울선 — 홈에서 화면 아래 양쪽으로 벌어진다
+  g.strokeStyle='rgba(255,255,255,.85)'; g.lineWidth=Math.max(1,bh*0.018);
+  g.beginPath(); g.moveTo(C.plx-bh*0.12,C.ply+0.03*bh); g.lineTo(C.plx-bh*3.4,MVH+40);
+  g.moveTo(C.plx+bh*0.12,C.ply+0.03*bh); g.lineTo(C.plx+bh*3.4,MVH+40); g.stroke();
+  // 타석 — 흰 선 네모 둘
+  g.lineWidth=Math.max(0.8,bh*0.012); g.strokeStyle='rgba(255,255,255,.7)';
+  [-1,1].forEach(k=>{ const x0=C.plx+k*bh*0.16, x1=C.plx+k*bh*0.56;
+    g.beginPath(); g.moveTo(x0,C.ply-0.06*bh); g.lineTo(x1,C.ply-0.06*bh);
+    g.lineTo(x1+k*bh*0.03,C.ply+0.09*bh); g.lineTo(x0+k*bh*0.02,C.ply+0.09*bh); g.closePath(); g.stroke(); });
+  // 홈플레이트 — 뒤(포수 쪽)가 뾰족하다
+  const w=bh*0.13;
+  g.fillStyle='#f4f4ef'; g.beginPath();
+  g.moveTo(C.plx-w,C.ply+0.03*bh); g.lineTo(C.plx+w,C.ply+0.03*bh);
+  g.lineTo(C.plx+w,C.ply); g.lineTo(C.plx,C.ply-0.025*bh); g.lineTo(C.plx-w,C.ply); g.closePath(); g.fill();
+  // 마운드 흙 — 투수 발밑
+  g.fillStyle=P.dirt[1]; g.beginPath(); g.ellipse(C.px+C.ph*0.2,C.py+C.ph*0.02,C.ph*0.95,C.ph*0.2,0,0,Math.PI*2); g.fill();
+  if(night){ g.fillStyle='rgba(10,20,50,.16)'; g.fillRect(0,0,MVW,MVH); }
+}
+function mvPaintRev(g,st,C,du,ou){
+  mvRevBg(g,C);
+  const bh=C.bh, side=st.batLeft?-1:1;               // 우타 = 화면 오른쪽
+  // 심판 — 포수 어깨 너머 안쪽(타자 반대편 틈)으로 고개를 내민다
+  const ux=C.plx-side*bh*0.07, uy=C.ply-0.14*bh;
+  mvShadow(g,ux,uy,bh*0.7);
+  mvSD(g,ux,uy,bh*0.80,MV_UMP_U,'ump',false,{mask:true});
+  // 포수
+  const cx=C.plx+side*bh*0.02, cy=C.ply-0.06*bh;
+  mvShadow(g,cx,cy,bh*0.8);
+  mvSD(g,cx,cy,bh*0.78,du,'catchF',!!st.batLeft,{});
+  // 타자 — 앞모습. 포수 뒤 그림을 거울에 비춘 자리다
+  const bx=C.plx+side*bh*0.38, by=C.ply+0.03*bh;
+  const S=(st.bat==='swing')?sdSwing(st.swT||0):null;
+  mvShadow(g,bx,by,bh*0.9);
+  mvSD(g,bx,by,bh*((S&&S.zoom)?S.zoom:1),ou,st.bat==='swing'?'swing':'stand',!st.batLeft,
+       {front:true, swT:st.swT, swQ:st.swQ});
+  // 투수 — 등. 우완이면 던지는 팔이 화면 오른쪽이다
+  mvShadow(g,C.px,C.py,C.ph*0.9);
+  mvSD(g,C.px,C.py,C.ph,du,st.pit||'idle',!st.pitLeft,{back:true, no:(st.pitNo==null?null:st.pitNo)});
+}
 /* ---------- 팀마다 다른 유니폼 색 ----------
    [제보] "옷이 같아서 헷갈려"
    예전엔 상대가 누구든 away 상수 하나(빨강)였다. 23팀이 전부 같은 옷이었다.
@@ -32247,7 +32532,7 @@ function handTag(pit){
 /* 마운드 그림을 이 투수에 맞춰 다시 그린다 (교체하면 손도 바뀐다) */
 function setPitFig(mound, pit){
   if(!mound) return;
-  mvPaint(mound,{pitLeft:throwHandOf(pit)==='L'});
+  mvPaint(mound,{pitLeft:throwHandOf(pit)==='L', pitNo:(pit&&pit.no!=null)?pit.no:null});
   mvScore(mound);
 }
 /* 중계 화면 뼈대를 만든다. mode: 'bat'(타격) | 'pit'(투구) */
@@ -32262,12 +32547,37 @@ function moundView(opts){
     <div class="lbl">${o.label||''}</div>
     <div class="cnt" id="cnt"><b>0</b>-<b>0</b></div>
     <div class="who" id="mwho"></div>
-    <div class="res" id="mres"></div>`;
+    <div class="res" id="mres"></div>
+    <button type="button" class="mv-camb" aria-label="카메라 바꾸기"></button>`;
+  const mode=o.usDef?'pit':'bat';
+  m._camMode=mode;
   mvPaint(m,{pitLeft:!!o.pitLeft, batLeft:!!o.batLeft, usDef:!!o.usDef,
-             batNo:(o.batNo==null?null:o.batNo), pit:'idle', bat:'stand'});
+             batNo:(o.batNo==null?null:o.batNo), pitNo:(o.pitNo==null?null:o.pitNo),
+             pit:'idle', bat:'stand', cam:mvCamPref(mode)});
+  mvCamSync(m);
+  const cb=m.querySelector('.mv-camb');
+  if(cb){
+    /* 판을 누르면 스윙이 나간다 — 버튼 누른 게 스윙으로 새지 않게 막는다 */
+    const stop=ev=>{ ev.stopPropagation(); };
+    cb.addEventListener('pointerdown',stop);
+    cb.onclick=(ev)=>{ ev.stopPropagation(); ev.preventDefault();
+      const L=MV_CAM_ORDER[mode], cur=(m._mv&&m._mv.cam)||L[0];
+      const nx=L[(L.indexOf(cur)+1)%L.length];
+      try{ if(typeof ST!=='undefined'&&ST){ ST.cam=ST.cam||{}; ST.cam[mode]=nx; } }catch(e){}
+      mvPaint(m,{cam:nx}); mvCamSync(m);
+      try{ fitZone(m); }catch(e){}
+    };
+  }
   mvScore(m);
   watchZone(m);                  // 존을 캔버스에 맞춰 앉히고, 크기가 바뀌면 다시
   return m;
+}
+/* 카메라 이름표 · 투수 뒤 카메라일 때 포수 미트(DOM) 숨기기 */
+function mvCamSync(m){
+  if(!m) return;
+  const k=(m._mv&&m._mv.cam)||'c', C=MV_CAMS[k]||MV_CAMS.c;
+  m.classList.toggle('cam-rev',!!C.rev);
+  const b=m.querySelector('.mv-camb'); if(b) b.textContent='🎥 '+C.name;
 }
 /* 외야 전광판 · 상단 띠에 지금 점수를 넣는다.
    [요청] "야구장 전광판 제대로 그리고 거기에 실시간 점수 이름 들어가게"   */
@@ -32290,9 +32600,12 @@ function fitZone(mound){
   if(!cv||!z) return;
   const mb=mound.getBoundingClientRect(), cb=cv.getBoundingClientRect();
   if(!cb.width||!cb.height||!mb.width) return;
-  const w=cb.width*SZ_W, h=w*SZ_HW;
-  const cx=(cb.left-mb.left)+cb.width*0.5;
-  const cy=(cb.top -mb.top )+cb.height*SZ_CY;
+  /* [v3.29.0] 카메라마다 존 자리가 다르다 — mvCamGeom 이 계산한다.
+     기본(포수 뒤)은 예전 숫자(SZ_CY · SZ_W) 그대로 나온다.            */
+  const G=mvCamGeom((mound._mv&&mound._mv.cam)||'c');
+  const w=cb.width*G.zw, h=w*SZ_HW;
+  const cx=(cb.left-mb.left)+cb.width*G.zx;
+  const cy=(cb.top -mb.top )+cb.height*G.zy;
   z.style.left=(cx-w/2).toFixed(1)+'px';
   z.style.top =(cy-h/2).toFixed(1)+'px';
   z.style.width=w.toFixed(1)+'px';
@@ -32304,7 +32617,17 @@ function fitZone(mound){
 function watchZone(mound){
   if(!mound || mound._zw) return;
   mound._zw=1;
-  const go=()=>{ try{ fitZone(mound); }catch(e){} };
+  /* [제보 v3.29.0] PC·태블릿 가로에서 판이 16:9 보다 길쭉하면 캔버스가 아래에만
+     붙고 **위가 텅 빈 검은 판**이 됐다. 그럴 때는 높이에 맞추고 좌우를 자른다(cover). */
+  const cover=()=>{ const cv=mound.querySelector('.mv-cv'); if(!cv) return;
+    const r=mound.getBoundingClientRect(); if(!r.width||!r.height) return;
+    if(r.height>r.width*MVH/MVW+2){
+      Object.assign(cv.style,{height:'100%',width:'auto',top:'0',bottom:'auto',left:'50%',transform:'translateX(-50%)',aspectRatio:MVW+'/'+MVH});
+      mound._cover=1;
+    } else if(mound._cover){
+      ['height','width','top','bottom','left','transform','aspectRatio'].forEach(k=>cv.style[k]=''); mound._cover=0; }
+  };
+  const go=()=>{ try{ cover(); fitZone(mound); }catch(e){} };
   go();
   try{
     if(typeof ResizeObserver==='function'){
@@ -32389,7 +32712,14 @@ function throwBall(mound, type, opts){
      올라갔는데 이 값을 안 고치면 **공이 투수 손이 아니라 화면 한가운데
      잔디에서 튀어나온다.** 카메라 식으로 다시 뽑은 값이다:
        (MV_CAM_Y + (132 - MV_CAM_Y)*MV_CAM) / 270 = 0.22                */
-  const sx=W*0.5, sy=H*0.22;
+  /* [v3.29.0] 카메라마다 릴리스 지점이 다르다. 캔버스 실제 사각형으로 옮긴다 */
+  const CG=mvCamGeom((mound._mv&&mound._mv.cam)||'c');
+  const REV=!!CG.rev;
+  let sx=W*0.5, sy=H*0.22;
+  { const cv=mound.querySelector('.mv-cv'); const cb=cv&&cv.getBoundingClientRect();
+    const lefty=!!(mound._mv&&mound._mv.pitLeft);
+    if(cb&&cb.width){ sx=cb.left-box.left+cb.width*(REV&&lefty?CG.rxL:CG.rx); sy=cb.top-box.top+cb.height*CG.ry; }
+    else if(REV){ sx=W*(lefty?CG.rxL:CG.rx); sy=H*CG.ry; } }
   const cxv=(o.cx==null?1:o.cx), cyv=(o.cy==null?1:o.cy);
   /* 0.303 — 세 칸(0,1,2)은 존 안(±0.303)에 들어가고
      빠진 공(-1,3)은 존 밖(±0.606 > 반폭 0.5)으로 나간다.               */
@@ -32407,7 +32737,10 @@ function throwBall(mound, type, opts){
 
      cx(0 몸쪽 · 2 바깥)와 변화량은 그대로 두고 **그리는 순간에만**
      타자가 실제로 선 쪽으로 뒤집는다. 판정은 한 글자도 안 건드린다. */
-  const side=(mound&&mound._mv&&mound._mv.batLeft)?-1:1;
+  /* 투수 뒤 카메라는 좌우가 거꾸로다 — 우타가 화면 오른쪽에 선다 */
+  const side=((mound&&mound._mv&&mound._mv.batLeft)?-1:1)*(REV?-1:1);
+  /* 변화량은 포수 뒤(존 폭 13.5%) 기준이라, 존 크기에 비례해서 줄인다 */
+  const kb=CG.zw/SZ_W;
   const tx=zx+(cxv-1)*(zw*0.303)*side;
   const ty=zy+(cyv-1)*(zh*0.303);
   /* [제보] "포수 글러브 모양은 왜 거기 고정인건지 모르겠다"
@@ -32429,7 +32762,9 @@ function throwBall(mound, type, opts){
      이제 변화량만큼 '어긋난 곳을 겨냥해서 던지고' 막판에 휘어서 목표로
      들어온다. 도착점은 언제나 미트 자리이고, 보이는 대로 판정이 나온다.  */
   const hand=(o.hand===-1?-1:1);
-  const bkx=(T.bx/100)*W*hand*side, bky=(T.by/100)*H;
+  const bkx=(T.bx/100)*W*hand*side*kb, bky=(T.by/100)*H*kb;
+  /* 도착 크기 — 존 폭에 비례. 포수 뒤에서는 예전처럼 9px(배율 1) 근처다 */
+  const fsc=REV?Math.max(0.32,Math.min(1,zw*0.11/9)):1;
   const ax=tx-bkx, ay=ty-bky;          // 겉보기 조준점 (여기서 시작해 목표로 휜다)
   /* exact 를 주면 넘긴 시간 그대로 쓴다 — 타석 화면은 구속(km/h)에서
      비행시간을 직접 계산해서 넘기므로 구종 보정을 두 번 먹으면 안 된다. */
@@ -32441,14 +32776,14 @@ function throwBall(mound, type, opts){
   const frame=(ts)=>{
     if(t0==null)t0=ts;
     let t=(ts-t0)/dur; if(t>1)t=1;
-    // 원근감 — 처음엔 천천히 커지다가 끝에 훅 온다
-    const e=Math.pow(t,1.7);
+    // 원근감 — 처음엔 천천히 커지다가 끝에 훅 온다 (투수 뒤에서는 반대로 멀어진다)
+    const e=REV?(1-Math.pow(1-t,1.5)):Math.pow(t,1.7);
     const bk = t<T.late ? 0 : Math.pow((t-T.late)/(1-T.late),2);
     const x = sx+(ax-sx)*e + bkx*bk;      // bk 가 1 이 되면 정확히 tx
     const y = sy+(ay-sy)*e + bky*bk;
     /* 원근 — 멀리서 작게 오다가 커진다. 도착했을 때 공 지름이 존 폭의
        17% 가 되게 잡았다 (실제 야구공 7.3cm / 스트라이크존 43cm). */
-    const sc = 0.34+e*0.66;
+    const sc = REV ? (fsc*2.4+(fsc-fsc*2.4)*e) : 0.34+e*0.66;
     ball.style.transform=tfm(x-4.5,y-4.5,sc);
     if(aim) aim.style.transform=tfm(x-7,y-20,0.7+e*0.5);
     if(t>0.15 && trails.length<14 && Math.random()<0.5){
@@ -35123,6 +35458,7 @@ function renderPitch(box, d){
   const w=el('div','pl-wrap');
   const head=el('div'); w.appendChild(head);
   const mv=moundView({pitLeft:throwHandOf(LIVE.curPitcher(def))==='L',
+    pitNo:(function(){ const q=LIVE.curPitcher(def); return (q&&q.no!=null)?q.no:null; })(),
     batLeft:(function(){const s0=off.slots[off.order%9];
       const b0=off.team.players.find(x=>x.id===s0.id); return !!(b0&&b0.bats==='L');})(),
     usDef:true});
@@ -42373,7 +42709,7 @@ function paintTabs(){
 let LOB_MORE=false;     // 가로 홈 — 아래 카드를 펼쳤나 (세이브에 안 남긴다)
 function go(v){
   plLock(false);        // 화면을 옮기면 타석 잠금은 무조건 푼다
-  { const vw=document.getElementById('view'); if(vw) vw.classList.remove('lob-solo'); }
+  { const vw=document.getElementById('view'); if(vw) vw.classList.remove('lob-solo','hs-pre'); }
   /* 고등학교를 하는 중에는 본편 화면으로 못 샌다. 아직 우완좌완이 아니다.
      [제보] "메인화면 갈 수 있는 버튼이 없는데" — 메인화면과 세이브 슬롯은
      본편이 아니라 그 위에 있는 것이라 막으면 안 됐다. 프롤로그 도중에
@@ -42470,6 +42806,8 @@ function normalizeState(){
   /* 화면 크기 — 옛 세이브에는 없는 값이라 여기서 메운다.
      0 은 「꽉 채움」이라 == null 로만 걸러야 한다 (|| 를 쓰면 0 이 기본값으로
      되돌아가서, 꽉 채움을 골라도 다음 판에 풀린다).                 */
+  /* [v3.29.0] 카메라 — 타석·마운드마다 마지막으로 고른 것 */
+  if(!ST.cam||typeof ST.cam!=='object') ST.cam={};
   if(ST.uiW==null)    ST.uiW=UI_W_DEF;
   if(ST.uiZoom==null) ST.uiZoom=UI_Z_DEF;
   ST.uiW=Math.max(0, Math.min(UI_W_MAX, ST.uiW|0));
