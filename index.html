@@ -1252,12 +1252,13 @@ body.pl-lock #view{touch-action:none}
 .ap-side{position:absolute;bottom:3px;font-size:9.5px;font-weight:800;color:#8b95a3;pointer-events:none}
 .ap-side.l{left:5px}.ap-side.r{right:5px}
 .ap-ret{position:absolute;transform:translate(-50%,-50%);border:2px solid #ffd15c;border-radius:50%;background:rgba(255,209,92,.14);pointer-events:none;transition:left .05s,top .05s}
-.ap-ret i{position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:#ffd15c}
-.ap-ret.out{border-color:#7fb4ff;background:rgba(127,180,255,.14)}.ap-ret.out i{background:#7fb4ff}
+.ap-ret i{position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.5)}
+.ap-ret.out{border-color:#7fb4ff;background:rgba(127,180,255,.14)}
 .ap-now{position:absolute;top:3px;left:0;right:0;text-align:center;font-size:10.5px;font-weight:800;color:#e2eaf5;pointer-events:none}
 .zthrow{flex:0 0 auto;font:inherit;font-size:14px;font-weight:900;color:#0e0f11;background:#ffd15c;border:0;border-radius:12px;padding:12px 14px;cursor:pointer}
 .aim-ret{position:absolute;transform:translate(-50%,-50%);border:2px solid rgba(255,209,92,.9);border-radius:50%;box-shadow:0 0 0 1px rgba(0,0,0,.35);pointer-events:none;z-index:6}
 .aim-ret.out{border-color:rgba(127,180,255,.9)}
+.aim-ret i{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.45)}
 .ball.seam{background:radial-gradient(circle at 38% 34%,#fff 60%,#e8e8e8 100%)}
 .trail{position:absolute;width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.30);
   pointer-events:none}
@@ -2092,6 +2093,10 @@ html.land #view.hs-pickv .hs-opt{padding:8px 10px}
 .slide-b.on,.slide-b:disabled{animation:none;opacity:.75}
 @keyframes slPulse{from{transform:scale(1)}to{transform:scale(1.04)}}
 .divb:disabled{opacity:.38}
+/* [제보 v3.48.0] 아이폰에서 조이스틱을 밀면 글자가 선택되고 「복사하기」 가 떴다 —
+   경기 판(판단창) 전체에서 선택 · 길게 누르기 메뉴를 끈다 */
+#decision,#decision *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+#decision input,#decision textarea{-webkit-user-select:text;user-select:text}
 .joy{position:relative;width:112px;height:112px;border-radius:50%;
   background:radial-gradient(circle,#1b222c 0%,#141a22 70%);
   border:2px solid #2a323d;touch-action:none;
@@ -9434,8 +9439,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.47.0';
-const APP_VERSION_NOTE = '수비 카메라 · 타석 화면 정리';
+const APP_VERSION = '3.48.0';
+const APP_VERSION_NOTE = '다이빙·점프 자유 · 아이폰 드래그 · 유인구 칸 없앰';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9456,6 +9461,15 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.48.0', t:'다이빙·점프 자유 · 아이폰 드래그 · 유인구 칸 없앰', items:[
+    '아이폰에서 조이스틱 밀면 글자 선택 · 「복사하기」 가 뜨던 것 막았다 — 손가락이 조이스틱 밖으로 나가도 안 끊긴다',
+    '공을 못 잡았는데 송구 단계가 열려서 아웃 잡던 버그 — 머리 위로 지나간 공을 「잡은 거리」로 치고 있었다',
+    '다이빙하면 몸이 그 방향으로 날아가며 눕는다 · 점프하면 글러브를 머리 위로 뻗는다',
+    '점프 중에도 다이빙(공중) · 점프하면서도 조금 움직인다',
+    '투구 — 유인구 버튼 줄 없앴다. 조준판으로 존 밖을 겨누면 그게 유인구',
+    '타자는 공이 존에 가까울수록 따라 나온다 — 한 칸 넘게 빼면 거의 안 쫓는다',
+    '조준 원 = 실제로 흩어지는 범위(1.5σ). 가운데 흰 공이 진짜 공 크기다',
+  ]},
   {v:'3.47.0', t:'수비 카메라 · 타석 화면 정리', items:[
     '수비할 때 카메라가 공과 내 야수를 따라 당겨 찍는다 — 공이 점만 해서 안 보이던 것',
     '땅볼도 굴러오는 길(점선)과 과녁을 찍어 준다 — 그 선으로 들어가서 막으면 된다',
@@ -37194,13 +37208,21 @@ function renderDefPlay(box, d){
       if(sc&&sc.setDir) sc.setDir(dx/R, dy/R);
     };
     const up=()=>{ on=false; setK(0,0); if(sc&&sc.setDir) sc.setDir(0,0); };
+    /* [제보 v3.48.0] "아이폰 기준 수비할때 조이스틱 움직이면 그 드래그 되어서
+       복사하기 이런거 뜨는거 짜증난다" · "저 드래그 때문에 공 못잡았는데"
+       아이폰 사파리는 포인터 이벤트만 막아서는 **글자 선택 · 돋보기 · 복사 메뉴**를
+       못 막는다. touchstart 를 직접 막고(passive:false), 판 전체에 선택 금지를 건다.
+       손가락이 조이스틱 밖으로 나가도 놓지 않는다 — pointerleave 로 끊던 게
+       「밀다가 갑자기 멈춤」 이었다. 떼는 건 창 어디서든 받는다.            */
     joy.style.touchAction='none';
-    joy.addEventListener('pointerdown',(ev)=>{ on=true;
+    try{ joy.addEventListener('touchstart',(ev)=>{ ev.preventDefault(); },{passive:false});
+         joy.addEventListener('touchmove',(ev)=>{ ev.preventDefault(); },{passive:false}); }catch(e){}
+    joy.addEventListener('pointerdown',(ev)=>{ on=true; if(ev.preventDefault)ev.preventDefault();
       try{joy.setPointerCapture(ev.pointerId);}catch(e){} move(ev); });
     joy.addEventListener('pointermove', move);
     joy.addEventListener('pointerup', up);
     joy.addEventListener('pointercancel', up);
-    joy.addEventListener('pointerleave', up);
+    try{ window.addEventListener('pointerup', ()=>{ if(on) up(); }); }catch(e){}
   }
   /* [제보] "수비도 언제쯤 준비하는 턴좀 줘라 아이폰으로 하는데 수비 장면
              뜰때 순간 스크롤 내려가서 뭐야 하다가 못잡았다"
@@ -37484,7 +37506,7 @@ function defScene(host, o){
        · 대신 그 사이 못 움직이고, 놓치면 0.35초 더 못 일어난다
      타이밍을 맞히면 못 잡을 공을 잡고, 헛 다이빙하면 확실히 놓친다.   */
   const DIVE_MS=450, DIVE_LAG=350;
-  let diveAt=-9999;
+  let diveAt=-9999, diveDir={x:0,y:0};
   const diving=(now)=>(now-diveAt)>=0 && (now-diveAt)<DIVE_MS;
   const lagging=(now)=>(now-diveAt)>=DIVE_MS && (now-diveAt)<DIVE_MS+DIVE_LAG;
   /* [요청] "점프나 다이빙 이런거 내가 판단할 수 있게"
@@ -37623,12 +37645,21 @@ function defScene(host, o){
     const now=Date.now()-t0;
     const dt=Math.min(0.06,(Date.now()-last)/1000); last=Date.now();
     /* 내 야수 — 아래 조이스틱을 민 방향으로. 많이 밀수록 빠르다 */
-    if(phase==='chase' && !diving(now) && !lagging(now) && !jumping(now)){
-      const dd=Math.hypot(dir.x,dir.y);
-      if(dd>0.08){
-        const v=Math.min(1,dd);
-        fx+=dir.x/dd*o.speed*v*dt;
-        fy+=dir.y/dd*o.speed*v*dt;
+    /* [요청 v3.48.0] "점프 슬라이딩 캐치 막 시도하면 허공에서도 할 수 있고 자유도 넘치는"
+       다이빙은 제자리에서 팔만 늘어나는 게 아니라 **몸이 그 방향으로 날아간다**.
+       점프 중에도 조금은 움직인다(공중 제어). 넘어져 있는 동안만 못 움직인다. */
+    if(phase==='chase' && !lagging(now)){
+      if(diving(now)){
+        const k=(now-diveAt)/DIVE_MS;                 // 날아가다가 미끄러지며 선다
+        const sp=o.speed*2.1*Math.max(0,1-k*0.85);
+        fx+=diveDir.x*sp*dt; fy+=diveDir.y*sp*dt;
+      } else {
+        const dd=Math.hypot(dir.x,dir.y);
+        if(dd>0.08){
+          const v=Math.min(1,dd)*(jumping(now)?0.45:1);
+          fx+=dir.x/dd*o.speed*v*dt;
+          fy+=dir.y/dd*o.speed*v*dt;
+        }
       }
     }
     /* 그라운드 밖으로는 못 나간다 */
@@ -37638,9 +37669,9 @@ function defScene(host, o){
     const near=Math.hypot(b.x-fx, b.y-fy);
     const dLand=Math.hypot(land.x-fx, land.y-fy);
     if(phase==='chase'){
-      if(now>=o.flyMs*0.55){ best=Math.min(best, near); bestLand=Math.min(bestLand, dLand); }
-      /* 공에 닿았다 — 그 자리에서 송구 단계로 */
-      const RE=diving(now)?o.reach*1.60:(jumping(now)?o.reach*1.15:o.reach);
+      /* 공에 닿았다 — 그 자리에서 송구 단계로.
+         다이빙은 몸이 실제로 날아가니 팔 길이는 조금만 늘린다(1.60 → 1.35) */
+      const RE=diving(now)?o.reach*1.35:(jumping(now)?o.reach*1.15:o.reach);
       const GR=diving(now)?GRAB*1.35:GRAB;
       /* 높이 — 공이 손 위로 지나가면 못 잡는다(점프하면 닿는다) */
       const bz=(now<o.flyMs)?b.z:0;
@@ -37648,6 +37679,12 @@ function defScene(host, o){
       /* 직선타는 날아오는 도중에도 잡힌다. 점프로 낚아채는 게 이거다 */
       const window0 = ldBall ? o.flyMs*0.35 : o.flyMs*0.85;
       const jumpCatch = jumping(now) && bz>5;
+      /* [버그 이력 v3.48.0] "드래그 때문에 공 못잡았는데 송구는 가능해서 아웃 잡았네"
+         가장 가까웠던 거리(best)를 **잡을 수 없는 순간에도** 쟀다 — 공이 머리 위로
+         지나가거나 아직 떨어지기 전(0.55~0.85)에 스치기만 해도 기록됐다. 그러면
+         공이 다 굴러간 뒤 「best 가 손 닿는 거리였다 → 잡았다」 로 송구 단계가 열렸다.
+         잡을 수 있는 순간(창 안 · 손 높이)에만 잰다.                     */
+      if(now>=window0 && !high){ best=Math.min(best, near); bestLand=Math.min(bestLand, dLand); }
       if(near<=RE && now>=window0 && !high){
         /* 확실히 잡는 거리(grab) 안이면 1, 겨우 닿는 끝이면 0.55.
            그 사이는 비례해서 깎는다 — 대충 붙은 것과 정확히 들어간 것을
@@ -37829,7 +37866,7 @@ function defScene(host, o){
       /* 바깥 원 = 손이 닿는 데까지 · 안쪽 원 = 깨끗하게 잡는 데.
          안쪽에 넣어야 호수비다. 눈으로 보이니까 목표가 생긴다.   */
       const dvOn=diving(now);
-      const RE2=dvOn?o.reach*1.60:o.reach, GR2=dvOn?GRAB*1.35:GRAB;
+      const RE2=dvOn?o.reach*1.35:o.reach, GR2=dvOn?GRAB*1.35:GRAB;
       g.strokeStyle=dvOn?'rgba(255,209,92,.95)'
         :((near<RE2)?'rgba(127,196,143,.75)':'rgba(255,209,92,.45)');
       g.lineWidth=dvOn?2.6:((near<RE2)?2:1.4);
@@ -37847,7 +37884,24 @@ function defScene(host, o){
     if(jh>0.3){                              // 떠 있다 — 그림자는 땅에 남긴다
       g.fillStyle='rgba(0,0,0,.28)'; g.beginPath(); g.ellipse(fx,fy+7,5-jh*0.2,2,0,0,Math.PI*2); g.fill();
     }
-    man(fx,fy-jh,PS_UNI.us,moving,fx<HX);
+    if(diving(now)||lagging(now)){
+      /* 몸을 날렸다 — 옆으로 눕는다. 뒤로 흙먼지. 넘어져 있는 동안은 누운 채 */
+      const k=diving(now)?(now-diveAt)/DIVE_MS:1;
+      const sx=(diveDir.x>=0?1:-1);
+      g.save(); g.translate(fx,fy); g.rotate(sx*Math.PI/2*Math.min(1,k*2.4));
+      psMan(g,0,5,PS_UNI.us,0,sx<0,false);
+      g.restore();
+      if(diving(now)) for(let i=0;i<5;i++){
+        g.fillStyle='rgba(214,176,128,'+(0.55*(1-k)).toFixed(3)+')';
+        g.beginPath(); g.arc(fx-diveDir.x*(5+i*3), fy+3-diveDir.y*(5+i*3), 1.6+i*0.5, 0, Math.PI*2); g.fill();
+      }
+    } else {
+      man(fx,fy-jh,PS_UNI.us,moving,fx<HX);
+      if(jh>0.3){                            // 뛰어올랐다 — 글러브를 머리 위로 뻗는다
+        g.fillStyle='#f2c9a0'; g.fillRect(fx+(fx<HX?-4:3), fy-jh-13, 1, 6);
+        g.fillStyle='#8b5a2b'; g.fillRect(fx+(fx<HX?-6:2), fy-jh-17, 4, 4);
+      }
+    }
     /* 내가 어디 있는지 한눈에 — 손가락이 안 가리니 표시를 크게 못 박는다 */
     if(phase!=='result'){
       g.strokeStyle='rgba(255,209,92,.9)'; g.lineWidth=2;
@@ -37929,7 +37983,11 @@ function defScene(host, o){
     setDir:(x,y)=>{ dir={x:x||0,y:y||0}; },
     dive:()=>{ if(phase!=='chase') return false;
       const n2=Date.now()-t0;
-      if(diving(n2)||lagging(n2)||jumping(n2)) return false;   // 연타 금지
+      if(diving(n2)||lagging(n2)) return false;   // 연타 금지 — 점프 중에는 된다(공중 다이빙)
+      /* 미는 방향으로 날아간다. 스틱을 안 밀고 있으면 공 쪽으로 */
+      let dx=dir.x, dy=dir.y;
+      if(Math.hypot(dx,dy)<0.15){ const bb=ballAt(n2); dx=bb.x-fx; dy=bb.y-fy; }
+      const dl=Math.hypot(dx,dy)||1; diveDir={x:dx/dl, y:dy/dl};
       diveAt=n2; dir={x:0,y:0};
       if(o.onTick) o.onTick('<b>몸을 날렸다!</b>');
       return true; },
@@ -38792,19 +38850,27 @@ function renderPitch(box, d){
   const paintAim=()=>{
     const ret=g.querySelector('.ap-ret'); if(!ret) return;
     const [px,py]=toPad(aimX,aimY), sd=aimSd();
-    const rad=Math.max(8, sd/ZE*PADZ/2*100*1.25);          // 원 반지름 — 판 크기의 %
+    /* [요청 v3.48.0] "원 안에 실제 공크기도 넣어서 원이 넓을수록 제구 안좋은거고"
+       원 = 공이 실제로 흩어지는 범위다. 반지름 1.5σ — 열에 일곱은 이 안으로 간다.
+       가운데 흰 공은 **진짜 공 크기**다(지름 7.3cm, 존 폭 43cm = 3.3칸 → 반지름 0.28칸).
+       제구 20 짜리 사회인 투수가 변화구를 던지면 원이 존만큼 커진다 — 그게 맞다. */
+    const BALL_R=0.28;
+    const rad=Math.max(4, sd*1.5/ZE*PADZ/2*100);            // 원 반지름 — 판 크기의 %
     ret.style.left=(px*100)+'%'; ret.style.top=(py*100)+'%';
     ret.style.width=ret.style.height=(rad*2)+'%';
+    { const bi=ret.querySelector('i'); if(bi){ const k=Math.min(100, BALL_R/(sd*1.5)*100);
+        bi.style.width=bi.style.height=k+'%'; bi.style.margin='0'; bi.style.transform='translate(-50%,-50%)'; } }
     const out=Math.abs(aimX-1)>ZE||Math.abs(aimY-1)>ZE;
     ret.classList.toggle('out', out);
     const nm=g.querySelector('.ap-now'); if(nm) nm.textContent=aimName(aimX,aimY);
     /* 야구장 위에도 같은 자리에 조준점 — throwBall 과 같은 식 */
     try{ const zs=mv.querySelector('#szone'), box0=mv.getBoundingClientRect();
-      let mr=mv.querySelector('.aim-ret'); if(!mr){ mr=el('div','aim-ret'); mv.appendChild(mr); }
+      let mr=mv.querySelector('.aim-ret'); if(!mr){ mr=el('div','aim-ret'); mr.innerHTML='<i></i>'; mv.appendChild(mr); }
       const zb=zs&&zs.getBoundingClientRect();
       if(zb&&zb.width){ const zx=zb.left+zb.width/2-box0.left, zy=zb.top+zb.height/2-box0.top;
         mr.style.left=(zx+(aimX-1)*(zb.width*0.303)*zSide)+'px'; mr.style.top=(zy+(aimY-1)*(zb.height*0.303))+'px';
-        const rr=Math.max(6, sd*zb.width*0.303*1.25); mr.style.width=mr.style.height=(rr*2)+'px';
+        const cpx=zb.width*0.303, rr=Math.max(5, sd*1.5*cpx); mr.style.width=mr.style.height=(rr*2)+'px';
+        const bi=mr.querySelector('i'); if(bi){ const bd=Math.max(3, BALL_R*2*cpx); bi.style.width=bi.style.height=bd+'px'; }
         mr.classList.toggle('out', out); mr.style.display=''; } }catch(e){}
   };
   let zBatLeft=false;
@@ -38827,6 +38893,10 @@ function renderPitch(box, d){
     /* 테스트용 손잡이 — 조준을 코드로 옮기고 읽는다(umptest) */
     g._setAim=(c,r)=>{ aimX=c; aimY=r; paintAim(); }; g._aim=()=>({x:aimX,y:aimY,side:zSide});
     paintAim();
+    /* 존 상자(#szone)는 카메라에 맞춰 조금 뒤에 자리를 잡는다(fitZone) — 그 전에 재면
+       야구장 위 조준 원이 엉뚱한 데 선다. 자리 잡은 뒤에 한 번 더 그린다 */
+    setTimeout(()=>{ try{ paintAim(); }catch(e){} }, 120);
+    setTimeout(()=>{ try{ paintAim(); }catch(e){} }, 420);
   };
   /* 던진다 — 조준점 둘레로 제구만큼 흩어진다(정규분포). 조준이 존 밖이면 유인구로 친다 */
   const throwAim=()=>{
@@ -38904,16 +38974,20 @@ function renderPitch(box, d){
       /* 타자가 휘두를지 참을지 — 카운트와 코스를 본다 */
       const cnt=LIVE.count();
       const eye=bat?bat.eye:40, con=bat?bat.con:40;
-      let sw = out ? 0.22 : 0.62;
-      if(cnt.s===2) sw+=0.22;                     // 투 스트라이크면 커트라도
+      /* 존에서 얼마나 떨어졌나(칸). 경계에 걸친 공일수록 따라 나온다 —
+         한 칸 넘게 빠지면 거의 안 쫓는다. 버튼으로 「유인구」 를 고르던 시절엔
+         0.22 로 평평했다. */
+      const dOut=Math.max(0, Math.max(Math.abs(ax-1),Math.abs(ay-1))-1.65);
+      let sw = out ? 0.50*Math.exp(-dOut/0.55) : 0.62;
+      if(cnt.s===2) sw+=0.22*(out?Math.exp(-dOut/0.9):1);   // 투 스트라이크면 커트라도
       if(cnt.b===3) sw-=0.18;                     // 쓰리볼이면 골라 나간다
       sw -= (eye-40)*0.004;
       /* 유인구는 변화구일수록, 2스트라이크일수록, 구위가 좋을수록 잘 속는다.
          반대로 볼카운트가 유리한 타자는 잘 안 따라 나온다.
          [균형] 예전엔 0볼 0스트라이크에서 22% 밖에 안 나와서
          "무조건 안 휘두른다" 였다. 상황을 맞추면 60%를 넘게 했다. */
-      if(isChase){
-        sw += 0.14                                   // 유인구 기본 유혹
+      if(out){
+        sw += 0.06*Math.exp(-dOut/0.55)              // 경계 근처 유혹
            + (T.hard>0?0.13:0)                       // 변화구면 더
            + (cnt.s===2?0.22:(cnt.s===1?0.08:0))     // 몰릴수록
            + (p.stf-38)*0.0035                       // 구위
@@ -38999,39 +39073,11 @@ function renderPitch(box, d){
   /* [요청] "투수 볼도 노려서 던질 수 있게 해줘야 할 듯. 변화구"
      2스트라이크에서 일부러 빼는 공. 스트라이크는 안 되지만 타자가 속으면
      헛스윙이고, 참으면 볼이다. 존 안으로 던지는 것보다 제구가 쉽다.   */
-  const chase=el('div','chase');
-  const crow=el('div','chase-row');
-  [['높게',1,-1],['낮게',1,3],['바깥쪽',3,1],['몸쪽',-1,1]].forEach(([n,cx,cy])=>{
-    const b3=el('button','chb',n);
-    b3.onclick=()=>throwTo(cy,cx,true,n+'으로 뺐다');
-    crow.appendChild(b3);
-  });
-  chase.appendChild(crow);
-  /* [주의] skip 은 이제 botRow 안에 있다 — w 의 자식이 아니라서
-     insertBefore(chase, skip) 이 터진다. 줄 앞에 넣는다.          */
-  w.insertBefore(chase, botRow);    // 존 바로 아래에 붙인다
-  /* [제보] "유인구 던지는 것도 뭔가 이유가 있었으면 좋겠다"
-     지금 던지면 속을지 아닐지를 숫자로 보여준다. 그래야 고를 이유가 생긴다. */
-  const chaseHint=()=>{
-    const p2=LIVE.curPitcher(def);
-    const slot2=off.slots[off.order%9];
-    const b2=off.team.players.find(x=>x.id===slot2.id);
-    const c2=LIVE.count();
-    const T2=PITCH_TYPES[type]||PITCH_TYPES.ff;
-    let sw=0.22+0.14+(T2.hard>0?0.13:0)
-      +(c2.s===2?0.22:(c2.s===1?0.08:0))
-      +(p2.stf-38)*0.0035
-      -(c2.b>=3?0.20:(c2.b>=2?0.09:0))
-      -((b2?b2.eye:40)-40)*0.004;
-    sw=Math.max(0.05,Math.min(0.92,sw));
-    const hangP=1-Math.max(0.55,Math.min(0.93,0.62+Math.max(0.25,Math.min(1,(p2.ctl-18)/42))*0.34));
-    const lv= sw>=0.55?['속는다','#7fc48f'] : (sw>=0.38?['반반','#c9a227'] : ['잘 안 속는다','#e08a70']);
-    chase.querySelector('.ch-h').innerHTML=
-      `<span>유인구 — 일부러 뺀다</span>`+
-      `<i>속을 확률 <b style="color:${lv[1]}">${(sw*100)|0}% ${lv[0]}</b>`+
-      ` · 몰릴 위험 ${(hangP*100)|0}%</i>`;
-  };
-  const chHead=el('div','ch-h'); chase.insertBefore(chHead, crow);
+  /* [요청 v3.48.0] "유인구 칸도 없애지 저 조이스틱 이용해서 던지는거면 유인구 칸도
+     필요없지 … 스트존에 가까울수록 알아서 스윙하는거"
+     맞다. 조준판으로 존 밖을 겨누면 그게 유인구다. 버튼 네 개가 화면만 먹었다.
+     타자가 따라 나올지는 **공이 존에서 얼마나 떨어졌나**로 정한다(throwGo). */
+  const chaseHint=()=>{};
 
   skip.onclick=()=>{ if(busy||resolved)return; resolved=true; LIVE.applyDecision('playskip'); decDone(box); };
   draw();

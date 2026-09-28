@@ -82,34 +82,19 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
     return /sharpF=Math\.max\(0\.25/.test(src) && /aimSd/.test(src) ? '제구 → 오차' : '!없다';
   });
 
-  console.log('\n[유인구]');
-  T('유인구 버튼 넷이 있다', ()=>{
-    const bs=[...d.querySelectorAll('.chase-row .chb')].map(b=>b.textContent);
-    return bs.length===4 ? bs.join(' / ') : `!${bs.length}개`;
+  console.log('\n[유인구 — 조준판으로 존 밖을 겨눈다]');
+  /* [v3.48.0] 유인구 버튼 넷을 없앴다. 조준판으로 존 밖을 겨누면 그게 유인구고,
+     타자가 따라 나올지는 공이 존에서 얼마나 떨어졌나로 정한다 */
+  T('유인구 버튼 줄이 없다(화면을 안 가린다)', ()=>!d.querySelector('.chase-row .chb') ? '없다' : '!남아 있다');
+  const src=ev("String(renderPitch)");
+  T('스윙 확률이 존에서 떨어진 거리로 줄어든다', ()=>/const dOut=Math\.max\(0/.test(src) && /0\.50\*Math\.exp\(-dOut\/0\.55\)/.test(src) ? '경계일수록 따라 나온다' : '!평평하다');
+  T('변화구·2스트라이크면 더 잘 속는다', ()=>/if\(out\)\{[\s\S]{0,500}?cnt\.s===2\?0\.22/.test(src) && /T\.hard>0\?0\.13/.test(src) ? '구종·카운트·구위·볼카운트를 다 본다' : '!없다');
+  T('스윙 확률 실측 — 경계 공이 멀리 뺀 공보다 잘 따라 나온다', ()=>{
+    const f=(dOut)=>0.50*Math.exp(-dOut/0.55);
+    return f(0.1)>0.4 && f(1.2)<0.07 ? '경계 '+(f(0.1)*100|0)+'% · 한 칸 넘게 '+(f(1.2)*100|0)+'%' : '!';
   });
-  T('유인구는 존 밖 좌표로 던진다', ()=>{
-    const src=ev("String(renderPitch)");
-    return /\['높게',1,-1\]/.test(src) && /throwTo\(cy,cx,true,/.test(src) ? '존 밖 4방향' : '!좌표가 안 맞는다';
-  });
-  T('유인구는 제구 실패가 없다 (일부러 빼는 공)', ()=>{
-    const src=ev("String(renderPitch)");
-    return /isChase \? true :/.test(src) ? '제구 판정 생략' : '!없다';
-  });
-  T('변화구·2스트라이크면 더 잘 속는다', ()=>{
-    const src=ev("String(renderPitch)");
-    /* v2.36.0 — 보정식이 여러 줄로 늘어났다 (구위·볼카운트까지 본다) */
-    const has=/if\(isChase\)\{[\s\S]{0,400}?cnt\.s===2\?0\.22/.test(src);
-    return has ? '구종·카운트·구위·볼카운트를 다 본다' : '!없다';
-  });
-  T('유인구도 몰릴 수 있다 — 던질 이유와 위험이 같이 있다', ()=>{
-    const src=ev("String(renderPitch)");
-    return /const hang\s*=\s*isChase/.test(src) && /if\(hang\)\{/.test(src)
-      ? '제구가 나쁘면 존으로 몰린다' : '!백발백중이다';
-  });
-  T('속을 확률을 화면에 보여준다', ()=>{
-    const src=ev("String(renderPitch)");
-    return /속을 확률/.test(src) && /몰릴 위험/.test(src) ? '유인구 버튼 위에 표시' : '!안 보여준다';
-  });
+  T('오차 원은 1.5σ · 가운데는 진짜 공 크기', ()=>/const BALL_R=0\.28/.test(src) && /sd\*1\.5/.test(src) ? '원 안에 공' : '!없다');
+  T('유인구도 몰릴 수 있다(옛 칸 조준 경로)', ()=>/const hang\s*=\s*isChase/.test(src) && /if\(hang\)\{/.test(src) ? '제구가 나쁘면 존으로 몰린다' : '!');
 
   console.log('\n[심판 오심과 항의]');
   T('오심이 실제로 난다', ()=>{

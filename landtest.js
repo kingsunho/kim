@@ -20,7 +20,7 @@ const SIZES=[[844,390,'폰 가로'],[1600,740,'태블릿 가로']];
 
 /* 판마다 «반드시 손이 닿아야 하는 것» */
 const MUST={
-  pitch  :['.ptype button','.apad','.zthrow','.chase .chb','.pit-bot .pl-skip'],
+  pitch  :['.ptype button','.apad','.zthrow','.pit-bot .pl-skip'],
   lead   :['.runstage','.lead-b'],
   defplay:['.runstage','.lead-b'],
   throw  :['.runstage'],
