@@ -1953,6 +1953,15 @@ table.hl-tbl td.hl-o{color:#c98a80}
 .divb u{display:block;font-style:normal;text-decoration:none;
   font-size:9px;font-weight:700;color:#8b95a3;margin-top:2px}
 .divb:active,.divb.on{border-color:var(--gold);color:var(--gold);transform:scale(.95)}
+/* 점프 · 몸 날리기 — 세로로 쌓는다(마구마구 오른손 버튼 둘) */
+.divcol{display:flex;flex-direction:column;gap:8px;align-items:center}
+.divcol .divb{width:64px;height:64px}
+.jmpb{background:linear-gradient(180deg,#2b4f8a,#1c355f)}
+.slide-b{flex:1 1 auto;background:linear-gradient(180deg,#b8402f,#8a2a1e)!important;border-color:#ffd15c!important;
+  animation:slPulse .5s ease-in-out infinite alternate}
+.slide-b span{color:#fff!important;font-size:1.15em}
+.slide-b.on,.slide-b:disabled{animation:none;opacity:.75}
+@keyframes slPulse{from{transform:scale(1)}to{transform:scale(1.04)}}
 .divb:disabled{opacity:.38}
 .joy{position:relative;width:112px;height:112px;border-radius:50%;
   background:radial-gradient(circle,#1b222c 0%,#141a22 70%);
@@ -8982,8 +8991,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.24.0';
-const APP_VERSION_NOTE = '다이빙 캐치 · 실책 · 슬라이딩이 크게 나온다 — 승부처가 긴장된다';
+const APP_VERSION = '3.25.0';
+const APP_VERSION_NOTE = '점프 · 슬라이딩을 내가 한다 — 일찍 돌수록 산다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9004,6 +9013,14 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.25.0', t:'점프 · 슬라이딩을 내가 한다 — 일찍 돌수록 산다', items:[
+    '<b>수비에 「점프」 버튼이 생겼다.</b> 「다이빙」 위에 있다. 다이빙은 옆으로, 점프는 위로 닿는 거리를 늘린다',
+    '<b>공에 높이가 생겼다.</b> 직선타는 높게 깔려 와서 서 있으면 끝물에나 닿는다 — 점프하면 날아오는 도중에 낚아챈다. <b>담장까지 가는 공은 점프 안 하면 못 잡는다</b>',
+    '공이 머리 위로 지나갈 판이면 그라운드에 「높다 — 점프!」「담장이다 — 점프!」 가 뜬다. 점프로 잡으면 <b>「점프 캐치!」「펜스 앞 점프 캐치!」</b> 컷이 나온다',
+    '<b>주루에 「슬라이딩!」 버튼이 생겼다.</b> 「더 간다」 로 돌고 나면 공이 베이스로 날아오는 동안 뜬다. <b>베이스 바로 앞에서</b> 누르면 살 확률이 확 오르고, 너무 일찍 누르거나 서서 들어가면 떨어진다',
+    '몸을 던졌으면 세이프든 아웃이든 그 장면이 크게 나온다 — 「세이프!」「아웃!」',
+    '[버그] <b>「더 간다」 를 일찍 누를수록 오히려 잘 죽었다.</b> 주석에는 「일찍 마음먹으면 위험이 낮다」 라고 써놓고 식은 거꾸로였다(v2.87.0 부터). 300ms 에 눌러도 위험이 0.89 였다. 이제 야수가 공을 잡기 전에 마음먹으면 대부분 산다. 3루 코치 판단도 같은 버그라 같이 고쳤다',
+  ]},
   {v:'3.24.0', t:'다이빙 캐치 · 실책 · 슬라이딩이 크게 나온다 — 승부처가 긴장된다', items:[
     '<b>스윙이 선풍기처럼 돌던 것 — 고쳤다.</b> 배트가 화면 위에서 한 바퀴 빙글 돌았다. 이제 몸을 감았다가 <b>배럴이 처지고 → 존을 가로지르고 → 마운드 쪽으로 뻗고 → 앞 어깨 너머로 감긴다.</b> 배트가 이쪽을 볼 땐 짧아지고 끝 단면이 보인다',
     '<b>호수비가 한 컷으로 나온다.</b> 담장 앞 뜬공을 잡으면 화면이 끊기고 <b>「다이빙 캐치!」「슬라이딩 캐치!」</b> 가 크게 찍힌다. 몸을 날린 사람이 이를 악물고 있다',
@@ -26291,6 +26308,14 @@ function livePlay(host, o){
      만큼만 묻는다. 버튼이 엔진보다 크게 약속하면 기록과 어긋난다.  */
   let stage2=false, intent2='auto', go2At=null, decided2=null;
   let T2_THROW=0, tgtBase2=0, arrive1=0;
+  /* [요청] "주루플레이도 마찬가지임" — 슬라이딩을 내가 한다.
+     「더 간다」 로 돌았으면 판정을 **공이 베이스에 닿기 직전**까지 미룬다
+     (pend). 그 사이 베이스 앞에서 [슬라이딩] 을 누르는 타이밍이 위험도를
+     깎거나 더한다. 굴리는 식은 그대로 stretchOdds 다 — 늦게 굴릴 뿐이다.
+       · 베이스 앞 적당한 데서(0.70~0.93) 누르면   위험 최대 -0.24
+       · 너무 일찍(0.60 전) 누르면 짧게 미끄러진다  위험 +0.12
+       · 안 누르고 서서 들어가면                   위험 +0.08            */
+  let pend=null, slideAt=null, slideR=null, resolvedAt=null, resolvedFrom=0, slideAdj=0;
   const t0=Date.now();
   const now=()=>Date.now()-t0;
 
@@ -26339,9 +26364,18 @@ function livePlay(host, o){
       const tBase=runMs*base;
       if(t<=tBase) return Math.min(base, raw);
       const arrive=T_THROW+THROW_MS;
-      const endT = decided ? (decided.ok ? arrive-150 : arrive+360) : (tBase+runMs);
-      /* 최소 0.42초는 뛰어야 뛰는 것처럼 보인다 */
-      const at1 = base + Math.min(1, (t-tBase)/Math.max(420,(endT-tBase)));
+      let endT, at1;
+      const pendPos=(tt)=>base + Math.min(1, (tt-tBase)/Math.max(420,(arrive-40-tBase)));
+      if(resolvedAt!=null){
+        /* 미뤘던 판정이 났다 — 그 자리에서 이어서 결과대로 닿는다 */
+        endT = decided.ok ? Math.max(resolvedAt+140, arrive-90) : arrive+360;
+        at1 = (t<=resolvedAt) ? pendPos(t)
+          : resolvedFrom + (base+1-resolvedFrom)*Math.min(1,(t-resolvedAt)/Math.max(1,endT-resolvedAt));
+      } else {
+        endT = decided ? (decided.ok ? arrive-150 : arrive+360) : (pend ? arrive-40 : (tBase+runMs));
+        /* 최소 0.42초는 뛰어야 뛰는 것처럼 보인다 */
+        at1 = pend ? pendPos(t) : base + Math.min(1, (t-tBase)/Math.max(420,(endT-tBase)));
+      }
       if(!stage2 || t<=endT) return at1;
       /* 베이스를 밟았다. 여기서부터가 두 번째 판단이다 */
       const b1=base+1;
@@ -26357,13 +26391,22 @@ function livePlay(host, o){
 
   /* 송구가 손을 떠나는 순간 — 여기서 「돌았는지」가 갈린다 */
   const decide=()=>{
-    if(decided) return;
+    if(decided||pend) return;
     const r=runPos(T_THROW);
     const went = canGo && intent==='go' && r>base+0.06;
-    /* 일찍 마음먹었으면 위험이 낮다. 송구 직전에 튀어나가면 높다 */
+    /* 일찍 마음먹었으면 위험이 낮다. 송구 직전에 튀어나가면 높다.
+       [버그 이력] v2.87.0 부터 식이 **거꾸로**였다 — 1-seg(...) 라서 일찍
+       누를수록 위험이 1 에 가까웠다(300ms 에 눌러도 0.89). 「주루로 할 수
+       있는 게 없는 기분」 이 여기서 나왔다. 늦게 누를수록 커지게 바로잡는다. */
     const risk = went
-      ? Math.max(0, Math.min(1, 1-seg(goAt!=null?goAt:T_THROW, 0, T_THROW)))
+      ? Math.max(0, Math.min(1, seg(goAt!=null?goAt:T_THROW, 0, T_THROW)))
       : 0;
+    if(went && o.slide!==false && !pend){
+      /* 돌았다 — 판정은 베이스 앞까지 미룬다(슬라이딩 창) */
+      pend={risk}; tgtBase=base+1; THROW_MS=THROW_GO; arrive1=T_THROW+THROW_MS;
+      if(o.onSlideOpen) o.onSlideOpen();
+      return;
+    }
     decided = (o.onDecide ? o.onDecide(went, risk) : null) || {go:went, ok:!went};
     if(decided.go) tgtBase=base+1;
     else           tgtBase=Math.max(1, base);
@@ -26375,12 +26418,30 @@ function livePlay(host, o){
       T2_THROW = arrive1 + 900;          // 베이스를 돌면서 정할 시간
     }
   };
+  /* 미뤄둔 판정 — 공이 베이스에 닿기 직전에 슬라이딩까지 보고 굴린다 */
+  const resolvePend=(t)=>{
+    if(!pend || decided) return;
+    const B=base+0.82;
+    if(slideR==null) slideAdj=0.08;                       // 서서 들어갔다
+    else if(slideR<base+0.60) slideAdj=0.12;              // 너무 일찍 — 짧게 미끄러졌다
+    else { const q=Math.max(0,1-Math.abs(slideR-B)/0.12); slideAdj = q>0 ? -0.24*q : 0.04; }
+    const risk=Math.max(0,Math.min(1,pend.risk+slideAdj));
+    resolvedFrom=runPos(t);
+    decided = (o.onDecide ? o.onDecide(true, risk) : null) || {go:true, ok:false};
+    resolvedAt=t;
+    if(!decided.go){ tgtBase=Math.max(1, base); }
+    if(decided.go && decided.ok && decided.again){
+      stage2=true; tgtBase2=base+2;
+      T2_THROW = arrive1 + 900;
+    }
+    if(o.onSlideDone) o.onSlideDone(decided, slideR!=null, slideAdj);
+  };
   /* 두 번째 송구가 손을 떠나는 순간 — 3루로 갈지가 여기서 갈린다 */
   const decide2=()=>{
     if(!stage2 || decided2) return;
     const went=(intent2==='go');
-    const risk = went
-      ? Math.max(0, Math.min(1, 1-seg(go2At!=null?go2At:T2_THROW, arrive1, T2_THROW)))
+    const risk = went      /* 첫 판단과 같은 버그였다 — 늦을수록 크게 */
+      ? Math.max(0, Math.min(1, seg(go2At!=null?go2At:T2_THROW, arrive1, T2_THROW)))
       : 0;
     decided2 = (o.onDecide2 ? o.onDecide2(went, risk) : null) || {go:went, ok:!went};
     if(!decided2.go) tgtBase2=base+1;
@@ -26478,6 +26539,7 @@ function livePlay(host, o){
     if(stop) return;
     const t=now();
     if(t>=T_THROW) decide();
+    if(pend && !decided && t>=T_THROW+THROW_MS*0.84) resolvePend(t);
     if(stage2 && t>=T2_THROW) decide2();
     const sh=hrShake(t);
     const sx=sh?(Math.sin(t/26)*sh):0, sy=sh?(Math.cos(t/19)*sh*0.7):0;
@@ -26549,6 +26611,14 @@ function livePlay(host, o){
 
     /* 나 */
     const rk=runPos(t);
+    /* 슬라이딩 — 흙먼지. 누른 뒤 0.7초 */
+    if(slideAt!=null && t-slideAt<700){
+      const rp0=runAt(Math.min(4,rk)), k=(t-slideAt)/700;
+      for(let i=0;i<6;i++){
+        g.fillStyle='rgba(214,176,128,'+(0.55*(1-k)).toFixed(3)+')';
+        g.beginPath(); g.arc(rp0.x-(i-2.5)*2.4*(1+k), rp0.y+2-k*3*(i%2), 2+k*3,0,Math.PI*2); g.fill();
+      }
+    }
     const rp=runAt(rk);
     man(rp.x,rp.y,BU,rk<4&&t<T_END()-300,rk>=1&&rk<3);
     /* 누를 수 있는 베이스를 띄운다 — 수비의 송구 탭과 같은 그림.
@@ -26657,7 +26727,7 @@ function livePlay(host, o){
       if(intent!=='go'){ intent='go'; goAt=now(); } return true; },
     back:()=>{
       if(stage2 && !decided2){ intent2='back'; return true; }
-      if(decided) return false;
+      if(decided||pend) return false;             // 이미 돌았다 — 슬라이딩만 남았다
       if(intent!=='back'){
         const t=now();
         backFrom=runPos(t);
@@ -26665,6 +26735,11 @@ function livePlay(host, o){
         intent='back'; backAt=t;
       } return true; },
     canGo:()=>canGo,
+    /* 슬라이딩 — 미뤄둔 판정이 있을 때 한 번만 */
+    canSlide:()=>!!(pend && !decided && slideAt==null),
+    slide:()=>{ if(!pend||decided||slideAt!=null) return false;
+      slideAt=now(); slideR=runPos(slideAt); return true; },
+    slid:()=>slideR!=null,
     decidedAt:()=>decided,
     /* 지금 몇 번째 판단인가 — 0 첫 판단 · 1 두 번째(3루 코치) · 2 끝났다.
        버튼 글씨가 이걸 보고 바뀐다.                                  */
@@ -30391,6 +30466,8 @@ const CUT_W=480, CUT_H=270;
 const CUT_TXT={
   dive:      {big:'다이빙 캐치!',  col:'#ffd15c'},
   slidecatch:{big:'슬라이딩 캐치!',col:'#ffd15c'},
+  jump:      {big:'점프 캐치!',    col:'#ffd15c'},
+  wall:      {big:'펜스 앞 점프 캐치!', col:'#ffd15c'},
   divemiss:  {big:'빠졌다!',      col:'#ff9a5c'},
   bobble:    {big:'실책!',        col:'#ff5b4f'},
   slideSafe: {big:'세이프!',      col:'#7ee08f'},
@@ -30486,11 +30563,12 @@ function cutBack(g,t,dirt){
   g.restore();
 }
 /* 도장 — 큰 글자가 쾅 찍힌다 */
-function cutStamp(g,txt,col,sub,k){
+function cutStamp(g,txt,col,sub,k,low){
   if(k<=0) return;
+  const Y=low?206:62, SY=low?234:94;
   const pop=k<0.14 ? 2.3-1.45*(k/0.14) : (k<0.24 ? 0.85+0.15*((k-0.14)/0.10) : 1);
   g.save();
-  g.translate(CUT_W*0.5, 62); g.rotate(-0.07); g.scale(pop,pop);
+  g.translate(CUT_W*0.5, Y); g.rotate(-0.07); g.scale(pop,pop);
   g.globalAlpha=Math.min(1,k/0.06);
   g.font='900 46px system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif';
   g.textAlign='center'; g.textBaseline='middle';
@@ -30503,8 +30581,8 @@ function cutStamp(g,txt,col,sub,k){
     g.save(); g.globalAlpha=Math.min(1,(k-0.2)/0.1);
     g.font='800 15px system-ui,-apple-system,sans-serif'; g.textAlign='center'; g.textBaseline='middle';
     const w=g.measureText(sub).width+26;
-    g.fillStyle='rgba(10,14,22,.82)'; g.beginPath(); mvRR(g,CUT_W*0.5-w/2,94,w,26,13); g.fill();
-    g.fillStyle='#ffffff'; g.fillText(sub,CUT_W*0.5,107.5);
+    g.fillStyle='rgba(10,14,22,.82)'; g.beginPath(); mvRR(g,CUT_W*0.5-w/2,SY,w,26,13); g.fill();
+    g.fillStyle='#ffffff'; g.fillText(sub,CUT_W*0.5,SY+13.5);
     g.restore();
   }
 }
@@ -30589,6 +30667,24 @@ function mvCutIn(host, c, done){
       const bs={x:470,y:-20};
       if(a<HIT){ const q=a/HIT; cutBall(g,bs.x+(gl.x-bs.x)*q, bs.y+(gl.y-bs.y)*q*q, 7, a*30); }
       else { cutBall(g,gl.x,gl.y-2,7,0); cutBurst(g,gl.x,gl.y,Math.min(1,hitK*2.2),'255,214,92'); }
+    } else if(K==='jump'||K==='wall'){
+      /* 뛰어올라 머리 위로 지나가는 공을 낚아챈다. 담장이면 뒤에 펜스가 선다 */
+      if(K==='wall'){
+        g.fillStyle='#1d4a2a'; g.fillRect(0,70,CUT_W,96);
+        g.fillStyle='rgba(255,255,255,.06)';
+        for(let i=0;i<12;i++) g.fillRect(i*44,70,2,96);
+        g.fillStyle='#ffd15c'; g.fillRect(0,66,CUT_W,5);
+        g.fillStyle='rgba(0,0,0,.25)'; g.fillRect(0,166,CUT_W,6);
+      }
+      const up=Math.sin(Math.PI*Math.min(1,a/(HIT+0.34)))*74;
+      const cx=236+a*18, cy=182-up, h=150;
+      g.fillStyle='rgba(0,0,0,'+(0.28-up*0.002).toFixed(3)+')';
+      g.beginPath(); g.ellipse(cx,252,40-up*0.2,8,0,0,Math.PI*2); g.fill();
+      const gl=cutGlove(cx,cy,h,'reach',-0.12,false);
+      cutFig(g,cx,cy,h,uF,'reach',-0.12,false,{face:faceF});
+      const bs={x:-30,y:10};
+      if(a<HIT){ const q=a/HIT; cutBall(g,bs.x+(gl.x-bs.x)*q, bs.y+(gl.y-bs.y)*q-Math.sin(Math.PI*q)*40, 7, a*30); }
+      else { cutBall(g,gl.x,gl.y-2,7,0); cutBurst(g,gl.x,gl.y,Math.min(1,hitK*2.2),'255,214,92'); }
     } else if(K==='bobble'){
       const pose=a<HIT+0.06?'bobble':'reach';
       const cx=230, cy=178, h=148;
@@ -30634,7 +30730,7 @@ function mvCutIn(host, c, done){
     /* 번쩍 — 닿는 순간 */
     if(hk>0&&hk<0.5){ g.setTransform(2,0,0,2,0,0); g.fillStyle='rgba(255,255,255,'+(0.45*(1-hk*2)).toFixed(3)+')'; g.fillRect(0,0,CUT_W,CUT_H); }
     g.setTransform(2,0,0,2,0,0);
-    cutStamp(g,TX.big,TX.col,c.sub||'',Math.max(0,(a-HIT)/0.5));
+    cutStamp(g,TX.big,TX.col,c.sub||'',Math.max(0,(a-HIT)/0.5),K==='jump'||K==='wall');
     /* 끝 — 어두워지며 빠진다 */
     if(t>0.9){ g.fillStyle='rgba(6,10,16,'+((t-0.9)/0.1*0.9).toFixed(3)+')'; g.fillRect(0,0,CUT_W,CUT_H); }
     if(t>=1){ end(); return; }
@@ -31925,6 +32021,16 @@ function renderSwing(box, d){
     });
     row.className='baserow';
     row.appendChild(bBack); row.appendChild(bGo);
+    /* 슬라이딩 — 돌고 나서 공이 베이스로 날아오는 동안만 뜬다.
+       베이스 바로 앞에서 누른다. 일찍 누르면 모자라게 미끄러진다.   */
+    const bSl=el('button','base-b slide-b');
+    bSl.innerHTML='<span>슬라이딩!</span><i>베이스 바로 앞에서</i>';
+    bSl.style.display='none';
+    const doSlide=(ev)=>{ if(ev&&ev.preventDefault)ev.preventDefault();
+      if(sc&&sc.slide&&sc.slide()){ bSl.disabled=true; bSl.classList.add('on');
+        bSl.innerHTML='<span>미끄러진다</span><i>흙먼지</i>'; } };
+    bSl.addEventListener('pointerdown',doSlide); bSl.onclick=doSlide;
+    row.appendChild(bSl);
     /* [계획 B] 버튼 글씨가 판단 단계를 따라간다.
          0 첫 판단(1루 코치) · 1 두 번째(3루 코치) · 2 이미 던졌다      */
     let lastPh=-1;
@@ -31989,8 +32095,26 @@ function renderSwing(box, d){
              [계획 B] 두 번째 창이 열릴 때도 여기서 글씨가 바뀐다.
              paintRow 는 단계가 안 바뀌면 아무것도 안 한다.           */
           paintRow(); },
-        onEnd:()=>{
+        onSlideOpen:()=>{
+          bBack.style.display='none'; bGo.style.display='none';
+          bSl.style.display=''; bSl.disabled=false;
+          if(note) note.innerHTML='<b>송구가 온다!</b> 베이스 바로 앞에서 [슬라이딩]';
+        },
+        onSlideDone:(dd, slid, adj)=>{
+          bSl.disabled=true;
+          if(note && dd) note.innerHTML=(slid
+              ? (adj<-0.12?'<b style="color:#7fc48f">완벽한 슬라이딩</b> — ':(adj>0.08?'<b style="color:#e08a70">너무 일찍 미끄러졌다</b> — ':'슬라이딩 — '))
+              : '<b style="color:#e08a70">서서 들어갔다</b> — ')
+            +(dd.ok?'세이프!':'태그 아웃');
+        },
+        onEnd:(dd)=>{
           if(t && r){ t.textContent=r.raw||r.label; t.style.color=r.color||''; }
+          /* 몸을 던졌으면 그 장면을 크게 — 세이프든 아웃이든 */
+          if(sc && sc.slid && sc.slid() && dd && typeof mvCutIn==='function' && cutOn()){
+            mvCutIn(stage, {kind:dd.ok?'slideSafe':'slideOut', uR:PS_UNI.us, uF:PS_UNI.them,
+              sub:(bat&&bat.name)||''}, ()=>setTimeout(fin, 200));
+            return;
+          }
           setTimeout(fin, 620);
         }});
     }catch(e){ sc=null; }
@@ -32318,7 +32442,7 @@ function renderDefPlay(box, d){
   joyWrap.appendChild(joy);
   /* 다이빙 — 못 잡을 공에 몸을 날린다. 헛치면 못 일어난다 */
   const divB=el('button','divb');
-  divB.innerHTML='몸 날리기<u>닿는 거리 ↑</u>';
+  divB.innerHTML='다이빙<u>닿는 거리 ↑</u>';
   const doDive=(ev)=>{
     if(ev&&ev.preventDefault)ev.preventDefault();
     if(!sc||!sc.dive) return;
@@ -32329,7 +32453,22 @@ function renderDefPlay(box, d){
   };
   divB.addEventListener('pointerdown', doDive);
   divB.onclick=doDive;
-  joyWrap.appendChild(divB);
+  /* 점프 — 머리 위로 지나가는 직선타 · 담장까지 가는 공 */
+  const jmpB=el('button','divb jmpb');
+  jmpB.innerHTML='점프<u>닿는 높이 ↑</u>';
+  const doJump=(ev)=>{
+    if(ev&&ev.preventDefault)ev.preventDefault();
+    if(!sc||!sc.jump) return;
+    if(sc.jump()){
+      jmpB.classList.add('on');
+      setTimeout(()=>jmpB.classList.remove('on'), 520);
+    }
+  };
+  jmpB.addEventListener('pointerdown', doJump);
+  jmpB.onclick=doJump;
+  const actCol=el('div','divcol');
+  actCol.appendChild(jmpB); actCol.appendChild(divB);
+  joyWrap.appendChild(actCol);
   box2.appendChild(joyWrap);
   /* [요청] "수비할때도 그 베이스 버튼두어서 송가 바로 가능하게"
      잡고 나면 조이스틱 자리가 **베이스 버튼**으로 바뀐다.
@@ -32478,7 +32617,7 @@ function renderDefPlay(box, d){
     ? (dir+'으로 직선타! — 순식간이다')
     : (dir+'으로 온다 — 쫓아가라');
   try{
-    sc=defScene(stage, {park, ang:d.ang, m:mDraw, pos, flyMs, names:fieldNames,
+    sc=defScene(stage, {park, ang:d.ang, m:mDraw, pos, flyMs, names:fieldNames, ld:isLD,
       reach:REACH, grab:GRAB, pxPerM, speed:SPEED, arm:av,
       bases:(LIVE.bases||[null,null,null]).slice(),
       hasFirst:!!LIVE.bases[0], outs:LIVE.outs,
@@ -32591,6 +32730,8 @@ function defScene(host, o){
   const landPx=Math.max(14, Math.min(psFenceR(P,o.ang)*1.06, psMtoPx(o.m, P, o.ang)));
   const land={x:HX+Math.cos(rad)*landPx, y:HY+Math.sin(rad)*landPx};
   const home=psPosOf(o.pos, P);
+  const ldBall=!!o.ld;
+  const wallBall=(o.m>40) && !ldBall && landPx>=psFenceR(P,o.ang)*0.94;   // 담장 앞까지 간다
   const BP=[{x:HX,y:HY}, PS_B[1], PS_B[2], PS_B[3], {x:HX,y:HY}];
   const lerp=(a,b,t)=>({x:a.x+(b.x-a.x)*t, y:a.y+(b.y-a.y)*t});
   const seg=(t,a,b)=>Math.max(0,Math.min(1,(t-a)/Math.max(1,(b-a))));
@@ -32622,6 +32763,17 @@ function defScene(host, o){
   let diveAt=-9999;
   const diving=(now)=>(now-diveAt)>=0 && (now-diveAt)<DIVE_MS;
   const lagging=(now)=>(now-diveAt)>=DIVE_MS && (now-diveAt)<DIVE_MS+DIVE_LAG;
+  /* [요청] "점프나 다이빙 이런거 내가 판단할 수 있게"
+     다이빙은 **옆으로** 닿는 거리를 늘린다. 점프는 **위로** 늘린다.
+     공에 높이(z)가 생겼다 — 서서 닿는 높이는 5, 점프 꼭대기에서 16 쯤.
+       · 직선타   높게 쭉 날아온다. 서서는 끝물에나 닿고, 점프하면 일찍 낚아챈다
+       · 담장 공  공이 높은 채로 담장에 닿는다. **점프 안 하면 못 잡는다**
+     점프하는 0.52초 동안은 못 움직인다. 늦게 뛰면 공이 머리 위로 지나간다. */
+  const JUMP_MS=520;
+  let jumpAt=-9999;
+  const jumping=(now)=>(now-jumpAt)>=0 && (now-jumpAt)<JUMP_MS;
+  const jumpH=(now)=>jumping(now)?Math.sin(Math.PI*(now-jumpAt)/JUMP_MS)*9:0;
+  const reachZ=(now)=>5+jumpH(now)*1.3;
   const GRAB = (o.grab!=null)?o.grab:(o.reach*0.42);
   const MPP  = (o.pxPerM&&o.pxPerM>0)?(1/o.pxPerM):PS_MPP;   // 이 자리 1px 이 몇 m
   let fx=home.x, fy=home.y, tx=home.x, ty=home.y;
@@ -32707,8 +32859,9 @@ function defScene(host, o){
 
   const ballAt=(now)=>{
     if(now<=o.flyMs){ const k=Math.min(1,now/o.flyMs);
-      return {x:HX+(land.x-HX)*k, y:HY+(land.y-HY)*k,
-              z:(o.m>40)?Math.sin(k*Math.PI)*11:0}; }
+      /* 직선타는 높게 깔려서 온다 — 점점 내려온다. 담장 공은 높은 채로 담장에 닿는다 */
+      const z = ldBall ? (9-7*k) : (o.m>40 ? Math.sin(k*Math.PI)*11 + (wallBall?9*k:0) : 0);
+      return {x:HX+(land.x-HX)*k, y:HY+(land.y-HY)*k, z}; }
     const r2=Math.min(1,(now-o.flyMs)/rollMs);
     return {x:land.x+Math.cos(rad)*18*r2, y:land.y+Math.sin(rad)*18*r2, z:0};
   };
@@ -32731,7 +32884,7 @@ function defScene(host, o){
     const now=Date.now()-t0;
     const dt=Math.min(0.06,(Date.now()-last)/1000); last=Date.now();
     /* 내 야수 — 아래 조이스틱을 민 방향으로. 많이 밀수록 빠르다 */
-    if(phase==='chase' && !diving(now) && !lagging(now)){
+    if(phase==='chase' && !diving(now) && !lagging(now) && !jumping(now)){
       const dd=Math.hypot(dir.x,dir.y);
       if(dd>0.08){
         const v=Math.min(1,dd);
@@ -32748,14 +32901,20 @@ function defScene(host, o){
     if(phase==='chase'){
       if(now>=o.flyMs*0.55){ best=Math.min(best, near); bestLand=Math.min(bestLand, dLand); }
       /* 공에 닿았다 — 그 자리에서 송구 단계로 */
-      const RE=diving(now)?o.reach*1.60:o.reach;
+      const RE=diving(now)?o.reach*1.60:(jumping(now)?o.reach*1.15:o.reach);
       const GR=diving(now)?GRAB*1.35:GRAB;
-      if(near<=RE && now>=o.flyMs*0.85){
+      /* 높이 — 공이 손 위로 지나가면 못 잡는다(점프하면 닿는다) */
+      const bz=(now<o.flyMs)?b.z:0;
+      const high=bz>reachZ(now);
+      /* 직선타는 날아오는 도중에도 잡힌다. 점프로 낚아채는 게 이거다 */
+      const window0 = ldBall ? o.flyMs*0.35 : o.flyMs*0.85;
+      const jumpCatch = jumping(now) && bz>5;
+      if(near<=RE && now>=window0 && !high){
         /* 확실히 잡는 거리(grab) 안이면 1, 겨우 닿는 끝이면 0.55.
            그 사이는 비례해서 깎는다 — 대충 붙은 것과 정확히 들어간 것을
            같은 포구로 치던 게 「공 근처가면 다 잡은 판정」이었다.      */
         /* 뜬공은 낙구 지점 기준, 굴러온 공은 공 기준으로 잰다 */
-        const air0=(isFly && now < o.flyMs);
+        const air0=((isFly||ldBall) && now < o.flyMs);
         const dd0=air0?Math.min(dLand,bestLand):best;
         const over=Math.max(0, dd0-GR)/Math.max(1,(RE-GR));
         q=Math.max(0.55, Math.min(1, 1-over*0.45));
@@ -32770,8 +32929,8 @@ function defScene(host, o){
            글러브 끝에 겨우 걸린 공은 화면을 끊고 크게 비춘다(mvCutIn).
            판정은 이미 났다. 컷인이 끝나면 그 자리에서 이어간다.        */
         const dv=diving(now);
-        const great = air0 ? (dv || over<=0.15) : dv;
-        const cutK = dv ? 'dive' : 'slidecatch';
+        const great = air0 ? (dv || jumpCatch || over<=0.15) : dv;
+        const cutK = jumpCatch ? (wallBall?'wall':'jump') : (dv ? 'dive' : 'slidecatch');
         const goOn=()=>{
         if(air0){
           airOut=true; q=Math.max(0.88, q);
@@ -32902,7 +33061,11 @@ function defScene(host, o){
       }
     }
     const moving=(phase==='chase' && Math.hypot(dir.x,dir.y)>0.08);
-    man(fx,fy,PS_UNI.us,moving,fx<HX);
+    const jh=jumpH(now);
+    if(jh>0.3){                              // 떠 있다 — 그림자는 땅에 남긴다
+      g.fillStyle='rgba(0,0,0,.28)'; g.beginPath(); g.ellipse(fx,fy+7,5-jh*0.2,2,0,0,Math.PI*2); g.fill();
+    }
+    man(fx,fy-jh,PS_UNI.us,moving,fx<HX);
     /* 내가 어디 있는지 한눈에 — 손가락이 안 가리니 표시를 크게 못 박는다 */
     if(phase!=='result'){
       g.strokeStyle='rgba(255,209,92,.9)'; g.lineWidth=2;
@@ -32934,7 +33097,10 @@ function defScene(host, o){
       const air1=(isFly && now<o.flyMs);
       const dNow=air1?dLand:near;
       const mLeft=Math.max(1,Math.round(dNow*MPP));
-      plate(dNow<=GRAB?(air1?'딱 밑이다':'붙었다')
+      /* 공이 손 위로 지나갈 판이다 — 점프하라고 한다 */
+      if((ldBall||wallBall) && now<o.flyMs && b.z>reachZ(now) && near<o.reach*1.6 && !jumping(now))
+        plate(wallBall?'담장이다 — 점프!':'높다 — 점프!','#ffd15c',14);
+      else plate(dNow<=GRAB?(air1?'딱 밑이다':'붙었다')
             :(dNow<o.reach?'손은 닿는다'
             :(moving?(mLeft+'m 남았다'):'아래 조이스틱을 밀어라')),
             dNow<=GRAB?'#7fc48f':(dNow<o.reach?'#ffd15c':(moving?'#e9e4d8':'#ffd15c')), 14);
@@ -32966,11 +33132,18 @@ function defScene(host, o){
     setDir:(x,y)=>{ dir={x:x||0,y:y||0}; },
     dive:()=>{ if(phase!=='chase') return false;
       const n2=Date.now()-t0;
-      if(diving(n2)||lagging(n2)) return false;   // 연타 금지
+      if(diving(n2)||lagging(n2)||jumping(n2)) return false;   // 연타 금지
       diveAt=n2; dir={x:0,y:0};
       if(o.onTick) o.onTick('<b>몸을 날렸다!</b>');
       return true; },
     canDive:()=>{ const n2=Date.now()-t0; return phase==='chase'&&!diving(n2)&&!lagging(n2); },
+    jump:()=>{ if(phase!=='chase') return false;
+      const n2=Date.now()-t0;
+      if(jumping(n2)||diving(n2)||lagging(n2)) return false;
+      jumpAt=n2;
+      if(o.onTick) o.onTick('<b>뛰어올랐다!</b>');
+      return true; },
+    ballHigh:()=>{ const n2=Date.now()-t0; const bb=ballAt(n2); return n2<o.flyMs && bb.z>5; },
     throwTo, noThrow,
     ring:()=>ringOf(Date.now()-t0),
     phase:()=>phase,

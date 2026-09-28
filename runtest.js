@@ -213,8 +213,12 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
     "typeof livePlay==='function' && /livePlay\\(stage/.test(renderSwing.toString())"));
   T('묻는 창이 없다 — 송구 순간에 몸으로 갈린다', ()=>ev(
     "/if\\(t>=T_THROW\\) decide\\(\\)/.test(livePlay.toString()) && /onDecide/.test(livePlay.toString())"));
+  /* [v3.25.0] 예전 검사는 `1-seg(goAt…)` 라는 **글자**를 찾았다 — 그 식이
+     거꾸로(일찍 누를수록 위험)였는데 검사가 그걸 붙잡아두고 있었다.
+     이제 위험은 seg(goAt…) 그대로다: 늦게 누를수록 커진다.          */
   T('일찍 마음먹을수록 안전하다', ()=>ev(
-    "/1-seg\\(goAt!=null\\?goAt:T_THROW, 0, T_THROW\\)/.test(livePlay.toString())"));
+    "/Math\\.min\\(1, seg\\(goAt!=null\\?goAt:T_THROW, 0, T_THROW\\)\\)/.test(livePlay.toString())"+
+    " && !/1-seg\\(goAt/.test(livePlay.toString())"));
   /* [2.83.0] 「2루까지 간다 누르면 순간이동」 을 고치면서 이 계산이
      여러 줄로 늘어났다. 붙어 있는 글자를 재는 게 아니라 뜻을 잰다. */
   T('결과와 안 어긋난다 — 주자 속도를 결과에 맞춘다', ()=>ev(
