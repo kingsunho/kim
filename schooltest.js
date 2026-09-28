@@ -8,7 +8,7 @@
      · 제목줄 · 고교 화면에 그 학교 이름이 나온다. 졸업까지 돈다
      · 불러와도(customApply 다시) 그 학교다
      · 고졸 지명 카드에 계약금이 나오고, 입단하면 내 계약(pfMyCon)에 그 계약금이 남는다
-     · 괴물 신인 계약금 — 잠재 86 → 10억, 90 → 15억                                */
+     · 괴물 신인 계약금 — 잠재 86 → 5억, 90 → 10억                                */
 const {JSDOM,VirtualConsole}=require('jsdom');
 const html=require('fs').readFileSync(process.argv[2]||'index.html','utf8');
 const bad=[]; const vc=new VirtualConsole();
@@ -72,7 +72,7 @@ const top=()=>{ const h=d.querySelector('.topbar h1'), s=d.querySelector('.topba
   btn(/입단한다/).click(); await wait(60);
   T('내 계약에 그 계약금', ()=>ev("pfMyCon().bonus")===exp ? ev("wonStr2(pfMyCon().bonus)") : '!'+ev("pfMyCon().bonus")+'≠'+exp);
   T('신문에 계약금', ()=>ev("(ST.pro.news||[]).some(n=>/계약금/.test(n.head))"));
-  T('괴물 신인 계약금 10억~15억', ()=>ev("pfPhenomBonus(86)")===100000 && ev("pfPhenomBonus(90)")===150000 ? '86→10억 · 90→15억' : '!'+ev("pfPhenomBonus(86)")+'/'+ev("pfPhenomBonus(90)"));
+  T('괴물 신인 계약금 5억~10억(10억은 한기주급)', ()=>ev("pfPhenomBonus(86)")===50000 && ev("pfPhenomBonus(90)")===100000 ? '86→5억 · 90→10억' : '!'+ev("pfPhenomBonus(86)")+'/'+ev("pfPhenomBonus(90)"));
   /* 신인 드래프트 중계 — 지명마다 계약금 */
   ev("ST.pro.year=2027; proSeasonEnd();"); await wait(30);
   ev("for(let s=1;s<80;s++){ ST.seed=s; pfState().rookies=null; if(pfRookiePool().list.some(x=>x.phenom)) break; }");
@@ -80,7 +80,7 @@ const top=()=>{ const h=d.querySelector('.topbar h1'), s=d.querySelector('.topba
   const P=JSON.parse(ev("JSON.stringify(pfRookiePool().picks)"));
   T('지명 전부에 계약금', ()=>P.length===110 && P.every(z=>z.bonus>0) ? '110명' : '!'+P.length);
   const ph=P.filter(z=>z.phenom);
-  T('괴물 신인은 10억 이상', ()=>ph.length&&ph.every(z=>z.bonus>=100000) ? ph.map(z=>z.round+'R '+ev("wonStr2("+z.bonus+")")).join(', ') : '!'+JSON.stringify(ph));
+  T('괴물 신인은 5억 이상', ()=>ph.length&&ph.every(z=>z.bonus>=50000) ? ph.map(z=>z.round+'R '+ev("wonStr2("+z.bonus+")")).join(', ') : '!'+JSON.stringify(ph));
   T('괴물 신인 신문', ()=>ev("(ST.pro.news||[]).some(n=>/역대급/.test(n.head))"));
 
   console.log(bad.length?('\n❌ '+bad.length+'건:\n'+bad.slice(0,12).join('\n')):'\n✅ 이상 없음');

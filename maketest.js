@@ -28,7 +28,7 @@ const clean=tag=>{ const t=(d.getElementById('view')||{}).textContent||'';
   console.log('[만들기 화면]');
   T('고르는 화면에 「새 선수 만들기」 가 있다', ()=>!!d.querySelector('.pk-make'));
   d.querySelector('.pk-make').click(); await wait(40);
-  T('만들기 칸이 다 있다', ()=>['#mk-nm','#mk-no','.mk-g[data-k="born"]','.mk-g[data-k="school"]',
+  T('만들기 칸이 다 있다', ()=>['#mk-nm','#mk-no','#mk-born','.mk-g[data-k="school"]',
     '.mk-g[data-k="throws"]','.mk-g[data-k="bats"]','.mk-g[data-k="pos"]'].every(s=>d.querySelector(s)));
   /* 이름 없이 누르면 안 넘어간다 */
   const start=()=>[...d.querySelectorAll('#view .btn')].find(b=>b.textContent==='이 선수로 시작');
@@ -37,7 +37,7 @@ const clean=tag=>{ const t=(d.getElementById('view')||{}).textContent||'';
   d.querySelector('#mk-nm').value='한결';
   d.querySelector('#mk-no').value='23';
   const pick=(k,v)=>d.querySelector('.mk-g[data-k="'+k+'"] button[data-v="'+v+'"]').click();
-  pick('born','1999'); pick('school','흥진고'); pick('throws','L'); pick('bats','L'); pick('pos','CF');
+  d.querySelector('#mk-born').value='1999'; pick('school','흥진고'); pick('throws','L'); pick('bats','L'); pick('pos','CF');
   start().click(); await wait(300);
 
   console.log('\n[로스터]');
