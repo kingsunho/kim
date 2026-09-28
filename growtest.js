@@ -92,15 +92,17 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   T(ev(`(function(){
       /* 산 것이 다음 주에 한꺼번에 붙는다 */
       var p=TBYID['wwzw'].players.find(function(x){return x.id==='ksh'});
+      /* [v3.41.0] 루틴이 매주 저절로 돈다 — 루틴 몫을 먼저 재서 뺀다. 특훈(산 것)은 루틴 위에서 8할 */
+      ST.myTrainQ=[]; var r0=p.con; applyMyTrain(); var rt=p.con-r0;
       ST.myTrainQ=['bat','bat'];            // 같은 걸 두 번
       var c0=p.con;
       applyMyTrain();
-      var up=p.con-c0;
-      /* 1.0 + 1.0*0.6 = 1.6 */
-      return Math.abs(up-1.6)<0.01 && trainQueue().length===0;
-    })()`), '같은 훈련을 두 번 하면 두 번째는 0.6 배만 는다');
-  T(ev("/이번 주는 아무것도 안 샀다/.test((function(){ST.myTrainQ=[];return applyMyTrain();})())"),
-    '아무것도 안 샀으면 안 샀다고 말해준다');
+      var up=p.con-c0-rt;
+      /* (1.0 + 1.0*0.6) × 0.8 = 1.28 */
+      return Math.abs(up-1.28)<0.15 && trainQueue().length===0;   // 한 주마다 0.1 단위로 굳혀서 오차가 난다
+    })()`), '같은 훈련을 두 번 하면 두 번째는 0.6 배만 는다(루틴 위 특훈 8할)');
+  T(ev("/루틴/.test((function(){ST.myTrainQ=[];return applyMyTrain();})())"),
+    '아무것도 안 사도 루틴이 돈다고 말해준다');
 
   /* ---------------------------------------------------------------
      [제보] "2군 안걸치고 왜 바로 1군 온거지?" · "1군벽은 좀 높아야되는데"

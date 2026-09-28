@@ -3212,6 +3212,10 @@ html.land .pp-ov,html.land #sheet{left:env(safe-area-inset-left,0px)!important;r
 .kd-sc b{color:var(--gold)}
 .stf-star{font-style:normal;color:var(--gold);letter-spacing:1px;margin-left:4px}.stf-star s{text-decoration:none;color:#3a414c}
 .stf-mgr{font-size:13px;margin:4px 0 8px}.stf-mgr i{font-style:normal;font-size:11.5px;color:var(--dim)}
+.tp-cb{font-style:normal;font-size:11px;font-weight:900;color:#0e0f11;background:#ffd15c;border-radius:4px;padding:1px 6px;margin-left:6px}
+.tp-gain{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:8px 0}
+.tp-gain b{font-size:13px;font-weight:900;color:#0e0f11;background:#8fd45f;border-radius:6px;padding:3px 9px}
+.tp-gain span{font-size:12px;color:var(--dim)}
 .ovb{font-style:normal;display:inline-block;min-width:24px;text-align:center;font-size:11px;font-weight:900;color:#0e0f11;border-radius:4px;padding:0 4px;margin-right:6px;line-height:17px;vertical-align:1px}
 .ocd-bar{display:flex;gap:6px;margin:0 0 10px}
 .gev-go{background:var(--gold);color:#0e0f11}
@@ -9370,8 +9374,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.43.0';
-const APP_VERSION_NOTE = '선수 카드 어디서나 · 성장 이벤트 · 커리어 WAR';
+const APP_VERSION = '3.44.0';
+const APP_VERSION_NOTE = '특훈 미니게임 — 등급만큼 바로 능력치';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9392,6 +9396,11 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.44.0', t:'특훈 미니게임 — 등급만큼 바로 능력치', items:[
+    '<b>훈련 세션이 「특훈 한 판」 이 됐다.</b> 예전엔 코인만 벌어 왔는데, 이제 한 판이 곧 특훈이다 — 등급만큼 그 자리에서 능력치가 붙는다(S 1.6배 · A 1.2 · B 0.8 · C 0.3). 코인은 덤',
+    '<b>PERFECT · COMBO.</b> 초록 칸 한가운데를 맞히면 PERFECT — 반 개 더, 다섯 번 연속이면 한 개 더',
+    '배팅 → 컨택 · 파워, 불펜 → 제구 · 구위, 펑고 → 수비 · 어깨. 노력파 · 트레이너 배수도 탄다',
+  ]},
   {v:'3.43.0', t:'선수 카드 어디서나 · 성장 이벤트 · 커리어 WAR', items:[
     '<b>선수를 누르면 카드부터 뜬다.</b> 종합(OVR) · S~G 등급 · 특성. 프런트 선수단 · 외국인 후보 줄마다 종합 뱃지가 붙었다',
     '<b>성장 이벤트</b> — 몇 주에 한 번 고를 거리 셋. 선배의 폼 교정 · 밤 11시 배팅장 · 스카우트 방문 · 회식 · 햄스트링 · 유튜브 레슨 · PT · 변화구 · 팬 사인 · 광고 · 기자 · 고교 은사. 로비에 「이벤트」 가 뜬다(두 주 지나면 사라진다)',
@@ -40790,10 +40799,10 @@ function renderTrainPlayer(){
   {
     const done=(typeof trainSessionDone==='function')&&trainSessionDone();
     const sb=el('button','mystatus '+(done?'in':'out')+' tapon');
-    sb.innerHTML='<div class="ms-big">🏋️ 훈련 세션'+(done?' — 했다':'')+'</div>'+
+    sb.innerHTML='<div class="ms-big">특훈 한 판'+(done?' — 했다':'')+'</div>'+
       '<div class="ms-sub">'+(done?(ST.trainSessLog||'이번 주는 끝'):
-        '열 번 해서 등급만큼 코인을 번다 · 공짜')+'</div>'+
-      '<div class="ms-why">'+(done?'다음 주에 또 할 수 있다':'S면 +10 · A +7 · B +4 · C +1')+'</div>';
+        '타이밍 게임 열 번 — 등급만큼 바로 능력치 · 코인은 덤')+'</div>'+
+      '<div class="ms-why">'+(done?'다음 주에 또 할 수 있다':'S 1.6배 · A 1.2 · B 0.8 · C 0.3 · PERFECT · COMBO')+'</div>';
     sb.onclick=()=>go('trainplay');
     c.appendChild(sb);
   }
@@ -44051,6 +44060,22 @@ function trainZoneAt(w, rnd){
   return lo + (typeof rnd==='number'?rnd:Math.random())*(hi-lo);
 }
 function trainSessionDef(id){ return TRAIN_SESSIONS.find(x=>x.id===id)||null; }
+/* [요청 v3.44.0] 「특훈을 미니게임 한 판으로 — 등급 따라 보너스」
+   세션이 코인만 벌어 오던 걸 바꾼다: 한 판이 곧 특훈이다. 등급만큼 그 자리에서 능력치가 붙는다.
+   코인은 덤으로 그대로 준다(상점 특훈을 더 사고 싶은 사람). 점수는 맞힘 + PERFECT 반 개(칸 한가운데 30%) */
+const TRAIN_SESS_GAIN={bat:{con:1, pow:0.5}, pit:{ctl:1, stf:0.5}, def:{def:1, arm:0.5}};
+const TRAIN_SESS_MUL={S:1.6, A:1.2, B:0.8, C:0.3};
+function trainSessApply(def0, g){
+  const me=ST.playerId||MYID, p=TBYID.wwzw.players.find(x=>x.id===me); if(!p) return [];
+  const G=TRAIN_SESS_GAIN[def0.id]||{}, m=(TRAIN_SESS_MUL[g]||0.3)*((typeof mtTrainMul==='function')?mtTrainMul():1);
+  const KN={con:'컨택',pow:'파워',ctl:'제구',stf:'구위',def:'수비',arm:'어깨'}, out=[];
+  Object.keys(G).forEach(k=>{ const v=Math.round(G[k]*m*10)/10; if(!v) return;
+    if(k==='ctl'||k==='stf'){ if(!p.pitch) return; p.pitch[k]=Math.min(99,(p.pitch[k]||30)+v); }
+    else p[k]=Math.min(99,(p[k]||30)+v);
+    out.push(KN[k]+' +'+v); });
+  try{ finalizeTeam(TBYID.wwzw); myRatingsSave(); }catch(e){}
+  return out;
+}
 function trainSessionDone(){ return (ST&&ST.trainSessAt===((ST.seasonNo||1)*100+(ST.round||0))); }
 
 function renderTrainPlay(){
@@ -44061,8 +44086,9 @@ function renderTrainPlay(){
     c.appendChild(b); return;
   }
   const head=el('div','card');
-  head.innerHTML='<div class="card-h">훈련 세션 · 코인 '+coinSlot()+'개</div>'+
-    '<p class="muted"><b>여기서 코인을 번다.</b> 열 번 해서 몇 번 맞히느냐로 등급이 갈린다 — '+
+  head.innerHTML='<div class="card-h">특훈 · 한 주에 한 판</div>'+
+    '<p class="muted"><b>등급만큼 바로 능력치가 붙는다</b> — S 1.6배 · A 1.2 · B 0.8 · C 0.3. 칸 한가운데는 PERFECT — 반 개 더, 5연속이면 한 개 더.<br>'+
+    '열 번 해서 몇 번 맞히느냐로 등급이 갈린다 — '+
     '<b style="color:#ffd15c">S 8개↑ +10</b> · <b style="color:#7fc48f">A 6개↑ +7</b> · '+
     '<b style="color:#c9a227">B 4개↑ +4</b> · <b style="color:#e08a70">C +1</b><br>'+
     '<b>공짜다.</b> 번 코인으로 능력치 훈련을 사면 된다. 주에 한 번.<br>'+
@@ -44101,7 +44127,7 @@ function renderTrainPlay(){
 function trainRun(def0){
   const c=$('#view'); c.innerHTML='';
   const z=trainZone(def0);
-  let tryN=0, hit=0, running=false, raf=null, dir=1, pos=0, speed=0;
+  let tryN=0, hit=0, perf=0, combo=0, best=0, running=false, raf=null, dir=1, pos=0, speed=0;
   const head=el('div','card');
   head.innerHTML='<div class="card-h">'+def0.icon+' '+def0.name+'</div>';
   c.appendChild(head);
@@ -44160,11 +44186,15 @@ function trainRun(def0){
     stop();
     const lo=zLo, hi=zLo+z.w;
     const ok=(pos>=lo && pos<=hi);
+    /* 한가운데 30% 면 PERFECT — 반 개 더 쳐 준다. 연속으로 맞히면 콤보 */
+    const mid=lo+z.w/2, pf=ok && Math.abs(pos-mid)<=z.w*0.15;
     marks[tryN]=ok; tryN++;
-    hit+=ok?1:0;
+    hit+=ok?1:0; if(pf) perf++;
+    combo=ok?combo+1:0; best=Math.max(best,combo);
     paint();
     mk.classList.toggle('good', ok);
-    note.innerHTML=ok?'<b style="color:#7fc48f">맞았다</b>'
+    note.innerHTML=pf?'<b style="color:#ffd15c">PERFECT</b>'+(combo>=3?' <i class="tp-cb">'+combo+' COMBO</i>':'')
+                  :ok?'<b style="color:#7fc48f">맞았다</b>'+(combo>=3?' <i class="tp-cb">'+combo+' COMBO</i>':'')
                      :'<b style="color:#e08a70">빗나갔다</b>';
     btn.textContent=(tryN>=TRAIN_TRIES)?'결과 보기 ▸':'다음 ▶';
     setTimeout(()=>{ mk.classList.remove('good'); }, 220);
@@ -44174,26 +44204,28 @@ function trainRun(def0){
 
   const finish=()=>{
     stop();
-    const G=trainGrade(hit);
+    const score=hit+perf*0.5+(best>=5?1:0);          // 5연속이면 한 개 더
+    const G=trainGrade(Math.floor(score));
     coinAdd(G.coin);
+    const gained=trainSessApply(def0, G.g);
     ST.trainSessAt=((ST.seasonNo||1)*100+(ST.round||0));
-    ST.trainSessLog=def0.name+' — '+hit+'/'+TRAIN_TRIES+' · '+G.g+'등급 · 코인 +'+G.coin;
+    ST.trainSessLog=def0.name+' — '+hit+'/'+TRAIN_TRIES+(perf?' · PERFECT '+perf:'')+' · '+G.g+'등급 · '+(gained.join(' · ')||'변화 없음')+' · 코인 +'+G.coin;
     /* 몸은 쓴 만큼 축난다. 세션은 가볍게 */
     const me=ST.playerId||MYID;
     ST.cond[me]=Math.max(20,Math.min(100,(ST.cond[me]||70)-3));
     ST.notices=ST.notices||[];
     ST.notices.push({type:'train', title:'훈련 세션 — '+def0.name,
-      body:hit+'/'+TRAIN_TRIES+' 성공 · '+G.g+'등급', effect:'코인 +'+G.coin});
+      body:hit+'/'+TRAIN_TRIES+' 성공 · '+G.g+'등급 · '+(gained.join(' · ')||''), effect:'코인 +'+G.coin});
     saveGame(true);
     c.innerHTML='';
     const r=el('div','card');
     r.innerHTML='<div class="card-h">'+def0.name+' 끝</div>'+
       '<div class="tp-res"><b style="color:'+G.c+'">'+G.g+'</b>'+
-        '<span>'+hit+' / '+TRAIN_TRIES+'</span></div>'+
-      '<p class="muted">'+G.say+'. <b>코인 +'+G.coin+'</b> (가진 '+coinSlot()+')<br>'+
-      '이 코인으로 능력치 훈련을 사면 다음 주에 몸에 붙는다.</p>';
+        '<span>'+hit+' / '+TRAIN_TRIES+(perf?' · PERFECT '+perf:'')+(best>=3?' · 최대 '+best+' COMBO':'')+'</span></div>'+
+      '<div class="tp-gain">'+(gained.length?gained.map(x=>'<b>'+x+'</b>').join(''):'<span>오늘은 몸에 안 붙었다</span>')+'</div>'+
+      '<p class="muted">'+G.say+'. 코인 +'+G.coin+' (가진 '+coinSlot()+')</p>';
     c.appendChild(r);
-    const b1=el('button','btn primary','훈련 사러 가기 ▸');
+    const b1=el('button','btn primary','훈련 화면으로 ▸');
     b1.onclick=()=>go('train'); c.appendChild(b1);
     const b2=el('button','btn','홈으로'); b2.onclick=()=>go('home'); c.appendChild(b2);
   };
