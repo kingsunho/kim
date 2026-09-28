@@ -1991,6 +1991,21 @@ html.land #view.hs-pre .lu-ch{flex-wrap:wrap;row-gap:1px}
 html.land #view.hs-pre .lu-ch em{margin-left:0;width:100%}
 html.land #view.hs-pre>.hs-prog{margin:4px 0}
 html.land #view.hs-pre .hs-b{margin-top:6px;line-height:1.6}
+/* [제보 v3.44.1] "아이폰 기준 위에 창이랑 짤려서 스크롤 내리는 거 너무 별로다"
+   사파리 가로 — 탭 줄 · 주소창이 위를 먹어서 세로가 300px 남짓이다. 이야기 카드 밑에
+   말하는 카드가 붙어 있으니 대사를 보려면 매번 내려야 했다. 경기 전 화면(hs-pre)처럼 두 칸으로 가른다 */
+html.land #view.hs-talkv,html.land #view.hs-pickv{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);
+  column-gap:10px;align-items:start;grid-auto-flow:row dense}
+html.land #view.hs-talkv>*,html.land #view.hs-pickv>*{grid-column:2;margin-top:0;margin-bottom:6px}
+html.land #view.hs-talkv>:first-child,html.land #view.hs-pickv>:first-child{grid-column:1;grid-row:1/span 4;
+  max-height:calc(100dvh - 58px - env(safe-area-inset-bottom));overflow:auto;padding:10px 12px}
+html.land #view.hs-talkv>.hs-pastw,html.land #view.hs-pickv>.hs-pastw{grid-column:1}
+html.land #view.hs-talkv .hs-b,html.land #view.hs-pickv .hs-b{font-size:13px;line-height:1.55;margin-top:6px;padding-top:6px}
+html.land #view.hs-talkv .hstalk{padding:10px;gap:10px;min-height:0}
+html.land #view.hs-talkv .ht-face{width:64px;height:84px}
+html.land #view.hs-talkv .ht-say{font-size:14px}
+html.land #view.hs-pickv .hspick{padding:10px 12px}
+html.land #view.hs-pickv .hs-opt{padding:8px 10px}
 .hs-pastw>summary::-webkit-details-marker{display:none}
 .lu-ro{display:flex;align-items:center;gap:8px;padding:7px 2px;
   border-bottom:1px solid rgba(255,255,255,.05);font-size:12.5px}
@@ -9374,8 +9389,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.44.0';
-const APP_VERSION_NOTE = '특훈 미니게임 — 등급만큼 바로 능력치';
+const APP_VERSION = '3.44.1';
+const APP_VERSION_NOTE = '고교 장면 — 가로 한 화면';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9396,6 +9411,9 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.44.1', t:'고교 장면 — 가로 한 화면', items:[
+    '고교 대화 · 고르기 장면을 가로에서 두 칸으로 — 왼쪽 이야기, 오른쪽 말하는 사람 · 고를 것. 아이폰 사파리처럼 위 창이 큰 화면에서 대사를 보려고 스크롤할 일이 없다',
+  ]},
   {v:'3.44.0', t:'특훈 미니게임 — 등급만큼 바로 능력치', items:[
     '<b>훈련 세션이 「특훈 한 판」 이 됐다.</b> 예전엔 코인만 벌어 왔는데, 이제 한 판이 곧 특훈이다 — 등급만큼 그 자리에서 능력치가 붙는다(S 1.6배 · A 1.2 · B 0.8 · C 0.3). 코인은 덤',
     '<b>PERFECT · COMBO.</b> 초록 칸 한가운데를 맞히면 PERFECT — 반 개 더, 다섯 번 연속이면 한 개 더',
@@ -23130,7 +23148,7 @@ function renderHS(){
     H.playing=false;
   }
   const c=$('#view'); c.innerHTML='';
-  c.classList.remove('hs-pre');
+  c.classList.remove('hs-pre','hs-talkv','hs-pickv');
   const me=ST.playerId||MYID;
 
   /* ---- 지난 경기 펴보기 (졸업 뒤에도 된다) ---- */
@@ -23277,11 +23295,13 @@ function renderHS(){
 
   /* 대사가 남았으면 대화 장면부터. 다 넘기면 고를 게 나온다 */
   if(s.say&&s.say.length&&(H.sayAt||0)<s.say.length){
+    c.classList.add('hs-talkv');      // 가로 — 왼쪽 이야기, 오른쪽 말하는 사람
     hsTalkScene(c, s, cast, year);
     return;
   }
   /* 고를 게 있으면 여기서 고른다 — 아직 안 골랐으면 그것만 보여준다 */
   if(s.pick && H.picked[H.i]==null){
+    c.classList.add('hs-pickv');      // 가로 — 왼쪽 이야기, 오른쪽 고를 것
     hsPickScene(c, s, cast, year);
     hsPastList(c);
     return;
@@ -46163,7 +46183,7 @@ function paintTabs(){
 let LOB_MORE=false;     // 가로 홈 — 아래 카드를 펼쳤나 (세이브에 안 남긴다)
 function go(v){
   plLock(false);        // 화면을 옮기면 타석 잠금은 무조건 푼다
-  { const vw=document.getElementById('view'); if(vw) vw.classList.remove('lob-solo','hs-pre'); }
+  { const vw=document.getElementById('view'); if(vw) vw.classList.remove('lob-solo','hs-pre','hs-talkv','hs-pickv'); }
   /* 고등학교를 하는 중에는 본편 화면으로 못 샌다. 아직 우완좌완이 아니다.
      [제보] "메인화면 갈 수 있는 버튼이 없는데" — 메인화면과 세이브 슬롯은
      본편이 아니라 그 위에 있는 것이라 막으면 안 됐다. 프롤로그 도중에
