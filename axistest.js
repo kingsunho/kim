@@ -88,7 +88,9 @@ const T=(n,r)=>{const ok=!!r&&!(typeof r==='string'&&r[0]==='!');
 
   console.log('\n[스윙이 눈에 보인다]');
   const sw=await p.evaluate(()=>{
-    const fr=[0,0.2,0.38,0.5,0.62,0.8,1].map(t=>mvSwingPose(t));
+    /* [v3.24.0] 스윙은 sdSwing 이 정한다 — 몸 돌림(tw)을 rot 로 읽는다.
+       예전 mvSwingPose(그림 한 장을 기울이던 것)는 더 안 쓴다. */
+    const fr=[0,0.2,0.38,0.5,0.62,0.8,1].map(t=>{ const q=sdSwing(t); return {rot:q.tw, blur:q.blur}; });
     /* 실제로 그려서 프레임마다 그림이 달라지는지 픽셀로 본다 */
     const c=document.createElement('canvas'); c.width=300; c.height=300;
     const g=c.getContext('2d');
@@ -100,7 +102,9 @@ const T=(n,r)=>{const ok=!!r&&!(typeof r==='string'&&r[0]==='!');
       const d=g.getImageData(0,0,300,300).data;
       let n=0,sx=0;
       for(let i=3;i<d.length;i+=4) if(d[i]>60){ n++; sx+=((i-3)/4)%300; }
-      sig.push({n, cx:n?Math.round(sx/n):0});
+      const mask=new Uint8Array(300*300);
+      for(let i=3,j=0;i<d.length;i+=4,j++) mask[j]=d[i]>60?1:0;
+      sig.push({n, cx:n?Math.round(sx/n):0, mask});
     });
     /* 등번호가 데이터에서 오는지 — 다른 번호를 주면 그림이 달라져야 한다 */
     const px=(no)=>{ g.clearRect(0,0,300,300);
@@ -108,7 +112,11 @@ const T=(n,r)=>{const ok=!!r&&!(typeof r==='string'&&r[0]==='!');
       const d=g.getImageData(0,0,300,300).data; let h=0;
       for(let i=0;i<d.length;i+=4) h=(h*31+d[i]+d[i+1]*3+d[i+3]*7)|0;
       return h; };
-    return {fr, sig, h1:px(1), h2:px(88), h0:px(null)};
+    /* 첫 프레임과 몇 픽셀이 다른가 — 배트가 3차원으로 돌아서 무게중심은
+       제자리로 돌아올 수 있다(카메라 쪽을 볼 때). 겹치지 않는 픽셀 수로 본다 */
+    const diff=sig.map(q=>{ let k=0; for(let j=0;j<q.mask.length;j++) if(q.mask[j]!==sig[0].mask[j]) k++; return k; });
+    sig.forEach(q=>{ delete q.mask; });
+    return {fr, sig, diff, h1:px(1), h2:px(88), h0:px(null)};
   });
   T('스윙 중에 몸이 돌아간다', (()=>{
       const r=sw.fr.map(f=>f.rot);
@@ -121,12 +129,12 @@ const T=(n,r)=>{const ok=!!r&&!(typeof r==='string'&&r[0]==='!');
         ? `0 → ${Math.max(...b).toFixed(2)} → ${b[b.length-1].toFixed(2)}` : '!'+b.join(',');
     })());
   T('프레임마다 실제로 그림이 다르다', (()=>{
-      /* 몸이 돌아가면 그림의 무게중심이 옆으로 밀린다. 픽셀 수보다 이게 확실하다 */
-      const s0=sw.sig[0], s1=sw.sig[1], s2=sw.sig[2], s3=sw.sig[3];
-      const moved=(a,b)=>Math.abs(a.cx-b.cx);
-      return moved(s1,s0)>=4 && moved(s2,s0)>=6 && moved(s3,s0)<=1
-        ? `무게중심 ${s0.cx} → ${s1.cx} → ${s2.cx} → ${s3.cx} (되돌아옴)`
-        : '!'+JSON.stringify(sw.sig);
+      /* 감기(0.38)·팔로스루(0.62)는 준비 자세와 수백 픽셀이 달라야 하고,
+         끝(1)에서는 준비 자세로 그대로 돌아와야 한다 */
+      const D=sw.diff;
+      return D[1]>=400 && D[2]>=400 && D[3]<=20
+        ? `준비 자세와 다른 픽셀 ${D.join(' → ')} (되돌아옴)`
+        : '!'+JSON.stringify(D);
     })());
   T('등번호가 선수 데이터에서 온다 (그림에 안 박혀 있다)',
     sw.h1!==sw.h2 && sw.h1!==sw.h0
