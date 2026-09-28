@@ -1196,7 +1196,7 @@ body.pl-lock #view{touch-action:none}
   font-size:10.5px;color:#cfe0ee;font-weight:700}
 .mv-top b{color:#fff;font-weight:800}
 .mvt-dia{position:relative;display:inline-block;width:15px;height:13px;font-style:normal}
-.mvt-dia u{position:absolute;width:5px;height:5px;background:rgba(255,255,255,.22);
+.mvt-dia u{position:absolute;width:5px;height:5px;background:rgba(255,255,255,.36);
   transform:rotate(45deg);text-decoration:none}
 .mvt-dia u.on{background:#ffd15c}
 .mvt-dia u.d1{right:0;top:4px}
@@ -2648,6 +2648,33 @@ html.land #decision.sheet.dk-swing:not(.swf) .who{display:none}
 html.land #decision.sheet.dk-swing:not(.swf) .mv-camb{left:252px;bottom:46px}
 html.land #decision.sheet.dk-swing:not(.swf) .mound .lbl{display:none}
 html.land #decision.sheet.dk-swing:not(.swf) .mv-top{left:250px}
+/* [제보 v3.47.0] "쓸모 없는 창이 너무 많아서 현재 베이스 상황 안보이고"
+   · 코스 분석은 접어 둔다 — 왼쪽 판은 노림수 + 준비 버튼만, 키만큼만 선다
+   · 이닝 · 아웃 · 주자 띠(mv-top)가 머리말 밑에 깔려 안 보였다 —
+     가운데 아래로 내리고 크게
+   · 머리말의 타자 카드는 한 줄로 · 오른쪽 작전 버튼은 설명을 빼고 낮게  */
+.aim-tog{display:none}
+html.land #decision.sheet.dk-swing:not(.swf) .aim{bottom:auto;max-height:calc(100% - 10px);width:206px}
+html.land #decision.sheet.dk-swing:not(.swf) .aim-tog{display:block;width:100%;margin:4px 0 5px;padding:5px 0;
+  font-size:11px;font-weight:800;color:#9fb0c4;background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);border-radius:7px}
+html.land #decision.sheet.dk-swing:not(.swf) .aim:not(.open) .aim-mix,
+html.land #decision.sheet.dk-swing:not(.swf) .aim:not(.open) .aim-zone,
+html.land #decision.sheet.dk-swing:not(.swf) .aim:not(.open) .aim-zc{display:none}
+html.land #decision.sheet.dk-swing:not(.swf) .aim-l{font-size:10.5px}
+html.land #decision.sheet.dk-swing:not(.swf) .pl-wrap>div:first-child{left:218px;max-height:26%}
+html.land #decision.sheet.dk-swing:not(.swf) .bat-info{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px}
+html.land #decision.sheet.dk-swing:not(.swf) .bat-info .bi-r,
+html.land #decision.sheet.dk-swing:not(.swf) .bat-info .bi-t{margin:0}
+html.land #decision.sheet.dk-swing:not(.swf) .mv-top{left:auto;right:8px;top:122px;bottom:auto;z-index:7;
+  transform:scale(1.45);transform-origin:right top}
+html.land #decision.sheet.dk-swing:not(.swf) .mv-camb{left:222px}
+html.land #decision.sheet.dk-swing:not(.swf) .aim-row button{font-size:12px;padding:8px 2px;white-space:nowrap}
+html.land #decision.sheet.dk-swing:not(.swf) .swg,
+html.land #decision.sheet.dk-swing:not(.swf) .swnote{left:222px}
+html.land #decision.sheet.dk-swing:not(.swf) .spray-row .spb i{display:none}
+html.land #decision.sheet.dk-swing:not(.swf) .spray-row .spb{padding:6px 4px}
+html.land #decision.sheet.dk-swing:not(.swf) .bunt-row .spb i{display:none}
 
 html.land #view>.card,html.land #view>.hero,html.land #view>.warn{max-width:100%}
 </style>
@@ -9407,8 +9434,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.46.0';
-const APP_VERSION_NOTE = '베이스 커버 · 상대 타자 스윙 · 뜬공 문구';
+const APP_VERSION = '3.47.0';
+const APP_VERSION_NOTE = '수비 카메라 · 타석 화면 정리';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9429,6 +9456,14 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.47.0', t:'수비 카메라 · 타석 화면 정리', items:[
+    '수비할 때 카메라가 공과 내 야수를 따라 당겨 찍는다 — 공이 점만 해서 안 보이던 것',
+    '땅볼도 굴러오는 길(점선)과 과녁을 찍어 준다 — 그 선으로 들어가서 막으면 된다',
+    '공에 흰 테두리 · 수비 화면 구석에 주자 · 아웃 표시',
+    '잡고 나면 카메라가 빠져서 베이스가 다 보인다 — 거기서 눌러 던진다',
+    '가로 타석 화면 — 코스 분석은 접어 두고(누르면 펼침), 이닝·아웃·주자를 오른쪽에 크게',
+    '타자 카드 한 줄 · 작전 버튼 설명 빼서 야구장이 덜 가린다',
+  ]},
   {v:'3.46.0', t:'베이스 커버 · 상대 타자 스윙 · 뜬공 문구', items:[
     '1루수가 땅볼 잡으러 나가면 투수가 1루에 뛰어 들어간다 — 빈 베이스에 던져서 아웃되던 그림 고쳤다',
     '2루는 키스톤 콤비 중 공 안 잡은 쪽이, 3루수가 잡으면 유격수가 3루에 들어간다',
@@ -36403,6 +36438,7 @@ function renderSwing(box, d){
   let inZone=true, curType='ff', bx=1, by=1, curDur=1000, curKmh=0, fouls=0;
   let curHbp=false;                        // 이 공이 몸쪽으로 붙어 오는가
   let aimSel='none';
+  let aimOpen=false;                       // 가로 화면에서 코스 분석을 펴 뒀나
 
   /* ---- 노림수 ---- */
   let skipReady=()=>{};
@@ -36416,6 +36452,14 @@ function renderSwing(box, d){
       : '이 투수는 직구밖에 없다 — 노릴 것도 없다'));
     /* [제보] "변화구만 노리면 너무 쉽게 쳐진다"
        이제 배분이 다르다. 감으로 찍지 말고 보고 고르라고 숫자를 깐다. */
+    /* [제보 v3.47.0] "쓸모 없는 창이 너무 많아서 현재 베이스 상황 안보이고"
+       가로에서는 코스 분석(구종 배분 · 히트맵)이 왼쪽 판을 위에서 아래까지
+       다 먹었다. 필요할 때 펴 보게 접어 둔다 — 노림수와 준비 버튼만 남긴다.
+       세로 화면은 스크롤되는 판이라 예전 그대로 다 편다(CSS 가 가른다). */
+    const tog=el('button','aim-tog', aimOpen?'코스 분석 접기 ▴':'코스 분석 보기 ▾');
+    tog.onclick=()=>{ aimOpen=!aimOpen; drawAim(); };
+    aim.appendChild(tog);
+    aim.classList.toggle('open', aimOpen);
     if(hasBreak){
       const mix=pitchMix(myP);
       const mm=el('div','aim-mix');
@@ -37085,7 +37129,7 @@ function renderDefPlay(box, d){
   const stage=el('div','runstage');
   box2.appendChild(stage);
   const note=el('div','rb-note');
-  note.innerHTML='<b>아래 조이스틱으로 움직인다.</b> 잡으면 그 자리에서 베이스를 눌러 던진다';
+  note.innerHTML='<b>조이스틱으로 과녁(노란 원)까지 간다.</b> 잡으면 베이스를 눌러 던진다';
   box2.appendChild(note);
   /* 조이스틱은 그라운드 밖에 둔다 — 손가락이 내 야수를 가리면 안 된다 */
   const joyWrap=el('div','joywrap');
@@ -37468,11 +37512,22 @@ function defScene(host, o){
   let last=t0;
   const rollMs=560;
   const total=o.flyMs+rollMs;
+  /* ---- 카메라 ----
+     [제보 v3.47.0] "수비는 이해 안감 잘보이지도 않고 공 판단이 안섬
+                     뭐 거리만 좀 나오더니 안타"
+     야구장 전체를 한 판에 욱여넣어서 공이 4px 짜리 점이었다. 내 야수도
+     손톱만 했다. 그래서 공이 어디로 오는지, 내가 얼마나 붙었는지를
+     눈으로 못 쟀다 — 남은 거리 숫자만 보고 뛰었다.
+     공을 쫓는 동안은 **공과 나를 같이 담도록 당겨 찍는다**(최대 2.1배).
+     잡고 나면 다시 빠져서 베이스가 다 보이게 한다 — 던질 데를 골라야 하니까. */
+  let camX=160, camY=150, camZ=1;
   const toLocal=(ev)=>{
     const r=cv.getBoundingClientRect();
     const sx=(typeof ev.clientX==='number'&&isFinite(ev.clientX))?ev.clientX:r.left+r.width/2;
     const sy=(typeof ev.clientY==='number'&&isFinite(ev.clientY))?ev.clientY:r.top+r.height/2;
-    return {x:(sx-r.left)/Math.max(1,r.width)*PSW, y:(sy-r.top)/Math.max(1,r.height)*PSH};
+    const lx=(sx-r.left)/Math.max(1,r.width)*PSW, ly=(sy-r.top)/Math.max(1,r.height)*PSH;
+    /* 화면 좌표 → 야구장 좌표 (카메라를 되돌린다) */
+    return {x:camX+(lx-PSW/2)/camZ, y:camY+(ly-PSH/2)/camZ};
   };
   /* 송구할 수 있는 베이스 — 주자가 향하는 곳만 띄운다 */
   const throwables=()=>{
@@ -37683,7 +37738,25 @@ function defScene(host, o){
       }
     }
 
-    g.setTransform(2,0,0,2,0,0);
+    /* 카메라 목표 — 쫓는 동안은 공 · 떨어질 자리 · 나를 한 화면에 */
+    {
+      let tx0=160, ty0=132, tz=1;
+      if(phase==='chase'||phase==='cut'){
+        const pts=[[fx,fy],[b.x,b.y-(b.z||0)]];
+        if(isFly && now<o.flyMs) pts.push([land.x,land.y]);
+        let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
+        pts.forEach(p2=>{ x0=Math.min(x0,p2[0]); x1=Math.max(x1,p2[0]); y0=Math.min(y0,p2[1]); y1=Math.max(y1,p2[1]); });
+        tx0=(x0+x1)/2; ty0=(y0+y1)/2;
+        const span=Math.max((x1-x0)+90, ((y1-y0)+80)*PSW/PSH);
+        tz=Math.max(1, Math.min(2.1, PSW/span));
+      }
+      const ez=(phase==='chase')?0.10:0.16;
+      camZ+=(tz-camZ)*ez; camX+=(tx0-camX)*ez; camY+=(ty0-camY)*ez;
+      /* 야구장 밖(검은 데)이 안 보이게 가둔다 */
+      const hw=PSW/2/camZ, hh=PSH/2/camZ;
+      camX=Math.max(hw, Math.min(PSW-hw, camX)); camY=Math.max(hh, Math.min(PSH-hh, camY));
+      g.setTransform(2*camZ,0,0,2*camZ, 2*(PSW/2-camX*camZ), 2*(PSH/2-camY*camZ));
+    }
     psField(g,P);
     /* 나머지 야수 — 이름표를 같이 단다 */
     /* 베이스 커버 — 내가 공을 주우러 나가면 누가 그 베이스에 들어간다(psCoverKey).
@@ -37695,8 +37768,9 @@ function defScene(host, o){
       const cq=psCoverAt(kk, q0, o.pos, land, cvB, cvK);
       const qq=cq||q0;
       man(qq.x,qq.y,PS_UNI.us,!!(cq&&cq.run),qq.x<HX);
+      /* 당겨 찍을 때는 남의 이름표가 같이 커져서 공을 가린다 — 빠져 있을 때만 단다 */
       const nm=(o.names&&o.names[kk])||null;
-      if(nm) psLabel(g,qq.x,qq.y-9,nm,false);
+      if(nm && camZ<1.25) psLabel(g,qq.x,qq.y-9,nm,false);
     });
     /* 주자 전부 — 누가 어디 있는지 보여야 어디로 던질지 안다 */
     const rk=Math.min(1, now/RUN_MS);
@@ -37709,6 +37783,17 @@ function defScene(host, o){
     if(phase==='chase'){
       g.strokeStyle='rgba(255,255,255,.30)'; g.lineWidth=1.5;
       g.beginPath(); g.moveTo(HX,HY); g.lineTo(b.x,b.y); g.stroke();
+      /* 땅볼도 **어디로 굴러오는지** 보여준다 — 공 길을 점선으로 늘이고
+         공이 지나갈 자리에 과녁을 찍는다. 그 선 위로 들어가 막으면 된다 */
+      if(!isFly && now<o.flyMs){
+        const endP={x:land.x+Math.cos(rad)*18, y:land.y+Math.sin(rad)*18};
+        g.strokeStyle='rgba(255,209,92,.55)'; g.lineWidth=1.2;
+        g.setLineDash([2,3]);
+        g.beginPath(); g.moveTo(b.x,b.y); g.lineTo(endP.x,endP.y); g.stroke();
+        g.setLineDash([]);
+        g.strokeStyle='rgba(255,209,92,.8)'; g.lineWidth=1.4;
+        g.beginPath(); g.arc(land.x,land.y,6,0,Math.PI*2); g.stroke();
+      }
       /* 뜬공이면 떨어질 자리를 찍어 준다 — 여기로 가라는 뜻이다 */
       if(isFly && now<o.flyMs){
         g.strokeStyle='rgba(255,209,92,.75)'; g.lineWidth=1.6;
@@ -37718,6 +37803,9 @@ function defScene(host, o){
         g.beginPath(); g.moveTo(land.x-4,land.y); g.lineTo(land.x+4,land.y);
         g.moveTo(land.x,land.y-4); g.lineTo(land.x,land.y+4); g.stroke();
       }
+      /* 공이 작아서 안 보였다 — 흰 테두리 원을 한 겹 둘러 눈에 띄게 */
+      g.strokeStyle='rgba(255,255,255,.85)'; g.lineWidth=1;
+      g.beginPath(); g.arc(b.x,b.y-(b.z||0),3.6,0,Math.PI*2); g.stroke();
       psBall(g,b.x,b.y,b.z);
     } else if(phase==='throw'){
       psBall(g,fx,fy-2,0);
@@ -37782,6 +37870,21 @@ function defScene(host, o){
         g.textAlign='left';
       });
     }
+    /* 여기부터는 화면에 붙는 글씨다 — 카메라를 푼다 */
+    g.setTransform(2,0,0,2,0,0);
+    /* 지금 상황 — 아웃 · 주자. 오른쪽 위 구석에 작게 */
+    {
+      const ox=292, oy=24, dd=7;
+      g.fillStyle='rgba(9,12,16,.72)';
+      if(g.roundRect){ g.beginPath(); g.roundRect(ox-20,oy-15,44,40,6); g.fill(); } else g.fillRect(ox-20,oy-15,44,40);
+      [[1,dd,0],[2,0,-dd],[3,-dd,0]].forEach(([bi,dx,dy])=>{
+        const on=!!(o.bases&&o.bases[bi-1]);
+        g.save(); g.translate(ox+dx,oy+dy); g.rotate(Math.PI/4);
+        g.fillStyle=on?'#ffd15c':'rgba(255,255,255,.22)'; g.fillRect(-3,-3,6,6); g.restore();
+      });
+      for(let i=0;i<2;i++){ g.fillStyle=i<(o.outs||0)?'#e08a70':'rgba(255,255,255,.22)';
+        g.beginPath(); g.arc(ox-5+i*10, oy+17, 2.6, 0, Math.PI*2); g.fill(); }
+    }
     if(phase==='chase' && !toldChase && now>o.flyMs*0.5){ toldChase=true; }
     if(phase==='chase'){
       /* [제보] 남은 거리도 평평한 배율로 적고 있었다 — 외야에서는
@@ -37796,7 +37899,7 @@ function defScene(host, o){
         plate(wallBall?'담장이다 — 점프!':'높다 — 점프!','#ffd15c',14);
       else plate(dNow<=GRAB?(air1?'딱 밑이다':'붙었다')
             :(dNow<o.reach?'손은 닿는다'
-            :(moving?(mLeft+'m 남았다'):'아래 조이스틱을 밀어라')),
+            :(moving?(mLeft+'m 남았다'):'조이스틱을 밀어라 — 과녁으로')),
             dNow<=GRAB?'#7fc48f':(dNow<o.reach?'#ffd15c':(moving?'#e9e4d8':'#ffd15c')), 14);
     } else if(phase==='result' && verdictTxt){
       plate(verdictTxt, verdictCol, 19);
