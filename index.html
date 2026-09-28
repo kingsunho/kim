@@ -9351,8 +9351,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.42.0';
-const APP_VERSION_NOTE = '특성 확장 · 코치 · 감독 · 외국인 · 선수 카드';
+const APP_VERSION = '3.42.1';
+const APP_VERSION_NOTE = '특성 목록 정리';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9373,6 +9373,9 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.42.1', t:'특성 목록 정리', items:[
+    '훈련 화면 특성 진행 막대를 열네 줄 다 깔지 않고 가까운 넷만 보여준다. 나머지는 「특성 전부 보기」',
+  ]},
   {v:'3.42.0', t:'특성 확장 · 코치 · 감독 · 외국인 · 선수 카드', items:[
     '<b>특성이 경기에서도 생긴다.</b> 클러치히터(득점권 안타 15) · 새가슴 · 선구안(볼넷 40) · 한방(홈런 20) · 고무팔(90구 넘게 8번 버팀) · 강심장(득점권 위기 아웃 40) · 이닝이터(150이닝) · 인기스타(태극마크 → 매주 광고 300만). 전부 판정에 실제로 먹는다',
     '<b>구단 금고로 스태프를 바꾼다.</b> 타격 · 투수 · 수비주루 코치(★ 만큼 내 루틴과 신인 성장) · 감독 교체(육성형 · 윈나우 · 스몰볼 · 데이터 — 팀 성향과 콜업 기준이 바뀐다)',
@@ -40413,9 +40416,14 @@ function mtCard(c){
     '<div class="trt-have">'+(have.length?have.map(t=>{ const d=MT_EARN.find(x=>x.id===t); const bad=(d&&d.bad)||MT_REMOVABLE.indexOf(t)>=0;
       return '<span class="trt-chip'+(bad?' bad':'')+'" title="'+(TRAIT_INFO[t]||(d&&d.eff)||'')+'">'+t+'</span>'; }).join(''):'<span class="muted">아직 없다</span>')+'</div>';
   const pr=el('div','trt-prog');
-  MT_EARN.filter(d=>d.key && !mtHas(d.id)).forEach(d=>{ const v=Math.min(d.need, Math.floor(M.prog[d.key]||0));
+  /* 열네 줄을 다 깔면 표가 된다 — 가까운 넷만. 나머지는 「전부」 로 편다 */
+  const pend=MT_EARN.filter(d=>d.key && !mtHas(d.id)).map(d=>({d, r:Math.min(1,(M.prog[d.key]||0)/d.need)})).sort((x,y)=>y.r-x.r);
+  const showAll=!!M._showAll;
+  (showAll?pend:pend.slice(0,4)).map(x=>x.d).forEach(d=>{ const v=Math.min(d.need, Math.floor(M.prog[d.key]||0));
     pr.innerHTML+='<div class="trt-p'+(d.bad?' bad':'')+'"><b>'+d.id+'</b><span><s style="width:'+Math.round(v/d.need*100)+'%"></s></span><i>'+d.how+' · '+v+'/'+d.need+' → '+d.eff+'</i></div>'; });
   card.appendChild(pr);
+  if(pend.length>4){ const t=el('button','btn sm trt-more', showAll?'접기':('특성 전부 보기 ('+pend.length+')'));
+    t.onclick=()=>{ M._showAll=!showAll; renderTrainPlayer(); }; card.appendChild(t); }
   const rem=have.filter(t=>MT_REMOVABLE.indexOf(t)>=0), k=mtYearKey();
   if(rem.length){
     const w=el('div','trt-rm');
