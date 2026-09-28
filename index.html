@@ -1796,6 +1796,29 @@ table.hl-tbl td.hl-o{color:#c98a80}
   animation:psIn .16s ease-out}
 @keyframes psIn{from{opacity:0}to{opacity:1}}
 .ps-box{width:100%;max-width:420px;position:relative}
+/* 클로즈업 컷인 — 판(ps-box · 수비 그라운드) 위에 통째로 덮는다 */
+.cut-ov{position:absolute;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;
+  background:#060a10;cursor:pointer;touch-action:none;overflow:hidden;border-radius:inherit}
+.cut-cv{width:100%;height:100%;object-fit:cover;display:block}
+/* 승부처 — 판 가장자리가 심장 뛰듯 붉게. 띠는 한 번 쾅 지나간다 */
+.mound.clutch::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:4;
+  box-shadow:inset 0 0 0 2px rgba(255,80,70,.55),inset 0 0 38px 8px rgba(255,40,40,.32);
+  animation:clBeat 1.05s ease-in-out infinite}
+@keyframes clBeat{0%,100%{opacity:.35}12%{opacity:1}24%{opacity:.5}36%{opacity:.9}60%{opacity:.35}}
+.clutch-ban{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;
+  background:rgba(6,8,14,.45);animation:cbFade 2.3s ease forwards;cursor:pointer}
+.cb-band{width:120%;transform:rotate(-4deg);padding:10px 0 12px;text-align:center;
+  background:linear-gradient(90deg,rgba(150,16,24,0),rgba(170,20,28,.95) 18%,rgba(200,28,36,.97) 50%,rgba(170,20,28,.95) 82%,rgba(150,16,24,0));
+  border-top:3px solid #ffd15c;border-bottom:3px solid #ffd15c;
+  box-shadow:0 8px 30px rgba(0,0,0,.5);animation:cbIn .38s cubic-bezier(.2,1.4,.4,1) both}
+.clutch-ban.pit .cb-band{background:linear-gradient(90deg,rgba(18,40,110,0),rgba(22,52,140,.95) 18%,rgba(28,64,170,.97) 50%,rgba(22,52,140,.95) 82%,rgba(18,40,110,0))}
+.cb-band b{display:block;font-size:clamp(26px,7vw,46px);font-weight:900;color:#fff;letter-spacing:.04em;
+  text-shadow:0 3px 0 #10141c,0 0 18px rgba(255,210,92,.6)}
+.clutch-ban.lv3 .cb-band b{color:#ffe07a}
+.cb-band span{display:block;font-size:13px;font-weight:800;color:#ffe9b0;margin-top:2px}
+.cb-band i{display:block;font-style:normal;font-size:12.5px;color:#fff;opacity:.92;margin-top:4px}
+@keyframes cbIn{from{transform:rotate(-4deg) translateX(-110%)}to{transform:rotate(-4deg) translateX(0)}}
+@keyframes cbFade{0%,78%{opacity:1}100%{opacity:0}}
 .ps-head{display:flex;justify-content:space-between;align-items:center;
   background:#101a28;border:1px solid var(--line);border-bottom:none;
   border-radius:10px 10px 0 0;padding:7px 11px;font-size:12px;color:var(--dim)}
@@ -8959,8 +8982,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.23.0';
-const APP_VERSION_NOTE = '선수들이 2등신이 됐다 — 마구마구 그 체형 그대로';
+const APP_VERSION = '3.24.0';
+const APP_VERSION_NOTE = '다이빙 캐치 · 실책 · 슬라이딩이 크게 나온다 — 승부처가 긴장된다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8981,6 +9004,15 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.24.0', t:'다이빙 캐치 · 실책 · 슬라이딩이 크게 나온다 — 승부처가 긴장된다', items:[
+    '<b>스윙이 선풍기처럼 돌던 것 — 고쳤다.</b> 배트가 화면 위에서 한 바퀴 빙글 돌았다. 이제 몸을 감았다가 <b>배럴이 처지고 → 존을 가로지르고 → 마운드 쪽으로 뻗고 → 앞 어깨 너머로 감긴다.</b> 배트가 이쪽을 볼 땐 짧아지고 끝 단면이 보인다',
+    '<b>호수비가 한 컷으로 나온다.</b> 담장 앞 뜬공을 잡으면 화면이 끊기고 <b>「다이빙 캐치!」「슬라이딩 캐치!」</b> 가 크게 찍힌다. 몸을 날린 사람이 이를 악물고 있다',
+    '<b>실책도 한 컷이다.</b> 글러브에서 공이 튀어 오르고 「실책!」 이 빨갛게 찍힌다. 놓친 사람 얼굴이 하얗게 질린다',
+    '<b>2루타·3루타는 베이스로 몸을 던진다.</b> 머리부터 미끄러져 들어가고, 뒤에서 심판이 팔을 벌린다 — 「세이프!」. 보살이면 태그에 걸려 「아웃!」',
+    '<b>내가 직접 수비할 때도 나온다.</b> 「몸 날리기」 로 잡으면 다이빙 캐치 컷, 헛 다이빙이면 「빠졌다!」 컷',
+    '<b>승부처에서 화면이 먼저 긴장한다.</b> 끝내기 찬스 · 마지막 아웃카운트 · 경기 후반 득점권 접전이면 타석 시작에 붉은 띠가 쾅 지나가고, 그 타석 내내 판 가장자리가 <b>심장 뛰듯</b> 붉게 뛴다. 내가 던질 때는 파란 띠 — 「위기」',
+    '결과·확률은 하나도 안 바뀐다. 이미 난 결과를 크게 보여줄 뿐이다. 컷은 탭하면 넘어가고, 설정 → 「클로즈업」 에서 끌 수 있다',
+  ]},
   {v:'3.23.0', t:'선수들이 2등신이 됐다 — 마구마구 그 체형 그대로', items:[
     '<b>경기장에 서 있는 사람이 전부 바뀌었다.</b> 7등신 그림을 걷어내고 <b>머리가 키의 절반인 2등신 SD</b> 로 새로 그렸다. 받은 게임 영상 그 체형이다',
     '<b>타자는 헬멧 뒤통수와 등번호가 보이는 뒷모습</b>이다. 배트는 머리 옆으로 세워 들어서 큰 헬멧에 안 가린다 — 그림 받기 전에 막혔던 게 바로 이거였다',
@@ -26905,10 +26937,26 @@ function psPlay(d, done, opt){
   };
 
   let t0=null, raf=null, dead=false;
+  /* 클로즈업 컷인 — 결정적 순간에 화면을 끊는다(mvCutIn). 그동안 시계를 멈춘다 */
+  const CUT=psCutFor(d, sc, du, bu);
+  const cutAt = !CUT ? Infinity :
+    (CUT.at==='run' ? Math.max(0,(T.run?T.run[1]:TOTAL)-80) : (T.fly?T.fly[1]:TOTAL));
+  let cutDone=!CUT;
   const frame=(ts)=>{
     if(dead) return;
     if(t0==null) t0=ts;
     const now=ts-t0;
+    if(!cutDone && now>=cutAt){
+      cutDone=true; draw(cutAt);
+      const ps=(typeof performance!=='undefined'&&performance.now)?performance.now():ts;
+      mvCutIn(ov, CUT, ()=>{
+        if(dead) return;
+        const pe=(typeof performance!=='undefined'&&performance.now)?performance.now():ps;
+        t0+=(pe-ps)+(now-cutAt);
+        raf=requestAnimationFrame(frame);
+      });
+      return;
+    }
     draw(now);
     if(now>=TOTAL){ finish(); return; }
     raf=requestAnimationFrame(frame);
@@ -27064,6 +27112,28 @@ function psPlay(d, done, opt){
   return psRun;
 }
 
+/* 이 장면에 컷인을 끼우나 — 드물어야 값이 있다.
+     실책                     → 글러브에서 튄다
+     담장 앞(16m 안) 뜬공 아웃  → 다이빙 / 슬라이딩 캐치
+     땅볼 아웃 일곱에 하나      → 내야 다이빙
+     2·3루타 열에 일곱         → 베이스로 몸을 던진다(세이프)
+     보살                      → 태그 아웃
+   난수는 장면 번호(seq)로 뽑는다 — 다시 보기에서도 같은 컷이 나온다.  */
+function psCutFor(d, sc, du, bu){
+  if(!d||!cutOn()) return null;
+  const K=d.kind, m=(sc&&sc.m)||0, fence=(d.bb&&d.bb.fence)||0;
+  const r=(((d.seq||0)*2654435761)>>>0)/4294967296;
+  const pos=sc&&sc.pos, pn=(typeof POSNAMES!=='undefined'&&POSNAMES[pos])||'';
+  const fName=pn;
+  const rName=(d.bat&&d.bat.name)||'';
+  const F=(kind,at,sub)=>({kind, at, sub, uF:du, uR:bu});
+  if(K==='E') return F('bobble','fly',fName);
+  if((K==='FB'||K==='SF') && fence && m>=fence-16) return F(r<0.55?'dive':'slidecatch','fly',fName);
+  if(K==='GB' && r<0.15) return F('dive','fly',fName);
+  if((K==='2B'||K==='3B') && r<0.7) return F('slideSafe','run',rName);
+  if(K==='AS') return F('slideOut','run',rName);
+  return null;
+}
 /* 결과 배너 문구 */
 function psBanner(d){
   const K=d.kind;
@@ -29764,30 +29834,42 @@ function sdIK(S,H,a,b,bend){
 const sdLerp=(a,b,k)=>a+(b-a)*k;
 const sdEase=k=>k<0?0:k>1?1:k*k*(3-2*k);
 
-/* 스윙 한 번 — t 0~1. 배트 각도(도)·손 자리·몸 돌림.
-   각도는 화면 기준(오른쪽 0, 아래 +90). 준비 자세는 왼쪽 위 -145° 로
-   배트가 **머리 왼쪽 바깥**에 선다 — 답지 그대로다. 휘두르면 아래로
-   떨어져서(배럴이 몸 뒤로 지나가고) 존(오른쪽, 0°)을 가로지른 뒤
-   앞 어깨 위로 넘어간다. 끊기지 않게 각도를 계속 줄여 나간다.        */
-const SD_SET={ang:-133, hx:-13, hy:-49, tw:0};
+/* 스윙 한 번 — t 0~1. 배트 방향(3차원)·손 자리·몸 돌림.
+   [제보] "돌리는게 좀 이상하긴한데" — v3.23.0 은 배트가 **화면 평면에서
+   한 바퀴** 돌았다. 선풍기 날개처럼 보인다. 진짜 스윙은 몸을 축으로
+   **거의 수평으로** 돈다 — 뒤(포수 쪽)로 처졌다가, 존을 가로지르고,
+   마운드 쪽으로 뻗었다가, 앞 어깨 너머로 감긴다.
+   그래서 배트 방향을 3차원(x 오른쪽 · y 위 · z 마운드 쪽)으로 잡고
+   카메라(조금 위에서 내려다본다)에 비춰서 그린다. 배트가 카메라 쪽을
+   보면 짧아지고 끝(배럴 단면)이 보인다. 마운드 쪽을 보면 몸 뒤로 숨는다. */
+const SD_SET={v:[-0.62,0.76,-0.18], hx:-13, hy:-49, tw:0};
+const SD_SWING_K=[
+  /* t     배트 방향            손 x  손 y  몸 돌림 */
+  [0.00, [-0.62, 0.76,-0.18], -13, -49, 0.00],
+  [0.22, [-0.74, 0.62,-0.26], -18, -52,-0.12],   // 뒤로 감는다
+  [0.36, [-0.50, 0.08,-0.86], -11, -45, 0.42],   // 배럴이 처져서 포수 쪽을 본다
+  [0.50, [ 1.00,-0.03, 0.04],   6, -40, 1.00],   // 임팩트 — 존과 나란하다
+  [0.62, [ 0.62, 0.12, 0.78],  11, -46, 1.12],   // 마운드 쪽으로 뻗는다
+  [0.78, [-0.85, 0.35, 0.40],  10, -56, 1.15],   // 앞 어깨 너머로 감긴다 — 헬멧 왼쪽으로 삐져나온다
+  [1.00, [-0.62, 0.76,-0.18], -13, -49, 0.00]    // 다시 준비
+];
+function sdNorm(v){ const l=Math.hypot(v[0],v[1],v[2])||1; return [v[0]/l,v[1]/l,v[2]/l]; }
+/* 카메라에 비춘 배트 — 화면 벡터 [x,y] (길이 1 이하) */
+function sdProj(v){ return [v[0], -v[1]*0.94 - v[2]*0.34]; }
 function sdSwing(t){
   const S=SD_SET;
-  if(!(t>0)) return Object.assign({},S,{blur:0,zoom:1});
-  const K=[
-    [0.00, -133, -13, -49, 0.00],
-    [0.22, -150, -18, -52,-0.12],    // 뒤로 감는다
-    [0.50, -360,   6, -40, 1.00],    // 임팩트 — 배트가 존과 나란하다
-    [0.78, -470,  12, -58, 1.15],    // 팔로스루 — 앞 어깨 위로
-    [1.00, -493, -13, -49, 0.00]     // 다시 준비 (-493 = -133)
-  ];
+  if(!(t>0)||t>=1) return {v:S.v.slice(), hx:S.hx, hy:S.hy, tw:0, blur:0, zoom:1, t:0};
+  const K=SD_SWING_K;
   let i=0; while(i<K.length-2 && t>K[i+1][0]) i++;
   const A=K[i], B=K[i+1];
   let k=(t-A[0])/(B[0]-A[0]);
-  k = (i===1) ? k*k*(1.6-0.6*k) : sdEase(k);       // 휘두르는 구간은 뒤로 갈수록 빠르다
-  const blur = t<0.22?0 : t<0.5?Math.min(1,(t-0.22)/0.14) : t<0.86?1-(t-0.5)/0.36*0.7 : 0.3*(1-(t-0.86)/0.14);
+  /* 휘두르는 구간(0.22~0.62)은 뒤로 갈수록 빠르다 — 채찍처럼 */
+  k = (i===1||i===2) ? k*k*(1.5-0.5*k) : sdEase(k);
+  const v=sdNorm([sdLerp(A[1][0],B[1][0],k), sdLerp(A[1][1],B[1][1],k), sdLerp(A[1][2],B[1][2],k)]);
+  const blur = t<0.26?0 : t<0.5?Math.min(1,(t-0.26)/0.12) : t<0.84?1-(t-0.5)/0.34*0.75 : 0.25*(1-(t-0.84)/0.16);
   const zoom = t<0.22?1-0.02*(t/0.22) : t<0.5?0.98+0.10*((t-0.22)/0.28) : 1.08-0.08*Math.min(1,(t-0.5)/0.5);
-  return {ang:sdLerp(A[1],B[1],k), hx:sdLerp(A[2],B[2],k), hy:sdLerp(A[3],B[3],k),
-          tw:sdLerp(A[4],B[4],k), blur:Math.max(0,blur), zoom:zoom};
+  return {v, hx:sdLerp(A[2],B[2],k), hy:sdLerp(A[3],B[3],k),
+          tw:sdLerp(A[4],B[4],k), blur:Math.max(0,blur), zoom, t};
 }
 
 /* 사람 하나. (x,y) 발바닥 가운데, h 키(논리 px). pose 는 기존 이름 그대로.
@@ -29892,20 +29974,19 @@ function sdLeg(D,H,K,A,w){
    얼굴은 마운드를 본다. 등번호와 헬멧 뒤통수, 오른쪽에 뺨과 귀가 조금.  */
 function sdBatter(D,S){
   const g=D.g, P=D.P, tw=S.tw;
-  const trail=(D.o.swQ!=null||S.blur>0)&&S.blur>0.03;
-  const ang=S.ang*Math.PI/180, H=[S.hx,S.hy];
   const BL=50;                                   // 배트 길이 — 짧고 굵게(SD)
-  /* 배트가 아래를 보는 동안(몸 앞으로 지나가는 구간)은 몸 뒤에 그린다 */
-  const a360=((S.ang%360)+360)%360;
-  const batBehind = a360>25 && a360<160;
+  const H=[S.hx,S.hy];
+  const pv=sdProj(S.v);
+  /* 배트가 마운드 쪽(z>0.25)을 보면 몸 저편이다 — 몸통보다 먼저 그린다 */
+  const batBehind = S.v[2]>0.25;
   // 몸 비틀기 — 어깨가 앞(오른쪽)으로 돈다
   const sx=tw*5, hipx=tw*2.2;
   const shL=[-14+sx*0.6,-45], shR=[14+sx,-45];
-  if(trail) sdTrail(D,H,S,BL);
+  if(S.blur>0.03) sdTrail(D,S,BL);
   /* 앞팔(왼팔) — 몸 저편이라 몸통보다 먼저 */
   const eF=sdIK(shR,[H[0]+3,H[1]+1],12,12,-1);
   sdLimb(D,[shR[0],shR[1],eF[0],eF[1],H[0]+3,H[1]+1],7.2,P.team,P.teamD);
-  if(batBehind) sdBat(D,H,ang,BL);
+  if(batBehind) sdBat(D,H,pv,S.v,BL);
   /* 다리 — 넓게 벌린다. 휘두르면 뒷발이 돌아서 무릎이 안으로 */
   const kIn=Math.max(0,tw)*6;
   sdLeg(D,[-8+hipx,-26],[-15+kIn,-13],[-16+kIn*0.4,-5],13);
@@ -29925,7 +30006,7 @@ function sdBatter(D,S){
   sdCel(D,torso,P.jer,()=>{
       g.fillStyle=P.jerD; g.beginPath(); g.rect(-30,-60,60,60);
       g.ellipse(4+sx*0.3,-40,15,17,0,0,Math.PI*2); g.fill('evenodd'); },
-    ()=>{ g.strokeStyle=P.team; g.lineWidth=1.3;              // 등판 가운데 솔기 대신 어깨 요크
+    ()=>{ g.strokeStyle=P.team; g.lineWidth=1.3;              // 어깨 요크
       g.beginPath(); g.moveTo(-15,-45); g.quadraticCurveTo(0,-43,15,-45); g.stroke(); });
   /* 등번호 — 팀 색에 흰 테두리 */
   if(D.o.no!=null){
@@ -29945,50 +30026,72 @@ function sdBatter(D,S){
   /* 머리 */
   sdBatHead(D,[2+tw*1.2,-74]);
   /* 손 · 배트 */
-  if(!batBehind) sdBat(D,H,ang,BL);
+  if(!batBehind) sdBat(D,H,pv,S.v,BL);
   sdHand(D,H[0]+2.4,H[1]+1.2,4.4,P.white,P.whiteD);
   sdHand(D,H[0],H[1],4.6,P.white,P.whiteD);
 }
-/* 배트 — 손잡이(손)에서 끝까지. 끝이 굵다 */
-function sdBat(D,H,ang,L){
+/* 배트 — 손잡이(손)에서 끝까지. pv 는 화면에 비친 방향(길이 ≤1),
+   v 는 3차원 방향. 카메라 쪽을 보면 짧아지고 끝 단면(둥근 나무결)이 보인다 */
+function sdBat(D,H,pv,v,L){
   const g=D.g, P=D.P;
+  const len=Math.hypot(pv[0],pv[1]), Lp=Math.max(8,L*len);
+  const ang=Math.atan2(pv[1],pv[0]);
+  const near=1-(v?v[2]:0)*0.12;                  // 카메라에 가까우면 조금 굵다
+  const w=4.9*near;
   g.save(); g.translate(H[0],H[1]); g.rotate(ang);
   const path=()=>{ g.beginPath();
-    g.moveTo(-6,-1.6); g.lineTo(L*0.40,-1.9);
-    g.quadraticCurveTo(L*0.62,-4.6,L-3,-4.9);
-    g.quadraticCurveTo(L+1.2,-4.8,L+1.2,0); g.quadraticCurveTo(L+1.2,4.8,L-3,4.9);
-    g.quadraticCurveTo(L*0.62,4.6,L*0.40,1.9); g.lineTo(-6,1.6); g.closePath(); };
-  sdCel(D,path,P.bat,()=>{ g.fillStyle=P.batD; g.fillRect(-8,1.2,L+12,6); },
-    ()=>{ g.fillStyle=P.batL; g.beginPath(); g.ellipse(L*0.72,-2.4,L*0.20,0.9,0,0,Math.PI*2); g.fill(); });
+    g.moveTo(-6,-1.6); g.lineTo(Lp*0.40,-1.9);
+    g.quadraticCurveTo(Lp*0.62,-w*0.94,Lp-3,-w);
+    g.quadraticCurveTo(Lp+1.2,-w,Lp+1.2,0); g.quadraticCurveTo(Lp+1.2,w,Lp-3,w);
+    g.quadraticCurveTo(Lp*0.62,w*0.94,Lp*0.40,1.9); g.lineTo(-6,1.6); g.closePath(); };
+  sdCel(D,path,P.bat,()=>{ g.fillStyle=P.batD; g.fillRect(-8,1.2,Lp+12,w+2); },
+    ()=>{ g.fillStyle=P.batL; g.beginPath(); g.ellipse(Lp*0.72,-w*0.5,Lp*0.20,0.9,0,0,Math.PI*2); g.fill(); });
+  /* 끝 단면 — 배럴이 카메라를 볼 때 */
+  if(v && v[2]<-0.35 && len<0.8){
+    const r=w*1.02;
+    sdCel(D,()=>{ g.beginPath(); g.ellipse(Lp-1,0,r*(1-len)*0.9+1.2,r,0,0,Math.PI*2); },P.batL,null,
+      ()=>{ g.strokeStyle=P.batD; g.lineWidth=0.7; g.beginPath();
+        g.ellipse(Lp-1,0,(r*(1-len)*0.9+1.2)*0.55,r*0.55,0,0,Math.PI*2); g.stroke(); });
+  }
   // 노브
   sdCel(D,()=>{ g.beginPath(); g.ellipse(-6.5,0,1.6,2.8,0,0,Math.PI*2); },P.batD);
   // 그립 테이프
   g.fillStyle=P.team; g.globalAlpha=0.9; g.fillRect(-5,-1.5,7,3); g.globalAlpha=1;
   g.restore();
 }
-/* 스윙 잔상 — 배트 끝이 지나간 부채꼴. 잘 맞을수록 금색 */
-function sdTrail(D,H,S,L){
-  const g=D.g, q=D.o.swQ;
+/* 스윙 잔상 — 배트 끝이 지나온 길을 리본으로. 잘 맞을수록 금색.
+   지나온 몇 프레임의 배트 끝을 다시 계산해서 잇는다 — 원을 그려 넣으면
+   궤적이 3차원이라 실제 배트와 안 맞는다.                          */
+function sdTrail(D,S,L){
+  const g=D.g, q=D.o.swQ, t=S.t||0;
   const solid=(q!=null&&q>=0.72), whiff=(q!=null&&q<0.18);
   const C = solid?'255,206,84':(whiff?'150,172,205':'255,255,255');
   const M = solid?1.3:(whiff?0.6:1);
-  const a=S.blur, D2R=Math.PI/180;
-  const end=S.ang*D2R, start=(S.ang+Math.min(150,70+a*80))*D2R;   // 지나온 쪽(각도가 큰 쪽)
-  g.save();
-  const grd=g.createRadialGradient(H[0],H[1],L*0.25,H[0],H[1],L*1.08);
-  grd.addColorStop(0,'rgba('+C+',0)');
-  grd.addColorStop(0.65,'rgba('+C+','+(0.28*a*M).toFixed(3)+')');
-  grd.addColorStop(0.94,'rgba('+C+','+(0.80*a*M).toFixed(3)+')');
-  grd.addColorStop(1,'rgba('+C+',0)');
-  g.fillStyle=grd;
-  g.beginPath(); g.moveTo(H[0],H[1]); g.arc(H[0],H[1],L*1.08,end,start,false); g.closePath(); g.fill();
-  g.lineCap='round';
-  g.strokeStyle='rgba(255,255,255,'+(0.75*a*(solid?1:0.7)).toFixed(3)+')'; g.lineWidth=2.4;
-  g.beginPath(); g.arc(H[0],H[1],L*0.98,end+0.05,end+(start-end)*0.7,false); g.stroke();
-  for(let i=0;i<3;i++){
-    g.strokeStyle='rgba('+C+','+(0.5*a*M*(1-i*0.25)).toFixed(3)+')'; g.lineWidth=1.3;
-    g.beginPath(); g.arc(H[0],H[1],L*(0.62+i*0.12),end+0.12+i*0.1,end+(start-end)*(0.55-i*0.1),false); g.stroke();
+  const a=S.blur;
+  const N=9, span=0.16;
+  const out=[], inn=[];
+  for(let i=0;i<=N;i++){
+    const tt=Math.max(0.2,t-span*(i/N));
+    const Q=(i===0)?S:sdSwing(tt);
+    const pv=sdProj(Q.v);
+    out.push([Q.hx+pv[0]*L*1.02, Q.hy+pv[1]*L*1.02]);
+    inn.push([Q.hx+pv[0]*L*0.42, Q.hy+pv[1]*L*0.42]);
   }
+  g.save();
+  g.beginPath(); g.moveTo(out[0][0],out[0][1]);
+  for(let i=1;i<=N;i++) g.lineTo(out[i][0],out[i][1]);
+  for(let i=N;i>=0;i--) g.lineTo(inn[i][0],inn[i][1]);
+  g.closePath();
+  const gr=g.createLinearGradient(out[0][0],out[0][1],out[N][0],out[N][1]);
+  gr.addColorStop(0,'rgba('+C+','+(0.62*a*M).toFixed(3)+')');
+  gr.addColorStop(1,'rgba('+C+',0)');
+  g.fillStyle=gr; g.fill();
+  /* 끝선 — 밝은 한 줄 */
+  g.lineCap='round'; g.lineJoin='round';
+  g.strokeStyle='rgba(255,255,255,'+(0.8*a*(solid?1:0.7)).toFixed(3)+')'; g.lineWidth=2.2;
+  g.beginPath(); g.moveTo(out[0][0],out[0][1]);
+  for(let i=1;i<=Math.round(N*0.7);i++) g.lineTo(out[i][0],out[i][1]);
+  g.stroke();
   g.restore();
 }
 /* 헬멧 뒤통수. 아래로 뒷머리·목, 오른쪽에 뺨과 귀 */
@@ -30054,6 +30157,38 @@ const SD_FRONT={
           L:[[-4,-21],[-13,-26],[-19,-33]], R:[[10,-21],[18,-12],[18,-5]], fL:[-21,-31], fR:[18,0],
           thr:[[4,-32],[16,-20]], glv:[[16,-40],[9,-36]], gloveAt:[10,-36], ball:false}
 };
+/* 컷인(클로즈업) 자세 — 경기 화면에서는 안 쓴다. 몸을 통째로 눕혀서
+   다이빙·슬라이딩을 만든다. 팔이 머리 위로 뻗은 자세를 90° 돌리면 날아가는 사람이다 */
+Object.assign(SD_FRONT,{
+  reach: {hip:[0,-27], lean:0,
+          L:[[-7,-26],[-10,-13],[-12,-5]], R:[[7,-26],[10,-13],[11,-5]], fL:[-12,0], fR:[11,0],
+          thr:[[-21,-40],[-27,-33]], glv:[[19,-60],[21,-77]], gloveAt:[22,-83], glvRot:-0.5, glvSz:9.5},
+  dive:  {hip:[0,-27], lean:0,
+          L:[[-5,-26],[-7,-13],[-8,-4]], R:[[5,-26],[9,-14],[11,-6]], fL:[-8,0], fR:[11,-1],
+          thr:[[-15,-60],[-11,-78]], glv:[[14,-61],[12,-80]], gloveAt:[12,-87], glvRot:-0.1, glvSz:10},
+  /* 주자가 머리부터 몸을 던진다 — 글러브가 없다 */
+  diveR: {hip:[0,-27], lean:0, noGlove:true,
+          L:[[-5,-26],[-7,-13],[-8,-4]], R:[[5,-26],[9,-14],[11,-6]], fL:[-8,0], fR:[11,-1],
+          thr:[[-15,-60],[-11,-78]], glv:[[14,-61],[12,-80]]},
+  tag:   {hip:[0,-25], lean:0.30,
+          L:[[-7,-24],[-13,-13],[-14,-5]], R:[[7,-24],[14,-13],[15,-5]], fL:[-14,0], fR:[15,0],
+          thr:[[-17,-36],[-15,-28]], glv:[[19,-34],[24,-18]], gloveAt:[25,-14], glvRot:1.2, glvSz:9.5},
+  bobble:{hip:[0,-24], lean:0.22,
+          L:[[-7,-23],[-13,-12],[-14,-4]], R:[[7,-23],[13,-12],[14,-4]], fL:[-14,0], fR:[14,0],
+          thr:[[-17,-34],[-9,-27]], glv:[[15,-35],[7,-25]], gloveAt:[6,-23], glvRot:0.9, glvSz:9.5},
+  run:   {hip:[0,-28], lean:0.12, noGlove:true,
+          L:[[-6,-27],[-13,-17],[-19,-11]], R:[[6,-27],[10,-14],[9,-4]], fL:[-20,-8], fR:[9,0],
+          thr:[[-19,-36],[-13,-28]], glv:[[18,-38],[21,-50]]},
+  safe:  {hip:[0,-27], lean:0, noGlove:true,
+          L:[[-7,-26],[-11,-13],[-12,-5]], R:[[7,-26],[11,-13],[12,-5]], fL:[-12,0], fR:[12,0],
+          thr:[[-27,-45],[-40,-45]], glv:[[27,-45],[40,-45]]},
+  outC:  {hip:[0,-27], lean:0, noGlove:true,
+          L:[[-7,-26],[-10,-13],[-11,-5]], R:[[7,-26],[10,-13],[11,-5]], fL:[-11,0], fR:[11,0],
+          thr:[[-24,-55],[-20,-72]], glv:[[18,-38],[12,-32]]},
+  ump:   {hip:[0,-25], lean:0.25, noGlove:true,
+          L:[[-7,-24],[-13,-13],[-14,-5]], R:[[7,-24],[13,-13],[14,-5]], fL:[-14,0], fR:[14,0],
+          thr:[[-16,-34],[-12,-24]], glv:[[16,-34],[12,-24]]}
+});
 function sdFront(D,pose){
   const g=D.g, P=D.P;
   let key=pose, mirrorGlove=false;
@@ -30103,18 +30238,17 @@ function sdFront(D,pose){
   if(R.kick){ g.save(); g.translate(0,-dy*0.5); leg(R.R,R.fR); g.restore(); }
   const head=[tx+(R.lean*6),-73];
   const drawHead=()=>sdFace(D,head);
+  const glvSz=key==='field'?9.5:(R.glvSz||8);
+  const glvArm=()=>{ arm(shR,R.glv[0],R.glv[1],true);
+    if(R.noGlove) sdHand(D,R.glv[1][0],R.glv[1][1],4.2,P.skin,P.skinD);
+    else sdGlove(D,R.gloveAt[0],R.gloveAt[1],glvSz,R.glvRot!=null?R.glvRot:(key==='cock'?0.9:0.15)); };
+  const thrArm=()=>{ arm(shL,R.thr[0],R.thr[1],false);
+    sdHand(D,R.thr[1][0],R.thr[1][1],4.2,P.skin,P.skinD);
+    if(R.ball) sdBall(D,R.thr[1][0]-1,R.thr[1][1]-3.4,2.6); };
   if(key==='rel'){                                   // 던지는 팔이 머리 위로 넘어온다 — 머리 뒤에
-    arm(shR,R.glv[0],R.glv[1],true); sdGlove(D,R.gloveAt[0],R.gloveAt[1],7.5,0.3);
-    drawHead();
-    arm(shL,R.thr[0],R.thr[1],false);
-    sdHand(D,R.thr[1][0],R.thr[1][1],4.2,P.skin,P.skinD);
+    glvArm(); drawHead(); thrArm();
   } else {
-    drawHead();
-    arm(shL,R.thr[0],R.thr[1],false);
-    sdHand(D,R.thr[1][0],R.thr[1][1],4.2,P.skin,P.skinD);
-    if(R.ball) sdBall(D,R.thr[1][0]-1,R.thr[1][1]-3.4,2.6);
-    arm(shR,R.glv[0],R.glv[1],true);
-    sdGlove(D,R.gloveAt[0],R.gloveAt[1],key==='field'?9.5:8,key==='cock'?0.9:0.15);
+    drawHead(); thrArm(); glvArm();
   }
   g.restore();
   if(mirrorGlove){ g.restore(); D.dir=-D.dir; }
@@ -30136,25 +30270,52 @@ function sdFace(D,C){
   g.fillStyle=P.hair;
   g.beginPath(); g.moveTo(cx-24,cy-6); g.quadraticCurveTo(cx-22,cy+4,cx-19,cy+6); g.lineTo(cx-17,cy-6); g.closePath(); g.fill();
   g.beginPath(); g.moveTo(cx+24,cy-6); g.quadraticCurveTo(cx+22,cy+4,cx+19,cy+6); g.lineTo(cx+17,cy-6); g.closePath(); g.fill();
-  // 눈 — 크고 까맣게, 반짝이 두 개
-  [-9.5,9.5].forEach(ex=>{
-    g.fillStyle='#231b1a'; g.beginPath(); g.ellipse(cx+ex,cy+5,3.8,5.2,0,0,Math.PI*2); g.fill();
-    g.fillStyle='#5a3a2c'; g.beginPath(); g.ellipse(cx+ex,cy+7,2.6,2.8,0,0,Math.PI*2); g.fill();
-    g.fillStyle='#ffffff'; g.beginPath(); g.arc(cx+ex+1.2,cy+2.9,1.5,0,Math.PI*2); g.fill();
-    g.beginPath(); g.arc(cx+ex-1.2,cy+7.6,0.7,0,Math.PI*2); g.fill();
-  });
-  // 눈썹 — 결연하게
+  /* 표정 — o.face. 컷인에서만 바뀐다.
+       grit  이를 악문다(>< 눈, 벌린 입)    — 몸 날릴 때
+       shock 동그란 눈, 오 벌린 입           — 실책
+       joy   웃는 눈(^^), 활짝 웃는 입       — 호수비·세이프 뒤  */
+  const xp=D.o.face;
+  if(xp==='grit'){
+    g.strokeStyle='#231b1a'; g.lineWidth=2.2; g.lineCap='round'; g.lineJoin='round';
+    g.beginPath(); g.moveTo(cx-13,cy+2); g.lineTo(cx-7,cy+5); g.lineTo(cx-13,cy+8);
+    g.moveTo(cx+13,cy+2); g.lineTo(cx+7,cy+5); g.lineTo(cx+13,cy+8); g.stroke();
+  } else if(xp==='joy'){
+    g.strokeStyle='#231b1a'; g.lineWidth=2.2; g.lineCap='round';
+    g.beginPath(); g.arc(cx-9.5,cy+7,3.6,Math.PI*1.1,Math.PI*1.9);
+    g.moveTo(cx+13.1,cy+7); g.arc(cx+9.5,cy+7,3.6,Math.PI*1.1,Math.PI*1.9); g.stroke();
+  } else {
+    const er=xp==='shock'?1.25:1;
+    [-9.5,9.5].forEach(ex=>{
+      g.fillStyle='#231b1a'; g.beginPath(); g.ellipse(cx+ex,cy+5,3.8*er,5.2*(xp==='shock'?1.05:1),0,0,Math.PI*2); g.fill();
+      if(xp==='shock'){ g.fillStyle='#ffffff'; g.beginPath(); g.ellipse(cx+ex,cy+5,2.6,3.6,0,0,Math.PI*2); g.fill();
+        g.fillStyle='#231b1a'; g.beginPath(); g.arc(cx+ex,cy+5.5,1.5,0,Math.PI*2); g.fill(); return; }
+      g.fillStyle='#5a3a2c'; g.beginPath(); g.ellipse(cx+ex,cy+7,2.6,2.8,0,0,Math.PI*2); g.fill();
+      g.fillStyle='#ffffff'; g.beginPath(); g.arc(cx+ex+1.2,cy+2.9,1.5,0,Math.PI*2); g.fill();
+      g.beginPath(); g.arc(cx+ex-1.2,cy+7.6,0.7,0,Math.PI*2); g.fill();
+    });
+  }
+  // 눈썹 — 결연하게 (놀라면 올라간다)
   g.strokeStyle=P.hair; g.lineWidth=1.8; g.lineCap='round';
-  g.beginPath(); g.moveTo(cx-14,cy-3); g.lineTo(cx-6,cy-1.6);
-  g.moveTo(cx+14,cy-3); g.lineTo(cx+6,cy-1.6); g.stroke();
+  const by=xp==='shock'?-3:0;
+  g.beginPath(); g.moveTo(cx-14,cy-3+by); g.lineTo(cx-6,cy-1.6+(xp==='grit'?1.2:by));
+  g.moveTo(cx+14,cy-3+by); g.lineTo(cx+6,cy-1.6+(xp==='grit'?1.2:by)); g.stroke();
   // 뺨
   g.fillStyle=P.blush;
   g.beginPath(); g.ellipse(cx-15,cy+13,4.6,2.6,0,0,Math.PI*2); g.fill();
   g.beginPath(); g.ellipse(cx+15,cy+13,4.6,2.6,0,0,Math.PI*2); g.fill();
   // 코 · 입
   g.fillStyle=P.skinD; g.beginPath(); g.ellipse(cx,cy+11,1.5,1.1,0,0,Math.PI*2); g.fill();
-  g.strokeStyle='#8a4a3a'; g.lineWidth=1.3;
-  g.beginPath(); g.moveTo(cx-3.2,cy+16); g.quadraticCurveTo(cx,cy+17.6,cx+3.2,cy+16); g.stroke();
+  if(xp==='grit'){
+    sdCel(D,()=>{ g.beginPath(); mvRR(g,cx-5,cy+13.5,10,4.6,1.6); },'#ffffff');
+    g.strokeStyle='#8a4a3a'; g.lineWidth=0.7; g.beginPath(); g.moveTo(cx-4.6,cy+15.8); g.lineTo(cx+4.6,cy+15.8); g.stroke();
+  } else if(xp==='shock'){
+    sdCel(D,()=>{ g.beginPath(); g.ellipse(cx,cy+16.5,3,3.8,0,0,Math.PI*2); },'#7a2e2a');
+  } else if(xp==='joy'){
+    sdCel(D,()=>{ g.beginPath(); g.moveTo(cx-5.5,cy+14); g.quadraticCurveTo(cx,cy+22,cx+5.5,cy+14); g.closePath(); },'#7a2e2a');
+  } else {
+    g.strokeStyle='#8a4a3a'; g.lineWidth=1.3;
+    g.beginPath(); g.moveTo(cx-3.2,cy+16); g.quadraticCurveTo(cx,cy+17.6,cx+3.2,cy+16); g.stroke();
+  }
   // 모자 — 둥근 크라운
   const crown=()=>{ g.beginPath();
     g.ellipse(cx,cy-9,27.5,24,0,Math.PI,Math.PI*2);
@@ -30206,6 +30367,283 @@ function sdCatcher(D){
   g.beginPath(); g.moveTo(cx-23,cy+4); g.quadraticCurveTo(cx,cy+10,cx+23,cy+4); g.stroke();
 }
 /* ===== [ART:END] ===== */
+
+/* ================= 클로즈업 컷인 =================
+   [요청] "게임은 슬라이딩 캐치하고 이런맛에 하는건데 호수비 나오고
+           실책 나오고 간절함이 부족해지잖아"
+
+   맞는 말이다. 여태 호수비는 **글자 한 줄**(「잡았다 — 호수비!」)이었다.
+   위에서 내려다본 9px 짜리 사람이 공에 닿는 걸로는 몸을 날렸는지 모른다.
+   마구마구는 그 순간 화면을 **끊고** 그 사람을 크게 비춘다.
+
+   그 한 컷을 만든다. 1.5초. 탭하면 넘어간다.
+     dive       몸을 날려 잡는다          「다이빙 캐치!」
+     slidecatch 미끄러지며 잡는다         「슬라이딩 캐치!」
+     divemiss   몸을 날렸는데 글러브 끝을 스친다 「빠졌다!」
+     bobble     글러브에서 공이 튄다      「실책!」
+     slideSafe  베이스로 몸을 던진다 — 세이프
+     slideOut   베이스로 몸을 던진다 — 태그 아웃
+
+   판정은 여기서 안 한다. **이미 난 결과를 크게 보여줄 뿐이다.**
+   그래서 기록·확률은 하나도 안 바뀐다.                              */
+const CUT_MS=1550;
+const CUT_W=480, CUT_H=270;
+const CUT_TXT={
+  dive:      {big:'다이빙 캐치!',  col:'#ffd15c'},
+  slidecatch:{big:'슬라이딩 캐치!',col:'#ffd15c'},
+  divemiss:  {big:'빠졌다!',      col:'#ff9a5c'},
+  bobble:    {big:'실책!',        col:'#ff5b4f'},
+  slideSafe: {big:'세이프!',      col:'#7ee08f'},
+  slideOut:  {big:'아웃!',        col:'#ff5b4f'}
+};
+/* 컷인을 끌지 여부 — 설정에서 끈 사람은 안 본다 */
+function cutOn(){ return !(typeof ST!=='undefined' && ST && ST.cutOff); }
+/* 사람을 (cx,cy) 몸 가운데 기준으로 rot 만큼 돌려 그린다.
+   발 기준으로 돌리면 눕히는 순간 몸이 화면 밖으로 튄다.            */
+function cutFig(g,cx,cy,h,u,pose,rot,flip,o){
+  g.save(); g.translate(cx,cy); g.rotate(rot||0);
+  mvSD(g,0,h*0.5,h,u,pose,!!flip,o||{});
+  g.restore();
+}
+/* 그 자세의 글러브가 화면 어디에 있나 — 공을 글러브에 넣으려면 알아야 한다 */
+function cutGlove(cx,cy,h,pose,rot,flip){
+  const R=SD_FRONT[pose]; if(!R||!R.gloveAt) return {x:cx,y:cy};
+  const s=h/100, dir=flip?-1:1;
+  /* sdFront 가 상체를 기울이는 만큼 같이 (lean) */
+  const hip=R.hip, ln=-(R.lean||0)*0.35;
+  let gx=R.gloveAt[0], gy=R.gloveAt[1]+(R.lean||0)*7;
+  const dx=gx-hip[0], dy=gy-hip[1];
+  gx=hip[0]+dx*Math.cos(ln)-dy*Math.sin(ln);
+  gy=hip[1]+dx*Math.sin(ln)+dy*Math.cos(ln);
+  const lx=gx*s*dir, ly=gy*s+h*0.5;
+  return {x:cx+lx*Math.cos(rot)-ly*Math.sin(rot), y:cy+lx*Math.sin(rot)+ly*Math.cos(rot)};
+}
+function cutBall(g,x,y,r,spin){
+  g.save(); g.translate(x,y); g.rotate(spin||0);
+  g.fillStyle='#ffffff'; g.beginPath(); g.arc(0,0,r,0,Math.PI*2); g.fill();
+  g.strokeStyle='#1a1f2c'; g.lineWidth=r*0.22; g.stroke();
+  g.strokeStyle='#d8413a'; g.lineWidth=r*0.18;
+  g.beginPath(); g.arc(-r*1.2,0,r,-0.6,0.6); g.stroke();
+  g.beginPath(); g.arc(r*1.2,0,r,Math.PI-0.6,Math.PI+0.6); g.stroke();
+  g.restore();
+}
+/* 흙먼지 — 미끄러진 자리 뒤로 */
+function cutDust(g,x,y,k,n,seed){
+  let s=seed||7;
+  const r=()=>{ s=(s*16807)%2147483647; return s/2147483647; };
+  for(let i=0;i<(n||14);i++){
+    const a=Math.PI*(0.9+r()*1.2), d=(10+r()*38)*k;
+    const px=x+Math.cos(a)*d, py=y+Math.sin(a)*d*0.45-k*10*r();
+    g.fillStyle='rgba(214,176,128,'+(0.55*(1-k)).toFixed(3)+')';
+    g.beginPath(); g.arc(px,py,(4+r()*9)*(0.5+k),0,Math.PI*2); g.fill();
+  }
+}
+/* 번쩍 — 공이 글러브에 꽂히는 자리 */
+function cutBurst(g,x,y,k,col){
+  const n=10;
+  for(let i=0;i<n;i++){
+    const a=i/n*Math.PI*2+0.3, r0=8+k*18, r1=r0+10+k*26;
+    g.strokeStyle='rgba('+col+','+(1-k).toFixed(3)+')'; g.lineWidth=3*(1-k)+1;
+    g.beginPath(); g.moveTo(x+Math.cos(a)*r0,y+Math.sin(a)*r0);
+    g.lineTo(x+Math.cos(a)*r1,y+Math.sin(a)*r1); g.stroke();
+  }
+  g.fillStyle='rgba(255,255,255,'+(0.9*(1-k)).toFixed(3)+')';
+  g.beginPath(); g.arc(x,y,6+k*10,0,Math.PI*2); g.fill();
+}
+/* 배경 — 비스듬한 띠(잔디) + 흘러가는 속도선. 뒤는 어둡게 */
+function cutBack(g,t,dirt){
+  const inK=Math.min(1,t/0.09);
+  g.fillStyle='rgba(6,10,16,'+(0.72*inK).toFixed(3)+')';
+  g.fillRect(0,0,CUT_W,CUT_H);
+  g.save();
+  /* 띠가 왼쪽에서 쓱 들어온다 */
+  const off=(1-sdEase(inK))*-CUT_W*1.2;
+  g.translate(off,0);
+  g.beginPath(); g.moveTo(-40,52); g.lineTo(CUT_W+40,20); g.lineTo(CUT_W+40,250); g.lineTo(-40,262); g.closePath();
+  const gr=g.createLinearGradient(0,20,0,262);
+  gr.addColorStop(0,'#2f7a3a'); gr.addColorStop(0.55,'#3f9448');
+  gr.addColorStop(dirt?0.62:1,dirt?'#b98b56':'#4ea356'); if(dirt) gr.addColorStop(1,'#a57a48');
+  g.fillStyle=gr; g.fill();
+  g.save(); g.clip();
+  /* 잔디 결 */
+  g.fillStyle='rgba(255,255,255,.05)';
+  for(let i=-2;i<12;i++){ g.beginPath(); g.moveTo(i*56,0); g.lineTo(i*56+28,0); g.lineTo(i*56-20,CUT_H); g.lineTo(i*56-48,CUT_H); g.closePath(); g.fill(); }
+  /* 속도선 */
+  let s=11;
+  const r=()=>{ s=(s*16807)%2147483647; return s/2147483647; };
+  for(let i=0;i<26;i++){
+    const y=30+r()*220, len=40+r()*120, sp=0.6+r()*1.4;
+    const x=((r()*CUT_W*1.6) - t*CUT_W*2.2*sp)%(CUT_W*1.6);
+    const xx=x<0?x+CUT_W*1.6:x;
+    g.strokeStyle='rgba(255,255,255,'+(0.10+r()*0.18).toFixed(3)+')'; g.lineWidth=1+r()*1.6;
+    g.beginPath(); g.moveTo(xx-120,y); g.lineTo(xx-120+len,y-len*0.06); g.stroke();
+  }
+  g.restore();
+  /* 띠 테두리 — 위아래 흰 줄 */
+  g.strokeStyle='rgba(255,255,255,.85)'; g.lineWidth=3;
+  g.beginPath(); g.moveTo(-40,52); g.lineTo(CUT_W+40,20); g.stroke();
+  g.beginPath(); g.moveTo(-40,262); g.lineTo(CUT_W+40,250); g.stroke();
+  g.restore();
+}
+/* 도장 — 큰 글자가 쾅 찍힌다 */
+function cutStamp(g,txt,col,sub,k){
+  if(k<=0) return;
+  const pop=k<0.14 ? 2.3-1.45*(k/0.14) : (k<0.24 ? 0.85+0.15*((k-0.14)/0.10) : 1);
+  g.save();
+  g.translate(CUT_W*0.5, 62); g.rotate(-0.07); g.scale(pop,pop);
+  g.globalAlpha=Math.min(1,k/0.06);
+  g.font='900 46px system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif';
+  g.textAlign='center'; g.textBaseline='middle';
+  g.lineJoin='round';
+  g.lineWidth=11; g.strokeStyle='#10141c'; g.strokeText(txt,0,0);
+  g.lineWidth=4.5; g.strokeStyle='#ffffff'; g.strokeText(txt,0,0);
+  g.fillStyle=col; g.fillText(txt,0,0);
+  g.restore();
+  if(sub && k>0.2){
+    g.save(); g.globalAlpha=Math.min(1,(k-0.2)/0.1);
+    g.font='800 15px system-ui,-apple-system,sans-serif'; g.textAlign='center'; g.textBaseline='middle';
+    const w=g.measureText(sub).width+26;
+    g.fillStyle='rgba(10,14,22,.82)'; g.beginPath(); mvRR(g,CUT_W*0.5-w/2,94,w,26,13); g.fill();
+    g.fillStyle='#ffffff'; g.fillText(sub,CUT_W*0.5,107.5);
+    g.restore();
+  }
+}
+/* 컷인 한 장. c = {kind, uF(수비 유니폼), uR(주자 유니폼), sub(자막)}
+   host 위에 덮고, 끝나면(또는 탭하면) done().                       */
+function mvCutIn(host, c, done){
+  let fin=false, raf=null, ov=null;
+  const end=()=>{ if(fin) return; fin=true;
+    if(raf){ try{cancelAnimationFrame(raf);}catch(e){} }
+    if(ov&&ov.parentNode) ov.parentNode.removeChild(ov);
+    done&&done(); };
+  if(!host||!c||!cutOn()||!CUT_TXT[c.kind]){ end(); return null; }
+  let g=null, cv=null;
+  try{
+    ov=document.createElement('div'); ov.className='cut-ov';
+    cv=document.createElement('canvas'); cv.className='cut-cv';
+    cv.width=CUT_W*2; cv.height=CUT_H*2;
+    ov.appendChild(cv);
+    if(getComputedStyle(host).position==='static') host.style.position='relative';
+    host.appendChild(ov);
+    g=cv.getContext&&cv.getContext('2d');
+  }catch(e){ g=null; }
+  if(!g){ end(); return null; }
+  const stop=(e)=>{ if(e){ e.stopPropagation(); if(e.preventDefault) e.preventDefault(); } end(); };
+  /* 탭하면 넘어간다. pointerdown 으로 끝내면 곧이어 오는 click 이 밑에 깔린
+     판(ps-ov)까지 내려가서 장면 전체가 닫힌다 — click 에서 끊는다 */
+  ov.addEventListener('click',stop);
+  const K=c.kind, TX=CUT_TXT[K];
+  const uF=c.uF||{cap:'#b23a34',sh:'#e6ddd0',pants:'#d8d0c4',gl:'#4a3018'};
+  const uR=c.uR||{cap:'#2f5fb0',sh:'#eef2f8',pants:'#dfe4ec',gl:'#5b3a1e'};
+  const UMP={cap:'#1d2230',sh:'#2b3140',pants:'#5d6472',gl:'#333333'};
+  /* 결정적 순간(공이 글러브에 닿는 때) — 이 뒤로 도장이 찍히고 화면이 흔들린다 */
+  const HIT = (K==='bobble')?0.40 : (K==='slideSafe'||K==='slideOut')?0.56 : 0.58;
+  const t0=Date.now();
+  const frame=()=>{
+    if(fin) return;
+    const t=Math.min(1,(Date.now()-t0)/CUT_MS);
+    /* 느린 화면 — 결정적 순간 앞뒤로 시간이 늘어진다 */
+    const u=t<0.08?0:Math.min(1,(t-0.08)/0.78);
+    const a = u<0.42 ? u*1.12 : (u<0.62 ? 0.47+(u-0.42)*0.8 : 0.63+(u-0.62)*0.97);
+    g.setTransform(2,0,0,2,0,0);
+    g.clearRect(0,0,CUT_W,CUT_H);
+    /* 흔들림 — 닿는 순간 0.15초 */
+    const hk=(a-HIT)/0.10;
+    if(hk>0&&hk<1){ const A=(1-hk)*(K==='bobble'?3:5);
+      g.setTransform(2,0,0,2,Math.sin(t*90)*A*2,Math.cos(t*70)*A*1.4); }
+    const slide=(K==='slideSafe'||K==='slideOut');
+    cutBack(g,t,slide||K==='bobble');
+    const hitK=Math.max(0,(a-HIT)/0.35);
+    const faceF=(K==='bobble'||K==='divemiss')?(a>HIT?'shock':'grit'):(a>HIT+0.12?'joy':'grit');
+
+    if(K==='dive'||K==='divemiss'){
+      /* 왼쪽에서 오른쪽으로 몸을 날린다 — 몸이 누우면서 떠올랐다가 떨어진다 */
+      const k=Math.min(1,a/0.72);
+      const cx=120+k*190, cy=172-Math.sin(Math.PI*Math.min(1,k*1.1))*34+(k>0.9?(k-0.9)*120:0);
+      const rot=0.25+sdEase(Math.min(1,k*1.3))*1.25;
+      const h=150;
+      if(k>0.82) cutDust(g,cx-40,226,Math.min(1,(k-0.82)/0.4),16,3);
+      const gl=cutGlove(cx,cy,h,'dive',rot,false);
+      cutFig(g,cx,cy,h,uF,'dive',rot,false,{face:faceF});
+      /* 공 — 오른쪽 위에서 글러브로 */
+      const bs={x:520,y:40};
+      if(K==='dive'){
+        if(a<HIT){ const q=a/HIT, e={x:gl.x,y:gl.y};
+          cutBall(g,bs.x+(e.x-bs.x)*q, bs.y+(e.y-bs.y)*q-Math.sin(Math.PI*q)*30, 7, a*30); }
+        else { cutBall(g,gl.x,gl.y-2,7,0); cutBurst(g,gl.x,gl.y,Math.min(1,hitK*2.2),'255,214,92'); }
+      } else {
+        /* 글러브 끝을 스치고 빠져나간다 */
+        const q=a/HIT, e={x:gl.x+30,y:gl.y+26};
+        const bx=bs.x+(e.x-bs.x)*q, by=bs.y+(e.y-bs.y)*q;
+        cutBall(g,bx+(q>1?(q-1)*260:0),by+(q>1?(q-1)*120:0),7,a*30);
+      }
+    } else if(K==='slidecatch'){
+      /* 발부터 미끄러져 들어오며 글러브를 치켜든다 */
+      const k=Math.min(1,a/0.66);
+      const cx=90+sdEase(k)*210, cy=182+k*10;
+      const rot=-0.25-sdEase(Math.min(1,k*1.4))*0.75;
+      const h=150;
+      cutDust(g,cx-50,232,Math.min(1,k),18,5);
+      const gl=cutGlove(cx,cy,h,'reach',rot,false);
+      cutFig(g,cx,cy,h,uF,'reach',rot,false,{face:faceF});
+      const bs={x:470,y:-20};
+      if(a<HIT){ const q=a/HIT; cutBall(g,bs.x+(gl.x-bs.x)*q, bs.y+(gl.y-bs.y)*q*q, 7, a*30); }
+      else { cutBall(g,gl.x,gl.y-2,7,0); cutBurst(g,gl.x,gl.y,Math.min(1,hitK*2.2),'255,214,92'); }
+    } else if(K==='bobble'){
+      const pose=a<HIT+0.06?'bobble':'reach';
+      const cx=230, cy=178, h=148;
+      const gl=cutGlove(cx,cy,h,'bobble',0,false);
+      cutFig(g,cx,cy,h,uF,pose,0,false,{face:faceF});
+      if(a<HIT){
+        /* 땅볼 — 오른쪽에서 두 번 튀며 들어온다 */
+        const q=a/HIT, bx=500+(gl.x-500)*q;
+        const by=gl.y+Math.abs(Math.sin(q*Math.PI*2.2))*-36*(1-q);
+        cutBall(g,bx,by,7,-a*40);
+      } else {
+        /* 글러브에서 튀어 올라 떨어진다 */
+        const q=(a-HIT)/(1-HIT);
+        const bx=gl.x+q*150, by=gl.y-Math.sin(Math.PI*Math.min(1,q*1.4))*110+(q>0.7?(q-0.7)*80:0);
+        cutBall(g,bx,Math.min(240,by),7,a*50);
+        if(hitK<1) cutBurst(g,gl.x,gl.y,Math.min(1,hitK*2.5),'255,120,90');
+      }
+    } else if(slide){
+      /* 베이스 — 오른쪽. 주자는 왼쪽에서 머리부터 몸을 던진다 */
+      const base={x:330,y:230};
+      g.fillStyle='rgba(0,0,0,.18)'; g.beginPath(); g.ellipse(base.x,base.y+4,34,9,0,0,Math.PI*2); g.fill();
+      g.fillStyle='#f6f6f2'; g.strokeStyle='#1a1f2c'; g.lineWidth=2;
+      g.beginPath(); g.moveTo(base.x-28,base.y); g.lineTo(base.x,base.y-8); g.lineTo(base.x+28,base.y); g.lineTo(base.x,base.y+8); g.closePath(); g.fill(); g.stroke();
+      /* 심판 — 뒤에 작게. 결정적 순간 뒤에 판정 */
+      const call=a>HIT+0.05;
+      mvSD(g,452,160,78,UMP,call?(K==='slideSafe'?'safe':'outC'):'ump',false,{});
+      /* 수비수 — 베이스 오른쪽에서 글러브를 내린다 */
+      const tagK=K==='slideOut'?Math.min(1,a/(HIT-0.04)):Math.min(1,a/(HIT+0.08));
+      const fx=404-sdEase(tagK)*12;
+      mvSD(g,fx,240,150,uF,tagK>0.5?'tag':'bobble',true,{face:a>HIT?(K==='slideOut'?'joy':'shock'):'grit'});
+      if(K==='slideOut'||a<HIT){
+        const gl=cutGlove(fx,240-75,150,'tag',0,true);
+        if(K==='slideOut') cutBall(g,gl.x,gl.y-3,6,0);
+      }
+      /* 주자 — 몸을 던진다 */
+      const k=Math.min(1,a/HIT);
+      const cx=40+sdEase(k)*214, cy=196-Math.sin(Math.PI*Math.min(1,k*1.15))*26+k*10;
+      const rot=0.4+sdEase(Math.min(1,k*1.2))*1.12;
+      if(k>0.7) cutDust(g,cx+20,236,Math.min(1,(k-0.7)/0.5+hitK*0.3),20,9);
+      cutFig(g,cx,cy,140,uR,'diveR',rot,false,{face:faceF==='shock'?'grit':(K==='slideSafe'&&a>HIT+0.12?'joy':'grit')});
+      if(a>HIT) cutBurst(g,base.x-10,base.y-12,Math.min(1,hitK*2.4),K==='slideSafe'?'140,240,160':'255,110,90');
+    }
+    /* 번쩍 — 닿는 순간 */
+    if(hk>0&&hk<0.5){ g.setTransform(2,0,0,2,0,0); g.fillStyle='rgba(255,255,255,'+(0.45*(1-hk*2)).toFixed(3)+')'; g.fillRect(0,0,CUT_W,CUT_H); }
+    g.setTransform(2,0,0,2,0,0);
+    cutStamp(g,TX.big,TX.col,c.sub||'',Math.max(0,(a-HIT)/0.5));
+    /* 끝 — 어두워지며 빠진다 */
+    if(t>0.9){ g.fillStyle='rgba(6,10,16,'+((t-0.9)/0.1*0.9).toFixed(3)+')'; g.fillRect(0,0,CUT_W,CUT_H); }
+    if(t>=1){ end(); return; }
+    raf=requestAnimationFrame(frame);
+  };
+  raf=requestAnimationFrame(frame);
+  return {kill:end};
+}
+
 
 /* 파츠 시트 — art/pack.js 가 만든 720x538 WebP 를 통째로 넣었다 (약 86KB).
    [함정] 제미나이가 준 원본은 '투명해 보이는 회색 체커보드' 였다. art/strip.js
@@ -30284,7 +30722,7 @@ function mvPaint(mound, o){
      좌타는 1루쪽(화면 오른쪽) — 포수 뒤에서 본 기준이다.            */
   /* [v3.23.0] SD 타자는 머리가 커서 박스 한가운데 세우면 헬멧이 존을 먹는다.
      바깥(포수 반대쪽)으로 키의 1할 비켜 세운다 */
-  const bx=(st.batLeft?MV_BOXC[1]:MV_BOXC[0]) + (st.batLeft?1:-1)*MV_FIG_H.bat*0.10;
+  const bx=(st.batLeft?MV_BOXC[1]:MV_BOXC[0]) + (st.batLeft?1:-1)*MV_FIG_H.bat*0.13;
   mvFootRing(g, bx, MV_BOXC[2], 34, true);               // 답지 — 타자 발밑
   if(!mvFig(g, st.bat, bx, MV_BOXC[2], ou, !!st.batLeft, {no:st.batNo, swT:st.swT, swQ:st.swQ}))
     mvGuy(g, bx, MV_BOXC[2]-2, 80, ou, st.bat, !st.batLeft);
@@ -31043,6 +31481,89 @@ function swingNote(o){
   return out.slice(0,2).join(' · ');
 }
 
+
+/* ================= 승부처 — 간절함 =================
+   [요청] "호수비 나오고 실책 나오고 간절함이 부족해지잖아"
+   9회말 2아웃 만루와 3회초 주자 없음이 **똑같은 화면**이었다.
+   긴장해야 할 타석에서 화면이 먼저 긴장한다 —
+     ① 타석이 시작될 때 한 번 「승부처」 띠가 쾅 지나간다
+     ② 그 타석 내내 판 가장자리가 심장 뛰듯 붉게 뛴다
+   결과·확률은 안 건드린다. 보여주기만 한다.                        */
+const CLUTCH_BAT_LINES=[
+  ['여기서 하나면 된다','여기서 하나면 됩니다'],
+  ['손에 땀이 찬다. 배트를 다시 쥔다','손에 땀이 찹니다. 배트를 다시 쥡니다'],
+  ['덕아웃이 전부 일어섰다','덕아웃이 전부 일어섰습니다'],
+  ['이 공 하나에 오늘이 걸렸다','이 공 하나에 오늘이 걸렸습니다'],
+  ['숨 한 번 크게 쉬고 들어간다','숨 한 번 크게 쉬고 들어갑니다'],
+  ['단톡방에 오늘 이 장면이 올라간다','단톡방에 오늘 이 장면이 올라갑니다'],
+  ['초구부터 노린다. 망설이면 끝이다','초구부터 노립니다. 망설이면 끝입니다']
+];
+const CLUTCH_PIT_LINES=[
+  ['한 방이면 뒤집힌다. 낮게 던진다','한 방이면 뒤집힙니다. 낮게 던집니다'],
+  ['포수 미트만 본다','포수 미트만 봅니다'],
+  ['뒤에 있는 여덟 명을 믿는다','뒤에 있는 여덟 명을 믿습니다'],
+  ['볼넷은 안 된다. 정면 승부다','볼넷은 안 됩니다. 정면 승부입니다'],
+  ['손끝이 떨린다. 로진을 한 번 더 만진다','손끝이 떨립니다. 로진을 한 번 더 만집니다'],
+  ['이 타자만 잡으면 끝이다','이 타자만 잡으면 끝납니다']
+];
+/* 지금이 승부처인가 — 공격 쪽에서 본다(mine 이 수비면 뒤집어 읽는다) */
+function clutchOf(){
+  if(typeof LIVE==='undefined'||!LIVE||LIVE.over) return null;
+  const INN=LIVE.INN||7, inn=LIVE.inning||1, half=LIVE.half||0, outs=LIVE.outs||0;
+  const off=half===0?LIVE.away:LIVE.home, dfn=half===0?LIVE.home:LIVE.away;
+  if(!off||!dfn) return null;
+  const diff=(off.runs||0)-(dfn.runs||0);           // 공격팀 기준
+  const b=LIVE.bases||[null,null,null];
+  const on=(b[0]?1:0)+(b[1]?1:0)+(b[2]?1:0);
+  const risp=!!(b[1]||b[2]);
+  const late=inn>=INN-1, last=inn>=INN;
+  const baseTxt=on===3?'만루':on===0?'주자 없음':
+    [b[0]?'1':'',b[1]?'2':'',b[2]?'3':''].filter(Boolean).join(',')+'루';
+  const where=inn+'회'+(half===0?'초':'말')+' '+outs+'아웃 '+baseTxt;
+  const gap=diff===0?'동점':(Math.abs(diff)+'점 차'+(diff<0?' 뒤진다':' 앞선다'));
+  /* 끝내기 — 말 공격, 마지막 이닝 이상, 지거나 비겼고 주자로 뒤집을 수 있다 */
+  if(half===1 && last && diff<=0 && -diff<=on+1)
+    return {lvl:3, big:'끝내기 찬스', sub:where+' · '+gap, gap:diff};
+  /* 마지막 아웃카운트 — 지고 있는 쪽의 마지막 타석 */
+  if(last && outs===2 && diff<0 && -diff<=on+1 && (half===1 || inn>=INN))
+    return {lvl:3, big:'마지막 아웃카운트', sub:where+' · '+gap, gap:diff};
+  if(late && Math.abs(diff)<=2 && (risp || (outs===2&&on>0)))
+    return {lvl:2, big:'승부처', sub:where+' · '+gap, gap:diff};
+  if(Math.abs(diff)<=1 && on===3)
+    return {lvl:2, big:'만루 승부', sub:where+' · '+gap, gap:diff};
+  return null;
+}
+/* 판(mv) 위에 띄운다. role — 'bat' 내 타석 / 'pit' 내 투구 */
+function clutchShow(mv, role){
+  const c=clutchOf();
+  if(!mv) return null;
+  mv.classList.toggle('clutch', !!c);
+  if(!c) return null;
+  /* 같은 타석에는 한 번만 — 공 하나마다 다시 그려져도 띠는 한 번 */
+  const key=[LIVE.inning,LIVE.half,LIVE.outs,(LIVE.bases||[]).join('.'),
+             (LIVE.off&&LIVE.off().order)||0].join('|');
+  if(LIVE._clutchKey===key) return c;
+  LIVE._clutchKey=key;
+  const me=(typeof ST!=='undefined'&&ST&&ST.playerId)||MYID;
+  const pool=role==='pit'?CLUTCH_PIT_LINES:CLUTCH_BAT_LINES;
+  const pair=pickFresh(pool, role==='pit'?'CLUTCH_PIT_LINES':'CLUTCH_BAT_LINES')||pool[0];
+  let big=c.big;
+  if(role==='pit'){          // 수비 쪽에서 읽으면 이름이 바뀐다
+    if(big==='끝내기 찬스') big='끝내기 위기';
+    else if(big==='마지막 아웃카운트') big='하나만 더';
+    else if(big==='만루 승부') big='만루 위기';
+    else big='위기';
+  }
+  const ban=document.createElement('div');
+  ban.className='clutch-ban lv'+c.lvl+(role==='pit'?' pit':'');
+  ban.innerHTML='<div class="cb-band"><b>'+big+'</b><span>'+c.sub+'</span>'+
+    '<i>「'+say(me,pair[0],pair[1])+'」</i></div>';
+  mv.appendChild(ban);
+  const kill=()=>{ if(ban.parentNode) ban.parentNode.removeChild(ban); };
+  ban.addEventListener('click',(e)=>{ e.stopPropagation(); kill(); });
+  setTimeout(kill, 2300);
+  return c;
+}
 function renderSwing(box, d){
   const bat=LIVE.batter();
   const def=LIVE.def();
@@ -31058,6 +31579,7 @@ function renderSwing(box, d){
   mv.classList.add('tapon');
   w.appendChild(mv);
   if(bat) moundWho(mv,bat.id,'타석');
+  try{ clutchShow(mv,'bat'); }catch(e){}
 
   const ars=arsenalOf(myP);
   const hasBreak=ars.some(k=>k!=='ff');
@@ -32244,6 +32766,13 @@ function defScene(host, o){
            공이 아직 떠 있을 때(now<flyMs) 잡았으면 여기서 끝낸다.
            손끝에 겨우 걸렸어도 잡은 건 잡은 거다 — q 를 올려서
            엔진이 무조건 아웃으로 받게 한다(defForce 문턱 0.84).     */
+        /* [요청] "슬라이딩 캐치하고 이런맛에 하는건데" — 몸을 날려 잡았거나
+           글러브 끝에 겨우 걸린 공은 화면을 끊고 크게 비춘다(mvCutIn).
+           판정은 이미 났다. 컷인이 끝나면 그 자리에서 이어간다.        */
+        const dv=diving(now);
+        const great = air0 ? (dv || over<=0.15) : dv;
+        const cutK = dv ? 'dive' : 'slidecatch';
+        const goOn=()=>{
         if(air0){
           airOut=true; q=Math.max(0.88, q);
           if(o.onTitle) o.onTitle(over<=0.15?'잡았다 — 호수비!':'잡았다 — 아웃!','#7fc48f');
@@ -32260,15 +32789,24 @@ function defScene(host, o){
           }
         } else {
           phase='throw';
-          if(o.onTitle) o.onTitle(q>=0.92?'잡았다 — 호수비!':'잡았다','#7fc48f');
+          if(o.onTitle) o.onTitle(q>=0.92||dv?'잡았다 — 호수비!':'잡았다','#7fc48f');
           if(o.onTick) o.onTick('<b>어디로 던질까.</b> 늦을수록 송구가 나빠진다');
           if(o.onPhase) o.onPhase('throw', throwables());
         }
+        };
+        if(great && typeof mvCutIn==='function' && cutOn()){
+          phase='cut';
+          const nm=(o.names&&o.names[o.pos])||'';
+          mvCutIn(host, {kind:cutK, uF:PS_UNI.us,
+              sub:((POSNAMES&&POSNAMES[o.pos])||o.pos||'')+(nm?' '+nm:'')},
+            ()=>{ if(stop) return; catchAt=Date.now()-t0; goOn(); });
+        } else goOn();
       } else if(now>=total){
         const over2=Math.max(0, best-GRAB)/Math.max(1,(o.reach-GRAB));
         q=(best<=o.reach) ? Math.max(0.55, 1-over2*0.45)
                           : Math.max(0, 0.5-(best-o.reach)/Math.max(1,o.reach)*0.5);
         caught=(best<=o.reach);
+        const dvMiss=(now-diveAt)>=0 && (now-diveAt)<DIVE_MS+DIVE_LAG+400;   // 막 몸을 날렸다
         if(diving(now)&&!caught) q=Math.max(0,q-0.06);   // 헛 다이빙은 더 깎는다
         if(caught){ phase='throw'; catchAt=now;
           if(o.onTitle) o.onTitle('잡았다','#7fc48f');
@@ -32278,7 +32816,13 @@ function defScene(host, o){
           phase='miss';
           if(o.onTitle) o.onTitle('빠졌다 — 손이 안 닿았다','#e08a70');
           if(o.onTick) o.onTick('타구가 빠져나갔다');
-          setTimeout(()=>{ if(o.onDone) o.onDone(q, 'def:none', null); }, 620);
+          /* 몸을 날렸는데 안 닿았다 — 그것도 한 컷이다. 아쉬움이 보여야 다음에 더 붙는다 */
+          if(dvMiss && typeof mvCutIn==='function' && cutOn()){
+            const nm=(o.names&&o.names[o.pos])||'';
+            mvCutIn(host, {kind:'divemiss', uF:PS_UNI.us,
+                sub:((POSNAMES&&POSNAMES[o.pos])||o.pos||'')+(nm?' '+nm:'')},
+              ()=>{ if(stop) return; if(o.onDone) o.onDone(q, 'def:none', null); });
+          } else setTimeout(()=>{ if(o.onDone) o.onDone(q, 'def:none', null); }, 620);
         }
       }
     }
@@ -33057,6 +33601,7 @@ function renderPitch(box, d){
       const b0=off.team.players.find(x=>x.id===s0.id); return !!(b0&&b0.bats==='L');})(),
     usDef:true});
   w.appendChild(mv);
+  try{ clutchShow(mv,'pit'); }catch(e){}
   const tRow=el('div','ptype'); w.appendChild(tRow);
   const wrap=el('div','zwrap');
   const g=el('div','zgrid'); wrap.appendChild(g);
@@ -37083,6 +37628,20 @@ function renderMore(){
   pl.appendChild(el('div','set-note',(ST.batReady||'auto')==='me'
     ? '타석에 서면 공이 안 온다. 노림수를 고르고 「준비 됐다 ▶」 를 눌러야 던진다. 급할 것 없다.'
     : '한 공이 끝나면 바로 다음 공이 온다. 실제 타석이 그렇다 — 투수가 내가 준비될 때까지 기다려주지 않는다.'));
+
+  /* 클로즈업 컷인 — 다이빙 캐치·실책·슬라이딩을 크게 비춘다. 1.5초씩이라
+     빨리 넘기고 싶은 사람은 끈다(탭해도 넘어간다) */
+  const cutP=el('p','muted');
+  cutP.innerHTML='<br><b>클로즈업</b> — 다이빙 캐치 · 실책 · 베이스 슬라이딩 같은 순간에 화면을 끊고 크게 비춘다.';
+  pl.appendChild(cutP);
+  const cutRow=el('div','btn-row');
+  [[false,'보여준다'],[true,'안 본다']].forEach(([k,nm])=>{
+    const b=el('button','btn'+((!!ST.cutOff)===k?' primary':''),nm);
+    b.onclick=()=>{ ST.cutOff=k; saveGame(true); renderMore();
+      toast(k?'클로즈업을 끈다':'클로즈업을 켠다'); };
+    cutRow.appendChild(b);
+  });
+  pl.appendChild(cutRow);
 
   /* 수비 — 선수 모드에서만.
      [요청] "수비는 이건 선택해야함 전체 공오는거 수비 다할건지
