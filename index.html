@@ -37284,7 +37284,11 @@ function showResult(){
   const next=ST.schedule[ST.round];
   const usSide=next.homeGame?res.home:res.away;
   const thSide=next.homeGame?res.away:res.home;
-  const stage=$('#stage');
+  /* [버그 이력 v3.33.0] 프로에서 2군으로 내려간 주에는 경기 화면이 「2군 경기」 판이라
+     #stage 가 없다. 그 상태로 결과를 부르면 stage.appendChild 에서 터졌다
+     (prosoak 이 3번에 1번꼴로 멈춘 게 이것 — 처리 안 된 예외로 조용히 매달렸다). 없으면 만든다 */
+  let stage=$('#stage');
+  if(!stage){ const v=$('#view'); if(v){ v.innerHTML=''; stage=el('div','stage'); stage.id='stage'; v.appendChild(stage); } }
   cardGameBox={box:res.box, pbox:res.pbox, wp:res.wp, lp:res.lp};   // 선수 카드의 '오늘 경기'용
   const dec=$('#decision'); if(dec){dec.innerHTML='';dec.classList.remove('on');dec.classList.remove('sheet');}
   const lc=$('#livectl'); if(lc)lc.innerHTML='';
