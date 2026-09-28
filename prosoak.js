@@ -91,6 +91,21 @@ const clean=(tag)=>{ const t=(d.getElementById('view')||{}).textContent||'';
   T('불러와도 라인업이 프로 선수다', ()=>ev("(ST.lineup||[]).every(s=>TBYID.wwzw.players.some(p=>p.id===s.id))")?'아홉 전부':'!섞였다');
   ev("go('home')"); clean('불러온 뒤 홈');
 
+  /* [v3.30.0] 명단 버전이 없는 옛 프로 세이브 — 라인업 · 로테이션을 새로 짜야 한다.
+     옛 id 는 빈 자리가 아니라 **다른 사람**을 가리키므로, 순서를 뒤섞은 라인업으로 흉내 낸다 */
+  console.log('\n[옛 프로 세이브(명단 9/28 이전)]');
+  const old=JSON.parse(snap); delete old.pro.rosterVer;
+  old.lineup=(old.lineup||[]).slice().reverse(); old.rotation=['wwzw_p15','wwzw_p14'];
+  ev(`TEAMS=[]; TBYID={}; ST=JSON.parse(${JSON.stringify(JSON.stringify(old))}); TEAMS=buildAllTeams(); TBYID={}; TEAMS.forEach(t=>TBYID[t.id]=t); normalizeState(); applyMyRatings();`);
+  T('명단 버전이 새것으로 바뀐다', ()=>ev("ST.pro.rosterVer===PRO_ROSTER_VER")?ev("PRO_ROSTER_VER"):'!'+ev("String(ST.pro.rosterVer)"));
+  T('라인업을 새로 짰다 — 아홉 전부 우리 선수', ()=>ev("(ST.lineup||[]).length>=9 && ST.lineup.every(s=>TBYID.wwzw.players.some(p=>p.id===s.id))")?'새로 짰다':'!'+ev("(ST.lineup||[]).length"));
+  T('로테이션을 새로 짰다 — 선발 다섯 이상', ()=>ev("(ST.rotation||[]).length>=5")?ev("ST.rotation.length")+'명':'!'+ev("(ST.rotation||[]).length"));
+  T('내 선수는 그대로다', ()=>ev("!!TBYID.wwzw.players.find(p=>p.id==='ksh')")?'있다':'!없다');
+  ev("go('home')"); clean('옛 세이브 불러온 뒤 홈');
+  T('부속 데이터가 열 팀 다 있다', ()=>ev("['kia','sam','lg','lot','kt','dsn','nc','ssg','hh','kw'].every(k=>PRO_FARM[k]&&PRO_FARM[k].hit.length&&PRO_FOREIGN[k].now.length>=4&&PRO_SEASON_2026[k]&&proFront(k))")
+    ?'2군 · 외국인 · 순위 · 프런트':'!빠진 팀');
+  T('아시안게임 대표팀 24명', ()=>ev("PRO_AG_2026.length")===24?'24명':'!'+ev("PRO_AG_2026.length"));
+
   console.log(bad.length?('\n❌ '+bad.length+'건:\n'+bad.slice(0,12).join('\n')):'\n✅ 이상 없음');
   process.exit(bad.length?1:0);
 })();
