@@ -3195,6 +3195,17 @@ html.land .pp-ov,html.land #sheet{left:env(safe-area-inset-left,0px)!important;r
 .kd-cand b em{font-style:normal;font-weight:600;font-size:11.5px;color:var(--dim)}
 .kd-cand span b{display:inline;font-size:inherit;color:var(--gold)}
 .kd-cand{padding:7px 10px;margin:4px 0}
+.stv-h{font-size:18px;font-weight:900;letter-spacing:.02em;margin-bottom:2px}
+.stv-box{display:flex;flex-direction:column;gap:8px;margin:10px 0;max-height:52vh;overflow:auto}
+.stv-l{background:#151a21;border-radius:10px;padding:9px 11px;border-left:3px solid #5b6778}
+.stv-l.mine{border-left-color:var(--gold);background:#1b1f27}
+.stv-l b{font-size:12.5px;font-weight:900}
+.stv-l i{font-style:normal;font-size:10.5px;color:var(--dim);margin-left:6px}
+.stv-l span{display:block;font-size:13.5px;line-height:1.55;margin-top:3px}
+.stv-ctl{display:flex;flex-direction:column;gap:7px}
+.stv-pick{text-align:left}
+.stv-back{font-size:12.5px;line-height:1.55;background:#151a21;border-left:3px solid var(--gold);padding:8px 10px;border-radius:6px;margin:8px 0}
+.stv-back i{font-style:normal;color:var(--dim);font-size:11.5px}
 .mil-res{font-size:12.5px;line-height:1.55;padding:8px 10px;border-radius:8px;margin:8px 0;background:#151a21;border-left:3px solid var(--dim)}
 .mil-res.ok{border-left-color:#6fcf8a}.mil-res.no{border-left-color:#e0706a}
 .kd-phen{border-color:var(--gold);background:rgba(255,200,60,.08)}
@@ -9292,8 +9303,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.38.0';
-const APP_VERSION_NOTE = '병역 — 상무 · 특례 · 현역';
+const APP_VERSION = '3.39.0';
+const APP_VERSION_NOTE = '지명 거부 — 스토브리그';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9314,6 +9325,12 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.39.0', t:'지명 거부 — 스토브리그', items:[
+    '<b>고졸로 지명받았는데 마음에 안 들면 거부할 수 있다.</b> 드래프트 날 「지명 거부」 — 그 길로 우완좌완(사회인) 입단 드래프트로 간다',
+    '<b>거부하면 장면이 이어진다.</b> 스카우트팀장 전화 → 다음 날 단장이 직접 찾아온다(왜 거부하는지 셋 중 하나를 고른다) → 그날 밤 집 → 우완좌완 단톡방 초대',
+    '<b>다시 나오면 그 구단이 또 부를 수 있다</b>(보유권 — 반쯤). 다른 구단이 부르면 그 단장한테서 문자가 온다. 트라이아웃 날엔 그 구단 스카우트팀장이 맨 뒷줄에 앉아 있다',
+    '다시 지명된 날 — 고졸 때 몇 라운드였고 지금 몇 라운드인지, 그 카페에서 했던 말이 같이 나온다',
+  ]},
   {v:'3.38.0', t:'병역 — 상무 · 특례 · 현역', items:[
     '<b>고졸로 바로 프로에 간 사람은 미필이다.</b> 입영 연기는 만 27세 시즌까지 — 그해 겨울까지 해결 못 하면 <b>현역 강제 입대</b>(한 해 야구를 못 하고 몸이 떨어진다)',
     '<b>상무 — 겨울마다 한 번 지원.</b> 리그 또래 지원자들과 능력치 + 그해 성적으로 줄 세워서 투수 6 · 야수 6명만 붙는다. 붙으면 한 해를 상무 퓨처스에서 뛰고(는다) 1군으로 돌아온다',
@@ -18121,10 +18138,121 @@ function hsGoPro(){
   /* 프로 리그는 2027 시즌 기준으로 만들어져 있다(명단 · 최저연봉 · 샐러리캡 · FA 남은 해).
      [처음 해보니] 고교 졸업 해(2019)로 들어가서 「KBO 2019」 가 찍혔다 — 트라이아웃 길과 같은
      2027 드래프트로 보낸다. 나이는 pfAge 가 「고졸 19세 입단」 으로 따로 센다 */
+  /* 지명을 거부하면 우완좌완 입단 드래프트로 되돌아가야 한다 — 걷기 전에 떠둔다 */
+  if(!ST.hsBack) ST.hsBack={entryDraft:ST.entryDraft, year:ST.year, farmBar:ST.farmBar, notices:(ST.notices||[]).slice(),
+    myFarm:ST.myFarm, founderOn:ST.founderOn};
+  ST.entryDraft=null;
+  ST.myFarm=0; ST.farmDone=0; ST.farmDoneSeen=0;
+  if(Array.isArray(ST.notices)) ST.notices=ST.notices.filter(n=>n.type!=='farm');
   ST.year=2026;
   ST.tryout={score:sc, year:2026, route:'hs'};
   ST.proSlot=proDraftSlot(sc,'hs');
   return ST.proSlot;
+}
+
+/* ================= 지명 거부 — 「스토브리그」 =================
+   [요청 v3.39.0] "고교 드래프트 끝나고 뽑혔는데 마음에 안 들면 거부하고 사회인야구 입단하고
+   다시 노릴 수 있게 — 관련된 스토리 · 스토브리그 드라마를 너무 인상 깊게 봐서"
+
+   실제로는 — 지명 구단이 보유권을 몇 년 쥐고 있고(고의 거부를 막으려고 늘려 왔다),
+   거부한 선수는 대학이나 독립·사회인 리그에서 시간을 보내고 다시 나온다.
+   게임에선 우완좌완(사회인)으로 가서 트라이아웃을 다시 본다. 그때
+     · 거부했던 구단이 또 부를 수 있다(보유권이 남아 있다 — 반쯤 확률)
+     · 다른 구단이 부르면, 거부했던 구단 단장한테서 문자가 온다
+   장면은 전화 → 단장 면담(고르는 것 하나) → 집 → 단톡방 초대 순. 대사는 풀에서 뽑는다.
+   단장 · 팀장은 이름을 안 붙인다(지어낸 사람도 실존 인물처럼 보이기 쉽다) — 직함으로만 부른다. */
+const STV_CALL=[
+  '{r}라운드입니다. 솔직히 말씀드리면 우리 평가가 딱 거기까지예요. 계약금은 {m}. 사인하시죠.',
+  '축하합니다, {r}라운드. 계약금 {m}이고, 2군에서 3년 보겠다는 게 구단 계획입니다.',
+  '{r}라운드 지명이에요. 기대하신 것보다 뒤라는 건 압니다. 그래도 우리가 불렀다는 게 중요하죠.',
+];
+const STV_GM_OPEN=[
+  '지명 거부는 처음 겪어 봅니다. 이유를 물어도 됩니까.',
+  '스카우트팀장한테 들었습니다. 사인을 안 하겠다고요. 이유를 듣고 싶습니다.',
+  '우리가 {r}라운드에 부른 게 모욕이었습니까. 궁금해서 직접 왔습니다.',
+];
+const STV_GM_CLOSE=[
+  '보유권은 우리가 갖고 있습니다. 다시 나오면 또 부를 수도 있고, 안 부를 수도 있어요. 그건 그때 당신 숫자가 정할 겁니다.',
+  '알겠습니다. 저는 감정으로 선수 안 뽑습니다. 숫자가 좋아지면 다시 봅시다.',
+  '틀렸다는 걸 증명하러 가는 거라면, 증명하고 오세요. 그 숫자는 제가 제일 먼저 보겠습니다.',
+];
+const STV_PICKS=[
+  {t:'제 값을 인정받고 싶습니다', gm:'값은 시장이 매깁니다. 오늘 시장이 매긴 값이 {r}라운드예요. 그걸 바꾸고 싶으면 숫자를 바꿔 오세요.', k:'value'},
+  {t:'기록으로 증명하고 다시 오겠습니다', gm:'좋습니다. 기록은 거짓말을 안 하니까요. 사회인 4부 리그 기록이라도 전 봅니다.', k:'prove'},
+  {t:'…같이 뛰고 싶은 사람들이 있습니다', gm:'야구는 혼자 하는 게 아니죠. 그 사람들이 당신을 더 좋은 선수로 만들면, 우리한테도 좋은 일입니다.', k:'team'},
+];
+const STV_HOME=[
+  ['부모님','계약금이 얼만데 그걸 걷어차? …그래, 네 인생이다. 대신 다시 그 자리 올 때까지 징징대지 마라.'],
+  ['고교 감독','스카우트들한테 전화 엄청 왔다. 다들 한마디씩 하더라 — 「간이 크다」고. 난 네가 틀렸다고 생각 안 한다.'],
+  ['부모님','밥은 먹고 다녀라. 그리고 이번엔 끝까지 해.'],
+];
+const STV_BACK_SAME=[
+  '다시 봅니다. {y}년 전 {r0}라운드였고, 오늘은 {r}라운드네요. 증명은 된 것 같습니다.',
+  '보유권 얘기 기억하십니까. 우리가 또 불렀습니다 — 이번엔 {r}라운드로.',
+];
+const STV_BACK_OTHER=[
+  '[{t0} 단장] 축하합니다. {r}라운드면 우리가 틀렸던 거네요. 그때 한 말은 유효합니다 — 숫자는 거짓말 안 합니다.',
+  '[{t0} 단장] 다른 구단 유니폼이 잘 어울리네요. 우리가 놓친 걸 인정합니다. 1군에서 봅시다.',
+];
+function stvFill(s, o){ return String(s).replace(/\{(\w+)\}/g,(m,k)=>o[k]!=null?o[k]:m); }
+function renderRefuse(slot){
+  const c=$('#view'); c.innerHTML='';
+  const me=ST.playerId||MYID, team=slot.team, bonus=pfBonusOf(slot.round, slot.pickIdx+1);
+  const o={r:slot.round, m:wonStr2(bonus), t:proName(team)};
+  const steps=[
+    {who:proName(team)+' 스카우트팀장', role:'전화', line:stvFill(pickFresh(STV_CALL,'stvCall'),o)},
+    {who:nameOf(me), role:'나', line:'…죄송합니다. 사인 안 하겠습니다.', mine:true},
+    {who:proName(team)+' 단장', role:'다음 날 · 학교 앞 카페', line:stvFill(pickFresh(STV_GM_OPEN,'stvOpen'),o)},
+    {pick:true},
+  ];
+  let i=0, picked=null;
+  const card=el('div','card stv'); c.appendChild(card);
+  card.innerHTML='<div class="stv-h">지명 거부</div><p class="muted">'+slot.round+'라운드 '+(slot.pickIdx+1)+'순위 · '+proName(team)+' — 계약금 '+wonStr2(bonus)+'</p>';
+  const box=el('div','stv-box'); card.appendChild(box);
+  const ctl=el('div','stv-ctl'); card.appendChild(ctl);
+  const say=(s)=>{ const r=el('div','stv-l'+(s.mine?' mine':''));
+    r.innerHTML='<b>'+s.who+'</b><i>'+(s.role||'')+'</i><span>'+s.line+'</span>'; box.appendChild(r); r.scrollIntoView&&r.scrollIntoView({block:'nearest'}); };
+  const next=()=>{
+    ctl.innerHTML='';
+    if(i<steps.length && !steps[i].pick){ say(steps[i++]);
+      const b=el('button','btn primary','다음 ▸'); b.onclick=next; ctl.appendChild(b); return; }
+    if(i<steps.length && steps[i].pick && !picked){
+      STV_PICKS.forEach(p=>{ const b=el('button','btn stv-pick',p.t);
+        b.onclick=()=>{ picked=p; i++;
+          say({who:nameOf(me), role:'나', line:p.t, mine:true});
+          say({who:proName(team)+' 단장', role:'', line:stvFill(p.gm,o)});
+          say({who:proName(team)+' 단장', role:'일어서면서', line:stvFill(pickFresh(STV_GM_CLOSE,'stvClose'),o)});
+          const h=pickFresh(STV_HOME,'stvHome'); say({who:h[0], role:'그날 밤', line:h[1]});
+          next(); };
+        ctl.appendChild(b); });
+      return; }
+    /* 끝 — 단톡방 초대, 그리고 우완좌완 드래프트장으로 */
+    say({who:'우완좌완 단톡방', role:'초대', line:'「'+nameOf(me)+'」님이 들어왔습니다. — 야 너 프로 안 갔냐? ㅋㅋ 일단 와라 일요일 경기 있다'});
+    const b=el('button','btn primary','우완좌완 드래프트장으로 ▸');
+    b.onclick=async()=>{ stvRefuse(slot, picked?picked.k:'prove'); await saveGame(true); go('entry'); toast('다시 시작이다'); };
+    ctl.appendChild(b);
+  };
+  next();
+}
+/* 거부 확정 — 우완좌완 입단 드래프트 길로 되돌린다 */
+function stvRefuse(slot, why){
+  const B=ST.hsBack||{};
+  ST.refused={team:slot.team, round:slot.round, pick:slot.pickIdx+1, year:2026, why:why||'prove'};
+  ST.entryDraft=B.entryDraft||entryDraftBuild(ST.hsGAvg!=null?ST.hsGAvg:0.4);
+  ST.year=B.year||ST.entryDraft.year;
+  ST.farmBar=B.farmBar!=null?B.farmBar:ST.farmBar;
+  ST.myFarm=B.myFarm!=null?B.myFarm:1; ST.farmMe={g:0,ab:0,h:0}; ST.farmDone=0; ST.farmDoneSeen=0;
+  if(Array.isArray(B.notices)) ST.notices=B.notices.slice();
+  if(B.founderOn!=null) ST.founderOn=B.founderOn;
+  ST.proRoute=null; ST.tryout=null; ST.proSlot=null; ST.hsBack=null;
+  return ST.refused;
+}
+/* 다시 나왔을 때 — 거부했던 구단이 또 부르나(보유권) */
+/* [처음 해보니] proDraftSlot 의 rng 를 이어 쓰면 붙은 시드끼리 값이 비슷해서 45% 가 15% 로 나왔다 —
+   시드를 해시해서 따로 굴린다 */
+function stvReturnTeam(){
+  const R=ST.refused; if(!R) return null;
+  return (clayHash('stv'+(ST.seed||1)+'_'+R.team)%100)<45 ? R.team : null;
 }
 /* 트라이아웃 장면 — 네 종목을 하나씩 보여주고 스카우트 한 줄 */
 function renderTryout(){
@@ -18143,7 +18271,9 @@ function renderTryout(){
   ];
   const card=el('div','card tryout');
   card.innerHTML='<div class="card-h">KBO 트라이아웃</div>'+
-    '<p class="muted">열 개 구단 스카우트가 뒤에 앉아 있다. 한 번뿐이다.</p>';
+    '<p class="muted">열 개 구단 스카우트가 뒤에 앉아 있다. 한 번뿐이다.</p>'+
+    (ST.refused?'<p class="stv-back">맨 뒷줄에 '+proName(ST.refused.team)+' 스카우트팀장이 앉아 있다. 눈이 마주치자 고개만 한 번 끄덕인다 — '+
+      '고졸 때 '+ST.refused.round+'라운드 지명을 거부했던 그 구단이다.</p>':'');
   c.appendChild(card);
   let i=0;
   const list=el('div','to-list'); card.appendChild(list);
@@ -18192,6 +18322,8 @@ function proDraftSlot(score, route){
   let tot=w.reduce((a,b)=>a+b,0), r=rng()*tot, idx=0;
   for(;idx<w.length;idx++){ r-=w[idx]; if(r<=0) break; }
   idx=Math.min(idx,w.length-1);
+  /* 예전에 지명을 거부했던 구단 — 보유권이 남아 있어서 반쯤은 또 부른다 */
+  if(!HS && ST.refused){ const t=stvReturnTeam(); if(t){ const j=PRO_DRAFT_ORDER.indexOf(t); if(j>=0) idx=j; } }
   return {round, pickIdx:idx, team:PRO_DRAFT_ORDER[idx]};
 }
 function renderProDraft(){
@@ -18242,6 +18374,17 @@ function renderProDraft(){
       '<p class="dr-me-why"><b>'+PRO_MODE_TXT[P.mode]+' · '+PRO_DRAFT_TXT[P.draft]+'</b> — '+P.line+'</p>'+
       '<p class="muted">마스코트 '+d.mascot+' · 홈 '+parkOf(d.park).name+' · 우승 '+d.titles.length+'회'+
         (d.titles.length?' (마지막 '+d.titles[d.titles.length-1]+')':'')+'</p>';
+    /* 예전에 거부했던 구단 이야기 — 같은 구단이 또 불렀나, 다른 구단인가 */
+    const RF=(!HSR&&ST.refused)?ST.refused:null;
+    if(RF){
+      const same=RF.team===team, o={y:Math.max(1,(ST.seasonNo||1)), r0:RF.round, r:slot.round, t0:proName(RF.team)};
+      const ln=stvFill(pickFresh(same?STV_BACK_SAME:STV_BACK_OTHER, same?'stvBackS':'stvBackO'), o);
+      const WHY={value:'「제 값을 인정받고 싶습니다」', prove:'「기록으로 증명하고 다시 오겠습니다」', team:'「같이 뛰고 싶은 사람들이 있습니다」'};
+      const sp=el('p','stv-back'); sp.innerHTML=(same?'<b>'+proName(team)+' 단장</b> — ':'')+ln+
+        '<br><i>그 카페에서 열아홉 살이 했던 말 — '+(WHY[RF.why]||WHY.prove)+'</i>'+
+        '<br><i>고졸 때 '+RF.round+'라운드 → 오늘 '+slot.round+'라운드 '+(slot.round<RF.round?'(올라갔다)':(slot.round>RF.round?'(내려갔다)':'(그대로)'))+'</i>';
+      card.appendChild(sp);
+    }
     cta.appendChild(card);
     const go2=el('button','btn primary','입단한다 ▸');
     go2.onclick=()=>{
@@ -18254,12 +18397,21 @@ function renderProDraft(){
       ST.proSlot=null; ST.tryout=null;
       if(HSR) proNews('입단', nameOf(me)+', '+proName(team)+' '+slot.round+'라운드 지명 — '+mySchool+' 졸업 바로 프로',
         '사회인을 거치지 않고 곧장 신청했다. '+PRO_MODE_TXT[P.mode]+' 기조의 '+proName(team)+'이(가) 「원석」 으로 불렀다. 2군에서 시작한다.');
+      else if(RF) proNews('입단', nameOf(me)+', '+proName(team)+' '+slot.round+'라운드 — '+(RF.team===team?'거부했던 구단이 다시 불렀다':'지명 거부 뒤 돌아왔다'),
+        '고졸 때 '+proName(RF.team)+'의 '+RF.round+'라운드 지명을 거부하고 사회인야구로 갔던 선수다. '+(slot.round<RF.round?'순번을 '+(RF.round-slot.round)+'라운드 끌어올려 돌아왔다.':'순번은 그때보다 뒤다 — 그래도 돌아왔다.'));
       else proNews('입단', nameOf(me)+', '+proName(team)+' '+slot.round+'라운드 지명 — 사회인 출신 트라이아웃 합격',
         '4부 리그에서 '+(tryoutCheck()?'':'')+'프로까지. '+PRO_MODE_TXT[P.mode]+' 기조의 '+proName(team)+'이(가) 불렀다. '+level+'에서 시작한다.');
+      if(RF){ ST.pro.refused=RF; ST.refused=null; }
       saveGame(true); go('home');
       toast(proName(team)+' 입단');
     };
     cta.appendChild(go2);
+    /* 고졸 지명은 거부할 수 있다 — 사회인야구(우완좌완)로 가서 다시 노린다 */
+    if(HSR){
+      const rf=el('button','btn','지명 거부 — 사회인야구에서 다시 노린다');
+      rf.onclick=()=>renderRefuse(slot);
+      cta.appendChild(rf);
+    }
   };
   const skip=el('button','btn','빨리 넘기기');
   skip.onclick=()=>{ if(stopped) return; clearTimeout(timer);
@@ -22763,7 +22915,7 @@ function renderHS(){
        전자면 좀 하위 드래프트로 뽑히고, 사회인야구까지 하면 상위 라운드"
        고졸 바로 신청은 5~10라운드(스카우트가 「원석」 으로 본다). 사회인에서 기록을
        쌓고 트라이아웃을 보면 실전 보정이 붙어서 1~4라운드까지 노릴 수 있다 */
-    const canPro=!!ST.entryDraft && typeof isPlayerMode==='function' && isPlayerMode();
+    const canPro=!!ST.entryDraft && !ST.refused && typeof isPlayerMode==='function' && isPlayerMode();
     if(canPro){
       const rc=el('div','card hs-route');
       const sc=hsProScore(), sl=proDraftSlot(sc,'hs');
