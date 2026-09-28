@@ -3210,6 +3210,28 @@ html.land .pp-ov,html.land #sheet{left:env(safe-area-inset-left,0px)!important;r
 .dr-me-money span{font-size:11.5px;color:var(--dim)}
 .dr-me-money b{font-size:20px;font-weight:900;color:var(--gold);margin-right:8px}
 .kd-sc b{color:var(--gold)}
+.rtn-free{font-style:normal;font-size:10.5px;font-weight:800;color:#0e0f11;background:#6fcf8a;border-radius:5px;padding:1px 6px;margin-left:6px;vertical-align:middle}
+.rtn-row{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin:6px 0}
+.rtn-l{width:34px;font-size:11.5px;color:var(--dim);font-weight:800}
+.rtn-c{font:inherit;font-size:12px;font-weight:800;color:var(--ink);background:#151a21;border:1px solid #2a323d;border-radius:999px;padding:5px 11px;cursor:pointer}
+.rtn-c.on{color:#0e0f11;background:var(--gold);border-color:var(--gold)}
+.rtn-c.lv2.on{background:#e0706a;border-color:#e0706a}
+.rtn-c.lv0.on{background:#6fcf8a;border-color:#6fcf8a}
+.rtn-pv{font-size:12.5px;margin:8px 0 0;color:var(--ink)}
+.rtn-pv b{color:var(--gold)}.rtn-pv u{text-decoration:none;color:#e0706a}
+.trt-have{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 8px}
+.trt-chip{font-size:12px;font-weight:900;padding:3px 10px;border-radius:999px;background:#1f3a2a;color:#9be3b3;border:1px solid #2e5a40}
+.trt-chip.bad{background:#3a1f22;color:#f0a09a;border-color:#5a2e33}
+.trt-p{display:grid;grid-template-columns:62px 1fr;gap:1px 8px;align-items:center;margin:5px 0}
+.trt-p b{font-size:12px}
+.trt-p span{height:7px;border-radius:4px;background:#232a33;overflow:hidden;position:relative}
+.trt-p span s{position:absolute;left:0;top:0;height:100%;background:#6fcf8a;text-decoration:none}
+.trt-p.bad span s{background:#e0706a}
+.trt-p i{grid-column:2;font-style:normal;font-size:10.5px;color:var(--dim)}
+.trt-rm{margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.wal-m{display:flex;align-items:baseline;gap:8px;margin:4px 0}
+.wal-m b{font-size:26px;font-weight:900;color:var(--gold)}
+.wal-m span{font-size:12px;color:var(--dim)}
 .mil-res{font-size:12.5px;line-height:1.55;padding:8px 10px;border-radius:8px;margin:8px 0;background:#151a21;border-left:3px solid var(--dim)}
 .mil-res.ok{border-left-color:#6fcf8a}.mil-res.no{border-left-color:#e0706a}
 .kd-phen{border-color:var(--gold);background:rgba(255,200,60,.08)}
@@ -9307,8 +9329,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.40.0';
-const APP_VERSION_NOTE = '학교 직접 적기 · 드래프트 계약금';
+const APP_VERSION = '3.41.0';
+const APP_VERSION_NOTE = '훈련 루틴 · 특성 · 지갑';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9329,6 +9351,14 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.41.0', t:'훈련 루틴 · 특성 · 지갑', items:[
+    '<b>훈련이 「루틴」 이 됐다 — 코인 없이 매주 저절로 돈다.</b> 주력 · 보조 하나씩, 강도 셋(가볍게 · 보통 · 빡세게). 한 번 정하면 끝. 코인으로 사는 건 그 위에 얹는 「특훈」 이다 — 안 사도 큰다',
+    '<b>특성이 생긴다.</b> 빡세게 10주 → 노력파(훈련 +25%) · 무리 안 하고 16주 → 성실(회복 빠름) · 40주 안 다침 → 철강 · 부상 세 번 → 유리몸 · 도박 다섯 번 → 도박중독. 나쁜 특성은 한 해 한 번 10% 로 지워 볼 수 있다',
+    '<b>프로에 가면 「지갑」.</b> 연봉 · 계약금으로 집(매주 컨디션 +) · 차(사기 +) · 개인 트레이너(훈련 1.15배) · 효도 · 기부',
+    '<b>도박</b> — 강원랜드는 합법이지만 결국 잃는다. 사설 토토는 걸리면 KBO 72경기 출장정지 · 제재금 · 「징계전력」(국가대표 제외 · 연봉 제시 -20%) · 징계 중 무급',
+    '<b>괴물 신인 계약금을 5억~10억으로 낮췄다.</b> 10억은 잠재 90 — 수십 년에 한 명이다. 그리고 셋 중 하나는 몸이 안 따라줘서 잘 안 큰다',
+    '내 선수 만들기 — 태어난 해를 1995~2007 에서 적는다(1999 · 2000 이 아니면 우완좌완과 학번이 안 겹친다)',
+  ]},
   {v:'3.40.0', t:'학교 직접 적기 · 드래프트 계약금', items:[
     '<b>내 선수 만들기에서 고등학교 이름을 직접 적을 수 있다.</b> 「직접 적기」 → 예: 휘문고. 부원은 전부 새 얼굴이고 라이벌은 군포고(우완좌완 열둘)다. 제목줄 · 드래프트에도 그 학교로 나온다',
     '<b>지명 카드에 계약금 · 첫해 연봉.</b> 라운드 · 순번 표대로(1R 1순위 5억 … 뒤 라운드 3천). 사회인 출신은 나이가 있어서 7할. 계약금은 내 통장으로',
@@ -13164,6 +13194,7 @@ LiveGame.prototype.rollMyInjury = function(cause, mult){
   pr *= (cond<55 ? 1.7 : (cond<70 ? 1.25 : 1));
   if(mm && mm.traits.includes('유리몸')) pr*=1.8;
   if(mm && mm.traits.includes('철강'))   pr*=0.45;
+  try{ pr*=mtInjMul(); }catch(e){}            // 루틴 「빡세게」 는 잘 다친다
   pr=Math.min(0.11, pr);
   if(this.rng()>=pr) return null;
   const pool=PM_INJURIES.filter(x=>x.cause===cause);
@@ -16496,7 +16527,8 @@ function proAutoDays(){
     /* 부상 — 지칠수록 잘 다친다. 프로는 매일 뛴다 */
     if((b&&b.pa)||(q&&q.bf)){
       const c0=ST.cond[me]||70;
-      const risk=0.004+Math.max(0,55-c0)*0.0012;
+      let risk=0.004+Math.max(0,55-c0)*0.0012;
+      try{ if(mtHas('유리몸')) risk*=1.8; if(mtHas('철강')) risk*=0.45; risk*=mtInjMul(); }catch(e){}
       if(!ST.injury[me] && rng()<risk){
         const inj=rollInjury(me, rng());
         ST.injury[me]=inj; ST.notices=ST.notices||[];
@@ -16905,6 +16937,7 @@ function ntPool(ev){
   TEAMS.forEach(t=>{
     (t.players||[]).forEach(p=>{ if(p.pitch&&p.id!==me) return;
       if(p.id===me && (ST.myFarm||0)>0) return;             // 2군이면 명단에 안 든다
+      if(p.id===me && typeof mtHas==='function' && mtHas('징계전력')) return;   // 도박 징계 — 대표 자격이 없다
       if(p.id===me && ST.role==='pit') return;
       hitters.push({p, t, sc:(p.con+p.pow*0.9+p.eye*0.7+p.def*0.45+p.spd*0.3), age:ageOf(p)}); });
     (t.pitchers||[]).forEach(q=>{
@@ -17193,9 +17226,12 @@ function pfMyStartCon(){ const D=ST.pro.draft||{};
   return {sal:kboMinSal(ST.pro.year), type:'rookie', left:1, svc:0, fa:0, bonus:(D.bonus!=null?D.bonus:pfBonusOf(D.round||5, D.pick||5))}; }
 function pfSetCon(id, c){ const F=pfState(); const o=Object.assign({},c); delete o.gen; F.con[id]=o; return o; }
 /* 신인 계약금(만원) — 1R 1순위 5억 · 1R 1.5~3.5억 · 2R 1억 안팎 · 뒤로 갈수록 3천까지 */
-/* 괴물 신인 계약금 — 역대 최고가 10억 언저리라 「역대급」 이면 그 위다. 잠재 86 → 10억 · 90 → 15억.
-   [요청 v3.40.0] "역대급 신인 보면 계약금 최소 15억 이런 소리도 나오잖아" */
-function pfPhenomBonus(pot){ return Math.round((100000+Math.max(0,(pot||86)-86)*12500)/1000)*1000; }
+/* 괴물 신인 계약금 — 잠재 86 → 5억 · 90 → 10억.
+   [요청 v3.40.0] "역대급 신인 보면 계약금 최소 15억 이런 소리도" 로 10~15억을 줬다가
+   [제보 v3.41.0] "10억 받을 정도면 아직도 한기주밖에 없어 — 그마저도 프로에선 성공 못 했고" —
+   맞다. 10억은 수십 년에 한 명이다. 5억(1R 1순위 수준)에서 시작해서 잠재 90 이어야 10억에 닿는다.
+   그리고 괴물이라고 다 크지 않는다 — 셋 중 하나는 bust(몸이 안 따라준다, 크는 속도 1/4) */
+function pfPhenomBonus(pot){ return Math.round((50000+Math.max(0,(pot||86)-86)*12500)/1000)*1000; }
 function pfBonusOf(round, pick){
   if(round<=1) return pick<=1?50000:Math.round(35000-(pick-2)*2500);
   const T={2:11000,3:9000,4:7000,5:6000,6:5000,7:4000,8:3500,9:3000,10:3000,11:3000};
@@ -17230,7 +17266,11 @@ function pfWeek(){
   F.cash=Math.round((F.cash+gate+media+col-pay-ops)*10)/10;
   /* 내 연봉 — 한 주치가 내 통장으로 */
   const me=ST.playerId||MYID; const mc=pfCon({id:me},ST.pro.team);
-  ST.pro.earned=Math.round(((ST.pro.earned||0)+mc.sal/24)*10)/10;
+  /* 징계 중엔 연봉이 안 나온다(무급 출장정지) */
+  const susp=ST.injury&&ST.injury[me]&&ST.injury[me].susp;
+  if(!susp) ST.pro.earned=Math.round(((ST.pro.earned||0)+mc.sal/24)*10)/10;
+  /* 집 — 좋은 데서 자면 더 돌아온다. 집이 있으면 「성실」 에 가까워진다 */
+  try{ const L=walLife(); if(L.house>=0){ ST.cond[me]=Math.min(100,(ST.cond[me]||70)+WAL_HOUSE[L.house].rec); const M=mtState(); M.prog.care=(M.prog.care||0)+0.5; } }catch(e){}
   /* 2군 시설 — 내가 2군에 있으면 시설만큼 조금씩 는다 */
   if((ST.myFarm||0)>0 && Math.random()<0.10*F.fac){
     ST.myRatings=ST.myRatings||{};
@@ -17538,7 +17578,7 @@ function pfRookiePool(){
     const p=pos==='P'
       ? {id, name:genName(rng,used), no:null, throws:rng()<0.3?'L':'R', role:rng()<0.4?'SP':'RP', stf:r('stf'), ctl:r('ctl'), sta:r('sta'), age:hs?19:23, ageYear:y+1, rookie:true, draftYear:y+1, pot, kmh:Math.round(135+cur*0.28+rng()*6)}
       : {id, name:genName(rng,used), no:null, bats:rng()<0.3?'L':'R', con:r('con'),pow:r('pow'),eye:r('eye'),spd:r('spd'),def:r('def'),arm:r('arm'), pos:[pos], pitch:null, real:null, pro:true, age:hs?19:23, ageYear:y+1, rookie:true, draftYear:y+1, pot};
-    if(ph) p.phenom=true;
+    if(ph){ p.phenom=true; p.bust=rng()<0.3; }
     return {p, cur, pot, school:hs?'고교':'대학', schoolName:school, pos, phenom:ph||undefined,
       rc:pfRange(cur,F.scout,rng), rp:pfRange(pot,F.scout,rng)};
   });
@@ -17637,7 +17677,8 @@ function pfGrow(){
     const s=m.snap; if(!s.rookie||!s.pot) return;
     const ours=m.to===ST.pro.team, age=pfAge(s);
     const now=pfGrade(s); if(now>=s.pot) return;
-    const step=Math.min(s.pot-now, (2+(clayHash(s.id+ST.pro.year)%4))*(age<=21?1.25:1)*(ours?(1+0.08*F.fac):1));
+    let step=Math.min(s.pot-now, (2+(clayHash(s.id+ST.pro.year)%4))*(age<=21?1.25:1)*(ours?(1+0.08*F.fac):1));
+    if(s.bust) step*=0.25;                           // 괴물이었는데 몸이 안 따라준다
     const ks=pfIsPit(s)?['stf','ctl','sta']:['con','pow','eye','spd','def','arm'];
     ks.forEach(k=>{ s[k]=Math.round(clamp((s[k]||30)+step*(pfIsPit(s)?1.0:1.0),12,90)); });
     const live=pfFind(s.id); if(live) ks.forEach(k=>live.p[k]=s[k]);
@@ -17662,7 +17703,8 @@ function pfMyOffer(){
   const s=(ST.role==='pit')?pfSeasonLine({id:me,stf:1}):pfSeasonLine(Object.assign({id:me},p));
   const farm=(ST.myFarm||0)>0;
   const pct=clamp(s.score*(farm?0.4:1), -0.25, 1.4);
-  const offer=Math.max(kboMinSal(y+1), Math.round(c.sal*(1+pct)/100)*100);
+  const stain=(typeof mtHas==='function'&&mtHas('징계전력'))?0.8:1;      // 징계 전력 — 구단이 깎는다
+  const offer=Math.max(kboMinSal(y+1), Math.round(c.sal*(1+pct)*stain/100)*100);
   return F.myOffer={year:y, old:c.sal, offer, ask:Math.round(offer*1.35/100)*100, txt:s.txt, score:s.score, done:false, tries:0};
 }
 function pfMyAccept(amount, how){
@@ -18417,7 +18459,8 @@ function renderProDraft(){
       const level=(!HSR && slot.round<=2 && sc>=80)?'1군':'2군';     // 고졸은 누구든 2군부터
       const drafted=PRO_DRAFT_2027.map((row,ri)=>row.map((p,ki)=>({r:ri+1,k:ki+1,team:teamOf(ri,ki),name:p[0],school:p[1],pos:p[2],grade:p[3]})));
       proEnter({team, round:slot.round, pick:slot.pickIdx+1, year:(ST.year||2026)+1, draftYear:ST.year||2026, level, bonus});
-      ST.pro.earned=Math.round(bonus/10000*10)/10;                // 계약금은 내 통장으로(억)
+      /* [버그 이력] earned 는 만원 단위다(pfWeek 가 연봉/24 를 만원으로 더한다) — 처음엔 억으로 넣었다 */
+      ST.pro.earned=(ST.pro.earned||0)+bonus;                          // 계약금은 내 통장으로(만원)
       ST.pro.draftClass=[].concat.apply([],drafted);
       if(HSR){ ST.pro.route='hs'; ST.pro.age0=19; ST.pro.year0=ST.pro.year; }
       ST.proSlot=null; ST.tryout=null;
@@ -22454,6 +22497,7 @@ function myRatingsSave(){
 }
 /* 주루 센스는 로스터에 없는 칸이라 장부가 유일한 집이다 */
 function applyMyRatings(){
+  try{ mtSync(); }catch(e){}                   // 내가 번 특성 — META 는 부팅마다 상수에서 다시 만들어진다
   if(typeof ST==='undefined'||!ST||!ST.myRatings) return 0;
   const me=ST.playerId||MYID;
   const us=TBYID['wwzw']; if(!us) return 0;
@@ -22567,14 +22611,14 @@ function renderMake(){
     '세 해 동안 친 것·던진 것이 그대로 현재 능력치와 잠재력이 된다.</p>'+
     '<div class="mk-f"><label>이름<input id="mk-nm" maxlength="6" placeholder="예: 김야구"></label>'+
     '<label>등번호<input id="mk-no" type="number" min="0" max="99" value="7"></label></div>'+
-    '<div class="mk-g" data-k="born"><span>태어난 해</span><button data-v="1999">1999</button><button data-v="2000" class="on">2000</button></div>'+
+    '<div class="mk-f"><label>태어난 해 (1995~2007)<input id="mk-born" type="number" min="1995" max="2007" value="2000"></label></div>'+
     '<div class="mk-g" data-k="school"><span>학교</span><button data-v="군포고" class="on">군포고</button><button data-v="흥진고">흥진고</button><button data-v="__own">직접 적기</button></div>'+
     '<div class="mk-f mk-own" style="display:none"><label>학교 이름<input id="mk-sch" maxlength="10" placeholder="예: 휘문고"></label></div>'+
     '<div class="mk-g" data-k="throws"><span>던지는 손</span><button data-v="R" class="on">우투</button><button data-v="L">좌투</button></div>'+
     '<div class="mk-g" data-k="bats"><span>치는 손</span><button data-v="R" class="on">우타</button><button data-v="L">좌타</button></div>'+
     '<div class="mk-g mk-pos" data-k="pos"><span>포지션</span>'+
       CUSTOM_POS.map(([k,n],j)=>'<button data-v="'+k+'"'+(j===0?' class="on"':'')+'>'+n+'</button>').join('')+'</div>'+
-    '<p class="muted mk-note">흥진고를 고르면 군포고 열둘이 3년 내내 상대편이다. 학교를 직접 적으면 부원은 전부 새 얼굴이고, 라이벌은 군포고다. 1999년생은 형 학번, 2000년생은 동생 학번이다.</p>';
+    '<p class="muted mk-note">흥진고를 고르면 군포고 열둘이 3년 내내 상대편이다. 학교를 직접 적으면 부원은 전부 새 얼굴이고, 라이벌은 군포고다. 1999년생은 형 학번, 2000년생은 동생 학번 — 그 밖의 해면 우완좌완과 학번이 안 겹친다.</p>';
   c.appendChild(card);
   card.querySelectorAll('.mk-g').forEach(g=>g.querySelectorAll('button').forEach(b=>{
     b.onclick=()=>{ g.querySelectorAll('button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
@@ -22592,7 +22636,10 @@ function renderMake(){
       if(school.length<2){ toast('학교 이름을 적어라'); return; }
       if(!/고$|고등학교$/.test(school)) school+='고';
     }
-    CUSTOM_PENDING={name:nm, no, born:+val('born')||2000, school,
+    /* [요청 v3.41.0] "본인 이름이랑 나이 설정은?" — 태어난 해를 1995~2007 에서 적는다.
+       1999 · 2000 이 아니면 우완좌완 열넷과 학번이 안 겹친다 — 고교 부원은 전부 새 얼굴이다 */
+    let born=parseInt((card.querySelector('#mk-born')||{}).value,10); if(!(born>=1995&&born<=2007)) born=2000;
+    CUSTOM_PENDING={name:nm, no, born, school,
       throws:val('throws')||'R', bats:val('bats')||'R', pos:val('pos')||'SS'};
     MYID=CUSTOM_ID;
     TEAMS=buildAllTeams(); TBYID={}; TEAMS.forEach(t=>TBYID[t.id]=t); buildPitcherPool();
@@ -23729,7 +23776,7 @@ function lobbyStage(){
       const t=document.querySelector('#view .news-card,#view .card');
       if(t) t.scrollIntoView({behavior:'smooth',block:'center'}); }, nNew],
    ['📊','기록',()=>go('stats'), 0]
-  ].concat(isPro()?[['','프런트',()=>go('front'),0]]:[]).forEach(([ic,nm,fn2,badge])=>{
+  ].concat(isPro()?[['','프런트',()=>go('front'),0],['','지갑',()=>renderWallet(),0]]:[]).forEach(([ic,nm,fn2,badge])=>{
     const bt=el('button','lob-ic');
     /* [v3.26.0] 이모지 아이콘을 뺐다 — 글자만. 「AI 가 만든 티」 가 제일 많이 나던 자리다 */
     bt.innerHTML='<span>'+nm+'</span>'+(badge?'<em>'+badge+'</em>':'');
@@ -39871,7 +39918,10 @@ function applyMyTrain(){
   if(!p) return null;
   const Q=trainQueue().slice();
   ST.myTrainQ=[]; ST.myTrain=null;
-  if(!Q.length){
+  /* [v3.41.0] 루틴 — 코인 없이 매주 저절로 돈다. 코인으로 산 건 그 위에 얹는 「특훈」 이다 */
+  let RT=null; try{ RT=rtWeek(); }catch(e){ RT=null; }
+  try{ mtWeek(); }catch(e){}
+  if(!Q.length && !RT){
     ST.myTrainLog='이번 주는 아무것도 안 샀다 — 아무것도 안 올랐다';
     ST.notices=ST.notices||[];
     ST.notices.push({type:'train', title:'훈련 없음',
@@ -39882,10 +39932,11 @@ function applyMyTrain(){
   /* 같은 훈련을 두 번 하면 두 번째부터는 덜 는다 */
   const seen={}, gains={}, names=[];
   let cond=0, teamed=false;
+  if(RT){ Object.keys(RT.gains).forEach(k=>{ gains[k]=(gains[k]||0)+RT.gains[k]; }); cond+=RT.cond; names.push(RT.label); }
   Q.forEach(id=>{
     const t=pmTrainDef(id); if(!t) return;
     const rep=seen[id]||0; seen[id]=rep+1;
-    const mul=rep?0.6:1;
+    const mul=(rep?0.6:1)*(RT?0.8:1);          // 루틴 위에 얹는 특훈은 8할
     cond+=t.cond;
     names.push(t.name+(rep?' (또)':''));
     if(t.team) teamed=true;
@@ -39899,8 +39950,9 @@ function applyMyTrain(){
     ST.morale[me]=Math.min(100,(ST.morale[me]||70)+4);
     ST.bond&&(ST.bond[me]=Math.min(100,(ST.bond[me]||50)+3));
   }
-  /* 이도류는 두 몫을 나눠 쓴다 — 그게 이도류의 값이다 */
-  const half=isTwoWay()?0.55:1;
+  /* 이도류는 두 몫을 나눠 쓴다 — 그게 이도류의 값이다.
+     특성 · 개인 트레이너가 여기서 곱해진다(노력파 1.25 · 트레이너 1.15) */
+  const half=(isTwoWay()?0.55:1)*mtTrainMul();
   const KN={con:'컨택',pow:'파워',eye:'선구',spd:'주루',def:'수비',arm:'어깨',
             sIQ:'주루 센스', stf:'구위',ctl:'제구',sta:'체력',brk:'변화'};
   const got=[];
@@ -39947,14 +39999,277 @@ function applyMyTrain(){
   ST.notices=ST.notices||[];
   ST.notices.push({type:'train', title:'지난주 훈련 — '+label,
     body: got.length?('올랐다: '+got.join(' · ')):'아직 정수로는 안 올랐다. 계속 쌓이는 중이다.',
-    effect: '컨디션 '+(cond>0?'+':'')+cond+(Q.length>1?(' · '+Q.length+'개를 몰아서 했다'):'')});
+    effect: '컨디션 '+(cond>0?'+':'')+Math.round(cond)+(Q.length?(' · 특훈 '+Q.length+'개'):'')});
   return ST.myTrainLog;
+}
+/* ================= 성장 루틴 · 특성 · 지갑 =================
+   [요청 v3.41.0] "훈련 코인 시스템 개편 — 중독성 있게, 근데 그런 훈련은 단순 스트레스만 받고
+   너무 거추장스럽거든 · 선수 키우기 좋은 방법 추천 · 훈련 열심히 하면 노력왕 같은 특성이 생겨서
+   추가 스탯, 부상 당하면 유리몸 · 특성 없애는 건 1년에 한 번 10% · 연봉으로 집 · 차 · 도박 —
+   도박하다 걸리면 중징계"
+
+   ── 무엇이 거추장스러웠나 ──
+     매주 코인으로 훈련을 「사야」 했다. 안 사면 그 주는 아무것도 안 올랐다(「훈련 없음」).
+     선수를 키우는 게 아니라 장바구니를 채우는 일이었다.
+
+   ── 이렇게 바꾼다 ──
+     · 루틴 — 한 번 정해 두면 매주 저절로 돈다(코인 없음). 주력 하나 · 보조 하나 · 강도 셋.
+         가볍게  0.7배 · 컨디션 반만 깎인다                → 오래 간다 · 「성실」 이 붙는다
+         보통    1.0배
+         빡세게  1.35배 · 컨디션 1.6배 · 부상 1.25배      → 「노력파」 가 붙는다 · 대신 다친다
+     · 코인은 없어도 되는 「특훈」 — 루틴 위에 얹는다(8할). 훈련 세션 · 경기로 번다
+     · 특성 — 어떻게 키웠는지가 몸에 남는다. 좋은 것도 나쁜 것도. 한 해 한 번 10% 로 지울 수 있다
+     · 지갑(프로) — 번 돈을 쓴다. 집은 회복, 차는 사기, 트레이너는 훈련, 도박은 … 걸리면 끝이다
+
+   [주의] 특성은 META[me].traits 에 얹힌다. META 는 부팅할 때 상수에서 다시 만들어지므로
+   ST.mt 에 적어 두고 mtSync() 가 다시 얹는다(능력치 장부와 같은 사고 방지).                */
+const RT_LV=[
+  {n:'가볍게', g:0.7, c:0.5, inj:0.9},
+  {n:'보통',   g:1.0, c:1.0, inj:1.0},
+  {n:'빡세게', g:1.35,c:1.6, inj:1.25},
+];
+function rtChoices(){
+  const pit=ST.role==='pit', two=ST.role==='two';
+  return PM_TRAIN.filter(t=>t.id!=='rest' && t.id!=='team' && (two || (pit?!!t.pit:!t.pit)));
+}
+function rtState(){
+  if(!ST) return null;
+  if(!ST.routine||!pmTrainDef(ST.routine.a)){
+    const pit=ST.role==='pit';
+    ST.routine={a:pit?'pctl':'bat', b:pit?'pspd':(ST.myPos==='C'||ST.myPos==='SS'||ST.myPos==='2B'?'def':'eye'), lv:1};
+  }
+  return ST.routine;
+}
+/* 이번 주 루틴 몫 — {gains, cond, label} */
+function rtPreview(){
+  const R=rtState(); if(!R) return null;
+  const A=pmTrainDef(R.a), B=pmTrainDef(R.b), L=RT_LV[R.lv]||RT_LV[1];
+  const gains={};
+  [[A,0.8],[B,0.5]].forEach(([t,w])=>{ if(!t) return; Object.keys(t.g||{}).forEach(k=>{ gains[k]=(gains[k]||0)+t.g[k]*w*L.g; }); });
+  const cond=Math.round(((A?A.cond*0.6:0)+(B?B.cond*0.4:0))*L.c);
+  return {gains, cond, label:'루틴('+L.n+') '+(A?A.name:'')+(B?' · '+B.name:''), lv:R.lv};
+}
+function rtWeek(){ if(!isPlayerMode()) return null; return rtPreview(); }
+
+/* ---- 특성 ---- */
+const MT_EARN=[
+  {id:'노력파',   key:'effort', need:10, how:'루틴 「빡세게」 로 10주',          eff:'훈련 효과 +25%'},
+  {id:'성실',     key:'care',   need:16, how:'무리 안 하고(가볍게·보통) 16주',   eff:'컨디션 회복이 빠르다'},
+  {id:'철강',     key:'iron',   need:40, how:'40주 동안 안 다친다',             eff:'부상 확률 0.45배'},
+  {id:'유리몸',   key:'inj',    need:3,  how:'부상 세 번',                      eff:'부상 확률 1.8배', bad:true},
+  {id:'도박중독', key:'gamble', need:5,  how:'도박 다섯 번',                    eff:'가끔 저절로 돈을 날리고 사기가 떨어진다', bad:true},
+  {id:'징계전력', key:null,     need:0,  how:'불법 도박 적발',                  eff:'연봉 제시 -20% · 국가대표 제외', bad:true},
+];
+/* 지울 수 있는 것 — 나쁜 특성만(원래 갖고 있던 것 포함). 「좌투」 「포수」 같은 건 몸이 그런 거다 */
+const MT_REMOVABLE=['유리몸','도박중독','징계전력','불만러','더위약함','외야미숙','수비약점','똥차','포수부담','좁은범위','과묵'];
+function mtState(){
+  if(!ST) return null;
+  if(!ST.mt||typeof ST.mt!=='object') ST.mt={have:[], removed:[], prog:{}, lastInj:false, tried:{}, log:[]};
+  ['have','removed','log'].forEach(k=>{ if(!Array.isArray(ST.mt[k])) ST.mt[k]=[]; });
+  ['prog','tried'].forEach(k=>{ if(!ST.mt[k]||typeof ST.mt[k]!=='object') ST.mt[k]={}; });
+  return ST.mt;
+}
+function mtSync(){
+  if(typeof ST==='undefined'||!ST) return;
+  const me=ST.playerId||MYID, m=META[me]; if(!m) return;
+  const M=mtState();
+  let t=(m.traits||[]).filter(x=>M.removed.indexOf(x)<0);
+  M.have.forEach(x=>{ if(t.indexOf(x)<0) t.push(x); });
+  /* 반대끼리는 같이 못 간다 — 나중에 붙은 쪽이 이긴다 */
+  if(t.indexOf('유리몸')>=0 && t.indexOf('철강')>=0){ const lastBad=M.have.lastIndexOf('유리몸')>M.have.lastIndexOf('철강'); t=t.filter(x=>x!==(lastBad?'철강':'유리몸')); }
+  m.traits=t;
+}
+function mtHas(id){ const m=META[ST.playerId||MYID]; return !!(m&&(m.traits||[]).indexOf(id)>=0); }
+function mtGive(id, why){
+  const M=mtState(); if(M.have.indexOf(id)>=0 && mtHas(id)) return false;
+  if(id==='유리몸') M.have=M.have.filter(x=>x!=='철강');
+  if(id==='철강') M.have=M.have.filter(x=>x!=='유리몸');
+  M.removed=M.removed.filter(x=>x!==id);
+  M.have.push(id); mtSync();
+  const D=MT_EARN.find(x=>x.id===id)||{};
+  M.log.unshift((ST.year||'')+' '+id+' — '+(why||D.how||''));
+  ST.notices=ST.notices||[];
+  ST.notices.push({type:'train', title:'특성이 생겼다 — '+id, body:(why||D.how||'')+'. '+(D.eff||TRAIT_INFO[id]||''),
+    effect:D.bad?'나쁜 특성 — 한 해 한 번 10% 로 지울 수 있다':'좋은 특성'});
+  try{ if(isPro()) proNews('특성', nameOf(ST.playerId||MYID)+' — 「'+id+'」', D.eff||''); }catch(e){}
+  return true;
+}
+function mtYearKey(){ return (typeof isPro==='function'&&isPro()&&ST.pro)?('p'+ST.pro.year):('a'+(ST.seasonNo||1)); }
+/* 지우기 — 한 해 한 번, 10% */
+function mtTryRemove(id, rng){
+  const M=mtState(), k=mtYearKey();
+  if(M.tried[k]) return {ok:false, why:'올해는 이미 해 봤다'};
+  if(!mtHas(id) || MT_REMOVABLE.indexOf(id)<0) return {ok:false, why:'지울 수 없는 특성이다'};
+  M.tried[k]=id;
+  const r=(rng||Math.random)();
+  if(r<0.10){ M.have=M.have.filter(x=>x!==id); if(M.removed.indexOf(id)<0) M.removed.push(id); mtSync();
+    M.log.unshift(k+' '+id+' 지움'); return {ok:true}; }
+  return {ok:false, why:'안 됐다 — 몸에 밴 건 쉽게 안 빠진다(10%)'};
+}
+/* 매주 — 루틴 강도 · 부상 · 도박이 쌓인다 */
+function mtWeek(){
+  if(!isPlayerMode()) return;
+  const M=mtState(), P=M.prog, me=ST.playerId||MYID, R=rtState();
+  const inj=ST.injury&&ST.injury[me], real=inj&&!inj.susp;
+  if(R.lv===2) P.effort=(P.effort||0)+1;
+  if(R.lv<=1) P.care=(P.care||0)+(R.lv===0?1.5:1);
+  if(real && !M.lastInj){ P.inj=(P.inj||0)+1; P.iron=0; }
+  if(!real) P.iron=(P.iron||0)+1;
+  M.lastInj=!!real;
+  MT_EARN.forEach(d=>{ if(d.key && (P[d.key]||0)>=d.need && !mtHas(d.id) && M.removed.indexOf(d.id)<0) mtGive(d.id); });
+  /* 도박중독 — 가끔 저절로 날린다 */
+  if(mtHas('도박중독') && isPro() && Math.random()<0.15){
+    const loss=Math.min(ST.pro.earned||0, 500+Math.round(Math.random()*25)*100);
+    ST.pro.earned=Math.round(((ST.pro.earned||0)-loss)*10)/10;
+    ST.morale&&(ST.morale[me]=Math.max(10,(ST.morale[me]||70)-5));
+    ST.notices=ST.notices||[]; ST.notices.push({type:'train', title:'또 손이 갔다', body:'밤새 휴대폰을 붙잡고 있었다. '+wonStr2(loss)+'이 사라졌다.', effect:'사기 -5 · 「도박중독」'});
+  }
+  mtSync();
+}
+function mtTrainMul(){
+  let m=1; try{ if(mtHas('노력파')) m*=1.25;
+    if(isPro()&&ST.pro.life&&ST.pro.life.trainer===ST.pro.year) m*=1.15; }catch(e){}
+  return m;
+}
+function mtInjMul(){ let m=1; try{ const R=rtState(); m*=(RT_LV[R.lv]||RT_LV[1]).inj; }catch(e){} return m; }
+
+/* ---- 지갑(프로) — ST.pro.earned 는 만원 단위다 ---- */
+const WAL_HOUSE=[
+  {n:'원룸 전세', cost:5000,   rec:1, d:'구단 숙소를 나왔다. 내 방이 생겼다'},
+  {n:'아파트',    cost:80000,  rec:2, d:'야구장 20분. 잠이 달라졌다'},
+  {n:'한강뷰 펜트하우스', cost:300000, rec:3, d:'창밖이 한강이다. 누가 봐도 스타다'},
+];
+const WAL_CAR=[
+  {n:'중고 경차', cost:800,   mo:2, d:'일단 굴러간다'},
+  {n:'국산 세단', cost:4000,  mo:4, d:'주차장에서 안 부끄럽다'},
+  {n:'수입 SUV',  cost:12000, mo:6, d:'장비가 다 들어간다'},
+  {n:'슈퍼카',    cost:40000, mo:8, d:'신문에 난다. 좋은 쪽으로든 나쁜 쪽으로든'},
+];
+function walLife(){ const P=ST.pro; if(!P.life||typeof P.life!=='object') P.life={house:-1, car:-1, trainer:0, gambles:0, caught:0, gave:0, hyo:0}; return P.life; }
+function walMoney(){ return Math.round(ST.pro.earned||0); }
+function walPay(cost){ if(walMoney()<cost) return false; ST.pro.earned=Math.round(((ST.pro.earned||0)-cost)*10)/10; return true; }
+function walBuy(kind, i){
+  const L=walLife(), me=ST.playerId||MYID;
+  const T=kind==='house'?WAL_HOUSE:WAL_CAR, it=T[i]; if(!it) return '없는 물건이다';
+  if(L[kind]>=i) return '이미 그보다 좋은 걸 갖고 있다';
+  if(!walPay(it.cost)) return '돈이 모자라다 ('+wonStr2(it.cost)+')';
+  L[kind]=i;
+  if(kind==='car'){ ST.morale&&(ST.morale[me]=Math.min(100,(ST.morale[me]||70)+it.mo)); if(i===3) proNews('연예', nameOf(me)+', 슈퍼카 타고 출근 — 「야구로 보여줘야」 팬 반응 엇갈려'); }
+  if(kind==='house'&&i===2) proNews('연예', nameOf(me)+', 한강뷰 펜트하우스 입주');
+  return null;
+}
+function walTrainer(){ const L=walLife(); if(L.trainer===ST.pro.year) return '올해는 이미 붙였다';
+  if(!walPay(5000)) return '돈이 모자라다 (5,000만)'; L.trainer=ST.pro.year; return null; }
+function walGive(kind){
+  const L=walLife(), me=ST.playerId||MYID;
+  if(kind==='hyo'){ if(L.hyo===ST.pro.year) return '올해는 이미 했다'; if(!walPay(6000)) return '돈이 모자라다 (6,000만)';
+    L.hyo=ST.pro.year; ST.morale&&(ST.morale[me]=Math.min(100,(ST.morale[me]||70)+8)); return null; }
+  if(!walPay(3000)) return '돈이 모자라다 (3,000만)';
+  L.gave=(L.gave||0)+1; ST.morale&&(ST.morale[me]=Math.min(100,(ST.morale[me]||70)+4));
+  proNews('미담', nameOf(me)+', 유소년 야구부에 3,000만 원 기부'+(L.gave>1?' — '+L.gave+'번째':''));
+  return null;
+}
+/* 도박 — legal: 강원랜드(합법 · 손해 보는 게임), illegal: 사설 토토(더 따는데 걸리면 끝) */
+const WAL_SUSP=72;            // 실제 KBO — 해외 원정 도박 72경기 출장정지(2016) 수준
+function walGamble(kind, bet, rng){
+  rng=rng||Math.random;
+  const L=walLife(), me=ST.playerId||MYID;
+  if(!walPay(bet)) return {err:'돈이 모자라다'};
+  L.gambles=(L.gambles||0)+1;
+  const M=mtState(); M.prog.gamble=(M.prog.gamble||0)+1;
+  if(M.prog.gamble>=5 && !mtHas('도박중독') && M.removed.indexOf('도박중독')<0) mtGive('도박중독');
+  const winP=kind==='legal'?0.45:0.55, win=rng()<winP;
+  if(win) ST.pro.earned=Math.round(((ST.pro.earned||0)+bet*2)*10)/10;
+  let caught=false;
+  if(kind==='illegal' && rng()<0.12){
+    caught=true; L.caught=(L.caught||0)+1;
+    const fine=Math.min(walMoney(), 5000);
+    ST.pro.earned=Math.round(((ST.pro.earned||0)-fine)*10)/10;
+    ST.injury=ST.injury||{}; ST.injury[me]={name:'KBO 징계 — 불법 도박 '+WAL_SUSP+'경기 출장정지', games:WAL_SUSP, susp:true};
+    ST.morale&&(ST.morale[me]=15);
+    mtGive('징계전력','불법 사설 도박 적발');
+    proNews('징계', nameOf(me)+', 불법 도박 적발 — KBO '+WAL_SUSP+'경기 출장정지 · 제재금',
+      '구단은 「깊이 사과드린다」 고 밝혔다. 팬들의 실망이 크다. 국가대표 자격도 사라졌다.');
+  }
+  return {win, caught, bet};
+}
+
+/* ---- 화면 — 훈련 탭 위쪽에 붙는 루틴 · 특성 카드 ---- */
+function rtCard(c){
+  const R=rtState(), pv=rtPreview();
+  const KN={con:'컨택',pow:'파워',eye:'선구',spd:'주루',def:'수비',arm:'어깨',sIQ:'주루 센스',stf:'구위',ctl:'제구',sta:'체력',brk:'변화'};
+  const card=el('div','card rtn-card');
+  card.innerHTML='<div class="card-h">내 루틴 <i class="rtn-free">코인 없이 매주 저절로</i></div>'+
+    '<p class="muted">주력 · 보조 하나씩, 강도 하나. 한 번 정하면 매주 알아서 돈다. 코인으로 사는 특훈은 이 위에 얹는 덤이다.</p>';
+  const row=(title, key)=>{ const w=el('div','rtn-row'); w.appendChild(el('span','rtn-l',title));
+    rtChoices().forEach(t=>{ const b=el('button','rtn-c'+(R[key]===t.id?' on':''), t.name);
+      b.onclick=()=>{ if(key==='a'&&R.b===t.id) R.b=R.a; if(key==='b'&&R.a===t.id) R.a=R.b; R[key]=t.id; saveGame(true); renderTrainPlayer(); };
+      w.appendChild(b); }); card.appendChild(w); };
+  row('주력','a'); row('보조','b');
+  const lv=el('div','rtn-row'); lv.appendChild(el('span','rtn-l','강도'));
+  RT_LV.forEach((L,i)=>{ const b=el('button','rtn-c lv'+i+(R.lv===i?' on':''), L.n); b.onclick=()=>{ R.lv=i; saveGame(true); renderTrainPlayer(); }; lv.appendChild(b); });
+  card.appendChild(lv);
+  const mul=mtTrainMul()*(isTwoWay()?0.55:1);
+  const g=Object.keys(pv.gains).map(k=>(KN[k]||k)+' +'+(pv.gains[k]*mul).toFixed(2)).join(' · ');
+  card.appendChild(Object.assign(el('p','rtn-pv'),{innerHTML:'한 주에 <b>'+g+'</b> · 컨디션 '+pv.cond+
+    (R.lv===2?' · <u>부상 1.25배</u>':'')+(mul>1?' · 특성·트레이너 ×'+mul.toFixed(2):'')}));
+  c.appendChild(card);
+}
+function mtCard(c){
+  const M=mtState(); mtSync();
+  const me=ST.playerId||MYID, have=(META[me]&&META[me].traits)||[];
+  const card=el('div','card trt-card');
+  card.innerHTML='<div class="card-h">내 특성</div>'+
+    '<div class="trt-have">'+(have.length?have.map(t=>{ const d=MT_EARN.find(x=>x.id===t); const bad=(d&&d.bad)||MT_REMOVABLE.indexOf(t)>=0;
+      return '<span class="trt-chip'+(bad?' bad':'')+'" title="'+(TRAIT_INFO[t]||(d&&d.eff)||'')+'">'+t+'</span>'; }).join(''):'<span class="muted">아직 없다</span>')+'</div>';
+  const pr=el('div','trt-prog');
+  MT_EARN.filter(d=>d.key && !mtHas(d.id)).forEach(d=>{ const v=Math.min(d.need, Math.floor(M.prog[d.key]||0));
+    pr.innerHTML+='<div class="trt-p'+(d.bad?' bad':'')+'"><b>'+d.id+'</b><span><s style="width:'+Math.round(v/d.need*100)+'%"></s></span><i>'+d.how+' · '+v+'/'+d.need+' → '+d.eff+'</i></div>'; });
+  card.appendChild(pr);
+  const rem=have.filter(t=>MT_REMOVABLE.indexOf(t)>=0), k=mtYearKey();
+  if(rem.length){
+    const w=el('div','trt-rm');
+    w.appendChild(el('p','muted',M.tried[k]?('올해는 「'+M.tried[k]+'」 를 지워 보려 했다. 내년에 다시.'):'나쁜 특성은 한 해 한 번 지워 볼 수 있다 — 10%.'));
+    if(!M.tried[k]) rem.forEach(t=>{ const b=el('button','btn sm','「'+t+'」 지워 보기 (10%)');
+      b.onclick=async()=>{ const r=mtTryRemove(t); toast(r.ok?('「'+t+'」 가 사라졌다!'):r.why); await saveGame(true); renderTrainPlayer(); }; w.appendChild(b); });
+    card.appendChild(w);
+  }
+  c.appendChild(card);
+}
+/* ---- 지갑 화면 ---- */
+function renderWallet(){
+  const c=$('#view'); c.innerHTML='';
+  if(!isPro()){ c.appendChild(el('div','card','지갑은 프로에 가면 열린다 — 사회인은 회비를 낸다.')); return; }
+  const L=walLife(), me=ST.playerId||MYID;
+  const hd=el('div','card wal-hd');
+  hd.innerHTML='<div class="card-h">내 지갑</div><div class="wal-m"><b>'+wonStr2(walMoney())+'</b><span>연봉 · 계약금으로 모은 돈</span></div>'+
+    '<p class="muted">집 '+(L.house>=0?WAL_HOUSE[L.house].n:'구단 숙소')+' · 차 '+(L.car>=0?WAL_CAR[L.car].n:'없음')+
+    (L.trainer===ST.pro.year?' · 개인 트레이너 있음':'')+(ST.injury[me]&&ST.injury[me].susp?' · <b style="color:#e0706a">징계 중</b>':'')+'</p>';
+  c.appendChild(hd);
+  const sec=(title, desc)=>{ const s=el('div','card'); s.appendChild(el('div','card-h',title)); s.appendChild(el('p','muted',desc||'')); c.appendChild(s); return s; };
+  const act=(s, label, sub, fn, dis)=>{ const b=el('button','pf-opt'+(dis?' done':'')); b.innerHTML='<b>'+label+'</b><span>'+sub+'</span>';
+    if(!dis) b.onclick=async()=>{ const e=fn(); if(e) toast(e); await saveGame(true); renderWallet(); }; s.appendChild(b); };
+  const h=sec('집','좋은 집에서 자면 매주 컨디션이 더 돌아온다.');
+  WAL_HOUSE.forEach((it,i)=>act(h, it.n+' — '+wonStr2(it.cost), it.d+' · 매주 컨디션 +'+it.rec, ()=>walBuy('house',i), L.house>=i));
+  const ca=sec('차','사면 사기가 오른다. 그 이상은 없다 — 알고 사는 거다.');
+  WAL_CAR.forEach((it,i)=>act(ca, it.n+' — '+wonStr2(it.cost), it.d+' · 사기 +'+it.mo, ()=>walBuy('car',i), L.car>=i));
+  const etc=sec('쓰는 데','');
+  act(etc,'개인 트레이너 (올 시즌) — 5,000만','훈련 효과 1.15배 — 비시즌까지', walTrainer, L.trainer===ST.pro.year);
+  act(etc,'부모님 차 선물 — 6,000만','사기 +8 · 한 해 한 번', ()=>walGive('hyo'), L.hyo===ST.pro.year);
+  act(etc,'유소년 야구부 기부 — 3,000만','사기 +4 · 신문 미담', ()=>walGive('give'));
+  const gb=sec('도박','');
+  gb.querySelector('p').innerHTML='강원랜드는 합법이지만 결국 잃는 게임이다. 사설 토토는 더 딸 것 같지만 <b>걸리면 KBO 중징계('+WAL_SUSP+'경기 출장정지 · 제재금 · 국가대표 박탈)</b>다. 다섯 번이면 「도박중독」.';
+  [1000,5000].forEach(bet=>act(gb,'강원랜드 — '+wonStr2(bet),'이길 확률 45% · 두 배', ()=>{ const r=walGamble('legal',bet); if(r.err) return r.err; toast(r.win?('땄다 +'+wonStr2(bet)):'잃었다'); return null; }));
+  [1000,5000].forEach(bet=>act(gb,'사설 토토 — '+wonStr2(bet),'이길 확률 55% · 두 배 · 걸릴 확률 12%', ()=>{ const r=walGamble('illegal',bet); if(r.err) return r.err;
+    if(r.caught){ toast('적발됐다 — '+WAL_SUSP+'경기 출장정지'); return null; } toast(r.win?('땄다 +'+wonStr2(bet)):'잃었다'); return null; }));
+  const bk=el('button','btn','← 홈으로'); bk.onclick=()=>go('home'); c.appendChild(bk);
 }
 function renderTrainPlayer(){
   const c=$('#view'); c.innerHTML='';
   const me=ST.playerId||MYID;
+  try{ rtCard(c); mtCard(c); }catch(e){}
   const head=el('div','card');
-  head.innerHTML='<div class="card-h">이번 주에 뭘 할까 · 코인 '+coinSlot()+'개</div>'+
+  head.innerHTML='<div class="card-h">특훈 — 루틴 위에 얹는다 · 코인 '+coinSlot()+'개</div>'+
     '<p class="muted"><b>코인이 있는 만큼 그 자리에서 산다.</b> 한 주에 '+TRAIN_Q_MAX+'개까지.<br>'+
     '산 훈련은 <b>다음 주에 한꺼번에</b> 몸에 붙는다 — 사자마자 오르지는 않는다.<br>'+
     '<b>값은 지금 능력치를 따라간다.</b> 낮은 칸은 2~3코인이고, '+
