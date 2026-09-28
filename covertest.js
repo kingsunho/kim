@@ -74,6 +74,16 @@ setTimeout(()=>{
   T('「무리하지 않았다」 는 고를 게 있었을 때만', ()=>!/:\s*'무리하지 않았다'/.test(html) ? '고를 게 없으면 타구 결과를 쓴다' : '!아직 그대로');
   T('뜬공이면 「뜬공 — 잡혔다」', ()=>/'뜬공 — 잡혔다\. 베이스로 돌아온다'/.test(html));
 
+  console.log('\n[수비 — v3.48.0]');
+  const ds=src('defScene');
+  T('못 잡을 순간(머리 위 · 창 밖)은 가장 가까운 거리로 안 친다', ()=>/if\(now>=window0 && !high\)\{ best=Math\.min\(best, near\)/.test(ds) ? '잡을 수 있을 때만 잰다' : '!아무 때나 잰다');
+  T('다이빙하면 몸이 그 방향으로 날아간다', ()=>/diveDir\.x\*sp\*dt/.test(ds) ? '날아간다' : '!제자리');
+  T('점프 중에도 다이빙이 된다(공중)', ()=>/if\(diving\(n2\)\|\|lagging\(n2\)\) return false;   \/\/ 연타 금지/.test(ds) ? '된다' : '!막혀 있다');
+  T('다이빙 · 점프 모션을 그린다', ()=>/g\.rotate\(sx\*Math\.PI\/2/.test(ds) && /글러브를 머리 위로/.test(ds) ? '눕는다 · 글러브를 뻗는다' : '!');
+  T('아이폰 — 조이스틱 touchstart 를 막는다', ()=>/joy\.addEventListener\('touchstart',\(ev\)=>\{ ev\.preventDefault\(\); \},\{passive:false\}\)/.test(html) ? '막는다' : '!');
+  T('아이폰 — 판단창에서 글자 선택 · 복사 메뉴를 끈다', ()=>/#decision,#decision \*\{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none/.test(html) ? '끈다' : '!');
+  T('조이스틱 밖으로 손가락이 나가도 안 놓친다', ()=>!/joy\.addEventListener\('pointerleave', up\)/.test(html) ? 'pointerleave 로 안 끊는다' : '!끊는다');
+
   console.log(bad.length?('\n❌ '+bad.length+'건:\n'+bad.slice(0,12).join('\n')):'\n✅ 이상 없음');
   process.exit(bad.length?1:0);
 }, 700);
