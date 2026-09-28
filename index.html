@@ -3212,6 +3212,25 @@ html.land .pp-ov,html.land #sheet{left:env(safe-area-inset-left,0px)!important;r
 .kd-sc b{color:var(--gold)}
 .stf-star{font-style:normal;color:var(--gold);letter-spacing:1px;margin-left:4px}.stf-star s{text-decoration:none;color:#3a414c}
 .stf-mgr{font-size:13px;margin:4px 0 8px}.stf-mgr i{font-style:normal;font-size:11.5px;color:var(--dim)}
+.ovb{font-style:normal;display:inline-block;min-width:24px;text-align:center;font-size:11px;font-weight:900;color:#0e0f11;border-radius:4px;padding:0 4px;margin-right:6px;line-height:17px;vertical-align:1px}
+.ocd-bar{display:flex;gap:6px;margin:0 0 10px}
+.gev-go{background:var(--gold);color:#0e0f11}
+.gev-hd b{display:block;font-size:17px;font-weight:900;margin-bottom:4px}
+.gev-hd span{display:block;font-size:13px;color:#b8c2cf;line-height:1.55}
+.gev-ch{display:flex;flex-direction:column;gap:7px;margin-top:12px}
+.gev-b{font:inherit;text-align:left;color:var(--ink);background:#151a21;border:1px solid #2a323d;border-radius:10px;padding:10px 12px;cursor:pointer}
+.gev-b b{display:block;font-size:14px}
+.gev-b i{display:block;font-style:normal;font-size:11.5px;color:var(--gold);margin-top:2px}
+.gev-r{font-size:13.5px;line-height:1.6;margin:0 0 10px}
+.crr-t{overflow-x:auto}
+.crr-t table{border-collapse:collapse;width:100%;font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.crr-t th{font-size:10.5px;color:var(--dim);font-weight:800;text-align:right;padding:5px 6px;border-bottom:1px solid #2b3442}
+.crr-t td{text-align:right;padding:6px;border-bottom:1px solid #1d232c}
+.crr-t th:nth-child(-n+2),.crr-t td:nth-child(-n+2){text-align:left}
+.crr-t td i{font-style:normal;font-size:10.5px;color:var(--dim)}
+.crr-t tr.now td{background:rgba(255,200,60,.06)}
+.crr-t tr.dim td{color:var(--dim)}
+.crr-sum{font-size:12px;color:var(--dim);margin-top:8px}
 .ocd-wrap{margin:0 0 10px}
 .ocd{display:flex;gap:12px;align-items:stretch;border-radius:14px;padding:12px;background:linear-gradient(135deg,#1b2230 0%,#12161d 60%);border:1px solid #2b3442;position:relative;overflow:hidden}
 .ocd::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--tc)}
@@ -9351,8 +9370,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.42.1';
-const APP_VERSION_NOTE = '특성 목록 정리';
+const APP_VERSION = '3.43.0';
+const APP_VERSION_NOTE = '선수 카드 어디서나 · 성장 이벤트 · 커리어 WAR';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9373,6 +9392,12 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.43.0', t:'선수 카드 어디서나 · 성장 이벤트 · 커리어 WAR', items:[
+    '<b>선수를 누르면 카드부터 뜬다.</b> 종합(OVR) · S~G 등급 · 특성. 프런트 선수단 · 외국인 후보 줄마다 종합 뱃지가 붙었다',
+    '<b>성장 이벤트</b> — 몇 주에 한 번 고를 거리 셋. 선배의 폼 교정 · 밤 11시 배팅장 · 스카우트 방문 · 회식 · 햄스트링 · 유튜브 레슨 · PT · 변화구 · 팬 사인 · 광고 · 기자 · 고교 은사. 로비에 「이벤트」 가 뜬다(두 주 지나면 사라진다)',
+    '선수 시트에서 프로 선수는 사회인 「몸값」 대신 KBO 연봉 · 계약 형태가 나온다',
+    '<b>커리어 표</b> — 훈련 화면 「커리어 · WAR」. 시즌별 타율 · 출루 · 장타 · OPS+ · WAR(투수는 ERA · ERA+ · WHIP · WAR). 리그 평균이 100',
+  ]},
   {v:'3.42.1', t:'특성 목록 정리', items:[
     '훈련 화면 특성 진행 막대를 열네 줄 다 깔지 않고 가까운 넷만 보여준다. 나머지는 「특성 전부 보기」',
   ]},
@@ -17946,7 +17971,7 @@ function renderStaffTab(c){
     '. 신규는 총액 100만 달러까지. 데려오면 같은 쪽 제일 약한 외국인을 내보낸다(잔여 연봉 절반).'));
   fxPool().list.forEach((X,i)=>{ const b=el('button','pf-opt'+(X.done?' done':''));
     const v=pfValue(X.p), st=X.pit?('구위 '+X.p.stf+' · 제구 '+X.p.ctl+' · 체력 '+X.p.sta):('컨택 '+X.p.con+' · 파워 '+X.p.pow+' · 선구 '+X.p.eye+' · 주루 '+X.p.spd);
-    b.innerHTML='<b>'+X.p.name+' · '+(X.pit?'투수':(POSNAMES[X.p.pos[0]]||'타자'))+' · '+X.from+' · '+X.p.age+'세</b><span>'+st+' · 가치 '+v+'</span><i>'+(X.done?'계약 완료':('총액 '+X.usd+'만 달러 · 이적료 '+X.buyout+'억'))+'</i>';
+    b.innerHTML='<b>'+pcBadge(X.p, X.pit)+X.p.name+' · '+(X.pit?'투수':(POSNAMES[X.p.pos[0]]||'타자'))+' · '+X.from+' · '+X.p.age+'세</b><span>'+st+' · 가치 '+v+'</span><i>'+(X.done?'계약 완료':('총액 '+X.usd+'만 달러 · 이적료 '+X.buyout+'억'))+'</i>';
     if(!X.done) b.onclick=async()=>{ const e=fxSign(i); toast(e||(X.p.name+' 영입')); await saveGame(true); renderProFront('staff'); };
     xc.appendChild(b); });
   c.appendChild(xc);
@@ -18007,7 +18032,8 @@ function renderProFront(tab){
     const row=(p, farm)=>{ const cc=pfCon(p,ST.pro.team);
       const r=el('div','pf-rrow'+(p.id===me?' me':''));
       const tp={fa:'FA '+cc.left+'년',annual:'연봉',rookie:'신인',foreign:'외국인'}[cc.type]||'';
-      r.innerHTML='<span class="pf-rn">'+(p.no!=null?p.no+' ':'')+p.name+'</span><span class="pf-rp">'+(pfIsPit(p)?'투수':(POSNAMES[(p.pos||[])[0]]||''))+' · '+pfAge(p)+'세</span>'+
+      r.onclick=(ev2)=>{ if(ev2.target&&ev2.target.tagName==='BUTTON') return; try{ openPlayerCard(p.id); }catch(e){} };
+      r.innerHTML='<span class="pf-rn">'+pcBadge(p, pfIsPit(p))+(p.no!=null?p.no+' ':'')+p.name+'</span><span class="pf-rp">'+(pfIsPit(p)?'투수':(POSNAMES[(p.pos||[])[0]]||''))+' · '+pfAge(p)+'세</span>'+
         '<span class="pf-rs">'+wonStr2(cc.sal)+'</span><span class="pf-rt">'+tp+'</span>';
       if(p.id!==me){ const b=el('button','pf-mv',farm?'등록':'말소');
         b.onclick=async()=>{ farm?pfToFirst(p.id):pfToFarm(p.id); await saveGame(true); renderProFront('roster'); };
@@ -23962,7 +23988,8 @@ function lobbyStage(){
       const t=document.querySelector('#view .news-card,#view .card');
       if(t) t.scrollIntoView({behavior:'smooth',block:'center'}); }, nNew],
    ['📊','기록',()=>go('stats'), 0]
-  ].concat(isPro()?[['','프런트',()=>go('front'),0],['','지갑',()=>renderWallet(),0]]:[]).forEach(([ic,nm,fn2,badge])=>{
+  ].concat(isPro()?[['','프런트',()=>go('front'),0],['','지갑',()=>renderWallet(),0]]:[])
+   .concat(ST.gev?[['','이벤트',()=>gevOpen(),1]]:[]).forEach(([ic,nm,fn2,badge])=>{
     const bt=el('button','lob-ic');
     /* [v3.26.0] 이모지 아이콘을 뺐다 — 글자만. 「AI 가 만든 티」 가 제일 많이 나던 자리다 */
     bt.innerHTML='<span>'+nm+'</span>'+(badge?'<em>'+badge+'</em>':'');
@@ -26762,6 +26789,12 @@ function openPlayerCard(pid){
       ${ours&&nickOf(pid)?`<div class="pcs-n2">'${nickOf(pid)}'</div>`:''}
     </div>`;
   body.appendChild(top);
+  /* [v3.43.0] 카드 한 장 — 종합 · 등급. 아래 표는 그대로 둔다(OOTP 식 상세) */
+  try{ const cd=el('div','ocd-wrap');
+    const src=pitFirst&&pit ? {name:nm, no:(p||pit).no, pitch:pit} : (p||{name:nm});
+    cd.innerHTML=pcCard(src,{pit:!!(pitFirst&&pit), pos:pitFirst?'P':(main||''), sub:team.name, traits:(m&&m.traits)||[],
+      color:(isPro()&&proKeyOf(team.id))?proUni(proKeyOf(team.id)).cap:'#2f5fb0'});
+    body.appendChild(cd); }catch(e){}
 
   /* ---- 오늘 경기 ---- */
   const gb=(typeof LIVE!=='undefined'&&LIVE)?cardGameBox:null;   // 확정 전 경기만 '오늘'이다
@@ -26819,7 +26852,14 @@ function openPlayerCard(pid){
       val=pitcherValue(pit)*1.5;
       note='투수는 구위·제구·체력으로 매긴 추정값이다.';
     }
-    if(val!=null){
+    /* [v3.43.0] 프로에선 사회인 몸값(만 원 단위 회비 기준)이 21만 원으로 찍혔다 — KBO 계약으로 보여준다 */
+    let proCon=null;
+    try{ if(isPro()){ const k=proKeyOf(team.id); if(k) proCon=pfCon(p||pit,k); } }catch(e){ proCon=null; }
+    if(proCon){
+      const tp={fa:'FA '+proCon.left+'년',annual:'연봉 계약',rookie:'신인',foreign:'외국인'}[proCon.type]||'';
+      add(otSec('연봉',
+        `<div class="pcs-val">${wonStr2(proCon.sal)}</div><p class="ot-note">${tp}</p>`));
+    } else if(val!=null){
       add(otSec('몸값',
         `<div class="pcs-val">${wonStr(val)}</div><p class="ot-note">${note}</p>`));
     }
@@ -40318,6 +40358,7 @@ function mtWeek(){
     ST.notices=ST.notices||[]; ST.notices.push({type:'train', title:'또 손이 갔다', body:'밤새 휴대폰을 붙잡고 있었다. '+wonStr2(loss)+'이 사라졌다.', effect:'사기 -5 · 「도박중독」'});
   }
   mtSync();
+  try{ gevWeek(); }catch(e){}
 }
 function mtTrainMul(){
   let m=1; try{ if(mtHas('노력파')) m*=1.25;
@@ -40549,10 +40590,187 @@ function pcMine(){
   const col=isPro()?proUni(ST.pro.team).cap:'#2f5fb0';
   return pcCard(p,{pit, pos:pit?'P':(ST.myPos||(p.pos||[''])[0]), sub:where+' · '+age+'세'+(ST.role==='two'?' · 투타겸업':''), traits:m.traits||[], color:col});
 }
+/* ================= v3.43.0 — 카드 · 이벤트 · 커리어 =================
+   [요청] "다음 업그레이드 제안 ㄱㄱ"
+     ① 선수 카드를 어디서나 — 선수 시트 · 프런트 선수단 · FA · 외국인에 종합(OVR) 뱃지
+     ② 성장 이벤트 — 몇 주에 한 번 고를 거리 셋. 고른 대로 몸이 바뀐다
+     ③ 커리어 — 시즌별 OPS+ · WAR(타자) / ERA+ · WAR(투수) 표                            */
+
+/* ---- ① 작은 종합 뱃지 ---- */
+function pcBadge(p, pit){
+  if(!p) return '';
+  const o=pcOvr(p, pit), g=pcGrade(o);
+  return '<em class="ovb" style="background:'+g[2]+'">'+o+'</em>';
+}
+
+/* ---- ② 성장 이벤트 ----
+   효과 키: 능력치(con pow eye spd def arm / stf ctl sta brk) · cond(컨디션) · mo(사기) ·
+   won(만원, 프로만) · prog{특성 진행} · inj(이 확률로 가벼운 부상)                       */
+const GEV=[
+  {id:'form', t:'선배가 폼을 봐 주겠단다', d:'배팅 케이지 뒤에서 한참 보더니 「손 위치가 높다」 고 한다.', bat:true, c:[
+    {t:'고친다',          e:{con:1.5, pow:-0.4},  r:'어색한데 공이 배트에 더 붙는다.'},
+    {t:'내 폼으로 간다',   e:{pow:1.0, mo:3},       r:'고집도 실력이다. 대신 결과로 말해야 한다.'},
+    {t:'영상부터 찍는다',  e:{eye:1.2},             r:'느린 화면으로 보니 뭐가 문제인지 보인다.'}]},
+  {id:'night', t:'밤 11시, 배팅장 불이 켜져 있다', d:'열쇠는 주머니에 있다.', c:[
+    {t:'두 시간 더 친다',  e:{con:1.0, pow:0.8, cond:-10, prog:{effort:1}}, r:'손바닥이 까졌다. 그래도 감이 왔다.'},
+    {t:'한 시간만',        e:{con:0.6, cond:-4},     r:'적당히 하고 나왔다.'},
+    {t:'집에 간다',        e:{cond:8},               r:'잘 잤다. 내일 몸이 가볍다.'}]},
+  {id:'scout', t:'관중석에 낯선 얼굴', d:'노트를 들고 있다. 누가 봐도 스카우트다.', c:[
+    {t:'힘껏 보여 준다',   e:{pow:1.0, mo:4, cond:-5}, r:'어깨에 힘이 들어갔다. 그래도 한 방은 보여 줬다.'},
+    {t:'평소대로',         e:{mo:6},                   r:'하던 대로 했다. 그게 제일 어렵다.'},
+    {t:'신경 끈다',        e:{eye:0.6},                r:'공만 봤다.'}]},
+  {id:'drink', t:'오늘 회식이다', d:'단톡방에 장소가 올라왔다. 고깃집 2층.', c:[
+    {t:'끝까지 간다',      e:{mo:8, cond:-12},       r:'새벽 세 시. 다음 날 해가 노랗다.'},
+    {t:'1차만',            e:{mo:4, cond:-3},        r:'고기만 먹고 빠졌다.'},
+    {t:'안 간다',          e:{cond:5, mo:-3},        r:'단톡방이 조용해졌다.'}]},
+  {id:'ham', t:'햄스트링이 뻐근하다', d:'뛸 때마다 뒤쪽이 당긴다.', c:[
+    {t:'참고 뛴다',        e:{mo:2, inj:0.3},        r:''},
+    {t:'이번 주는 쉰다',   e:{cond:15},              r:'찜질하고 누워 있었다. 한결 낫다.'},
+    {t:'병원에 간다',      e:{cond:10, won:-100},    r:'근육이 살짝 뭉친 거란다. 주사 한 대.'}]},
+  {id:'tube', t:'알고리즘이 타격 레슨 영상을 띄웠다', d:'조회수 300만. 「이것만 고치면 비거리 20m」.', bat:true, c:[
+    {t:'따라 해 본다',     e:{rnd:true},             r:''},
+    {t:'코치한테 물어본다',e:{con:0.7, eye:0.5},     r:'「반은 맞고 반은 틀렸다」. 맞는 반만 가져왔다.'},
+    {t:'넘긴다',           e:{},                     r:'유튜브는 유튜브다.'}]},
+  {id:'weight', t:'웨이트장 PT 선생님', d:'「이번 달 뭐 할래요?」', c:[
+    {t:'벌크업',           e:{pow:1.5, spd:-0.8, stf:0.8}, r:'옷이 작아졌다.'},
+    {t:'코어 · 가동성',     e:{def:0.8, prog:{iron:3}},   r:'몸이 단단해진 느낌이다.'},
+    {t:'스트레칭만',       e:{cond:10},                  r:'몸이 풀렸다.'}]},
+  {id:'pitch', t:'변화구를 하나 더?', d:'불펜 포수가 「스플리터 던져 볼래?」 한다.', pit:true, c:[
+    {t:'스플리터를 배운다',e:{brk:2.0, ctl:-0.5},    r:'떨어지긴 한다. 어디로 떨어질지는 모르지만.'},
+    {t:'직구를 다듬는다',  e:{stf:1.2},              r:'회전수가 조금 올랐다.'},
+    {t:'제구만 판다',      e:{ctl:1.3},              r:'같은 자리에 스무 개.'}]},
+  {id:'sign', t:'퇴근길에 팬들이 기다린다', d:'사인 펜을 든 아이가 맨 앞에 있다.', pro:true, c:[
+    {t:'끝까지 해 준다',   e:{mo:6, cond:-4, prog:{star:0.2}}, r:'마지막 한 명까지. 사진도 찍었다.'},
+    {t:'아이들만',         e:{mo:3},                 r:'아이들 먼저.'},
+    {t:'모자 눌러쓰고 간다',e:{mo:-2},               r:'커뮤니티에 글이 하나 올라왔다.'}]},
+  {id:'ad', t:'광고 섭외가 들어왔다', d:'치킨 브랜드. 촬영은 하루.', pro:true, c:[
+    {t:'찍는다',           e:{won:1500, cond:-6},    r:'광고비가 들어왔다. 치킨은 공짜로 먹는다.'},
+    {t:'시즌 끝나고',      e:{mo:2},                 r:'야구가 먼저다.'}]},
+  {id:'press', t:'기자가 마이크를 들이민다', d:'「올 시즌 목표는요?」', c:[
+    {t:'「홈런왕이요」',    e:{rnd2:true},            r:''},
+    {t:'「팀이 이기는 거요」',e:{mo:3},              r:'무난하다. 기사 제목도 무난하다.'}]},
+  {id:'teacher', t:'고교 은사한테 전화가 왔다', d:'「요즘 잘하더라. 한번 들러라.」', c:[
+    {t:'찾아간다',         e:{mo:6, cond:-2},        r:'운동장이 작아 보였다.'},
+    {t:'전화로 인사만',    e:{mo:3},                 r:'목소리가 그대로였다.'}]},
+];
+const GEV_KN={con:'컨택',pow:'파워',eye:'선구',spd:'주루',def:'수비',arm:'어깨',stf:'구위',ctl:'제구',sta:'체력',brk:'변화'};
+function gevPool(){
+  const pit=ST.role==='pit', pro=isPro();
+  return GEV.filter(g=>(!g.pro||pro) && (!g.bat||!pit) && (!g.pit||pit||ST.role==='two'));
+}
+/* 매주 — 셋 중 하나꼴로 이벤트. 안 고르면 두 주 뒤 사라진다 */
+function gevWeek(rng){
+  if(!isPlayerMode() || (typeof hsActive==='function'&&hsActive())) return null;
+  rng=rng||Math.random;
+  const wk=ST.round||0;
+  if(ST.gev && wk-ST.gev.wk>=2) ST.gev=null;
+  if(ST.gev) return ST.gev;
+  if(rng()>=0.34) return null;
+  const P=gevPool(); if(!P.length) return null;
+  const g=pickFresh(P,'gev',rng); ST.gev={id:g.id, wk};
+  return ST.gev;
+}
+function gevApply(e, rng){
+  rng=rng||Math.random;
+  const me=ST.playerId||MYID, p=TBYID.wwzw.players.find(x=>x.id===me); if(!p) return [];
+  const out=[];
+  let E={...e};
+  if(E.rnd){ E=(rng()<0.5)?{pow:1.4,con:-0.3}:{con:-0.8}; out.push(E.pow?'이상하게 맞는다!':'폼이 무너졌다.'); }
+  if(E.rnd2){ const ok=rng()<0.5; E=ok?{mo:8,pow:0.5}:{mo:-6}; out.push(ok?'기사 댓글이 불탔다 — 좋은 쪽으로.':'「건방지다」 는 댓글이 달렸다.'); }
+  Object.keys(E).forEach(k=>{
+    const v=E[k];
+    if(GEV_KN[k]){
+      const pk=(k==='stf'||k==='ctl'||k==='sta'||k==='brk');
+      if(pk){ if(!p.pitch) return; p.pitch[k]=Math.max(8,Math.min(99,(p.pitch[k]||30)+v)); }
+      else { if(p[k]==null) return; p[k]=Math.max(8,Math.min(99,p[k]+v)); }
+      out.push(GEV_KN[k]+' '+(v>0?'+':'')+v);
+    }
+    if(k==='cond'){ ST.cond[me]=Math.max(20,Math.min(100,(ST.cond[me]||70)+v)); out.push('컨디션 '+(v>0?'+':'')+v); }
+    if(k==='mo'&&ST.morale){ ST.morale[me]=Math.max(10,Math.min(100,(ST.morale[me]||70)+v)); out.push('사기 '+(v>0?'+':'')+v); }
+    if(k==='won'&&isPro()){ ST.pro.earned=Math.max(0,(ST.pro.earned||0)+v); out.push((v>0?'+':'')+wonStr2(v)); }
+    if(k==='prog'){ const P=mtState().prog; Object.keys(v).forEach(q=>{ P[q]=(P[q]||0)+v[q]; }); }
+    if(k==='inj' && rng()<v && ST.injury && !ST.injury[me]){ ST.injury[me]={name:'햄스트링 미세 손상', games:2}; out.push('결국 탈이 났다 — 2경기 결장'); }
+  });
+  try{ finalizeTeam(TBYID.wwzw); myRatingsSave(); }catch(e2){}
+  return out;
+}
+/* 이벤트 창 — 선수 시트(#sheet)를 빌려 쓴다 */
+function gevOpen(){
+  if(!ST.gev) return;
+  const g=GEV.find(x=>x.id===ST.gev.id); if(!g){ ST.gev=null; return; }
+  const body=$('#sheet-body'); if(!body) return;
+  $('#sheet-title').textContent='이벤트';
+  body.innerHTML='';
+  const hd=el('div','gev-hd'); hd.innerHTML='<b>'+g.t+'</b><span>'+g.d+'</span>'; body.appendChild(hd);
+  const box=el('div','gev-ch'); body.appendChild(box);
+  g.c.forEach(ch=>{ const b=el('button','gev-b');
+    const fx=Object.keys(ch.e).filter(k=>GEV_KN[k]||k==='cond'||k==='mo'||k==='won').map(k=>{ const v=ch.e[k];
+      return (GEV_KN[k]||({cond:'컨디션',mo:'사기',won:''})[k])+(k==='won'?((v>0?'+':'')+wonStr2(v)):((v>0?' +':' ')+v)); });
+    b.innerHTML='<b>'+ch.t+'</b>'+(fx.length?'<i>'+fx.join(' · ')+'</i>':(ch.e.rnd||ch.e.rnd2||ch.e.inj?'<i>?</i>':''));
+    b.onclick=async()=>{ const res=gevApply(ch.e); ST.gev=null;
+      box.innerHTML='<p class="gev-r">'+([ch.r].concat(res).filter(Boolean).join('<br>'))+'</p>';
+      const ok=el('button','btn primary','확인'); ok.onclick=()=>{ $('#sheet').classList.remove('open'); try{ if(typeof renderHome==='function'&&document.querySelector('.lob')) renderHome(); }catch(e){} };
+      box.appendChild(ok); await saveGame(true); };
+    box.appendChild(b); });
+  $('#sheet').classList.add('open');
+}
+
+/* ---- ③ 커리어 — OOTP 느낌의 시즌 표 ----
+   리그 평균은 KBO 기준값(LG_PRO 주석의 목표치): 출루 .345 · 장타 .390 · 평균자책 4.69.
+   WAR 은 줄인 식이다 — 타자: (OPS+ 로 본 득점 기여 + 대체 선수 몫 + 수비 위치) ÷ 10,
+   투수: (리그 평균 대비 실점 + 대체 선수 몫) ÷ 10. 10점 = 1승. 흐름을 보는 숫자지 소수점까지 믿을 숫자는 아니다 */
+const CRR_LG={obp:0.345, slg:0.390, era:4.69};
+const CRR_POS={C:10,SS:7.5,'2B':2.5,'3B':2.5,CF:2.5,LF:-7.5,RF:-7.5,'1B':-12.5,DH:-17.5,P:0};
+function crrBat(b, pos){
+  const pa=b.pa||0; if(!pa) return null;
+  const ab=b.ab||0, h=b.h||0, tb=h+(b.d2||0)+2*(b.d3||0)+3*(b.hr||0);
+  const avg=ab?h/ab:0, obp=(h+(b.bb||0)+(b.hbp||0))/pa, slg=ab?tb/ab:0;
+  const opsp=Math.round(100*(obp/CRR_LG.obp+slg/CRR_LG.slg-1));
+  const war=((opsp-100)/100*pa*0.12 + pa/600*20 + pa/600*(CRR_POS[pos]||0))/10;
+  return {avg, obp, slg, ops:obp+slg, opsp, war, pa, hr:b.hr||0, rbi:b.rbi||0, sb:b.sb||0};
+}
+function crrPit(q){
+  const ip=(q.outs||0)/3; if(!ip) return null;
+  const e=q.er*9/ip, erap=Math.round(100*CRR_LG.era/Math.max(0.5,e));
+  const war=((CRR_LG.era-e)*ip/9 + ip*0.12)/10;
+  return {era:e, erap, war, ip, w:q.w||0, l:q.l||0, k:q.k||0, whip:((q.h||0)+(q.bb||0))/ip};
+}
+function crrRows(){
+  const me=ST.playerId||MYID, pos=ST.role==='pit'?'P':(ST.myPos||'DH'), rows=[];
+  if(isPro()){
+    (ST.pro.history||[]).forEach(h=>rows.push({y:h.year, tm:h.teamName, lv:h.level, b:crrBat(h.bat||{},pos), q:crrPit(h.pit||{})}));
+    rows.push({y:ST.pro.year, tm:proName(ST.pro.team), lv:(ST.myFarm||0)>0?'2군':'1군', b:crrBat(ST.bat[me]||{},pos), q:crrPit(ST.pit[me]||{}), now:true});
+  } else rows.push({y:ST.year||2026, tm:'우완좌완', lv:'사회인', b:crrBat(ST.bat[me]||{},pos), q:crrPit(ST.pit[me]||{}), now:true});
+  return rows;
+}
+function crrOpen(){
+  const body=$('#sheet-body'); if(!body) return;
+  $('#sheet-title').textContent='커리어';
+  const rows=crrRows(), pit=ST.role==='pit';
+  const f3=v=>v.toFixed(3).replace(/^0/,''), c=v=>'<b class="crr-w" style="color:'+(v>=4?'#ff5a4f':v>=2?'#f2c94c':v>=0?'#d7dde6':'#8a94a6')+'">'+v.toFixed(1)+'</b>';
+  const pl=v=>'<span style="color:'+(v>=130?'#ff5a4f':v>=110?'#f2c94c':v>=90?'#d7dde6':'#8a94a6')+'">'+v+'</span>';
+  let h='<div class="crr-t"><table><thead><tr><th>해</th><th>팀</th>'+
+    (pit?'<th>승패</th><th>이닝</th><th>ERA</th><th>ERA+</th><th>WHIP</th><th>삼진</th>'
+        :'<th>타석</th><th>타율</th><th>출루</th><th>장타</th><th>OPS+</th><th>홈런</th><th>타점</th><th>도루</th>')+'<th>WAR</th></tr></thead><tbody>';
+  let tw=0;
+  rows.forEach(r=>{ const s=pit?r.q:r.b; if(!s){ h+='<tr class="dim"><td>'+r.y+(r.now?'*':'')+'</td><td>'+r.tm+' · '+r.lv+'</td><td colspan="9">기록 없음</td></tr>'; return; }
+    tw+=s.war;
+    h+='<tr'+(r.now?' class="now"':'')+'><td>'+r.y+(r.now?'*':'')+'</td><td>'+r.tm+' <i>'+r.lv+'</i></td>'+
+      (pit?'<td>'+s.w+'-'+s.l+'</td><td>'+s.ip.toFixed(1)+'</td><td>'+s.era.toFixed(2)+'</td><td>'+pl(s.erap)+'</td><td>'+s.whip.toFixed(2)+'</td><td>'+s.k+'</td>'
+          :'<td>'+s.pa+'</td><td>'+f3(s.avg)+'</td><td>'+f3(s.obp)+'</td><td>'+f3(s.slg)+'</td><td>'+pl(s.opsp)+'</td><td>'+s.hr+'</td><td>'+s.rbi+'</td><td>'+s.sb+'</td>')+
+      '<td>'+c(s.war)+'</td></tr>'; });
+  h+='</tbody></table></div><p class="crr-sum">통산 WAR '+c(tw)+' · * 는 진행 중인 시즌. OPS+ · ERA+ 는 리그 평균이 100.</p>';
+  body.innerHTML=h;
+  $('#sheet').classList.add('open');
+}
 function renderTrainPlayer(){
   const c=$('#view'); c.innerHTML='';
   const me=ST.playerId||MYID;
-  try{ const cd=el('div','ocd-wrap'); cd.innerHTML=pcMine(); c.appendChild(cd); }catch(e){}
+  try{ const cd=el('div','ocd-wrap'); cd.innerHTML=pcMine(); c.appendChild(cd);
+    const bar=el('div','ocd-bar');
+    const cb=el('button','btn sm','커리어 · WAR'); cb.onclick=()=>crrOpen(); bar.appendChild(cb);
+    if(ST.gev){ const eb=el('button','btn sm gev-go','이벤트가 있다 ▸'); eb.onclick=()=>gevOpen(); bar.appendChild(eb); }
+    c.appendChild(bar); }catch(e){}
   try{ rtCard(c); mtCard(c); }catch(e){}
   const head=el('div','card');
   head.innerHTML='<div class="card-h">특훈 — 루틴 위에 얹는다 · 코인 '+coinSlot()+'개</div>'+
