@@ -83,7 +83,12 @@ const reload=()=>{ const snap=ev("JSON.stringify(ST)");
   ev("clearInterval(PF_DRAFT_T)");
   T('11라운드 110명이 다 뽑혔다', ()=>{ const n=ev("pfRookiePool().picks.length"); return n===110?'110명':'!'+n; });
   T('우리 지명 열하나가 우리 2군에 왔다', ()=>{ const mine=JSON.parse(ev("JSON.stringify(pfRookiePool().picks.filter(z=>z.team===ST.pro.team).map(z=>z.id))"));
-    const ok=mine.length===11 && mine.every(id=>ev(`!!(TBYID.wwzw.farm||[]).find(p=>p.id==='${id}')`)); return ok?'11명':'!'+mine.length; });
+    /* 괴물 신인(phenom)은 바로 1군 — 나머지는 2군 */
+    const ok=mine.length===11 && mine.every(id=>ev(`(function(){ const ph=!!(pfRookiePool().list.find(x=>x.p.id==='${id}')||{}).phenom;
+      return ph ? !![].concat(TBYID.wwzw.players,TBYID.wwzw.pitchers).find(p=>p.id==='${id}') : !!(TBYID.wwzw.farm||[]).find(p=>p.id==='${id}'); })()`)); return ok?'11명':'!'+mine.length; });
+  T('후보 학교가 고졸이면 고, 대졸이면 대', ()=>ev("pfRookiePool().list.every(x=>(x.school==='고교')===/고$/.test(x.schoolName))") ? '맞다' : '!섞였다');
+  T('괴물 신인은 고졸 · 현재 58+ · 잠재 86+', ()=>{ const P=JSON.parse(ev("JSON.stringify(pfRookiePool().list.filter(x=>x.phenom).map(x=>[x.cur,x.pot,x.school]))"));
+    return P.every(q=>q[0]>=58&&q[1]>=86&&q[2]==='고교') ? (P.length?P.length+'명':'올해는 없다') : '!'+JSON.stringify(P); });
   T('스카우트 범위 안에 진짜 값이 있다', ()=>{ const r=JSON.parse(ev(`JSON.stringify(pfRookiePool().list.map(x=>({c:x.rc, p:x.rp, tc:x.cur, tp:x.pot})))`));
     const bad2=r.filter(x=>x.tc!=null&&(x.tc<x.c[0]||x.tc>x.c[1]||x.tp<x.p[0]||x.tp>x.p[1]));
     return r.length&&!bad2.length ? r.length+'명 전원' : '!'+bad2.length+'/'+r.length+' '+JSON.stringify(r[0]); });

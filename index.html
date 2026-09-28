@@ -3195,6 +3195,8 @@ html.land .pp-ov,html.land #sheet{left:env(safe-area-inset-left,0px)!important;r
 .kd-cand b em{font-style:normal;font-weight:600;font-size:11.5px;color:var(--dim)}
 .kd-cand span b{display:inline;font-size:inherit;color:var(--gold)}
 .kd-cand{padding:7px 10px;margin:4px 0}
+.kd-phen{border-color:var(--gold);background:rgba(255,200,60,.08)}
+.kd-star{text-decoration:none;display:inline-block;font-size:10.5px;font-weight:900;color:#0e0f11;background:var(--gold);border-radius:5px;padding:1px 6px;vertical-align:middle}
 @media (min-width:600px){ .kd-our .kd-cand{display:inline-block;width:calc(50% - 4px);vertical-align:top;margin:3px 0}
   .kd-our .kd-cand:nth-of-type(odd){margin-right:8px} }
 .kd-ctl{display:flex;flex-direction:column;gap:7px;margin:10px 0}
@@ -9288,8 +9290,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.36.0';
-const APP_VERSION_NOTE = 'KBO 연봉 · 신인 드래프트 중계';
+const APP_VERSION = '3.37.0';
+const APP_VERSION_NOTE = '고졸 바로 프로 · 구단 모자 글자 · 괴물 신인';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9310,6 +9312,15 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.37.0', t:'고졸 바로 프로 · 구단 모자 글자 · 괴물 신인', items:[
+    '<b>고교를 졸업하면 진로를 고른다.</b> 바로 KBO 드래프트를 신청하면 고졸 신인으로 하위 라운드(5~10R)에서 불리고 2군부터. 사회인야구(우완좌완)에서 기록을 쌓고 트라이아웃을 보면 실전 보정이 붙어서 상위 라운드(1~4R)까지 노린다',
+    '<b>프로 구단마다 모자 앞 글자가 생겼다.</b> 곰 D · 쌍둥이 T · 호랑이 K · 사자 S · 거인 G · 마법사 W · 공룡 N · 착륙선 L · 독수리 E · 영웅 H. 로고를 베끼진 않고 글자 하나와 팀 색으로만',
+    '<b>쌍둥이 · 곰은 홈 유니폼에 줄무늬(핀스트라이프).</b>',
+    '<b>KBO 규정대로 원정 팀은 유색 유니폼.</b> 홈은 흰색, 원정은 팀마다 원정색(회색 · 남색 · 팀 색) — 유색 셔츠 위 번호는 흰 글씨',
+    '<b>괴물 신인.</b> 신인 드래프트에 해마다 반쯤 확률로 하나(가끔 둘) — 고졸인데 벌써 1군급, 잠재는 맨 위. 뽑히면 2군을 건너뛰고 바로 1군',
+    '드래프트 후보 학교가 실제 학교 이름이 됐다 — 휘문고 · 서울고 · 덕수고 · 경남고 · 북일고 … 대학은 고려대 · 연세대 · 성균관대 …(선수는 전부 지어낸 사람)',
+    '고졸 능력치인데 학교가 「○○대」 로 붙던 것을 고쳤다',
+  ]},
   {v:'3.36.0', t:'KBO 연봉 · 신인 드래프트 중계', items:[
     '<b>연봉이 생겼다 — KBO 규정 그대로.</b> FA 계약한 사람은 계약 해를 채우고, 나머지는 겨울마다 성적대로 재계약한다. 최저연봉 2026 3,000만 · 2027~ 3,300만',
     '<b>나도 선수 겸 프런트다.</b> 겨울에 구단이 내 연봉을 제시한다 — 도장 · 버티기 · 연봉조정 신청 중에 고른다. 1군 8시즌을 채우면 내 FA — 세 구단 조건을 보고 고른다(다른 구단을 고르면 그리로 간다)',
@@ -15593,7 +15604,7 @@ const PRO_PARKS=[
 ];
 const PRO_TEAMS=[
   {key:'kia', name:'광주 호랑이', short:'호랑이', city:'광주', mascot:'범이', park:'gwangju',
-   cap:'#EA0029', sh:'#ffffff', pants:'#eceef2', sub:'#06141F',
+   cap:'#EA0029', sh:'#ffffff', pants:'#eceef2', sub:'#06141F', ltr:'K', aw:'#c8102e',
    titles:[1983,1986,1987,1988,1989,1991,1993,1996,1997,2009,2017,2024],
    retired:[[18,'선동훈','투수'],[7,'이종번','유격수']],
    records:['단일 시즌 평균자책점 0.78 — 선동훈 (1993)','단일 시즌 84도루 — 이종번 (1994)','역대 최연소 30-30 — 김도형 (2024)'],
@@ -15617,7 +15628,7 @@ const PRO_TEAMS=[
         ['이태야',44,'R','RP',3.77,31.3,6.6,null,2.8,28,36],['곽도유',0,'L','RP',3.35,28.3,9.0,null,4.3,37,22],
         ['김현순',17,'R','RP',3.75,2,7.1,null,3.5,1,26]]},
   {key:'sam', name:'대구 사자', short:'사자', city:'대구', mascot:'갈기', park:'daegu',
-   cap:'#074CA1', sh:'#ffffff', pants:'#eceef2', sub:'#c0c0c0',
+   cap:'#074CA1', sh:'#ffffff', pants:'#eceef2', sub:'#c0c0c0', ltr:'S', aw:'#1a5cb0',
    titles:[1985,2002,2005,2006,2011,2012,2013,2014],
    retired:[[10,'양준협','외야수'],[22,'이만서','포수'],[36,'이승연','1루수']],
    records:['단일 시즌 56홈런 — 이승연 (2003)','통합 4연패 (2011~2014)','통산 최다 안타 경쟁 — 양준협 (2318안타)'],
@@ -15640,7 +15651,7 @@ const PRO_TEAMS=[
         ['김태후',27,'R','RP',3.34,36,6.3,null,2.7,42,34],['김백안',63,'R','RP',4.16,14.3,7.2,null,4.0,5,22],
         ['사토세',74,'R','RP',6.00,12.3,6.4,null,4.0,13,28]]},
   {key:'lg', name:'서울 쌍둥이', short:'쌍둥이', city:'서울', mascot:'쌍쌍이', park:'jamsil',
-   cap:'#C30452', sh:'#ffffff', pants:'#eceef2', sub:'#000000',
+   cap:'#C30452', sh:'#ffffff', pants:'#eceef2', sub:'#000000', ltr:'T', pin:true, aw:'#8d9098', awp:'#8d9098',
    titles:[1990,1994,2023,2025],
    retired:[[41,'김용서','투수'],[9,'이병구','외야수'],[33,'박용태','외야수']],
    records:['통산 최다 안타 2504 — 박용태','29년 만의 우승 (2023)','단일 시즌 최다 출루 경쟁 — 홍창긴'],
@@ -15664,7 +15675,7 @@ const PRO_TEAMS=[
         ['고우서',19,'R','RP',3.77,10,8.1,null,4.3,8,28],['김강율',37,'R','RP',4.71,4,7.9,null,5.6,5,38],
         ['이종훈',40,'R','RP',5.97,3,6.8,null,4.4,2,25],['양우지',65,'R','RP',4.83,2.7,6.3,null,4.9,3,19]]},
   {key:'lot', name:'부산 거인', short:'거인', city:'부산', mascot:'갈매기', park:'sajik',
-   cap:'#041E42', sh:'#ffffff', pants:'#eceef2', sub:'#D00F31',
+   cap:'#041E42', sh:'#ffffff', pants:'#eceef2', sub:'#D00F31', ltr:'G', aw:'#8e97a3', awp:'#8e97a3',
    titles:[1984,1992],
    retired:[[11,'최동운','투수'],[10,'이대훈','내야수']],
    records:['한국시리즈 혼자 4승 — 최동운 (1984)','9경기 연속 홈런 — 이대훈 (2010)','타격 7관왕 — 이대훈 (2010)'],
@@ -15688,7 +15699,7 @@ const PRO_TEAMS=[
         ['이준어',54,'R','RP',4.25,6,6.3,null,3.9,6,20],['윤성인',55,'R','RP',6.75,4.7,6.8,null,6.2,6,27],
         ['박세인',41,'L','RP',4.24,4.3,7.7,null,3.2,8,29],['김태규',14,'R','RP',7.19,3.7,6.1,null,3.9,3,20]]},
   {key:'kt', name:'수원 마법사', short:'마법사', city:'수원', mascot:'마법이', park:'suwon',
-   cap:'#1b1b1f', sh:'#ffffff', pants:'#eceef2', sub:'#EB1C24',
+   cap:'#1b1b1f', sh:'#ffffff', pants:'#eceef2', sub:'#EB1C24', ltr:'W', lc:'#ff3b3b', aw:'#26262c',
    titles:[2021],
    retired:[],
    records:['단일 시즌 47홈런 — 로하즈 (2020)','창단 첫 통합 우승 (2021)','2026 정규시즌 1위 질주'],
@@ -15712,7 +15723,7 @@ const PRO_TEAMS=[
         ['문용인',18,'R','RP',5.40,14.3,8.0,null,5.2,11,31],['이정연',21,'R','RP',5.20,6,6.9,null,5.3,7,28],
         ['장민홍',99,'R','RP',5.21,2.3,5.8,null,4.6,3,24]]},
   {key:'dsn', name:'서울 곰', short:'곰', city:'서울', mascot:'뚝심이', park:'jamsil',
-   cap:'#131230', sh:'#ffffff', pants:'#eceef2', sub:'#ED1C24',
+   cap:'#131230', sh:'#ffffff', pants:'#eceef2', sub:'#ED1C24', ltr:'D', pin:true, aw:'#8f96a0', awp:'#8f96a0',
    titles:[1982,1995,2001,2015,2016,2019],
    retired:[[21,'박철선','투수'],[54,'김영선','포수']],
    records:['개막 22연승 — 박철선 (1982)','원년 우승 (1982)','7년 연속 한국시리즈 진출 (2015~2021)'],
@@ -15736,7 +15747,7 @@ const PRO_TEAMS=[
         ['윤태오',65,'R','RP',4.22,21.7,7.5,null,4.3,24,22],['김영형',20,'R','RP',4.71,5,5.9,null,3.6,5,24],
         ['서준온',41,'R','RP',6.35,3.3,5.6,null,4.4,4,21],['김한종',95,'R','RP',5.39,3,6.4,null,4.1,4,21]]},
   {key:'nc', name:'창원 공룡', short:'공룡', city:'창원', mascot:'쿵쿵이', park:'changwon',
-   cap:'#315288', sh:'#ffffff', pants:'#eceef2', sub:'#AF917B',
+   cap:'#315288', sh:'#ffffff', pants:'#eceef2', sub:'#AF917B', ltr:'N', lc:'#d8c2a8', aw:'#23406e',
    titles:[2020],
    retired:[],
    records:['40홈런-40도루 — 테임조 (2015)','창단 첫 통합 우승 (2020)','한 시즌 팀 최다 도루 경쟁'],
@@ -15761,7 +15772,7 @@ const PRO_TEAMS=[
         ['최우서',64,'R','RP',4.55,8.3,7.7,null,4.7,9,21],['최요항',67,'L','RP',4.94,7.7,6.9,null,4.3,10,18],
         ['최성연',26,'L','RP',4.50,3,6.1,null,3.9,5,29]]},
   {key:'ssg', name:'인천 착륙선', short:'착륙선', city:'인천', mascot:'착륙이', park:'incheon',
-   cap:'#CE0E2D', sh:'#ffffff', pants:'#eceef2', sub:'#FFB81C',
+   cap:'#CE0E2D', sh:'#ffffff', pants:'#eceef2', sub:'#FFB81C', ltr:'L', lc:'#FFB81C', aw:'#b00c26',
    titles:[2007,2008,2010,2018,2022],
    retired:[[26,'박경한','포수']],
    records:['KBO 통산 최다 홈런 — 최전','와이어 투 와이어 우승 (2022)','왕조 시절 3회 우승 (2007·2008·2010)'],
@@ -15785,7 +15796,7 @@ const PRO_TEAMS=[
         ['한두송',34,'L','RP',5.53,34.7,6.1,null,3.2,34,29],['백승언',59,'L','RP',4.92,11,6.6,null,4.7,7,25],
         ['신상현',0,'R','RP',6.38,2,6.3,null,7.6,2,19],['윤태형',12,'R','RP',7.14,2,6.4,null,5.7,1,22]]},
   {key:'hh', name:'대전 독수리', short:'독수리', city:'대전', mascot:'날개', park:'daejeon',
-   cap:'#FF6600', sh:'#ffffff', pants:'#eceef2', sub:'#1d1d1d',
+   cap:'#FF6600', sh:'#ffffff', pants:'#eceef2', sub:'#1d1d1d', ltr:'E', aw:'#e25e00',
    titles:[1999],
    retired:[[35,'장종헌','내야수'],[21,'송진운','투수'],[23,'정민천','투수'],[52,'김태군','1루수']],
    records:['신인왕 · MVP 동시 수상 — 류현전 (2006)','통산 최다승 — 송진운 (210승)','단일 시즌 41홈런 — 장종헌 (1992)'],
@@ -15811,7 +15822,7 @@ const PRO_TEAMS=[
         ['원종형',48,'R','RP',4.66,10.7,7.5,null,5.7,13,21],['박재구',39,'R','RP',6.34,5.7,6.2,null,5.7,7,23],
         ['하동운',97,'L','RP',5.42,0.3,7.3,null,7.3,1,19]]},
   {key:'kw', name:'서울 영웅', short:'영웅', city:'서울', mascot:'영웅이', park:'gocheok',
-   cap:'#820024', sh:'#ffffff', pants:'#eceef2', sub:'#b07f80',
+   cap:'#820024', sh:'#ffffff', pants:'#eceef2', sub:'#b07f80', ltr:'H', aw:'#6f0a22',
    titles:[],
    retired:[],
    records:['단일 시즌 201안타 — 서건찬 (2014)','단일 시즌 53홈런 — 박병헌 (2015)','메이저리거를 가장 많이 보낸 구단'],
@@ -16141,11 +16152,22 @@ function proName(key){
 }
 function proKeyOf(id){ if(id==='wwzw') return (ST&&ST.pro&&ST.pro.team)||null;
   return (String(id||'').indexOf('p_')===0)?String(id).slice(2):null; }
-function proUni(key){
+/* 유니폼 — [요청 v3.37.0] "두산이면 모자 D, 엘지면 T, 엘지는 유니폼 줄무늬 — 색깔 살리고"
+   로고를 그대로 베끼진 않는다(상표다). **모자 글자 하나 · 줄무늬 · 팀 색**으로 「그 팀 같다」 까지만.
+   KBO 리그 규정 — 홈은 흰색 또는 유색, 원정은 유색 유니폼. 그래서 away 면 원정 유색(aw)을 입는다.
+   유색 셔츠 위에선 팀 색 글씨가 안 보이니 번호 · 가슴 글씨는 흰색(trim)으로 바꾼다 */
+function proUni(key, away){
   const d=proDef(key)||{cap:'#2f5fb0',sh:'#eef2f8',pants:'#dfe4ec'};
-  const c=sdRgb(d.cap);
-  return {cap:d.cap, sh:d.sh||'#ffffff', pants:d.pants||'#eceef2',
-    st:'rgba('+c[0]+','+c[1]+','+c[2]+',.30)', gl:'#5b3a1e'};
+  const c=sdRgb(d.cap), A=!!(away&&d.aw);
+  return {cap:d.cap, sh:A?d.aw:(d.sh||'#ffffff'), pants:A?(d.awp||'#b9bec7'):(d.pants||'#eceef2'),
+    st:'rgba('+c[0]+','+c[1]+','+c[2]+',.30)', gl:'#5b3a1e',
+    ltr:d.ltr||null, lc:d.lc||'#ffffff', pin:(!A&&d.pin)?d.cap:null, trim:A?'#ffffff':null};
+}
+/* 이번 경기 우리가 홈인가 — 중계 중이면 LIVE 에서, 아니면 이번 주 일정에서 */
+function proUsHome(){
+  try{ if(typeof LIVE!=='undefined'&&LIVE&&LIVE.home&&LIVE.home.team) return LIVE.home.team.id==='wwzw';
+    const sc=(ST.schedule||[])[ST.round]; if(sc&&sc.home!=null) return !!sc.home; }catch(e){}
+  return true;
 }
 /* 기록 → 능력치 (프로 척도: 리그 평균 50) */
 const PRO_POS_D={C:[56,56],SS:[60,58],CF:[58,52],'2B':[55,50],'3B':[52,58],RF:[50,58],LF:[46,48],'1B':[45,45],DH:[40,40]};
@@ -16861,7 +16883,10 @@ function pfIdOf(key){ return key===ST.pro.team ? 'wwzw' : 'p_'+key; }
 /* 나이 — 2026-09-28 명단에는 나이(proAge, 2026 시즌 기준)가 있다. 없으면 id 로 고정해서 뽑는다 */
 function pfAge(p){
   const me=ST.playerId||MYID, y=(ST.pro&&ST.pro.year)||2027;
-  if(p.id===me){ const b=(META[me]&&META[me].born)||2000; return y-b; }
+  if(p.id===me){
+    /* 고졸 바로 입단 — 스무 살 전에 들어왔다. 태어난 해로 세면 2027 에 스물일곱 신인이 된다 */
+    if(ST.pro&&ST.pro.route==='hs'&&ST.pro.year0) return (ST.pro.age0||19)+(y-ST.pro.year0);
+    const b=(META[me]&&META[me].born)||2000; return y-b; }
   if(p.age) return p.age+(y-(p.ageYear||2027));
   if(p.proAge) return p.proAge+(y-2026);
   return 21+(clayHash(String(p.id))%15)+(y-2027);
@@ -17278,9 +17303,17 @@ function pfD2Run(picks){
    · 후보의 **진짜** 현재·잠재(20~80 눈금)는 우리도 모른다. 스카우트진이 **범위**로 알려준다.
      스카우트진 ★1 은 폭 19칸, ★5 는 폭 5칸. 범위 안에 진짜 값이 **반드시** 들어 있다
      (어디쯤인지만 모른다). 뽑으면 현재는 바로 보이고, 잠재는 해마다 좁혀진다
-   · 후보는 전부 지어낸 이름 · 지어낸 학교다(genName · PF_SCHOOLS)                     */
-const PF_SCHOOLS=['한빛고','새솔고','청람고','누리고','가람고','다온고','해오름고','별빛고','미르고','라온고','은솔고','푸름고',
-  '한결대','새길대','청운대','누리대','가온대','다솜대'];
+   · 후보 이름은 지어낸 사람(genName)이다. 학교는 실제 야구부가 있는 학교 이름을 쓴다.
+     [요청 v3.37.0] "고등학교는 이름 써도 되잖아 휘문고 서울고 이런거는 쓰자" — 학교는 사람이 아니다.
+     선수는 전부 지어낸 사람이라 어느 학교에도 실제로 그런 선수가 있다는 말이 되지 않는다
+   · [요청 v3.37.0] "가끔 신인부터 잘하는 애들 — 이정후 강백호처럼" — 해마다 반쯤 확률로
+     「괴물 신인」 이 하나 섞인다(가끔 둘). 고졸인데 현재가 벌써 1군급이고 잠재는 맨 위.
+     뽑히면 2군을 건너뛰고 바로 1군 명단에 든다                                        */
+const PF_SCHOOLS_HS=['휘문고','서울고','덕수고','경기고','충암고','장충고','신일고','배재고','선린인터넷고','성남고',
+  '경남고','부산고','개성고','부경고','마산용마고','김해고','대구고','경북고','상원고','광주제일고','광주동성고','진흥고',
+  '북일고','대전고','세광고','청주고','인천고','동산고','제물포고','유신고','장안고','야탑고','소래고','강릉고','전주고','군산상일고'];
+const PF_SCHOOLS_U=['고려대','연세대','성균관대','동국대','한양대','경희대','단국대','인하대','홍익대','중앙대','건국대','동아대','영남대','원광대'];
+const PF_SCHOOLS=PF_SCHOOLS_HS.concat(PF_SCHOOLS_U);
 function pfRange(truth, scout, rng){
   const w=Math.round(22-scout*3.4);                 // ★1 19칸 · ★3 12칸 · ★5 5칸
   const a=Math.round(rng()*w);
@@ -17292,19 +17325,29 @@ function pfRookiePool(){
   const rng=makeRng(((ST.seed||1)*7717+y*3)>>>0), used=new Set();
   TEAMS.forEach(t=>pfAll(t).forEach(p=>used.add(p.name)));
   const POS=['SS','CF','C','2B','3B','1B','LF','RF','P','P','P','P','P'];
+  /* 괴물 신인 — 몇 번째 후보가 그런지 먼저 정한다(0~2명) */
+  const phen=new Set();
+  if(rng()<0.55) phen.add((rng()*140)|0);
+  if(rng()<0.15) phen.add((rng()*140)|0);
   const list=Array.from({length:140},(_,i)=>{
-    const pos=POS[(rng()*POS.length)|0], hs=rng()<0.68;
+    const pos=POS[(rng()*POS.length)|0], ph=phen.has(i), hs=ph||rng()<0.68;
     /* 진짜 값 — 현재는 대학이 높고, 잠재는 고교가 높다. 상위권은 드물다 */
-    const cur=Math.round(clamp((hs?27:34)+Math.pow(rng(),1.6)*22+(rng()-0.5)*6,18,62));
-    const pot=Math.round(clamp(cur+6+Math.pow(rng(),1.3)*(hs?40:28),30,88));
+    let cur=Math.round(clamp((hs?27:34)+Math.pow(rng(),1.6)*22+(rng()-0.5)*6,18,62));
+    let pot=Math.round(clamp(cur+6+Math.pow(rng(),1.3)*(hs?40:28),30,88));
+    /* 괴물 — 스무 살이 안 됐는데 벌써 리그 평균(50) 언저리 · 잠재는 86~90.
+       (범위 눈금이 90 에서 끝나서 90 을 넘기지 않는다 — 넘기면 진짜 값이 범위 밖으로 나간다) */
+    if(ph){ cur=58+((rng()*9)|0); pot=86+((rng()*5)|0); }
     const prof={SS:{def:5,spd:3},'2B':{def:3,spd:2},'3B':{pow:3,arm:3},'1B':{pow:6,def:-4,spd:-4},C:{def:4,arm:4,spd:-7},
       CF:{spd:6,def:3},LF:{pow:3},RF:{pow:3,arm:3}}[pos]||{};
     const r=(k)=>Math.round(clamp(cur+(prof[k]||0)+(rng()-0.5)*10,12,80));
-    const id='rk'+y+'_'+i, school=PF_SCHOOLS[(rng()*PF_SCHOOLS.length)|0];
+    /* [버그 이력] 학교를 고교 · 대학 한 통에서 뽑아서, 고졸 능력치(hs)인데 학교는 「○○대」 가 붙곤 했다 */
+    const SL=hs?PF_SCHOOLS_HS:PF_SCHOOLS_U;
+    const id='rk'+y+'_'+i, school=SL[(rng()*SL.length)|0];
     const p=pos==='P'
       ? {id, name:genName(rng,used), no:null, throws:rng()<0.3?'L':'R', role:rng()<0.4?'SP':'RP', stf:r('stf'), ctl:r('ctl'), sta:r('sta'), age:hs?19:23, ageYear:y+1, rookie:true, draftYear:y+1, pot, kmh:Math.round(135+cur*0.28+rng()*6)}
       : {id, name:genName(rng,used), no:null, bats:rng()<0.3?'L':'R', con:r('con'),pow:r('pow'),eye:r('eye'),spd:r('spd'),def:r('def'),arm:r('arm'), pos:[pos], pitch:null, real:null, pro:true, age:hs?19:23, ageYear:y+1, rookie:true, draftYear:y+1, pot};
-    return {p, cur, pot, school:school.endsWith('대')?'대학':'고교', schoolName:school, pos,
+    if(ph) p.phenom=true;
+    return {p, cur, pot, school:hs?'고교':'대학', schoolName:school, pos, phenom:ph||undefined,
       rc:pfRange(cur,F.scout,rng), rp:pfRange(pot,F.scout,rng)};
   });
   F.rookies={year:y, list, order:null, picks:[], done:false, scout:F.scout};
@@ -17347,9 +17390,10 @@ function pfRookieStep(myPickId){
   else x=pfRookieAIPick(k,left);
   if(!x) { pfRookieFinish(); return false; }
   const n=D.picks.length, round=Math.floor(n/10)+1, pick=(n%10)+1;
-  D.picks.push({id:x.p.id, name:x.p.name, team:k, round, pick, pos:x.pos, school:x.school, schoolName:x.schoolName});
+  D.picks.push({id:x.p.id, name:x.p.name, team:k, round, pick, pos:x.pos, school:x.school, schoolName:x.schoolName, phenom:x.phenom||undefined});
   const snap=Object.assign({},x.p,{no:60+(n%39)});
-  pfMove(snap, null, k, '신인 드래프트', '2군');
+  pfMove(snap, null, k, '신인 드래프트', x.phenom?'1군':'2군');            // 괴물 신인은 바로 1군
+  if(x.phenom) proNews('드래프트', proName(k)+', '+x.schoolName+' '+x.p.name+' 지명 — 「첫해부터 1군에서 쓴다」');
   if(k===ST.pro.team){
     const bonus=pfBonusOf(round,pick);
     F.cash=Math.round((F.cash-bonus/10000)*10)/10;
@@ -17690,18 +17734,19 @@ function renderRookieDraft(rec, fast){
   const paintSpot=(z, big)=>{
     if(!z){ spot.innerHTML=''; return; }
     spot.innerHTML='<div class="kd-card'+(z.team===ST.pro.team?' mine':'')+'"><div class="kd-no">'+z.round+'라운드 '+z.pick+'순위</div>'+
-      '<div class="kd-tm">'+teamChip(z.team)+' '+proName(z.team)+'</div><div class="kd-nm">'+z.name+'</div>'+
+      '<div class="kd-tm">'+teamChip(z.team)+' '+proName(z.team)+'</div><div class="kd-nm">'+(z.phenom?'<u class="kd-star">괴물 신인</u> ':'')+z.name+'</div>'+
       '<div class="kd-sc">'+z.schoolName+' · '+(POSNAMES[z.pos]||z.pos)+'</div></div>';
     const cd=spot.firstChild; cd.classList.remove('pop'); void cd.offsetWidth; cd.classList.add('pop');
   };
   let filter='all';
   const est=(x)=>'현재 <b>'+x.rc[0]+'~'+x.rc[1]+'</b> · 잠재 <b>'+x.rp[0]+'~'+x.rp[1]+'</b>';
   const tier=(x)=>{ const m=(x.rp[0]+x.rp[1])/2, n=(x.rc[0]+x.rc[1])/2;
+    if(x.phenom) return '「괴물 신인 — 2군 안 거치고 첫해부터 1군」';
     return m>=72?'「1군 주전감 · 놓치면 후회」':(n>=46?'「바로 1군에 쓸 수 있다」':(m>=60?'「원석 — 3년은 기다려야」':(m>=50?'「뎁스 자원」':'「성장이 더딜 것」'))); };
   const paintPick=()=>{
     pickArea.innerHTML='';
     if(D.done){ const mine=D.picks.filter(z=>z.team===ST.pro.team);
-      const cd=el('div','card'); cd.innerHTML='<div class="card-h">우리 지명 '+mine.length+'명 — 전원 2군에서 시작</div>'+
+      const cd=el('div','card'); cd.innerHTML='<div class="card-h">우리 지명 '+mine.length+'명 — '+(mine.some(z=>z.phenom)?'괴물 신인은 1군 · 나머지는 2군에서 시작':'전원 2군에서 시작')+'</div>'+
         mine.map(z=>{ const r=F.rep[z.id]; return '<div class="kd-row mine"><u>'+z.round+'R '+z.pick+'</u><b>'+z.name+'</b><i>'+z.schoolName+' · '+(POSNAMES[z.pos]||z.pos)+
           (r?' · 현재 '+r.cur+' · 잠재 '+r.rp[0]+'~'+r.rp[1]:'')+' · 계약금 '+wonStr2(pfBonusOf(z.round,z.pick))+'</i></div>'; }).join('');
       pickArea.appendChild(cd); return; }
@@ -17717,8 +17762,8 @@ function renderRookieDraft(rec, fast){
     const taken=new Set(D.picks.map(x=>x.id));
     const inF=x=>filter==='all'||(filter==='P'&&x.pos==='P')||(filter==='C'&&x.pos==='C')||(filter==='IF'&&['1B','2B','3B','SS'].includes(x.pos))||(filter==='OF'&&['LF','CF','RF'].includes(x.pos));
     D.list.filter(x=>!taken.has(x.p.id)&&inF(x)).sort((a,b)=>(b.rp[0]+b.rp[1]+b.rc[0]+b.rc[1]*0.6)-(a.rp[0]+a.rp[1]+a.rc[0]+a.rc[1]*0.6)).slice(0,16).forEach(x=>{
-      const b=el('button','pf-opt kd-cand');
-      b.innerHTML='<b>'+x.p.name+' <em>'+x.schoolName+' · '+(POSNAMES[x.pos]||x.pos)+(x.p.kmh?' · 최고 '+x.p.kmh+'km/h':'')+'</em></b><span>'+est(x)+'</span><i>스카우트 '+tier(x)+'</i>';
+      const b=el('button','pf-opt kd-cand'+(x.phenom?' kd-phen':''));
+      b.innerHTML='<b>'+(x.phenom?'<u class="kd-star">괴물</u> ':'')+x.p.name+' <em>'+x.schoolName+' · '+(POSNAMES[x.pos]||x.pos)+(x.p.kmh?' · 최고 '+x.p.kmh+'km/h':'')+'</em></b><span>'+est(x)+'</span><i>스카우트 '+tier(x)+'</i>';
       b.onclick=async()=>{ pfRookieStep(x.p.id); await saveGame(true); run(); };
       cd.appendChild(b); });
     pickArea.appendChild(cd);
@@ -17900,7 +17945,30 @@ function tryoutScore(){
   const tool=Math.max(hit*0.75+fld*0.25, pit);
   const stat=T.batOk?Math.min(18,(T.avg-0.600)*90+8):(T.pitOk?Math.min(18,(1-T.era)*14+8):0);
   const age=(ST.seasonNo||1)-1;            // 사회인에서 오래 있을수록 잠재력 평가가 깎인다
-  return Math.round(Math.max(20, Math.min(99, tool*0.95+stat-age*3)));
+  /* [v3.37.0] 사회인 실전 보정 — 고졸 바로 신청(hsProScore)보다 위에서 불리게 한다.
+     「실제 경기를 한 시즌 넘게 치렀다」 는 게 스카우트 눈에는 즉시 전력이다 */
+  const amBonus=8;
+  return Math.round(Math.max(20, Math.min(99, tool*0.95+stat-age*3+amBonus)));
+}
+/* 고졸 바로 신청 점수 — 고교 3년 성적(hsGrades 평균 0~1)으로. 40~85 */
+function hsProScore(){
+  const g=(ST&&ST.hsGAvg!=null)?ST.hsGAvg:0.4;
+  return Math.round(40+Math.max(0,Math.min(1,g))*45);
+}
+/* 고교 졸업 → 바로 KBO 드래프트. 우완좌완 입단 드래프트(entryDraft)와 2군 공지를 걷는다 */
+function hsGoPro(){
+  const sc=hsProScore();
+  ST.proRoute='hs';
+  ST.entryDraft=null;
+  ST.myFarm=0; ST.farmDone=0; ST.farmDoneSeen=0;
+  if(Array.isArray(ST.notices)) ST.notices=ST.notices.filter(n=>n.type!=='farm');
+  /* 프로 리그는 2027 시즌 기준으로 만들어져 있다(명단 · 최저연봉 · 샐러리캡 · FA 남은 해).
+     [처음 해보니] 고교 졸업 해(2019)로 들어가서 「KBO 2019」 가 찍혔다 — 트라이아웃 길과 같은
+     2027 드래프트로 보낸다. 나이는 pfAge 가 「고졸 19세 입단」 으로 따로 센다 */
+  ST.year=2026;
+  ST.tryout={score:sc, year:2026, route:'hs'};
+  ST.proSlot=proDraftSlot(sc,'hs');
+  return ST.proSlot;
 }
 /* 트라이아웃 장면 — 네 종목을 하나씩 보여주고 스카우트 한 줄 */
 function renderTryout(){
@@ -17950,12 +18018,19 @@ function renderTryout(){
    실제 2027 지명 결과(이름만 바꿈)를 순서대로 부르고, 내 차례가 오면 멈춘다.
    내가 불리는 자리 — 트라이아웃 점수로 라운드가 정해지고, 그 라운드에서
    **기조가 맞는 팀**이 부른다. 사회인 출신은 「즉시 전력」 이라 윈나우 팀이 좋아한다. */
-function proDraftSlot(score){
-  const round = score>=85?1 : score>=76?2 : score>=68?3 : score>=62?4 : score>=56?5 : score>=50?6 : score>=45?7 : score>=40?8 : 9;
-  /* 그 라운드 안에서 누가 부르나 — 기조로 가중치 */
-  const rng=makeRng(((ST.seed||1)^(score*7919))>>>0);
+function proDraftSlot(score, route){
+  const HS=route==='hs';
+  /* 고졸 바로 신청은 하위 라운드(5~10) — 사회인을 거친 트라이아웃만 1~4라운드가 열린다 */
+  const round = HS
+    ? (score>=80?5 : score>=70?6 : score>=60?7 : score>=50?8 : score>=44?9 : 10)
+    : (score>=85?1 : score>=76?2 : score>=68?3 : score>=62?4 : score>=56?5 : score>=50?6 : score>=45?7 : score>=40?8 : 9);
+  /* 그 라운드 안에서 누가 부르나 — 기조로 가중치.
+     사회인 출신은 「즉시 전력」 이라 윈나우 팀이, 고졸은 「원석」 이라 잠재력 · 리빌딩 팀이 좋아한다 */
+  const rng=makeRng(((ST.seed||1)^(score*7919)^(HS?0x5a5a:0))>>>0);
   const w=PRO_DRAFT_ORDER.map(k=>{ const P=proPhil(k);
-    let v=1; if(P.draft==='ready') v+=1.6; if(P.mode==='win') v+=1.0; if(P.draft==='upside') v-=0.5;
+    let v=1;
+    if(HS){ if(P.draft==='upside') v+=1.6; if(P.mode==='rebuild') v+=1.0; if(P.draft==='ready') v-=0.5; }
+    else { if(P.draft==='ready') v+=1.6; if(P.mode==='win') v+=1.0; if(P.draft==='upside') v-=0.5; }
     if(P.draft==='pitch' && !(ST.role==='pit'||ST.role==='two')) v-=0.4;
     return Math.max(0.2,v); });
   let tot=w.reduce((a,b)=>a+b,0), r=rng()*tot, idx=0;
@@ -17998,7 +18073,9 @@ function renderProDraft(){
   const reveal=()=>{
     const pos=(ST.role==='pit')?'투수':(ST.role==='two'?'투타겸업':((POSNAMES[ST.myPos]||'야수')));
     const team=slot.team, d=proDef(team), P=proPhil(team);
-    const row=line(slot.round-1,slot.pickIdx,nameOf(me),'사회인 · 우완좌완',pos,'트라이아웃 출신',true);
+    const HSR=(ST.tryout&&ST.tryout.route==='hs');
+    const mySchool=(()=>{ try{ return HS_SCHOOLS[hsMySchool()].name; }catch(e){ return '고교'; } })();
+    const row=line(slot.round-1,slot.pickIdx,nameOf(me),HSR?mySchool:'사회인 · 우완좌완',pos,HSR?'고졸 바로 신청':'트라이아웃 출신',true);
     row.classList.add('pop');
     cta.innerHTML='';
     const card=el('div','card dr-me');
@@ -18013,12 +18090,15 @@ function renderProDraft(){
     const go2=el('button','btn primary','입단한다 ▸');
     go2.onclick=()=>{
       /* 1·2라운드에 트라이아웃 점수가 높으면 1군 캠프부터 — 아니면 2군 */
-      const level=(slot.round<=2 && sc>=80)?'1군':'2군';
+      const level=(!HSR && slot.round<=2 && sc>=80)?'1군':'2군';     // 고졸은 누구든 2군부터
       const drafted=PRO_DRAFT_2027.map((row,ri)=>row.map((p,ki)=>({r:ri+1,k:ki+1,team:teamOf(ri,ki),name:p[0],school:p[1],pos:p[2],grade:p[3]})));
       proEnter({team, round:slot.round, pick:slot.pickIdx+1, year:(ST.year||2026)+1, draftYear:ST.year||2026, level});
       ST.pro.draftClass=[].concat.apply([],drafted);
+      if(HSR){ ST.pro.route='hs'; ST.pro.age0=19; ST.pro.year0=ST.pro.year; }
       ST.proSlot=null; ST.tryout=null;
-      proNews('입단', nameOf(me)+', '+proName(team)+' '+slot.round+'라운드 지명 — 사회인 출신 트라이아웃 합격',
+      if(HSR) proNews('입단', nameOf(me)+', '+proName(team)+' '+slot.round+'라운드 지명 — '+mySchool+' 졸업 바로 프로',
+        '사회인을 거치지 않고 곧장 신청했다. '+PRO_MODE_TXT[P.mode]+' 기조의 '+proName(team)+'이(가) 「원석」 으로 불렀다. 2군에서 시작한다.');
+      else proNews('입단', nameOf(me)+', '+proName(team)+' '+slot.round+'라운드 지명 — 사회인 출신 트라이아웃 합격',
         '4부 리그에서 '+(tryoutCheck()?'':'')+'프로까지. '+PRO_MODE_TXT[P.mode]+' 기조의 '+proName(team)+'이(가) 불렀다. '+level+'에서 시작한다.');
       saveGame(true); go('home');
       toast(proName(team)+' 입단');
@@ -21990,6 +22070,7 @@ function hsGraduate(){
        졸업하고 곧바로 2군으로 가던 걸, 그 사이에 **입단 드래프트**를
        끼운다. 순번은 고교 3년이 정하고, 그 순번이 2군 기간이 된다.
        동기들도 같은 드래프트에서 우완좌완에 뽑힌다.               */
+    ST.hsGAvg=gAvg;                       // 바로 프로에 도전하면 이걸로 순번을 매긴다(hsProScore)
     ST.entryDraft=entryDraftBuild(gAvg);
     /* 본편은 **입단한 해**부터다. 고교 2016~2018 을 지나 2026 에서
        깨어나면 7년이 어디로 갔는지 설명이 안 된다. */
@@ -22522,12 +22603,30 @@ function renderHS(){
     ep.appendChild(room);
     c.appendChild(ep);
 
+    /* [요청 v3.37.0] "고교 끝나고 바로 프로 도전할건지 사회인야구 끝나고 도전할건지 선택 —
+       전자면 좀 하위 드래프트로 뽑히고, 사회인야구까지 하면 상위 라운드"
+       고졸 바로 신청은 5~10라운드(스카우트가 「원석」 으로 본다). 사회인에서 기록을
+       쌓고 트라이아웃을 보면 실전 보정이 붙어서 1~4라운드까지 노릴 수 있다 */
+    const canPro=!!ST.entryDraft && typeof isPlayerMode==='function' && isPlayerMode();
+    if(canPro){
+      const rc=el('div','card hs-route');
+      const sc=hsProScore(), sl=proDraftSlot(sc,'hs');
+      rc.innerHTML='<div class="card-h">졸업하고 어디로 가나</div>'+
+        '<p class="muted">바로 KBO 드래프트를 신청하면 고졸 신인으로 <b>하위 라운드</b>(스카우트 예상 '+sl.round+'라운드 안팎)에서 불린다. '+
+        '사회인야구(우완좌완)에서 기록을 쌓고 트라이아웃을 보면 실전 경험이 붙어서 <b>상위 라운드</b>까지 노릴 수 있다 — 대신 시간이 걸린다.</p>';
+      c.appendChild(rc);
+    }
     const go2=el('button','btn primary',
-      (ST.entryDraft?'드래프트장으로 ▸':'우완좌완으로'));
+      (ST.entryDraft?(canPro?'사회인야구부터 — 우완좌완 드래프트장으로 ▸':'드래프트장으로 ▸'):'우완좌완으로'));
     go2.onclick=async()=>{ await saveGame(true);
       if(ST.entryDraft){ go('entry'); toast('이름이 불린다'); }
       else { go('home'); toast('여기서부터 진짜다'); } };
     c.appendChild(go2);
+    if(canPro){
+      const gp=el('button','btn','바로 프로 — KBO 신인 드래프트 신청 ▸');
+      gp.onclick=async()=>{ hsGoPro(); await saveGame(true); renderProDraft(); };
+      c.appendChild(gp);
+    }
     hsPastList(c);
     return;
   }
@@ -33251,10 +33350,12 @@ function sdPal(u){
   /* 유니폼 데이터의 글러브 색(#5b3a1e)은 옛 선화용이라 셀 채색에선 검게 뭉갠다.
      가죽색 쪽으로 끌어올린다 */
   const gl=sdMix(u.gl||'#6b4424','#c98a4a',0.45);
-  const k=t+sh+pt+gl;
+  const k=t+sh+pt+gl+(u.trim||'');
   if(SD_PAL[k]) return SD_PAL[k];
   return SD_PAL[k]={
     team:t, teamD:sdMix(t,'#000000',0.38), teamL:sdMix(t,'#ffffff',0.40),
+    /* 번호 · 가슴 글씨 — 흰 셔츠엔 팀 색, 원정 유색 셔츠엔 흰색(테두리는 팀 색 짙게) */
+    trim:u.trim||t, trimO:u.trim?sdMix(t,'#000000',0.45):'#ffffff',
     jer:sh, jerD:sdMix(sh,'#5d6a86',0.30),
     pan:pt, panD:sdMix(pt,'#5d6a86',0.32),
     skin:'#fcd9b8', skinD:'#eaa886', blush:'rgba(255,120,120,.38)',
@@ -33329,7 +33430,7 @@ function mvSD(g,x,y,h,u,pose,flip,o){
   try{ const T=g.getTransform(); dev=Math.hypot(T.a,T.b)||1; }catch(e){ dev=s*3; }
   const LW=Math.max(1.3,Math.min(5.5,dev*2.3))/dev;
   g.lineJoin='round'; g.lineCap='round';
-  const D={g,P,LW,dir,o};
+  const D={g,P,LW,dir,o,U:u||{}};
   try{
     if(pose==='stand'||pose==='swing') sdBatter(D, pose==='swing'?sdSwing(o.swT||0):sdSwing(0));
     else if(pose==='catch') sdCatcher(D);
@@ -33361,6 +33462,21 @@ function sdSleeve(D,S,E,w){
   const P=D.P, k=0.46;
   const m=[S[0]+(E[0]-S[0])*k, S[1]+(E[1]-S[1])*k];
   sdLimb(D,[S[0],S[1],m[0],m[1]],w,P.jer,P.jerD);
+}
+/* 줄무늬(핀스트라이프) — 몸통 clip 안에서 부른다. 팀에 pin 이 있을 때만 */
+function sdPin(D,x0,x1,y0,y1){
+  const U=D.U||{}; if(!U.pin) return;
+  const g=D.g; g.save(); g.strokeStyle=U.pin; g.globalAlpha=0.55; g.lineWidth=0.7;
+  g.beginPath(); for(let x=x0;x<=x1;x+=3.6){ g.moveTo(x,y0); g.lineTo(x,y1); } g.stroke(); g.restore();
+}
+/* 번호 — 흰 셔츠엔 팀 색 글씨 · 흰 테두리, 원정 유색 셔츠엔 흰 글씨 · 짙은 테두리.
+   뒤집힌 그림 안에서도 바로 읽히게 D.dir 로 한 번 더 뒤집는다 */
+function sdNum(D,x,y,px,no){
+  const g=D.g, P=D.P;
+  g.save(); g.translate(x,y); g.scale(D.dir,1);
+  g.font='900 '+px+'px sans-serif'; g.textAlign='center'; g.textBaseline='middle';
+  g.lineWidth=px*0.2; g.strokeStyle=P.trimO||'#ffffff'; g.strokeText(String(no),0,0);
+  g.fillStyle=P.trim||P.team; g.fillText(String(no),0,0); g.restore();
 }
 function sdBall(D,x,y,r){
   const g=D.g;
@@ -33459,24 +33575,16 @@ function sdBatter(D,S){
   sdCel(D,torso,P.jer,()=>{
       g.fillStyle=P.jerD; g.beginPath(); g.rect(-30,-60,60,60);
       g.ellipse(4+sx*0.3,-40,15,17,0,0,Math.PI*2); g.fill('evenodd'); },
-    ()=>{ g.strokeStyle=P.team; g.lineWidth=1.3;              // 어깨 요크
+    ()=>{ sdPin(D,-20,20,-52,-26);
+      g.strokeStyle=P.trim; g.lineWidth=1.3;              // 어깨 요크
       g.beginPath(); g.moveTo(-15,-45); g.quadraticCurveTo(0,-43,15,-45); g.stroke();
       if(F){ // 앞 — 단추 줄 · 가슴 글씨 · 왼쪽 아래 가슴 번호(KBO 유니폼이 그렇다)
         g.lineWidth=1.1; g.beginPath(); g.moveTo(1,-46); g.lineTo(1,-28); g.stroke();
-        g.fillStyle=P.team; g.beginPath(); mvRR(g,-11,-41,9,3.2,1.4); g.fill();
+        g.fillStyle=P.trim; g.beginPath(); mvRR(g,-11,-41,9,3.2,1.4); g.fill();
         g.beginPath(); mvRR(g,3.5,-41,9,3.2,1.4); g.fill();
-        if(D.o.no!=null){ g.save(); g.translate(-7,-33); g.scale(D.dir,1);
-          g.font='900 8px sans-serif'; g.textAlign='center'; g.textBaseline='middle';
-          g.lineWidth=1.8; g.strokeStyle='#ffffff'; g.strokeText(String(D.o.no),0,0);
-          g.fillStyle=P.team; g.fillText(String(D.o.no),0,0); g.restore(); } } });
-  /* 등번호 — 팀 색에 흰 테두리 */
-  if(D.o.no!=null && !F){
-    g.save(); g.translate(sx*0.25,-36.5); g.scale(D.dir,1);
-    g.font='900 13px sans-serif'; g.textAlign='center'; g.textBaseline='middle';
-    g.lineWidth=2.6; g.strokeStyle='#ffffff'; g.strokeText(String(D.o.no),0,0);
-    g.fillStyle=P.team; g.fillText(String(D.o.no),0,0);
-    g.restore();
-  }
+        if(D.o.no!=null) sdNum(D,-7,-33,8,D.o.no); } });
+  /* 등번호 — 팀 색에 흰 테두리(원정 유색 셔츠면 흰 글씨) */
+  if(D.o.no!=null && !F) sdNum(D,sx*0.25,-36.5,13,D.o.no);
   /* 벨트 */
   sdCel(D,()=>{ g.beginPath(); g.moveTo(-15.5,-30); g.lineTo(15.5,-30); g.lineTo(15.2,-26.4); g.lineTo(-15.2,-26.4); g.closePath(); },P.teamD);
   g.restore();
@@ -33693,19 +33801,17 @@ function sdFront(D,pose){
     g.quadraticCurveTo(tx-19,-37,tx-15,-47); g.closePath(); };
   sdCel(D,torso,P.jer,()=>{ g.fillStyle=P.jerD; g.beginPath(); g.rect(tx-30,-60,60,60);
       g.ellipse(tx+5,-40,15,17,0,0,Math.PI*2); g.fill('evenodd'); },
-    ()=>{ if(BK){ // 등 — 등번호. 글씨는 뒤집힌 그림 안에서도 바로 읽히게
-        if(D.o.no!=null){ g.save(); g.translate(tx,-36); g.scale(D.dir,1);
-          g.font='900 13px sans-serif'; g.textAlign='center'; g.textBaseline='middle';
-          g.lineWidth=2.6; g.strokeStyle='#ffffff'; g.strokeText(String(D.o.no),0,0);
-          g.fillStyle=P.team; g.fillText(String(D.o.no),0,0); g.restore(); }
+    ()=>{ sdPin(D,tx-20,tx+20,-52,hip[1]);
+      if(BK){ // 등 — 등번호. 글씨는 뒤집힌 그림 안에서도 바로 읽히게
+        if(D.o.no!=null) sdNum(D,tx,-36,13,D.o.no);
         return; }
       // 단추 줄 · 가슴 글씨 자리
-      g.strokeStyle=P.team; g.lineWidth=1.1;
+      g.strokeStyle=P.trim; g.lineWidth=1.1;
       g.beginPath(); g.moveTo(tx+1,-47); g.lineTo(tx+1,hip[1]-1); g.stroke();
-      g.fillStyle=P.team; g.beginPath(); mvRR(g,tx-11,-42,9,3.2,1.4); g.fill();
+      g.fillStyle=P.trim; g.beginPath(); mvRR(g,tx-11,-42,9,3.2,1.4); g.fill();
       g.beginPath(); mvRR(g,tx+3.5,-42,9,3.2,1.4); g.fill();
       // 목 V
-      g.fillStyle=P.team; g.beginPath(); g.moveTo(tx-5,-48.5); g.lineTo(tx+6,-48.5); g.lineTo(tx+0.5,-43.5); g.closePath(); g.fill(); });
+      g.fillStyle=P.trim; g.beginPath(); g.moveTo(tx-5,-48.5); g.lineTo(tx+6,-48.5); g.lineTo(tx+0.5,-43.5); g.closePath(); g.fill(); });
   sdCel(D,()=>{ g.beginPath(); g.moveTo(tx-15.5,hip[1]-3); g.lineTo(tx+15.5,hip[1]-3);
       g.lineTo(tx+15.3,hip[1]+0.4); g.lineTo(tx-15.3,hip[1]+0.4); g.closePath(); },P.teamD);
   /* 팔 — 소매(유니폼) + 언더셔츠(팀 색) */
@@ -33812,9 +33918,14 @@ function sdFace(D,C){
       // 이음선
       g.strokeStyle=P.teamD; g.lineWidth=0.9; g.beginPath();
       g.moveTo(cx,cy-33); g.quadraticCurveTo(cx+1,cy-18,cx,cy-3); g.stroke(); });
-  // 모자 로고 — 흰 동그라미
-  sdCel(D,()=>{ g.beginPath(); g.arc(cx,cy-16,5.2,0,Math.PI*2); },'#ffffff');
-  g.fillStyle=P.team; g.beginPath(); g.arc(cx,cy-16,2.4,0,Math.PI*2); g.fill();
+  // 모자 앞 — 팀 글자가 있으면 글자 하나, 없으면(사회인 · 고교) 흰 동그라미
+  const U=D.U||{};
+  if(U.ltr){ g.save(); g.translate(cx,cy-15.5); g.scale(D.dir,1);
+    g.font='900 17px Georgia, "Times New Roman", serif'; g.textAlign='center'; g.textBaseline='middle';
+    g.lineJoin='round'; g.lineWidth=2.4; g.strokeStyle=P.teamD; g.strokeText(U.ltr,0,0.5);
+    g.fillStyle=U.lc||'#ffffff'; g.fillText(U.ltr,0,0.5); g.restore(); }
+  else { sdCel(D,()=>{ g.beginPath(); g.arc(cx,cy-16,5.2,0,Math.PI*2); },'#ffffff');
+    g.fillStyle=P.team; g.beginPath(); g.arc(cx,cy-16,2.4,0,Math.PI*2); g.fill(); }
   // 챙 — 카메라 쪽으로 튀어나온다
   sdCel(D,()=>{ g.beginPath(); g.ellipse(cx,cy-2.5,26,5.6,0,0,Math.PI*2); },P.teamD,null,
     ()=>{ g.fillStyle=P.team; g.beginPath(); g.ellipse(cx+2,cy-4.2,22,3.2,0,0,Math.PI*2); g.fill(); });
@@ -34266,7 +34377,7 @@ function mvPaint(mound, o){
   mvSheetInit(); mvFigInit();
   g.setTransform(MVS,0,0,MVS,0,0);          // 논리 좌표(480x270) 로 그린다
   g.clearRect(0,0,MVW,MVH);
-  const home=isPro()?proUni(ST.pro.team):{cap:'#2f5fb0', sh:'#eef2f8', pants:'#dfe4ec', st:'rgba(47,95,176,.35)', gl:'#5b3a1e'};
+  const home=isPro()?proUni(ST.pro.team, !proUsHome()):{cap:'#2f5fb0', sh:'#eef2f8', pants:'#dfe4ec', st:'rgba(47,95,176,.35)', gl:'#5b3a1e'};
   const away=mvOppUniform();
   const du=st.usDef?home:away, ou=st.usDef?away:home;
   const CAM=MV_CAMS[st.cam]||MV_CAMS.c;
@@ -34427,8 +34538,8 @@ function mvOppUniform(){
   if(isPro()){
     try{ const sc=(ST.schedule||[])[ST.round]; const k=sc?proKeyOf(sc.opp):null;
       if(typeof LIVE!=='undefined'&&LIVE&&LIVE.home&&LIVE.away){
-        const o=LIVE.home.team.id==='wwzw'?LIVE.away.team:LIVE.home.team; const k2=proKeyOf(o.id); if(k2) return proUni(k2); }
-      if(k) return proUni(k); }catch(e){}
+        const o=LIVE.home.team.id==='wwzw'?LIVE.away.team:LIVE.home.team; const k2=proKeyOf(o.id); if(k2) return proUni(k2, proUsHome()); }
+      if(k) return proUni(k, proUsHome()); }catch(e){}
   }
   let idx=-1, n=23;
   try{
