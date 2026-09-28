@@ -92,7 +92,7 @@ const T=(ok,n,extra)=>{console.log((ok?'  ✅ ':'  ❌ ')+n+(extra?' :: '+extra:
   /* [주의] 페이지 DOM 에서 읽으면 안 된다 — 위에서 body 를 건드리면
      스크립트 태그가 같이 날아간다. 파일에서 직접 읽는다.          */
   const SRC=require('fs').readFileSync('index.html','utf8');
-  const relM=SRC.match(/const sx=W\*0\.5, sy=H\*([\d.]+)/);
+  const relM=SRC.match(/(?:const|let) sx=W\*0\.5, sy=H\*([\d.]+)/);
   const rel=relM?Number(relM[1]):null;
   /* [버그 이력] 0.49 는 카메라를 당기기 전 마운드 자리였다. 안 고치면
      공이 투수 손이 아니라 화면 한가운데 잔디에서 튀어나온다.      */
