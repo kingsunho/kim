@@ -2974,6 +2974,32 @@ html.land .tab .ic svg{width:16px;height:16px}
 .lob-more{color:rgba(255,255,255,.7)}
 /* 안내역 한 마디 — 갈색 테두리 판 대신 평평한 판 */
 .tip-box{background:var(--panel);border:0;box-shadow:none}
+/* 가로 홈 — 로비 한 판만. 스크롤이 생기지 않게 높이를 화면에 딱 맞춘다 */
+html.land #view.lob-solo>*:not(.lob){display:none}
+html.land #view.lob-solo>.lob{height:calc(100vh - 100px);height:calc(100dvh - 100px);margin:0}
+html.land #view.lob-solo{padding-bottom:0}
+@media (orientation:landscape) and (max-height:500px){
+  html.land .topbar{padding:4px 12px}
+  html.land .tabbar{padding:1px 8px calc(1px + env(safe-area-inset-bottom))}
+  html.land .tab{padding:5px 2px}
+  html.land #view.lob-solo>.lob{height:calc(100vh - 86px);height:calc(100dvh - 86px)}
+}
+button.lob-more{background:rgba(14,15,17,.8);border:0;border-radius:999px;padding:4px 10px;font-weight:800;font-size:11px;cursor:pointer}
+/* 프로 면담 컷신 — 인물이 크게 서고 아래에 대사창 */
+.pt-ov{position:fixed;inset:0;z-index:130;display:flex;align-items:flex-end;justify-content:center;cursor:pointer;
+  background:rgba(8,9,11,.82);animation:psIn .18s ease-out}
+.pt-bg{position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(0,0,0,0) 60%)}
+.pt-face{position:absolute;left:50%;bottom:120px;width:180px;height:240px;transform:translateX(-50%);animation:ptIn .3s ease-out}
+.pt-box{position:relative;width:min(640px,94vw);margin:0 0 14px;background:#fff;color:#111;border-radius:16px;padding:14px 16px 12px;min-height:84px}
+.pt-nm{font-size:13px;font-weight:900;color:#ff6a3d;margin-bottom:4px}
+.pt-say{font-size:16px;font-weight:700;line-height:1.55}
+.pt-more{font-size:11px;color:#888;text-align:right;margin-top:6px}
+.pt-opts{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.pt-opt{background:#111;color:#fff;border:0;border-radius:10px;padding:10px 12px;font-weight:800;font-size:14px;text-align:left;cursor:pointer}
+.pt-opt:active{opacity:.8}
+html.land .pt-face{left:18%;bottom:10px;width:210px;height:280px}
+html.land .pt-box{margin-left:30vw;width:min(560px,62vw)}
+@keyframes ptIn{from{opacity:0;transform:translate(-50%,20px)}to{opacity:1;transform:translate(-50%,0)}}
 /* 트라이아웃 · 드래프트 */
 .to-list{display:flex;flex-direction:column;gap:8px;margin:10px 0}
 .to-row{display:grid;grid-template-columns:96px 1fr;gap:2px 10px;background:var(--panel2);border-radius:12px;padding:10px 12px;animation:drIn .25s ease-out both}
@@ -9086,8 +9112,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.27.0';
-const APP_VERSION_NOTE = '프로로 가는 길 — 트라이아웃 · 드래프트 · KBO 144경기';
+const APP_VERSION = '3.28.0';
+const APP_VERSION_NOTE = '프로는 면담이다 · 가로 홈은 스크롤 없이 한 화면';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9108,6 +9134,12 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.28.0', t:'프로는 면담이다 · 가로 홈은 스크롤 없이 한 화면', items:[
+    '<b>프로에서는 단톡방 대신 불려가서 마주 앉는다.</b> 감독 · 주장 · 선배가 화면에 크게 서서(그 팀 유니폼) 말하고, 끝에 내 대답을 고른다',
+    '부르는 때 — 입단 첫 주 · 1군 콜업 · 방망이가 뜨거울 때 · 차갑게 식었을 때 · 팀 5연패 · 가끔 선배가 한마디. 대답은 감독 신뢰 · 사기 · 컨디션에 남고, 「2군에서 감 찾고 오겠습니다」 는 진짜로 내려간다',
+    '감독 이름도 한 글자씩 비틀었다. 대사는 유형마다 여러 벌이라 같은 말이 계속 나오지 않는다',
+    '<b>폰 가로모드 홈이 한 화면에 딱 들어온다.</b> 로비만 남기고 아래 카드는 「자세히 ▾」 를 눌러야 펼쳐진다. 제목줄 · 탭바도 얇아졌다',
+  ]},
   {v:'3.27.0', t:'프로로 가는 길 — 트라이아웃 · 드래프트 · KBO 144경기', items:[
     '<b>사회인에서 타율 .600 (또는 평균자책점 0점대)를 찍으면 프로에 도전한다.</b> 규정 타석(경기 수 × 2.5)·규정 이닝(× 0.8)을 채워야 인정된다. 시즌 종료 화면에 조건과 지금 내 숫자가 뜬다',
     '<b>KBO 트라이아웃</b> — 60m 달리기 · 프리배팅(투수면 불펜 투구) · 수비 · 사회인 기록. 열 개 구단 스카우트가 점수를 매긴다',
@@ -16240,6 +16272,156 @@ function proNews(tag, head, body){
   ST.pro.news=ST.pro.news.slice(0,60);
 }
 
+
+/* ================= 프로 면담 — 컷신 =================
+   [요청] "프로에선 카톡이 아니라 직접 면담이겠지 감독님 면담이 온다던가
+           주장이나 다른 선수에게도 면담이 오거나 이런걸 컷신으로"
+   사회인은 단톡방이 이야기를 끌고 갔다. 프로는 **불려가서 마주 앉는다.**
+   화면을 끊고 인물을 크게 세운다(SD 캐릭터 · 그 팀 유니폼). 대사를 넘기고,
+   끝에 내 대답을 고른다. 대답은 감독 신뢰 · 사기 · 다음 경기 컨디션에 남는다.
+
+   감독 이름도 가명이다 — 한 글자씩 비틀었다.                             */
+const PRO_MGR={kia:'이범허',sam:'박진먼',lg:'염경업',lot:'김태헝',kt:'이강천',
+  dsn:'김원헝',nc:'이호중',ssg:'이숭영',hh:'김경몬',kw:'설종전'};
+function proMgrName(k){ return PRO_MGR[k||(ST&&ST.pro&&ST.pro.team)]||'감독'; }
+/* 주장 — 우리 팀에서 제일 오래 뛴 것 같은 사람(타순 앞 베테랑). 나는 아니다 */
+function proCaptain(){
+  const d=proDef(ST.pro.team); const me=ST.playerId||MYID;
+  const h=(d&&d.hit)||[]; const idx=Math.min(1,h.length-1);
+  const p=TBYID['wwzw'].players.find(x=>x.name===(h[idx]||[])[0] && x.id!==me);
+  return p||TBYID['wwzw'].players.find(x=>x.id!==me);
+}
+function proMate(rng){
+  const me=ST.playerId||MYID;
+  const L=TBYID['wwzw'].players.filter(x=>x.id!==me);
+  return L[((rng?rng():Math.random())*L.length)|0];
+}
+/* 면담 대본 — 유형마다 여러 벌. pickFresh 로 뽑는다(같은 말이 시즌 내내 반복되지 않게).
+   감독 · 선배가 신인한테 하는 말이라 반말이 맞다 — 존댓말 짝은 필요 없다. */
+const PRO_TALK_LINES={
+  welcome:[[
+    ['{mgr}','왔나. 트라이아웃 영상 봤다. 사회인에서 그 숫자 찍은 거, 여기선 아무도 안 알아준다'],
+    ['{mgr}','여긴 매일 경기다. 몸이 먼저 무너진다. 컨디션 관리부터 배워라'],
+    ['{cap}','주장 {capn}이다. 모르는 거 있으면 나한테 물어봐라. 라커 자리는 저쪽이다']]],
+  callup:[[
+    ['{mgr}','2군 보고서 봤다. 올라왔으니 보여줘라'],
+    ['{mgr}','한 번에 증명하려고 하지 마라. 한 타석씩이다']],[
+    ['{mgr}','퓨처스 감독이 너 좀 쓰라고 전화를 세 번 했다'],
+    ['{mgr}','오늘 바로 나간다. 떨리면 초구는 그냥 봐라']]],
+  hot:[[
+    ['{mgr}','요즘 방망이가 좋다. 기자들이 너 얘기만 한다'],
+    ['{mgr}','타순을 올릴까 생각 중이다. 네 생각은 어떠냐']],[
+    ['{mgr}','전력분석팀이 너 타구 속도 표를 가져왔다. 숫자가 좋다'],
+    ['{mgr}','이제 상대가 너를 분석하기 시작한다. 거기서부터가 진짜다']]],
+  cold:[[
+    ['{mgr}','앉아라. 요즘 타석에서 뭘 보고 있냐'],
+    ['{mgr}','계속 이러면 나도 방법이 없다. 2군에 한 번 다녀오는 것도 방법이다']],[
+    ['{mgr}','타격코치가 네 스윙이 짧아졌다더라. 쫓기고 있다는 거다'],
+    ['{mgr}','이번 주가 마지막 기회라고 생각해라']]],
+  slump_team:[[
+    ['{cap}','다들 모여봐라. 연패는 누구 하나 탓이 아니다'],
+    ['{cap}','{me}, 막내부터 파이팅 한 번 내라']],[
+    ['{cap}','오늘 경기 끝나고 다 같이 밥 먹는다. 빠지는 사람 없다'],
+    ['{cap}','분위기는 우리가 만드는 거다']]],
+  mate:[[['{mate}','야 {me}. 저 팀 에이스 초구 변화구다. 기다리지 마라']],
+    [['{mate}','{me}, 나도 처음 올라왔을 때 석 달을 못 쳤다. 버티는 사람이 이긴다']],
+    [['{mate}','웨이트 같이 할래? 시즌 중에도 안 하면 여름에 방망이가 무거워진다']],
+    [['{mate}','원정 가면 잠이 안 오지? 나는 3년 걸렸다. 그냥 누워 있어라']],
+    [['{mate}','{me}, 수비 위치 반 걸음만 당겨라. 이 구장은 타구가 짧게 떨어진다']],
+    [['{mate}','팬들 사인 요청 오면 다 해줘라. 그거 나중에 다 돌아온다']]]
+};
+const PRO_TALK_PICK={
+  welcome:[['"보여드리겠습니다"',{trust:3,morale:6}],['"1군에서 쓰실 때까지 기다리겠습니다"',{trust:5,morale:0}],['(고개만 끄덕인다)',{trust:0,morale:2}]],
+  callup:[['"한 타석씩 하겠습니다"',{trust:4,morale:5,cond:4}],['"주전 자리 뺏으러 왔습니다"',{trust:-2,morale:10}]],
+  hot:[['"올려주시면 치겠습니다"',{trust:2,morale:8,order:-1}],['"지금 자리가 편합니다"',{trust:4,morale:3}]],
+  cold:[['"특타 하겠습니다"',{trust:4,cond:-6,con:1}],['"2군에서 감 찾고 오겠습니다"',{trust:2,farm:1}],['"한 주만 더 믿어주십시오"',{trust:-3,morale:4}]],
+  slump_team:[['(제일 크게 파이팅을 외친다)',{morale:6,team:3}],['(조용히 방망이를 챙긴다)',{morale:2}]],
+  mate:[['"감사합니다, 선배"',{morale:4,cond:2}],['"같이 하겠습니다"',{morale:3,pow:1,cond:-4}]]
+};
+/* 경기가 끝날 때 — 이번 주 면담감이 있으면 줄에 세운다(한 번에 하나) */
+function proTalkPick(res, won, uIds){
+  if(!isPro()) return;
+  const P=ST.pro; if(!Array.isArray(P.talkQ)) P.talkQ=[];
+  if(P.talkQ.length) return;
+  const me=ST.playerId||MYID, rd=ST.round||0;
+  const rng=makeRng(((ST.seed||1)+rd*9973+(P.year||0))>>>0);
+  const b=ST.bat[me]||blankBat();
+  const avg=b.ab?b.h/b.ab:0;
+  const last=P.talkAt||-99;
+  if(!P.welcomed){ P.welcomed=true; P.talkQ.push({k:'welcome'}); return; }
+  if(P.wasFarm && (ST.myFarm||0)===0){ P.wasFarm=false; P.talkQ.push({k:'callup'}); return; }
+  P.wasFarm=(ST.myFarm||0)>0;
+  if(rd-last<12) return;                         // 두 주에 한 번 이상은 안 부른다
+  const s=ST.stand['wwzw']||{};
+  if(b.pa>=40 && avg>=0.330 && rng()<0.6){ P.talkQ.push({k:'hot'}); P.talkAt=rd; return; }
+  if(b.pa>=30 && avg<0.200 && (ST.myFarm||0)===0 && rng()<0.7){ P.talkQ.push({k:'cold'}); P.talkAt=rd; return; }
+  const lost=(ST.schedule||[]).slice(0,rd+1).filter(x=>x.played&&x.result).slice(-5);
+  if(lost.length===5 && lost.every(x=>x.result.us<x.result.them)){ P.talkQ.push({k:'slump_team'}); P.talkAt=rd; return; }
+  if(rng()<0.30){ P.talkQ.push({k:'mate', mate:(proMate(rng)||{}).id}); P.talkAt=rd; }
+}
+function proTalkApply(eff){
+  const me=ST.playerId||MYID, P=ST.pro;
+  P.trust=Math.max(0,Math.min(100,(P.trust==null?50:P.trust)+(eff.trust||0)));
+  if(eff.morale) ST.morale[me]=Math.max(10,Math.min(100,(ST.morale[me]||70)+eff.morale));
+  if(eff.cond) ST.cond[me]=Math.max(20,Math.min(100,(ST.cond[me]||70)+eff.cond));
+  if(eff.team) TBYID['wwzw'].players.forEach(p=>{ ST.morale[p.id]=Math.min(100,(ST.morale[p.id]||70)+eff.team); });
+  ['con','pow'].forEach(k=>{ if(eff[k]){ ST.myRatings=ST.myRatings||{};
+    const mp=TBYID['wwzw'].players.find(x=>x.id===me); if(mp){ mp[k]=Math.min(85,(mp[k]||40)+eff[k]); ST.myRatings[k]=mp[k]; } } });
+  if(eff.farm && (ST.myFarm||0)===0){ ST.myFarm=1; ST.farmMe={g:0,ab:0,h:0}; ST.farmBar=0.290; ST.farmDone=0; ST.farmDoneSeen=0;
+    if(ST.lineup) ST.lineup=ST.lineup.filter(x=>x.id!==me); P.wasFarm=true; }
+}
+/* 인물 한 명 — SD 캐릭터를 그 팀 유니폼으로 크게. 표정이 대사를 따라간다 */
+function proTalkFace(cv, who, face){
+  try{
+    const g=cv.getContext('2d'); if(!g) return;
+    g.setTransform(2,0,0,2,0,0); g.clearRect(0,0,cv.width,cv.height);
+    const u=proUni(ST.pro.team);
+    const mgr=(who==='{mgr}');
+    mvSD(g, 90, 232, 210, mgr?{cap:'#1d2230',sh:u.cap,pants:'#2b3140',gl:'#333'}:u, 'talk', false, {face});
+  }catch(e){}
+}
+function proTalkShow(T, done){
+  const pool=PRO_TALK_LINES[T.k]||[[]];
+  const lines=(T.script!=null&&pool[T.script])?pool[T.script]:(pickFresh(pool,'PT_'+T.k)||pool[0]);
+  const picks=PRO_TALK_PICK[T.k]||[];
+  const me=ST.playerId||MYID;
+  const cap=proCaptain(), mate=T.mate?TBYID['wwzw'].players.find(x=>x.id===T.mate):proMate();
+  const fill=t=>String(t).replace(/\{mgr\}/g,proMgrName()+' 감독').replace(/\{capn\}/g,cap?cap.name:'')
+    .replace(/\{cap\}/g,'주장 '+(cap?cap.name:'')).replace(/\{mate\}/g,mate?mate.name:'선배').replace(/\{me\}/g,nameOf(me));
+  const ov=el('div','pt-ov');
+  ov.innerHTML='<div class="pt-bg"></div><canvas class="pt-face" width="360" height="480"></canvas>'+
+    '<div class="pt-box"><div class="pt-nm"></div><div class="pt-say"></div><div class="pt-opts"></div><div class="pt-more">탭하면 다음</div></div>';
+  (document.getElementById('stage')||document.body).appendChild(ov);
+  const cv=ov.querySelector('.pt-face'), nm=ov.querySelector('.pt-nm'), say=ov.querySelector('.pt-say'),
+        opts=ov.querySelector('.pt-opts'), more=ov.querySelector('.pt-more');
+  let i=0;
+  const close=()=>{ if(ov.parentNode) ov.parentNode.removeChild(ov); saveGame(true); done&&done(); };
+  const show=()=>{
+    if(i<lines.length){
+      const L=lines[i];
+      nm.textContent=fill(L[0]); say.textContent=fill(L[1]);
+      const face=/2군|방법이 없다|뭘 보고/.test(L[1])?'grit':(/좋다|파이팅|봤다/.test(L[1])?'joy':null);
+      proTalkFace(cv, L[0], face);
+      opts.innerHTML=''; more.style.display='';
+      return;
+    }
+    more.style.display='none';
+    nm.textContent=nameOf(me); say.textContent='';
+    opts.innerHTML='';
+    picks.forEach(([t,eff])=>{
+      const b=el('button','pt-opt',t);
+      b.onclick=(e)=>{ e.stopPropagation(); proTalkApply(eff);
+        ST.pro.talks=(ST.pro.talks||[]).concat([{k:T.k,year:ST.pro.year,round:ST.round,pick:t}]).slice(-40);
+        close(); };
+      opts.appendChild(b);
+    });
+    if(!picks.length) close();
+  };
+  ov.onclick=()=>{ if(i<lines.length){ i++; show(); } };
+  show();
+  return ov;
+}
+
 /* ---------- 시즌 ---------- */
 function newSeason(){
   /* 이탈 명단은 시즌이 바뀌어도 그대로 간다. 나간 사람은 안 돌아온다. */
@@ -21166,7 +21348,9 @@ function lobbyStage(){
     cta.appendChild(go2);
     w.appendChild(cta);
   }
-  w.appendChild(el('div','lob-more','▾ 아래로 더 있다'));
+  const more=el('button','lob-more',LOB_MORE?'▴ 접기':'자세히 ▾');
+  more.onclick=()=>{ LOB_MORE=!LOB_MORE; renderHome(); };
+  w.appendChild(more);
   return w;
 }
 function renderHomePlayer(){
@@ -21174,6 +21358,10 @@ function renderHomePlayer(){
   /* 가로면 로비 한 판을 맨 위에 얹는다 — 그 아래는 예전 카드 그대로다 */
   if(document.documentElement.classList.contains('land')){
     try{ const lb=lobbyStage(); if(lb) c.appendChild(lb); }catch(e){}
+    /* [제보] "핸드폰 가로모드 너무 부담스럽게 꽉차고 스크롤 내려야해서 불편"
+       가로에서는 로비 한 판만 화면에 둔다 — 아래 카드는 「자세히 ▾」 로 편다.
+       다른 화면으로 가면 go() 가 이 표시를 걷는다. */
+    if(!LOB_MORE) c.classList.add('lob-solo');
   }
   const me=ST.playerId||MYID;
   const p=TBYID['wwzw'].players.find(x=>x.id===me);
@@ -21337,9 +21525,13 @@ function renderHomePlayer(){
         '<div class="ms-why">눌러서 오늘 신문을 편다</div>';
       pb.onclick=()=>{ try{ showPaper(); }catch(e){} };
       c.appendChild(pb);
-      if(ST.paperSeen!==key){
-        ST.paperSeen=key;
-        try{ saveGame(true); }catch(e){}
+      /* 프로 — 불려간 면담이 있으면 신문보다 먼저 */
+      const talk=(isPro()&&ST.pro&&Array.isArray(ST.pro.talkQ)&&ST.pro.talkQ.length)?ST.pro.talkQ.shift():null;
+      const paperNow=(ST.paperSeen!==key);
+      if(paperNow){ ST.paperSeen=key; try{ saveGame(true); }catch(e){} }
+      if(talk){
+        setTimeout(()=>{ try{ proTalkShow(talk, ()=>{ if(paperNow) try{ showPaper(); }catch(e){} }); }catch(e){} }, 380);
+      } else if(paperNow){
         setTimeout(()=>{ try{ showPaper(); }catch(e){} }, 420);
       }
     }
@@ -31409,6 +31601,10 @@ Object.assign(SD_FRONT,{
   outC:  {hip:[0,-27], lean:0, noGlove:true,
           L:[[-7,-26],[-10,-13],[-11,-5]], R:[[7,-26],[10,-13],[11,-5]], fL:[-11,0], fR:[11,0],
           thr:[[-24,-55],[-20,-72]], glv:[[18,-38],[12,-32]]},
+  /* 면담 — 맨손으로 앞에서 손을 모은다(글러브 없이) */
+  talk:  {hip:[0,-27], lean:0, noGlove:true,
+          L:[[-7,-26],[-9,-13],[-10,-5]], R:[[7,-26],[9,-13],[10,-5]], fL:[-10,0], fR:[10,0],
+          thr:[[-15,-35],[-4,-33]], glv:[[15,-35],[4,-33]]},
   ump:   {hip:[0,-25], lean:0.25, noGlove:true,
           L:[[-7,-24],[-13,-13],[-14,-5]], R:[[7,-24],[13,-13],[14,-5]], fL:[-14,0], fR:[14,0],
           thr:[[-16,-34],[-12,-24]], glv:[[16,-34],[12,-24]]}
@@ -42174,8 +42370,10 @@ function paintTabs(){
     b.style.display=(hide&&PM_BLOCK[v])?'none':'';
   });
 }
+let LOB_MORE=false;     // 가로 홈 — 아래 카드를 펼쳤나 (세이브에 안 남긴다)
 function go(v){
   plLock(false);        // 화면을 옮기면 타석 잠금은 무조건 푼다
+  { const vw=document.getElementById('view'); if(vw) vw.classList.remove('lob-solo'); }
   /* 고등학교를 하는 중에는 본편 화면으로 못 샌다. 아직 우완좌완이 아니다.
      [제보] "메인화면 갈 수 있는 버튼이 없는데" — 메인화면과 세이브 슬롯은
      본편이 아니라 그 위에 있는 것이라 막으면 안 됐다. 프롤로그 도중에
