@@ -1243,6 +1243,21 @@ body.pl-lock #view{touch-action:none}
 .ball{position:absolute;width:9px;height:9px;border-radius:50%;background:#fff;
   box-shadow:0 0 7px rgba(255,255,255,.75), inset -2px -2px 0 rgba(0,0,0,.15);
   left:0;top:0;will-change:transform;pointer-events:none}
+.apad{position:relative;width:168px;aspect-ratio:1;flex:0 0 auto;border-radius:12px;background:#0f1319;border:1px solid #2a323d;touch-action:none;user-select:none;-webkit-user-select:none;cursor:crosshair;overflow:hidden}
+.ap-zone{position:absolute;left:20%;top:20%;width:60%;height:60%;border:2px solid #d7dde6;border-radius:3px;background:rgba(127,196,143,.08);pointer-events:none}
+.ap-zone i{position:absolute;background:rgba(215,221,230,.18)}
+.ap-zone i.v1{left:33.3%;top:0;bottom:0;width:1px}.ap-zone i.v2{left:66.6%;top:0;bottom:0;width:1px}
+.ap-zone i.h1{top:33.3%;left:0;right:0;height:1px}.ap-zone i.h2{top:66.6%;left:0;right:0;height:1px}
+.ap-hot{position:absolute;left:33.3%;top:33.3%;width:33.4%;height:33.4%;background:rgba(224,138,112,.14)}
+.ap-side{position:absolute;bottom:3px;font-size:9.5px;font-weight:800;color:#8b95a3;pointer-events:none}
+.ap-side.l{left:5px}.ap-side.r{right:5px}
+.ap-ret{position:absolute;transform:translate(-50%,-50%);border:2px solid #ffd15c;border-radius:50%;background:rgba(255,209,92,.14);pointer-events:none;transition:left .05s,top .05s}
+.ap-ret i{position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:#ffd15c}
+.ap-ret.out{border-color:#7fb4ff;background:rgba(127,180,255,.14)}.ap-ret.out i{background:#7fb4ff}
+.ap-now{position:absolute;top:3px;left:0;right:0;text-align:center;font-size:10.5px;font-weight:800;color:#e2eaf5;pointer-events:none}
+.zthrow{flex:0 0 auto;font:inherit;font-size:14px;font-weight:900;color:#0e0f11;background:#ffd15c;border:0;border-radius:12px;padding:12px 14px;cursor:pointer}
+.aim-ret{position:absolute;transform:translate(-50%,-50%);border:2px solid rgba(255,209,92,.9);border-radius:50%;box-shadow:0 0 0 1px rgba(0,0,0,.35);pointer-events:none;z-index:6}
+.aim-ret.out{border-color:rgba(127,180,255,.9)}
 .ball.seam{background:radial-gradient(circle at 38% 34%,#fff 60%,#e8e8e8 100%)}
 .trail{position:absolute;width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.30);
   pointer-events:none}
@@ -2845,6 +2860,8 @@ html.land #decision.sheet.dk-pitch .zwrap{grid-column:2;grid-row:3;margin:0;min-
 html.land #decision.sheet.dk-pitch .zwrap .zgrid{flex:0 1 auto;margin:0 auto;
   width:min(100%,34vh);max-width:100%;max-height:calc(100% - 30px);
   grid-template-rows:repeat(3,minmax(0,1fr))}
+html.land #decision.sheet.dk-pitch .zwrap .apad{margin:0 auto;width:auto;height:min(100%,34vh,calc(100% - 70px));max-width:100%}
+html.land #decision.sheet.dk-pitch .zwrap .zthrow{padding:8px 10px;font-size:13px}
 html.land #decision.sheet.dk-pitch .zwrap .zinfo{flex:0 0 auto;font-size:9.5px;line-height:1.35;
   max-height:26px;overflow:hidden}
 /* [버그 이력] 유인구 줄(.chase)을 안 세워놨더니 격자가 제멋대로 다섯째
@@ -2973,6 +2990,7 @@ html.land #decision.sheet .runcv{width:auto;height:100%;max-width:100%;max-heigh
 #decision.sheet .ptype button b{font-size:13px}
 #decision.sheet .zwrap .zgrid{flex:0 0 148px}
 #decision.sheet .zgrid button{font-size:10px}
+#decision.sheet .zwrap .apad{width:148px}
 #decision.sheet .chase-row button{padding:7px 3px}
 #decision.sheet .bat-info .bi-r,#decision.sheet .bat-info .bi-t{font-size:10px}
 #decision.sheet .pl-t{font-size:14px}
@@ -9389,8 +9407,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.44.1';
-const APP_VERSION_NOTE = '고교 장면 — 가로 한 화면';
+const APP_VERSION = '3.45.0';
+const APP_VERSION_NOTE = '투구 조준 — 조이스틱처럼, 제구만큼 흩어진다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9411,6 +9429,12 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.45.0', t:'투구 조준 — 조이스틱처럼, 제구만큼 흩어진다', items:[
+    '아홉 칸 고르기 대신 조준판을 끌어서 원하는 곳을 겨누고 「던진다」',
+    '조준판 좌우가 지금 카메라에 보이는 방향 그대로 — 바깥쪽 눌렀는데 반대로 가던 거 고쳤다',
+    '조준점 둘레 원이 제구 오차 — 제구 좋은 투수는 작고, 지치거나 빠른 공일수록 커진다',
+    '존 밖을 겨누면 유인구 — 제구가 흔들리면 안으로 몰리기도 한다',
+  ]},
   {v:'3.44.1', t:'고교 장면 — 가로 한 화면', items:[
     '고교 대화 · 고르기 장면을 가로에서 두 칸으로 — 왼쪽 이야기, 오른쪽 말하는 사람 · 고를 것. 아이폰 사파리처럼 위 창이 큰 화면에서 대사를 보려고 스크롤할 일이 없다',
   ]},
@@ -35276,6 +35300,8 @@ function moundView(opts){
       try{ if(typeof ST!=='undefined'&&ST){ ST.cam=ST.cam||{}; ST.cam[mode]=nx; } }catch(e){}
       mvPaint(m,{cam:nx}); mvCamSync(m);
       try{ fitZone(m); }catch(e){}
+      /* 투구 조준판은 카메라 따라 좌우가 뒤집힌다 — 타석 중에 바꿔도 다시 그린다 */
+      try{ if(m._onCam) m._onCam(nx); }catch(e){}
     };
   }
   mvScore(m);
@@ -38346,7 +38372,14 @@ function renderPitch(box, d){
   try{ atmosShow(mv,'pit'); }catch(e){}
   const tRow=el('div','ptype'); w.appendChild(tRow);
   const wrap=el('div','zwrap');
-  const g=el('div','zgrid'); wrap.appendChild(g);
+  /* [요청 v3.45.0] "투수 할 때 바깥쪽 하면 반대로 던지니 헷갈려 — 9개 고르는 게 아니라 조이스틱으로
+     원하는 곳에 던지게, 제구력에 따라 다르게. 마구마구 방식"
+     아홉 칸 버튼 → 조준판(apad). 끌어서 조준점을 옮기고 「던진다」.
+     [버그 이력] 버튼 칸은 좌타일 때만 좌우를 뒤집었다. 투수 뒤 카메라(기본값)는 화면 자체가 거울이라
+     바깥쪽을 누르면 공이 반대쪽으로 갔다. 조준판은 **지금 화면 그대로**의 좌우다 —
+     throwBall 이 공을 그리는 식(side = 타자 손 × 카메라)을 그대로 거꾸로 쓴다.
+     제구는 조준점 둘레의 원(오차 범위)으로 보인다. 제구가 나쁘거나 변화구일수록 원이 크다 */
+  const g=el('div','apad'); wrap.appendChild(g);
   const info=el('div','zinfo'); wrap.appendChild(info);
   w.appendChild(wrap);
   /* [주의] 이 창이 sheet(화면 전체) 가 되면서 바깥의 「🔄 투수 교체」
@@ -38518,6 +38551,7 @@ function renderPitch(box, d){
       `제구 ${p.ctl} — ${p.ctl>=45?'웬만하면 들어간다':(p.ctl>=30?'가끔 몰린다':'자주 빠진다')}`+
       ` · 최고 <b>${Math.round(topKmh(p))}km/h</b>`+
       `<details class="zhelp"><summary>코스는 어떻게 고르나</summary>`+
+      `조준판을 끌어서 조준점을 옮기고 「던진다」. 둘레의 원이 <b>제구 오차</b>다 — 제구가 나쁘거나 변화구면 원이 커진다. `+
       `<b style="color:#e08a70">한가운데</b>는 넣기 쉽지만 맞기도 쉽다. `+
       `<b style="color:#7fc48f">구석·낮은 코스</b>는 어렵지만 타자가 잘 못 친다. `+
       `빠지면 <b>볼</b>이다. 변화구는 위력적이지만 더 자주 빠진다.</details>`;
@@ -38536,18 +38570,71 @@ function renderPitch(box, d){
      공이 간다. 이름표(몸쪽/바깥쪽)는 뜻을 그대로 달고 따라간다.
      [주의] 존은 타자마다 다시 깔아야 한다. 예전엔 판단창을 열 때
      딱 한 번만 만들어서 다음 타자가 반대 손이어도 그대로였다.     */
-  const buildZone=(batLeft)=>{
-    g.innerHTML='';
-    const cols=batLeft?[2,1,0]:[0,1,2];
-    for(let r=0;r<3;r++) cols.forEach(c2=>{
-      /* [제보] "중앙 하이볼 던질 때는 왜 거긴 색깔 안 나오지"
-         높은 가운데(0,1)만 클래스가 안 붙어서 혼자 무색이었다.
-         한가운데만 hot, 나머지 여덟 칸은 전부 cold 다.               */
-      const b2=el('button',(r===1&&c2===1)?'hot':'cold',NAMES[r][c2]);
-      b2.onclick=()=>throwTo(r,c2);
-      g.appendChild(b2);
-    });
+  /* 조준 — 칸 단위 좌표(0 몸쪽 · 1 가운데 · 2 바깥 / 0 높게 · 2 낮게). 존 가장자리는 가운데에서 ±1.65칸
+     (throwBall 이 칸 간격을 존 폭의 0.303 으로 그린다 → 0.5/0.303). 그 밖은 볼 */
+  let aimX=1, aimY=1, zSide=1;
+  const ZE=1.65, PADZ=0.6;                 // 조준판에서 존이 차지하는 비율(가운데 60%)
+  const aimSd=()=>{ const p=LIVE.curPitcher(def), T=PITCH_TYPES[type]||PITCH_TYPES.ff;
+    const fq=(LIVE.pbox&&LIVE.pbox[p.id])||null, ctl=pitFade(p, fq?(fq.outs||0):0).ctl;
+    const sharpF=Math.max(0.25,Math.min(1,(ctl-18)/42));
+    return (0.16+(1-sharpF)*0.62)*(1+(T.hard||0)*0.9); };
+  const toPad=(c,r)=>{ const sc=zSide>0?c:2-c; return [0.5+(sc-1)/ZE*PADZ/2, 0.5+(r-1)/ZE*PADZ/2]; };
+  const fromPad=(px,py)=>{ const sc=1+(px-0.5)*2/PADZ*ZE, r=1+(py-0.5)*2/PADZ*ZE; return [zSide>0?sc:2-sc, r]; };
+  const aimName=(c,r)=>{ const d=c-1, e=r-1;
+    if(Math.abs(d)>ZE||Math.abs(e)>ZE) return (Math.abs(e)>Math.abs(d))?(e<0?'높게 뺀다':'낮게 뺀다'):(d>0?'바깥으로 뺀다':'몸쪽으로 뺀다');
+    const cc=d<-0.55?0:(d>0.55?2:1), rr=e<-0.55?0:(e>0.55?2:1); return NAMES[rr][cc]; };
+  const paintAim=()=>{
+    const ret=g.querySelector('.ap-ret'); if(!ret) return;
+    const [px,py]=toPad(aimX,aimY), sd=aimSd();
+    const rad=Math.max(8, sd/ZE*PADZ/2*100*1.25);          // 원 반지름 — 판 크기의 %
+    ret.style.left=(px*100)+'%'; ret.style.top=(py*100)+'%';
+    ret.style.width=ret.style.height=(rad*2)+'%';
+    const out=Math.abs(aimX-1)>ZE||Math.abs(aimY-1)>ZE;
+    ret.classList.toggle('out', out);
+    const nm=g.querySelector('.ap-now'); if(nm) nm.textContent=aimName(aimX,aimY);
+    /* 야구장 위에도 같은 자리에 조준점 — throwBall 과 같은 식 */
+    try{ const zs=mv.querySelector('#szone'), box0=mv.getBoundingClientRect();
+      let mr=mv.querySelector('.aim-ret'); if(!mr){ mr=el('div','aim-ret'); mv.appendChild(mr); }
+      const zb=zs&&zs.getBoundingClientRect();
+      if(zb&&zb.width){ const zx=zb.left+zb.width/2-box0.left, zy=zb.top+zb.height/2-box0.top;
+        mr.style.left=(zx+(aimX-1)*(zb.width*0.303)*zSide)+'px'; mr.style.top=(zy+(aimY-1)*(zb.height*0.303))+'px';
+        const rr=Math.max(6, sd*zb.width*0.303*1.25); mr.style.width=mr.style.height=(rr*2)+'px';
+        mr.classList.toggle('out', out); mr.style.display=''; } }catch(e){}
   };
+  let zBatLeft=false;
+  mv._onCam=()=>{ try{ buildZone(zBatLeft); }catch(e){} };
+  const buildZone=(batLeft)=>{
+    zBatLeft=!!batLeft;
+    const CG=mvCamGeom((mv._mv&&mv._mv.cam)||'c');
+    zSide=(batLeft?-1:1)*(CG.rev?-1:1);
+    const inLeft=zSide>0;                   // 몸쪽(칸 0)이 화면 왼쪽인가
+    g.innerHTML='<div class="ap-zone"><i class="v1"></i><i class="v2"></i><i class="h1"></i><i class="h2"></i><b class="ap-hot"></b></div>'+
+      '<span class="ap-side l">'+(inLeft?'몸쪽':'바깥')+'</span><span class="ap-side r">'+(inLeft?'바깥':'몸쪽')+'</span>'+
+      '<div class="ap-ret"><i></i></div><div class="ap-now"></div>';
+    const setFrom=(ev)=>{ const b=g.getBoundingClientRect(); if(!b.width) return;
+      const px=Math.max(0,Math.min(1,(ev.clientX-b.left)/b.width)), py=Math.max(0,Math.min(1,(ev.clientY-b.top)/b.height));
+      const [c,r]=fromPad(px,py); aimX=Math.max(-1.3,Math.min(3.3,c)); aimY=Math.max(-1.3,Math.min(3.3,r)); paintAim(); };
+    let drag=false;
+    g.onpointerdown=(ev)=>{ if(busy||resolved) return; drag=true; try{ g.setPointerCapture(ev.pointerId); }catch(e){} if(ev.preventDefault) ev.preventDefault(); setFrom(ev); };
+    g.onpointermove=(ev)=>{ if(drag) setFrom(ev); };
+    g.onpointerup=g.onpointercancel=()=>{ drag=false; };
+    /* 테스트용 손잡이 — 조준을 코드로 옮기고 읽는다(umptest) */
+    g._setAim=(c,r)=>{ aimX=c; aimY=r; paintAim(); }; g._aim=()=>({x:aimX,y:aimY,side:zSide});
+    paintAim();
+  };
+  /* 던진다 — 조준점 둘레로 제구만큼 흩어진다(정규분포). 조준이 존 밖이면 유인구로 친다 */
+  const throwAim=()=>{
+    if(busy||resolved) return;
+    const sd=aimSd();
+    const gs=()=>{ const u=Math.max(1e-6,LIVE.rng()), v=LIVE.rng(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); };
+    const ax=Math.max(-1.6,Math.min(3.6,aimX+gs()*sd)), ay=Math.max(-1.6,Math.min(3.6,aimY+gs()*sd));
+    const chase0=Math.abs(aimX-1)>ZE||Math.abs(aimY-1)>ZE;
+    const out=Math.abs(ax-1)>ZE||Math.abs(ay-1)>ZE;
+    const corner=!out && (Math.abs(ax-1)>0.55||Math.abs(ay-1)>0.55);
+    throwTo(Math.round(Math.max(-1,Math.min(3,ay))), Math.round(Math.max(-1,Math.min(3,ax))), chase0, aimName(aimX,aimY)+(chase0&&!out?' — 몰렸다':''), {ax, ay, out, corner});
+  };
+  const goBtn=el('button','zthrow','던진다 ▶'); goBtn.onclick=throwAim;
+  wrap.insertBefore(goBtn, info);
 
   /* [제보] "변화구 누르고 유인구 누르면 안 움직임. 다른 거 클릭이 안 되네"
      유인구는 존 밖 좌표(-1 또는 3)로 던진다. 그런데 아래에서 코스 이름을
@@ -38555,22 +38642,22 @@ function renderPitch(box, d){
      거기서 예외가 터졌다. busy 는 이미 true 라 아무 버튼도 안 먹었다.
      — 이름은 유인구 버튼이 들고 오게 하고, 혹시 또 터져도 화면이 안 죽게
      통째로 감쌌다. 멈추느니 그 공은 없던 걸로 하는 게 낫다.          */
-  const throwTo=(r,c2,isChase,label)=>{
+  const throwTo=(r,c2,isChase,label,pre)=>{
     if(busy||resolved)return; busy=true;
-    try{ throwGo(r,c2,isChase,label); }
+    try{ throwGo(r,c2,isChase,label,pre); }
     catch(e){
       busy=false;
       try{ moundResult(mv,'다시 던진다','#e2c05a'); draw(); }catch(e2){}
       try{ console.error('throwTo',e); }catch(e2){}
     }
   };
-  const throwGo=(r,c2,isChase,label)=>{
+  const throwGo=(r,c2,isChase,label,pre)=>{
     const p=LIVE.curPitcher(def);
     const slot=off.slots[off.order%9];
     const bat=off.team.players.find(x=>x.id===slot.id);
     const T=PITCH_TYPES[type];
     const sharpF=Math.max(0.25,Math.min(1,(p.ctl-18)/42));
-    const corner=(r!==1||c2!==1);
+    const corner=pre?pre.corner:(r!==1||c2!==1);
     /* [제보] "변화구 유인구 던지면 제구가 무조건 잘되고 상대는 무조건 안
        휘두르더라. 유인구 던지는 것도 뭔가 이유가 있었으면 좋겠다"
 
@@ -38579,9 +38666,10 @@ function renderPitch(box, d){
        이제 **밋밋하게 몰릴 수 있다.** 제구가 나쁠수록 덜 빠져서 존 안으로
        들어온다 — 그게 실투다. 노리고 있던 타자한테는 제일 맞기 좋은 공이다.
        그래서 유인구는 '2스트라이크에 변화구로' 라는 이유가 생긴다.      */
-    const hang = isChase && (LIVE.rng() > Math.max(0.55,Math.min(0.93,0.62+sharpF*0.34)));
-    const ok= isChase ? true : (LIVE.rng() < (corner?0.42:0.72)*sharpF*(1-T.hard));
-    let ax=c2, ay=r, out=!!isChase;
+    /* 조준판으로 던졌으면(pre) 흩어짐은 이미 끝났다 — 떨어진 자리가 곧 결과다 */
+    const hang = isChase && !pre && (LIVE.rng() > Math.max(0.55,Math.min(0.93,0.62+sharpF*0.34)));
+    const ok= pre ? true : (isChase ? true : (LIVE.rng() < (corner?0.42:0.72)*sharpF*(1-T.hard)));
+    let ax=pre?pre.ax:c2, ay=pre?pre.ay:r, out=pre?pre.out:!!isChase;
     if(hang){                                  // 덜 빠졌다 — 존 가장자리로 몰린다
       out=false;
       ax=Math.max(0,Math.min(2,c2)); ay=Math.max(0,Math.min(2,r));

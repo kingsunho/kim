@@ -290,15 +290,14 @@ setTimeout(async()=>{
       LIVE.step();}})()`);
     if(!ev("window._d2")) return '코스 지점 못 만남';
     ev("showDecision(window._d2)");
-    const cells=d.querySelectorAll('.zgrid button').length;
-    return cells===9 ? '9칸 존' : false;
+    return (d.querySelector('.apad .ap-zone')&&d.querySelector('.zthrow')) ? '조준판 + 던진다' : false;
   });
   T('구종 버튼이 투수 능력에 맞게 나온다', ()=>{
     const t=[...d.querySelectorAll('.ptype button')].map(x=>x.textContent.replace(/(빠르다|뚝 떨어진다|옆으로 휜다|느리다)/,''));
     return t.length>=1 && t.join(' / ');
   });
   T('존을 누르면 와인드업 후 결과가 기록된다', async()=>{
-    const c=d.querySelector('.zgrid button'); c.click();
+    const c=d.querySelector('.zthrow'); c.click();
     return true;
   });
 

@@ -52,16 +52,34 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
     return /오늘 (첫 타석|\d+타수)/.test(t) ? t : `!${t}`;
   });
 
-  console.log('\n[존 색깔]');
-  T('아홉 칸 전부 색이 있다', ()=>{
-    const bs=[...d.querySelectorAll('.zgrid button')];
-    const noCls=bs.filter(b=>!b.className.trim());
-    return (bs.length===9&&noCls.length===0)
-      ? bs.map(b=>b.className).join(',') : `!${noCls.length}칸이 무색`;
+  console.log('\n[조준판]');
+  T('조준판 — 존 · 한가운데 · 조준점', ()=>!!(d.querySelector('.apad .ap-zone')&&d.querySelector('.apad .ap-hot')&&d.querySelector('.apad .ap-ret')&&d.querySelector('.zthrow')));
+  T('조준판 좌우가 공 그리는 방향과 같다(카메라 · 타석)', ()=>{
+    /* throwBall 은 x=(cx-1)*side, side=(좌타?-1:1)*(REV?-1:1). 조준판 zSide 가 이것과 같아야
+       「바깥」 누른 곳으로 공이 간다 — [요청 v3.45.0] 카메라 뒤집힌 걸 안 따라가서 반대로 갔다 */
+    const g=d.querySelector('.apad'), a=g._aim();
+    const L=d.querySelector('.ap-side.l').textContent, R=d.querySelector('.ap-side.r').textContent;
+    const okLbl=(a.side>0)?(L==='몸쪽'&&R==='바깥'):(L==='바깥'&&R==='몸쪽');
+    return okLbl ? 'side '+a.side+' · 왼쪽='+L : '!side '+a.side+' 인데 왼쪽='+L;
   });
-  T('한가운데만 hot 이다', ()=>{
-    const bs=[...d.querySelectorAll('.zgrid button')];
-    return bs.filter(b=>b.className==='hot').length===1 && bs[4].className==='hot';
+  T('카메라를 바꾸면 조준판 좌우도 따라 바뀐다', ()=>{
+    const cb=d.querySelector('#decision .mv-camb'); if(!cb) return '!카메라 버튼 없음';
+    const seen=[];
+    for(let i=0;i<3;i++){ const a=d.querySelector('.apad')._aim();
+      seen.push(a.side+'/'+d.querySelector('.ap-side.l').textContent);
+      cb.click(); }
+    const sides=new Set(seen);
+    return sides.size===2 ? seen.join(' · ') : '!안 바뀐다 '+seen.join(' · ');
+  });
+  T('조준을 옮기면 이름이 바뀐다', ()=>{
+    const g=d.querySelector('.apad'); g._setAim(1,1);
+    const t1=d.querySelector('.ap-now').textContent; g._setAim(1,-1.2);
+    const t2=d.querySelector('.ap-now').textContent; g._setAim(1,1);
+    return t1!==t2 && /높게/.test(t2) ? t1+' → '+t2 : '!'+t1+' / '+t2;
+  });
+  T('제구 오차 원 — 제구 나쁠수록 크다', ()=>{
+    const src=ev("String(renderPitch)");
+    return /sharpF=Math\.max\(0\.25/.test(src) && /aimSd/.test(src) ? '제구 → 오차' : '!없다';
   });
 
   console.log('\n[유인구]');
