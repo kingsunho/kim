@@ -18,7 +18,8 @@ const dom=new JSDOM(html,{runScripts:'dangerously',pretendToBeVisual:true,url:'h
   beforeParse(w){ w.scrollTo=()=>{}; w.TextEncoder=TextEncoder; w.TextDecoder=TextDecoder; }});
 const w=dom.window,d=w.document,ev=s=>w.eval(s);
 w.confirm=()=>true;
-process.on('unhandledRejection',e=>bad.push('REJECT: '+String(e).slice(0,160)));
+/* [v3.33.0] 예외가 나면 바로 끝낸다 — 예전엔 bad 에만 적고 매달려서 「멈춘 테스트」 로 보였다 */
+process.on('unhandledRejection',e=>{ console.log('  ❌ 처리 안 된 예외 :: '+String(e&&e.stack||e).split('\n').slice(0,3).join(' | ')); process.exit(1); });
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const T=(n,f)=>{try{const r=f();const ok=r===true||(typeof r==='string'&&r.length>0&&!/^!/.test(r));
   console.log((ok?'  ✅ ':'  ❌ ')+n+(typeof r==='string'?' :: '+r.replace(/^!/,''):''));if(!ok)bad.push(n);}
