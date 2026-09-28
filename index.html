@@ -3206,6 +3206,10 @@ html.land .pp-ov,html.land #sheet{left:env(safe-area-inset-left,0px)!important;r
 .stv-pick{text-align:left}
 .stv-back{font-size:12.5px;line-height:1.55;background:#151a21;border-left:3px solid var(--gold);padding:8px 10px;border-radius:6px;margin:8px 0}
 .stv-back i{font-style:normal;color:var(--dim);font-size:11.5px}
+.dr-me-money{display:flex;align-items:baseline;gap:6px 10px;flex-wrap:wrap;margin:6px 0 2px}
+.dr-me-money span{font-size:11.5px;color:var(--dim)}
+.dr-me-money b{font-size:20px;font-weight:900;color:var(--gold);margin-right:8px}
+.kd-sc b{color:var(--gold)}
 .mil-res{font-size:12.5px;line-height:1.55;padding:8px 10px;border-radius:8px;margin:8px 0;background:#151a21;border-left:3px solid var(--dim)}
 .mil-res.ok{border-left-color:#6fcf8a}.mil-res.no{border-left-color:#e0706a}
 .kd-phen{border-color:var(--gold);background:rgba(255,200,60,.08)}
@@ -9303,8 +9307,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.39.1';
-const APP_VERSION_NOTE = '위 제목줄 — 고교 · 사회인 · 프로';
+const APP_VERSION = '3.40.0';
+const APP_VERSION_NOTE = '학교 직접 적기 · 드래프트 계약금';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9325,6 +9329,12 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.40.0', t:'학교 직접 적기 · 드래프트 계약금', items:[
+    '<b>내 선수 만들기에서 고등학교 이름을 직접 적을 수 있다.</b> 「직접 적기」 → 예: 휘문고. 부원은 전부 새 얼굴이고 라이벌은 군포고(우완좌완 열둘)다. 제목줄 · 드래프트에도 그 학교로 나온다',
+    '<b>지명 카드에 계약금 · 첫해 연봉.</b> 라운드 · 순번 표대로(1R 1순위 5억 … 뒤 라운드 3천). 사회인 출신은 나이가 있어서 7할. 계약금은 내 통장으로',
+    '<b>괴물 신인은 역대급 계약금 — 10억~15억.</b> 신인 드래프트 중계 전광판 · 지명 현황에도 지명마다 계약금이 찍힌다',
+    '내 첫 계약의 계약금이 누구든 5라운드 5순위 값으로 찍히던 것을 고쳤다',
+  ]},
   {v:'3.39.1', t:'위 제목줄 — 고교 · 사회인 · 프로', items:[
     '<b>화면 맨 위 제목줄이 지금 뛰는 곳을 따라간다.</b> 고교 때는 「군포고 야구부 · 2017 · 고2」, 졸업하면 「군포고 졸업 · 우완좌완 입단 드래프트」 또는 「KBO 신인 드래프트」, 프로는 「구단 · KBO 2027 · 1군/퓨처스」',
     '예전엔 고교 3년 내내 「우완좌완 야구 매니저 · 안산 4부리그」 가 떠 있었다',
@@ -16370,7 +16380,7 @@ function proEnter(info){
     pos:(mp.pos||['RF']).slice(), pitch:mp.pitch?{stf:cv(mp.pitch.stf),ctl:cv(mp.pitch.ctl),
       sta:cv(mp.pitch.sta)+12,brk:mp.pitch.brk||25}:null, real:null, pro:true, rookie:true};
   const amaStats={year:ST.year, bat:ST.bat[me]?{...ST.bat[me]}:null, pit:ST.pit[me]?{...ST.pit[me]}:null};
-  ST.pro={team:info.team, year:(info.year||((ST.year||2026)+1)), draft:{round:info.round,pick:info.pick,year:info.draftYear||ST.year},
+  ST.pro={team:info.team, year:(info.year||((ST.year||2026)+1)), draft:{round:info.round,pick:info.pick,year:info.draftYear||ST.year,bonus:(info.bonus!=null?info.bonus:null)},
     level:info.level||'2군', me:base, ama:amaStats, history:[], news:[], seasons:0, trades:[], talks:[],
     rosterVer:PRO_ROSTER_VER};
   ST.myRatings={con:base.con,pow:base.pow,eye:base.eye,spd:base.spd,def:base.def,arm:base.arm,
@@ -17178,9 +17188,14 @@ function pfCon(p, key){
   return {sal, type:'annual', left:1, svc, fa:0, gen:true};
 }
 /* 내 계약 — 드래프트 순번 계약금 + 첫해 최저연봉 */
-function pfMyStartCon(){ return {sal:kboMinSal(ST.pro.year), type:'rookie', left:1, svc:0, fa:0, bonus:pfBonusOf(ST.pro.round||5, ST.pro.pick||5)}; }
+/* [버그 이력 v3.40.0] ST.pro.round 는 없다(proEnter 는 ST.pro.draft 에 둔다) — 누구든 5라운드 5순위 계약금이 찍혔다 */
+function pfMyStartCon(){ const D=ST.pro.draft||{};
+  return {sal:kboMinSal(ST.pro.year), type:'rookie', left:1, svc:0, fa:0, bonus:(D.bonus!=null?D.bonus:pfBonusOf(D.round||5, D.pick||5))}; }
 function pfSetCon(id, c){ const F=pfState(); const o=Object.assign({},c); delete o.gen; F.con[id]=o; return o; }
 /* 신인 계약금(만원) — 1R 1순위 5억 · 1R 1.5~3.5억 · 2R 1억 안팎 · 뒤로 갈수록 3천까지 */
+/* 괴물 신인 계약금 — 역대 최고가 10억 언저리라 「역대급」 이면 그 위다. 잠재 86 → 10억 · 90 → 15억.
+   [요청 v3.40.0] "역대급 신인 보면 계약금 최소 15억 이런 소리도 나오잖아" */
+function pfPhenomBonus(pot){ return Math.round((100000+Math.max(0,(pot||86)-86)*12500)/1000)*1000; }
 function pfBonusOf(round, pick){
   if(round<=1) return pick<=1?50000:Math.round(35000-(pick-2)*2500);
   const T={2:11000,3:9000,4:7000,5:6000,6:5000,7:4000,8:3500,9:3000,10:3000,11:3000};
@@ -17567,12 +17582,13 @@ function pfRookieStep(myPickId){
   else x=pfRookieAIPick(k,left);
   if(!x) { pfRookieFinish(); return false; }
   const n=D.picks.length, round=Math.floor(n/10)+1, pick=(n%10)+1;
-  D.picks.push({id:x.p.id, name:x.p.name, team:k, round, pick, pos:x.pos, school:x.school, schoolName:x.schoolName, phenom:x.phenom||undefined});
+  const bonus=x.phenom?Math.max(pfPhenomBonus(x.pot),pfBonusOf(round,pick)):pfBonusOf(round,pick);
+  D.picks.push({id:x.p.id, name:x.p.name, team:k, round, pick, pos:x.pos, school:x.school, schoolName:x.schoolName, phenom:x.phenom||undefined, bonus});
   const snap=Object.assign({},x.p,{no:60+(n%39)});
   pfMove(snap, null, k, '신인 드래프트', x.phenom?'1군':'2군');            // 괴물 신인은 바로 1군
-  if(x.phenom) proNews('드래프트', proName(k)+', '+x.schoolName+' '+x.p.name+' 지명 — 「첫해부터 1군에서 쓴다」');
+  if(x.phenom) proNews('드래프트', proName(k)+', '+x.schoolName+' '+x.p.name+' 지명 — 계약금 '+wonStr2(bonus)+' 「역대급」',
+    '「첫해부터 1군에서 쓴다」. 구단 역사상 가장 큰 계약금이라는 말이 나온다.');
   if(k===ST.pro.team){
-    const bonus=pfBonusOf(round,pick);
     F.cash=Math.round((F.cash-bonus/10000)*10)/10;
     pfSetCon(x.p.id, {sal:kboMinSal(ST.pro.year+1), type:'rookie', left:1, svc:0, fa:0, bonus});
     F.rep[x.p.id]={cur:x.cur, rp:x.rp.slice(), pot:x.pot};             // 잠재 범위는 해마다 좁혀진다
@@ -17906,13 +17922,13 @@ function renderRookieDraft(rec, fast){
     const mine=D.picks.filter(z=>z.team===ST.pro.team);
     board.innerHTML='<div class="kd-bh">지명 현황 '+D.picks.length+'/110'+(mine.length?' · 우리 '+mine.length+'명':'')+'</div>'+
       D.picks.slice(-12).reverse().map(z=>'<div class="kd-row'+(z.team===ST.pro.team?' mine':'')+'"><u>'+z.round+'R '+z.pick+'</u>'+teamChip(z.team)+
-        '<b>'+z.name+'</b><i>'+z.schoolName+' · '+(POSNAMES[z.pos]||z.pos)+'</i></div>').join('');
+        '<b>'+(z.phenom?'<u class="kd-star">괴물</u> ':'')+z.name+'</b><i>'+z.schoolName+' · '+(POSNAMES[z.pos]||z.pos)+' · 계약금 '+wonStr2(z.bonus!=null?z.bonus:pfBonusOf(z.round,z.pick))+'</i></div>').join('');
   };
   const paintSpot=(z, big)=>{
     if(!z){ spot.innerHTML=''; return; }
     spot.innerHTML='<div class="kd-card'+(z.team===ST.pro.team?' mine':'')+'"><div class="kd-no">'+z.round+'라운드 '+z.pick+'순위</div>'+
       '<div class="kd-tm">'+teamChip(z.team)+' '+proName(z.team)+'</div><div class="kd-nm">'+(z.phenom?'<u class="kd-star">괴물 신인</u> ':'')+z.name+'</div>'+
-      '<div class="kd-sc">'+z.schoolName+' · '+(POSNAMES[z.pos]||z.pos)+'</div></div>';
+      '<div class="kd-sc">'+z.schoolName+' · '+(POSNAMES[z.pos]||z.pos)+' · 계약금 <b>'+wonStr2(z.bonus!=null?z.bonus:pfBonusOf(z.round,z.pick))+'</b></div></div>';
     const cd=spot.firstChild; cd.classList.remove('pop'); void cd.offsetWidth; cd.classList.add('pop');
   };
   let filter='all';
@@ -17925,7 +17941,7 @@ function renderRookieDraft(rec, fast){
     if(D.done){ const mine=D.picks.filter(z=>z.team===ST.pro.team);
       const cd=el('div','card'); cd.innerHTML='<div class="card-h">우리 지명 '+mine.length+'명 — '+(mine.some(z=>z.phenom)?'괴물 신인은 1군 · 나머지는 2군에서 시작':'전원 2군에서 시작')+'</div>'+
         mine.map(z=>{ const r=F.rep[z.id]; return '<div class="kd-row mine"><u>'+z.round+'R '+z.pick+'</u><b>'+z.name+'</b><i>'+z.schoolName+' · '+(POSNAMES[z.pos]||z.pos)+
-          (r?' · 현재 '+r.cur+' · 잠재 '+r.rp[0]+'~'+r.rp[1]:'')+' · 계약금 '+wonStr2(pfBonusOf(z.round,z.pick))+'</i></div>'; }).join('');
+          (r?' · 현재 '+r.cur+' · 잠재 '+r.rp[0]+'~'+r.rp[1]:'')+' · 계약금 '+wonStr2(z.bonus!=null?z.bonus:pfBonusOf(z.round,z.pick))+'</i></div>'; }).join('');
       pickArea.appendChild(cd); return; }
     const k=D.order[D.picks.length]; if(k!==ST.pro.team) return;
     const n=D.picks.length;
@@ -18374,9 +18390,12 @@ function renderProDraft(){
     cta.innerHTML='';
     const card=el('div','card dr-me');
     card.style.setProperty('--tc',d.cap);
+    /* 계약금 — 라운드 · 순번 표대로. 사회인 출신(스물여섯 넘어 입단)은 7할 — 「즉시 전력이지만 나이가 있다」 */
+    const bonus=Math.round(pfBonusOf(slot.round, slot.pickIdx+1)*(HSR?1:0.7)/100)*100;
     card.innerHTML='<div class="dr-me-top">'+slot.round+'라운드 '+(slot.pickIdx+1)+'순위</div>'+
       '<div class="dr-me-tm">'+proName(team)+'</div>'+
       '<div class="dr-me-nm">'+nameOf(me)+' <u>'+pos+'</u></div>'+
+      '<div class="dr-me-money"><span>계약금</span><b>'+wonStr2(bonus)+'</b><span>첫해 연봉</span><b>'+wonStr2(kboMinSal(2027))+'</b></div>'+
       '<p class="dr-me-why"><b>'+PRO_MODE_TXT[P.mode]+' · '+PRO_DRAFT_TXT[P.draft]+'</b> — '+P.line+'</p>'+
       '<p class="muted">마스코트 '+d.mascot+' · 홈 '+parkOf(d.park).name+' · 우승 '+d.titles.length+'회'+
         (d.titles.length?' (마지막 '+d.titles[d.titles.length-1]+')':'')+'</p>';
@@ -18397,11 +18416,12 @@ function renderProDraft(){
       /* 1·2라운드에 트라이아웃 점수가 높으면 1군 캠프부터 — 아니면 2군 */
       const level=(!HSR && slot.round<=2 && sc>=80)?'1군':'2군';     // 고졸은 누구든 2군부터
       const drafted=PRO_DRAFT_2027.map((row,ri)=>row.map((p,ki)=>({r:ri+1,k:ki+1,team:teamOf(ri,ki),name:p[0],school:p[1],pos:p[2],grade:p[3]})));
-      proEnter({team, round:slot.round, pick:slot.pickIdx+1, year:(ST.year||2026)+1, draftYear:ST.year||2026, level});
+      proEnter({team, round:slot.round, pick:slot.pickIdx+1, year:(ST.year||2026)+1, draftYear:ST.year||2026, level, bonus});
+      ST.pro.earned=Math.round(bonus/10000*10)/10;                // 계약금은 내 통장으로(억)
       ST.pro.draftClass=[].concat.apply([],drafted);
       if(HSR){ ST.pro.route='hs'; ST.pro.age0=19; ST.pro.year0=ST.pro.year; }
       ST.proSlot=null; ST.tryout=null;
-      if(HSR) proNews('입단', nameOf(me)+', '+proName(team)+' '+slot.round+'라운드 지명 — '+mySchool+' 졸업 바로 프로',
+      if(HSR) proNews('입단', nameOf(me)+', '+proName(team)+' '+slot.round+'라운드 지명 — '+mySchool+' 졸업 바로 프로 · 계약금 '+wonStr2(bonus),
         '사회인을 거치지 않고 곧장 신청했다. '+PRO_MODE_TXT[P.mode]+' 기조의 '+proName(team)+'이(가) 「원석」 으로 불렀다. 2군에서 시작한다.');
       else if(RF) proNews('입단', nameOf(me)+', '+proName(team)+' '+slot.round+'라운드 — '+(RF.team===team?'거부했던 구단이 다시 불렀다':'지명 거부 뒤 돌아왔다'),
         '고졸 때 '+proName(RF.team)+'의 '+RF.round+'라운드 지명을 거부하고 사회인야구로 갔던 선수다. '+(slot.round<RF.round?'순번을 '+(RF.round-slot.round)+'라운드 끌어올려 돌아왔다.':'순번은 그때보다 뒤다 — 그래도 돌아왔다.'));
@@ -20235,6 +20255,7 @@ const HS_SCHOOLS={
 /* 실존 인물이 어느 학교 몇 학번인지 — META 의 school·born 에서 그대로 온다 */
 function hsSchoolOf(pid){
   const m=META[pid]; if(!m) return null;
+  if(m.hsMine && HS_SCHOOLS.mine) return 'mine';      // 직접 적은 학교(내 선수 만들기)
   return /흥진/.test(m.school||'') ? 'heung' : 'gunpo';
 }
 function hsGradeOf(pid, year){
@@ -20276,7 +20297,7 @@ function hsMakePlayer(rng, grade, tag){
    한 학교 9명은 있어야 경기가 된다 — 흥진고는 실존이 둘뿐이라 많이 채운다. */
 function hsRoster(year, seed){
   const rng=makeRng((seed*7919 + year*131)>>>0);
-  const out={gunpo:[], heung:[]};
+  const out={gunpo:[], heung:[], mine:[]};
   Object.keys(META).forEach(pid=>{
     const g=hsGradeOf(pid, year); if(!g) return;
     const sc=hsSchoolOf(pid); if(!sc) return;
@@ -20286,7 +20307,7 @@ function hsRoster(year, seed){
     out[sc].push({...p, grade:g, real:true});
   });
   /* 모자라는 자리는 부원으로 채운다 */
-  ['gunpo','heung'].forEach(sc=>{
+  ['gunpo','heung'].concat(HS_SCHOOLS.mine?['mine']:[]).forEach(sc=>{
     let k=0;
     while(out[sc].length<11){
       const g=1+((rng()*3)|0);
@@ -21317,7 +21338,8 @@ function hsTeamOf(school, year, seed, meId, meBoost){
 }
 /* 내가 뛰는 학교 / 상대 학교 */
 function hsMySchool(){ return hsSchoolOf(ST.playerId||MYID)||'gunpo'; }
-function hsFoe(){ return hsMySchool()==='gunpo'?'heung':'gunpo'; }
+/* 직접 적은 학교면 라이벌은 군포고 — 우완좌완 열둘이 3년 내내 상대편이다 */
+function hsFoe(){ const m=hsMySchool(); return m==='gunpo'?'heung':'gunpo'; }
 
 /* 라인업 — 내 자리는 내가 정한 포지션으로 못 박는다.
    [요청] "고교때도 그 포지션으로 뛰고"                                */
@@ -22511,6 +22533,11 @@ function customApply(){
     note:'직접 만든 선수', custom:true};
   if(i>=0) WWZW[i]=p; else WWZW.push(p);
   const heung=/흥진/.test(c.school||'');
+  /* [요청 v3.40.0] "명단에 없는 사람들은 고등학교 이름도 직접 적을 수 있고" — 군포고 · 흥진고가 아니면
+     그 이름으로 세 번째 학교(mine)를 세운다. 부원은 전부 지어낸 사람, 라이벌은 군포고(우완좌완 열둘) */
+  const own=!!c.school && !/흥진|군포/.test(c.school);
+  if(own) HS_SCHOOLS.mine={id:'mine', name:c.school, short:c.school.replace(/고등학교$|고$/,''), cap:'#2d7a4a'};
+  else delete HS_SCHOOLS.mine;
   const posMap={}; posMap[c.pos]=58; if(!isP) posMap.DH=50;
   /* 잠재력 — 졸업 성적 평균이 시작값(HS_BASE)보다 얼마나 올랐나.
      졸업 전이면 가운데(5)로 둔다 */
@@ -22522,12 +22549,13 @@ function customApply(){
       pot=Math.max(3,Math.min(9,Math.round(4+(avg-b)/6))); c.pot=pot; }
     else if(c.pot) pot=c.pot;          // 프로로 가면 hsRatings 가 비워진다 — 졸업 때 잰 값을 쓴다
   }catch(e){}
-  const friends=Object.keys(META).filter(k=>k!==CUSTOM_ID && META[k].born===c.born &&
+  const friends=own?[]:Object.keys(META).filter(k=>k!==CUSTOM_ID && META[k].born===c.born &&
     (/흥진/.test(META[k].school||''))===heung).slice(0,3);
+  const schoolName=own?c.school:(heung?'흥진고':'군포고');
   META[CUSTOM_ID]={born:c.born, speech:(heung&&c.born===2000)?'jon':'ban', throws:c.throws==='L'?'L':'R',
-    car:false, school:heung?'흥진고':'군포고', drink:1, attend:0.9, loyal:80, pot,
+    car:false, school:schoolName, hsMine:own||undefined, drink:1, attend:0.9, loyal:80, pot,
     traits:[], friends, rival:null, coach:{}, pos:PR(posMap),
-    desc:'직접 만든 선수. '+(heung?'흥진고':'군포고')+' '+c.born+'년생.'};
+    desc:'직접 만든 선수. '+schoolName+' '+c.born+'년생.'};
   return true;
 }
 /* 새 선수 만들기 화면 — 고르는 화면(renderPick)에서 들어온다 */
@@ -22540,15 +22568,17 @@ function renderMake(){
     '<div class="mk-f"><label>이름<input id="mk-nm" maxlength="6" placeholder="예: 김야구"></label>'+
     '<label>등번호<input id="mk-no" type="number" min="0" max="99" value="7"></label></div>'+
     '<div class="mk-g" data-k="born"><span>태어난 해</span><button data-v="1999">1999</button><button data-v="2000" class="on">2000</button></div>'+
-    '<div class="mk-g" data-k="school"><span>학교</span><button data-v="군포고" class="on">군포고</button><button data-v="흥진고">흥진고</button></div>'+
+    '<div class="mk-g" data-k="school"><span>학교</span><button data-v="군포고" class="on">군포고</button><button data-v="흥진고">흥진고</button><button data-v="__own">직접 적기</button></div>'+
+    '<div class="mk-f mk-own" style="display:none"><label>학교 이름<input id="mk-sch" maxlength="10" placeholder="예: 휘문고"></label></div>'+
     '<div class="mk-g" data-k="throws"><span>던지는 손</span><button data-v="R" class="on">우투</button><button data-v="L">좌투</button></div>'+
     '<div class="mk-g" data-k="bats"><span>치는 손</span><button data-v="R" class="on">우타</button><button data-v="L">좌타</button></div>'+
     '<div class="mk-g mk-pos" data-k="pos"><span>포지션</span>'+
       CUSTOM_POS.map(([k,n],j)=>'<button data-v="'+k+'"'+(j===0?' class="on"':'')+'>'+n+'</button>').join('')+'</div>'+
-    '<p class="muted mk-note">흥진고를 고르면 군포고 열둘이 3년 내내 상대편이다. 1999년생은 형 학번, 2000년생은 동생 학번이다.</p>';
+    '<p class="muted mk-note">흥진고를 고르면 군포고 열둘이 3년 내내 상대편이다. 학교를 직접 적으면 부원은 전부 새 얼굴이고, 라이벌은 군포고다. 1999년생은 형 학번, 2000년생은 동생 학번이다.</p>';
   c.appendChild(card);
   card.querySelectorAll('.mk-g').forEach(g=>g.querySelectorAll('button').forEach(b=>{
-    b.onclick=()=>{ g.querySelectorAll('button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); };
+    b.onclick=()=>{ g.querySelectorAll('button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+      if(g.getAttribute('data-k')==='school'){ const o=card.querySelector('.mk-own'); if(o) o.style.display=(b.getAttribute('data-v')==='__own')?'':'none'; } };
   }));
   const val=k=>{ const b=card.querySelector('.mk-g[data-k="'+k+'"] button.on'); return b?b.getAttribute('data-v'):null; };
   const go2=el('button','btn primary','이 선수로 시작');
@@ -22556,7 +22586,13 @@ function renderMake(){
     const nm=String((card.querySelector('#mk-nm')||{}).value||'').trim().replace(/[<>&"']/g,'');
     if(nm.length<2){ toast('이름을 두 글자 이상 적어라'); return; }
     let no=parseInt((card.querySelector('#mk-no')||{}).value,10); if(!(no>=0&&no<=99)) no=7;
-    CUSTOM_PENDING={name:nm, no, born:+val('born')||2000, school:val('school')||'군포고',
+    let school=val('school')||'군포고';
+    if(school==='__own'){
+      school=String((card.querySelector('#mk-sch')||{}).value||'').trim().replace(/[<>&"'\s]/g,'');
+      if(school.length<2){ toast('학교 이름을 적어라'); return; }
+      if(!/고$|고등학교$/.test(school)) school+='고';
+    }
+    CUSTOM_PENDING={name:nm, no, born:+val('born')||2000, school,
       throws:val('throws')||'R', bats:val('bats')||'R', pos:val('pos')||'SS'};
     MYID=CUSTOM_ID;
     TEAMS=buildAllTeams(); TBYID={}; TEAMS.forEach(t=>TBYID[t.id]=t); buildPitcherPool();
