@@ -3145,6 +3145,59 @@ html.land body{padding-left:env(safe-area-inset-left,0px);padding-right:env(safe
 html.land .tabbar,html.land #updbar{left:env(safe-area-inset-left,0px);right:env(safe-area-inset-right,0px)}
 html.land #decision.sheet,html.land .ps-ov,html.land .ch-ov,html.land .rk-ov,html.land .pt-ov,
 html.land .pp-ov,html.land #sheet{left:env(safe-area-inset-left,0px)!important;right:env(safe-area-inset-right,0px)!important}
+
+/* ---- v3.36.0 프로 연봉 · 신인 드래프트 중계 ----
+   [버그 이력] dr-·pd-·rk- 는 고교 드래프트·선수 상세가 이미 쓴다. 이름을 kd-(KBO 드래프트)로 갈랐다 */
+.pf-capbar{position:relative;height:9px;border-radius:5px;background:#232a33;overflow:hidden;margin:6px 0 4px}
+.pf-capbar i{position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,#3d8b5a,#c9a227);border-radius:5px}
+.pf-capbar i.over{background:linear-gradient(90deg,#c9a227,#d6453d)}
+.pf-capbar u{position:absolute;top:0;width:2px;height:100%;background:#8fa3b8;text-decoration:none}
+.pf-capt{font-size:11.5px;margin:0 0 6px}
+.pf-tabs{margin:2px 0 10px}
+.pf-sub{font-size:11px;letter-spacing:.08em;color:var(--gold);font-weight:800;margin:12px 0 4px}
+.pf-rrow{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:1px 8px;padding:6px 2px;border-bottom:1px solid var(--line);font-size:12.5px}
+.pf-rrow.me{background:rgba(255,106,61,.10);border-radius:6px}
+.pf-rn{font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pf-rp{grid-column:1;grid-row:2;font-size:11px;color:var(--dim)}
+.pf-rs{grid-column:2;grid-row:1/3;text-align:right;font-size:12px;white-space:nowrap}
+.pf-rt{grid-column:2;font-size:10.5px;color:var(--dim);text-align:right}
+.pf-rt.up{color:#6fcf8a}.pf-rt.dn{color:#e0706a}
+.pf-mv{grid-column:3;grid-row:1/3;font:inherit;font-size:11px;font-weight:800;color:var(--ink);background:#1b222b;border:1px solid #2f3945;border-radius:8px;padding:5px 9px;cursor:pointer}
+.pf-myrow{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px}
+.pf-myrow span{color:var(--dim)}
+.pf-myrow.big b{font-size:22px;font-weight:900;color:var(--gold)}
+.pf-msg{font-size:12.5px;line-height:1.55;background:#151a21;border-left:3px solid var(--gold);padding:8px 10px;border-radius:6px;margin:8px 0}
+.pf-opt.ours{border-color:#3c5a7a}
+.kd-hd .muted b{color:var(--gold)}
+.kd-spot{min-height:0;margin:0 0 10px}
+.kd-card{border-radius:14px;padding:12px 14px;background:linear-gradient(135deg,#1a2230,#10151c);border:1px solid #2a3442;text-align:center}
+.kd-card.mine{background:linear-gradient(135deg,var(--pt,#ff6a3d),#7a2a14);border-color:transparent}
+.kd-card.pop{animation:kdPop .45s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes kdPop{0%{transform:scale(.86);opacity:0}100%{transform:none;opacity:1}}
+.kd-no{font-size:11px;letter-spacing:.1em;color:var(--dim);font-weight:800}
+.kd-card.mine .kd-no,.kd-card.mine .kd-sc{color:#ffe9df}
+.kd-tm{font-size:13px;font-weight:800;margin-top:4px}
+.kd-nm{font-size:24px;font-weight:900;margin:4px 0 2px;color:#fff}
+.kd-sc{font-size:12px;color:#b8c2cf}
+.kd-board{max-height:34vh;overflow:auto;display:flex;flex-direction:column;gap:3px}
+.kd-bh{font-size:11px;font-weight:800;color:var(--dim);margin-bottom:4px}
+.kd-row{display:grid;grid-template-columns:48px auto 1fr;align-items:baseline;gap:1px 7px;padding:6px 8px;border-radius:9px;background:var(--panel2);font-size:12.5px}
+.kd-row u{text-decoration:none;font-size:10.5px;font-weight:800;color:var(--dim)}
+.kd-row b{min-width:0}
+.kd-row i{grid-column:2/4;font-style:normal;font-size:11px;color:#b8c2cf}
+.kd-row.mine{background:rgba(255,106,61,.18)}
+.kd-row.mine u{color:#ffcdb8}
+.kd-chip{font-style:normal;display:inline-block;font-size:10.5px;font-weight:900;color:#fff;padding:1px 6px;border-radius:5px;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.kd-our .card-h{color:var(--gold)}
+.kd-flt{display:flex;gap:5px;margin:6px 0 8px;flex-wrap:wrap}
+.kd-flt button{font:inherit;font-size:12px;font-weight:800;color:var(--dim);background:#151a21;border:1px solid #2a323d;border-radius:999px;padding:5px 12px;cursor:pointer}
+.kd-flt button.on{color:#0e0f11;background:var(--gold);border-color:var(--gold)}
+.kd-cand b em{font-style:normal;font-weight:600;font-size:11.5px;color:var(--dim)}
+.kd-cand span b{display:inline;font-size:inherit;color:var(--gold)}
+.kd-cand{padding:7px 10px;margin:4px 0}
+@media (min-width:600px){ .kd-our .kd-cand{display:inline-block;width:calc(50% - 4px);vertical-align:top;margin:3px 0}
+  .kd-our .kd-cand:nth-of-type(odd){margin-right:8px} }
+.kd-ctl{display:flex;flex-direction:column;gap:7px;margin:10px 0}
 </style>
 <div id="lock">
   <div class="lock-box">
@@ -9235,8 +9288,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.35.0';
-const APP_VERSION_NOTE = '고교는 간절하게, 프로는 중계처럼';
+const APP_VERSION = '3.36.0';
+const APP_VERSION_NOTE = 'KBO 연봉 · 신인 드래프트 중계';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9257,6 +9310,16 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.36.0', t:'KBO 연봉 · 신인 드래프트 중계', items:[
+    '<b>연봉이 생겼다 — KBO 규정 그대로.</b> FA 계약한 사람은 계약 해를 채우고, 나머지는 겨울마다 성적대로 재계약한다. 최저연봉 2026 3,000만 · 2027~ 3,300만',
+    '<b>나도 선수 겸 프런트다.</b> 겨울에 구단이 내 연봉을 제시한다 — 도장 · 버티기 · 연봉조정 신청 중에 고른다. 1군 8시즌을 채우면 내 FA — 세 구단 조건을 보고 고른다(다른 구단을 고르면 그리로 간다)',
+    '<b>샐러리캡(경쟁균형세).</b> 외국인 · 신인 빼고 상위 40명 합. 넘으면 초과분 50%, 2년 연속이면 100% + 1라운드 지명권 9단계 하락. 2027~ 하한도 있고 프랜차이즈 스타 한 명은 절반만 계산',
+    '<b>FA 등급 A·B·C</b>(외국인 빼고 연봉 순위) · 보상 — A 200%+보상선수(20인 보호 밖) 또는 300% · B 100%+보상선수(25인 밖) 또는 200% · C 150%',
+    '<b>신인 드래프트 중계.</b> 11라운드 · 전년도 순위 역순. 다른 구단 지명이 한 명씩 호명되고, 우리 차례에서 멈춘다. 뽑은 사람은 전원 2군에서 시작',
+    '<b>스카우트 리포트 — 현재 · 잠재가 범위로 나온다.</b> 진짜 값은 늘 그 범위 안에 있다. 스카우트진 ★1 은 19칸, ★5 는 5칸. 뽑고 나면 현재는 바로 보이고 잠재는 해마다 좁혀진다',
+    '2차 드래프트 보호 35인(1~3년차 · 외국인 · 올해 FA 자동 제외) · 선수단 화면에서 1군 등록 · 말소',
+    '메인 화면 캐릭터가 이제 앞을 본다 — 홈플레이트 한가운데 뒤돌아 서 있던 걸 옆으로 비켜 세웠다. 프로에선 위 띠에 내 연봉이 나온다',
+  ]},
   {v:'3.35.0', t:'고교는 간절하게, 프로는 중계처럼', items:[
     '<b>프로 — 타석(내 투구)이 시작되면 TV 중계 하단 자막이 들어온다.</b> 팀 색 띠 · 등번호 · 이름 · 시즌 성적 · 오늘 성적, 그리고 캐스터 한마디(첫 타석 · 멀티히트 · 무안타 · 투구 수에 따라 다르다)',
     '<b>고교 — 내 타석마다 응원석이 운다.</b> 고3 대회와 고교 마지막 경기는 시작할 때 「지면 끝이다 — 마지막 여름」 띠가 한 번 지나간다',
@@ -16501,8 +16564,20 @@ function pfResolveTradeReq(){
   pfLog('트레이드 요청 성사 — '+proName(from)+' → '+proName(to));
   return to;
 }
+/* 내 FA 이적 — 도장 찍은 구단으로 옮긴다. 장부(현금·시설·스카우트)는 새 구단 것으로 */
+function pfResolveFAMove(){
+  const to=ST.pro.faMove; if(!to) return null;
+  ST.pro.faMove=null;
+  const from=ST.pro.team; if(to===from) return null;
+  ST.pro.team=to;
+  const F=pfState(); F.cash=null; F.fac=null; F.scout=null; F.collab=null; F.protect=null; pfState();
+  proNews('이적', nameOf(ST.playerId||MYID)+', FA로 '+proName(from)+'에서 '+proName(to)+'로');
+  pfLog('FA 이적 — '+proName(from)+' → '+proName(to));
+  return to;
+}
 function proNextYear(){
   pfWinterAuto();
+  try{ pfResolveFAMove(); }catch(e){}
   try{ pfResolveTradeReq(); }catch(e){}
   ST.pro.year++;
   ST.seasonNo=(ST.seasonNo||1)+1;
@@ -16742,32 +16817,54 @@ function ntCard(c, rec){
    [요청] "우린 프런트야 ㅇㅋ?" — 구단 기조대로 드래프트·FA · 부유함 · 2군 시설 ·
            유니폼 콜라보 같은 상업 수익으로 FA 자금 · FA 등급별 보상 · 2년마다
            2차 드래프트(보호선수) · 트레이드 · 프로 드래프트는 내가 지명
+   [요청 v3.36.0] "연봉시스템 넣긴해야해 — fa인 선수들은 계약 채우고 아닌 선수들은
+           1년마다 재계약 · 프런트겸 선수 · 실제 kbo 룰로 가자고 mlb룰 말고"
 
-   돈은 **억 원**으로 센다(사회인 쪽 운영비는 만 원이라 따로 논다).
-     금고 시작 = 재정★×60+40 · 매주 관중 수입(관중★) + 콜라보 − 운영비
-     시즌 끝 모기업 지원(재정★) + 가을야구 보너스
-   선수 이동(트레이드 · FA · 보상선수 · 2차 드래프트 · 신인)은 moves 에 **선수를
-   통째로** 적는다. 구단 명단은 파일 상수에서 매번 새로 만들어지니, 만들 때마다
-   pfApplyMoves 가 다시 옮긴다. 명단이 바뀌어도(순서가 달라져도) 안 깨지게
-   번호가 아니라 id·이름으로 찾는다.
-   [주의] 나(내 선수)는 어떤 이동에도 안 끼운다 — 트레이드 요청은 따로다.     */
+   ── 실제 KBO 규정 (2026-09 기준으로 확인한 것) ──
+     최저연봉        2026 3,000만 → 2027 부터 3,300만 (2026-01 이사회 의결)
+     샐러리캡(경쟁균형세) 상위 40명 합계 — 2026 143억9723만 · 2027 151억1709만 · 2028 158억7294만
+                    초과하면 초과분 50% 제재금(연속이면 100% + 다음 드래프트 1라운드 9단계 하락)
+     샐러리캡 하한   2027 도입 60억6538만 — 못 채우면 모자란 만큼 낸다
+     프랜차이즈 스타  2027 부터 한 명은 연봉의 50% 만 캡에 잡힌다(한국판 래리 버드 룰)
+     FA 자격         고졸 8시즌 · 대졸 7시즌(1군 145일 등록 = 1시즌). 재자격은 4시즌 뒤
+     FA 등급·보상    A 직전 연봉 200% + 보호 20인 외 1명, 또는 300%
+                    B 100% + 보호 25인 외 1명, 또는 200%     C 150% 만
+                    등급은 연봉 순위(구단 3위·리그 30위 안 A · 구단 10위·리그 60위 안 B).
+                    만 35세 이상 신규 FA 는 C
+     2차 드래프트     2년마다 · 보호 35명 · 입단 1~3년차 · 외국인 · 당해 FA 자동 제외 ·
+                    양도금 1R 4억 · 2R 3억 · 3R 2억
+     신인 드래프트    11라운드 · 전년도 순위 역순(뱀 모양 아님)
+     외국인           신규 100만 달러 · 아시아쿼터 20만 달러 상한
+   게임으로 줄인 것(규정이 아니라 단순화다):
+     · 1군 145일 = 그 해 나이로 셈(고졸 가정: 만 19세 입단 → 27세 시즌 끝 FA)
+     · 재자격 FA 는 B 로 친다 · 비FA 다년계약은 없다
+     · 2029 년 뒤 캡·하한은 해마다 5% 오른다고 본다
+
+   돈 단위 — 연봉은 **만 원**, 구단 금고는 **억 원**.
+   선수 이동(트레이드 · FA · 보상선수 · 2차 드래프트 · 신인 · 1군↔2군)은 moves 에
+   **선수를 통째로** 적는다. 구단 명단은 파일 상수에서 매번 새로 만들어지니, 만들 때마다
+   pfApplyMoves 가 다시 옮긴다. 명단이 바뀌어도 안 깨지게 id·이름으로 찾는다.
+   [주의] 나(내 선수)는 어떤 이동에도 안 끼운다 — 트레이드 요청 · 내 FA 는 따로다.     */
 function pfState(){
   const P=ST.pro; if(!P) return null;
   if(!P.front) P.front={};
   const F=P.front, ph=proPhil(P.team);
-  if(F.cash==null) F.cash=ph.wealth*60+40;
+  if(F.cash==null) F.cash=ph.wealth*25+40;
   if(F.fac==null) F.fac=ph.farm;
+  if(F.scout==null) F.scout=Math.max(1,Math.min(5,Math.round((ph.wealth+ph.farm)/2)));
   ['moves','log'].forEach(k=>{ if(!Array.isArray(F[k])) F[k]=[]; });
+  ['con','rep'].forEach(k=>{ if(!F[k]||typeof F[k]!=='object') F[k]={}; });
   return F;
 }
-function pfLog(t){ const F=pfState(); if(!F) return; F.log.unshift({year:ST.pro.year, round:ST.round||0, t}); F.log=F.log.slice(0,40); }
+function pfLog(t){ const F=pfState(); if(!F) return; F.log.unshift({year:ST.pro.year, round:ST.round||0, t}); F.log=F.log.slice(0,60); }
 function pfIdOf(key){ return key===ST.pro.team ? 'wwzw' : 'p_'+key; }
-/* 나이 — KBO 선수 데이터에 없다. id 로 21~35 를 고정하고 해마다 먹는다. 나는 진짜 나이 */
+/* 나이 — 2026-09-28 명단에는 나이(proAge, 2026 시즌 기준)가 있다. 없으면 id 로 고정해서 뽑는다 */
 function pfAge(p){
-  const me=ST.playerId||MYID;
-  if(p.id===me){ const b=(META[me]&&META[me].born)||2000; return (ST.pro.year||2027)-b; }
-  if(p.age) return p.age+((ST.pro.year||2027)-(p.ageYear||2027));
-  return 21+(clayHash(String(p.id))%15)+((ST.pro.year||2027)-2027);
+  const me=ST.playerId||MYID, y=(ST.pro&&ST.pro.year)||2027;
+  if(p.id===me){ const b=(META[me]&&META[me].born)||2000; return y-b; }
+  if(p.age) return p.age+(y-(p.ageYear||2027));
+  if(p.proAge) return p.proAge+(y-2026);
+  return 21+(clayHash(String(p.id))%15)+(y-2027);
 }
 function pfIsPit(p){ return p && p.stf!=null && p.con==null; }
 function pfValue(p){
@@ -16775,33 +16872,56 @@ function pfValue(p){
   if(pfIsPit(p)) return Math.round(p.stf*1.1+p.ctl+(p.sta||40)*0.25);
   return Math.round(p.con+p.pow*0.9+p.eye*0.7+(p.def||40)*0.45+(p.spd||40)*0.3);
 }
+/* 20~80 스카우팅 눈금 — 스카우트 리포트 · 성장에 쓴다 */
+function pfGrade(p){ return Math.round(clamp(pfValue(p)/(pfIsPit(p)?2.35:3.3),15,90)); }
+/* ---- 규정 숫자 ---- */
+function kboMinSal(y){ return (y||ST.pro.year)>=2027?3300:3000; }
+function kboCap(y){ const T={2026:1439723,2027:1511709,2028:1587294}; y=y||ST.pro.year;
+  return T[y]||Math.round(1587294*Math.pow(1.05,Math.max(0,y-2028))); }
+function kboFloor(y){ y=y||ST.pro.year; return y<2027?0:Math.round(606538*Math.pow(1.05,Math.max(0,y-2027))); }
+function wonStr2(m){ m=Math.round(m||0); if(m>=10000){ const e=Math.floor(m/10000), r=m%10000; return e+'억'+(r?(' '+r.toLocaleString()+'만'):''); } return m.toLocaleString()+'만'; }
+/* ---- 2군 명단 — PRO_FARM(9/20 퓨처스 등록). 엔진은 안 쓴다(t.farm 은 경기에 안 나간다) ---- */
+function pfBuildFarm(t){
+  if(!t||t.farm) return;
+  t.farm=[];
+  const key=t.proKey, d=(typeof PRO_FARM!=='undefined')?PRO_FARM[key]:null; if(!d) return;
+  const rng=makeRng((clayHash(String(key))*31+7)>>>0);
+  (d.hit||[]).forEach((h,i)=>{ const r=proHitR(h,rng);
+    t.farm.push({id:t.id+'_f'+i, name:h[0], no:h[1], bats:h[3]==='S'?'L':h[3], con:r.con,pow:r.pow,eye:r.eye,spd:r.spd,def:r.def,arm:r.arm,
+      pos:[h[2]==='DH'?'1B':h[2]], pitch:null, real:null, pro:true, proAge:h[10]||null, farm:true}); });
+  (d.pit||[]).forEach((q,i)=>{ const r=proPitR(q);
+    t.farm.push({id:t.id+'_fp'+i, name:q[0], no:q[1], throws:q[2], role:q[3], stf:r.stf, ctl:r.ctl, sta:r.sta, era:q[4], proAge:q[10]||null, farm:true}); });
+}
+function pfAll(t){ return [].concat(t.players||[], t.pitchers||[], t.farm||[]).filter((p,i,a)=>a.findIndex(q=>q.id===p.id)===i); }
+function pfIsForeign(p, key){
+  try{ const F=PRO_FOREIGN[key]; if(!F) return null; const x=(F.now||[]).find(z=>z[0]===p.name); return x?x[3]:null; }catch(e){ return null; }
+}
 /* 선수를 옮긴다 — 지금 판(TEAMS)에도 바로 반영하고, 세이브(moves)에도 적는다.
-   toKey 가 null 이면 방출(어디에도 안 간다) */
-function pfMove(p, fromKey, toKey, why){
+   toKey 가 null 이면 방출. slot '2군' 이면 2군 명단으로 간다 */
+function pfMove(p, fromKey, toKey, why, slot){
   const F=pfState(), me=ST.playerId||MYID;
   if(!p||p.id===me) return false;
-  const snap=JSON.parse(JSON.stringify(p)); delete snap._orig; delete snap._origNo;
+  const snap=JSON.parse(JSON.stringify(p)); delete snap._orig; delete snap._origNo; delete snap.farm;
   if(snap.age==null){ snap.age=pfAge(p); snap.ageYear=ST.pro.year; }
-  F.moves.push({snap, from:fromKey, to:toKey, why:why||'', year:ST.pro.year});
+  F.moves.push({snap, from:fromKey, to:toKey, why:why||'', year:ST.pro.year, slot:slot||'1군'});
   pfApplyMoves(TEAMS, [F.moves[F.moves.length-1]]);
   try{ const t=TBYID[pfIdOf(toKey)]; if(t&&t.id==='wwzw'){ pfFillPlayer(snap.id); } }catch(e){}
   return true;
 }
 function pfApplyMoves(teams, only){
+  (teams||[]).forEach(t=>{ try{ pfBuildFarm(t); }catch(e){} });
   const F=ST&&ST.pro&&ST.pro.front; if(!F) return;
   const list=only||F.moves||[];
   const byId={}; (teams||[]).forEach(t=>byId[t.id]=t);
   list.forEach(m=>{
     const s=m.snap, isP=pfIsPit(s);
     const from=m.from?byId[pfIdOf(m.from)]:null, to=m.to?byId[pfIdOf(m.to)]:null;
-    const rm=(t)=>{ if(!t) return; ['players','pitchers'].forEach(k=>{
-      const i=(t[k]||[]).findIndex(x=>x.id===s.id || (x.name===s.name && x.no===s.no && !x.custom));
-      if(i>=0) t[k].splice(i,1); }); };
-    /* 같은 사람이 두 번 옮겨질 수 있다(FA 로 왔다가 트레이드로 나간다) — 어디서든 한 번 빼고 넣는다 */
-    (teams||[]).forEach(t=>{ if(t!==from) ['players','pitchers'].forEach(k=>{
-      const i=(t[k]||[]).findIndex(x=>x.id===s.id); if(i>=0) t[k].splice(i,1); }); });
-    rm(from);
-    if(to){ const o=JSON.parse(JSON.stringify(s)); (isP?to.pitchers:to.players).push(o); }
+    /* 어디 있든 한 번 빼고(같은 사람이 여러 번 옮겨질 수 있다) 새 자리에 넣는다 */
+    (teams||[]).forEach(t=>['players','pitchers','farm'].forEach(k=>{
+      const i=(t[k]||[]).findIndex(x=>x.id===s.id || (t===from && x.name===s.name && x.no===s.no && !x.custom));
+      if(i>=0) t[k].splice(i,1); }));
+    if(to){ const o=JSON.parse(JSON.stringify(s));
+      if(m.slot==='2군'){ o.farm=true; to.farm.push(o); } else (isP?to.pitchers:to.players).push(o); }
   });
   (teams||[]).forEach(t=>{ try{ finalizeTeam(t); }catch(e){} });
 }
@@ -16812,114 +16932,271 @@ function pfFillPlayer(id){
     if(ST.lgBat&&!ST.lgBat[id]) ST.lgBat[id]=blankBat(); if(ST.lgPit&&!ST.lgPit[id]) ST.lgPit[id]=blankPit(); }catch(e){}
   try{ buildPitcherPool(); }catch(e){}
 }
+function pfFind(id){ for(const t of TEAMS){ const p=pfAll(t).find(x=>x.id===id); if(p) return {p,t}; } return null; }
+
+/* ================= 계약 · 연봉 =================
+   계약 {sal:만원, type:'fa'|'annual'|'rookie'|'foreign', left:남은 해(올해 포함), svc:뛴 시즌, fa:FA 몇 번}
+   세이브에는 **바뀐 사람만**(F.con) 남긴다. 나머지는 나이·가치에서 해마다 같은 값이 나온다 */
+let PF_PCT=null, PF_PCT_Y=null;
+function pfPct(p){
+  const y=ST.pro.year;
+  if(!PF_PCT||PF_PCT_Y!==y){ PF_PCT=TEAMS.reduce((a,t)=>a.concat([].concat(t.players||[],t.pitchers||[]).map(pfValue)),[]).sort((a,b)=>a-b); PF_PCT_Y=y; }
+  const v=pfValue(p), A=PF_PCT; if(!A.length) return 0.5;
+  let lo=0,hi=A.length; while(lo<hi){ const m=(lo+hi)>>1; if(A[m]<v) lo=m+1; else hi=m; }
+  return lo/A.length;
+}
+function pfFASal(pct, age){          // FA 한 해 몸값(만원) — 1억 ~ 26억
+  const a=age>=34?0.6:(age>=32?0.8:1);
+  return Math.round((10000+Math.pow(pct,3)*250000)*a/100)*100;
+}
+function pfCon(p, key){
+  const F=pfState(), me=ST.playerId||MYID;
+  if(F.con[p.id]) return F.con[p.id];
+  if(p.id===me) return F.con[me]=pfMyStartCon();
+  const y=ST.pro.year, h=clayHash(String(p.id)), age=pfAge(p);
+  const fr=pfIsForeign(p, key);
+  if(fr) return {sal:fr==='아시아쿼터'?Math.min(28000,18000+(h%10)*1000):Math.round((70000+pfPct(p)*110000)/1000)*1000, type:'foreign', left:1, svc:0, fa:0, gen:true};
+  if(p.rookie) return {sal:kboMinSal(y), type:'rookie', left:1, svc:Math.max(0,y-(p.draftYear||y)), fa:0, gen:true};
+  if(p.farm && age<=24) return {sal:kboMinSal(y)+(h%6)*500, type:'annual', left:1, svc:Math.max(0,age-19), fa:0, gen:true};
+  const svc=Math.max(0,age-19), pct=pfPct(p);
+  /* [손봄 v3.36.0] 처음엔 8시즌 넘은 사람을 전부 FA 계약으로 깔았더니 구단 상위 40명 합이 240억 —
+     샐러리캡(143억)의 1.7배였다. 실제로 FA 를 선언해서 큰 계약을 하는 건 주전급뿐이다.
+     벤치 베테랑은 FA 자격이 있어도 연봉 재계약으로 남는다 */
+  if(svc>=8 && pct>=0.5){
+    /* 이미 한 번 FA 를 한 사람 — 2027 시즌에 남은 해가 1~4 년. 해가 갈수록 줄고 0 이면 이번 겨울 FA.
+       연봉은 총액에서 계약금을 뺀 몫이다 — 「4년 80억, 계약금 34억」 이면 한 해 11.5억.
+       (0.65 로 뒀더니 구단 셋이 샐러리캡을 넘었다. 실제로 넘는 구단은 한 해 한둘이다) */
+    const left0=1+(h%4), left=left0-(y-2027), sal=Math.round(pfFASal(pct, age)*0.58/100)*100;
+    if(left>=1) return {sal, type:'fa', left, svc, fa:1+(age>=33?1:0), gen:true};
+    return {sal, type:'fa', left:0, svc, fa:1, gen:true};
+  }
+  /* 연봉 재계약 — 7년차 주전은 6~11억까지 오른다(A 등급 FA 가 여기서 나온다) */
+  const sv=Math.min(svc,7), old=svc>7?Math.max(0.5,1-(svc-7)*0.06):1;
+  const sal=Math.max(kboMinSal(y), Math.round((kboMinSal(y)+Math.pow(pct,2.4)*110000*(0.3+sv*0.1)*old)/100)*100);
+  return {sal, type:'annual', left:1, svc, fa:0, gen:true};
+}
+/* 내 계약 — 드래프트 순번 계약금 + 첫해 최저연봉 */
+function pfMyStartCon(){ return {sal:kboMinSal(ST.pro.year), type:'rookie', left:1, svc:0, fa:0, bonus:pfBonusOf(ST.pro.round||5, ST.pro.pick||5)}; }
+function pfSetCon(id, c){ const F=pfState(); const o=Object.assign({},c); delete o.gen; F.con[id]=o; return o; }
+/* 신인 계약금(만원) — 1R 1순위 5억 · 1R 1.5~3.5억 · 2R 1억 안팎 · 뒤로 갈수록 3천까지 */
+function pfBonusOf(round, pick){
+  if(round<=1) return pick<=1?50000:Math.round(35000-(pick-2)*2500);
+  const T={2:11000,3:9000,4:7000,5:6000,6:5000,7:4000,8:3500,9:3000,10:3000,11:3000};
+  return T[round]||3000;
+}
+/* 상위 40명 합계(외국인 · 신인 제외) — 프랜차이즈 스타 한 명은 절반만(2027~) */
+function pfPayroll(){
+  const us=TBYID.wwzw; const all=pfAll(us);
+  const cons=all.map(p=>({p, c:pfCon(p,ST.pro.team)}));
+  const total=cons.reduce((s,x)=>s+x.c.sal,0);
+  /* KBO 샐러리캡은 외국인 · 신인을 빼고 상위 40명이다 */
+  const top=cons.filter(x=>x.c.type!=='foreign'&&x.c.type!=='rookie').sort((a,b)=>b.c.sal-a.c.sal).slice(0,40);
+  const fr=(ST.pro.year>=2027)?top.find(x=>x.c.type!=='foreign'):null;
+  const capSum=top.reduce((s,x)=>s+(x===fr?Math.round(x.c.sal/2):x.c.sal),0);
+  return {total, capSum, franchise:fr?fr.p:null, n:all.length, cons};
+}
 /* ---- 돈 ---- */
 const PF_COLLABS=[
   {id:'toon', name:'웹툰 콜라보 유니폼', cost:5,  rev:1.1, line:'인기 웹툰 주인공이 가슴에 붙는다. 젊은 팬이 산다'},
   {id:'cvs',  name:'편의점 컬래버 굿즈', cost:9,  rev:1.9, line:'유니폼 빵 · 삼각김밥 띠지. 전국에 깔린다'},
   {id:'game', name:'게임 캐릭터 유니폼', cost:14, rev:3.0, line:'모바일 게임과 한정판 원정 유니폼. 비싸지만 제일 잘 팔린다'},
 ];
+/* 매주 — 입장 수입(관중★) + 중계권·스폰서 + 콜라보 − 선수단 연봉(한 주치) − 운영비.
+   24주 한 시즌이라 연봉 총액 ÷ 24 가 한 주치다 */
 function pfWeek(){
   if(!isPro()) return null;
   const F=pfState(), ph=proPhil(ST.pro.team);
   const R=proRank(); const rk=R.findIndex(x=>x.id==='wwzw')+1;
-  const gate=ph.fans*1.5*(rk<=5?1.15:0.9);
+  const gate=ph.fans*1.25*(rk<=5?1.15:0.9), media=2.2;
   const col=(F.collab&&F.collab.year===ST.pro.year)?(PF_COLLABS.find(c=>c.id===F.collab.id)||{rev:0}).rev*(0.6+ph.fans*0.14):0;
-  const cost=5.2;
-  F.cash=Math.round((F.cash+gate+col-cost)*10)/10;
+  const pay=pfPayroll().total/10000/24, ops=1.2;
+  F.cash=Math.round((F.cash+gate+media+col-pay-ops)*10)/10;
+  /* 내 연봉 — 한 주치가 내 통장으로 */
+  const me=ST.playerId||MYID; const mc=pfCon({id:me},ST.pro.team);
+  ST.pro.earned=Math.round(((ST.pro.earned||0)+mc.sal/24)*10)/10;
   /* 2군 시설 — 내가 2군에 있으면 시설만큼 조금씩 는다 */
   if((ST.myFarm||0)>0 && Math.random()<0.10*F.fac){
-    const me=ST.playerId||MYID; ST.myRatings=ST.myRatings||{};
+    ST.myRatings=ST.myRatings||{};
     const p=TBYID.wwzw.players.find(x=>x.id===me);
     if(p){ const ks=['con','pow','eye','spd','def','arm']; const k=ks[(Math.random()*ks.length)|0];
       p[k]=Math.min(90,(p[k]||40)+1); ST.myRatings[k]=p[k]; return '2군 시설에서 '+({con:'컨택',pow:'파워',eye:'선구',spd:'주루',def:'수비',arm:'어깨'})[k]+'이 1 올랐다'; }
   }
   return null;
 }
+/* 시즌 끝 결산 — 모기업 지원 · 가을야구 · 샐러리캡(경쟁균형세) · 하한 */
 function pfSeasonEnd(rank){
-  const F=pfState(), ph=proPhil(ST.pro.team);
-  const sup=ph.wealth*14, bonus=rank<=5?(6-rank)*4:0;
+  const F=pfState(), ph=proPhil(ST.pro.team), y=ST.pro.year;
+  const sup=ph.wealth*28, bonus=rank<=5?(6-rank)*4:0;
   F.cash=Math.round((F.cash+sup+bonus)*10)/10;
-  pfLog('시즌 결산 — 모기업 지원 '+sup+'억'+(bonus?' · 가을야구 보너스 '+bonus+'억':''));
+  pfLog('시즌 결산 — 모기업(스폰서) 지원 '+sup+'억'+(bonus?' · 가을야구 보너스 '+bonus+'억':''));
+  const P=pfPayroll(), cap=kboCap(y), fl=kboFloor(y);
+  F.capHist=F.capHist||{};
+  if(P.capSum>cap){
+    const prevOver=!!(F.capHist[y-1]&&F.capHist[y-1].over);
+    const rate=prevOver?1.0:0.5, tax=Math.round((P.capSum-cap)*rate/100)/100;
+    F.cash=Math.round((F.cash-tax)*10)/10;
+    F.capHist[y]={over:true, tax, drop:prevOver};
+    pfLog('경쟁균형세 — 상한 '+wonStr2(cap)+' 초과 '+wonStr2(P.capSum-cap)+' · 제재금 '+tax+'억'+(prevOver?' · 2년 연속 → 다음 드래프트 1라운드 9단계 하락':''));
+    proNews('샐러리캡', proName(ST.pro.team)+', 경쟁균형세 상한 초과 — 제재금 '+tax+'억');
+  } else if(fl && P.capSum<fl){
+    const pen=Math.round((fl-P.capSum)/100)/100;
+    F.cash=Math.round((F.cash-pen)*10)/10; F.capHist[y]={over:false, under:true, pen};
+    pfLog('샐러리캡 하한 미달 — 모자란 '+pen+'억을 낸다');
+  } else F.capHist[y]={over:false};
   F.collab=null;
 }
-/* ---- FA ----
-   KBO 식 등급: 연봉(여기선 가치) 순위로 A(상위 30%) · B · C.
-     A — 보상금(몸값 20%) + 보상선수 1명(우리 보호 선수 밖에서 원 소속 구단이 고른다)
-     B — 보상금 10% + 보상선수 1명(보호 범위가 넓다 — 대개 벤치)
-     C — 보상금 15% 만. 선수는 안 간다
-   AI 구단도 기조(fa:aggressive/normal/frugal)대로 남은 FA 를 데려간다. */
-const PF_PROTECT=22;           // 1군 명단이 서른여덟 남짓(v3.33.0) — KBO 35인 보호(2군 포함 60여 명)를 비율로 줄였다
+
+/* ================= 겨울 — 연봉 재계약 · FA =================
+   비FA(annual · rookie)는 해마다 다시 계약한다 — 올해 성적이 고과다.
+   FA 계약자는 남은 해를 채운다. 계약이 끝나거나 8시즌을 채우면 FA 시장에 나온다. */
+function pfSeasonLine(p){
+  const b=(ST.lgBat&&ST.lgBat[p.id])||(ST.bat&&ST.bat[p.id])||null, q=(ST.lgPit&&ST.lgPit[p.id])||(ST.pit&&ST.pit[p.id])||null;
+  if(pfIsPit(p)){ if(!q||!q.outs) return {score:-0.1, txt:'등판 없음'};
+    const ip=q.outs/3, e=era(q); const sc=clamp((4.7-e)*0.12+Math.min(ip,150)/150*0.35-0.1,-0.35,1.1);
+    return {score:sc, txt:ipStr(q)+'이닝 평균자책 '+e.toFixed(2)}; }
+  if(!b||!b.pa) return {score:-0.1, txt:'타석 없음'};
+  const obp=(b.h+b.bb+(b.hbp||0))/Math.max(1,b.pa), slg=b.ab?((b.h-b.d2-b.d3-b.hr)+2*b.d2+3*b.d3+4*b.hr)/b.ab:0;
+  const ops=obp+slg; const sc=clamp((ops-0.700)*1.6*Math.min(1,b.pa/400)+Math.min(b.pa,500)/500*0.25-0.1,-0.35,1.1);
+  return {score:sc, txt:b.pa+'타석 OPS '+ops.toFixed(3)};
+}
+function pfRenewals(){
+  const F=pfState(), y=ST.pro.year, me=ST.playerId||MYID;
+  if(F.renew&&F.renew.year===y) return F.renew;
+  const us=TBYID.wwzw, list=[];
+  pfAll(us).forEach(p=>{
+    if(p.id===me) return;
+    const c=pfCon(p,ST.pro.team);
+    if(c.type!=='annual'&&c.type!=='rookie') return;
+    if(c.svc+1>=8 && c.type==='annual') return;            // 이번 겨울 FA 로 나간다
+    const s=pfSeasonLine(p), grow=(pfGrade(p)-45)*0.008;
+    const pct=clamp(s.score+grow, -0.30, 1.20);
+    const nw=Math.max(kboMinSal(y+1), Math.round(c.sal*(1+pct)/100)*100);
+    list.push({id:p.id, name:p.name, old:c.sal, sal:nw, txt:s.txt, pct});
+  });
+  F.renew={year:y, list, done:false};
+  return F.renew;
+}
+function pfRenewSign(){
+  const F=pfState(), R=pfRenewals(); if(R.done) return R;
+  R.list.forEach(x=>{ const f=pfFind(x.id); if(!f) return; const c=pfCon(f.p,ST.pro.team);
+    pfSetCon(x.id, Object.assign({},c,{sal:x.sal, type:(c.type==='rookie'&&c.svc>=2)?'annual':c.type, left:1})); });
+  R.done=true;
+  const tot=R.list.reduce((s,x)=>s+(x.sal-x.old),0);
+  pfLog('연봉 재계약 '+R.list.length+'명 — 총 '+(tot>=0?'+':'')+wonStr2(tot));
+  return R;
+}
+/* ---- FA ---- */
+function pfFAGrade(p, t, c){
+  const age=pfAge(p);
+  if(c.fa===0 && age>=35) return 'C';
+  const sal=c.sal;
+  /* 등급 산정 연봉 순위에서 외국인은 뺀다 — 구단 안에서도 리그 전체에서도 */
+  const teamRank=pfAll(t).map(q=>pfCon(q,proKeyOf(t.id))).filter(x=>x.type!=='foreign'&&x.sal>sal).length+1;
+  const lg=TEAMS.reduce((n,tt)=>n+pfAll(tt).filter(q=>pfCon(q,proKeyOf(tt.id)).type!=='foreign'&&pfCon(q,proKeyOf(tt.id)).sal>sal).length,0)+1;
+  let g=(teamRank<=3&&lg<=30)?'A':((teamRank<=10&&lg<=60)?'B':'C');
+  if(c.fa>=1 && g==='A') g='B';            // 재자격 — 게임 단순화
+  return g;
+}
 function pfFAOpen(){
-  const F=pfState(), y=ST.pro.year;
+  const F=pfState(), y=ST.pro.year, me=ST.playerId||MYID;
   if(F.fa&&F.fa.year===y) return F.fa;
-  const all=[];
-  TEAMS.filter(t=>t.id!=='wwzw').forEach(t=>{
-    [].concat(t.players,t.pitchers).forEach(p=>{ if(pfAge(p)>=29) all.push({p,t,v:pfValue(p)}); }); });
-  all.sort((a,b)=>b.v-a.v);
-  const rng=makeRng(((ST.seed||1)*131+y*17)>>>0);
-  /* 등급은 FA 자격자(29세 이상) 안에서 가치 순위로 — 상위 25% A · 다음 35% B · 나머지 C.
-     [처음 짜보니] 리그 전체로 자르니 신인·유망주가 바닥을 채워서 FA 가 전부 A 였다 */
-  const vals=all.map(x=>x.v);
-  const cutA=vals[Math.floor(vals.length*0.25)]||0, cutB=vals[Math.floor(vals.length*0.60)]||0;
-  const pool=all.filter(()=>rng()<0.2).slice(0,10);
-  F.fa={year:y, list:pool.map(({p,t,v})=>{
-    const g=v>=cutA?'A':(v>=cutB?'B':'C');
-    const price=Math.round((g==='A'?60+(v-cutA)*1.4:(g==='B'?24+(v-cutB)*0.9:8+v*0.05))*(0.9+rng()*0.25));
-    return {id:p.id, name:p.name, from:proKeyOf(t.id), grade:g, price, v, pit:pfIsPit(p), age:pfAge(p), done:null};
-  })};
+  const list=[];
+  TEAMS.forEach(t=>{
+    const key=proKeyOf(t.id);
+    pfAll(t).forEach(p=>{
+      if(p.id===me) return;
+      const c=pfCon(p,key); if(c.type==='foreign'||c.type==='rookie') return;
+      const newFA = (c.type==='annual' && c.svc+1>=8);
+      const expire= (c.type==='fa' && c.left<=1);
+      if(!newFA && !expire) return;
+      const age=pfAge(p)+1, g=pfFAGrade(p,t,c);
+      const yrs=age<=30?4:(age<=32?3:(age<=34?2:1));
+      const per=pfFASal(pfPct(p), age);
+      list.push({id:p.id, name:p.name, from:key, grade:g, yrs, total:Math.round(per*yrs/1000)*1000, last:c.sal,
+        v:pfValue(p), pit:pfIsPit(p), age, ours:t.id==='wwzw', done:null});
+    });
+  });
+  list.sort((a,b)=>b.total-a.total);
+  F.fa={year:y, list:list.slice(0,24)};
   return F.fa;
 }
-function pfFind(id){ for(const t of TEAMS){ const p=[].concat(t.players||[],t.pitchers||[]).find(x=>x.id===id); if(p) return {p,t}; } return null; }
-function pfProtected(){
+/* 보호명단 — n 명. 나는 자동 보호. 직접 고른 게(F.protect) 있으면 그걸 먼저 */
+function pfProtected(n){
   const F=pfState(), me=ST.playerId||MYID, us=TBYID.wwzw;
-  const all=[].concat(us.players,us.pitchers).filter(p=>p.id!==me);
-  if(Array.isArray(F.protect)&&F.protect.length) return new Set(F.protect.concat([me]));
-  const top=all.slice().sort((a,b)=>pfValue(b)-pfValue(a)).slice(0,PF_PROTECT).map(p=>p.id);
-  return new Set(top.concat([me]));
+  const all=pfAll(us).filter(p=>p.id!==me).sort((a,b)=>pfValue(b)-pfValue(a));
+  const mine=(Array.isArray(F.protect)?F.protect:[]).filter(id=>all.some(p=>p.id===id));
+  const out=mine.slice(0,n);
+  all.forEach(p=>{ if(out.length<n && !out.includes(p.id)) out.push(p.id); });
+  return new Set(out.concat([me]));
+}
+/* 원 소속 구단이 보상을 고른다 — 쓸 만한 사람이 있으면 선수+돈, 없으면 돈만 */
+function pfCompPick(fromTeam, toTeam, grade, faId){
+  const n=grade==='A'?20:25;
+  const prot=(toTeam.id==='wwzw')?pfProtected(n):new Set(pfAll(toTeam).slice().sort((a,b)=>pfValue(b)-pfValue(a)).slice(0,n).map(p=>p.id));
+  const cand=pfAll(toTeam).filter(p=>!prot.has(p.id)&&p.id!==faId&&pfCon(p,proKeyOf(toTeam.id)).type!=='foreign'&&!p.rookie)
+    .sort((a,b)=>pfValue(b)-pfValue(a));
+  const best=cand[0]||null;
+  const med=pfAll(fromTeam).map(pfValue).sort((a,b)=>a-b); const mid=med[Math.floor(med.length*0.5)]||0;
+  return (best && pfValue(best)>=mid) ? best : null;
+}
+function pfFAComp(x, toKey){
+  const fromT=TBYID[pfIdOf(x.from)], toT=TBYID[pfIdOf(toKey)];
+  if(x.grade==='C') return {money:Math.round(x.last*1.5), player:null};
+  const pl=pfCompPick(fromT,toT,x.grade,x.id);
+  if(x.grade==='A') return pl?{money:x.last*2, player:pl}:{money:x.last*3, player:null};
+  return pl?{money:x.last, player:pl}:{money:x.last*2, player:null};
+}
+function pfSignCon(id, x){
+  pfSetCon(id, {sal:Math.round(x.total*0.65/x.yrs/100)*100, type:'fa', left:x.yrs, svc:(x.age-19), fa:1+((pfCon({id},x.from).fa)||0), bonus:Math.round(x.total*0.35)});
 }
 function pfSign(id){
   const F=pfState(), fa=F.fa; if(!fa) return {ok:false, why:'FA 시장이 안 열렸다'};
   const x=fa.list.find(z=>z.id===id); if(!x||x.done) return {ok:false, why:'이미 끝났다'};
-  const comp=Math.round(x.price*(x.grade==='A'?0.20:x.grade==='B'?0.10:0.15));
-  const total=x.price+comp;
-  if(F.cash<total) return {ok:false, why:'금고가 모자라다 — '+total+'억 필요 (지금 '+F.cash+'억)'};
   const f=pfFind(id); if(!f) return {ok:false, why:'선수를 못 찾았다'};
-  F.cash=Math.round((F.cash-total)*10)/10;
-  pfMove(f.p, x.from, ST.pro.team, 'FA');
-  x.done='us';
-  let lost=null;
-  if(x.grade!=='C'){
-    /* 보상선수 — 원 소속 구단이 우리 보호 선수 밖에서 제일 좋은 사람을 데려간다 */
-    const prot=pfProtected(), us=TBYID.wwzw;
-    const cand=[].concat(us.players,us.pitchers).filter(p=>!prot.has(p.id)&&p.id!==id)
-      .sort((a,b)=>pfValue(b)-pfValue(a));
-    const pick=x.grade==='A'?cand[0]:cand[Math.min(cand.length-1,2)];
-    if(pick){ lost=pick.name; pfMove(pick, ST.pro.team, x.from, 'FA 보상선수'); }
+  const bonus=x.total*0.35/10000;
+  if(x.ours){
+    /* 우리 FA 잔류 — 보상 없음 */
+    if(F.cash<bonus) return {ok:false, why:'금고가 모자라다 — 계약금 '+bonus.toFixed(1)+'억'};
+    F.cash=Math.round((F.cash-bonus)*10)/10; pfSignCon(id,x); x.done='us';
+    pfLog('FA '+x.name+' 잔류 — '+x.yrs+'년 '+wonStr2(x.total));
+    proNews('FA', proName(ST.pro.team)+', '+x.name+'과 '+x.yrs+'년 '+wonStr2(x.total)+' 잔류 계약');
+    return {ok:true, total:x.total};
   }
-  pfLog('FA '+x.name+'('+x.grade+'등급) 영입 — '+x.price+'억 + 보상금 '+comp+'억'+(lost?' · 보상선수 '+lost+' 이적':''));
-  proNews('FA', proName(ST.pro.team)+', FA '+x.name+' 4년 '+x.price+'억', x.grade+'등급 · '+proName(x.from)+'에서 온다'+(lost?'. 보상선수로 '+lost+'이(가) 떠난다':''));
-  return {ok:true, total, comp, lost};
+  const comp=pfFAComp(x, ST.pro.team), cm=comp.money/10000;
+  if(F.cash<bonus+cm) return {ok:false, why:'금고가 모자라다 — 계약금 '+bonus.toFixed(1)+'억 + 보상금 '+cm.toFixed(1)+'억 필요 (지금 '+F.cash+'억)'};
+  F.cash=Math.round((F.cash-bonus-cm)*10)/10;
+  pfMove(f.p, x.from, ST.pro.team, 'FA'); pfSignCon(id,x); x.done='us';
+  let lost=null;
+  if(comp.player){ lost=comp.player.name; pfMove(comp.player, ST.pro.team, x.from, 'FA 보상선수'); }
+  pfLog('FA '+x.name+'('+x.grade+'등급) 영입 — '+x.yrs+'년 '+wonStr2(x.total)+' · 보상금 '+wonStr2(comp.money)+(lost?' + 보상선수 '+lost:''));
+  proNews('FA', proName(ST.pro.team)+', FA '+x.name+' '+x.yrs+'년 '+wonStr2(x.total), x.grade+'등급 · '+proName(x.from)+'에서 온다'+(lost?'. 보상선수로 '+lost+'이(가) 떠난다':''));
+  return {ok:true, total:x.total, comp:comp.money, lost};
 }
-/* 남은 FA 는 AI 가 데려간다 — 기조가 공격적인 부자 구단부터 */
+/* 남은 FA 는 AI 가 데려간다 — 기조가 공격적인 부자 구단부터. 우리 FA 를 뺏기면 보상을 받는다 */
 function pfFAClose(){
   const F=pfState(), fa=F.fa; if(!fa||fa.closed) return;
   const rng=makeRng(((ST.seed||1)*977+ST.pro.year)>>>0);
   const buyers=PRO_TEAMS.map(d=>d.key).filter(k=>k!==ST.pro.team)
     .sort((a,b)=>{ const A=proPhil(a),B=proPhil(b), w=v=>({aggressive:3,normal:2,frugal:1})[v.fa]||2;
-      return (w(B)*10+B.wealth)-(w(A)*10+A.wealth); });
+      return (w(B)*10+B.wealth)-(w(A)*10+A.wealth)+(rng()-0.5)*6; });
   fa.list.forEach(x=>{
     if(x.done) return;
-    if(rng()<0.35){ x.done='stay'; return; }           // 원 소속 팀과 재계약
+    const f=pfFind(x.id); if(!f){ x.done='stay'; return; }
+    if(rng()<0.45 || x.grade==='C'&&rng()<0.5){ x.done='stay'; pfSignCon(x.id,x); return; }     // 원 소속 팀 잔류
     const k=buyers.find(b=>b!==x.from && (proPhil(b).mode!=='rebuild'||x.age<31));
-    const f=pfFind(x.id);
-    if(k&&f){ pfMove(f.p, x.from, k, 'FA'); x.done=k; pfLog('FA '+x.name+' → '+proName(k)); }
-    else x.done='stay';
+    if(!k){ x.done='stay'; pfSignCon(x.id,x); return; }
+    const comp=pfFAComp(x,k);
+    pfMove(f.p, x.from, k, 'FA'); pfSignCon(x.id,x); x.done=k;
+    let got='';
+    if(comp.player){ pfMove(comp.player, k, x.from, 'FA 보상선수'); got=' · 보상선수 '+comp.player.name; }
+    if(x.ours){ F.cash=Math.round((F.cash+comp.money/10000)*10)/10;
+      pfLog('우리 FA '+x.name+' → '+proName(k)+' · 보상금 '+wonStr2(comp.money)+got);
+      proNews('FA', x.name+', '+proName(ST.pro.team)+' 떠나 '+proName(k)+'로 — '+x.yrs+'년 '+wonStr2(x.total)); }
+    else pfLog('FA '+x.name+' → '+proName(k)+got);
   });
   fa.closed=true;
 }
-/* ---- 트레이드 제안 (1:1) ----
-   받는 쪽 기조가 값을 매긴다 — 리빌딩 구단은 젊은 사람에 1.25배, 윈나우는 서른 넘은 즉전감에 1.15배.
-   우리가 주는 가치가 받는 가치의 95% 를 넘어야 받는다. 시즌 중 네 주에 한 번 */
+/* ---- 트레이드 제안 (1:1) ---- */
 function pfTradeAdj(p, key){
   const ph=proPhil(key), a=pfAge(p); let v=pfValue(p);
   if(ph.mode==='rebuild') v*= a<=26?1.25:(a>=31?0.8:1);
@@ -16937,22 +17214,39 @@ function pfTrade(ourId, theirId){
   F.tradeRound=ST.round||0;
   if(give<get*0.95){ pfLog('트레이드 제안 거절 — '+proName(k)+'에 '+a.p.name+' ↔ '+b.p.name);
     return {ok:false, why:proName(k)+' 쪽이 거절했다 — 「그 카드로는 안 된다」', give:Math.round(give), get:Math.round(get)}; }
-  pfMove(a.p, ST.pro.team, k, '트레이드'); pfMove(b.p, k, ST.pro.team, '트레이드');
+  const ca=pfCon(a.p,ST.pro.team), cb=pfCon(b.p,k);
+  pfMove(a.p, ST.pro.team, k, '트레이드', a.p.farm?'2군':'1군'); pfMove(b.p, k, ST.pro.team, '트레이드', b.p.farm?'2군':'1군');
+  pfSetCon(a.p.id, ca); pfSetCon(b.p.id, cb);      // 계약은 들고 간다
   pfLog('트레이드 성사 — '+a.p.name+' ↔ '+b.p.name+' ('+proName(k)+')');
-  try{ proNews&&proNews('트레이드', proName(ST.pro.team)+'·'+proName(k)+' 1:1 트레이드 — '+a.p.name+' ↔ '+b.p.name); }catch(e){}
+  try{ proNews('트레이드', proName(ST.pro.team)+'·'+proName(k)+' 1:1 트레이드 — '+a.p.name+' ↔ '+b.p.name); }catch(e){}
   return {ok:true};
 }
-/* ---- 2차 드래프트 — 2년마다(홀수 해 시즌 끝) ----
-   구단마다 PF_PROTECT 명을 묶고, 나머지에서 뽑는다. 우리는 셋까지(4억·3억·2억).
-   다른 구단도 우리 비보호에서 한 명씩 데려갈 수 있다(많아야 셋) */
+/* ---- 1군 등록 · 말소 ---- */
+function pfToFarm(id){ const f=pfFind(id); if(!f||f.t.id!=='wwzw'||f.p.farm) return false;
+  pfMove(f.p, ST.pro.team, ST.pro.team, '말소', '2군'); return true; }
+function pfToFirst(id){ const f=pfFind(id); if(!f||f.t.id!=='wwzw'||!f.p.farm) return false;
+  pfMove(f.p, ST.pro.team, ST.pro.team, '등록', '1군'); return true; }
+
+/* ---- 2차 드래프트 — 2년마다(홀수 해 시즌 끝) · 보호 35 · 입단 1~3년차 · 외국인 · 당해 FA 자동 제외 ---- */
+const PF_D2_PROTECT=35;
 function pfD2Year(y){ return (y%2)===1; }
+function pfD2Exempt(p, key){
+  const c=pfCon(p,key);
+  if(c.type==='foreign') return true;
+  if(p.rookie && (ST.pro.year-(p.draftYear||ST.pro.year))<3) return true;
+  if(!p.rookie && pfAge(p)<=21) return true;              // 입단 3년차 이하로 본다
+  const fa=pfState().fa; if(fa&&fa.year===ST.pro.year&&fa.list.some(x=>x.id===p.id)) return true;
+  return false;
+}
 function pfD2Pool(){
   const out=[];
   TEAMS.filter(t=>t.id!=='wwzw').forEach(t=>{
-    const all=[].concat(t.players,t.pitchers).sort((a,b)=>pfValue(b)-pfValue(a));
-    all.slice(PF_PROTECT).forEach(p=>out.push({p,t,v:pfValue(p),age:pfAge(p)}));
+    const key=proKeyOf(t.id);
+    const all=pfAll(t).filter(p=>!pfD2Exempt(p,key)).sort((a,b)=>pfValue(b)-pfValue(a));
+    const exempt=pfAll(t).length-all.length;
+    all.slice(Math.max(0,PF_D2_PROTECT-exempt)).forEach(p=>out.push({p,t,v:pfValue(p),age:pfAge(p)}));
   });
-  return out.sort((a,b)=>b.v-a.v).slice(0,18);
+  return out.sort((a,b)=>b.v-a.v).slice(0,24);
 }
 function pfD2Run(picks){
   const F=pfState(), y=ST.pro.year; if(F.d2Year===y) return null;
@@ -16961,91 +17255,259 @@ function pfD2Run(picks){
     const f=pfFind(id); if(!f||f.t.id==='wwzw') return;
     if(F.cash<cost[i]) return;
     F.cash=Math.round((F.cash-cost[i])*10)/10;
-    pfMove(f.p, proKeyOf(f.t.id), ST.pro.team, '2차 드래프트'); got.push(f.p.name);
+    const c=pfCon(f.p,proKeyOf(f.t.id));
+    pfMove(f.p, proKeyOf(f.t.id), ST.pro.team, '2차 드래프트', '2군'); pfSetCon(id,c); got.push(f.p.name);
   });
-  const prot=pfProtected(), us=TBYID.wwzw, rng=makeRng(((ST.seed||1)*313+y)>>>0);
-  const expo=[].concat(us.players,us.pitchers).filter(p=>!prot.has(p.id)).sort((a,b)=>pfValue(b)-pfValue(a));
+  const prot=pfProtected(PF_D2_PROTECT), us=TBYID.wwzw, rng=makeRng(((ST.seed||1)*313+y)>>>0);
+  const expo=pfAll(us).filter(p=>!prot.has(p.id)&&!pfD2Exempt(p,ST.pro.team)).sort((a,b)=>pfValue(b)-pfValue(a));
   PRO_TEAMS.map(d=>d.key).filter(k=>k!==ST.pro.team).forEach(k=>{
-    if(lost.length>=3||!expo.length) return;
-    if(rng()<0.22){ const p=expo.shift(); lost.push(p.name+' → '+proName(k)); pfMove(p, ST.pro.team, k, '2차 드래프트'); }
+    if(lost.length>=4||!expo.length) return;
+    if(rng()<0.25){ const p=expo.shift(); const c=pfCon(p,ST.pro.team);
+      F.cash=Math.round((F.cash+cost[Math.min(2,lost.length)])*10)/10;          // 양도금이 들어온다
+      lost.push(p.name+' → '+proName(k)); pfMove(p, ST.pro.team, k, '2차 드래프트', '2군'); pfSetCon(p.id,c); }
   });
   F.d2Year=y;
   pfLog('2차 드래프트 — 데려온 사람 '+(got.join(', ')||'없음')+' · 떠난 사람 '+(lost.join(', ')||'없음'));
   return {got, lost};
 }
-/* ---- 신인 드래프트 — 시즌 끝마다 세 라운드. 순위 역순. 우리 차례는 내가 고른다 ----
-   후보는 전부 지어낸 고교·대학 선수다(genName). 구단 기조가 AI 의 고르는 눈이다 */
+
+/* ================= 신인 드래프트 · 스카우트 =================
+   [요청 v3.36.0] "드래프트 할때 어떻게 나오는지 보여줘 · 스카우터진들 나오면 그 범위가
+   괜찮게 나와야겠는데 포텐셜이랑 현재 스탯이랑"
+   · 11라운드 · 전년도 순위 역순 — 지명이 한 명씩 전광판처럼 뜬다. 우리 차례에서 멈춘다
+   · 후보의 **진짜** 현재·잠재(20~80 눈금)는 우리도 모른다. 스카우트진이 **범위**로 알려준다.
+     스카우트진 ★1 은 폭 19칸, ★5 는 폭 5칸. 범위 안에 진짜 값이 **반드시** 들어 있다
+     (어디쯤인지만 모른다). 뽑으면 현재는 바로 보이고, 잠재는 해마다 좁혀진다
+   · 후보는 전부 지어낸 이름 · 지어낸 학교다(genName · PF_SCHOOLS)                     */
+const PF_SCHOOLS=['한빛고','새솔고','청람고','누리고','가람고','다온고','해오름고','별빛고','미르고','라온고','은솔고','푸름고',
+  '한결대','새길대','청운대','누리대','가온대','다솜대'];
+function pfRange(truth, scout, rng){
+  const w=Math.round(22-scout*3.4);                 // ★1 19칸 · ★3 12칸 · ★5 5칸
+  const a=Math.round(rng()*w);
+  return [Math.max(15,truth-a), Math.min(90,truth+(w-a))];
+}
 function pfRookiePool(){
   const F=pfState(), y=ST.pro.year;
-  if(F.rookies&&F.rookies.year===y) return F.rookies;
+  if(F.rookies&&F.rookies.year===y&&F.rookies.list&&F.rookies.list.length>=110) return F.rookies;
   const rng=makeRng(((ST.seed||1)*7717+y*3)>>>0), used=new Set();
-  TEAMS.forEach(t=>[].concat(t.players,t.pitchers).forEach(p=>used.add(p.name)));
-  const POS=['SS','CF','C','2B','3B','1B','LF','RF','P','P','P','P'];
-  const list=Array.from({length:30},(_,i)=>{
-    const pos=POS[(rng()*POS.length)|0], hs=rng()<0.62, pot=Math.round(38+rng()*50);
-    const base=hs?24+rng()*14:32+rng()*14;
-    const r=()=>Math.round(clamp(base+(rng()-0.5)*14,15,70));
+  TEAMS.forEach(t=>pfAll(t).forEach(p=>used.add(p.name)));
+  const POS=['SS','CF','C','2B','3B','1B','LF','RF','P','P','P','P','P'];
+  const list=Array.from({length:140},(_,i)=>{
+    const pos=POS[(rng()*POS.length)|0], hs=rng()<0.68;
+    /* 진짜 값 — 현재는 대학이 높고, 잠재는 고교가 높다. 상위권은 드물다 */
+    const cur=Math.round(clamp((hs?27:34)+Math.pow(rng(),1.6)*22+(rng()-0.5)*6,18,62));
+    const pot=Math.round(clamp(cur+6+Math.pow(rng(),1.3)*(hs?40:28),30,88));
+    const prof={SS:{def:5,spd:3},'2B':{def:3,spd:2},'3B':{pow:3,arm:3},'1B':{pow:6,def:-4,spd:-4},C:{def:4,arm:4,spd:-7},
+      CF:{spd:6,def:3},LF:{pow:3},RF:{pow:3,arm:3}}[pos]||{};
+    const r=(k)=>Math.round(clamp(cur+(prof[k]||0)+(rng()-0.5)*10,12,80));
+    const id='rk'+y+'_'+i, school=PF_SCHOOLS[(rng()*PF_SCHOOLS.length)|0];
     const p=pos==='P'
-      ? {id:'rk'+y+'_'+i, name:genName(rng,used), no:null, throws:rng()<0.3?'L':'R', role:'RP', stf:r(), ctl:r(), sta:r(), age:hs?18:22, ageYear:y+1, rookie:true}
-      : {id:'rk'+y+'_'+i, name:genName(rng,used), no:null, bats:rng()<0.3?'L':'R', con:r(),pow:r(),eye:r(),spd:r(),def:r(),arm:r(), pos:[pos], pitch:null, real:null, pro:true, age:hs?18:22, ageYear:y+1, rookie:true};
-    return {p, pot, school:(hs?'고교':'대학'), pos};
+      ? {id, name:genName(rng,used), no:null, throws:rng()<0.3?'L':'R', role:rng()<0.4?'SP':'RP', stf:r('stf'), ctl:r('ctl'), sta:r('sta'), age:hs?19:23, ageYear:y+1, rookie:true, draftYear:y+1, pot, kmh:Math.round(135+cur*0.28+rng()*6)}
+      : {id, name:genName(rng,used), no:null, bats:rng()<0.3?'L':'R', con:r('con'),pow:r('pow'),eye:r('eye'),spd:r('spd'),def:r('def'),arm:r('arm'), pos:[pos], pitch:null, real:null, pro:true, age:hs?19:23, ageYear:y+1, rookie:true, draftYear:y+1, pot};
+    return {p, cur, pot, school:school.endsWith('대')?'대학':'고교', schoolName:school, pos,
+      rc:pfRange(cur,F.scout,rng), rp:pfRange(pot,F.scout,rng)};
   });
-  F.rookies={year:y, list, order:null, picks:[], done:false};
+  F.rookies={year:y, list, order:null, picks:[], done:false, scout:F.scout};
   return F.rookies;
 }
 function pfRookieOrder(){
+  const F=pfState();
   const R=proRank().slice().reverse().map(x=>proKeyOf(x.id)||ST.pro.team);
-  const o=[]; for(let r=0;r<3;r++) R.forEach(k=>o.push(k)); return o;
+  const o=[];
+  for(let r=0;r<11;r++){
+    let row=R.slice();
+    /* 경쟁균형세 2년 연속 초과 — 1라운드 지명권 9단계 하락(=라운드 맨 끝) */
+    if(r===0 && F.capHist && F.capHist[ST.pro.year] && F.capHist[ST.pro.year].drop){
+      row=row.filter(k=>k!==ST.pro.team).concat([ST.pro.team]); }
+    row.forEach(k=>o.push(k));
+  }
+  return o;
 }
-/* AI 한 번 고르기 — 기조: pitch 투수 먼저 · ready 지금 능력 · upside 잠재력 · bpa 둘 섞어서 */
 function pfRookieAIPick(k, left){
   const ph=proPhil(k);
-  const sc=x=>{ const now=pfValue(x.p)/ (pfIsPit(x.p)?2.35:3.3);
-    if(ph.draft==='pitch') return (x.pos==='P'?20:0)+x.pot*0.6+now*0.4;
-    if(ph.draft==='ready') return now*1.0+x.pot*0.3+(x.school==='대학'?6:0);
-    if(ph.draft==='upside') return x.pot*1.0+(x.school==='고교'?5:0);
-    return x.pot*0.6+now*0.6; };
+  /* AI 스카우트도 진짜 값을 정확히는 모른다 — 구단마다 조금씩 틀린다 */
+  const noise=x=>((clayHash(k+x.p.id)%9)-4);
+  const sc=x=>{ const now=x.cur+noise(x), pot=x.pot+noise(x)*1.3;
+    if(ph.draft==='pitch') return (x.pos==='P'?8:0)+pot*0.6+now*0.4;
+    if(ph.draft==='ready') return now*1.0+pot*0.35+(x.school==='대학'?4:0);
+    if(ph.draft==='upside') return pot*1.0+(x.school==='고교'?3:0);
+    return pot*0.6+now*0.6; };
   return left.slice().sort((a,b)=>sc(b)-sc(a))[0];
 }
-/* 우리 차례가 올 때까지 AI 가 뽑는다. myPick 을 주면 그걸로 우리 차례를 채우고 계속 */
-function pfRookieRun(myPickId){
-  const F=pfState(), D=pfRookiePool(); if(D.done) return D;
+/* 한 명 뽑는다(AI 든 우리든). 우리 차례에 id 가 없으면 false */
+function pfRookieStep(myPickId){
+  const F=pfState(), D=pfRookiePool(); if(D.done) return false;
   if(!D.order) D.order=pfRookieOrder();
+  if(D.picks.length>=D.order.length){ pfRookieFinish(); return false; }
   const taken=new Set(D.picks.map(x=>x.id));
-  while(D.picks.length<D.order.length){
-    const k=D.order[D.picks.length];
-    const left=D.list.filter(x=>!taken.has(x.p.id));
-    let x=null;
-    if(k===ST.pro.team){
-      if(!myPickId) return D;                       // 내 차례 — 여기서 멈춘다
-      x=left.find(z=>z.p.id===myPickId)||null; myPickId=null;
-      if(!x) return D;
-    } else x=pfRookieAIPick(k,left);
-    if(!x) break;
-    taken.add(x.p.id);
-    D.picks.push({id:x.p.id, name:x.p.name, team:k, round:Math.floor(D.picks.length/10)+1, pos:x.pos, pot:x.pot, school:x.school});
-    const snap=Object.assign({},x.p,{no:60+(D.picks.length%39)});
-    pfMove(snap, null, k, '신인 드래프트');
+  const k=D.order[D.picks.length];
+  const left=D.list.filter(x=>!taken.has(x.p.id));
+  let x=null;
+  if(k===ST.pro.team){ if(!myPickId) return false; x=left.find(z=>z.p.id===myPickId)||null; if(!x) return false; }
+  else x=pfRookieAIPick(k,left);
+  if(!x) { pfRookieFinish(); return false; }
+  const n=D.picks.length, round=Math.floor(n/10)+1, pick=(n%10)+1;
+  D.picks.push({id:x.p.id, name:x.p.name, team:k, round, pick, pos:x.pos, school:x.school, schoolName:x.schoolName});
+  const snap=Object.assign({},x.p,{no:60+(n%39)});
+  pfMove(snap, null, k, '신인 드래프트', '2군');
+  if(k===ST.pro.team){
+    const bonus=pfBonusOf(round,pick);
+    F.cash=Math.round((F.cash-bonus/10000)*10)/10;
+    pfSetCon(x.p.id, {sal:kboMinSal(ST.pro.year+1), type:'rookie', left:1, svc:0, fa:0, bonus});
+    F.rep[x.p.id]={cur:x.cur, rp:x.rp.slice(), pot:x.pot};             // 잠재 범위는 해마다 좁혀진다
   }
+  if(D.picks.length>=D.order.length) pfRookieFinish();
+  return true;
+}
+function pfRookieFinish(){
+  const D=pfRookiePool(); if(D.done) return;
   D.done=true;
   const mine=D.picks.filter(z=>z.team===ST.pro.team).map(z=>z.name);
-  pfLog('신인 드래프트 — 우리 지명 '+(mine.join(', ')||'없음'));
-  proNews('드래프트', proName(ST.pro.team)+' 신인 지명 — '+(mine.join(' · ')||'없음'));
+  pfLog('신인 드래프트 — 우리 지명 '+mine.length+'명 ('+(mine.slice(0,3).join(', ')||'없음')+(mine.length>3?' 외':'')+')');
+  const top=D.picks[0]; if(top) proNews('드래프트', (ST.pro.year+1)+' 신인 드래프트 전체 1순위 — '+proName(top.team)+' '+top.name+' ('+top.schoolName+' · '+(POSNAMES[top.pos]||top.pos)+')');
+}
+/* 옛 이름 — 우리 차례까지 굴리고, id 를 주면 우리 차례를 채운다 */
+function pfRookieRun(myPickId){
+  const D=pfRookiePool(); if(D.done) return D;
+  let g=0;
+  while(!D.done && g++<200){
+    if(!D.order) D.order=pfRookieOrder();
+    const k=D.order[D.picks.length];
+    if(k===ST.pro.team){ if(!myPickId) return D; if(!pfRookieStep(myPickId)) return D; myPickId=null; continue; }
+    if(!pfRookieStep(null)) break;
+  }
   return D;
+}
+/* 우리 차례를 스카우트팀에 맡긴다 — 스카우트가 **보는 값(범위 가운데)** 으로 고른다 */
+function pfRookieAutoOurs(){
+  const D=pfRookiePool(); let g=0;
+  while(!D.done && g++<200){
+    pfRookieRun(null); if(D.done) break;
+    const taken=new Set(D.picks.map(x=>x.id)), left=D.list.filter(x=>!taken.has(x.p.id));
+    const ph=proPhil(ST.pro.team);
+    const est=x=>{ const c=(x.rc[0]+x.rc[1])/2, p=(x.rp[0]+x.rp[1])/2;
+      return ph.draft==='ready'?c+p*0.35:(ph.draft==='upside'?p:(ph.draft==='pitch'?(x.pos==='P'?8:0)+p*0.6+c*0.4:p*0.6+c*0.6)); };
+    const x=left.slice().sort((a,b)=>est(b)-est(a))[0]; if(!x) break;
+    pfRookieStep(x.p.id);
+  }
+}
+/* 겨울 성장 — 신인은 잠재까지 해마다 큰다(나이 어릴수록 · 우리 2군 시설이 좋을수록 빨리).
+   잠재 범위는 한 해에 3할씩 진짜 값 쪽으로 좁혀진다 */
+function pfGrow(){
+  const F=pfState();
+  const byId={}; F.moves.forEach(m=>{ byId[m.snap.id]=m; });
+  Object.values(byId).forEach(m=>{
+    const s=m.snap; if(!s.rookie||!s.pot) return;
+    const ours=m.to===ST.pro.team, age=pfAge(s);
+    const now=pfGrade(s); if(now>=s.pot) return;
+    const step=Math.min(s.pot-now, (2+(clayHash(s.id+ST.pro.year)%4))*(age<=21?1.25:1)*(ours?(1+0.08*F.fac):1));
+    const ks=pfIsPit(s)?['stf','ctl','sta']:['con','pow','eye','spd','def','arm'];
+    ks.forEach(k=>{ s[k]=Math.round(clamp((s[k]||30)+step*(pfIsPit(s)?1.0:1.0),12,90)); });
+    const live=pfFind(s.id); if(live) ks.forEach(k=>live.p[k]=s[k]);
+  });
+  Object.keys(F.rep).forEach(id=>{ const r=F.rep[id]; if(!r||!r.rp) return;
+    r.rp=[Math.round(r.rp[0]+(r.pot-r.rp[0])*0.3), Math.round(r.rp[1]-(r.rp[1]-r.pot)*0.3)]; });
+}
+
+/* ================= 내 계약 — 선수로서 =================
+   비FA 는 해마다 구단 제시액을 받는다. 도장 · 버티기 · 연봉조정 신청(KBO 연봉조정위원회는
+   구단안 · 선수안 중 하나만 고른다 — 역대로 선수가 이긴 건 딱 한 번이다).
+   FA 자격(1군 8시즌)을 채우면 겨울에 FA 를 선언할 수 있다 — 구단들이 조건을 낸다. */
+function pfMyCon(){ const me=ST.playerId||MYID; return pfCon({id:me},ST.pro.team); }
+function pfMySvc(){ return (ST.pro.history||[]).filter(h=>h.level!=='2군').length; }
+function pfMyOffer(){
+  const F=pfState(), y=ST.pro.year;
+  if(F.myOffer&&F.myOffer.year===y) return F.myOffer;
+  const me=ST.playerId||MYID, c=pfMyCon();
+  if(c.type==='fa'&&c.left>1) return F.myOffer={year:y, skip:true};
+  const b=ST.bat[me]||blankBat(), q=ST.pit[me]||blankPit();
+  const p=TBYID.wwzw.players.find(x=>x.id===me)||{};
+  const s=(ST.role==='pit')?pfSeasonLine({id:me,stf:1}):pfSeasonLine(Object.assign({id:me},p));
+  const farm=(ST.myFarm||0)>0;
+  const pct=clamp(s.score*(farm?0.4:1), -0.25, 1.4);
+  const offer=Math.max(kboMinSal(y+1), Math.round(c.sal*(1+pct)/100)*100);
+  return F.myOffer={year:y, old:c.sal, offer, ask:Math.round(offer*1.35/100)*100, txt:s.txt, score:s.score, done:false, tries:0};
+}
+function pfMyAccept(amount, how){
+  const F=pfState(), O=pfMyOffer(), me=ST.playerId||MYID, c=pfMyCon();
+  pfSetCon(me, Object.assign({},c,{sal:amount, type:(c.type==='rookie'&&pfMySvc()>=2)?'annual':(c.type==='rookie'?'rookie':c.type), left:1}));
+  O.done=true; O.final=amount; O.how=how;
+  pfLog('내 연봉 — '+wonStr2(O.old)+' → '+wonStr2(amount)+' ('+how+')');
+  proNews('연봉', nameOf(me)+', '+wonStr2(amount)+'에 '+how+(amount>O.old?' — '+Math.round((amount/O.old-1)*100)+'% 인상':''));
+}
+function pfMyHold(){
+  const O=pfMyOffer(); if(O.done) return O;
+  O.tries++;
+  const r=makeRng(((ST.seed||1)*59+ST.pro.year*7+O.tries)>>>0)();
+  if(O.tries>2){ O.msg='구단 — 「더는 못 올린다. 이게 마지막이다」'; return O; }
+  if(r<0.5){ O.offer=Math.round(O.offer*(1.06+r*0.12)/100)*100; O.msg='구단이 한 발 물러섰다 — '+wonStr2(O.offer); }
+  else if(r<0.8){ O.msg='구단 — 「고과는 고과다」. 제시액 그대로'; try{ if(ST.morale) ST.morale[ST.playerId||MYID]=Math.max(0,(ST.morale[ST.playerId||MYID]||60)-3); }catch(e){} }
+  else O.msg='구단 — 「그럼 조정위원회로 가자」';
+  return O;
+}
+function pfMyArbitrate(){
+  const O=pfMyOffer(); if(O.done) return O;
+  /* 선수가 이길 확률 — 성적이 아주 좋아야 조금 있다(역대 선수 승리는 한 번뿐) */
+  const p=clamp(0.04+Math.max(0,O.score)*0.22, 0.04, 0.30);
+  const win=makeRng(((ST.seed||1)*131+ST.pro.year*13)>>>0)()<p;
+  pfMyAccept(win?O.ask:O.offer, win?'연봉조정 승리':'연봉조정 — 구단안');
+  O.arb={win, p};
+  return O;
+}
+/* 내 FA — 1군 8시즌을 채운 겨울. 구단 셋(지금 구단 포함)이 조건을 낸다 */
+function pfMyFA(){
+  const F=pfState(), y=ST.pro.year, c=pfMyCon();
+  if(pfMySvc()<8 || (c.type==='fa'&&c.left>1)) return null;
+  if(F.myFA&&F.myFA.year===y) return F.myFA;
+  const me=ST.playerId||MYID, p=TBYID.wwzw.players.find(x=>x.id===me)||{};
+  const age=pfAge({id:me})+1, per=pfFASal(pfPct(p), age), yrs=age<=30?4:(age<=32?3:(age<=34?2:1));
+  const rng=makeRng(((ST.seed||1)*211+y)>>>0);
+  const others=PRO_TEAMS.map(d=>d.key).filter(k=>k!==ST.pro.team).sort(()=>rng()-0.5).slice(0,2);
+  const offers=[ST.pro.team].concat(others).map((k,i)=>({key:k, yrs, total:Math.round(per*yrs*(i===0?0.95:(1+rng()*0.2))/1000)*1000}));
+  return F.myFA={year:y, offers, done:false};
+}
+function pfMyFAPick(key){
+  const F=pfState(), M=pfMyFA(); if(!M||M.done) return;
+  const o=M.offers.find(x=>x.key===key); if(!o) return;
+  const me=ST.playerId||MYID;
+  pfSetCon(me,{sal:Math.round(o.total*0.65/o.yrs/100)*100, type:'fa', left:o.yrs+1, svc:pfMySvc(), fa:(pfMyCon().fa||0)+1, bonus:Math.round(o.total*0.35)});
+  ST.pro.earned=Math.round(((ST.pro.earned||0)+o.total*0.35)*10)/10;
+  M.done=true; M.pick=key;
+  if(key!==ST.pro.team){ ST.pro.faMove=key; }
+  proNews('FA', nameOf(me)+', '+proName(key)+'와 '+o.yrs+'년 '+wonStr2(o.total)+' FA 계약');
+  pfLog('내 FA — '+proName(key)+' '+o.yrs+'년 '+wonStr2(o.total));
+}
+/* 해가 바뀔 때 — 계약 해 줄이기 · 서비스 시즌 올리기(바뀐 사람 장부만) · 성장 · 재계약 도장 */
+function pfYearRoll(){
+  const F=pfState();
+  pfRenewSign();
+  try{ const O=pfMyOffer(); if(!O.skip&&!O.done) pfMyAccept(O.offer,'구단 제시액에 도장'); }catch(e){}
+  Object.keys(F.con).forEach(id=>{ const c=F.con[id]; c.svc=(c.svc||0)+1; if(c.type==='fa') c.left=Math.max(0,(c.left||1)-1); });
+  pfGrow();
 }
 
 /* ---- 화면 ---- */
-function renderProFront(){
+function renderProFront(tab){
   const c=$('#view'); c.innerHTML='';
   const F=pfState(), ph=proPhil(ST.pro.team), me=ST.playerId||MYID;
+  const P=pfPayroll(), cap=kboCap(), fl=kboFloor();
   const hd=el('div','card pf-hd');
+  const capPct=Math.min(100,Math.round(P.capSum/cap*100));
   hd.innerHTML='<div class="card-h">프런트 — '+proName(ST.pro.team)+'</div>'+
     '<div class="pf-cash"><b>'+F.cash.toFixed(1)+'억</b><span>구단 금고</span></div>'+
+    '<div class="pf-capbar"><i style="width:'+capPct+'%" class="'+(P.capSum>cap?'over':'')+'"></i>'+
+      (fl?'<u style="left:'+Math.round(fl/cap*100)+'%"></u>':'')+'</div>'+
+    '<p class="muted pf-capt">상위 40명 연봉 '+wonStr2(P.capSum)+' / 샐러리캡 '+wonStr2(cap)+(fl?' · 하한 '+wonStr2(fl):'')+
+      (P.franchise?'<br>프랜차이즈 스타(50%만 계산) — '+P.franchise.name:'')+'<br>선수단 '+P.n+'명 · 연봉 총액 '+wonStr2(P.total)+' (한 주 '+(P.total/10000/24).toFixed(1)+'억)</p>'+
     '<p class="muted">기조 「'+PRO_MODE_TXT[ph.mode]+'」 · 드래프트 「'+PRO_DRAFT_TXT[ph.draft]+'」 · FA '+({aggressive:'공격적',normal:'보통',frugal:'짠물'})[ph.fa]+'<br>'+
-    '재정 '+'★'.repeat(ph.wealth)+' · 관중 '+'★'.repeat(ph.fans)+' · 2군 시설 '+'★'.repeat(F.fac)+'<br>'+ph.line+'</p>';
+    '재정 '+'★'.repeat(ph.wealth)+' · 관중 '+'★'.repeat(ph.fans)+' · 2군 시설 '+'★'.repeat(F.fac)+' · 스카우트진 '+'★'.repeat(F.scout)+'<br>'+ph.line+'</p>';
   c.appendChild(hd);
-  /* 유니폼 콜라보 — 시즌에 하나 */
-  {
+  const tabs=el('div','subtabs pf-tabs');
+  const T=tab||'money';
+  [['money','돈'],['roster','선수단 · 연봉'],['trade','트레이드'],['log','장부']].forEach(([k,n])=>{
+    const b=el('button','subtab'+(k===T?' on':''),n); b.onclick=()=>renderProFront(k); tabs.appendChild(b); });
+  c.appendChild(tabs);
+  if(T==='money'){
     const card=el('div','card');
     card.appendChild(el('div','card-h','유니폼 콜라보 · 상업 수익'));
     const on=F.collab&&F.collab.year===ST.pro.year ? PF_COLLABS.find(x=>x.id===F.collab.id) : null;
@@ -17057,72 +17519,90 @@ function renderProFront(){
         b.innerHTML='<b>'+x.name+'</b><span>제작비 '+x.cost+'억 · 주당 약 '+(x.rev*(0.6+ph.fans*0.14)).toFixed(1)+'억</span><i>'+x.line+'</i>';
         b.onclick=async()=>{ if(F.cash<x.cost){ toast('금고가 모자라다'); return; }
           F.cash=Math.round((F.cash-x.cost)*10)/10; F.collab={id:x.id, year:ST.pro.year};
-          pfLog('유니폼 콜라보 — '+x.name+' ('+x.cost+'억)'); await saveGame(true); renderProFront(); };
+          pfLog('유니폼 콜라보 — '+x.name+' ('+x.cost+'억)'); await saveGame(true); renderProFront('money'); };
         card.appendChild(b);
       });
     }
     c.appendChild(card);
+    const up=(title, lv, cost, desc, fn)=>{ const cd=el('div','card');
+      cd.appendChild(el('div','card-h',title+' '+'★'.repeat(lv)+'☆'.repeat(5-lv)));
+      cd.appendChild(el('p','muted',desc));
+      if(lv<5){ const b=el('button','btn','한 칸 올린다 — '+cost+'억');
+        b.onclick=async()=>{ if(F.cash<cost){ toast('금고가 모자라다'); return; } F.cash=Math.round((F.cash-cost)*10)/10; fn(); await saveGame(true); renderProFront('money'); };
+        cd.appendChild(b); }
+      c.appendChild(cd); };
+    up('2군 시설', F.fac, (F.fac+1)*25, '시설이 좋을수록 2군에 있는 사람(나 · 신인)이 빨리 큰다.', ()=>{ F.fac++; pfLog('2군 시설 투자 (★'+F.fac+')'); });
+    up('스카우트진', F.scout, (F.scout+1)*12, '신인 드래프트 후보의 현재·잠재 범위가 좁아진다. ★1 은 19칸, ★5 는 5칸.', ()=>{ F.scout++; pfLog('스카우트진 보강 (★'+F.scout+')'); });
   }
-  /* 2군 시설 */
-  {
+  if(T==='roster'){
     const card=el('div','card');
-    card.appendChild(el('div','card-h','2군 시설 '+'★'.repeat(F.fac)+'☆'.repeat(5-F.fac)));
-    card.appendChild(el('p','muted','시설이 좋을수록 2군에 내려가 있을 때 빨리 는다.'));
-    if(F.fac<5){ const cost=(F.fac+1)*25;
-      const b=el('button','btn','한 칸 올린다 — '+cost+'억');
-      b.onclick=async()=>{ if(F.cash<cost){ toast('금고가 모자라다'); return; }
-        F.cash=Math.round((F.cash-cost)*10)/10; F.fac++; pfLog('2군 시설 투자 — '+cost+'억 (★'+F.fac+')');
-        await saveGame(true); renderProFront(); };
-      card.appendChild(b); }
+    const us=TBYID.wwzw; const first=[].concat(us.players,us.pitchers).filter((p,i,a)=>a.findIndex(q=>q.id===p.id)===i);
+    card.innerHTML='<div class="card-h">선수단 · 연봉 — 1군 '+first.length+'명 · 2군 '+(us.farm||[]).length+'명</div>'+
+      '<p class="muted">1군 엔트리는 29명(2026~, 아시아쿼터 포함). 등록 · 말소는 여기서. FA 는 계약 해를 채우고, 나머지는 해마다 재계약한다.</p>';
+    const row=(p, farm)=>{ const cc=pfCon(p,ST.pro.team);
+      const r=el('div','pf-rrow'+(p.id===me?' me':''));
+      const tp={fa:'FA '+cc.left+'년',annual:'연봉',rookie:'신인',foreign:'외국인'}[cc.type]||'';
+      r.innerHTML='<span class="pf-rn">'+(p.no!=null?p.no+' ':'')+p.name+'</span><span class="pf-rp">'+(pfIsPit(p)?'투수':(POSNAMES[(p.pos||[])[0]]||''))+' · '+pfAge(p)+'세</span>'+
+        '<span class="pf-rs">'+wonStr2(cc.sal)+'</span><span class="pf-rt">'+tp+'</span>';
+      if(p.id!==me){ const b=el('button','pf-mv',farm?'등록':'말소');
+        b.onclick=async()=>{ farm?pfToFirst(p.id):pfToFarm(p.id); await saveGame(true); renderProFront('roster'); };
+        r.appendChild(b); }
+      return r; };
+    card.appendChild(el('div','pf-sub','1군'));
+    first.slice().sort((a,b)=>pfCon(b,ST.pro.team).sal-pfCon(a,ST.pro.team).sal).forEach(p=>card.appendChild(row(p,false)));
+    card.appendChild(el('div','pf-sub','2군'));
+    (us.farm||[]).slice().sort((a,b)=>pfValue(b)-pfValue(a)).forEach(p=>card.appendChild(row(p,true)));
     c.appendChild(card);
   }
-  /* 트레이드 제안 */
-  {
+  if(T==='trade'){
     const card=el('div','card');
     card.appendChild(el('div','card-h','트레이드 제안 (1:1)'));
     const wait=4-((ST.round||0)-(F.tradeRound??-99));
-    card.appendChild(el('p','muted', wait>0?('다음 제안까지 '+wait+'주'):'우리 선수 하나와 상대 선수 하나를 바꾼다. 상대 구단 기조가 값을 매긴다.'));
+    card.appendChild(el('p','muted', wait>0?('다음 제안까지 '+wait+'주'):'우리 선수 하나와 상대 선수 하나를 바꾼다. 상대 구단 기조가 값을 매긴다. 계약은 그대로 들고 간다.'));
     const selT=d0('select'); selT.className='rn-sel';
     PRO_TEAMS.filter(d=>d.key!==ST.pro.team).forEach(d=>{ const o=d0('option'); o.value=d.key; o.textContent=proName(d.key)+' ('+PRO_MODE_TXT[proPhil(d.key).mode]+')'; selT.appendChild(o); });
     const selThem=d0('select'); selThem.className='rn-sel';
     const selUs=d0('select'); selUs.className='rn-sel';
+    const lab=(p,key)=>p.name+' · '+(pfIsPit(p)?'투수':(POSNAMES[(p.pos||[])[0]]||''))+' · '+pfAge(p)+'세 · 가치 '+pfValue(p)+' · '+wonStr2(pfCon(p,key).sal);
     const fillThem=()=>{ selThem.innerHTML=''; const t=TBYID[pfIdOf(selT.value)];
-      [].concat(t.players,t.pitchers).sort((a,b)=>pfValue(b)-pfValue(a)).forEach(p=>{ const o=d0('option'); o.value=p.id;
-        o.textContent='받기: '+p.name+' · '+(pfIsPit(p)?'투수':(POSNAMES[(p.pos||[])[0]]||''))+' · '+pfAge(p)+'세 · 가치 '+pfValue(p); selThem.appendChild(o); }); };
-    [].concat(TBYID.wwzw.players,TBYID.wwzw.pitchers).filter(p=>p.id!==me).sort((a,b)=>pfValue(b)-pfValue(a)).forEach(p=>{
-      if(selUs.querySelector('option[value="'+p.id+'"]')) return;
-      const o=d0('option'); o.value=p.id; o.textContent='주기: '+p.name+' · '+(pfIsPit(p)?'투수':(POSNAMES[(p.pos||[])[0]]||''))+' · '+pfAge(p)+'세 · 가치 '+pfValue(p); selUs.appendChild(o); });
+      pfAll(t).sort((a,b)=>pfValue(b)-pfValue(a)).forEach(p=>{ const o=d0('option'); o.value=p.id; o.textContent='받기: '+lab(p,selT.value); selThem.appendChild(o); }); };
+    pfAll(TBYID.wwzw).filter(p=>p.id!==me).sort((a,b)=>pfValue(b)-pfValue(a)).forEach(p=>{
+      const o=d0('option'); o.value=p.id; o.textContent='주기: '+lab(p,ST.pro.team); selUs.appendChild(o); });
     selT.onchange=fillThem; fillThem();
     card.appendChild(selT); card.appendChild(selThem); card.appendChild(selUs);
     const b=el('button','btn','제안한다');
     b.disabled=wait>0;
-    b.onclick=async()=>{ const r=pfTrade(selUs.value, selThem.value); toast(r.ok?'트레이드 성사':r.why); await saveGame(true); renderProFront(); };
+    b.onclick=async()=>{ const r=pfTrade(selUs.value, selThem.value); toast(r.ok?'트레이드 성사':r.why); await saveGame(true); renderProFront('trade'); };
     card.appendChild(b);
     c.appendChild(card);
   }
-  /* 장부 */
-  if(F.log.length){
+  if(T==='log'){
     const card=el('div','card');
     card.appendChild(el('div','card-h','프런트 장부'));
-    F.log.slice(0,12).forEach(x=>card.appendChild(el('div','pf-log', x.year+' · '+x.t)));
+    if(!F.log.length) card.appendChild(el('p','muted','아직 적힌 게 없다.'));
+    F.log.slice(0,30).forEach(x=>card.appendChild(el('div','pf-log', x.year+' · '+x.t)));
     c.appendChild(card);
   }
   const bk=el('button','btn sm','← 홈'); bk.onclick=()=>go('home'); c.appendChild(bk);
 }
-/* 시즌 끝 — 겨울 일정(신인 드래프트 · FA · 2차 드래프트)을 차례로 */
+/* 시즌 끝 — 겨울 일정을 차례로 */
 function pfWinterCard(c, rec){
   const F=pfState(), y=rec.year;
   const card=el('div','card pf-win');
-  card.appendChild(el('div','card-h','겨울 — 프런트 일'));
-  const D=pfRookiePool();
+  card.appendChild(el('div','card-h','겨울 — 프런트 · 선수'));
   const row=(t,done,fn)=>{ const b=el('button','pf-opt'+(done?' done':''));
     b.innerHTML='<b>'+(done?'✓ ':'')+t[0]+'</b><span>'+t[1]+'</span>'; if(!done) b.onclick=fn; card.appendChild(b); };
-  row(['신인 드래프트','순위 역순 세 라운드 · 우리 차례는 내가 지명'], D.done, ()=>renderRookieDraft(rec));
+  const O=pfMyOffer();
+  if(!O.skip) row(['내 연봉 협상','올해 '+O.txt+' · 지금 '+wonStr2(O.old)+' → 구단 제시 '+wonStr2(O.offer)], O.done, ()=>renderMyContract(rec));
+  const MF=pfMyFA();
+  if(MF) row(['FA 선언 — 1군 '+pfMySvc()+'시즌을 채웠다','구단 '+MF.offers.length+'곳이 조건을 냈다'], MF.done, ()=>renderMyFA(rec));
+  const D=pfRookiePool();
+  row([(ST.pro.year+1)+' 신인 드래프트 — 11라운드','전년도 순위 역순 · 우리 차례는 내가 지명 · 스카우트진 ★'+F.scout], D.done, ()=>renderRookieDraft(rec));
+  const R=pfRenewals();
+  row(['연봉 재계약 — '+R.list.length+'명','비FA 는 해마다 다시 계약한다 · 올해 성적이 고과'], R.done, ()=>renderRenewals(rec));
   const fa=pfFAOpen();
-  row(['FA 시장 — '+fa.list.length+'명','A·B 등급은 보상선수 · C 는 보상금만 · 금고 '+F.cash.toFixed(0)+'억'], !!fa.closed, ()=>renderProFA(rec));
-  if(pfD2Year(y)) row(['2차 드래프트','보호선수 '+PF_PROTECT+'명 밖에서 셋까지 · 우리도 뺏길 수 있다'], F.d2Year===y, ()=>renderProD2(rec));
-  /* [요청] "트레이드 요청" — 선수로서 나를 보내 달라고 한다. 겨울에만.
-     받아들여지면 다음 시즌은 다른 유니폼이다. 구단 금고·시설은 새 구단 것이 된다 */
+  row(['FA 시장 — '+fa.list.length+'명 (우리 FA '+fa.list.filter(x=>x.ours).length+'명)','A 200%+보상선수(20인 외) · B 100%+보상선수(25인 외) · C 150% · 금고 '+F.cash.toFixed(0)+'억'], !!fa.closed, ()=>renderProFA(rec));
+  if(pfD2Year(y)) row(['2차 드래프트','보호 35명 · 1~3년차 · 외국인 자동 제외 · 셋까지 4억·3억·2억'], F.d2Year===y, ()=>renderProD2(rec));
   { const on=!!ST.pro.tradeReq;
     const b=el('button','pf-opt'+(on?' on':''));
     b.innerHTML='<b>'+(on?'✓ ':'')+'트레이드 요청 — 나를 다른 구단으로</b><span>'+(on?'요청해 뒀다. 다음 시즌으로 넘어갈 때 결정된다 (다시 누르면 취소)':'자리가 없거나 새 출발이 필요할 때. 받아줄 구단이 있으면 간다')+'</span>';
@@ -17130,48 +17610,158 @@ function pfWinterCard(c, rec){
     card.appendChild(b); }
   c.appendChild(card);
 }
-function pfBack(rec){ const b=el('button','btn sm','← 시즌 끝 화면'); b.onclick=()=>{ saveGame(true); proSeasonScreen(rec, ST.pro.lastPost); }; return b; }
-function renderRookieDraft(rec){
+function pfBack(rec){ const b=el('button','btn sm','← 시즌 끝 화면'); b.onclick=()=>{ clearInterval(PF_DRAFT_T); saveGame(true); proSeasonScreen(rec, ST.pro.lastPost); }; return b; }
+/* ---- 내 연봉 협상 화면 ---- */
+function renderMyContract(rec){
   const c=$('#view'); c.innerHTML='';
-  const D=pfRookieRun(null);
-  const card=el('div','card');
-  const mineN=D.picks.filter(z=>z.team===ST.pro.team).length;
-  card.innerHTML='<div class="card-h">'+(ST.pro.year+1)+' 신인 드래프트</div>'+
-    '<p class="muted">'+(D.done?'끝났다.':('지금 '+(Math.floor(D.picks.length/10)+1)+'라운드 · <b>우리 차례</b> — 한 명을 고른다'))+
-    ' 기조는 「'+PRO_DRAFT_TXT[proPhil(ST.pro.team).draft]+'」.</p>';
+  const O=pfMyOffer(), me=ST.playerId||MYID;
+  const card=el('div','card pf-my');
+  card.innerHTML='<div class="card-h">'+(ST.pro.year+1)+' 연봉 협상 — '+nameOf(me)+'</div>'+
+    '<div class="pf-myrow"><span>올해 연봉</span><b>'+wonStr2(O.old)+'</b></div>'+
+    '<div class="pf-myrow"><span>올해 성적</span><b>'+O.txt+'</b></div>'+
+    '<div class="pf-myrow big"><span>구단 제시</span><b>'+wonStr2(O.done?O.final:O.offer)+'</b></div>'+
+    (O.msg?'<p class="pf-msg">'+O.msg+'</p>':'')+
+    (O.done?'<p class="muted">'+(O.how||'')+(O.arb?(' — 조정위원회는 '+(O.arb.win?'<b>내 손을</b>':'구단 손을')+' 들었다'):'')+'</p>':
+    '<p class="muted">최저연봉 '+wonStr2(kboMinSal(ST.pro.year+1))+'. 연봉조정 신청은 구단안('+wonStr2(O.offer)+')과 내 요구안('+wonStr2(O.ask)+') 중 <b>하나만</b> 고른다 — 역대로 선수가 이긴 건 딱 한 번이다.</p>');
   c.appendChild(card);
-  if(D.picks.length){ const pc=el('div','card'); pc.appendChild(el('div','card-h','지명 현황'));
-    D.picks.slice(-10).forEach(z=>pc.appendChild(el('div','pf-log'+(z.team===ST.pro.team?' mine':''), z.round+'R · '+proName(z.team)+' — '+z.name+' ('+z.school+' '+(POSNAMES[z.pos]||z.pos)+')')));
-    c.appendChild(pc); }
-  if(!D.done){
-    const taken=new Set(D.picks.map(x=>x.id));
-    const lc=el('div','card'); lc.appendChild(el('div','card-h','남은 후보'));
-    D.list.filter(x=>!taken.has(x.p.id)).sort((a,b)=>b.pot-a.pot).slice(0,14).forEach(x=>{
-      const b=el('button','pf-opt');
-      const now=pfValue(x.p);
-      b.innerHTML='<b>'+x.p.name+' · '+x.school+' '+(POSNAMES[x.pos]||x.pos)+'</b><span>지금 '+now+' · 잠재 '+'★'.repeat(Math.max(1,Math.round(x.pot/20)))+'</span>';
-      b.onclick=async()=>{ pfRookieRun(x.p.id); await saveGame(true); renderRookieDraft(rec); };
-      lc.appendChild(b);
-    });
-    c.appendChild(lc);
+  if(!O.done){
+    const b1=el('button','btn primary','도장 찍는다 — '+wonStr2(O.offer));
+    b1.onclick=async()=>{ pfMyAccept(O.offer,'구단 제시액에 도장'); await saveGame(true); renderMyContract(rec); };
+    const b2=el('button','btn','더 달라고 버틴다');
+    b2.onclick=async()=>{ pfMyHold(); await saveGame(true); renderMyContract(rec); };
+    const b3=el('button','btn','연봉조정 신청 — 요구안 '+wonStr2(O.ask));
+    b3.onclick=async()=>{ pfMyArbitrate(); await saveGame(true); renderMyContract(rec); };
+    [b1,b2,b3].forEach(b=>c.appendChild(b));
   }
-  if(mineN) c.appendChild(el('p','muted','우리 지명: '+D.picks.filter(z=>z.team===ST.pro.team).map(z=>z.name).join(', ')));
   c.appendChild(pfBack(rec));
+}
+function renderMyFA(rec){
+  const c=$('#view'); c.innerHTML='';
+  const M=pfMyFA(); if(!M){ c.appendChild(pfBack(rec)); return; }
+  const card=el('div','card');
+  card.innerHTML='<div class="card-h">FA 선언 — 조건표</div><p class="muted">계약금은 총액의 35% 를 바로 받고, 나머지는 해마다 연봉으로 받는다. 다른 구단으로 가면 원 소속 구단이 보상을 받는다.</p>';
+  M.offers.forEach(o=>{ const b=el('button','pf-opt'+(M.done?(M.pick===o.key?' on':' done'):''));
+    b.innerHTML='<b>'+proName(o.key)+(o.key===ST.pro.team?' (잔류)':'')+'</b><span>'+o.yrs+'년 총액 '+wonStr2(o.total)+' · 계약금 '+wonStr2(o.total*0.35)+'</span>';
+    if(!M.done) b.onclick=async()=>{ pfMyFAPick(o.key); await saveGame(true); renderMyFA(rec); };
+    card.appendChild(b); });
+  c.appendChild(card);
+  c.appendChild(pfBack(rec));
+}
+function renderRenewals(rec){
+  const c=$('#view'); c.innerHTML='';
+  const R=pfRenewals();
+  const tot=R.list.reduce((s,x)=>s+(x.sal-x.old),0);
+  const card=el('div','card');
+  card.innerHTML='<div class="card-h">연봉 재계약 — '+R.list.length+'명 · 총 '+(tot>=0?'+':'')+wonStr2(tot)+'</div>'+
+    '<p class="muted">비FA 선수는 해마다 다시 계약한다. 고과는 올해 성적과 성장이다. 최저연봉 '+wonStr2(kboMinSal(ST.pro.year+1))+'.</p>';
+  R.list.slice().sort((a,b)=>b.sal-a.sal).forEach(x=>{ const r=el('div','pf-rrow');
+    const pc=Math.round((x.sal/x.old-1)*100);
+    r.innerHTML='<span class="pf-rn">'+x.name+'</span><span class="pf-rp">'+x.txt+'</span><span class="pf-rs">'+wonStr2(x.old)+' → <b>'+wonStr2(x.sal)+'</b></span><span class="pf-rt '+(pc>=0?'up':'dn')+'">'+(pc>=0?'+':'')+pc+'%</span>';
+    card.appendChild(r); });
+  c.appendChild(card);
+  if(!R.done){ const b=el('button','btn primary','전원 도장'); b.onclick=async()=>{ pfRenewSign(); await saveGame(true); renderRenewals(rec); }; c.appendChild(b); }
+  c.appendChild(pfBack(rec));
+}
+/* ---- 신인 드래프트 — 중계 보드 ---- */
+let PF_DRAFT_T=null;
+function renderRookieDraft(rec, fast){
+  clearInterval(PF_DRAFT_T);
+  const c=$('#view'); c.innerHTML='';
+  const F=pfState(), D=pfRookiePool(); if(!D.order) D.order=pfRookieOrder();
+  const hd=el('div','card kd-hd');
+  c.appendChild(hd);
+  const spot=el('div','kd-spot'); c.appendChild(spot);
+  const board=el('div','card kd-board'); c.appendChild(board);
+  const pickArea=el('div','kd-pick'); c.appendChild(pickArea);
+  const ctl=el('div','kd-ctl'); c.appendChild(ctl);
+  const teamChip=k=>{ const u=proUni(k)||{}; return '<em class="kd-chip" style="background:'+(u.cap||'#333')+'">'+(proDef(k)||{}).short+'</em>'; };
+  const paintHead=()=>{
+    const n=D.picks.length, rd=Math.min(11,Math.floor(n/10)+1), pk=(n%10)+1;
+    hd.innerHTML='<div class="card-h">'+(ST.pro.year+1)+' KBO 신인 드래프트</div>'+
+      '<p class="muted">11라운드 · 전년도 순위 역순 · '+(D.done?'<b>끝났다</b>':('지금 <b>'+rd+'라운드 '+pk+'순위</b> — '+proName(D.order[n])))+
+      ' · 우리 스카우트진 ★'+F.scout+' (범위 폭 '+Math.round(22-F.scout*3.4)+'칸)</p>';
+  };
+  const paintBoard=()=>{
+    const mine=D.picks.filter(z=>z.team===ST.pro.team);
+    board.innerHTML='<div class="kd-bh">지명 현황 '+D.picks.length+'/110'+(mine.length?' · 우리 '+mine.length+'명':'')+'</div>'+
+      D.picks.slice(-12).reverse().map(z=>'<div class="kd-row'+(z.team===ST.pro.team?' mine':'')+'"><u>'+z.round+'R '+z.pick+'</u>'+teamChip(z.team)+
+        '<b>'+z.name+'</b><i>'+z.schoolName+' · '+(POSNAMES[z.pos]||z.pos)+'</i></div>').join('');
+  };
+  const paintSpot=(z, big)=>{
+    if(!z){ spot.innerHTML=''; return; }
+    spot.innerHTML='<div class="kd-card'+(z.team===ST.pro.team?' mine':'')+'"><div class="kd-no">'+z.round+'라운드 '+z.pick+'순위</div>'+
+      '<div class="kd-tm">'+teamChip(z.team)+' '+proName(z.team)+'</div><div class="kd-nm">'+z.name+'</div>'+
+      '<div class="kd-sc">'+z.schoolName+' · '+(POSNAMES[z.pos]||z.pos)+'</div></div>';
+    const cd=spot.firstChild; cd.classList.remove('pop'); void cd.offsetWidth; cd.classList.add('pop');
+  };
+  let filter='all';
+  const est=(x)=>'현재 <b>'+x.rc[0]+'~'+x.rc[1]+'</b> · 잠재 <b>'+x.rp[0]+'~'+x.rp[1]+'</b>';
+  const tier=(x)=>{ const m=(x.rp[0]+x.rp[1])/2, n=(x.rc[0]+x.rc[1])/2;
+    return m>=72?'「1군 주전감 · 놓치면 후회」':(n>=46?'「바로 1군에 쓸 수 있다」':(m>=60?'「원석 — 3년은 기다려야」':(m>=50?'「뎁스 자원」':'「성장이 더딜 것」'))); };
+  const paintPick=()=>{
+    pickArea.innerHTML='';
+    if(D.done){ const mine=D.picks.filter(z=>z.team===ST.pro.team);
+      const cd=el('div','card'); cd.innerHTML='<div class="card-h">우리 지명 '+mine.length+'명 — 전원 2군에서 시작</div>'+
+        mine.map(z=>{ const r=F.rep[z.id]; return '<div class="kd-row mine"><u>'+z.round+'R '+z.pick+'</u><b>'+z.name+'</b><i>'+z.schoolName+' · '+(POSNAMES[z.pos]||z.pos)+
+          (r?' · 현재 '+r.cur+' · 잠재 '+r.rp[0]+'~'+r.rp[1]:'')+' · 계약금 '+wonStr2(pfBonusOf(z.round,z.pick))+'</i></div>'; }).join('');
+      pickArea.appendChild(cd); return; }
+    const k=D.order[D.picks.length]; if(k!==ST.pro.team) return;
+    const n=D.picks.length;
+    const cd=el('div','card kd-our');
+    cd.innerHTML='<div class="card-h">우리 차례 — '+(Math.floor(n/10)+1)+'라운드 '+((n%10)+1)+'순위 · 계약금 '+wonStr2(pfBonusOf(Math.floor(n/10)+1,(n%10)+1))+'</div>'+
+      '<p class="muted">숫자는 스카우트진이 본 <b>범위</b>다. 진짜 값은 그 안 어딘가에 있다. 뽑으면 현재는 바로 보이고, 잠재는 해마다 좁혀진다.</p>';
+    const fl=el('div','kd-flt');
+    [['all','전체'],['P','투수'],['C','포수'],['IF','내야'],['OF','외야']].forEach(([k2,n2])=>{ const b=el('button',k2===filter?'on':'',n2);
+      b.onclick=()=>{ filter=k2; paintPick(); }; fl.appendChild(b); });
+    cd.appendChild(fl);
+    const taken=new Set(D.picks.map(x=>x.id));
+    const inF=x=>filter==='all'||(filter==='P'&&x.pos==='P')||(filter==='C'&&x.pos==='C')||(filter==='IF'&&['1B','2B','3B','SS'].includes(x.pos))||(filter==='OF'&&['LF','CF','RF'].includes(x.pos));
+    D.list.filter(x=>!taken.has(x.p.id)&&inF(x)).sort((a,b)=>(b.rp[0]+b.rp[1]+b.rc[0]+b.rc[1]*0.6)-(a.rp[0]+a.rp[1]+a.rc[0]+a.rc[1]*0.6)).slice(0,16).forEach(x=>{
+      const b=el('button','pf-opt kd-cand');
+      b.innerHTML='<b>'+x.p.name+' <em>'+x.schoolName+' · '+(POSNAMES[x.pos]||x.pos)+(x.p.kmh?' · 최고 '+x.p.kmh+'km/h':'')+'</em></b><span>'+est(x)+'</span><i>스카우트 '+tier(x)+'</i>';
+      b.onclick=async()=>{ pfRookieStep(x.p.id); await saveGame(true); run(); };
+      cd.appendChild(b); });
+    pickArea.appendChild(cd);
+  };
+  const paintCtl=()=>{
+    ctl.innerHTML='';
+    if(!D.done){
+      const f=el('button','btn sm','우리 차례까지 빨리 ▸▸'); f.onclick=()=>{ fast=true; run(); };
+      const a=el('button','btn sm','남은 우리 지명은 스카우트팀에 맡긴다'); a.onclick=async()=>{ clearInterval(PF_DRAFT_T); pfRookieAutoOurs(); await saveGame(true); renderRookieDraft(rec); };
+      ctl.appendChild(f); ctl.appendChild(a);
+    }
+    ctl.appendChild(pfBack(rec));
+  };
+  const tick=()=>{
+    if(D.done || D.order[D.picks.length]===ST.pro.team){ clearInterval(PF_DRAFT_T); paintHead(); paintBoard(); paintPick(); paintCtl(); saveGame(true); return; }
+    pfRookieStep(null);
+    paintHead(); paintBoard(); paintSpot(D.picks[D.picks.length-1]);
+  };
+  const run=()=>{
+    clearInterval(PF_DRAFT_T); pickArea.innerHTML='';
+    if(fast){ let g=0; while(!D.done && D.order[D.picks.length]!==ST.pro.team && g++<200) pfRookieStep(null); tick(); fast=false; return; }
+    PF_DRAFT_T=setInterval(tick, 420); tick();
+  };
+  paintHead(); paintBoard(); paintSpot(D.picks[D.picks.length-1]); paintCtl();
+  run();
 }
 function renderProFA(rec){
   const c=$('#view'); c.innerHTML='';
   const F=pfState(), fa=pfFAOpen();
   const hd=el('div','card');
   hd.innerHTML='<div class="card-h">FA 시장 · 금고 '+F.cash.toFixed(1)+'억</div>'+
-    '<p class="muted">A — 몸값 + 보상금 20% + 보상선수 1명 · B — 보상금 10% + 보상선수(벤치) · C — 보상금 15% 만.<br>보상선수는 우리 보호 '+PF_PROTECT+'명 밖에서 원 소속 구단이 고른다.</p>';
+    '<p class="muted">등급은 직전 연봉 순위 — A 구단 3위·리그 30위 안 · B 구단 10위·리그 60위 안 · 만 35세 신규 FA 는 C.<br>'+
+    '데려가면 원 소속 구단이 보상을 고른다 — A 직전 연봉 200% + 보상선수(우리 20인 보호 외) 또는 300% · B 100% + 보상선수(25인 외) 또는 200% · C 150%.<br>'+
+    '계약금(총액 35%)은 바로 나가고 나머지는 해마다 연봉으로 나간다. 우리 FA 는 잔류 계약을 할 수 있다 — 떠나면 보상을 받는다.</p>';
   c.appendChild(hd);
   const lc=el('div','card');
   fa.list.forEach(x=>{
-    const b=el('button','pf-opt'+(x.done?' done':''));
-    const comp=Math.round(x.price*(x.grade==='A'?0.20:x.grade==='B'?0.10:0.15));
-    b.innerHTML='<b><em class="pf-g g'+x.grade+'">'+x.grade+'</em> '+x.name+' · '+(x.pit?'투수':'야수')+' · '+x.age+'세 · '+proName(x.from)+'</b>'+
-      '<span>'+(x.done?(x.done==='us'?'우리가 데려왔다':(x.done==='stay'?'잔류':'→ '+proName(x.done))):('4년 '+x.price+'억 + 보상금 '+comp+'억 · 가치 '+x.v))+'</span>';
-    if(!x.done&&!fa.closed) b.onclick=async()=>{ const r=pfSign(x.id); toast(r.ok?('계약 — '+r.total+'억'+(r.lost?' · 보상선수 '+r.lost+' 떠남':'')):r.why); await saveGame(true); renderProFA(rec); };
+    const b=el('button','pf-opt'+(x.done?' done':'')+(x.ours?' ours':''));
+    const comp=x.ours?null:pfFAComp(x, ST.pro.team);
+    b.innerHTML='<b><em class="pf-g g'+x.grade+'">'+x.grade+'</em> '+x.name+' · '+(x.pit?'투수':'야수')+' · '+x.age+'세 · '+(x.ours?'<u>우리 FA</u>':proName(x.from))+'</b>'+
+      '<span>'+(x.done?(x.done==='us'?(x.ours?'잔류 계약':'우리가 데려왔다'):(x.done==='stay'?'원 소속 잔류':'→ '+proName(x.done))):
+        (x.yrs+'년 '+wonStr2(x.total)+' · 직전 연봉 '+wonStr2(x.last)+(comp?' · 보상 '+wonStr2(comp.money)+(comp.player?' + '+comp.player.name:''):'')+' · 가치 '+x.v))+'</span>';
+    if(!x.done&&!fa.closed) b.onclick=async()=>{ const r=pfSign(x.id); toast(r.ok?('계약 — '+wonStr2(r.total)+(r.lost?' · 보상선수 '+r.lost+' 떠남':'')):r.why); await saveGame(true); renderProFA(rec); };
     lc.appendChild(b);
   });
   c.appendChild(lc);
@@ -17184,25 +17774,26 @@ function renderProD2(rec){
   const F=pfState(), me=ST.playerId||MYID;
   if(F.d2Year===ST.pro.year){ c.appendChild(el('div','card','올해 2차 드래프트는 끝났다.')); c.appendChild(pfBack(rec)); return; }
   const us=TBYID.wwzw;
-  const all=[].concat(us.players,us.pitchers).filter((p,i,a)=>p.id!==me && a.findIndex(q=>q.id===p.id)===i).sort((a,b)=>pfValue(b)-pfValue(a));
-  const prot=pfProtected();
-  if(!Array.isArray(F.protect)||!F.protect.length) F.protect=all.filter(p=>prot.has(p.id)).map(p=>p.id);
+  const all=pfAll(us).filter(p=>p.id!==me).sort((a,b)=>pfValue(b)-pfValue(a));
+  const ex=all.filter(p=>pfD2Exempt(p,ST.pro.team));
+  const need=all.filter(p=>!pfD2Exempt(p,ST.pro.team));
+  if(!Array.isArray(F.protect)||!F.protect.length) F.protect=need.slice(0,PF_D2_PROTECT).map(p=>p.id);
   const hd=el('div','card');
-  hd.innerHTML='<div class="card-h">2차 드래프트 · 보호선수 '+F.protect.length+'/'+PF_PROTECT+'</div>'+
-    '<p class="muted">묶을 사람을 고른다. 나는 자동 보호다. 묶지 않은 사람은 다른 구단이 데려갈 수 있다.</p>';
+  hd.innerHTML='<div class="card-h">2차 드래프트 · 보호 '+F.protect.length+'/'+PF_D2_PROTECT+'</div>'+
+    '<p class="muted">묶을 사람을 고른다(1군 · 2군 전체에서). 나 · 입단 1~3년차 · 외국인 · 올해 FA 는 자동 제외('+ex.length+'명). 묶지 않은 사람은 다른 구단이 데려갈 수 있다 — 양도금은 우리가 받는다.</p>';
   c.appendChild(hd);
   const pc=el('div','card pf-prot');
-  all.forEach(p=>{ const on=F.protect.includes(p.id);
-    const b=el('button','pf-chip'+(on?' on':''), p.name+' '+pfValue(p));
+  need.forEach(p=>{ const on=F.protect.includes(p.id);
+    const b=el('button','pf-chip'+(on?' on':''), p.name+' '+pfValue(p)+(p.farm?' · 2군':''));
     b.onclick=()=>{ const i=F.protect.indexOf(p.id);
-      if(i>=0) F.protect.splice(i,1); else if(F.protect.length<PF_PROTECT) F.protect.push(p.id); else { toast('보호는 '+PF_PROTECT+'명까지'); return; }
+      if(i>=0) F.protect.splice(i,1); else if(F.protect.length<PF_D2_PROTECT) F.protect.push(p.id); else { toast('보호는 '+PF_D2_PROTECT+'명까지'); return; }
       renderProD2(rec); };
     pc.appendChild(b); });
   c.appendChild(pc);
   const pool=pfD2Pool(), pick=[];
   const lc=el('div','card'); lc.appendChild(el('div','card-h','데려올 사람 (셋까지 · 4억 · 3억 · 2억)'));
   pool.forEach(x=>{ const b=el('button','pf-opt');
-    b.innerHTML='<b>'+x.p.name+' · '+proName(proKeyOf(x.t.id))+' · '+x.age+'세</b><span>'+(pfIsPit(x.p)?'투수':'야수')+' · 가치 '+x.v+'</span>';
+    b.innerHTML='<b>'+x.p.name+' · '+proName(proKeyOf(x.t.id))+' · '+x.age+'세'+(x.p.farm?' · 2군':'')+'</b><span>'+(pfIsPit(x.p)?'투수':'야수')+' · 가치 '+x.v+' · '+wonStr2(pfCon(x.p,proKeyOf(x.t.id)).sal)+'</span>';
     b.onclick=()=>{ const i=pick.indexOf(x.p.id); if(i>=0){ pick.splice(i,1); b.classList.remove('on'); }
       else if(pick.length<3){ pick.push(x.p.id); b.classList.add('on'); } };
     lc.appendChild(b); });
@@ -17213,19 +17804,18 @@ function renderProD2(rec){
   c.appendChild(pfBack(rec));
 }
 
-/* 다음 시즌으로 넘어가는데 겨울 일을 안 끝냈으면 알아서 끝낸다(우리 차례는 기조대로) */
+/* 다음 시즌으로 넘어가는데 겨울 일을 안 끝냈으면 알아서 끝낸다(우리 차례는 스카우트팀이) */
 function pfWinterAuto(){
   try{
-    const D=pfRookiePool();
-    let g=0; while(!D.done && g++<40){
-      pfRookieRun(null); if(D.done) break;
-      const taken=new Set(D.picks.map(x=>x.id)); const left=D.list.filter(x=>!taken.has(x.p.id));
-      const x=pfRookieAIPick(ST.pro.team,left); if(!x) break; pfRookieRun(x.p.id);
-    }
+    clearInterval(PF_DRAFT_T);
+    pfRookieAutoOurs();
     pfFAOpen(); pfFAClose();
     if(pfD2Year(ST.pro.year) && pfState().d2Year!==ST.pro.year) pfD2Run([]);
-  }catch(e){}
+    const M=pfMyFA(); if(M&&!M.done) pfMyFAPick(ST.pro.team);
+    pfYearRoll();
+  }catch(e){ try{ console.warn('pfWinterAuto',e); }catch(e2){} }
 }
+
 /* 면담 — 자리만 잡아둔다. 실제 장면은 proTalk 가 그린다 */
 function proTalkRoll(res, won, uIds){ try{ if(typeof proTalkPick==='function') proTalkPick(res,won,uIds); }catch(e){} }
 
@@ -22611,11 +23201,17 @@ function lobbyPaint(cv){
     /* 나 — 잔디를 밟고 선다. 등번호는 내 번호다 (그림에 안 박혀 있다) */
     const me=(ST&&(ST.playerId||MYID))||null;
     const pl=me?(TBYID['wwzw'].players||[]).find(x=>x.id===me):null;
-    const feet=off+vh*0.84, hgt=vh*0.62, sc=hgt/MV_FIG_H.bat;
-    mvShadow(g, MVW/2, feet, hgt*1.1);
-    g.save(); g.translate(MVW/2, feet); g.scale(sc,sc);
-    mvFig(g,'stand',0,0,LOB_UNI,false,{no:(pl&&pl.no!=null)?pl.no:null});
-    g.restore();
+    /* [제보 v3.36.0] "메인 화면은 뒷모습이 아니라 앞모습이 나오게 해야지 ㅋㅋㅋ
+       홈플레이트 중앙에 서서 뭐하냐" — 맞다. 타석 그림(포수 뒤에서 본 뒷모습)을
+       그대로 홈플레이트 위에 세워놨었다. 로비는 **나를 보여주는 자리**다.
+       앞모습으로, 플레이트 옆 흙(3루 쪽 타석 앞)에 세운다. 프로면 그 팀 유니폼,
+       투수면 글러브를 끼고 선다.                                              */
+    const U=(typeof isPro==='function'&&isPro()&&ST.pro)?proUni(ST.pro.team):LOB_UNI;
+    const isPit=!!(ST&&(ST.role==='pit'));
+    const feet=off+vh*0.80, hgt=vh*0.60, x=MVW*0.44;
+    mvShadow(g, x, feet, hgt*1.0);
+    if(isPit) mvSD(g, x, feet, hgt*0.92, U, 'idle', false, {no:(pl&&pl.no!=null)?pl.no:null});
+    else mvSD(g, x, feet, hgt, U, 'stand', true, {front:true, no:(pl&&pl.no!=null)?pl.no:null});
     g.restore();
   }catch(e){ try{ g.restore(); }catch(e2){} return false; }
   return true;
@@ -22667,7 +23263,9 @@ function lobbyStage(){
     '<span class="lob-mp" title="시즌 '+done+' / '+total+'">'+
       '<i style="width:'+Math.round(done/total*100)+'%"></i></span>'+
     '<i class="lob-cur c1">'+(ST.round||0)+'주차</i>'+
-    '<i class="lob-cur">'+Math.round(ST.budget||0)+'만원</i>';
+    '<i class="lob-cur">'+((typeof isPro==='function'&&isPro()&&typeof pfMyCon==='function')?
+      (()=>{ try{ return '연봉 '+wonStr2(pfMyCon().sal); }catch(e){ return Math.round(ST.budget||0)+'만원'; } })():
+      Math.round(ST.budget||0)+'만원')+'</i>';
   w.appendChild(top);
 
   /* --- 왼쪽 아이콘 줄 --- */
@@ -32863,10 +33461,14 @@ function sdBatter(D,S){
       g.ellipse(4+sx*0.3,-40,15,17,0,0,Math.PI*2); g.fill('evenodd'); },
     ()=>{ g.strokeStyle=P.team; g.lineWidth=1.3;              // 어깨 요크
       g.beginPath(); g.moveTo(-15,-45); g.quadraticCurveTo(0,-43,15,-45); g.stroke();
-      if(F){ // 앞 — 단추 줄 · 가슴 글씨
+      if(F){ // 앞 — 단추 줄 · 가슴 글씨 · 왼쪽 아래 가슴 번호(KBO 유니폼이 그렇다)
         g.lineWidth=1.1; g.beginPath(); g.moveTo(1,-46); g.lineTo(1,-28); g.stroke();
         g.fillStyle=P.team; g.beginPath(); mvRR(g,-11,-41,9,3.2,1.4); g.fill();
-        g.beginPath(); mvRR(g,3.5,-41,9,3.2,1.4); g.fill(); } });
+        g.beginPath(); mvRR(g,3.5,-41,9,3.2,1.4); g.fill();
+        if(D.o.no!=null){ g.save(); g.translate(-7,-33); g.scale(D.dir,1);
+          g.font='900 8px sans-serif'; g.textAlign='center'; g.textBaseline='middle';
+          g.lineWidth=1.8; g.strokeStyle='#ffffff'; g.strokeText(String(D.o.no),0,0);
+          g.fillStyle=P.team; g.fillText(String(D.o.no),0,0); g.restore(); } } });
   /* 등번호 — 팀 색에 흰 테두리 */
   if(D.o.no!=null && !F){
     g.save(); g.translate(sx*0.25,-36.5); g.scale(D.dir,1);
