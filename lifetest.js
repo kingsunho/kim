@@ -135,6 +135,33 @@ const statSum=()=>ev("(function(){ const p=TBYID.wwzw.players.find(x=>x.id===(ST
   ev("go('train')"); await wait(20);
   T('선수 카드 — 종합 · 등급', ()=>{ const o=d.querySelector('.ocd-ovr'); return o&&/^\d+$/.test(o.textContent)&&d.querySelectorAll('.ocd-r b').length>=4 ? 'OVR '+o.textContent : '!'; });
 
+  console.log('\n[v3.43 — 카드 · 이벤트 · 커리어]');
+  T('리그 평균 줄이면 OPS+ 100', ()=>{ const r=JSON.parse(ev("JSON.stringify(crrBat({pa:600,ab:520,h:138,d2:25,d3:2,hr:9,bb:62,hbp:8},'CF'))")); return Math.abs(r.opsp-100)<=6 ? 'OPS+ '+r.opsp+' · WAR '+r.war.toFixed(1) : '!'+r.opsp; });
+  T('리그 평균 투수면 ERA+ 100', ()=>ev("crrPit({outs:540,er:94,h:180,bb:60,w:10,l:10,k:140}).erap")===100);
+  ev("renderProFront('roster')"); await wait(20);
+  T('프런트 선수단 — 종합 뱃지', ()=>d.querySelectorAll('.pf-rrow .ovb').length>10 ? d.querySelectorAll('.pf-rrow .ovb').length+'명' : '!'+d.querySelectorAll('.pf-rrow .ovb').length);
+  { const row=[...d.querySelectorAll('.pf-rrow')].find(r=>!r.classList.contains('me')); if(row) row.click(); await wait(20); }
+  T('선수를 누르면 카드 시트', ()=>!!d.querySelector('#sheet.open .ocd-ovr'));
+  ev("document.getElementById('sheet').classList.remove('open'); ST.gev=null;");
+  ev("gevWeek(()=>0.01)");
+  T('이벤트가 걸린다', ()=>ev("!!ST.gev") ? ev("ST.gev.id") : '!');
+  ev("go('home')"); await wait(20);
+  T('로비에 「이벤트」', ()=>[...d.querySelectorAll('.lob-ic')].some(b=>/이벤트/.test(b.textContent)));
+  ev("gevOpen()"); await wait(10);
+  T('이벤트 창 — 고를 거리', ()=>d.querySelectorAll('#sheet.open .gev-b').length>=2);
+  const s1=statSum(), cg1=ev("ST.cond[ST.playerId]"), mo1=ev("ST.morale[ST.playerId]");
+  d.querySelector('#sheet .gev-b').click(); await wait(20);
+  T('고르면 결과가 나오고 이벤트가 끝난다', ()=>!!d.querySelector('#sheet .gev-r') && !ev("ST.gev") ? (d.querySelector('#sheet .gev-r').textContent.slice(0,40)) : '!');
+  T('뭔가 바뀌었다(능력치 · 컨디션 · 사기)', ()=>statSum()!==s1 || ev("ST.cond[ST.playerId]")!==cg1 || ev("ST.morale[ST.playerId]")!==mo1);
+  ev("ST.gev={id:'drink', wk:ST.round}; ST.round+=2; gevWeek(()=>0.99)");
+  T('두 주 안 고르면 사라진다', ()=>!ev("ST.gev"));
+  const eff=JSON.parse(ev("JSON.stringify(gevApply({pow:1.5, cond:-10}, ()=>0.5))"));
+  T('효과 문구', ()=>eff.some(x=>/파워 \+1\.5/.test(x)) && eff.some(x=>/컨디션 -10/.test(x)) ? eff.join(' · ') : '!'+eff);
+  ev("crrOpen()"); await wait(10);
+  T('커리어 표', ()=>!!d.querySelector('#sheet.open .crr-t table') && /WAR/.test(d.querySelector('#sheet').textContent));
+  ev("document.getElementById('sheet').classList.remove('open')");
+  clean('커리어');
+
   console.log('\n[한 주 · 한 시즌]');
   ev("ST.injury[ST.playerId]=null;");
   for(let k=0;k<2;k++) ev("runWeek(); saveGame(true);");
