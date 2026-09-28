@@ -75,22 +75,32 @@ const reload=()=>{ const snap=ev("JSON.stringify(ST)");
   [...d.querySelectorAll('.pf-win .pf-opt')].find(b=>/신인 드래프트/.test(b.textContent)).click(); await wait(30);
   T('우리 차례에서 멈춘다', ()=>/우리 차례/.test(d.getElementById('view').textContent));
   let guard=0;
-  while(!ev("pfRookiePool().done") && guard++<5){
-    const opt=d.querySelector('.card .pf-opt'); if(!opt) break; opt.click(); await wait(20); }
-  T('세 라운드 30명이 다 뽑혔다', ()=>{ const n=ev("pfRookiePool().picks.length"); return n===30?'30명':'!'+n; });
-  T('우리 지명 셋이 우리 팀에 왔다', ()=>{ const mine=JSON.parse(ev("JSON.stringify(pfRookiePool().picks.filter(z=>z.team===ST.pro.team).map(z=>z.id))"));
-    const ok=mine.length===3 && mine.every(id=>ev(`!![].concat(TBYID.wwzw.players,TBYID.wwzw.pitchers).find(p=>p.id==='${id}')`)); return ok?'3명':'!'+mine.length; });
+  while(!ev("pfRookiePool().done") && guard++<60){
+    const opt=d.querySelector('.kd-cand');
+    if(opt){ opt.click(); await wait(20); continue; }
+    const f=[...d.querySelectorAll('#view .btn')].find(b=>/우리 차례까지 빨리/.test(b.textContent));
+    if(!f) break; f.click(); await wait(20); }
+  ev("clearInterval(PF_DRAFT_T)");
+  T('11라운드 110명이 다 뽑혔다', ()=>{ const n=ev("pfRookiePool().picks.length"); return n===110?'110명':'!'+n; });
+  T('우리 지명 열하나가 우리 2군에 왔다', ()=>{ const mine=JSON.parse(ev("JSON.stringify(pfRookiePool().picks.filter(z=>z.team===ST.pro.team).map(z=>z.id))"));
+    const ok=mine.length===11 && mine.every(id=>ev(`!!(TBYID.wwzw.farm||[]).find(p=>p.id==='${id}')`)); return ok?'11명':'!'+mine.length; });
+  T('스카우트 범위 안에 진짜 값이 있다', ()=>{ const r=JSON.parse(ev(`JSON.stringify(pfRookiePool().list.map(x=>({c:x.rc, p:x.rp, tc:x.cur, tp:x.pot})))`));
+    const bad2=r.filter(x=>x.tc!=null&&(x.tc<x.c[0]||x.tc>x.c[1]||x.tp<x.p[0]||x.tp>x.p[1]));
+    return r.length&&!bad2.length ? r.length+'명 전원' : '!'+bad2.length+'/'+r.length+' '+JSON.stringify(r[0]); });
+  T('스카우트진이 좋을수록 범위가 좁다', ()=>{ const w=ev("(function(){ const a=pfRange(60,1,()=>0.5), b=pfRange(60,5,()=>0.5); return (a[1]-a[0])+'>'+(b[1]-b[0]); })()");
+    const [a,b]=w.split('>').map(Number); return a>b ? '★1 '+a+'칸 · ★5 '+b+'칸' : '!'+w; });
   /* FA */
   ev("pfState().cash=400");
   const fa=JSON.parse(ev("JSON.stringify(pfFAOpen())"));
   T('FA 에 등급이 붙는다', ()=>fa.list.length && fa.list.every(x=>/^[ABC]$/.test(x.grade)) ? fa.list.map(x=>x.grade).join('') : '!'+fa.list.length);
-  const A=fa.list.find(x=>x.grade==='A');
+  /* A·B 는 보상선수가 붙는다(A 20인 · B 25인 보호 밖). 해에 따라 A 가 없을 수 있어서 둘 다 본다 */
+  const A=fa.list.find(x=>x.grade==='A'&&!x.ours)||fa.list.find(x=>x.grade==='B'&&!x.ours);
   if(A){
-    const before=ev("[].concat(TBYID.wwzw.players,TBYID.wwzw.pitchers).length");
+    const before=ev("pfAll(TBYID.wwzw).length");
     const r=JSON.parse(ev(`JSON.stringify(pfSign('${A.id}'))`));
-    T('A 등급 영입 — 보상선수가 떠난다', ()=>r.ok&&r.lost ? A.name+' 영입 · '+r.lost+' 떠남' : '!'+JSON.stringify(r));
-    T('인원은 그대로(한 명 오고 한 명 감)', ()=>ev("[].concat(TBYID.wwzw.players,TBYID.wwzw.pitchers).length")===before ? '같다' : '!'+before+'→'+ev("[].concat(TBYID.wwzw.players,TBYID.wwzw.pitchers).length"));
-  } else T('A 등급 FA 가 있다', ()=>'!없다');
+    T(A.grade+' 등급 영입 — 보상선수가 떠난다', ()=>r.ok&&r.lost ? A.name+' 영입 · '+r.lost+' 떠남' : '!'+JSON.stringify(r));
+    T('인원은 그대로(한 명 오고 한 명 감)', ()=>ev("pfAll(TBYID.wwzw).length")===before ? '같다' : '!'+before+'→'+ev("pfAll(TBYID.wwzw).length"));
+  } else T('보상선수 붙는 FA 가 있다', ()=>'!없다');
   ev("pfFAClose()");
   T('시장을 닫으면 남은 FA 가 정리된다', ()=>ev("pfFAOpen().list.every(x=>!!x.done)"));
   /* 2차 드래프트 — 2027 은 홀수 해 */
@@ -99,6 +109,17 @@ const reload=()=>{ const snap=ev("JSON.stringify(ST)");
   const d2=JSON.parse(ev(`JSON.stringify(pfD2Run(${JSON.stringify(pool)}))`));
   T('2차 드래프트로 데려온다', ()=>d2&&d2.got.length===2 ? d2.got.join(', ') : '!'+JSON.stringify(d2));
   T('나는 어디에도 안 끌려간다', ()=>ev("!!TBYID.wwzw.players.find(p=>p.id==='ksh')"));
+
+  console.log('\n[연봉 — 비FA 는 해마다 재계약 · 내 연봉]');
+  T('재계약 명단이 있고 전원 최저연봉 이상', ()=>{ const R=JSON.parse(ev("JSON.stringify(pfRenewals())")); const mn=ev("kboMinSal(ST.pro.year+1)");
+    return R.list.length && R.list.every(x=>x.sal>=mn) ? R.list.length+'명 · 최저 '+mn : '!'+R.list.length; });
+  T('FA 계약 중인 사람은 재계약 명단에 없다', ()=>ev("(function(){ const ids=pfRenewals().list.map(x=>x.id); return pfAll(TBYID.wwzw).filter(p=>pfCon(p,ST.pro.team).type==='fa').every(p=>!ids.includes(p.id)); })()"));
+  T('내 연봉 제시액이 나온다', ()=>{ const o=JSON.parse(ev("JSON.stringify(pfMyOffer())")); return o.skip||o.offer>=ev("kboMinSal(ST.pro.year+1)") ? (o.skip?'FA 계약 중':o.old+'→'+o.offer) : '!'+JSON.stringify(o); });
+  T('샐러리캡은 외국인 · 신인을 뺀다', ()=>ev("pfPayroll().capSum<=pfPayroll().total") ? '캡 '+ev("wonStr2(pfPayroll().capSum)")+' / 총 '+ev("wonStr2(pfPayroll().total)") : '!');
+  { const snap=ev("JSON.stringify(ST)");
+    ev("ST.pro.history=(ST.pro.history||[]).concat(Array.from({length:8},()=>({level:'1군'}))); pfState().myFA={year:ST.pro.year, offers:[{key:'kt',yrs:4,total:400000}], done:false}; pfMyFAPick('kt'); pfResolveFAMove();");
+    T('내 FA — 다른 구단을 고르면 옮긴다', ()=>ev("ST.pro.team")==='kt' && ev("pfMyCon().type")==='fa' ? '→ kt · '+ev("wonStr2(pfMyCon().sal)") : '!'+ev("ST.pro.team"));
+    ev(`TEAMS=[]; TBYID={}; ST=JSON.parse(${JSON.stringify(snap)}); TEAMS=buildAllTeams(); TBYID={}; TEAMS.forEach(t=>TBYID[t.id]=t); normalizeState();`); }
 
   console.log('\n[트레이드 요청 — 나를 보내 달라]');
   T('겨울 카드에 트레이드 요청이 있다', ()=>{ ev("proSeasonScreen(ST.pro.history[ST.pro.history.length-1], ST.pro.lastPost)"); return [...d.querySelectorAll('.pf-win .pf-opt')].some(b=>/트레이드 요청/.test(b.textContent)); });
@@ -119,7 +140,7 @@ const reload=()=>{ const snap=ev("JSON.stringify(ST)");
   console.log('\n[저장 · 다음 시즌 · 144경기]');
   reload();
   T('불러와도 신인 · FA · 2차 드래프트가 남는다', ()=>{ const n=ev("pfState().moves.length"); const mine=JSON.parse(ev("JSON.stringify(pfRookiePool().picks.filter(z=>z.team===ST.pro.team).map(z=>z.id))"));
-    return (n>30 && mine.every(id=>ev(`!![].concat(TBYID.wwzw.players,TBYID.wwzw.pitchers).find(p=>p.id==='${id}')`)))?'이동 '+n+'건':'!'+n; });
+    return (n>30 && mine.every(id=>ev(`!!pfAll(TBYID.wwzw).find(p=>p.id==='${id}')`)))?'이동 '+n+'건':'!'+n; });
   ev("proNextYear()"); await wait(30);
   T('다음 시즌이 열린다', ()=>ev("ST.pro.year")===2028);
   T('다음 시즌에도 이동이 남는다', ()=>ev(`!!TBYID.wwzw.players.find(p=>p.id==='${pair.b}')`) ? '남았다' : '!사라졌다');
