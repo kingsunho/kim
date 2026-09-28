@@ -36,7 +36,7 @@ node prosoak.js            # 프로(KBO) 144경기 · 포스트시즌 · 다음 
 ```
 
 여유가 있으면 기능별 테스트도 같이 (`boxtest` `feattest` `awardtest` `sorttest`
-`nametest` `mgrtest` `kakaotest` `careertest` `compattest` `smoketest` `maketest` `nttest` `fronttest` `hsprotest` `miltest` `schooltest` `lifetest` …).
+`nametest` `mgrtest` `kakaotest` `careertest` `compattest` `smoketest` `maketest` `nttest` `fronttest` `hsprotest` `miltest` `schooltest` `lifetest` `sesstest` …).
 
 **확률 기반이라 가끔 실패하는 것** — 실패하면 3회 재실행해서 판단한다:
 `advtest.js` `wltest.js` `recruittest.js` `dectest2.js` `playtest.js`
