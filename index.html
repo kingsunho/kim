@@ -9303,8 +9303,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.39.0';
-const APP_VERSION_NOTE = '지명 거부 — 스토브리그';
+const APP_VERSION = '3.39.1';
+const APP_VERSION_NOTE = '위 제목줄 — 고교 · 사회인 · 프로';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9325,6 +9325,10 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.39.1', t:'위 제목줄 — 고교 · 사회인 · 프로', items:[
+    '<b>화면 맨 위 제목줄이 지금 뛰는 곳을 따라간다.</b> 고교 때는 「군포고 야구부 · 2017 · 고2」, 졸업하면 「군포고 졸업 · 우완좌완 입단 드래프트」 또는 「KBO 신인 드래프트」, 프로는 「구단 · KBO 2027 · 1군/퓨처스」',
+    '예전엔 고교 3년 내내 「우완좌완 야구 매니저 · 안산 4부리그」 가 떠 있었다',
+  ]},
   {v:'3.39.0', t:'지명 거부 — 스토브리그', items:[
     '<b>고졸로 지명받았는데 마음에 안 들면 거부할 수 있다.</b> 드래프트 날 「지명 거부」 — 그 길로 우완좌완(사회인) 입단 드래프트로 간다',
     '<b>거부하면 장면이 이어진다.</b> 스카우트팀장 전화 → 다음 날 단장이 직접 찾아온다(왜 거부하는지 셋 중 하나를 고른다) → 그날 밤 집 → 우완좌완 단톡방 초대',
@@ -18257,6 +18261,7 @@ function stvReturnTeam(){
 /* 트라이아웃 장면 — 네 종목을 하나씩 보여주고 스카우트 한 줄 */
 function renderTryout(){
   const c=$('#view'); c.innerHTML='';
+  try{ paintTabs(); }catch(e){}                 // 제목줄 — 지금 어디서 뛰나
   const me=ST.playerId||MYID;
   const p=TBYID['wwzw'].players.find(x=>x.id===me)||{};
   const isP=!!(p.pitch && (ST.role==='pit'||ST.role==='two'));
@@ -18328,6 +18333,7 @@ function proDraftSlot(score, route){
 }
 function renderProDraft(){
   const c=$('#view'); c.innerHTML='';
+  try{ paintTabs(); }catch(e){}                 // 제목줄 — 지금 어디서 뛰나
   const me=ST.playerId||MYID;
   const sc=(ST.tryout&&ST.tryout.score)||tryoutScore();
   const slot=ST.proSlot||(ST.proSlot=proDraftSlot(sc));
@@ -22809,6 +22815,7 @@ function hsPastList(c){
 }
 function renderHS(){
   const H=hsSlot();
+  try{ paintTabs(); }catch(e){}                 // 제목줄 — 지금 어디서 뛰나
   /* 직접 치는 중이면 경기 화면을 다시 세운다(새로고침·화면 복귀) */
   if(H.playing){
     if(LIVE && LIVE._hs && !LIVE.over){
@@ -45235,6 +45242,20 @@ const VIEWS={home:renderHome,squad:renderSquad,lineup:renderLineup,kakao:renderK
   day:renderDay,mgr:renderMgr};
 /* 선수 모드면 감독 전용 탭을 아예 안 보이게 한다.
    눌러도 막히긴 하지만, 있는데 안 되는 것보다 없는 게 낫다. */
+function topbarText(){
+  try{
+    if(isPro()) return [proName(ST.pro.team), 'KBO '+(ST.pro.year||'')+' · '+(((ST.myFarm||0)>0)?'퓨처스':'1군')];
+    if(ST && isPlayerMode() && ST.hs){
+      const school=(HS_SCHOOLS[hsMySchool()]||{}).name||'고등학교';
+      if(!ST.hs.done){ const s=hsStory()[ST.hs.i]||hsStory()[0];
+        return [school+' 야구부', hsYearAt(ST.hs.i)+' · 고'+s.y]; }
+      if(ST.proSlot && ST.tryout && ST.tryout.route==='hs') return [school+' 졸업', 'KBO 신인 드래프트'];
+      if(ST.entryDraft) return [school+' 졸업', '우완좌완 입단 드래프트'];
+    }
+    if(ST && ST.proSlot && ST.tryout) return ['우완좌완', 'KBO 트라이아웃 · 신인 드래프트'];
+  }catch(e){}
+  return ['우완좌완 야구 매니저', '안산 4부리그'];
+}
 function paintTabs(){
   /* [제보] "선수모드인데 밑에 홈이랑 이런거 누르면 그냥 우완좌완 그게
              나와버리고" — 고등학교를 하는 중인데 본편 탭이 떠 있었다.
@@ -45242,10 +45263,11 @@ function paintTabs(){
   const bar=document.querySelector('.tabbar');
   if(bar) bar.style.display = (typeof hsActive==='function'&&hsActive()) ? 'none' : '';
   const hide=isPlayerMode();
-  /* 제목줄 — 프로면 내 구단 이름 */
+  /* 제목줄 — 지금 어디서 뛰나. 프로면 내 구단, 고교면 내 학교, 사회인이면 우완좌완.
+     [제보 v3.39.1] "상단에 우완좌완 야구 매니저 4부리그 — 고교 때는 고등학교로, 프로 갔으면
+     프로로 나오게 해야지" — 고교 3년 · 졸업 · 드래프트 날까지 「안산 4부리그」 가 떠 있었다 */
   { const h=document.querySelector('.topbar h1'), sp=document.querySelector('.topbar > span');
-    if(h) h.textContent=isPro()?proName(ST.pro.team):'우완좌완 야구 매니저';
-    if(sp) sp.textContent=isPro()?('KBO '+(ST.pro.year||'')+' · '+(((ST.myFarm||0)>0)?'퓨처스':'1군')):'안산 4부리그'; }
+    const T=topbarText(); if(h) h.textContent=T[0]; if(sp) sp.textContent=T[1]; }
   $$('.tab').forEach(b=>{
     const v=b.dataset.v;
     b.style.display=(hide&&PM_BLOCK[v])?'none':'';

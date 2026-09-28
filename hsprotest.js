@@ -37,6 +37,10 @@ const btn=re=>[...d.querySelectorAll('#view .btn')].find(b=>re.test(b.textConten
     return ok ? '맞다' : '!아니다'; });
   T('사회인 1라운드는 열려 있다', ()=>ev("proDraftSlot(90).round")===1);
 
+  const top=()=>{ const h=d.querySelector('.topbar h1'), s=d.querySelector('.topbar > span'); return (h?h.textContent:'')+' | '+(s?s.textContent:''); };
+  ev("hsSlot(); go('hs'); renderHS();"); await wait(30);
+  T('제목줄 — 고교 때는 학교 · 학년', ()=>/야구부/.test(top())&&/고1/.test(top())&&!/4부리그/.test(top()) ? top() : '!'+top());
+
   console.log('\n[고교 3년 → 졸업 화면]');
   ev(`(function(){ const H=hsSlot(); let g=0;
     while(!H.done && g++<60){ H.sayAt=99; H.picked=H.picked||{}; const s=hsStory()[H.i];
@@ -47,17 +51,21 @@ const btn=re=>[...d.querySelectorAll('#view .btn')].find(b=>re.test(b.textConten
   const snap=ev("JSON.stringify(ST)");
   ev("renderHS()"); await wait(40);
   T('두 갈래가 다 뜬다', ()=>!!btn(/사회인야구부터/) && !!btn(/바로 프로/) ? '둘 다' : '!'+[...d.querySelectorAll('#view .btn')].map(b=>b.textContent).join('|'));
+  T('제목줄 — 졸업 · 입단 드래프트', ()=>/졸업/.test(top())&&!/4부리그/.test(top()) ? top() : '!'+top());
   T('진로 카드에 예상 라운드가 나온다', ()=>{ const t=(d.querySelector('.hs-route')||{}).textContent||''; return /라운드/.test(t) ? t.match(/예상 \d+라운드/)[0] : '!'; });
   clean('졸업');
 
   console.log('\n[바로 프로]');
   btn(/바로 프로/).click(); await wait(40);
   T('entryDraft · 2군 공지가 걷혔다', ()=>ev("!ST.entryDraft && !(ST.notices||[]).some(n=>n.type==='farm')"));
+  T('제목줄 — KBO 신인 드래프트', ()=>/KBO 신인 드래프트/.test(top()) ? top() : '!'+top());
   T('슬롯이 하위 라운드', ()=>{ const r=ev("ST.proSlot.round"); return r>=5&&r<=10 ? r+'라운드' : '!'+r; });
   const sk=btn(/빨리 넘기기/); if(sk) sk.click(); await wait(40);
   T('내 줄 — 학교 · 「고졸 바로 신청」', ()=>{ const r=d.querySelector('.dr-row.mine'); const t=r?r.textContent:''; return /고졸 바로 신청/.test(t)&&/고/.test(t) ? t.slice(0,40) : '!'+t; });
   btn(/입단한다/).click(); await wait(80);
   T('프로 모드로 들어갔다', ()=>ev("isPro()") ? ev("proName(ST.pro.team)") : '!아니다');
+  ev("go('home')"); await wait(20);
+  T('제목줄 — 프로 구단 · KBO', ()=>/KBO 2027/.test(top())&&!/우완좌완 야구 매니저/.test(top()) ? top() : '!'+top());
   T('2군에서 시작', ()=>ev("ST.pro.level")==='2군' ? '2군' : '!'+ev("ST.pro.level"));
   T('2027 시즌으로 들어간다(리그 기준 해)', ()=>ev("ST.pro.year")===2027 ? '2027' : '!'+ev("ST.pro.year"));
   T('나이는 고졸 19세', ()=>ev("pfAge({id:ST.playerId||MYID})")===19 ? '19세' : '!'+ev("pfAge({id:ST.playerId||MYID})"));
