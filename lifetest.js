@@ -25,6 +25,7 @@ const T=(n,f)=>{try{const r=f();const ok=r===true||(typeof r==='string'&&r.lengt
   catch(e){console.log('  ❌ '+n+' :: '+e.message);bad.push(n+': '+e.message)}};
 const clean=tag=>{ const t=(d.getElementById('view')||{}).textContent||'';
   const m=t.match(/.{0,20}(undefined|NaN|\[object Object\]).{0,20}/); if(m) bad.push('['+tag+'] '+m[0]); return !m; };
+const reloadPro=()=>{ const snap=ev("JSON.stringify(ST)"); ev(`TEAMS=[]; TBYID={}; ST=JSON.parse(${JSON.stringify(snap)}); TEAMS=buildAllTeams(); TBYID={}; TEAMS.forEach(t=>TBYID[t.id]=t); normalizeState(); applyMyRatings();`); };
 const statSum=()=>ev("(function(){ const p=TBYID.wwzw.players.find(x=>x.id===(ST.playerId||MYID)); return ['con','pow','eye','spd','def','arm'].reduce((a,k)=>a+(p[k]||0),0); })()");
 
 (async()=>{
@@ -95,6 +96,44 @@ const statSum=()=>ev("(function(){ const p=TBYID.wwzw.players.find(x=>x.id===(ST
   T('신문에 징계', ()=>ev("(ST.pro.news||[]).some(n=>/출장정지/.test(n.head))"));
   ev("for(let i=0;i<5;i++) walGamble('legal', 100, ()=>0.9);");
   T('다섯 번 하면 도박중독', ()=>ev("mtHas('도박중독')"));
+
+  console.log('\n[특성 2 — 경기에서]');
+  T('클러치히터 — 득점권에서 삼진 0.85 · 장타 1.1', ()=>{ const m=JSON.parse(ev("JSON.stringify(mtPaMods({traits:['클러치히터']},null,true))")); return m&&Math.abs(m.k-0.85)<1e-9&&Math.abs(m.pow-1.1)<1e-9 ? 'k '+m.k+' · pow '+m.pow : '!'+JSON.stringify(m); });
+  T('득점권이 아니면 클러치 효과 없음', ()=>ev("mtPaMods({traits:['클러치히터']},null,false)")===null);
+  T('배수는 곱한다(똑딱이 × 클러치)', ()=>Math.abs(ev("mtMerge({k:0.82,pow:0.55},{k:0.85,pow:1.1}).k")-0.82*0.85)<1e-9);
+  ev("ST.mt.prog.clutch=0; mtLiveHook(null,{isUser:true},{isUser:false},{id:ST.playerId},{id:'x'},{type:'2B'},true);");
+  T('득점권 안타를 센다', ()=>ev("ST.mt.prog.clutch")===1);
+  ev("ST.mt.prog.clutch=14; mtLiveHook(null,{isUser:true},{isUser:false},{id:ST.playerId},{id:'x'},{type:'1B'},true); mtWeek();");
+  T('15개 → 클러치히터', ()=>ev("mtHas('클러치히터')"));
+  T('고무팔 — 후반에 덜 떨어진다', ()=>{ const a=ev("pitFade({id:'zz',stf:60,ctl:60,sta:40},30).dStf"); ev("META[ST.playerId].traits.push('고무팔')"); const b=ev("pitFade({id:ST.playerId,stf:60,ctl:60,sta:40},30).dStf"); return b<a ? a.toFixed(1)+' → '+b.toFixed(1) : '!'+a+' / '+b; });
+  T('이닝이터 — 지치는 시점이 3아웃 늦다', ()=>{ const a=ev("pitFade({id:'zz',stf:60,ctl:60,sta:40},0).fadeAt"); ev("META[ST.playerId].traits.push('이닝이터')"); const b=ev("pitFade({id:ST.playerId,stf:60,ctl:60,sta:40},0).fadeAt"); return b===a+3 ? a+' → '+b : '!'+a+' / '+b; });
+
+  console.log('\n[스태프 · 외국인 — 구단 금고]');
+  ev("pfState().cash=200;");
+  const cb=ev("stfState().coach.bat"), m1=ev("stfTrainMul('bat')");
+  if(cb<5){ ev("stfUpgrade('bat')");
+    T('타격 코치 교체 — 금고에서 나간다', ()=>ev("stfState().coach.bat")===cb+1 && ev("pfState().cash")<200 ? '★'+cb+'→★'+(cb+1)+' · 금고 '+ev("pfState().cash")+'억' : '!');
+    T('타격 루틴이 더 잘 된다', ()=>ev("stfTrainMul('bat')")>m1 ? m1.toFixed(2)+'→'+ev("stfTrainMul('bat')").toFixed(2) : '!'); }
+  T('내 통장은 안 건드린다', ()=>{ const w0=ev("walMoney()"); ev("stfUpgrade('pit')"); return ev("walMoney()")===w0; });
+  const pool=JSON.parse(ev("JSON.stringify(stfMgrPool().list.map(x=>x.style))"));
+  T('감독 후보 셋', ()=>pool.length===3 ? pool.join(',') : '!'+pool.length);
+  const si=pool.indexOf('small');
+  if(si>=0){ const sb0=ev("TBYID.wwzw.tend.sb"); ev("stfHireMgr("+si+")");
+    T('스몰볼 감독 — 도루 성향이 오른다', ()=>ev("TBYID.wwzw.tend.sb")>sb0 ? sb0.toFixed(2)+'→'+ev("TBYID.wwzw.tend.sb").toFixed(2) : '!'); }
+  const fx=JSON.parse(ev("JSON.stringify(fxPool().list.map(x=>({n:x.p.name,pit:x.pit,usd:x.usd})))"));
+  T('외국인 후보 넷 · 100만 달러 이하', ()=>fx.length===4 && fx.every(x=>x.usd<=100) ? fx.map(x=>x.n+' '+x.usd).join(', ') : '!'+JSON.stringify(fx));
+  const nOurs=ev("fxOurs(true).length"), c1=ev("pfState().cash");
+  ev("fxSign(0)");
+  T('영입 — 우리 팀에 온다', ()=>ev("!!pfAll(TBYID.wwzw).find(p=>p.id===fxPool().list[0].p.id)"));
+  T('같은 쪽 외국인 수는 그대로(한 명 방출)', ()=>ev("fxOurs(true).length")===Math.max(1,nOurs) ? ev("fxOurs(true).map(p=>p.name).join(',')") : '!'+nOurs+'→'+ev("fxOurs(true).length"));
+  T('금고에서 계약금 · 이적료가 나간다', ()=>ev("pfState().cash")<c1);
+  reloadPro();
+  T('불러와도 그 외국인이 우리 팀', ()=>ev("!!pfAll(TBYID.wwzw).find(p=>p.id===fxPool().list[0].p.id)"));
+  ev("renderProFront('staff')"); await wait(20);
+  T('스태프 탭 화면', ()=>/코치진/.test(d.getElementById('view').textContent)&&/외국인/.test(d.getElementById('view').textContent));
+  clean('스태프');
+  ev("go('train')"); await wait(20);
+  T('선수 카드 — 종합 · 등급', ()=>{ const o=d.querySelector('.ocd-ovr'); return o&&/^\d+$/.test(o.textContent)&&d.querySelectorAll('.ocd-r b').length>=4 ? 'OVR '+o.textContent : '!'; });
 
   console.log('\n[한 주 · 한 시즌]');
   ev("ST.injury[ST.playerId]=null;");
