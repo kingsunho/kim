@@ -1695,6 +1695,27 @@ table.hl-tbl td.hl-o{color:#c98a80}
 .pickcard{display:block;width:100%;text-align:left;background:var(--panel);
   border:1px solid var(--line);border-radius:13px;padding:13px;margin-bottom:9px;color:var(--ink)}
 .pickcard.on{border-color:var(--gold);background:rgba(201,162,39,.10)}
+.pk-make{border-style:dashed}
+.mk-f{display:flex;gap:8px;margin:10px 0}
+.mk-f label{flex:1;display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--dim)}
+.mk-f input{font:inherit;font-size:15px;padding:9px 10px;border-radius:9px;border:1px solid #2a323d;background:#0f1319;color:var(--ink)}
+.mk-g{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:8px 0}
+.mk-g>span{width:64px;font-size:12px;color:var(--dim)}
+.mk-g button{font:inherit;font-size:13px;padding:7px 12px;border-radius:999px;border:1px solid #2a323d;background:#151a21;color:var(--ink);cursor:pointer}
+.mk-g button.on{border-color:var(--pt,#ff6a3d);background:rgba(255,106,61,.16);color:#fff}
+.mk-note{font-size:11.5px}
+.rn-sel{font:inherit;font-size:14px;width:100%;padding:8px;border-radius:9px;border:1px solid #2a323d;background:#0f1319;color:var(--ink);margin:8px 0}
+.rn-team{display:flex;align-items:center;gap:8px;margin:4px 0 10px;font-size:12px;color:var(--dim)}
+.rn-team input{flex:1;font:inherit;font-size:14px;padding:8px;border-radius:9px;border:1px solid #2a323d;background:#0f1319;color:var(--ink)}
+.rn-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:5px}
+.rn-row{display:flex;align-items:center;gap:5px}
+.rn-row input{font:inherit;font-size:13px;padding:6px 7px;border-radius:7px;border:1px solid #2a323d;background:#0f1319;color:var(--ink);min-width:0}
+.rn-row .rn-no{width:52px;flex:0 0 52px;text-align:center}
+.rn-row .rn-nm{flex:1}
+.rn-pos{font-size:11px;color:var(--dim);width:38px;text-align:right}
+/* 가로 폰은 높이가 모자란다 — 두 칸씩 나란히 (포지션만 한 줄 통째로) */
+html.land .mk-g:not(.mk-pos){display:inline-flex;width:49%;vertical-align:top;margin:5px 0}
+html.land .mk-f{margin:6px 0}
 .pk-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
 .pk-nm{font-size:16px;font-weight:800}
 .pk-age{font-size:10.5px;color:var(--dim)}
@@ -3518,9 +3539,11 @@ function finalizeTeam(team){
 }
 
 function buildAllTeams(){
+  try{ customApply(); }catch(e){}           // 내가 만든 선수를 로스터·인적정보에 끼운다 (없으면 뺀다)
   if(isPro()) return buildProTeams();       // 프로에 갔으면 KBO 10구단
   const out=[buildUser()];
   LEAGUE_DEFS.forEach((d,i)=>out.push(buildAI(d,10007+i*7919)));
+  try{ applyRenames(out); }catch(e){}       // 내가 바꾼 이름·번호·팀명
   return out;
 }
 
@@ -9165,8 +9188,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.30.0';
-const APP_VERSION_NOTE = '폰에서 잘리던 것들 — 노치 · 타석 · 수비 화면';
+const APP_VERSION = '3.31.0';
+const APP_VERSION_NOTE = '내 선수를 만든다 · 이름·번호·팀명을 바꾼다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9187,6 +9210,13 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.31.0', t:'내 선수를 만든다 · 이름·번호·팀명을 바꾼다', items:[
+    '<b>우완좌완 열넷 말고 내가 만든 사람으로 할 수 있다.</b> 처음 선수 고르는 화면 맨 아래 「＋ 새 선수 만들기」 — 이름 · 등번호 · 태어난 해(1999/2000) · 학교(군포고/흥진고) · 투타 · 포지션을 고른다',
+    '만든 선수도 고1 을 똑같이 20에서 시작한다. 고교 3년 동안 친 것·던진 것이 그대로 현재 능력치가 되고, 잠재력도 그 졸업 성적에서 바로 나온다. 나머지 열넷은 원래 능력치 그대로다',
+    '흥진고를 고르면 군포고 열둘이 3년 내내 상대편이다. 졸업하면 우완좌완 열다섯 번째 사람이 된다',
+    '<b>설정 → 「이름 · 등번호 · 팀명」</b> — 우리 팀이든 상대 팀이든 이름·번호·팀 이름을 바꾼다. 내 세이브 안에서만 바뀌고, 「이 팀 원래대로」 로 되돌릴 수 있다',
+    '[고침] 새 시즌이 열리면 졸업 능력치가 떨어져 나가서, 훈련 장부가 없던 사람은 다음에 불러올 때 능력치가 엉뚱하게 돌아가던 것',
+  ]},
   {v:'3.30.0', t:'폰에서 잘리던 것들 — 노치 · 타석 · 수비 화면', items:[
     '<b>아이폰 가로에서 노치·둥근 모서리에 걸려 잘리던 양옆을 비웠다.</b> 버튼·글씨가 이제 화면 안쪽에 선다',
     '타석 화면 아래쪽(타자 카드 · 카메라 버튼 · 결과 글씨)이 화면 밖으로 밀려나던 걸 고쳤다',
@@ -15762,6 +15792,7 @@ function buildProTeams(){
     }
     out.push(t);
   });
+  try{ applyRenames(out); }catch(e){}
   return out;
 }
 function proRebuild(){
@@ -16588,7 +16619,19 @@ function newSeason(){
     drinkInvite:null, poach:null,                          // 우정·술약속·영입제안
     lastLineup:null, luSaved:[], oppEvent:null, mystery:null, canParty:false, teamBuff:null,
     kakaoPost:[], partyDone:false, lastFreePass:0, awards:null,
-    caStart:(function(){const o={};TBYID['wwzw'].players.forEach(p=>o[p.id]=calcCA(p));return o;})()};
+    caStart:(function(){const o={};TBYID['wwzw'].players.forEach(p=>o[p.id]=calcCA(p));return o;})(),
+    /* [v3.31.0] 시즌이 바뀌어도 따라가는 내 설정 — 만든 선수 · 바꾼 이름/번호/팀명 · 카메라.
+       만든 선수는 **그 선수로 하고 있을 때만** 따라간다(열넷으로 새로 하면 버린다) */
+    custom:(typeof ST!=='undefined'&&ST&&ST.custom&&MYID===CUSTOM_ID)?ST.custom:null,
+    rename:(typeof ST!=='undefined'&&ST&&ST.rename)?ST.rename:{},
+    renum:(typeof ST!=='undefined'&&ST&&ST.renum)?ST.renum:{},
+    teamNames:(typeof ST!=='undefined'&&ST&&ST.teamNames)?ST.teamNames:{},
+    proNames:(typeof ST!=='undefined'&&ST&&ST.proNames)?ST.proNames:{},
+    cam:(typeof ST!=='undefined'&&ST&&ST.cam)?ST.cam:{},
+    /* [버그 이력 v3.31.0] 졸업 능력치(hsRatings)가 새 시즌에서 떨어져 나갔다.
+       훈련 장부(myRatings)가 아직 없는 사람은 다음에 불러올 때 **파일 상수의
+       실측 능력치**로 돌아갔다(만든 선수는 시작값 20 으로). 같은 사람이면 들고 간다 */
+    hsRatings:(typeof ST!=='undefined'&&ST&&ST.hsRatings&&ST.playerId===MYID)?ST.hsRatings:null};
 }
 
 function autoFixLineup(){
@@ -18068,9 +18111,19 @@ function renderPick(){
     };
     c.appendChild(b);
   });
+  /* 새 판일 때만 — 시즌 도중에 사람을 새로 만들면 기록이 꼬인다 */
+  if(!ST||(ST.round===0&&!ST.weekDone)){
+    const mk=el('button','pickcard pk-make');
+    mk.innerHTML='<div class="pk-top"><span class="pk-nm">＋ 새 선수 만들기</span></div>'+
+      '<div class="pk-role">이름 · 등번호 · 학교 · 투타를 내가 정한다</div>';
+    mk.onclick=()=>renderMake();
+    c.appendChild(mk);
+  }
   const go2=el('button','btn primary','이 선수로 시작');
   go2.onclick=async()=>{
     if(!ST||(ST.round===0&&!ST.weekDone)){
+      /* 열넷 중 하나를 골랐다 — 앞에서 만들다 만 선수는 버린다 */
+      if(MYID!==CUSTOM_ID) CUSTOM_PENDING=null;
       TEAMS=buildAllTeams();TBYID={};TEAMS.forEach(t=>TBYID[t.id]=t);buildPitcherPool();
       ST=newSeason(); ST.playerId=MYID;
       ST.lineup=recommendLineup(); ST.rotation=recommendRotation();
@@ -20361,6 +20414,187 @@ function applyHsStart(){
   return 1;
 }
 
+/* ================= 내 선수 만들기 =================
+   [요청] "우완좌완 멤버 아니더라도 만들 수 있게해줘" · "자신이 키우는 캐릭터는
+   고교때 기록한 성적 바탕으로 잠재력 바로 현재 스탯"
+
+   열넷 말고 **열다섯 번째 사람**을 하나 만든다. 이름 · 등번호 · 태어난 해
+   (1999/2000) · 학교(군포고/흥진고) · 투타 · 포지션만 고르면 된다.
+   그 다음은 열넷과 똑같다 — 고1 을 HS_BASE 에서 시작하고, 세 해 동안 친 것·
+   던진 것이 졸업 능력치(hsRatings)가 된다. 잠재력(pot)도 그 졸업 성적에서
+   바로 뽑는다. 나머지 열넷은 원래 능력치 그대로다.
+
+   [주의] 로스터(WWZW)와 인적정보(META)는 세이브에 없다 — 파일 상수에서
+   매번 새로 만든다. 그래서 buildAllTeams 가 부를 때마다 여기서 끼워 넣는다.
+   세이브에는 ST.custom 한 덩어리만 남는다. 실명이 아니라 내가 지은 이름이다. */
+const CUSTOM_ID='my';
+let CUSTOM_PENDING=null;          // 새 판을 만들기 전(ST 가 아직 없을 때) 잠깐 들고 있는 값
+const CUSTOM_POS=[['SS','유격수'],['2B','2루수'],['3B','3루수'],['1B','1루수'],['C','포수'],
+  ['CF','중견수'],['LF','좌익수'],['RF','우익수'],['P','투수']];
+function customOf(){
+  try{ if(typeof ST!=='undefined'&&ST&&ST.custom) return ST.custom; }catch(e){}
+  return CUSTOM_PENDING;
+}
+function customApply(){
+  const c=customOf();
+  const i=WWZW.findIndex(p=>p.id===CUSTOM_ID);
+  if(!c){ if(i>=0) WWZW.splice(i,1); delete META[CUSTOM_ID]; return false; }
+  const b=HS_BASE, isP=(c.pos==='P');
+  const p={id:CUSTOM_ID, name:c.name, bats:c.bats==='L'?'L':'R', no:c.no,
+    con:b, pow:b, eye:b, spd:b, def:b, arm:b,
+    pos:isP?['P']:[c.pos], pitch:isP?{stf:b,ctl:b,sta:b}:null,
+    real:{g:0,pa:0,ab:0,h:0,d2:0,d3:0,hr:0,bb:0,hbp:0,k:0,sb:0,cs:0,rbi:0,r:0},
+    note:'직접 만든 선수', custom:true};
+  if(i>=0) WWZW[i]=p; else WWZW.push(p);
+  const heung=/흥진/.test(c.school||'');
+  const posMap={}; posMap[c.pos]=58; if(!isP) posMap.DH=50;
+  /* 잠재력 — 졸업 성적 평균이 시작값(HS_BASE)보다 얼마나 올랐나.
+     졸업 전이면 가운데(5)로 둔다 */
+  let pot=5;
+  try{
+    const R=(typeof ST!=='undefined'&&ST&&ST.hsRatings)||null;
+    if(R){ const ks=['con','pow','eye','spd','def','arm'].filter(k=>R[k]!=null);
+      const avg=ks.reduce((s2,k)=>s2+R[k],0)/Math.max(1,ks.length);
+      pot=Math.max(3,Math.min(9,Math.round(4+(avg-b)/6))); c.pot=pot; }
+    else if(c.pot) pot=c.pot;          // 프로로 가면 hsRatings 가 비워진다 — 졸업 때 잰 값을 쓴다
+  }catch(e){}
+  const friends=Object.keys(META).filter(k=>k!==CUSTOM_ID && META[k].born===c.born &&
+    (/흥진/.test(META[k].school||''))===heung).slice(0,3);
+  META[CUSTOM_ID]={born:c.born, speech:(heung&&c.born===2000)?'jon':'ban', throws:c.throws==='L'?'L':'R',
+    car:false, school:heung?'흥진고':'군포고', drink:1, attend:0.9, loyal:80, pot,
+    traits:[], friends, rival:null, coach:{}, pos:PR(posMap),
+    desc:'직접 만든 선수. '+(heung?'흥진고':'군포고')+' '+c.born+'년생.'};
+  return true;
+}
+/* 새 선수 만들기 화면 — 고르는 화면(renderPick)에서 들어온다 */
+function renderMake(){
+  const c=$('#view'); c.innerHTML='';
+  const card=el('div','card mk-card');
+  card.innerHTML='<div class="card-h">새 선수 만들기</div>'+
+    '<p class="muted">우완좌완 열넷 말고 내가 만든 사람으로 한다. 누구든 고1 을 '+HS_BASE+'에서 시작한다 — '+
+    '세 해 동안 친 것·던진 것이 그대로 현재 능력치와 잠재력이 된다.</p>'+
+    '<div class="mk-f"><label>이름<input id="mk-nm" maxlength="6" placeholder="예: 김야구"></label>'+
+    '<label>등번호<input id="mk-no" type="number" min="0" max="99" value="7"></label></div>'+
+    '<div class="mk-g" data-k="born"><span>태어난 해</span><button data-v="1999">1999</button><button data-v="2000" class="on">2000</button></div>'+
+    '<div class="mk-g" data-k="school"><span>학교</span><button data-v="군포고" class="on">군포고</button><button data-v="흥진고">흥진고</button></div>'+
+    '<div class="mk-g" data-k="throws"><span>던지는 손</span><button data-v="R" class="on">우투</button><button data-v="L">좌투</button></div>'+
+    '<div class="mk-g" data-k="bats"><span>치는 손</span><button data-v="R" class="on">우타</button><button data-v="L">좌타</button></div>'+
+    '<div class="mk-g mk-pos" data-k="pos"><span>포지션</span>'+
+      CUSTOM_POS.map(([k,n],j)=>'<button data-v="'+k+'"'+(j===0?' class="on"':'')+'>'+n+'</button>').join('')+'</div>'+
+    '<p class="muted mk-note">흥진고를 고르면 군포고 열둘이 3년 내내 상대편이다. 1999년생은 형 학번, 2000년생은 동생 학번이다.</p>';
+  c.appendChild(card);
+  card.querySelectorAll('.mk-g').forEach(g=>g.querySelectorAll('button').forEach(b=>{
+    b.onclick=()=>{ g.querySelectorAll('button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); };
+  }));
+  const val=k=>{ const b=card.querySelector('.mk-g[data-k="'+k+'"] button.on'); return b?b.getAttribute('data-v'):null; };
+  const go2=el('button','btn primary','이 선수로 시작');
+  go2.onclick=async()=>{
+    const nm=String((card.querySelector('#mk-nm')||{}).value||'').trim().replace(/[<>&"']/g,'');
+    if(nm.length<2){ toast('이름을 두 글자 이상 적어라'); return; }
+    let no=parseInt((card.querySelector('#mk-no')||{}).value,10); if(!(no>=0&&no<=99)) no=7;
+    CUSTOM_PENDING={name:nm, no, born:+val('born')||2000, school:val('school')||'군포고',
+      throws:val('throws')||'R', bats:val('bats')||'R', pos:val('pos')||'SS'};
+    MYID=CUSTOM_ID;
+    TEAMS=buildAllTeams(); TBYID={}; TEAMS.forEach(t=>TBYID[t.id]=t); buildPitcherPool();
+    ST=newSeason(); ST.custom=CUSTOM_PENDING; ST.playerId=CUSTOM_ID;
+    ST.lineup=recommendLineup(); ST.rotation=recommendRotation();
+    await saveGame(true);
+    if(isPlayerMode() && !ST.role){ go('role'); return; }
+    if(!ST.tutDone){ ST.tutStep=0; go('tutorial'); } else go('home');
+  };
+  c.appendChild(go2);
+  const bk=el('button','btn sm','← 열넷 중에서 고르기');
+  bk.onclick=()=>renderPick();
+  c.appendChild(bk);
+}
+
+/* ================= 이름 · 등번호 · 팀명 바꾸기 =================
+   [요청] "이름 편집 기능 넣고" · "등번호 설정 가능하게" · "팀명 변경 가능하게"
+   상대 선수·구단은 전부 가명이다(CLAUDE.md). 바꾸고 싶으면 **내 세이브 안에서만**
+   바꾼다 — 파일에는 안 들어가고, 링크로 퍼지지도 않는다.
+   원래 이름은 _orig 에 들고 있어서 「원래대로」 로 되돌릴 수 있다.         */
+function applyRenames(teams){
+  if(typeof ST==='undefined'||!ST) return;
+  const RN=ST.rename||{}, NO=ST.renum||{}, TN=ST.teamNames||{};
+  (teams||[]).forEach(t=>{
+    if(t._orig==null){
+      /* 프로 구단은 만들 때 이미 proNames 를 먹은 이름이다 — 원래 이름은 정의에서 */
+      const k=isPro()?proKeyOf(t.id):null, df=k?proDef(k):null;
+      t._orig=(df&&df.name)?df.name:t.name;
+    }
+    t.name=TN[t.id]||(isPro()?proName(proKeyOf(t.id)):null)||t._orig;
+    [].concat(t.players||[], t.pitchers||[]).forEach(p=>{
+      if(p._orig==null) p._orig=p.name;
+      if(p._origNo===undefined) p._origNo=(p.no==null?null:p.no);
+      p.name=RN[p.id]||p._orig;
+      p.no=(NO[p.id]!=null)?NO[p.id]:p._origNo;
+    });
+  });
+}
+/* 팀 이름을 저장할 자리 — 프로 구단은 proNames(구단 키), 사회인은 teamNames(팀 id) */
+function renameTeamSet(t, v){
+  if(isPro()){ const k=proKeyOf(t.id); if(!k) return;
+    ST.proNames=ST.proNames||{}; if(v) ST.proNames[k]=v; else delete ST.proNames[k]; }
+  ST.teamNames=ST.teamNames||{}; if(v) ST.teamNames[t.id]=v; else delete ST.teamNames[t.id];
+}
+function renderRename(tid){
+  const c=$('#view'); c.innerHTML='';
+  const teams=TEAMS.slice().sort((a,b)=>(a.id==='wwzw'?-1:b.id==='wwzw'?1:0));
+  const t=TBYID[tid]||teams[0];
+  const card=el('div','card');
+  card.innerHTML='<div class="card-h">이름 · 등번호 · 팀명 바꾸기</div>'+
+    '<p class="muted">내 세이브 안에서만 바뀐다. 다른 사람 화면에는 원래 이름 그대로다. 비우면 원래 이름으로 돌아간다.</p>';
+  const sel=el('select','rn-sel');
+  teams.forEach(x=>{ const o=d0('option'); o.value=x.id; o.textContent=(x.id==='wwzw'?'★ ':'')+x.name; if(x.id===t.id) o.selected=true; sel.appendChild(o); });
+  sel.onchange=()=>renderRename(sel.value);
+  card.appendChild(sel);
+  const tn=el('label','rn-team'); tn.innerHTML='<span>팀 이름</span>';
+  const ti=d0('input'); ti.value=t.name; ti.placeholder=t._orig||t.name; ti.maxLength=16; tn.appendChild(ti);
+  card.appendChild(tn);
+  const list=el('div','rn-list');
+  const seen={};
+  [].concat(t.players||[], (t.pitchers||[]).filter(q=>!(t.players||[]).some(p=>p.id===q.id))).forEach(p=>{
+    if(seen[p.id]) return; seen[p.id]=1;
+    const row=el('div','rn-row');
+    const ni=d0('input'); ni.value=p.name; ni.placeholder=p._orig||p.name; ni.maxLength=8; ni.dataset.id=p.id; ni.className='rn-nm';
+    const no=d0('input'); no.type='number'; no.min='0'; no.max='99'; no.value=(p.no==null?'':p.no); no.dataset.id=p.id; no.className='rn-no';
+    const pos=el('span','rn-pos', Array.isArray(p.pos)?(POSNAMES[p.pos[0]]||p.pos[0]):(p.pos||(p.stf?'투수':'')));
+    row.appendChild(no); row.appendChild(ni); row.appendChild(pos);
+    list.appendChild(row);
+  });
+  card.appendChild(list);
+  c.appendChild(card);
+  const save=el('button','btn primary','저장');
+  const clean=v=>String(v||'').trim().replace(/[<>&"']/g,'');
+  save.onclick=async()=>{
+    ST.rename=ST.rename||{}; ST.renum=ST.renum||{};
+    const tv=clean(ti.value); renameTeamSet(t, (tv&&tv!==t._orig)?tv:'');
+    list.querySelectorAll('.rn-nm').forEach(i=>{ const id=i.dataset.id, v=clean(i.value);
+      const p=[].concat(t.players||[],t.pitchers||[]).find(x=>x.id===id); const o=p?(p._orig||p.name):'';
+      if(v && v!==o) ST.rename[id]=v; else delete ST.rename[id]; });
+    list.querySelectorAll('.rn-no').forEach(i=>{ const id=i.dataset.id, v=parseInt(i.value,10);
+      const p=[].concat(t.players||[],t.pitchers||[]).find(x=>x.id===id); const o=p?p._origNo:null;
+      if(v>=0&&v<=99&&v!==o) ST.renum[id]=v; else delete ST.renum[id]; });
+    /* 내가 만든 선수는 ST.custom 이 원본이다 — 거기도 같이 고친다 */
+    if(ST.custom){ if(ST.rename[CUSTOM_ID]){ ST.custom.name=ST.rename[CUSTOM_ID]; delete ST.rename[CUSTOM_ID]; }
+      if(ST.renum[CUSTOM_ID]!=null){ ST.custom.no=ST.renum[CUSTOM_ID]; delete ST.renum[CUSTOM_ID]; }
+      try{ customApply(); const mp=TBYID.wwzw.players.find(x=>x.id===CUSTOM_ID);
+        if(mp){ mp.name=mp._orig=ST.custom.name; mp.no=mp._origNo=ST.custom.no; } }catch(e){} }
+    applyRenames(TEAMS);
+    await saveGame(true); toast('바꿨다'); renderRename(t.id);
+  };
+  const reset=el('button','btn sm','이 팀 원래대로');
+  reset.onclick=async()=>{
+    renameTeamSet(t,'');
+    [].concat(t.players||[],t.pitchers||[]).forEach(p=>{ if(ST.rename) delete ST.rename[p.id]; if(ST.renum) delete ST.renum[p.id]; });
+    applyRenames(TEAMS); await saveGame(true); toast('원래 이름으로'); renderRename(t.id);
+  };
+  const back=el('button','btn sm','← 설정으로');
+  back.onclick=()=>go('more');
+  c.appendChild(save); c.appendChild(reset); c.appendChild(back);
+}
+function d0(tag){ return document.createElement(tag); }
+
 /* ---------- 고교 화면 ---------- */
 function hsStatLine(b,q){
   const out=[];
@@ -20748,7 +20982,7 @@ function renderHS(){
    흥진고 둘은 김인규를 통해 들어왔다. 지어낸 게 아니다.            */
 function hsEpilogue(){
   const me=ST.playerId||MYID;
-  const heung=(me==='ksh'||me==='ksn');
+  const heung=(hsSchoolOf(me)==='heung');   // 내가 만든 흥진고 선수도 같은 길이다
   const out=[
     {who:coachId(), text:'야 우리 오랜만에 야구 한번 해볼까'},
     {who:'jms', text:'ㅇㅇ 콜'},
@@ -39379,6 +39613,15 @@ function renderMore(){
   rv.appendChild(rvb);
   c.appendChild(rv);
 
+  /* [v3.31.0] 이름 · 등번호 · 팀명 — 내 세이브 안에서만 */
+  const rnc=el('div','card');
+  rnc.appendChild(el('div','card-h','이름 · 등번호 · 팀명'));
+  rnc.appendChild(el('p','muted','우리 팀이든 상대 팀이든 이름·번호·팀 이름을 바꾼다. 내 세이브에만 남는다.'));
+  const rnb=el('button','btn','바꾸러 가기 ▸');
+  rnb.onclick=()=>renderRename('wwzw');
+  rnc.appendChild(rnb);
+  c.appendChild(rnc);
+
   /* [제보] "지금 pc버전 화면이 너무 꽉찬대 크기조절 할 수 있게? 원하는만큼"
      PC 가로에서 본문이 모니터를 꽉 채웠다. 폭과 글자 크기를 직접 민다.
      폰은 원래 화면보다 천장이 넓어서 아무것도 안 바뀐다 — 그래서 가로
@@ -42860,6 +43103,13 @@ function exiledOn(teamId){
 function normalizeState(){
   /* 프로 세이브면 KBO 10구단을 **먼저** 다시 세우고 엔진 기준값을 갈아 끼운다.
      뒤에서 라인업·로테이션을 정리할 때 사회인 로스터를 보면 프로 선수가 전부 지워진다 */
+  /* 내가 만든 선수가 있는 세이브면 로스터를 그 선수까지 넣어서 다시 세운다.
+     boot · slotLoad 는 ST 를 읽기 **전에** 팀을 만들어서 여기서 한 번 맞춘다 */
+  if(!isPro()){
+    const hasC=!!(TBYID['wwzw']&&TBYID['wwzw'].players.some(p=>p.id===CUSTOM_ID));
+    if(hasC!==!!ST.custom){ TEAMS=buildAllTeams(); TBYID={}; TEAMS.forEach(t=>TBYID[t.id]=t);
+      if(typeof buildPitcherPool==='function') buildPitcherPool(); }
+  } else { try{ customApply(); }catch(e){} }
   if(isPro()) proRebuild(); else applyLeagueCal();
   const us=TBYID['wwzw'];
   /* 화면 크기 — 옛 세이브에는 없는 값이라 여기서 메운다.
