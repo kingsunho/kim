@@ -8959,8 +8959,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.22.0';
-const APP_VERSION_NOTE = 'PC 화면이 안 꽉 찬다 — 두 칸 배치 · 크기는 내가 정한다';
+const APP_VERSION = '3.23.0';
+const APP_VERSION_NOTE = '선수들이 2등신이 됐다 — 마구마구 그 체형 그대로';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -8981,6 +8981,14 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.23.0', t:'선수들이 2등신이 됐다 — 마구마구 그 체형 그대로', items:[
+    '<b>경기장에 서 있는 사람이 전부 바뀌었다.</b> 7등신 그림을 걷어내고 <b>머리가 키의 절반인 2등신 SD</b> 로 새로 그렸다. 받은 게임 영상 그 체형이다',
+    '<b>타자는 헬멧 뒤통수와 등번호가 보이는 뒷모습</b>이다. 배트는 머리 옆으로 세워 들어서 큰 헬멧에 안 가린다 — 그림 받기 전에 막혔던 게 바로 이거였다',
+    '<b>스윙이 진짜로 돈다.</b> 예전엔 그림 한 장을 기울였는데, 이제 배트가 손을 축으로 떨어졌다가 존을 가로질러 앞 어깨 위로 넘어간다. 팔도 같이 따라간다',
+    '<b>투수는 모자 쓴 얼굴이 정면으로 보인다.</b> 셋 포지션 → 다리 들기 → 팔 젖히기 → 릴리스 → 팔로스루 다섯 동작이 전부 따로 그려져 있다',
+    '<b>야수와 포수도 같은 화풍이다.</b> 한 화면에 그림체가 두 가지 섞이지 않는다. 상대 팀 색도 헬멧·모자·양말에 그대로 들어간다',
+    '메인화면에 서 있는 나도 같은 2등신이다. 그림 파일을 안 기다려서 <b>첫 화면부터 바로 보인다</b>',
+  ]},
   {v:'3.22.0', t:'PC 화면이 안 꽉 찬다 — 두 칸 배치 · 크기는 내가 정한다', items:[
     '<b>PC에서 화면이 모니터를 꽉 채우던 것 — 고쳤다.</b> 1920 모니터에서 카드 하나가 <b>1896px</b>이었다. 왼쪽 끝에 제목, 오른쪽 끝에 값이라 눈이 모니터를 가로질러야 했다',
     '<b>선수단·훈련·순위·기록·설정이 두 칸으로 흐른다.</b> 선수단이 세로 <b>4841px → 2527px</b>, 훈련이 <b>1421px → 736px</b>. 훈련은 이제 스크롤 없이 한 화면에 다 들어온다',
@@ -29492,6 +29500,12 @@ function mvGuyVec(g,x,y,h,u,pose,flip,no){
 }
 /* 파츠가 준비됐으면 파츠로, 아니면 손으로 그린 선화로 */
 function mvGuy(g,x,y,h,u,pose,flip,no){
+  /* [v3.23.0] 야수·포수도 SD 로 — 타자·투수만 2등신이면 한 화면에 두 화풍이 섞인다 */
+  if(pose==='idle'||pose==='idleL'||pose==='catch'){
+    if(pose!=='catch') mvShadow(g,x,y,h);
+    mvSD(g,x,y,h*1.1,u,pose,false,{fielder:true});
+    return;
+  }
   const sheet=mvSheetFor(u);
   if(!sheet) return mvGuyVec(g,x,y,h,u,pose,flip,no);
   if(pose==='catch') return mvCatcherSprite(g,sheet,x,y,h);
@@ -29549,7 +29563,7 @@ const MV_FIG_OF={ idle:'pitw', wind:'pitw', cock:'pitw', rel:'pit', follow:'pit'
    1m, 투수는 18m 다. 실제 비율로 가면 그게 맞다.
    90 → 128. 카메라 1.5 를 곱하면 화면에서 192px(높이의 71%)이 되고
    발은 아래로 잘려 나간다. 잘리는 게 맞다 — 어깨 뒤 카메라다.   */
-const MV_FIG_H={ pit:46, pitw:44, bat:146 };
+const MV_FIG_H={ pit:36, pitw:36, bat:112 };
 let MV_FIG=null, MV_FIG_OK=false;
 const MV_FIG_TINT={};
 function mvFigInit(){
@@ -29631,31 +29645,13 @@ function mvSwingPose(t){
    손대는 건 (1) 좌우 뒤집기 (2) 스윙 진행도에 따른 몸통 회전뿐이다.  */
 function mvFig(g,pose,x,y,u,flip,o){
   const k=MV_FIG_OF[pose]; if(!k) return false;
-  const img=mvFigFor(u); if(!img) return false;
-  const F=MV_FIGS[k], A=MV_FIG_ANCH[k], h=MV_FIG_H[k];
-  const S=(pose==='swing')?mvSwingPose((o&&o.swT)||0):null;
-  /* 스윙하는 동안만 타자가 커진다 — 디딘 발을 축으로 위로 자란다 */
-  const sc=(h/F[3])*((S&&S.zoom)?S.zoom:1), dir=flip?-1:1;
-  g.save();
-  g.translate(x + (S?S.push*dir:0), y);
-  if(S&&S.rot) g.rotate(S.rot*dir);
-  g.scale(dir*sc, sc);
-  g.drawImage(img, F[0],F[1],F[2],F[3], -A[0]*F[2], -F[3], F[2],F[3]);
-  /* 등번호 — 선수 데이터에서 온다. 숫자를 그림에 박아두지 않는다. */
-  if(k==='bat' && o && o.no!=null){
-    g.save();
-    g.translate(MV_BAT_NO[0]-A[0]*F[2], MV_BAT_NO[1]-F[3]);
-    g.scale(dir,1);                       // 뒤집혀도 숫자는 바로 보이게
-    g.fillStyle='#1e2b45';
-    g.font='700 '+MV_BAT_NO[2]+'px sans-serif';
-    g.textAlign='center'; g.textBaseline='middle';
-    g.fillText(String(o.no), 0, 0);
-    g.restore();
-  }
-  /* 배트가 지나간 자리 — 스윙 중에만. 잘 맞을수록 밝고 금색이다 */
-  if(S&&S.blur>0.02) mvBatSweep(g,F,A,S.blur,(o&&o.swQ!=null)?o.swQ:null);
-  g.restore();
-  mvShadow(g,x,y,h*0.62);
+  /* [v3.23.0] 통짜 그림 대신 SD 캐릭터(mvSD)를 그린다. 그림 파일을 안 기다린다 —
+     그래서 첫 프레임부터 사람이 서 있다. 스윙하는 동안만 조금 커진다(zoom). */
+  const h=MV_FIG_H[k];
+  const S=(pose==='swing')?sdSwing((o&&o.swT)||0):null;
+  const hh=h*((S&&S.zoom)?S.zoom:1);
+  mvShadow(g,x,y,h*0.9);
+  mvSD(g,x,y,hh,u,pose,!!flip,o||{});
   return true;
 }
 /* 배트 잔상. 두 손이 모인 자리에서 존을 훑고 앞으로 나간다 (그림 픽셀) */
@@ -29704,6 +29700,510 @@ function mvBatSweep(g,F,A,a,q){
     g.beginPath(); g.arc(gx,gy,rr, (0-i*12)*D, (-130+i*12)*D, true); g.stroke();
   }
   g.lineCap='butt';
+}
+/* =========================================================
+   SD 캐릭터 (2등신) — 그림을 받지 않고 **코드로 그린다**
+   [요청] "캐릭터도 저렇게 비슷하게 해주고" — 답지(art/_ref_sd_*.png)는
+   머리가 키의 절반인 2등신이다. 그림을 새로 받으려고 의뢰서까지 썼는데
+   (art/SD_REQUEST.md) 몇 주째 안 왔다. 통짜 그림은 머리만 키우면 배트가
+   머리 뒤로 숨어서 코드로 못 고친다는 게 그때 결론이었다.
+
+   그래서 사람을 **벡터로 직접 그린다.** 좋은 점이 셋이다.
+     ① 체형을 마음대로 — 머리 반, 몸 반. 배트는 처음부터 머리 옆에 둔다
+     ② 스윙이 진짜로 돈다 — 그림 한 장을 기울이던 걸 그만두고, 배트가
+        손을 축으로 한 바퀴 돈다. 팔은 두 마디(어깨-팔꿈치-손)를 계산한다
+     ③ 유니폼 색 물들이기가 필요 없다 — 팀 색을 그대로 칠한다
+
+   좌표 — 키 100 짜리 사람. 발바닥 가운데가 (0,0), 위로 갈수록 y 가 음수.
+   머리(헬멧 포함)가 -46 ~ -100 이라 키의 54% 다.
+   빛은 오른쪽 위에서 온다 — 그림자는 왼쪽 아래에 한 겹(셀 채색).
+   ========================================================= */
+const SD_OL='#1a1f2c';
+const SD_PAL={};
+function sdRgb(c){
+  c=String(c||'#888888');
+  if(c[0]==='#'){
+    const n=c.length===4?c.slice(1).split('').map(x=>x+x).join(''):c.slice(1,7);
+    return [parseInt(n.slice(0,2),16),parseInt(n.slice(2,4),16),parseInt(n.slice(4,6),16)];
+  }
+  const m=c.match(/[\d.]+/g); return m?[+m[0],+m[1],+m[2]]:[136,136,136];
+}
+function sdMix(a,b,t){ const A=sdRgb(a),B=sdRgb(b);
+  return 'rgb('+A.map((v,i)=>Math.round(v+(B[i]-v)*t)).join(',')+')'; }
+/* 팀 색 하나로 한 벌을 다 뽑는다 — 유니폼 색이 스물네 벌이라 캐시한다 */
+function sdPal(u){
+  u=u||{};
+  const t=u.cap||'#2f5fb0', sh=u.sh||'#eef2f8', pt=u.pants||sh;
+  /* 유니폼 데이터의 글러브 색(#5b3a1e)은 옛 선화용이라 셀 채색에선 검게 뭉갠다.
+     가죽색 쪽으로 끌어올린다 */
+  const gl=sdMix(u.gl||'#6b4424','#c98a4a',0.45);
+  const k=t+sh+pt+gl;
+  if(SD_PAL[k]) return SD_PAL[k];
+  return SD_PAL[k]={
+    team:t, teamD:sdMix(t,'#000000',0.38), teamL:sdMix(t,'#ffffff',0.40),
+    jer:sh, jerD:sdMix(sh,'#5d6a86',0.30),
+    pan:pt, panD:sdMix(pt,'#5d6a86',0.32),
+    skin:'#fcd9b8', skinD:'#eaa886', blush:'rgba(255,120,120,.38)',
+    hair:'#3b2a22', hairL:'#5a4032',
+    gl:gl, glD:sdMix(gl,'#000000',0.22), glL:sdMix(gl,'#ffffff',0.28),
+    bat:'#e2b172', batD:'#a8723c', batL:'#f6d9a8',
+    shoe:'#262b37', shoeL:'#4a5264', sole:'#f3f3f3',
+    white:'#ffffff', whiteD:'#cfd6e2'
+  };
+}
+/* 두 마디 팔·다리 — 어깨(S)에서 손(H)까지, 팔꿈치가 bend 쪽으로 꺾인다 */
+function sdIK(S,H,a,b,bend){
+  const dx=H[0]-S[0], dy=H[1]-S[1];
+  let d=Math.hypot(dx,dy)||0.001;
+  const dm=Math.min(d,a+b-0.01);
+  const base=Math.atan2(dy,dx);
+  const c=Math.max(-1,Math.min(1,(a*a+dm*dm-b*b)/(2*a*dm)));
+  const al=Math.acos(c)*(bend>0?1:-1);
+  return [S[0]+Math.cos(base+al)*a, S[1]+Math.sin(base+al)*a];
+}
+const sdLerp=(a,b,k)=>a+(b-a)*k;
+const sdEase=k=>k<0?0:k>1?1:k*k*(3-2*k);
+
+/* 스윙 한 번 — t 0~1. 배트 각도(도)·손 자리·몸 돌림.
+   각도는 화면 기준(오른쪽 0, 아래 +90). 준비 자세는 왼쪽 위 -145° 로
+   배트가 **머리 왼쪽 바깥**에 선다 — 답지 그대로다. 휘두르면 아래로
+   떨어져서(배럴이 몸 뒤로 지나가고) 존(오른쪽, 0°)을 가로지른 뒤
+   앞 어깨 위로 넘어간다. 끊기지 않게 각도를 계속 줄여 나간다.        */
+const SD_SET={ang:-133, hx:-13, hy:-49, tw:0};
+function sdSwing(t){
+  const S=SD_SET;
+  if(!(t>0)) return Object.assign({},S,{blur:0,zoom:1});
+  const K=[
+    [0.00, -133, -13, -49, 0.00],
+    [0.22, -150, -18, -52,-0.12],    // 뒤로 감는다
+    [0.50, -360,   6, -40, 1.00],    // 임팩트 — 배트가 존과 나란하다
+    [0.78, -470,  12, -58, 1.15],    // 팔로스루 — 앞 어깨 위로
+    [1.00, -493, -13, -49, 0.00]     // 다시 준비 (-493 = -133)
+  ];
+  let i=0; while(i<K.length-2 && t>K[i+1][0]) i++;
+  const A=K[i], B=K[i+1];
+  let k=(t-A[0])/(B[0]-A[0]);
+  k = (i===1) ? k*k*(1.6-0.6*k) : sdEase(k);       // 휘두르는 구간은 뒤로 갈수록 빠르다
+  const blur = t<0.22?0 : t<0.5?Math.min(1,(t-0.22)/0.14) : t<0.86?1-(t-0.5)/0.36*0.7 : 0.3*(1-(t-0.86)/0.14);
+  const zoom = t<0.22?1-0.02*(t/0.22) : t<0.5?0.98+0.10*((t-0.22)/0.28) : 1.08-0.08*Math.min(1,(t-0.5)/0.5);
+  return {ang:sdLerp(A[1],B[1],k), hx:sdLerp(A[2],B[2],k), hy:sdLerp(A[3],B[3],k),
+          tw:sdLerp(A[4],B[4],k), blur:Math.max(0,blur), zoom:zoom};
+}
+
+/* 사람 하나. (x,y) 발바닥 가운데, h 키(논리 px). pose 는 기존 이름 그대로.
+   o.no 등번호 · o.swT 스윙 진행 · o.swQ 얼마나 잘 맞았나              */
+function mvSD(g,x,y,h,u,pose,flip,o){
+  o=o||{};
+  const P=sdPal(u), s=h/100, dir=flip?-1:1;
+  g.save();
+  g.translate(x,y); g.scale(s*dir,s);
+  /* 외곽선 굵기 — 화면에서 실제로 몇 픽셀이 되나를 보고 정한다.
+     작은 야수(20px)도 선이 살아 있고, 로비의 큰 나도 선이 뭉개지지 않게 */
+  let dev=1;
+  try{ const T=g.getTransform(); dev=Math.hypot(T.a,T.b)||1; }catch(e){ dev=s*3; }
+  const LW=Math.max(1.3,Math.min(5.5,dev*2.3))/dev;
+  g.lineJoin='round'; g.lineCap='round';
+  const D={g,P,LW,dir,o};
+  try{
+    if(pose==='stand'||pose==='swing') sdBatter(D, pose==='swing'?sdSwing(o.swT||0):sdSwing(0));
+    else if(pose==='catch') sdCatcher(D);
+    else sdFront(D,pose);
+  }finally{ g.restore(); }
+}
+
+/* ---------- 그리기 도구 ---------- */
+function sdPath(g,pts,close){ g.beginPath(); g.moveTo(pts[0],pts[1]);
+  for(let i=2;i<pts.length;i+=2) g.lineTo(pts[i],pts[i+1]); if(close) g.closePath(); }
+/* 채우고 → (안쪽에) 그림자 한 겹 → 외곽선 */
+function sdCel(D,path,fill,shade,hi){
+  const g=D.g;
+  path(); g.fillStyle=fill; g.fill();
+  if(shade||hi){ g.save(); path(); g.clip(); if(shade) shade(); if(hi) hi(); g.restore(); }
+  path(); g.lineWidth=D.LW; g.strokeStyle=SD_OL; g.stroke();
+}
+/* 굵은 팔다리 — 외곽선 → 그림자색 → 밝은 색을 빛 쪽으로 살짝 밀어서 */
+function sdLimb(D,pts,w,col,colD){
+  const g=D.g;
+  sdPath(g,pts); g.lineWidth=w+D.LW*2; g.strokeStyle=SD_OL; g.stroke();
+  sdPath(g,pts); g.lineWidth=w; g.strokeStyle=colD||col; g.stroke();
+  if(colD){ g.save(); g.translate(w*0.16,-w*0.10);
+    sdPath(g,pts); g.lineWidth=w*0.60; g.strokeStyle=col; g.stroke(); g.restore(); }
+}
+/* 반소매 — 어깨에서 팔꿈치 쪽으로 4할. 둥근 공을 어깨에 얹으면 어깨뽕처럼 보였다 */
+function sdSleeve(D,S,E,w){
+  const P=D.P, k=0.46;
+  const m=[S[0]+(E[0]-S[0])*k, S[1]+(E[1]-S[1])*k];
+  sdLimb(D,[S[0],S[1],m[0],m[1]],w,P.jer,P.jerD);
+}
+function sdBall(D,x,y,r){
+  const g=D.g;
+  sdCel(D,()=>{ g.beginPath(); g.arc(x,y,r,0,Math.PI*2); },'#ffffff',
+    ()=>{ g.fillStyle='#d6dbe4'; g.beginPath(); g.arc(x-r*0.35,y+r*0.35,r,0,Math.PI*2); g.fill(); });
+  g.strokeStyle='#d8413a'; g.lineWidth=r*0.18;
+  g.beginPath(); g.arc(x-r*1.25,y,r,-0.6,0.6); g.stroke();
+  g.beginPath(); g.arc(x+r*1.25,y,r,Math.PI-0.6,Math.PI+0.6); g.stroke();
+}
+/* 글러브 — 손바닥이 보이는 둥근 미트 */
+function sdGlove(D,x,y,r,rot){
+  const g=D.g, P=D.P;
+  g.save(); g.translate(x,y); g.rotate(rot||0);
+  const path=()=>{ g.beginPath();
+    g.moveTo(-r*0.95,r*0.2);
+    g.bezierCurveTo(-r*1.05,-r*0.9,-r*0.3,-r*1.25,r*0.2,-r*1.05);
+    g.bezierCurveTo(r*0.9,-r*1.0,r*1.15,-r*0.2,r*0.95,r*0.35);
+    g.bezierCurveTo(r*0.8,r*1.0,-r*0.6,r*1.05,-r*0.95,r*0.2); g.closePath(); };
+  sdCel(D,path,P.gl,()=>{ g.fillStyle=P.glD; g.beginPath(); g.ellipse(-r*0.5,r*0.5,r*0.9,r*0.7,0,0,Math.PI*2); g.fill(); },
+    ()=>{ g.fillStyle=P.glL; g.beginPath(); g.ellipse(r*0.25,-r*0.55,r*0.45,r*0.25,-0.5,0,Math.PI*2); g.fill(); });
+  // 끈
+  g.strokeStyle=P.glD; g.lineWidth=D.LW*0.7;
+  g.beginPath(); g.moveTo(-r*0.35,-r*0.9); g.lineTo(-r*0.25,-r*0.2);
+  g.moveTo(r*0.25,-r*0.95); g.lineTo(r*0.2,-r*0.25); g.stroke();
+  g.restore();
+}
+function sdHand(D,x,y,r,col,colD){
+  const g=D.g;
+  sdCel(D,()=>{ g.beginPath(); g.arc(x,y,r,0,Math.PI*2); },col,
+    ()=>{ g.fillStyle=colD; g.beginPath(); g.arc(x-r*0.4,y+r*0.45,r,0,Math.PI*2); g.fill(); });
+}
+function sdShoe(D,x,y,w,back){
+  const g=D.g, P=D.P;
+  const path=()=>{ g.beginPath(); g.ellipse(x,y-w*0.30,w*0.55,w*0.34,0,0,Math.PI*2); };
+  sdCel(D,path,P.shoe,null,()=>{ g.fillStyle=P.shoeL; g.beginPath();
+    g.ellipse(x+w*0.12,y-w*0.46,w*0.30,w*0.12,0,0,Math.PI*2); g.fill(); });
+  // 밑창 — 뒤에서 보면 뒤꿈치 흰 줄이 보인다
+  g.fillStyle=P.sole; g.beginPath();
+  g.ellipse(x,y-w*0.06,w*0.46,w*0.09,0,0,Math.PI*2); g.fill();
+  g.lineWidth=D.LW*0.8; g.strokeStyle=SD_OL; g.stroke();
+  if(back){ g.fillStyle=D.P.team; g.beginPath(); g.ellipse(x,y-w*0.36,w*0.16,w*0.10,0,0,Math.PI*2); g.fill(); }
+}
+/* 바지 + 양말 한 다리. 엉덩이(H) → 무릎(K) → 발목(A) */
+function sdLeg(D,H,K,A,w){
+  const P=D.P;
+  const mid=[sdLerp(K[0],A[0],0.45), sdLerp(K[1],A[1],0.45)];
+  sdLimb(D,[K[0],K[1],A[0],A[1]],w*0.78,P.team,P.teamD);          // 양말
+  sdLimb(D,[H[0],H[1],K[0],K[1],mid[0],mid[1]],w,P.pan,P.panD);   // 바지
+  // 바지 밑단
+  const g=D.g; g.save(); g.fillStyle=P.panD;
+  g.beginPath(); g.ellipse(mid[0],mid[1],w*0.52,w*0.22,0,0,Math.PI*2); g.fill();
+  g.lineWidth=D.LW*0.8; g.strokeStyle=SD_OL; g.stroke(); g.restore();
+}
+
+/* ---------- 타자 — 뒤에서 본다 (우타 기준) ----------
+   얼굴은 마운드를 본다. 등번호와 헬멧 뒤통수, 오른쪽에 뺨과 귀가 조금.  */
+function sdBatter(D,S){
+  const g=D.g, P=D.P, tw=S.tw;
+  const trail=(D.o.swQ!=null||S.blur>0)&&S.blur>0.03;
+  const ang=S.ang*Math.PI/180, H=[S.hx,S.hy];
+  const BL=50;                                   // 배트 길이 — 짧고 굵게(SD)
+  /* 배트가 아래를 보는 동안(몸 앞으로 지나가는 구간)은 몸 뒤에 그린다 */
+  const a360=((S.ang%360)+360)%360;
+  const batBehind = a360>25 && a360<160;
+  // 몸 비틀기 — 어깨가 앞(오른쪽)으로 돈다
+  const sx=tw*5, hipx=tw*2.2;
+  const shL=[-14+sx*0.6,-45], shR=[14+sx,-45];
+  if(trail) sdTrail(D,H,S,BL);
+  /* 앞팔(왼팔) — 몸 저편이라 몸통보다 먼저 */
+  const eF=sdIK(shR,[H[0]+3,H[1]+1],12,12,-1);
+  sdLimb(D,[shR[0],shR[1],eF[0],eF[1],H[0]+3,H[1]+1],7.2,P.team,P.teamD);
+  if(batBehind) sdBat(D,H,ang,BL);
+  /* 다리 — 넓게 벌린다. 휘두르면 뒷발이 돌아서 무릎이 안으로 */
+  const kIn=Math.max(0,tw)*6;
+  sdLeg(D,[-8+hipx,-26],[-15+kIn,-13],[-16+kIn*0.4,-5],13);
+  sdLeg(D,[8+hipx,-26],[15+tw*1.5,-13],[15,-5],13);
+  sdShoe(D,-16+kIn*0.4,0,15,true);
+  sdShoe(D,15,-0.5,15,true);
+  /* 엉덩이 + 몸통 */
+  g.save(); g.translate(hipx,0); g.rotate(tw*0.05);
+  sdCel(D,()=>{ g.beginPath(); g.moveTo(-15,-30);
+      g.quadraticCurveTo(-17,-19,-8,-19); g.quadraticCurveTo(0,-21,8,-19);
+      g.quadraticCurveTo(17,-19,15,-30); g.closePath(); },P.pan,
+    ()=>{ g.fillStyle=P.panD; g.beginPath(); g.ellipse(-9,-22,9,6,0,0,Math.PI*2); g.fill(); });
+  const torso=()=>{ g.beginPath(); g.moveTo(-15,-47);
+    g.quadraticCurveTo(0,-51,15+sx*0.4,-47);
+    g.quadraticCurveTo(19,-37,15,-27); g.lineTo(-15,-27);
+    g.quadraticCurveTo(-19,-37,-15,-47); g.closePath(); };
+  sdCel(D,torso,P.jer,()=>{
+      g.fillStyle=P.jerD; g.beginPath(); g.rect(-30,-60,60,60);
+      g.ellipse(4+sx*0.3,-40,15,17,0,0,Math.PI*2); g.fill('evenodd'); },
+    ()=>{ g.strokeStyle=P.team; g.lineWidth=1.3;              // 등판 가운데 솔기 대신 어깨 요크
+      g.beginPath(); g.moveTo(-15,-45); g.quadraticCurveTo(0,-43,15,-45); g.stroke(); });
+  /* 등번호 — 팀 색에 흰 테두리 */
+  if(D.o.no!=null){
+    g.save(); g.translate(sx*0.25,-36.5); g.scale(D.dir,1);
+    g.font='900 13px sans-serif'; g.textAlign='center'; g.textBaseline='middle';
+    g.lineWidth=2.6; g.strokeStyle='#ffffff'; g.strokeText(String(D.o.no),0,0);
+    g.fillStyle=P.team; g.fillText(String(D.o.no),0,0);
+    g.restore();
+  }
+  /* 벨트 */
+  sdCel(D,()=>{ g.beginPath(); g.moveTo(-15.5,-30); g.lineTo(15.5,-30); g.lineTo(15.2,-26.4); g.lineTo(-15.2,-26.4); g.closePath(); },P.teamD);
+  g.restore();
+  /* 뒷팔(오른팔) — 카메라 쪽이라 몸통 위에. 팔꿈치가 바깥으로 든다 */
+  const eB=sdIK(shL,H,12,12,1);
+  sdLimb(D,[shL[0],shL[1],eB[0],eB[1],H[0],H[1]],7.6,P.team,P.teamD);
+  sdSleeve(D,[shL[0]+1,shL[1]+1.5],eB,10);
+  /* 머리 */
+  sdBatHead(D,[2+tw*1.2,-74]);
+  /* 손 · 배트 */
+  if(!batBehind) sdBat(D,H,ang,BL);
+  sdHand(D,H[0]+2.4,H[1]+1.2,4.4,P.white,P.whiteD);
+  sdHand(D,H[0],H[1],4.6,P.white,P.whiteD);
+}
+/* 배트 — 손잡이(손)에서 끝까지. 끝이 굵다 */
+function sdBat(D,H,ang,L){
+  const g=D.g, P=D.P;
+  g.save(); g.translate(H[0],H[1]); g.rotate(ang);
+  const path=()=>{ g.beginPath();
+    g.moveTo(-6,-1.6); g.lineTo(L*0.40,-1.9);
+    g.quadraticCurveTo(L*0.62,-4.6,L-3,-4.9);
+    g.quadraticCurveTo(L+1.2,-4.8,L+1.2,0); g.quadraticCurveTo(L+1.2,4.8,L-3,4.9);
+    g.quadraticCurveTo(L*0.62,4.6,L*0.40,1.9); g.lineTo(-6,1.6); g.closePath(); };
+  sdCel(D,path,P.bat,()=>{ g.fillStyle=P.batD; g.fillRect(-8,1.2,L+12,6); },
+    ()=>{ g.fillStyle=P.batL; g.beginPath(); g.ellipse(L*0.72,-2.4,L*0.20,0.9,0,0,Math.PI*2); g.fill(); });
+  // 노브
+  sdCel(D,()=>{ g.beginPath(); g.ellipse(-6.5,0,1.6,2.8,0,0,Math.PI*2); },P.batD);
+  // 그립 테이프
+  g.fillStyle=P.team; g.globalAlpha=0.9; g.fillRect(-5,-1.5,7,3); g.globalAlpha=1;
+  g.restore();
+}
+/* 스윙 잔상 — 배트 끝이 지나간 부채꼴. 잘 맞을수록 금색 */
+function sdTrail(D,H,S,L){
+  const g=D.g, q=D.o.swQ;
+  const solid=(q!=null&&q>=0.72), whiff=(q!=null&&q<0.18);
+  const C = solid?'255,206,84':(whiff?'150,172,205':'255,255,255');
+  const M = solid?1.3:(whiff?0.6:1);
+  const a=S.blur, D2R=Math.PI/180;
+  const end=S.ang*D2R, start=(S.ang+Math.min(150,70+a*80))*D2R;   // 지나온 쪽(각도가 큰 쪽)
+  g.save();
+  const grd=g.createRadialGradient(H[0],H[1],L*0.25,H[0],H[1],L*1.08);
+  grd.addColorStop(0,'rgba('+C+',0)');
+  grd.addColorStop(0.65,'rgba('+C+','+(0.28*a*M).toFixed(3)+')');
+  grd.addColorStop(0.94,'rgba('+C+','+(0.80*a*M).toFixed(3)+')');
+  grd.addColorStop(1,'rgba('+C+',0)');
+  g.fillStyle=grd;
+  g.beginPath(); g.moveTo(H[0],H[1]); g.arc(H[0],H[1],L*1.08,end,start,false); g.closePath(); g.fill();
+  g.lineCap='round';
+  g.strokeStyle='rgba(255,255,255,'+(0.75*a*(solid?1:0.7)).toFixed(3)+')'; g.lineWidth=2.4;
+  g.beginPath(); g.arc(H[0],H[1],L*0.98,end+0.05,end+(start-end)*0.7,false); g.stroke();
+  for(let i=0;i<3;i++){
+    g.strokeStyle='rgba('+C+','+(0.5*a*M*(1-i*0.25)).toFixed(3)+')'; g.lineWidth=1.3;
+    g.beginPath(); g.arc(H[0],H[1],L*(0.62+i*0.12),end+0.12+i*0.1,end+(start-end)*(0.55-i*0.1),false); g.stroke();
+  }
+  g.restore();
+}
+/* 헬멧 뒤통수. 아래로 뒷머리·목, 오른쪽에 뺨과 귀 */
+function sdBatHead(D,C){
+  const g=D.g, P=D.P, cx=C[0], cy=C[1];
+  // 목 · 머리 (헬멧 밑으로 삐져나오는 부분)
+  sdCel(D,()=>{ g.beginPath(); g.ellipse(cx+3,cy+9,22,19,0,0,Math.PI*2); },P.skin,
+    ()=>{ g.fillStyle=P.skinD; g.beginPath(); g.ellipse(cx-8,cy+16,18,12,0,0,Math.PI*2); g.fill(); });
+  // 뒷머리
+  sdCel(D,()=>{ g.beginPath(); g.moveTo(cx-19,cy+10);
+      g.quadraticCurveTo(cx-12,cy+21,cx+1,cy+19.5); g.quadraticCurveTo(cx+9,cy+18.5,cx+13,cy+13);
+      g.lineTo(cx+10,cy+6); g.closePath(); },P.hair,
+    ()=>{ g.strokeStyle=P.hairL; g.lineWidth=1.1; g.beginPath();
+      g.moveTo(cx-10,cy+13); g.lineTo(cx-8,cy+18); g.moveTo(cx-3,cy+14); g.lineTo(cx-2,cy+19);
+      g.moveTo(cx+4,cy+13); g.lineTo(cx+4,cy+18); g.stroke(); });
+  // 귀 (오른쪽 — 카메라 쪽 귀)
+  sdCel(D,()=>{ g.beginPath(); g.ellipse(cx+24,cy+9,4.6,6,0.2,0,Math.PI*2); },P.skin,
+    ()=>{ g.fillStyle=P.skinD; g.beginPath(); g.ellipse(cx+24.5,cy+9.5,2.2,3.4,0.2,0,Math.PI*2); g.fill(); });
+  // 헬멧 — 둥근 공. 아래 테두리가 살짝 내려온다
+  const helm=()=>{ g.beginPath();
+    g.ellipse(cx,cy-3,29.5,27,0,Math.PI*0.94,Math.PI*2.06);
+    g.quadraticCurveTo(cx+14,cy+16,cx-2,cy+15);
+    g.quadraticCurveTo(cx-22,cy+15,cx-29.3,cy+2.4); g.closePath(); };
+  sdCel(D,helm,P.team,()=>{
+      g.fillStyle=P.teamD; g.beginPath(); g.rect(cx-40,cy-40,80,80);
+      g.ellipse(cx+6,cy-8,28,25,0,0,Math.PI*2); g.fill('evenodd'); },
+    ()=>{ // 광택
+      g.fillStyle='rgba(255,255,255,.55)'; g.beginPath();
+      g.ellipse(cx+10,cy-17,10,5.2,-0.45,0,Math.PI*2); g.fill();
+      g.fillStyle='rgba(255,255,255,.85)'; g.beginPath();
+      g.ellipse(cx+18,cy-11,2.4,1.6,-0.45,0,Math.PI*2); g.fill();
+      // 챙 끝 — 마운드 쪽(오른쪽)으로 살짝 보인다
+      g.fillStyle=P.teamD; g.beginPath(); g.ellipse(cx+26,cy+4,8,4,-0.3,0,Math.PI*2); g.fill();
+    });
+  // 헬멧 아래 테두리
+  g.strokeStyle=P.teamL; g.lineWidth=1.2; g.globalAlpha=0.55;
+  g.beginPath(); g.moveTo(cx-26,cy+4); g.quadraticCurveTo(cx-18,cy+13,cx-2,cy+12.4);
+  g.quadraticCurveTo(cx+12,cy+13,cx+20,cy+9); g.stroke(); g.globalAlpha=1;
+}
+
+/* ---------- 앞에서 본 사람 — 투수 · 야수 ----------
+   우투 기준. 화면 왼쪽이 던지는 손(오른손), 오른쪽이 글러브.         */
+const SD_FRONT={
+  /* hip 골반, lean 상체 기울기, head 머리 추가 이동,
+     legs [엉덩이→무릎→발목] 두 개(화면 왼쪽·오른쪽),
+     thr 던지는 손 [팔꿈치, 손], glv 글러브 손 [팔꿈치, 손], ball 공을 쥐었나 */
+  idle:  {hip:[0,-27], lean:0,
+          L:[[-7,-26],[-9,-13],[-10,-5]], R:[[7,-26],[9,-13],[10,-5]], fL:[-10,0], fR:[10,0],
+          thr:[[-13,-36],[-2,-39]], glv:[[13,-36],[4,-40]], gloveAt:[3,-40], ball:false},
+  field: {hip:[0,-25], lean:0.05,
+          L:[[-7,-24],[-12,-13],[-12,-5]], R:[[7,-24],[12,-13],[12,-5]], fL:[-12,0], fR:[12,0],
+          thr:[[-17,-34],[-13,-27]], glv:[[17,-34],[15,-27]], gloveAt:[17,-27], ball:false},
+  wind:  {hip:[-2,-30], lean:-0.05, kick:true,
+          L:[[-7,-29],[-6,-15],[-6,-5]], R:[[5,-29],[13,-41],[17,-30]], fL:[-6,0], fR:[18,-25],
+          thr:[[-12,-42],[0,-48]], glv:[[14,-42],[3,-49]], gloveAt:[2,-49], ball:false},
+  cock:  {hip:[1,-25], lean:-0.10,
+          L:[[-7,-24],[-14,-12],[-13,-4]], R:[[8,-24],[20,-14],[22,-5]], fL:[-13,0], fR:[22,-0.5],
+          thr:[[-24,-47],[-27,-60]], glv:[[24,-42],[31,-45]], gloveAt:[31,-45], ball:true},
+  rel:   {hip:[3,-24], lean:0.16,
+          L:[[-5,-23],[-12,-11],[-15,-4]], R:[[10,-23],[19,-13],[20,-5]], fL:[-15,-1.5], fR:[20,0],
+          thr:[[-25,-58],[-22,-78]], glv:[[16,-38],[10,-34]], gloveAt:[11,-34], ball:false},
+  follow:{hip:[4,-22], lean:0.34,
+          L:[[-4,-21],[-13,-26],[-19,-33]], R:[[10,-21],[18,-12],[18,-5]], fL:[-21,-31], fR:[18,0],
+          thr:[[4,-32],[16,-20]], glv:[[16,-40],[9,-36]], gloveAt:[10,-36], ball:false}
+};
+function sdFront(D,pose){
+  const g=D.g, P=D.P;
+  let key=pose, mirrorGlove=false;
+  if(pose==='idleL'){ key='field'; mirrorGlove=true; }
+  else if(pose==='idle' && D.o.fielder) key='field';
+  const R=SD_FRONT[key]||SD_FRONT.idle;
+  if(mirrorGlove){ g.save(); g.scale(-1,1); D.dir=-D.dir; }
+  const hip=R.hip;
+  /* 다리 — 뒤쪽 다리를 먼저 */
+  const leg=(Lg,foot)=>{ sdLeg(D,Lg[0],Lg[1],Lg[2],12); sdShoe(D,foot[0],foot[1]+0.5,14,false); };
+  if(key==='follow'){ leg(R.L,R.fL); leg(R.R,R.fR); }
+  else if(R.kick){ leg(R.L,R.fL); }
+  else { leg(R.R,R.fR); leg(R.L,R.fL); }
+  /* 상체 — 골반을 축으로 기운다(카메라 쪽으로 숙이면 lean>0: 아래로 눌린다) */
+  g.save(); g.translate(hip[0],hip[1]); g.rotate(-R.lean*0.35); g.translate(-hip[0],-hip[1]);
+  const dy=R.lean*14;          // 숙이면 상체가 내려온다
+  g.translate(0,dy*0.5);
+  const tx=hip[0];
+  // 글러브 쪽 팔은 몸 뒤로 가는 때가 있다(cock) — 몸통 앞에 그린다
+  // 몸통
+  const shL=[tx-14,-45], shR=[tx+14,-45];
+  sdCel(D,()=>{ g.beginPath(); g.moveTo(tx-15,hip[1]-4);
+      g.quadraticCurveTo(tx-17,hip[1]+6,tx-8,hip[1]+7); g.lineTo(tx+8,hip[1]+7);
+      g.quadraticCurveTo(tx+17,hip[1]+6,tx+15,hip[1]-4); g.closePath(); },P.pan,
+    ()=>{ g.fillStyle=P.panD; g.beginPath(); g.ellipse(tx-10,hip[1]+6,8,5,0,0,Math.PI*2); g.fill(); });
+  const torso=()=>{ g.beginPath(); g.moveTo(tx-15,-47);
+    g.quadraticCurveTo(tx,-50,tx+15,-47);
+    g.quadraticCurveTo(tx+19,-37,tx+15,hip[1]-1); g.lineTo(tx-15,hip[1]-1);
+    g.quadraticCurveTo(tx-19,-37,tx-15,-47); g.closePath(); };
+  sdCel(D,torso,P.jer,()=>{ g.fillStyle=P.jerD; g.beginPath(); g.rect(tx-30,-60,60,60);
+      g.ellipse(tx+5,-40,15,17,0,0,Math.PI*2); g.fill('evenodd'); },
+    ()=>{ // 단추 줄 · 가슴 글씨 자리
+      g.strokeStyle=P.team; g.lineWidth=1.1;
+      g.beginPath(); g.moveTo(tx+1,-47); g.lineTo(tx+1,hip[1]-1); g.stroke();
+      g.fillStyle=P.team; g.beginPath(); mvRR(g,tx-11,-42,9,3.2,1.4); g.fill();
+      g.beginPath(); mvRR(g,tx+3.5,-42,9,3.2,1.4); g.fill();
+      // 목 V
+      g.fillStyle=P.team; g.beginPath(); g.moveTo(tx-5,-48.5); g.lineTo(tx+6,-48.5); g.lineTo(tx+0.5,-43.5); g.closePath(); g.fill(); });
+  sdCel(D,()=>{ g.beginPath(); g.moveTo(tx-15.5,hip[1]-3); g.lineTo(tx+15.5,hip[1]-3);
+      g.lineTo(tx+15.3,hip[1]+0.4); g.lineTo(tx-15.3,hip[1]+0.4); g.closePath(); },P.teamD);
+  /* 팔 — 소매(유니폼) + 언더셔츠(팀 색) */
+  const arm=(sh,E,Hd,isGlove)=>{
+    sdLimb(D,[sh[0],sh[1],E[0],E[1],Hd[0],Hd[1]],7,P.team,P.teamD);
+    sdSleeve(D,[sh[0]+(sh[0]<tx?1:-1),sh[1]+1.5],E,9.5);
+  };
+  /* 와인드업 — 든 무릎은 배 앞으로 온다. 몸통 다음에 그린다 */
+  if(R.kick){ g.save(); g.translate(0,-dy*0.5); leg(R.R,R.fR); g.restore(); }
+  const head=[tx+(R.lean*6),-73];
+  const drawHead=()=>sdFace(D,head);
+  if(key==='rel'){                                   // 던지는 팔이 머리 위로 넘어온다 — 머리 뒤에
+    arm(shR,R.glv[0],R.glv[1],true); sdGlove(D,R.gloveAt[0],R.gloveAt[1],7.5,0.3);
+    drawHead();
+    arm(shL,R.thr[0],R.thr[1],false);
+    sdHand(D,R.thr[1][0],R.thr[1][1],4.2,P.skin,P.skinD);
+  } else {
+    drawHead();
+    arm(shL,R.thr[0],R.thr[1],false);
+    sdHand(D,R.thr[1][0],R.thr[1][1],4.2,P.skin,P.skinD);
+    if(R.ball) sdBall(D,R.thr[1][0]-1,R.thr[1][1]-3.4,2.6);
+    arm(shR,R.glv[0],R.glv[1],true);
+    sdGlove(D,R.gloveAt[0],R.gloveAt[1],key==='field'?9.5:8,key==='cock'?0.9:0.15);
+  }
+  g.restore();
+  if(mirrorGlove){ g.restore(); D.dir=-D.dir; }
+}
+/* 얼굴 — 모자 · 큰 눈 · 발그레한 뺨 */
+function sdFace(D,C){
+  const g=D.g, P=D.P, cx=C[0], cy=C[1];
+  // 귀
+  [[-1],[1]].forEach(([k])=>sdCel(D,()=>{ g.beginPath(); g.ellipse(cx+k*24.5,cy+6,4.8,6,0,0,Math.PI*2); },P.skin,
+    ()=>{ g.fillStyle=P.skinD; g.beginPath(); g.ellipse(cx+k*24.5,cy+6.5,2.2,3.2,0,0,Math.PI*2); g.fill(); }));
+  // 얼굴
+  const face=()=>{ g.beginPath(); g.ellipse(cx,cy+3,25,23,0,0,Math.PI*2); };
+  sdCel(D,face,P.skin,()=>{
+      g.fillStyle=P.skinD; g.beginPath(); g.rect(cx-40,cy-40,80,80);
+      g.ellipse(cx+4,cy+1,25,23,0,0,Math.PI*2); g.fill('evenodd');
+      // 모자챙 그림자
+      g.fillStyle='rgba(170,90,60,.30)'; g.beginPath(); g.ellipse(cx,cy-9,30,9,0,0,Math.PI*2); g.fill(); });
+  // 옆머리
+  g.fillStyle=P.hair;
+  g.beginPath(); g.moveTo(cx-24,cy-6); g.quadraticCurveTo(cx-22,cy+4,cx-19,cy+6); g.lineTo(cx-17,cy-6); g.closePath(); g.fill();
+  g.beginPath(); g.moveTo(cx+24,cy-6); g.quadraticCurveTo(cx+22,cy+4,cx+19,cy+6); g.lineTo(cx+17,cy-6); g.closePath(); g.fill();
+  // 눈 — 크고 까맣게, 반짝이 두 개
+  [-9.5,9.5].forEach(ex=>{
+    g.fillStyle='#231b1a'; g.beginPath(); g.ellipse(cx+ex,cy+5,3.8,5.2,0,0,Math.PI*2); g.fill();
+    g.fillStyle='#5a3a2c'; g.beginPath(); g.ellipse(cx+ex,cy+7,2.6,2.8,0,0,Math.PI*2); g.fill();
+    g.fillStyle='#ffffff'; g.beginPath(); g.arc(cx+ex+1.2,cy+2.9,1.5,0,Math.PI*2); g.fill();
+    g.beginPath(); g.arc(cx+ex-1.2,cy+7.6,0.7,0,Math.PI*2); g.fill();
+  });
+  // 눈썹 — 결연하게
+  g.strokeStyle=P.hair; g.lineWidth=1.8; g.lineCap='round';
+  g.beginPath(); g.moveTo(cx-14,cy-3); g.lineTo(cx-6,cy-1.6);
+  g.moveTo(cx+14,cy-3); g.lineTo(cx+6,cy-1.6); g.stroke();
+  // 뺨
+  g.fillStyle=P.blush;
+  g.beginPath(); g.ellipse(cx-15,cy+13,4.6,2.6,0,0,Math.PI*2); g.fill();
+  g.beginPath(); g.ellipse(cx+15,cy+13,4.6,2.6,0,0,Math.PI*2); g.fill();
+  // 코 · 입
+  g.fillStyle=P.skinD; g.beginPath(); g.ellipse(cx,cy+11,1.5,1.1,0,0,Math.PI*2); g.fill();
+  g.strokeStyle='#8a4a3a'; g.lineWidth=1.3;
+  g.beginPath(); g.moveTo(cx-3.2,cy+16); g.quadraticCurveTo(cx,cy+17.6,cx+3.2,cy+16); g.stroke();
+  // 모자 — 둥근 크라운
+  const crown=()=>{ g.beginPath();
+    g.ellipse(cx,cy-9,27.5,24,0,Math.PI,Math.PI*2);
+    g.quadraticCurveTo(cx+27.5,cy-3,cx+25,cy-2.5); g.lineTo(cx-25,cy-2.5);
+    g.quadraticCurveTo(cx-27.5,cy-3,cx-27.5,cy-9); g.closePath(); };
+  sdCel(D,crown,P.team,()=>{
+      g.fillStyle=P.teamD; g.beginPath(); g.rect(cx-40,cy-50,80,60);
+      g.ellipse(cx+6,cy-13,26,22,0,0,Math.PI*2); g.fill('evenodd'); },
+    ()=>{ g.fillStyle='rgba(255,255,255,.45)'; g.beginPath();
+      g.ellipse(cx+10,cy-24,9,4.4,-0.3,0,Math.PI*2); g.fill();
+      // 이음선
+      g.strokeStyle=P.teamD; g.lineWidth=0.9; g.beginPath();
+      g.moveTo(cx,cy-33); g.quadraticCurveTo(cx+1,cy-18,cx,cy-3); g.stroke(); });
+  // 모자 로고 — 흰 동그라미
+  sdCel(D,()=>{ g.beginPath(); g.arc(cx,cy-16,5.2,0,Math.PI*2); },'#ffffff');
+  g.fillStyle=P.team; g.beginPath(); g.arc(cx,cy-16,2.4,0,Math.PI*2); g.fill();
+  // 챙 — 카메라 쪽으로 튀어나온다
+  sdCel(D,()=>{ g.beginPath(); g.ellipse(cx,cy-2.5,26,5.6,0,0,Math.PI*2); },P.teamD,null,
+    ()=>{ g.fillStyle=P.team; g.beginPath(); g.ellipse(cx+2,cy-4.2,22,3.2,0,0,Math.PI*2); g.fill(); });
+}
+
+/* ---------- 포수 — 쪼그려 앉은 뒷모습 ---------- */
+function sdCatcher(D){
+  const g=D.g, P=D.P;
+  // 다리 — 넓게 벌려 쪼그린다
+  sdLimb(D,[-9,-14,-24,-10,-20,-2],13,P.pan,P.panD);
+  sdLimb(D,[9,-14,24,-10,20,-2],13,P.pan,P.panD);
+  sdShoe(D,-21,0,14,true); sdShoe(D,21,0,14,true);
+  // 미트 — 몸 왼쪽으로 내민다
+  sdGlove(D,-22,-30,9,-0.4);
+  // 등 — 조끼
+  const back=()=>{ g.beginPath(); g.moveTo(-17,-44);
+    g.quadraticCurveTo(0,-49,17,-44); g.quadraticCurveTo(21,-28,15,-14);
+    g.quadraticCurveTo(0,-9,-15,-14); g.quadraticCurveTo(-21,-28,-17,-44); g.closePath(); };
+  sdCel(D,back,P.jer,()=>{ g.fillStyle=P.jerD; g.beginPath(); g.rect(-30,-60,60,60);
+      g.ellipse(5,-32,16,18,0,0,Math.PI*2); g.fill('evenodd'); },
+    ()=>{ // 가슴 보호대 끈 X
+      g.strokeStyle=P.teamD; g.lineWidth=3; g.beginPath();
+      g.moveTo(-14,-42); g.lineTo(13,-16); g.moveTo(14,-42); g.lineTo(-13,-16); g.stroke(); });
+  // 헬멧 (뒤로 쓴다)
+  const cx=0, cy=-64;
+  sdCel(D,()=>{ g.beginPath(); g.ellipse(cx,cy,24,22,0,0,Math.PI*2); },P.team,
+    ()=>{ g.fillStyle=P.teamD; g.beginPath(); g.rect(cx-40,cy-40,80,80);
+      g.ellipse(cx+5,cy-5,23,21,0,0,Math.PI*2); g.fill('evenodd'); },
+    ()=>{ g.fillStyle='rgba(255,255,255,.5)'; g.beginPath();
+      g.ellipse(cx+8,cy-12,8,4,-0.4,0,Math.PI*2); g.fill(); });
+  // 마스크 끈
+  g.strokeStyle='#2a2a2a'; g.lineWidth=2.2;
+  g.beginPath(); g.moveTo(cx-23,cy+4); g.quadraticCurveTo(cx,cy+10,cx+23,cy+4); g.stroke();
 }
 /* ===== [ART:END] ===== */
 
@@ -29782,7 +30282,9 @@ function mvPaint(mound, o){
      좌타일 때만 뒤집는다. */
   /* 타자는 타석 박스 한가운데에 발을 놓는다. 우타는 3루쪽(화면 왼쪽),
      좌타는 1루쪽(화면 오른쪽) — 포수 뒤에서 본 기준이다.            */
-  const bx=st.batLeft?MV_BOXC[1]:MV_BOXC[0];
+  /* [v3.23.0] SD 타자는 머리가 커서 박스 한가운데 세우면 헬멧이 존을 먹는다.
+     바깥(포수 반대쪽)으로 키의 1할 비켜 세운다 */
+  const bx=(st.batLeft?MV_BOXC[1]:MV_BOXC[0]) + (st.batLeft?1:-1)*MV_FIG_H.bat*0.10;
   mvFootRing(g, bx, MV_BOXC[2], 34, true);               // 답지 — 타자 발밑
   if(!mvFig(g, st.bat, bx, MV_BOXC[2], ou, !!st.batLeft, {no:st.batNo, swT:st.swT, swQ:st.swQ}))
     mvGuy(g, bx, MV_BOXC[2]-2, 80, ou, st.bat, !st.batLeft);
