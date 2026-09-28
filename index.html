@@ -9407,8 +9407,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.45.0';
-const APP_VERSION_NOTE = '투구 조준 — 조이스틱처럼, 제구만큼 흩어진다';
+const APP_VERSION = '3.46.0';
+const APP_VERSION_NOTE = '베이스 커버 · 상대 타자 스윙 · 뜬공 문구';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9429,6 +9429,13 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.46.0', t:'베이스 커버 · 상대 타자 스윙 · 뜬공 문구', items:[
+    '1루수가 땅볼 잡으러 나가면 투수가 1루에 뛰어 들어간다 — 빈 베이스에 던져서 아웃되던 그림 고쳤다',
+    '2루는 키스톤 콤비 중 공 안 잡은 쪽이, 3루수가 잡으면 유격수가 3루에 들어간다',
+    '베이스 바로 옆에서 잡은 1루수는 던지지 않고 직접 밟는다',
+    '투수할 때 상대 타자가 진짜로 배트를 돌린다 — 헛스윙은 흐린 잔상, 맞으면 흰색',
+    '뜬공·땅볼 아웃처럼 고를 게 없던 타구에 「무리하지 않았다」 가 뜨던 것 고쳤다',
+  ]},
   {v:'3.45.0', t:'투구 조준 — 조이스틱처럼, 제구만큼 흩어진다', items:[
     '아홉 칸 고르기 대신 조준판을 끌어서 원하는 곳을 겨누고 「던진다」',
     '조준판 좌우가 지금 카메라에 보이는 방향 그대로 — 바깥쪽 눌렀는데 반대로 가던 거 고쳤다',
@@ -29998,6 +30005,55 @@ function psNearest(p, park){
   return best;
 }
 
+/* ---------- 베이스 커버 ----------
+   [제보 v3.46.0] "1루수가 땅볼잡았는데 비어있는 베이스에 던지고 아웃이라니
+                   이게 무슨 엔진이야"
+   맞는 말이다. 판정(엔진)은 멀쩡했는데 **그림**이 틀렸다 — 공 쫓는 야수만
+   움직이고 나머지는 제자리에 박혀 있었다. 1루수가 공을 주우러 나가면
+   1루는 비어 있는데, 공은 거기로 날아가서 아웃이 됐다.
+   실제 야구대로 누가 베이스에 들어가는지 정한다.
+     1루 — 1루수. 1루수가 공을 잡으면 **투수가 뛰어 들어간다**
+     2루 — 공이 3루쪽(왼쪽)이면 2루수, 1루쪽(오른쪽)이면 유격수.
+           둘 중 하나가 공을 잡으면 나머지 하나
+     3루 — 3루수. 3루수가 잡으면 유격수
+     홈  — 포수. 포수가 잡으면 투수
+   b 는 0(홈)·1·2·3, fk 는 공 잡은 야수, land 는 공 떨어진 자리. */
+function psCoverKey(b, fk, land){
+  if(b===1) return fk==='1B' ? 'P' : '1B';
+  if(b===2){
+    if(fk==='2B') return 'SS';
+    if(fk==='SS') return '2B';
+    /* 3루수가 잡으면 유격수는 3루로 간다 — 2루는 2루수 몫. 1루수가 잡으면 반대 */
+    if(fk==='3B') return '2B';
+    if(fk==='1B') return 'SS';
+    return (land && land.x<160) ? '2B' : 'SS';
+  }
+  if(b===3) return fk==='3B' ? 'SS' : '3B';
+  return fk==='C' ? 'P' : 'C';
+}
+/* 커버 들어가는 야수의 지금 자리. 해당 없으면 null.
+   k 0 → 제자리, 1 → 베이스 위(살짝 앞, 주자랑 안 겹치게) */
+function psCoverAt(kk, p0, fk, land, bases, k){
+  if(kk===fk) return null;
+  for(let i=0;i<bases.length;i++){
+    const b=bases[i];
+    if(psCoverKey(b, fk, land)!==kk) continue;
+    const bp=(b===0||b>=4)?{x:160,y:236}:PS_B[b];
+    const q=Math.max(0,Math.min(1,k));
+    /* 베이스 안쪽(마운드 쪽)으로 4px — 주자 그림과 겹치면 누가 누군지 모른다 */
+    const tx=bp.x+(160-bp.x)*0.06, ty=bp.y+(176-bp.y)*0.06;
+    return {x:p0.x+(tx-p0.x)*q, y:p0.y+(ty-p0.y)*q, run:q>0&&q<1, b};
+  }
+  return null;
+}
+/* 1루수가 베이스 바로 옆에서 잡았으면 던질 것 없이 직접 밟는다 */
+function psSelfTag(fk, at, b){
+  if(!at) return false;
+  const bp=(b===0||b>=4)?{x:160,y:236}:PS_B[b];
+  const own=(b===1&&fk==='1B')||(b===3&&fk==='3B')||(b===0&&fk==='C')||(b===2&&(fk==='2B'||fk==='SS'));
+  return own && Math.hypot(at.x-bp.x, at.y-bp.y)<26;
+}
+
 /* ---------- 도트 그리기 ---------- */
 const PS_FOUL=50.2;                 // 홈에서 1·3루 쪽으로 벌어진 각도(도)
 function psRad(a){ return (a-90)*Math.PI/180; }
@@ -30254,9 +30310,13 @@ function groundScene(host, o){
         g.beginPath(); g.arc(tgt.x,tgt.y,9,0,Math.PI*2); g.stroke();
       }
       /* 야수 — 공 쫓는 사람만 움직인다 */
+      /* 베이스 커버 — 송구 받는 베이스에 누가 들어가 있어야 한다(psCoverKey) */
+      const cvB=(HR||flyOut)?[]:(endB===1?[1]:[1,endB>=4?0:endB]);
       Object.keys(PS_POS).forEach(kk=>{
         if(kk===fk && !HR) return;
-        const p=psPosOf(kk,P);
+        const p0c=psPosOf(kk,P);
+        const cq=cvB.length?psCoverAt(kk,p0c,fk,land,cvB,Math.min(1,k/Math.max(0.05,K_THROW))):null;
+        const p=cq||p0c;
         if(kk===mine){ g.strokeStyle='rgba(255,209,92,.55)'; g.lineWidth=1.5;
           g.beginPath(); g.arc(p.x,p.y,10,0,Math.PI*2); g.stroke(); }
         man(p.x,p.y,DU,false,p.x<HX,false);
@@ -30561,7 +30621,8 @@ function livePlay(host, o){
     if(flyOut) return ['뜬공 — 그대로 잡혔다','#e08a70'];
     if(t<T_THROW) return canGo&&intent!=='go'
       ? ['잡았다 — 지금 정해라','#ffd15c'] : ['잡았다','#e9e4d8'];
-    if(t<T_THROW+THROW_MS) return [(tgtBase>=4?'홈':tgtBase+'루')+'로 송구','#ffd15c'];
+    if(t<T_THROW+THROW_MS) return (tgtBase===1&&psSelfTag(fkey,land,1))
+      ? ['1루수가 직접 밟는다','#ffd15c'] : [(tgtBase>=4?'홈':tgtBase+'루')+'로 송구','#ffd15c'];
     /* 두 단계 주루 — 베이스를 돌고 나서 한 번 더 정한다 */
     if(stage2 && !decided2 && t<T2_THROW)
       return intent2!=='go'
@@ -30640,14 +30701,27 @@ function livePlay(host, o){
     /* 야수 — 타구 쪽 사람만 뛴다 */
     const kc=seg(t,0,T_CATCH);
     const held=(t>=T_CATCH);
+    /* 베이스 커버 — 공 가는 베이스엔 누가 서 있어야 한다(psCoverKey) */
+    const cvB=[];
+    if(!HR && !flyOut){
+      cvB.push(1);
+      if(tgtBase>1) cvB.push(tgtBase>=4?0:tgtBase);
+      if(stage2) cvB.push(tgtBase2>=4?0:tgtBase2);
+    }
+    const cvK=seg(t, 250, T_CATCH+220);
+    /* 1루수가 베이스 옆에서 잡았다 — 던지지 않고 직접 밟는다 */
+    const selfT = !HR && !flyOut && tgtBase===1 && psSelfTag(fkey, land, 1);
     Object.keys(PS_POS).forEach(kk=>{
       const p0=psPosOf(kk,P);
       if(kk===fkey && !HR) return;
+      const cq=cvB.length ? psCoverAt(kk, p0, fkey, land, cvB, cvK) : null;
+      if(cq){ man(cq.x,cq.y,DU,cq.run,cq.x<HX); return; }
       man(p0.x,p0.y,DU,false,p0.x<HX);
     });
     let fp=fhome;
     if(!HR){
       fp=lerp(fhome, land, Math.min(1, seg(t,0,T_CATCH)*1.08));
+      if(selfT && t>=T_THROW) fp=lerp(land, PS_B[1], seg(t,T_THROW,T_THROW+THROW_MS));
       if(held){ g.strokeStyle='rgba(255,209,92,.85)'; g.lineWidth=2;
         g.beginPath(); g.arc(fp.x,fp.y,10,0,Math.PI*2); g.stroke(); }
       man(fp.x,fp.y,DU,!held,fp.x<HX);
@@ -30671,13 +30745,15 @@ function livePlay(host, o){
       const from=PS_B[Math.min(3,base+1)];
       const tg2=(tgtBase2>=4)?{x:HX,y:HY}:PS_B[Math.min(3,tgtBase2)];
       bp=lerp(from, tg2, seg(t,T2_THROW,T2_THROW+THROW_GO));
+    } else if(selfT){
+      bp={x:fp.x, y:fp.y-2};                       // 공은 1루수 손에 있다
     } else {
       const tg=(tgtBase>=4)?{x:HX,y:HY}:PS_B[Math.min(3,tgtBase)];
       bp=lerp(land, tg, seg(t,T_THROW,T_THROW+THROW_MS));
     }
     g.strokeStyle='rgba(255,255,255,.28)'; g.lineWidth=1.5;
     g.beginPath(); g.moveTo(HX,HY); g.lineTo(land.x,land.y); g.stroke();
-    if(t>=T_THROW && !HR && !flyOut){
+    if(t>=T_THROW && !HR && !flyOut && !selfT){
       const tg=(tgtBase>=4)?{x:HX,y:HY}:PS_B[Math.min(3,tgtBase)];
       g.strokeStyle='rgba(255,209,92,.55)';
       g.beginPath(); g.moveTo(land.x,land.y); g.lineTo(bp.x,bp.y); g.stroke();
@@ -31154,6 +31230,11 @@ function psPlay(d, done, opt){
       if(k===sc.pos && T.chase){
         const kk=seg(T.chase,now);
         if(kk>0){ p={x:lerp(home.x,sc.land.x,kk), y:lerp(home.y,sc.land.y,kk)}; f=fr; }
+      } else if(T.chase && K!=='HR' && sc.land){
+        /* 1루 커버 — 1루수가 공 주우러 가면 투수가 들어간다(psCoverKey) */
+        const kk=seg(T.chase,now);
+        const cq=(kk!=null&&kk>0)?psCoverAt(k, home, sc.pos, sc.land, [1], kk):null;
+        if(cq){ p=cq; f=cq.run?fr:0; }
       }
       psMan(g,p.x,p.y,du,f,(k==='P')?pitL:false);   // 좌완은 글러브가 반대쪽
     });
@@ -36629,9 +36710,17 @@ function renderSwing(box, d){
           /* 몸으로 정한 걸 엔진이 굴린다 — 확률식은 예전 그대로다 */
           const out=(LIVE&&LIVE.resolveStretch)?LIVE.resolveStretch(go,risk):null;
           flushLog(); updateLiveUI();
+          /* [제보 v3.46.0] "뜬공인데 무리하지 않았다는 뭐야"
+             고를 게 없던 타구(뜬공 · 땅볼 아웃 · 앞 베이스가 막힌 안타)에도
+             송구 시각이 되면 이 줄이 떴다. 안 고른 게 아니라 고를 게 없었다.
+             그때는 무슨 일이 벌어졌는지를 쓴다.                          */
           if(note) note.textContent = go
             ? (out&&out.ok?'돌았다 — 세이프':'돌았다 — 여기서 갈렸다')
-            : '무리하지 않았다';
+            : offer ? (offer.hit==='1B'?'1루에서 멈췄다':'2루에서 멈췄다')
+            : play.type==='OUT'
+              ? (play.gb?'땅볼 — 1루 승부':(play.ld?'직선타 — 잡혔다':'뜬공 — 잡혔다. 베이스로 돌아온다'))
+              : play.type==='3B' ? '3루타 — 여기까지'
+              : '앞 베이스에 주자가 있다 — 여기서 선다';
           paintRow();
           /* 접전이 아웃으로 불렸으면 그 자리에서 따질 수 있다 */
           if(LIVE._badCall && LIVE._badCall.kind==='play') showArgue(row, null);
@@ -37374,7 +37463,7 @@ function defScene(host, o){
      거리는 딱 「닿는 거리」다 — 완벽하게 자리를 잡아도 최저 등급이
      나왔다. 뜬공은 **낙구 지점까지 얼마나 붙었나**로 잰다.        */
   let bestLand=9999;
-  let catchAt=0, throwAt=0, tgt=null, q=0, tq=0;
+  let catchAt=0, throwAt=0, tgt=null, q=0, tq=0, selfTag=false;
   const t0=Date.now();
   let last=t0;
   const rollMs=560;
@@ -37417,7 +37506,11 @@ function defScene(host, o){
     const now=Date.now()-t0;
     tq=Math.max(0,Math.min(1,(ringOf(now)-3.5)/Math.max(1,(9+(o.arm-45)*0.10)-3.5)));
     tgt=bestB; throwAt=now; phase='throw2';
-    if(o.onTitle) o.onTitle(bestB.label+'로 던졌다'+(tq>0.6?' — 좋은 송구':(tq<0.25?' — 늦었다':'')),'#ffd15c');
+    /* 베이스 바로 옆에서 잡았으면 던질 게 없다 — 내가 직접 밟는다 */
+    selfTag=psSelfTag(o.pos, {x:fx,y:fy}, bnum);
+    if(selfTag) tq=Math.max(tq, 0.9);
+    if(o.onTitle) o.onTitle(selfTag ? (bestB.label+' — 직접 밟았다')
+      : bestB.label+'로 던졌다'+(tq>0.6?' — 좋은 송구':(tq<0.25?' — 늦었다':'')),'#ffd15c');
     if(o.onTick) o.onTick('공이 '+bestB.label+'로 간다');
     /* 2루 송구는 병살을 노린 것이다 — 엔진이 그렇게 받는다 */
     const where=(bestB.b===2 && o.hasFirst)?'at:lead':'at:first';
@@ -37593,10 +37686,15 @@ function defScene(host, o){
     g.setTransform(2,0,0,2,0,0);
     psField(g,P);
     /* 나머지 야수 — 이름표를 같이 단다 */
+    /* 베이스 커버 — 내가 공을 주우러 나가면 누가 그 베이스에 들어간다(psCoverKey).
+       [제보 v3.46.0] 1루수로 땅볼 잡고 1루에 던지면 빈 베이스에 공이 갔다 */
+    const cvB=throwables().map(t=>t.b), cvK=seg(now, 250, 1150);
     Object.keys(PS_POS).forEach(kk=>{
       if(kk===o.pos) return;
-      const qq=psPosOf(kk,P);
-      man(qq.x,qq.y,PS_UNI.us,false,qq.x<HX);
+      const q0=psPosOf(kk,P);
+      const cq=psCoverAt(kk, q0, o.pos, land, cvB, cvK);
+      const qq=cq||q0;
+      man(qq.x,qq.y,PS_UNI.us,!!(cq&&cq.run),qq.x<HX);
       const nm=(o.names&&o.names[kk])||null;
       if(nm) psLabel(g,qq.x,qq.y-9,nm,false);
     });
@@ -37622,6 +37720,11 @@ function defScene(host, o){
       }
       psBall(g,b.x,b.y,b.z);
     } else if(phase==='throw'){
+      psBall(g,fx,fy-2,0);
+    } else if(phase==='throw2' && tgt && selfTag){
+      /* 공을 든 채로 베이스까지 뛴다 */
+      const bp=basePt(tgt.b);
+      fx+=(bp.x-fx)*Math.min(1,dt*9); fy+=(bp.y-fy)*Math.min(1,dt*9);
       psBall(g,fx,fy-2,0);
     } else if(phase==='throw2' && tgt){
       const bp=basePt(tgt.b);
@@ -38689,26 +38792,33 @@ function renderPitch(box, d){
     if(lb) lb.innerHTML=`<b>${T.n}</b> · ${where}`;
     windup(mv,()=>{
       mvSpeed(mv, pitchKmh(p,type));
+      /* [제보 v3.46.0] "투수할때 상대 헛스윙 하는 모션이 안나오고 무슨 돌려 있는 자세인데 자꾸"
+         진짜였다. 투구 화면은 타자가 휘두를지를 **공이 도착한 뒤에** 굴렸고,
+         배트를 돌리는 그림(mvSwing)은 아예 안 불렀다. 타자는 서 있는 자세
+         그대로 굳어 있었다. 휘두를지를 던지기 전에 정하고, 공이 홈에
+         닿는 순간 배트가 존을 지나가게 맞춰 돌린다(스윙 0.44초의 절반쯤이 임팩트).
+         어떻게 맞았는지는 판정이 나면 잔상 색(mvSwingQ)으로 알려준다. */
+      /* 타자가 휘두를지 참을지 — 카운트와 코스를 본다 */
+      const cnt=LIVE.count();
+      const eye=bat?bat.eye:40, con=bat?bat.con:40;
+      let sw = out ? 0.22 : 0.62;
+      if(cnt.s===2) sw+=0.22;                     // 투 스트라이크면 커트라도
+      if(cnt.b===3) sw-=0.18;                     // 쓰리볼이면 골라 나간다
+      sw -= (eye-40)*0.004;
+      /* 유인구는 변화구일수록, 2스트라이크일수록, 구위가 좋을수록 잘 속는다.
+         반대로 볼카운트가 유리한 타자는 잘 안 따라 나온다.
+         [균형] 예전엔 0볼 0스트라이크에서 22% 밖에 안 나와서
+         "무조건 안 휘두른다" 였다. 상황을 맞추면 60%를 넘게 했다. */
+      if(isChase){
+        sw += 0.14                                   // 유인구 기본 유혹
+           + (T.hard>0?0.13:0)                       // 변화구면 더
+           + (cnt.s===2?0.22:(cnt.s===1?0.08:0))     // 몰릴수록
+           + (p.stf-38)*0.0035                       // 구위
+           - (cnt.b>=3?0.20:(cnt.b>=2?0.09:0));      // 볼카운트가 유리하면 참는다
+      }
+      const swung = LIVE.rng() < Math.max(0.05,Math.min(0.92,sw));
+      if(swung) setTimeout(()=>{ try{ mvSwing(mv, null); }catch(e){} }, 900-230);
       throwBall(mv,type,{cx:ax,cy:ay,dur:900,hand:pitchHand(p,bat),onEnd:()=>{
-        /* 타자가 휘두를지 참을지 — 카운트와 코스를 본다 */
-        const cnt=LIVE.count();
-        const eye=bat?bat.eye:40, con=bat?bat.con:40;
-        let sw = out ? 0.22 : 0.62;
-        if(cnt.s===2) sw+=0.22;                     // 투 스트라이크면 커트라도
-        if(cnt.b===3) sw-=0.18;                     // 쓰리볼이면 골라 나간다
-        sw -= (eye-40)*0.004;
-        /* 유인구는 변화구일수록, 2스트라이크일수록, 구위가 좋을수록 잘 속는다.
-           반대로 볼카운트가 유리한 타자는 잘 안 따라 나온다.
-           [균형] 예전엔 0볼 0스트라이크에서 22% 밖에 안 나와서
-           "무조건 안 휘두른다" 였다. 상황을 맞추면 60%를 넘게 했다. */
-        if(isChase){
-          sw += 0.14                                   // 유인구 기본 유혹
-             + (T.hard>0?0.13:0)                       // 변화구면 더
-             + (cnt.s===2?0.22:(cnt.s===1?0.08:0))     // 몰릴수록
-             + (p.stf-38)*0.0035                       // 구위
-             - (cnt.b>=3?0.20:(cnt.b>=2?0.09:0));      // 볼카운트가 유리하면 참는다
-        }
-        const swung = LIVE.rng() < Math.max(0.05,Math.min(0.92,sw));
         let kind, pre, col, cq=0.55;
         if(!swung){
           /* [요청] "실제 심판 판정이 오락가락한 것처럼 그것도 넣자.
@@ -38764,6 +38874,7 @@ function renderPitch(box, d){
           }
           else { kind='strike'; pre='헛스윙!'; col='#7fc48f'; }
         }
+        if(swung){ try{ mvSwingQ(mv, kind==='strike'?0.05:(kind==='foul'?0.40:cq)); }catch(e){} }
         const res=LIVE.pitchResult(kind, kind==='contact'?cq:null, type);
         draw();
         if(!res){
