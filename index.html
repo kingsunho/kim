@@ -3210,6 +3210,28 @@ html.land .pp-ov,html.land #sheet{left:env(safe-area-inset-left,0px)!important;r
 .dr-me-money span{font-size:11.5px;color:var(--dim)}
 .dr-me-money b{font-size:20px;font-weight:900;color:var(--gold);margin-right:8px}
 .kd-sc b{color:var(--gold)}
+.stf-star{font-style:normal;color:var(--gold);letter-spacing:1px;margin-left:4px}.stf-star s{text-decoration:none;color:#3a414c}
+.stf-mgr{font-size:13px;margin:4px 0 8px}.stf-mgr i{font-style:normal;font-size:11.5px;color:var(--dim)}
+.ocd-wrap{margin:0 0 10px}
+.ocd{display:flex;gap:12px;align-items:stretch;border-radius:14px;padding:12px;background:linear-gradient(135deg,#1b2230 0%,#12161d 60%);border:1px solid #2b3442;position:relative;overflow:hidden}
+.ocd::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--tc)}
+.ocd-l{width:66px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #2b3442;padding-right:10px}
+.ocd-ovr{font-size:38px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums;text-shadow:0 2px 0 rgba(0,0,0,.4)}
+.ocd-pos{margin-top:4px;font-size:12px;font-weight:900;color:#0e0f11;background:#d7dde6;border-radius:4px;padding:1px 7px}
+.ocd-m{flex:1;min-width:0}
+.ocd-nm{font-size:17px;font-weight:900;color:#fff}.ocd-nm u{text-decoration:none;font-size:12px;color:var(--dim);margin-right:6px}
+.ocd-sub{font-size:11px;color:var(--dim);margin:1px 0 6px}
+.ocd-g{display:grid;grid-template-columns:1fr 1fr;gap:3px 12px}
+.ocd-r{display:grid;grid-template-columns:30px 20px 24px 1fr;align-items:center;gap:4px;font-size:11.5px}
+.ocd-r span{color:#b8c2cf}
+.ocd-r b{font-size:11px;font-weight:900;color:#0e0f11;text-align:center;border-radius:4px;line-height:17px}
+.ocd-r em{font-style:normal;font-weight:800;text-align:right;font-variant-numeric:tabular-nums}
+.ocd-r s{height:5px;border-radius:3px;background:#232a33;overflow:hidden;text-decoration:none}
+.ocd-r s i{display:block;height:100%}
+.ocd-tr{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
+.ocd-t{font-style:normal;font-size:10.5px;font-weight:900;padding:1px 7px;border-radius:4px;background:#27402f;color:#a8ebbd}
+.ocd-t.bad{background:#46252a;color:#f3a7a0}
+@media (min-width:600px){ .ocd-g{grid-template-columns:1fr 1fr 1fr} }
 .rtn-free{font-style:normal;font-size:10.5px;font-weight:800;color:#0e0f11;background:#6fcf8a;border-radius:5px;padding:1px 6px;margin-left:6px;vertical-align:middle}
 .rtn-row{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin:6px 0}
 .rtn-l{width:34px;font-size:11.5px;color:var(--dim);font-weight:800}
@@ -9329,8 +9351,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.41.0';
-const APP_VERSION_NOTE = '훈련 루틴 · 특성 · 지갑';
+const APP_VERSION = '3.42.0';
+const APP_VERSION_NOTE = '특성 확장 · 코치 · 감독 · 외국인 · 선수 카드';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9351,6 +9373,13 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.42.0', t:'특성 확장 · 코치 · 감독 · 외국인 · 선수 카드', items:[
+    '<b>특성이 경기에서도 생긴다.</b> 클러치히터(득점권 안타 15) · 새가슴 · 선구안(볼넷 40) · 한방(홈런 20) · 고무팔(90구 넘게 8번 버팀) · 강심장(득점권 위기 아웃 40) · 이닝이터(150이닝) · 인기스타(태극마크 → 매주 광고 300만). 전부 판정에 실제로 먹는다',
+    '<b>구단 금고로 스태프를 바꾼다.</b> 타격 · 투수 · 수비주루 코치(★ 만큼 내 루틴과 신인 성장) · 감독 교체(육성형 · 윈나우 · 스몰볼 · 데이터 — 팀 성향과 콜업 기준이 바뀐다)',
+    '<b>외국인 영입</b> — 후보 넷, 총액 100만 달러 상한(KBO 신규 규정). 데려오면 같은 쪽 제일 약한 외국인을 내보낸다',
+    '<b>내 통장과 구단 금고를 확실히 갈랐다.</b> 프런트는 금고, 로비 「지갑」 은 내 돈. 섞이는 건 연봉 · 계약금뿐',
+    '<b>선수 카드.</b> 훈련 화면 맨 위 — 종합(OVR) 크게, 능력치는 S~G 등급과 막대, 특성 뱃지',
+  ]},
   {v:'3.41.0', t:'훈련 루틴 · 특성 · 지갑', items:[
     '<b>훈련이 「루틴」 이 됐다 — 코인 없이 매주 저절로 돈다.</b> 주력 · 보조 하나씩, 강도 셋(가볍게 · 보통 · 빡세게). 한 번 정하면 끝. 코인으로 사는 건 그 위에 얹는 「특훈」 이다 — 안 사도 큰다',
     '<b>특성이 생긴다.</b> 빡세게 10주 → 노력파(훈련 +25%) · 무리 안 하고 16주 → 성실(회복 빠름) · 40주 안 다침 → 철강 · 부상 세 번 → 유리몸 · 도박 다섯 번 → 도박중독. 나쁜 특성은 한 해 한 번 10% 로 지워 볼 수 있다',
@@ -13087,8 +13116,11 @@ function pitchArmWear(res){
   const p=TBYID['wwzw'].players.find(x=>x.id===me);
   const sta=(p&&p.pitch&&p.pitch.sta!=null)?p.pitch.sta:40;
   /* 체력이 좋으면 같은 투구수도 덜 남는다 */
-  const over=np-(70+sta*0.45);
-  if(over<=0) return null;
+  const gum=(typeof mtHas==='function'&&mtHas('고무팔'));
+  /* 90구 넘게 던지고 멀쩡했으면 「고무팔」 쪽으로 한 칸 */
+  const heavyOk=()=>{ try{ if(np>=90 && !(ST.injury&&ST.injury[me])){ const M=mtState(); M.prog.heavy=(M.prog.heavy||0)+1; } }catch(e){} };
+  const over=np-(70+sta*0.45)-(gum?25:0);
+  if(over<=0){ heavyOk(); return null; }
   ST.rest=ST.rest||{};
   ST.rest[me]=Math.max(0,(ST.rest[me]==null?3:ST.rest[me])-(over>40?2:1));
   const msg={type:'train', title:'어깨가 안 올라온다',
@@ -13102,6 +13134,7 @@ function pitchArmWear(res){
     msg.title='어깨 피로 누적 — '+injLenText(g)+' 결장';
     msg.body=np+'구는 너무 많았다. 던지고 나서 팔이 안 올라간다.';
   }
+  heavyOk();
   return msg;
 }
 const INJ_SCAR_MULT=2.6;
@@ -13997,7 +14030,9 @@ LiveGame.prototype.stepPA = function(){
             * (off.isUser ? (this.mgr.boost||1) : 1);
   if(gjM!==1) parkE={...parkE, babip:parkE.babip*gjM};
   /* 똑딱이 — 배트에 맞히는 건 잘하는데(삼진 적음) 담장 근처를 못 간다 */
-  const pmods = (mm && mm.traits.includes('똑딱이')) ? {k:0.82, pow:0.55} : null;
+  let pmods = (mm && mm.traits.includes('똑딱이')) ? {k:0.82, pow:0.55} : null;
+  const rispNow=!!(this.bases[1]||this.bases[2]);
+  try{ pmods=mtMerge(pmods, mtPaMods(mm, (typeof META!=='undefined')?META[pit.id]:null, rispNow)); }catch(e){}
   /* 직접 조작(타이밍 스윙 · 코스 선택) 결과를 확률에 얹는다.
      결과를 정하지 않고 확률만 민다 — 손이 빠른 사람이 리그를 씹어먹으면
      안 되고, 못 맞혀도 게임이 망가지면 안 된다.                        */
@@ -14032,6 +14067,7 @@ LiveGame.prototype.stepPA = function(){
   /* [요청] "투구수 현황 표시도 가능한가?"
      손으로 친 타석은 pitchResult 가 공마다 세어 뒀다(_paPitches).
      엔진이 통째로 낸 타석은 결과에서 되짚어 굴린다. */
+  try{ mtLiveHook(this, off, def, bat, pit, res, rispNow); }catch(e){}
   pl.np=(pl.np||0)+(this._paPitches>0 ? this._paPitches : pitchesForPA(res.type, rng, bat));
   this._paPitches=0;
   /* [요청] "칠때마다 비거리도 적어주고"
@@ -16319,6 +16355,7 @@ function buildProTeams(){
     out.push(t);
   });
   try{ pfApplyMoves(out); }catch(e){}        // 트레이드 · FA · 드래프트로 옮긴 사람
+  try{ stfApplyTeam(out.find(t=>t.id==='wwzw')); }catch(e){}   // 감독 색
   try{ applyRenames(out); }catch(e){}
   return out;
 }
@@ -16369,7 +16406,7 @@ function proNewSeason(){
   ST.rotation=recommendRotation();
   ST.lineup=recommendLineup(); if(typeof applyDHRule==='function') applyDHRule();
   /* 2군에서 시작하면 1군 경기에 못 나간다 — 콜업 기준은 사회인보다 높다 */
-  if(keepPro.level==='2군'){ ST.myFarm=1; ST.farmMe={g:0,ab:0,h:0}; ST.farmBar=0.300; ST.farmDone=0; ST.farmDoneSeen=0;
+  if(keepPro.level==='2군'){ ST.myFarm=1; ST.farmMe={g:0,ab:0,h:0}; ST.farmBar=0.300+((typeof stfFarmBarAdj==='function')?stfFarmBarAdj():0); ST.farmDone=0; ST.farmDoneSeen=0;
     ST.lineup=(ST.lineup||[]).filter(x=>x.id!==ST.playerId); if(ST.lineup.length<9) ST.lineup=recommendLineup(); }
   return ST;
 }
@@ -17013,6 +17050,7 @@ function ntPlay(ev, year){
   }
   /* 병역 특례 — [요청 v3.38.0] "올림픽은 동메달 이상, 아시안게임은 금메달, 나머지 국대는 없고"
      (실제 병역법 시행령 — 올림픽 3위 이상 · 아시안게임 1위. WBC · 프리미어12 · APBC 는 해당 없음) */
+  try{ const M=mtState(); M.prog.star=(M.prog.star||0)+1; }catch(e){}         // 태극마크 — 「인기스타」
   const rec={ev, name:E.name, year, games, medal, my, called:true,
     exempt:!!((E.ag && medal==='gold') || (ev==='olympic' && !!medal))};
   ST.pro.nt=ST.pro.nt||{}; ST.pro.nt[year]=rec;
@@ -17139,6 +17177,7 @@ function pfBuildFarm(t){
 }
 function pfAll(t){ return [].concat(t.players||[], t.pitchers||[], t.farm||[]).filter((p,i,a)=>a.findIndex(q=>q.id===p.id)===i); }
 function pfIsForeign(p, key){
+  if(p&&p.foreign) return p.foreign;              // 프런트가 데려온 외국인(fxSign)
   try{ const F=PRO_FOREIGN[key]; if(!F) return null; const x=(F.now||[]).find(z=>z[0]===p.name); return x?x[3]:null; }catch(e){ return null; }
 }
 /* 선수를 옮긴다 — 지금 판(TEAMS)에도 바로 반영하고, 세이브(moves)에도 적는다.
@@ -17269,6 +17308,9 @@ function pfWeek(){
   /* 징계 중엔 연봉이 안 나온다(무급 출장정지) */
   const susp=ST.injury&&ST.injury[me]&&ST.injury[me].susp;
   if(!susp) ST.pro.earned=Math.round(((ST.pro.earned||0)+mc.sal/24)*10)/10;
+  /* 인기스타 — 광고 · 팬 사인회. 징계전력이 붙으면 광고가 끊긴다 */
+  try{ if(!susp && mtHas('인기스타') && !mtHas('징계전력')) ST.pro.earned+=300;
+    if(mtHas('성실')) ST.cond[me]=Math.min(100,(ST.cond[me]||70)+1); }catch(e){}
   /* 집 — 좋은 데서 자면 더 돌아온다. 집이 있으면 「성실」 에 가까워진다 */
   try{ const L=walLife(); if(L.house>=0){ ST.cond[me]=Math.min(100,(ST.cond[me]||70)+WAL_HOUSE[L.house].rec); const M=mtState(); M.prog.care=(M.prog.care||0)+0.5; } }catch(e){}
   /* 2군 시설 — 내가 2군에 있으면 시설만큼 조금씩 는다 */
@@ -17679,6 +17721,7 @@ function pfGrow(){
     const now=pfGrade(s); if(now>=s.pot) return;
     let step=Math.min(s.pot-now, (2+(clayHash(s.id+ST.pro.year)%4))*(age<=21?1.25:1)*(ours?(1+0.08*F.fac):1));
     if(s.bust) step*=0.25;                           // 괴물이었는데 몸이 안 따라준다
+    if(ours) step*=stfRookieMul();                   // 코치진 · 감독 성향
     const ks=pfIsPit(s)?['stf','ctl','sta']:['con','pow','eye','spd','def','arm'];
     ks.forEach(k=>{ s[k]=Math.round(clamp((s[k]||30)+step*(pfIsPit(s)?1.0:1.0),12,90)); });
     const live=pfFind(s.id); if(live) ks.forEach(k=>live.p[k]=s[k]);
@@ -17766,6 +17809,145 @@ function pfYearRoll(){
 }
 
 /* ---- 화면 ---- */
+/* ================= 스태프 · 외국인 — 구단 돈으로 =================
+   [요청 v3.42.0] "내 돈이랑 구단 돈을 다르게 · 구단 돈으로 스카우터나 코치진 감독진 변경 가능하게 ·
+   외국인 용병 데려오는 데 쓰거나"
+
+   돈 두 주머니 — 헷갈리지 않게 이름부터 갈랐다.
+     구단 금고 F.cash (억)       — 프런트가 쓴다. 코치 · 감독 · 외국인 · 스카우트 · 시설 · FA
+     내 통장   ST.pro.earned (만원) — 내가 쓴다. 집 · 차 · 트레이너 · 도박(로비 「지갑」)
+   섞이는 곳은 없다. 구단이 나한테 주는 건 연봉 · 계약금뿐이다.
+
+   · 코치진 — 타격 · 투수 · 수비주루 ★1~5. 내 루틴(그 갈래)과 우리 신인이 크는 속도가 달라진다
+   · 감독 — 해마다 후보 셋. 육성형 · 윈나우 · 스몰볼 · 데이터. 팀 성향과 내 콜업 기준이 바뀐다
+   · 외국인 — KBO 규정: 신규 외국인 계약 총액 100만 달러 상한. 후보 넷, 데려오면 같은 쪽(투수/타자)
+     제일 약한 외국인을 내보낸다(잔여 연봉 절반은 구단이 문다). 이름은 전부 지어낸 것이다       */
+const STAFF_KEYS=[['bat','타격 코치'],['pit','투수 코치'],['def','수비 · 주루 코치']];
+const STAFF_OF={bat:'bat',eye:'bat',body:'bat',def:'def',run:'def',steal:'def',pspd:'pit',pctl:'pit',pbrk:'pit',psta:'pit'};
+const MGR_STYLES={
+  dev:  {n:'육성형',   d:'2군을 믿는다 — 콜업 기준이 낮고 신인이 빨리 큰다'},
+  win:  {n:'윈나우',   d:'지금 이긴다 — 장타 · 타구가 조금 세지고 신인은 덜 쓴다'},
+  small:{n:'스몰볼',   d:'한 점을 짜낸다 — 도루가 늘고 삼진이 준다'},
+  data: {n:'데이터',   d:'볼카운트 싸움 — 볼넷이 늘어난다'},
+};
+function stfState(){
+  const F=pfState(), ph=proPhil(ST.pro.team);
+  if(!F.coach||typeof F.coach!=='object'){ const b=Math.max(1,Math.min(5,Math.round((ph.farm+ph.wealth)/2))); F.coach={bat:b,pit:b,def:Math.max(1,b-1)}; }
+  if(!F.mgr||typeof F.mgr!=='object') F.mgr={name:'현 감독', style:ph.mode==='rebuild'?'dev':(ph.mode==='win'?'win':'small'), since:ST.pro.year};
+  return F;
+}
+function stfTrainMul(trainId){
+  try{ if(!isPro()) return 1; const F=stfState(), k=STAFF_OF[trainId]; if(!k) return 1; return 1+0.05*((F.coach[k]||3)-3); }catch(e){ return 1; }
+}
+function stfUpgrade(k){
+  const F=stfState(), lv=F.coach[k]||1; if(lv>=5) return '이미 최고다';
+  const cost=(lv+1)*6; if(F.cash<cost) return '금고가 모자라다 ('+cost+'억)';
+  F.cash=Math.round((F.cash-cost)*10)/10; F.coach[k]=lv+1;
+  pfLog((STAFF_KEYS.find(x=>x[0]===k)||[,k])[1]+' 교체 — ★'+(lv+1)+' ('+cost+'억)'); return null;
+}
+/* 감독 후보 — 해마다 셋. 이름은 지어낸다(실존 감독 이름을 쓰지 않는다) */
+function stfMgrPool(){
+  const F=stfState(), y=ST.pro.year;
+  if(F.mgrPool&&F.mgrPool.year===y) return F.mgrPool;
+  const rng=makeRng(((ST.seed||1)*8231+y)>>>0), used=new Set();
+  const st=Object.keys(MGR_STYLES).filter(s=>s!==F.mgr.style).sort(()=>rng()-0.5).slice(0,3);
+  const list=st.map((s,i)=>({name:genName(rng,used), style:s, cost:3+Math.round(rng()*5), age:48+((rng()*14)|0),
+    career:['2군 감독 출신','수석코치 출신','해설위원 출신','대표팀 코치 출신'][(rng()*4)|0]}));
+  return F.mgrPool={year:y, list};
+}
+function stfHireMgr(i){
+  const F=stfState(), c=stfMgrPool().list[i]; if(!c) return '없는 후보다';
+  if(F.cash<c.cost) return '금고가 모자라다 ('+c.cost+'억)';
+  F.cash=Math.round((F.cash-c.cost)*10)/10;
+  const old=F.mgr.name; F.mgr={name:c.name, style:c.style, since:ST.pro.year}; F.mgrPool.list.splice(i,1);
+  pfLog('감독 교체 — '+old+' → '+c.name+' ('+MGR_STYLES[c.style].n+' · 계약금 '+c.cost+'억)');
+  proNews('구단', proName(ST.pro.team)+', 새 감독 '+c.name+' 선임 — 「'+MGR_STYLES[c.style].n+'」', c.career+'. '+MGR_STYLES[c.style].d+'.');
+  stfApplyTeam(TBYID.wwzw);
+  return null;
+}
+/* 팀 성향에 감독 색을 입힌다 — 팀을 새로 만들 때마다(buildProTeams) 다시 입힌다 */
+function stfApplyTeam(t){
+  if(!t||!t.tend||!isPro()) return;
+  const F=stfState(), s=F.mgr.style;
+  if(!t._tend0) t._tend0={...t.tend};
+  const b=t._tend0, T={...b};
+  if(s==='win'){ T.pow=b.pow*1.03; T.babip=b.babip*1.01; }
+  if(s==='small'){ T.sb=b.sb*1.30; T.k=b.k*0.97; }
+  if(s==='data'){ T.bb=b.bb*1.05; }
+  t.tend=T;
+}
+function stfRookieMul(){ try{ const F=stfState(); const avg=(F.coach.bat+F.coach.pit+F.coach.def)/3;
+  return (1+0.04*(avg-3))*(F.mgr.style==='dev'?1.2:(F.mgr.style==='win'?0.9:1)); }catch(e){ return 1; } }
+function stfFarmBarAdj(){ try{ return stfState().mgr.style==='dev'?-0.030:0; }catch(e){ return 0; } }
+
+/* ---- 외국인 ---- */
+const FX_USD=1400;                       // 1달러 = 1,400원으로 친다
+function fxOurs(pit){
+  const us=TBYID.wwzw;
+  return pfAll(us).filter(p=>!p.farm && pfIsForeign(p, ST.pro.team) && pfIsPit(p)===!!pit);
+}
+function fxPool(){
+  const F=pfState(), y=ST.pro.year;
+  if(F.fxPool&&F.fxPool.year===y) return F.fxPool;
+  const rng=makeRng(((ST.seed||1)*5821+y*7)>>>0);
+  const C=['usa','dom','ven','pur','mex','cub','usa','dom'];
+  const list=Array.from({length:4},(_,i)=>{
+    const ck=C[(rng()*C.length)|0], N=NT_COUNTRIES[ck], pit=i<2;
+    const q=58+Math.round(rng()*16), r=(sp)=>Math.round(clamp(q+(rng()-0.5)*sp,40,85));
+    const usd=Math.round((55+(q-58)*2.8+rng()*8)/5)*5;       // 55~100만 달러
+    const nm=N.sur[(rng()*N.sur.length)|0];
+    const id='fx'+y+'_'+i;
+    const p=pit ? {id, name:nm, no:40+i*3, throws:rng()<0.3?'L':'R', role:rng()<0.7?'SP':'RP', stf:r(14), ctl:r(14), sta:r(10), foreign:'외국인', age:26+((rng()*7)|0), ageYear:y}
+                : {id, name:nm, no:25+i*3, bats:rng()<0.4?'L':'R', con:r(14), pow:r(16)+4, eye:r(14), spd:r(18), def:r(14), arm:r(14),
+                   pos:[['1B','LF','RF','3B','CF'][(rng()*5)|0]], pitch:null, real:null, pro:true, foreign:'외국인', age:26+((rng()*7)|0), ageYear:y};
+    return {p, pit, usd:Math.min(100,usd), from:N.name, buyout:Math.round(rng()*3), done:false};
+  });
+  return F.fxPool={year:y, list};
+}
+function fxSign(i){
+  const F=pfState(), X=fxPool().list[i]; if(!X||X.done) return '없는 후보다';
+  const salM=Math.round(X.usd*140);                           // 만원 (1만 달러 = 1,400만)
+  const ours=fxOurs(X.pit).sort((a,b)=>pfValue(a)-pfValue(b));
+  const out=ours[0]||null;
+  const upfront=Math.round(salM*0.3/10000*10)/10 + X.buyout + (out?Math.round(pfCon(out,ST.pro.team).sal*0.5/10000*10)/10:0);
+  if(F.cash<upfront) return '금고가 모자라다 ('+upfront.toFixed(1)+'억)';
+  F.cash=Math.round((F.cash-upfront)*10)/10;
+  if(out) pfMove(out, ST.pro.team, null, '외국인 교체 — 방출');
+  pfMove(X.p, null, ST.pro.team, '외국인 영입 ('+X.from+')');
+  pfSetCon(X.p.id, {sal:Math.round(salM*0.7/100)*100, type:'foreign', left:1, svc:0, fa:0});
+  X.done=true;
+  pfLog('외국인 영입 — '+X.p.name+' ('+X.from+' · '+X.usd+'만 달러)'+(out?' · '+out.name+' 방출':''));
+  proNews('이적', proName(ST.pro.team)+', 새 외국인 '+(X.pit?'투수':'타자')+' '+X.p.name+' 영입 — 총액 '+X.usd+'만 달러'+(out?' · '+out.name+' 결별':''));
+  return null;
+}
+function renderStaffTab(c){
+  const F=stfState();
+  const cc=el('div','card'); cc.appendChild(el('div','card-h','코치진'));
+  cc.appendChild(el('p','muted','코치가 좋으면 내 루틴(그 갈래)과 우리 신인이 빨리 큰다. ★3 이 기본, ★5 는 1.1배.'));
+  STAFF_KEYS.forEach(([k,n])=>{ const lv=F.coach[k]||1, cost=(lv+1)*6;
+    const b=el('button','pf-opt'+(lv>=5?' done':''));
+    b.innerHTML='<b>'+n+' <em class="stf-star">'+'★'.repeat(lv)+'<s>'+'★'.repeat(5-lv)+'</s></em></b><span>'+(lv>=5?'최고 수준':'더 좋은 코치로 — '+cost+'억')+' · 훈련 ×'+(1+0.05*(lv-3)).toFixed(2)+'</span>';
+    if(lv<5) b.onclick=async()=>{ const e=stfUpgrade(k); toast(e||(n+' 교체')); await saveGame(true); renderProFront('staff'); };
+    cc.appendChild(b); });
+  c.appendChild(cc);
+  const mc=el('div','card'); mc.appendChild(el('div','card-h','감독'));
+  mc.appendChild(Object.assign(el('p','stf-mgr'),{innerHTML:'<b>'+F.mgr.name+'</b> · '+MGR_STYLES[F.mgr.style].n+' · '+(ST.pro.year-F.mgr.since+1)+'년째<br><i>'+MGR_STYLES[F.mgr.style].d+'</i>'}));
+  stfMgrPool().list.forEach((m,i)=>{ const b=el('button','pf-opt');
+    b.innerHTML='<b>'+m.name+' · '+MGR_STYLES[m.style].n+'</b><span>'+m.age+'세 · '+m.career+' · 계약금 '+m.cost+'억</span><i>'+MGR_STYLES[m.style].d+'</i>';
+    b.onclick=async()=>{ const e=stfHireMgr(i); toast(e||('새 감독 — '+m.name)); await saveGame(true); renderProFront('staff'); };
+    mc.appendChild(b); });
+  c.appendChild(mc);
+  const xc=el('div','card'); xc.appendChild(el('div','card-h','외국인'));
+  const cur=fxOurs(true).concat(fxOurs(false));
+  xc.appendChild(el('p','muted','지금 '+cur.length+'명 — '+(cur.map(p=>p.name+'('+(pfIsPit(p)?'투':'타')+' '+pfValue(p)+')').join(' · ')||'없다')+
+    '. 신규는 총액 100만 달러까지. 데려오면 같은 쪽 제일 약한 외국인을 내보낸다(잔여 연봉 절반).'));
+  fxPool().list.forEach((X,i)=>{ const b=el('button','pf-opt'+(X.done?' done':''));
+    const v=pfValue(X.p), st=X.pit?('구위 '+X.p.stf+' · 제구 '+X.p.ctl+' · 체력 '+X.p.sta):('컨택 '+X.p.con+' · 파워 '+X.p.pow+' · 선구 '+X.p.eye+' · 주루 '+X.p.spd);
+    b.innerHTML='<b>'+X.p.name+' · '+(X.pit?'투수':(POSNAMES[X.p.pos[0]]||'타자'))+' · '+X.from+' · '+X.p.age+'세</b><span>'+st+' · 가치 '+v+'</span><i>'+(X.done?'계약 완료':('총액 '+X.usd+'만 달러 · 이적료 '+X.buyout+'억'))+'</i>';
+    if(!X.done) b.onclick=async()=>{ const e=fxSign(i); toast(e||(X.p.name+' 영입')); await saveGame(true); renderProFront('staff'); };
+    xc.appendChild(b); });
+  c.appendChild(xc);
+}
 function renderProFront(tab){
   const c=$('#view'); c.innerHTML='';
   const F=pfState(), ph=proPhil(ST.pro.team), me=ST.playerId||MYID;
@@ -17773,7 +17955,7 @@ function renderProFront(tab){
   const hd=el('div','card pf-hd');
   const capPct=Math.min(100,Math.round(P.capSum/cap*100));
   hd.innerHTML='<div class="card-h">프런트 — '+proName(ST.pro.team)+'</div>'+
-    '<div class="pf-cash"><b>'+F.cash.toFixed(1)+'억</b><span>구단 금고</span></div>'+
+    '<div class="pf-cash"><b>'+F.cash.toFixed(1)+'억</b><span>구단 금고 · 내 통장과 따로다</span></div>'+
     '<div class="pf-capbar"><i style="width:'+capPct+'%" class="'+(P.capSum>cap?'over':'')+'"></i>'+
       (fl?'<u style="left:'+Math.round(fl/cap*100)+'%"></u>':'')+'</div>'+
     '<p class="muted pf-capt">상위 40명 연봉 '+wonStr2(P.capSum)+' / 샐러리캡 '+wonStr2(cap)+(fl?' · 하한 '+wonStr2(fl):'')+
@@ -17783,9 +17965,10 @@ function renderProFront(tab){
   c.appendChild(hd);
   const tabs=el('div','subtabs pf-tabs');
   const T=tab||'money';
-  [['money','돈'],['roster','선수단 · 연봉'],['trade','트레이드'],['log','장부']].forEach(([k,n])=>{
+  [['money','돈'],['staff','스태프 · 외국인'],['roster','선수단 · 연봉'],['trade','트레이드'],['log','장부']].forEach(([k,n])=>{
     const b=el('button','subtab'+(k===T?' on':''),n); b.onclick=()=>renderProFront(k); tabs.appendChild(b); });
   c.appendChild(tabs);
+  if(T==='staff'){ try{ renderStaffTab(c); }catch(e){ c.appendChild(el('p','muted','스태프 화면을 못 열었다')); } }
   if(T==='money'){
     const card=el('div','card');
     card.appendChild(el('div','card-h','유니폼 콜라보 · 상업 수익'));
@@ -35405,12 +35588,16 @@ function pitFade(pit, outs){
   const sta=(pit&&pit.sta!=null)?pit.sta:40;
   const s0=(pit&&pit.stf!=null)?pit.stf:40, c0=(pit&&pit.ctl!=null)?pit.ctl:40;
   const lim=Math.max(6, Math.round(4+(sta-22)*0.19));
-  const fadeAt=Math.max(6, Math.round(lim*0.75));
+  let fadeAt=Math.max(6, Math.round(lim*0.75));
+  /* 특성 — 이닝이터는 한 이닝(3아웃) 늦게 지친다. 고무팔은 떨어지는 폭이 절반 조금 넘는다 */
+  let soft=1;
+  try{ const T=(typeof META!=='undefined'&&pit&&META[pit.id]&&META[pit.id].traits)||[];
+    if(T.indexOf('이닝이터')>=0) fadeAt+=3; if(T.indexOf('고무팔')>=0) soft=0.55; }catch(e){}
   const over=(outs||0)-fadeAt;
   if(over<=0) return {k:0, lim, fadeAt, dStf:0, dCtl:0, stf:s0, ctl:c0};
   const k=Math.min(1, over/Math.max(4, lim-fadeAt+4));
-  const dStf=k*(15-Math.max(0,Math.min(7,(sta-30)*0.15)));
-  const dCtl=k*( 9-Math.max(0,Math.min(4,(sta-30)*0.09)));
+  const dStf=k*(15-Math.max(0,Math.min(7,(sta-30)*0.15)))*soft;
+  const dCtl=k*( 9-Math.max(0,Math.min(4,(sta-30)*0.09)))*soft;
   return {k, lim, fadeAt, dStf, dCtl,
           stf:Math.max(12, s0-dStf), ctl:Math.max(10, c0-dCtl)};
 }
@@ -40045,7 +40232,8 @@ function rtPreview(){
   const R=rtState(); if(!R) return null;
   const A=pmTrainDef(R.a), B=pmTrainDef(R.b), L=RT_LV[R.lv]||RT_LV[1];
   const gains={};
-  [[A,0.8],[B,0.5]].forEach(([t,w])=>{ if(!t) return; Object.keys(t.g||{}).forEach(k=>{ gains[k]=(gains[k]||0)+t.g[k]*w*L.g; }); });
+  [[A,0.8],[B,0.5]].forEach(([t,w])=>{ if(!t) return; const cm=(typeof stfTrainMul==='function')?stfTrainMul(t.id):1;
+    Object.keys(t.g||{}).forEach(k=>{ gains[k]=(gains[k]||0)+t.g[k]*w*L.g*cm; }); });
   const cond=Math.round(((A?A.cond*0.6:0)+(B?B.cond*0.4:0))*L.c);
   return {gains, cond, label:'루틴('+L.n+') '+(A?A.name:'')+(B?' · '+B.name:''), lv:R.lv};
 }
@@ -40116,7 +40304,9 @@ function mtWeek(){
   if(real && !M.lastInj){ P.inj=(P.inj||0)+1; P.iron=0; }
   if(!real) P.iron=(P.iron||0)+1;
   M.lastInj=!!real;
-  MT_EARN.forEach(d=>{ if(d.key && (P[d.key]||0)>=d.need && !mtHas(d.id) && M.removed.indexOf(d.id)<0) mtGive(d.id); });
+  MT_EARN.forEach(d=>{ if(!d.key || (P[d.key]||0)<d.need || mtHas(d.id) || M.removed.indexOf(d.id)>=0) return;
+    if(d.id==='새가슴' && (P.clutch||0)*4>(P.choke||0)) return;       // 칠 만큼 쳤으면 새가슴이 아니다
+    mtGive(d.id); });
   /* 도박중독 — 가끔 저절로 날린다 */
   if(mtHas('도박중독') && isPro() && Math.random()<0.15){
     const loss=Math.min(ST.pro.earned||0, 500+Math.round(Math.random()*25)*100);
@@ -40242,7 +40432,7 @@ function renderWallet(){
   if(!isPro()){ c.appendChild(el('div','card','지갑은 프로에 가면 열린다 — 사회인은 회비를 낸다.')); return; }
   const L=walLife(), me=ST.playerId||MYID;
   const hd=el('div','card wal-hd');
-  hd.innerHTML='<div class="card-h">내 지갑</div><div class="wal-m"><b>'+wonStr2(walMoney())+'</b><span>연봉 · 계약금으로 모은 돈</span></div>'+
+  hd.innerHTML='<div class="card-h">내 지갑</div><div class="wal-m"><b>'+wonStr2(walMoney())+'</b><span>연봉 · 계약금 · 광고 — 구단 금고와 따로다</span></div>'+
     '<p class="muted">집 '+(L.house>=0?WAL_HOUSE[L.house].n:'구단 숙소')+' · 차 '+(L.car>=0?WAL_CAR[L.car].n:'없음')+
     (L.trainer===ST.pro.year?' · 개인 트레이너 있음':'')+(ST.injury[me]&&ST.injury[me].susp?' · <b style="color:#e0706a">징계 중</b>':'')+'</p>';
   c.appendChild(hd);
@@ -40264,9 +40454,97 @@ function renderWallet(){
     if(r.caught){ toast('적발됐다 — '+WAL_SUSP+'경기 출장정지'); return null; } toast(r.win?('땄다 +'+wonStr2(bet)):'잃었다'); return null; }));
   const bk=el('button','btn','← 홈으로'); bk.onclick=()=>go('home'); c.appendChild(bk);
 }
+/* ---- 특성 2 — 경기에서 생기는 것들 ----
+   [요청 v3.42.0] "특성 더 여러 가지 — 회복 빠른 스타일, 투수 혹사당해도 버티는 스타일, 클러치 히터 등등"
+   경기 한 타석 한 타석이 쌓인다(mtLiveHook). 자동으로 돈 경기는 안 센다 — 내가 뛴 경기만.
+   효과는 판정에 실제로 먹는다(mtPaMods · pitFade · 어깨 과부하).                         */
+MT_EARN.push(
+  {id:'클러치히터', key:'clutch', need:15,  how:'득점권 안타 15개',            eff:'득점권에서 삼진 0.85배 · 장타 1.1배'},
+  {id:'새가슴',     key:'choke',  need:30,  how:'득점권에서 30번 범타(안타의 네 배 넘게)', eff:'득점권에서 삼진 1.15배 · 장타 0.9배', bad:true},
+  {id:'선구안',     key:'walk',   need:40,  how:'볼넷 40개',                     eff:'볼넷 1.12배'},
+  {id:'한방',       key:'hr',     need:20,  how:'홈런 20개',                     eff:'장타 1.06배'},
+  {id:'고무팔',     key:'heavy',  need:8,   how:'90구 넘게 던지고 안 다친 경기 8번', eff:'경기 후반에 덜 지친다 · 어깨 과부하가 늦게 온다'},
+  {id:'강심장',     key:'escape', need:40,  how:'득점권 위기에서 잡은 아웃 40개', eff:'득점권에서 상대 삼진 1.12배'},
+  {id:'이닝이터',   key:'outs',   need:450, how:'150이닝',                        eff:'지치기 시작하는 시점이 1이닝 늦다'},
+  {id:'인기스타',   key:'star',   need:1,   how:'국가대표로 뽑힌다',              eff:'광고가 들어온다 — 매주 300만'}
+);
+MT_REMOVABLE.push('새가슴');
+Object.assign(TRAIT_INFO,{
+  '클러치히터':'득점권에서 강하다','새가슴':'득점권에서 몸이 굳는다','선구안':'볼을 잘 고른다','한방':'한 번 걸리면 넘어간다',
+  '고무팔':'많이 던져도 버틴다','강심장':'위기에서 더 세진다','이닝이터':'오래 던진다','인기스타':'광고가 들어온다',
+  '도박중독':'가끔 저절로 돈을 날린다','징계전력':'불법 도박 징계를 받았다'
+});
+/* 한 타석의 판정 배수 — 타자(mm) · 투수(pm) 특성과 득점권 여부 */
+function mtPaMods(mm, pm, risp){
+  const t=(mm&&mm.traits)||[], q=(pm&&pm.traits)||[];
+  let k=1, bb=1, pow=1;
+  if(t.indexOf('선구안')>=0) bb*=1.12;
+  if(t.indexOf('한방')>=0) pow*=1.06;
+  if(risp){
+    if(t.indexOf('클러치히터')>=0){ k*=0.85; pow*=1.10; }
+    if(t.indexOf('새가슴')>=0){ k*=1.15; pow*=0.90; }
+    if(q.indexOf('강심장')>=0) k*=1.12;
+  }
+  return (k!==1||bb!==1||pow!==1)?{k,bb,pow}:null;
+}
+/* 배수끼리 곱한다 — 스프레드로 덮으면 먼저 것이 사라진다 */
+function mtMerge(a, b){
+  if(!b) return a; if(!a) return b;
+  const o={...a, ...b};
+  ['k','bb','pow','babip','hbp'].forEach(x=>{ if(a[x]!=null&&b[x]!=null) o[x]=a[x]*b[x]; });
+  return o;
+}
+/* 한 타석이 끝날 때 — 내가 친 · 내가 던진 것만 센다 */
+function mtLiveHook(G, off, def, bat, pit, res, risp){
+  if(typeof isPlayerMode!=='function'||!isPlayerMode()) return;
+  const me=ST.playerId||MYID; if(!res) return;
+  const P=mtState().prog, hit=/^(1B|2B|3B|HR)$/.test(res.type), out=(res.type==='OUT'||res.type==='K');
+  if(bat&&bat.id===me&&off.isUser){
+    if(risp&&hit) P.clutch=(P.clutch||0)+1;
+    if(risp&&out) P.choke=(P.choke||0)+1;
+    if(res.type==='BB') P.walk=(P.walk||0)+1;
+    if(res.type==='HR') P.hr=(P.hr||0)+1;
+  }
+  if(pit&&pit.id===me&&def.isUser){
+    if(risp&&out) P.escape=(P.escape||0)+1;
+    if(out) P.outs=(P.outs||0)+1;
+  }
+}
+/* ---- 선수 카드 — 한눈에 보이는 능력치 ----
+   [요청 v3.42.0] "AI 티 안 나고 — 마구마구 · 프로스피 · 더쇼 · 컴프야 · OOTP 느낌"
+   숫자를 줄글로 늘어놓던 자리를 카드 한 장으로 바꾼다. 종합(OVR) 하나 크게, 능력치는 등급 글자(S~G)와
+   막대. 등급 색은 야구 게임에서 다들 쓰는 순서(S 분홍 → A 빨강 → … → G 회색)를 따른다.            */
+const PC_GR=[[85,'S','#ff4fa0'],[75,'A','#ff5a4f'],[65,'B','#ff9b3d'],[55,'C','#f2c94c'],[45,'D','#8fd45f'],[35,'E','#4fb8e8'],[25,'F','#8a94a6'],[0,'G','#5a6270']];
+function pcGrade(v){ v=v||0; return PC_GR.find(g=>v>=g[0])||PC_GR[PC_GR.length-1]; }
+function pcOvr(p, pit){
+  if(pit){ const q=p.pitch||p; return Math.round((q.stf||30)*0.45+(q.ctl||30)*0.40+(q.sta||30)*0.15); }
+  return Math.round((p.con||30)*0.26+(p.pow||30)*0.22+(p.eye||30)*0.14+(p.spd||30)*0.12+(p.def||30)*0.16+(p.arm||30)*0.10);
+}
+function pcCard(p, o){
+  o=o||{}; const pit=!!o.pit, q=pit?(p.pitch||p):p;
+  const rows=pit?[['구위',q.stf],['제구',q.ctl],['체력',q.sta],['변화',q.brk]]
+                :[['컨택',p.con],['파워',p.pow],['선구',p.eye],['주루',p.spd],['수비',p.def],['어깨',p.arm]];
+  const ovr=pcOvr(p,pit), G=pcGrade(ovr);
+  const tr=(o.traits||[]).map(t=>{ const bad=MT_REMOVABLE.indexOf(t)>=0; return '<i class="ocd-t'+(bad?' bad':'')+'">'+t+'</i>'; }).join('');
+  return '<div class="ocd" style="--tc:'+(o.color||'#2f5fb0')+'">'+
+    '<div class="ocd-l"><div class="ocd-ovr" style="color:'+G[2]+'">'+ovr+'</div><div class="ocd-pos">'+(o.pos||'')+'</div></div>'+
+    '<div class="ocd-m"><div class="ocd-nm">'+(p.no!=null?'<u>'+p.no+'</u>':'')+p.name+'</div><div class="ocd-sub">'+(o.sub||'')+'</div>'+
+    '<div class="ocd-g">'+rows.filter(r=>r[1]!=null).map(([n,v])=>{ const g=pcGrade(v);
+      return '<div class="ocd-r"><span>'+n+'</span><b style="background:'+g[2]+'">'+g[1]+'</b><em>'+Math.round(v)+'</em><s><i style="width:'+Math.min(100,Math.round(v))+'%;background:'+g[2]+'"></i></s></div>'; }).join('')+
+    '</div>'+(tr?'<div class="ocd-tr">'+tr+'</div>':'')+'</div></div>';
+}
+function pcMine(){
+  const me=ST.playerId||MYID, p=TBYID.wwzw.players.find(x=>x.id===me); if(!p) return '';
+  const pit=ST.role==='pit', m=META[me]||{};
+  const where=isPro()?(proName(ST.pro.team)+' · '+((ST.myFarm||0)>0?'퓨처스':'1군')):(hsActive()?((HS_SCHOOLS[hsMySchool()]||{}).name||'고교'):'우완좌완');
+  const age=isPro()?pfAge({id:me}):((ST.year||2026)-(m.born||2000));
+  const col=isPro()?proUni(ST.pro.team).cap:'#2f5fb0';
+  return pcCard(p,{pit, pos:pit?'P':(ST.myPos||(p.pos||[''])[0]), sub:where+' · '+age+'세'+(ST.role==='two'?' · 투타겸업':''), traits:m.traits||[], color:col});
+}
 function renderTrainPlayer(){
   const c=$('#view'); c.innerHTML='';
   const me=ST.playerId||MYID;
+  try{ const cd=el('div','ocd-wrap'); cd.innerHTML=pcMine(); c.appendChild(cd); }catch(e){}
   try{ rtCard(c); mtCard(c); }catch(e){}
   const head=el('div','card');
   head.innerHTML='<div class="card-h">특훈 — 루틴 위에 얹는다 · 코인 '+coinSlot()+'개</div>'+
