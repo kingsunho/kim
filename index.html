@@ -2885,6 +2885,37 @@ html.land .lob-top b{font-size:13.5px}
 /* ---- 중계 화면(mvBcast) — 가로에서만 ----
    [요청 v3.50.0] 프로스피 · 더쇼 같은 정석 중계 화면. 왼쪽 위 점수 띠 + 카드 두 장. */
 .bc-sb,.bc-cards{display:none}
+/* 지명 축하 컷신 */
+.dcel{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 50% 40%,color-mix(in srgb,var(--tc) 45%,#0b0f15),#07090d 75%);color:#fff;padding:20px;cursor:pointer}
+.dcel-card{max-width:520px;width:100%;text-align:center;animation:dcelIn .45s ease-out}
+@keyframes dcelIn{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+.dcel-big{font-size:clamp(44px,12vw,86px);font-weight:900;letter-spacing:-1px;color:#ffd15c;text-shadow:0 0 24px rgba(255,209,92,.55)}
+.dcel:not(.r1) .dcel-big{font-size:clamp(34px,9vw,60px);color:#fff}
+.dcel-tm{font-size:18px;font-weight:800;margin-top:6px}.dcel-nm{font-size:26px;font-weight:900;margin-top:8px}
+.dcel-flash{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.dcel-flash i{position:absolute;width:40vmax;height:40vmax;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.9),transparent 60%);opacity:0;animation:dcelFl 1.6s ease-out infinite}
+.dcel-flash i:nth-child(1){left:-10%;top:5%}.dcel-flash i:nth-child(2){right:-12%;top:30%;animation-delay:.5s}.dcel-flash i:nth-child(3){left:30%;bottom:-20%;animation-delay:1s}
+.dcel:not(.r1) .dcel-flash{display:none}
+@keyframes dcelFl{0%{opacity:.0}8%{opacity:.85}30%{opacity:0}100%{opacity:0}}
+.dcel-role{font-size:12px;color:#c9d2dc;letter-spacing:1px;margin-bottom:6px}
+.dcel-who{font-size:20px;font-weight:900;margin-bottom:10px}
+.dcel-line{font-size:17px;line-height:1.55;background:rgba(0,0,0,.35);border-radius:12px;padding:14px 16px}
+.dcel-ban{display:inline-block;font-size:18px;font-weight:900;padding:12px 18px;background:#b8262a;border:3px solid #ffd15c;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,.4)}
+.dcel-chat{text-align:left;display:flex;flex-direction:column;gap:6px}
+.dcel-chat p{margin:0;background:#fff;color:#1b1f24;border-radius:12px;padding:6px 11px;font-size:13.5px;opacity:0;animation:dcelIn .35s ease-out forwards}
+.dcel-chat p b{display:inline-block;font-size:11px;color:#6a7480;margin-right:7px}
+.dcel-q{font-size:15px;color:#c9d2dc;margin-bottom:10px}.dcel-a{font-size:19px;font-weight:800;line-height:1.5}
+.dcel-foot{position:absolute;bottom:18px;font-size:11px;color:#9fb0c4}
+.dcel-skip{position:absolute;top:14px;right:14px;padding:6px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.3);background:rgba(0,0,0,.3);color:#fff;font-size:12px}
+/* 자동 경기 줄 */
+.auto-row{margin:8px 0;padding:8px 10px;border-radius:10px;background:var(--panel);border:1px solid rgba(255,255,255,.08)}
+.auto-h{font-weight:800;font-size:13px;margin-bottom:6px}.auto-h i{font-style:normal;font-weight:500;font-size:11px;color:var(--dm);margin-left:6px}
+.auto-chips{display:flex;flex-wrap:wrap;gap:6px}
+.auto-c{padding:7px 11px;border-radius:999px;font-size:12px;font-weight:800;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:var(--tx)}
+.auto-c.on{background:rgba(127,196,143,.18);border-color:rgba(127,196,143,.6);color:#bfe7c8}
+.auto-c.off{background:rgba(255,255,255,.03);color:#8b95a3;border-style:dashed}
+.auto-c.all.on{background:rgba(255,209,92,.2);border-color:#ffd15c;color:#ffd15c}
 html.land .mound .bc-sb{display:flex;position:absolute;left:8px;top:6px;z-index:7;align-items:stretch;
   background:rgba(10,14,20,.86);border:1px solid rgba(255,255,255,.14);border-radius:6px;overflow:hidden;
   font-size:11px;color:#e9e4d8;box-shadow:0 2px 8px rgba(0,0,0,.35);pointer-events:none}
@@ -9521,7 +9552,7 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.51.0';
+const APP_VERSION = '3.52.0';
 const APP_VERSION_NOTE = '선수가 늙고 은퇴하고 환생한다 · 실측 구속 · 역대 기록';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
@@ -9543,7 +9574,7 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
-  {v:'3.51.0', t:'선수가 늙고 은퇴하고 환생한다 · 실측 구속 · 역대 기록', items:[
+  {v:'3.52.0', t:'선수가 늙고 은퇴하고 환생한다 · 실측 구속 · 역대 기록', items:[
     '<b>프로 선수들이 해마다 변한다.</b> 겨울마다 능력치가 조금 오르거나 떨어지거나 그대로다 — 젊으면 크고, 서른 넘으면 조금씩 빠진다. 같은 나이라도 사람마다 다르다',
     '<b>은퇴가 생겼다.</b> 나이만 보지 않는다 — 기록이 안 나오는 베테랑부터 떠난다. 큰 부상을 당한 베테랑이 그대로 은퇴하기도 한다. 1군 빈자리는 2군에서 올라온다',
     '<b>은퇴한 선수가 새 이름으로 환생한다.</b> 쓸 만했던 은퇴 선수는 그해 신인 드래프트에 새 이름으로 다시 나온다 — 포지션 · 투타 · 강점이 닮았다. 스카우트가 「어딘가 ○○ 어릴 때를 보는 것 같다」 고 흘린다',
@@ -9553,6 +9584,15 @@ const CHANGELOG=[
     '2026 아시안게임 — 결승에서 일본을 3-1 로 꺾고 금메달(5회 연속). 대표팀 24명 병역 특례',
     'KBO 역대 기록(1982~) — 연도별 부문 1위 · 한 시즌 역대 10걸 · 통산 10걸 · 「처음」 기록. 프로 신문 기록실에 한 줄씩 나온다. 이름은 전부 알아볼 만하게 비튼 가명이다',
     '한국 대표팀 역대 성적(2006 WBC ~ 2026 아시안게임)을 넣었다',
+  ]},
+  {v:'3.51.0', t:'선수마다 다른 생김새 · 지명 컷신 · 자동 경기', items:[
+    '선수마다 생김새가 다르다 — 긴 뒷머리 · 파마 · 아이블랙 · 선글라스 · 수염 · 목걸이 · 체격',
+    'S급(능력 80+) 선수는 선글라스 · 목걸이 · 긴 머리가 훨씬 자주 나온다',
+    '타격 자세(손 높게 · 낮게)와 투구 폼(쓰리쿼터 · 오버핸드 · 사이드암 · 언더핸드 · 하이킥)이 사람마다 다르다',
+    '포수 뒤 화면에서 투수가 떠 보이던 것 — 마운드가 담장 그림 위에 있었다. 잔디 위로 내렸다',
+    '고졸 바로 프로도 고교에서 압도하면(타율 · 홈런 · 평균자책) 1라운드까지 간다',
+    '1라운드 지명 컷신 — 플래시 · 모교 현수막 · 부모님 · 감독 · 단톡방 폭발 · 인터뷰. 2~4라운드도 따로',
+    '경기 시작 화면에 「오늘 직접 할 것」 — 타격 · 투구 · 수비 · 주루를 따로 자동으로 돌릴 수 있다(능력치대로)',
   ]},
   {v:'3.50.0', t:'정석 중계 화면', items:[
     '가로 화면 왼쪽 위에 중계 점수 띠 — 이닝 ▲▼ · 두 팀 점수 · 주자 · B S O',
@@ -12655,6 +12695,8 @@ const PLAY_OPTS=[[PLAY_OFF,'끄기'],[PLAY_MINE,'내 선수만'],[PLAY_KEY,'중�
 /* 옛 세이브의 ST.playMode 하나를 양쪽에 그대로 물려준다 */
 function playModeFor(which){
   if(typeof ST==='undefined'||!ST) return PLAY_OFF;
+  /* [요청 v3.51.0] 오늘 경기 자동 — 그쪽은 스탯대로 굴린다 */
+  if(autoOn(which==='pit'?'pit':'bat')) return PLAY_OFF;
   const v = which==='pit' ? ST.playPit : ST.playBat;
   const m = v || ST.playMode || PLAY_OFF;
   /* [제보] "왜 게임들어가면 내가 선택한 캐릭터만 플레이 되는게 아니라
@@ -12667,6 +12709,39 @@ function playModeFor(which){
     return (m===PLAY_OFF) ? PLAY_OFF : PLAY_MINE;
   return m;
 }
+/* ================= 자동 경기 =================
+   [요청 v3.51.0] "pc로 하거나 모바일로 하는애들 중 바빠서 못하는애들이 있어서 자동타격
+                   자동 수비 자동 투구 이런 기능 추가하면 좋을 듯? 경기 전에 물어보고"
+   경기 시작 화면에 「오늘 직접 할 것」 줄을 둔다(autoRow). 끈 쪽은 판단창을 안 띄우고
+   엔진이 **능력치대로** 굴린다 — 예전 「알아서」 와 같은 길이라 결과 분포가 안 바뀐다.
+   막는 창(모달)으로 안 만든 건 — 시즌 완주 검사(soaktest)가 시작 버튼만 누르고 가기
+   때문이기도 하고, 매 경기 한 번 더 누르는 것 자체가 바쁜 사람한테 짐이라서다.
+   고른 건 ST.autoPlay 에 남아서 다음 경기에도 그대로다.                    */
+function autoOn(which){
+  try{ return !!(typeof ST!=='undefined' && ST && ST.autoPlay && ST.autoPlay[which]); }catch(e){ return false; }
+}
+function autoRow(){
+  const box=el('div','auto-row');
+  const P=ST.autoPlay||(ST.autoPlay={bat:false,def:false,pit:false,run:false});
+  const KEYS=[['bat','타격'],['pit','투구'],['def','수비'],['run','주루']];
+  const paint=()=>{
+    const all=KEYS.every(([k])=>P[k]);
+    box.innerHTML='<div class="auto-h">오늘 직접 할 것 <i>끈 건 능력치대로 알아서 한다</i></div>';
+    const row=el('div','auto-chips');
+    KEYS.forEach(([k,n])=>{
+      const b=el('button','auto-c'+(P[k]?' off':' on'), (P[k]?'자동 ':'직접 ')+n);
+      b.onclick=()=>{ P[k]=!P[k]; try{ saveGame(true); }catch(e){} paint(); };
+      row.appendChild(b);
+    });
+    const a=el('button','auto-c all'+(all?' on':''), all?'전부 자동 ✓':'전부 자동');
+    a.onclick=()=>{ const v=!all; KEYS.forEach(([k])=>P[k]=v); try{ saveGame(true); }catch(e){} paint();
+      toast(v?'오늘은 보기만 한다 — 능력치대로 굴러간다':'다시 직접 한다'); };
+    row.appendChild(a);
+    box.appendChild(row);
+  };
+  paint();
+  return box;
+}
 /* 수비·주루를 언제 물어볼지.
    [요청] "수비는 이건 선택해야함 전체 공오는거 수비 다할건지 약간
            중요한 순간 수비 할건지 (…) 근데 주루플레이도 할건지 말건지"
@@ -12675,6 +12750,7 @@ function playModeFor(which){
      all  내 자리로 오는 공은 전부 / 내가 나갈 때마다               */
 function askModeOf(which){
   if(typeof ST==='undefined'||!ST) return 'off';
+  if(autoOn(which)) return 'off';
   if(which==='def') return ST.defMode || ((ST.defAsk===false)?'off':'all');
   if(which==='run') return ST.runMode || ((ST.runAsk===false)?'off':'all');
   return 'off';
@@ -15947,7 +16023,7 @@ function isMe(pid){ return pid===(ST?ST.playerId:MYID); }
      퓨처스 기록은 1군 몫으로 깎아서 섞었다(타율 ×0.90 · 출루 ×0.93 · 장타 ×0.86 · 평균자책 ×1.15).
      수비 보정은 그 자리 리그 평균 수비율과의 차이, 어깨 보정은 포수 도루저지율 차이다.
      구속은 공식 기록에 없다 — 전부 null 로 두고 proKmh() 가 구위로 뽑는다.
-   ▸ [v3.51.0] 구속을 넣었다. [요청] "네이버스포츠 경기 중계에 들어가면 공하나하나 구속이 나오거든"
+   ▸ [v3.52.0] 구속을 넣었다. [요청] "네이버스포츠 경기 중계에 들어가면 공하나하나 구속이 나오거든"
      8/29~9/27 KBO 101경기 문자중계의 공 30,951개(투수 188명)에서 투수마다 직구(없으면 투심)
      평균 · 최고를 뽑았다. 직구 10개 미만인 사람(한 달 동안 거의 안 던진 불펜 16명)은 null — 예전처럼
      구위로 뽑는다. 검증: 곽반 최고 160 — 예전 주석에 「곽반 160」 으로 알려져 있던 숫자와 같다.
@@ -16386,7 +16462,7 @@ const PRO_SEASON_2026={
   kw:{rank:10,g:137,w:47,l:86,d:4,avg:.246,ops:.687,hr:112,sb:23,r:552,era:5.36,k9:7.43,bb9:3.94,e:84,style:['빈타','불안한 마운드']}};
 /* 2026 아시안게임(아이치 · 나고야) 야구 대표팀 — 9월 중순 소집, 9/21 첫 경기.
    KBO 공식 발표 24명. [팀, 가명, 투수/포수/내야수/외야수].
-   [v3.51.0] 결과 — 9/27 결승에서 일본을 3-1 로 꺾고 **금메달**(5회 연속). 서울신문 · 올림픽 채널 속보로
+   [v3.52.0] 결과 — 9/27 결승에서 일본을 3-1 로 꺾고 **금메달**(5회 연속). 서울신문 · 올림픽 채널 속보로
    교차 확인했다. 금메달이라 24명 전원 병역 특례다(PRO_AG_2026_RESULT.exempt). */
 const PRO_AG_2026=[
   ['lg','김영후','투수'],['ssg','조병연','투수'],['kt','박영헌','투수'],['kt','소형존','투수'],
@@ -18006,7 +18082,7 @@ function pfRookiePool(){
     return {p, cur, pot, school:hs?'고교':'대학', schoolName:school, pos, phenom:ph||undefined,
       rc:pfRange(cur,F.scout,rng), rp:pfRange(pot,F.scout,rng)};
   });
-  /* [v3.51.0] 환생 — 올해 은퇴한 사람 중 쓸 만했던 사람이 새 이름으로 후보에 섞인다(뒤쪽 후보 자리를 쓴다) */
+  /* [v3.52.0] 환생 — 올해 은퇴한 사람 중 쓸 만했던 사람이 새 이름으로 후보에 섞인다(뒤쪽 후보 자리를 쓴다) */
   const regen=(F.retired||[]).filter(r=>r.g>=40).sort((a,b)=>b.g-a.g).slice(0,20);
   regen.forEach((r,i)=>{ list[list.length-1-i]=pfRegenPros(r,i,y,rng,used); });
   F.rookies={year:y, list, order:null, picks:[], done:false, scout:F.scout};
@@ -18027,7 +18103,7 @@ function pfRookieOrder(){
 }
 function pfRookieAIPick(k, left){
   const ph=proPhil(k);
-  /* [v3.51.0] 모자란 쪽을 더 쳐준다 — 투수만 뽑는 구단(쌍둥이 · 독수리)이 10년이면 2군 타자가 말라서
+  /* [v3.52.0] 모자란 쪽을 더 쳐준다 — 투수만 뽑는 구단(쌍둥이 · 독수리)이 10년이면 2군 타자가 말라서
      은퇴한 1군 타자 자리를 못 채웠다(agetest). 타자:투수가 한쪽으로 기울면 반대쪽에 +10 */
   let needH=0, needP=0;
   try{ const t=TBYID[pfIdOf(k)], all=pfAll(t), nP=all.filter(pfIsPit).length, nH=all.length-nP;
@@ -18882,7 +18958,7 @@ function proTalkRoll(res, won, uIds){ try{ if(typeof proTalkPick==='function') p
 
 /* 프로 구속 — 사회인은 117 에서 눌렀다(4부 리그 현실). 프로는 150 이 기본이다.
    알려진 사람은 그 숫자, 나머지는 구위로 뽑는다.
-   [v3.51.0] 1군 투수 169명 중 153명은 문자중계 실측 직구 평균(kmh)이 있다. 없는 사람만 구위로 뽑는다.
+   [v3.52.0] 1군 투수 169명 중 153명은 문자중계 실측 직구 평균(kmh)이 있다. 없는 사람만 구위로 뽑는다.
    지치면 구위가 깎인 만큼 떨어진다(liveStf).                          */
 function proKmh(pit){
   let full=null, stf0=null;
@@ -18969,7 +19045,19 @@ function tryoutScore(){
 /* 고졸 바로 신청 점수 — 고교 3년 성적(hsGrades 평균 0~1)으로. 40~85 */
 function hsProScore(){
   const g=(ST&&ST.hsGAvg!=null)?ST.hsGAvg:0.4;
-  return Math.round(40+Math.max(0,Math.min(1,g))*45);
+  /* [요청 v3.51.0] "고교때 막 계속 홈런치거나 하면 고교 드래프트도 윗순번 가능하려나"
+     가능해야 맞다 — 고교 성적표(평점)만 보던 걸 **실제 기록**까지 본다.
+     스무 타석 넘게 쳤으면 타율 · 홈런, 열 이닝 넘게 던졌으면 평균자책이 더해진다(최대 +12).
+     고교에서 압도하면 88 을 넘어 1라운드까지 간다(proDraftSlot) */
+  let bonus=0;
+  try{
+    const B=(ST.hs&&ST.hs.bat)||null, P=(ST.hs&&ST.hs.pit)||null;
+    if(B && B.ab>=20){ const avg=B.h/B.ab;
+      bonus=Math.max(bonus, Math.max(-4, Math.min(12, (avg-0.300)*40 + (B.hr||0)*1.2))); }
+    if(P && P.outs>=30){ const era=P.er*27/P.outs;
+      bonus=Math.max(bonus, Math.max(-4, Math.min(12, (4.0-era)*2.2 + (P.k||0)/Math.max(1,P.outs/3)*1.5))); }
+  }catch(e){}
+  return Math.round(Math.max(40, Math.min(97, 40+Math.max(0,Math.min(1,g))*45+bonus)));
 }
 /* 고교 졸업 → 바로 KBO 드래프트. 우완좌완 입단 드래프트(entryDraft)와 2군 공지를 걷는다 */
 function hsGoPro(){
@@ -19150,9 +19238,10 @@ function renderTryout(){
    **기조가 맞는 팀**이 부른다. 사회인 출신은 「즉시 전력」 이라 윈나우 팀이 좋아한다. */
 function proDraftSlot(score, route){
   const HS=route==='hs';
-  /* 고졸 바로 신청은 하위 라운드(5~10) — 사회인을 거친 트라이아웃만 1~4라운드가 열린다 */
+  /* 고졸 바로 신청 — 예전엔 5라운드가 천장이었다. [v3.51.0] 고교에서 압도하면(기록 보너스까지 88+)
+     1라운드도 열린다. 평범한 고교 성적이면 예전처럼 중하위 라운드다 */
   const round = HS
-    ? (score>=80?5 : score>=70?6 : score>=60?7 : score>=50?8 : score>=44?9 : 10)
+    ? (score>=88?1 : score>=83?2 : score>=78?3 : score>=73?4 : score>=66?5 : score>=60?6 : score>=54?7 : score>=48?8 : score>=44?9 : 10)
     : (score>=85?1 : score>=76?2 : score>=68?3 : score>=62?4 : score>=56?5 : score>=50?6 : score>=45?7 : score>=40?8 : 9);
   /* 그 라운드 안에서 누가 부르나 — 기조로 가중치.
      사회인 출신은 「즉시 전력」 이라 윈나우 팀이, 고졸은 「원석」 이라 잠재력 · 리빌딩 팀이 좋아한다 */
@@ -19169,6 +19258,74 @@ function proDraftSlot(score, route){
   /* 예전에 지명을 거부했던 구단 — 보유권이 남아 있어서 반쯤은 또 부른다 */
   if(!HS && ST.refused){ const t=stvReturnTeam(); if(t){ const j=PRO_DRAFT_ORDER.indexOf(t); if(j>=0) idx=j; } }
   return {round, pickIdx:idx, team:PRO_DRAFT_ORDER[idx]};
+}
+/* ================= 지명 축하 컷신 =================
+   [요청 v3.51.0] "1라운드 뽑으면 다른 컷신추가해주고 막 여기저기서 축하해주는거
+                   2-4라운드까지도 다른 컷신 넣어주자"
+   1라운드   — 플래시가 터진다 · 부모님 · 모교 현수막 · 단톡방 폭발 · 기자 인터뷰
+   2~4라운드 — 전화가 온다 · 부모님 · 단톡방 축하
+   5라운드~  — 예전처럼 카드 한 장(조용히 불린 것도 그 나름의 맛이다)
+   대사는 풀에서 pickFresh 로 뽑는다. 우리 팀 동료들이 단톡방에서 떠든다(실명 열넷 그대로).
+   부모님 · 감독 · 기자는 이름을 안 붙인다 — 직함으로만.                      */
+const DCEL_MOM_R1=['엄마 지금 손이 떨려서 전화를 못 하겠다… 우리 아들 장하다',
+  '할머니가 TV 앞에서 우신다. 얼른 전화 한 번 드려라',
+  '아빠가 동네 치킨집 다 돌면서 자랑하고 다닌다',
+  '밥은 먹었냐. 오늘 저녁은 네가 먹고 싶은 거 다 해줄게'];
+const DCEL_MOM_R24=['봤다 봤어! 이름 불릴 때 엄마 소리 질렀다',
+  '아빠가 몇 라운드든 프로면 프로래. 축하한다',
+  '오늘은 일찍 들어와라. 케이크 사놨다',
+  '이제 시작이다. 다치지만 말아라'];
+const DCEL_COACH=['내가 뭐랬냐. 너는 된다고 했잖아. 가서 이름값 해라',
+  '감독 생활 하면서 오늘 같은 날이 제일 좋다. 고생했다',
+  '프로 가서 인사 잘하고, 밥 잘 먹고, 무조건 첫해엔 몸부터 만들어라',
+  '우리 팀 이름 달고 나간 첫 프로다. 자랑스럽다'];
+const DCEL_CHAT_R1=['ㅁㅊ 1라운드???','와 진짜 됐네 ㅋㅋㅋㅋㅋ','싸인 미리 받아둔다 줄 서라','이제 회비 안 내도 됨?? 아니 내라',
+  '오늘 회식 네가 쏘는 거다','기사 떴다 링크 올림','TV에 나왔는데 얼굴 긴장한 거 봐 ㅋㅋ','우리 팀에서 1라운드가 나오네 이게 되네',
+  '계약금으로 배트 한 박스만 쏴줘라','나 오늘 회사에서 소리 질렀다'];
+const DCEL_CHAT_R24=['오 불렸다!!','축하한다 진짜로','몇 라운드든 프로다 프로','회식 가자 오늘',
+  '이제 우리 팀 경기는 누가 뛰냐 ㅋㅋ','기사 떴냐?','싸인 연습해라','역시 될 줄 알았다'];
+const DCEL_PRESS_Q=['1라운드 지명 소감 한마디 부탁드립니다','롤모델이 있나요?','어떤 선수가 되고 싶습니까?','가족에게 한마디 해주세요'];
+const DCEL_PRESS_A=['아직 실감이 안 납니다. 불러주신 만큼 증명하겠습니다','꾸준한 선수요. 매일 나가는 선수가 되고 싶습니다',
+  '팬분들이 이름 외워주시는 선수가 되겠습니다','엄마 아빠, 이제 시작입니다. 고생 많으셨습니다'];
+function draftCelebrate(o, cb){
+  if(!o || o.round>4 || typeof document==='undefined'){ if(cb) cb(); return; }
+  const top=o.round===1, t=proDef(o.team);
+  const me=ST.playerId||MYID;
+  const mates=(TBYID['wwzw'].players||[]).filter(x=>x.id!==me);
+  const pickMate=(i)=>mates[(i*7+(o.pick||1)*3)%Math.max(1,mates.length)];
+  const S=[];
+  S.push({k:'flash', big: top?'1라운드!!':o.round+'라운드', sub:proName(o.team)+' · '+o.pick+'순위', nm:o.name});
+  if(top) S.push({k:'banner', who:(o.hs?o.school:'우완좌완')+' 앞',
+    line:'축 '+(o.hs?o.school+' 출신 ':'우완좌완 ')+o.name+' 선수 '+proName(o.team)+' 1라운드 지명'});
+  S.push({k:'talk', who:'엄마', role:top?'울면서 전화':'전화', line:pickFresh(top?DCEL_MOM_R1:DCEL_MOM_R24, top?'dcMom1':'dcMom2')});
+  if(top) S.push({k:'talk', who:o.hs?'고교 감독':'우완좌완 감독', role:'문자', line:pickFresh(DCEL_COACH,'dcCoach')});
+  const pool=top?DCEL_CHAT_R1:DCEL_CHAT_R24, n=top?6:4, chat=[];
+  for(let i=0;i<n;i++){ const m=pickMate(i); chat.push({who:m?m.name:'동료', line:pickFresh(pool, top?'dcChat1':'dcChat2')}); }
+  S.push({k:'chat', chat});
+  if(top){ const qi=(o.pick||1)%DCEL_PRESS_Q.length;
+    S.push({k:'press', q:DCEL_PRESS_Q[qi], a:DCEL_PRESS_A[qi]}); }
+  const ov=el('div','dcel'+(top?' r1':''));
+  ov.style.setProperty('--tc', t.cap||'#c9a227');
+  let i=0;
+  const paint=()=>{
+    const x=S[i];
+    let h='';
+    if(x.k==='flash') h='<div class="dcel-flash"><i></i><i></i><i></i></div><div class="dcel-big">'+x.big+'</div>'+
+      '<div class="dcel-tm">'+x.sub+'</div><div class="dcel-nm">'+x.nm+'</div>';
+    else if(x.k==='banner') h='<div class="dcel-role">'+x.who+'</div><div class="dcel-ban">'+x.line+'</div>';
+    else if(x.k==='talk') h='<div class="dcel-role">'+x.role+'</div><div class="dcel-who">'+x.who+'</div><div class="dcel-line">「'+x.line+'」</div>';
+    else if(x.k==='chat') h='<div class="dcel-role">단톡방 · 우완좌완</div><div class="dcel-chat">'+
+      x.chat.map((c2,j)=>'<p style="animation-delay:'+(j*0.18)+'s"><b>'+c2.who+'</b>'+c2.line+'</p>').join('')+'</div>';
+    else if(x.k==='press') h='<div class="dcel-role">지명 직후 · 인터뷰</div><div class="dcel-q">Q. '+x.q+'</div><div class="dcel-a">「'+x.a+'」</div>';
+    ov.innerHTML='<div class="dcel-card">'+h+'</div><div class="dcel-foot">'+(i+1)+' / '+S.length+' · 눌러서 넘기기</div>'+
+      '<button class="dcel-skip">건너뛰기</button>';
+    ov.querySelector('.dcel-skip').onclick=(e)=>{ e.stopPropagation(); close(); };
+  };
+  const close=()=>{ if(ov.parentNode) ov.parentNode.removeChild(ov); if(cb) cb(); };
+  ov.onclick=()=>{ i++; if(i>=S.length) close(); else paint(); };
+  paint();
+  document.body.appendChild(ov);
+  return ov;
 }
 function renderProDraft(){
   const c=$('#view'); c.innerHTML='';
@@ -19234,6 +19391,8 @@ function renderProDraft(){
       card.appendChild(sp);
     }
     cta.appendChild(card);
+    /* 지명 축하 컷신 — 1라운드 · 2~4라운드는 따로 */
+    try{ draftCelebrate({round:slot.round, pick:slot.pickIdx+1, team, name:nameOf(me), school:mySchool, hs:HSR, bonus}); }catch(e){}
     const go2=el('button','btn primary','입단한다 ▸');
     go2.onclick=()=>{
       /* 1·2라운드에 트라이아웃 점수가 높으면 1군 캠프부터 — 아니면 2군 */
@@ -23913,6 +24072,7 @@ function renderHS(){
   c.appendChild(prog);
 
   const inLine=!!(B && B.uLine.some(x=>x.id===(ST.playerId||MYID)));
+  if(inLine) c.appendChild(autoRow());
   const b=el('button','btn primary', inLine?'경기 시작 — 내 타석은 직접 친다':'경기 시작');
   b.onclick=async()=>{
     H.sayAt=0;
@@ -27360,7 +27520,7 @@ function openPlayerCard(pid){
       ${ours&&nickOf(pid)?`<div class="pcs-n2">'${nickOf(pid)}'</div>`:''}
     </div>`;
   body.appendChild(top);
-  /* [v3.51.0] 프로 선수 — 나이 · 직구 구속(문자중계 실측) · 대표팀 · 병역. 병역은 확인된 것만 */
+  /* [v3.52.0] 프로 선수 — 나이 · 직구 구속(문자중계 실측) · 대표팀 · 병역. 병역은 확인된 것만 */
   try{ const pk=isPro()?proKeyOf(team.id):null, me=ST.playerId||MYID;
     if(pk && pid!==me){
       const x=p||pit, on=(x&&x._orig)||nm, nt=proNT(pk,on)||proNT(pk,nm);
@@ -32027,6 +32187,7 @@ function renderGame(){
          여기까지 흘러와도 되돌아갈 길이 있어야 한다. 2군 경기를 아직
          안 쳤으면 **그게 먼저다.**                                */
       if(farm && !farmPlayedThisWeek()){
+        c.appendChild(autoRow());
         const fb2=el('button','btn primary','내 2군 경기부터 ▸');
         fb2.onclick=()=>farmLiveStart();
         c.appendChild(fb2);
@@ -32163,7 +32324,9 @@ function renderGame(){
   /* 경기 시작 전에 리그 랭킹을 한 번 보여준다 */
   b1.onclick=lock(()=>showRankIntro(()=>startLive(true)));
   b2.onclick=lock(()=>showRankIntro(()=>startLive(false)));
-  ctrl.appendChild(b1);ctrl.appendChild(b2); c.appendChild(ctrl);
+  ctrl.appendChild(b1);ctrl.appendChild(b2);
+  if(isPlayerMode()) c.appendChild(autoRow());         // 직접 지휘 전에 — 오늘 뭘 직접 할지
+  c.appendChild(ctrl);
   c.appendChild(st);
 }
 
@@ -33135,7 +33298,7 @@ const MVW=480, MVH=270;
 const MV_BOX=[[166,230,62,42],[252,230,62,42]];
 /* 타석 한가운데 (발이 놓이는 자리) */
 const MV_BOXC=[MV_BOX[0][0]+MV_BOX[0][2]/2, MV_BOX[1][0]+MV_BOX[1][2]/2, 262];
-const MV_MOUND={x:240,y:132}, MV_PLATE={x:240,y:250};
+const MV_MOUND={x:240,y:146}, MV_PLATE={x:240,y:250};
 /* ================= 카메라 =================
    [제보] "너무 짜치는데 이런 느낌이 안나" (마구마구 타석 화면 넉 장)
 
@@ -33261,9 +33424,17 @@ const MV_PARKS={
     gwangju: pro(['#1b3f24','#123018'],['#3a8a33','#4ea545'],125)
   });
 })();
+/* [제보 v3.51.0] "타자 뷰에 투수가 왜 공중에 떠있는 느낌이냐.."
+   진짜였다. 잔디는 담장 아래(deep+wall ≈ 146)부터 시작하는데 마운드는 y=132 —
+   **마운드가 담장 그림 위에 올라가 있었다.** 투수 발밑이 외야 담이니 떠 보일 수밖에.
+   담장을 12 올리고(MV_DEEP_UP) 마운드를 146 으로 내린다. 이제 마운드 뒤로
+   외야 잔디 띠가 한 줄 보이고, 투수는 흙 위에 선다.                         */
+const MV_DEEP_UP=12;
 function mvPark(){
   const id=(typeof ST!=='undefined'&&ST)?ST.park:'benamul';
-  return MV_PARKS[id]||MV_PARKS.benamul;
+  const P=MV_PARKS[id]||MV_PARKS.benamul;
+  if(!P._up){ P._up=1; P.deep=P.deep-MV_DEEP_UP; }
+  return P;
 }
 const MV_SKY={
   clear:['#2a76c0','#5ea7d8','#9fd0e8'],
@@ -34738,6 +34909,42 @@ function sdSwing(t){
           tw:sdLerp(A[4],B[4],k), blur:Math.max(0,blur), zoom, t};
 }
 
+/* ================= 선수마다 다른 생김새 =================
+   [요청 v3.51.0] "생긴게 다 너무 똑같이 생겼다 특색이 없어 … 타자들 아이패치도 하고 누군 선글라스도
+   끼고 그건 마구마구 갬성이거든 … 뒷머리가 풍성 … 특정 타격폼 투구폼 이런것들 구사좀"
+   선수 id 로 정해지는 **고정 외형**이다(매번 바뀌면 누가 누군지 모른다).
+     hair   짧게 · 빡빡 · 뒷머리 길게(헬멧 밑으로 풍성) · 파마
+     eye    없음 · 아이블랙(눈 밑 검은 패치) · 선글라스
+     beard  없음 · 수염 자국 · 턱수염
+     build  체격(가로 0.90~1.16) — 파워가 세면 조금 더 크다
+     chain  목걸이 · stance 타격 자세(표준 · 손 높게 · 낮게 웅크림)
+     form   투구 폼(쓰리쿼터 · 오버핸드 · 사이드암 · 언더핸드) · kick 다리 높게
+   능력치가 80 넘는 **S급은 튄다** — 선글라스 · 목걸이 · 긴 머리가 훨씬 자주 나온다.
+   [원칙] 실존 선수 얼굴을 흉내 내지 않는다(이 파일은 링크로 퍼진다). 유형만 준다.   */
+function sdLookOf(p){
+  if(!p) return null;
+  const id=String(p.id||p.name||'');
+  let h=2166136261;
+  for(let i=0;i<id.length;i++){ h^=id.charCodeAt(i); h=Math.imul(h,16777619)>>>0; }
+  const r=()=>{ h=(Math.imul(h,1103515245)+12345)>>>0; return (h>>>8)/16777216; };
+  const pick=(a)=>a[Math.min(a.length-1,(r()*a.length)|0)];
+  const stf=(p.pitch&&p.pitch.stf)||p.stf||0, ctl=(p.pitch&&p.pitch.ctl)||p.ctl||0;
+  const top=Math.max(p.pow||0,p.con||0,p.spd||0,stf,ctl);
+  const star=top>=80;
+  const L={star};
+  L.hair = star ? pick(['long','long','perm','short','buzz']) : pick(['short','short','short','buzz','long','perm']);
+  const e=r();
+  L.eye  = star ? (e<0.40?'shades':(e<0.75?'black':'none')) : (e<0.10?'black':(e<0.15?'shades':'none'));
+  const b=r();
+  L.beard= b<0.14?'stubble':(b<0.24?'goatee':'none');
+  L.build= Math.round((0.90+r()*0.18+((p.pow||0)>=75?0.06:0))*100)/100;
+  L.chain= star ? r()<0.55 : r()<0.06;
+  L.stance=pick(['std','std','high','low']);
+  const f=r();
+  L.form = f<0.58?'tq':(f<0.80?'over':(f<0.93?'side':'sub'));
+  L.kick = r()<0.28?'high':'std';
+  return L;
+}
 /* 사람 하나. (x,y) 발바닥 가운데, h 키(논리 px). pose 는 기존 이름 그대로.
    o.no 등번호 · o.swT 스윙 진행 · o.swQ 얼마나 잘 맞았나              */
 function mvSD(g,x,y,h,u,pose,flip,o){
@@ -34752,8 +34959,18 @@ function mvSD(g,x,y,h,u,pose,flip,o){
   const LW=Math.max(1.3,Math.min(5.5,dev*2.3))/dev;
   g.lineJoin='round'; g.lineCap='round';
   const D={g,P,LW,dir,o,U:u||{}};
+  const LK=o.look||null;
+  if(LK && LK.build && LK.build!==1) g.scale(LK.build,1);        // 체격 — 옆으로 넓게/좁게
   try{
-    if(pose==='stand'||pose==='swing') sdBatter(D, pose==='swing'?sdSwing(o.swT||0):sdSwing(0));
+    if(pose==='stand'||pose==='swing'){
+      let S0=pose==='swing'?sdSwing(o.swT||0):sdSwing(0);
+      /* 타격 자세 — 서 있을 때만. 손을 높이 든 사람, 낮게 웅크린 사람 */
+      if(LK && !(S0.t>0)){
+        if(LK.stance==='high') S0=Object.assign({},S0,{hy:S0.hy-7, hx:S0.hx+1, v:sdNorm([S0.v[0]*0.6,S0.v[1]+0.25,S0.v[2]])});
+        else if(LK.stance==='low') S0=Object.assign({},S0,{hy:S0.hy+6, hx:S0.hx-2, v:sdNorm([S0.v[0]*1.3,S0.v[1]-0.2,S0.v[2]])});
+      }
+      sdBatter(D, S0);
+    }
     else if(pose==='catch') sdCatcher(D);
     else if(pose==='catchF') sdCatcherF(D);
     else sdFront(D,pose);
@@ -34996,6 +35213,19 @@ function sdBatHead(D,C){
     ()=>{ g.strokeStyle=P.hairL; g.lineWidth=1.1; g.beginPath();
       g.moveTo(cx-10,cy+13); g.lineTo(cx-8,cy+18); g.moveTo(cx-3,cy+14); g.lineTo(cx-2,cy+19);
       g.moveTo(cx+4,cy+13); g.lineTo(cx+4,cy+18); g.stroke(); });
+  /* 뒷머리 — 길게 · 파마. 헬멧 밑으로 목덜미까지 풍성하게 */
+  const LK=D.o.look;
+  if(LK && LK.hair==='long'){
+    sdCel(D,()=>{ g.beginPath(); g.moveTo(cx-24,cy+6);
+      g.quadraticCurveTo(cx-30,cy+26,cx-16,cy+31); g.quadraticCurveTo(cx-4,cy+27,cx+6,cy+31);
+      g.quadraticCurveTo(cx+16,cy+27,cx+14,cy+10); g.closePath(); },P.hair,
+      ()=>{ g.strokeStyle=P.hairL; g.lineWidth=1; g.beginPath();
+        g.moveTo(cx-16,cy+14); g.lineTo(cx-18,cy+26); g.moveTo(cx-6,cy+15); g.lineTo(cx-6,cy+27);
+        g.moveTo(cx+4,cy+14); g.lineTo(cx+5,cy+26); g.stroke(); });
+  } else if(LK && LK.hair==='perm'){
+    [[-20,14],[-12,19],[-3,20],[6,18],[12,13],[-24,8]].forEach(([dx,dy])=>
+      sdCel(D,()=>{ g.beginPath(); g.arc(cx+dx,cy+dy,6.2,0,Math.PI*2); },P.hair));
+  }
   // 귀 (오른쪽 — 카메라 쪽 귀)
   sdCel(D,()=>{ g.beginPath(); g.ellipse(cx+24,cy+9,4.6,6,0.2,0,Math.PI*2); },P.skin,
     ()=>{ g.fillStyle=P.skinD; g.beginPath(); g.ellipse(cx+24.5,cy+9.5,2.2,3.4,0.2,0,Math.PI*2); g.fill(); });
@@ -35087,7 +35317,17 @@ function sdFront(D,pose){
   let key=pose, mirrorGlove=false;
   if(pose==='idleL'){ key='field'; mirrorGlove=true; }
   else if(pose==='idle' && D.o.fielder) key='field';
-  const R=SD_FRONT[key]||SD_FRONT.idle;
+  let R=SD_FRONT[key]||SD_FRONT.idle;
+  /* 투구 폼 — 팔 각도 · 다리 드는 높이. 같은 「던진다」 도 사람마다 다르게 */
+  const LKf=D.o.look;
+  if(LKf){
+    if(key==='rel' && LKf.form==='over') R=Object.assign({},R,{thr:[[-18,-62],[-12,-84]], lean:0.20});
+    else if(key==='rel' && LKf.form==='side') R=Object.assign({},R,{thr:[[-30,-44],[-47,-45]], lean:0.08});
+    else if(key==='rel' && LKf.form==='sub') R=Object.assign({},R,{thr:[[-27,-30],[-42,-17]], lean:0.30, hip:[3,-22]});
+    else if(key==='cock' && LKf.form==='side') R=Object.assign({},R,{thr:[[-24,-40],[-32,-44]]});
+    else if(key==='cock' && LKf.form==='sub') R=Object.assign({},R,{thr:[[-22,-30],[-30,-22]], lean:0.10});
+    if(key==='wind' && LKf.kick==='high') R=Object.assign({},R,{R:[[5,-29],[11,-50],[18,-44]], fR:[19,-39], hip:[-3,-31]});
+  }
   if(mirrorGlove){ g.save(); g.scale(-1,1); D.dir=-D.dir; }
   const hip=R.hip;
   /* 다리 — 뒤쪽 다리를 먼저 */
@@ -35167,6 +35407,15 @@ function sdFront(D,pose){
 /* 얼굴 — 모자 · 큰 눈 · 발그레한 뺨 */
 function sdFace(D,C){
   const g=D.g, P=D.P, cx=C[0], cy=C[1];
+  const LK=D.o.look;
+  /* 긴 머리 · 파마 — 얼굴 뒤로 모자 밑에서 삐져나온다 */
+  if(LK && LK.hair==='long'){
+    sdCel(D,()=>{ g.beginPath(); g.moveTo(cx-27,cy-6); g.quadraticCurveTo(cx-33,cy+18,cx-22,cy+28);
+      g.lineTo(cx+22,cy+28); g.quadraticCurveTo(cx+33,cy+18,cx+27,cy-6); g.closePath(); },P.hair);
+  } else if(LK && LK.hair==='perm'){
+    [[-27,4],[-28,14],[-22,23],[27,4],[28,14],[22,23]].forEach(([dx,dy])=>
+      sdCel(D,()=>{ g.beginPath(); g.arc(cx+dx,cy+dy,6.4,0,Math.PI*2); },P.hair));
+  }
   // 귀
   [[-1],[1]].forEach(([k])=>sdCel(D,()=>{ g.beginPath(); g.ellipse(cx+k*24.5,cy+6,4.8,6,0,0,Math.PI*2); },P.skin,
     ()=>{ g.fillStyle=P.skinD; g.beginPath(); g.ellipse(cx+k*24.5,cy+6.5,2.2,3.2,0,0,Math.PI*2); g.fill(); }));
@@ -35214,6 +35463,20 @@ function sdFace(D,C){
   g.fillStyle=P.blush;
   g.beginPath(); g.ellipse(cx-15,cy+13,4.6,2.6,0,0,Math.PI*2); g.fill();
   g.beginPath(); g.ellipse(cx+15,cy+13,4.6,2.6,0,0,Math.PI*2); g.fill();
+  /* 아이블랙 — 눈 밑 검은 패치(햇빛 반사 막는 그거) */
+  if(LK && LK.eye==='black'){ g.fillStyle='#15171c';
+    g.beginPath(); mvRR(g,cx-14,cy+10.5,9,2.8,1); g.fill();
+    g.beginPath(); mvRR(g,cx+5,cy+10.5,9,2.8,1); g.fill(); }
+  /* 선글라스 — 스포츠 고글. 렌즈에 하늘이 비친다 */
+  if(LK && LK.eye==='shades'){
+    g.fillStyle='#10131a'; g.beginPath(); mvRR(g,cx-18,cy+1.5,16,10,4.5); g.fill();
+    g.beginPath(); mvRR(g,cx+2,cy+1.5,16,10,4.5); g.fill();
+    g.fillRect(cx-3,cy+4,6,2);
+    g.fillStyle='rgba(120,200,255,.6)'; g.beginPath(); mvRR(g,cx-15.5,cy+3,6,2.6,1.2); g.fill();
+    g.beginPath(); mvRR(g,cx+4.5,cy+3,6,2.6,1.2); g.fill(); }
+  /* 수염 */
+  if(LK && LK.beard==='stubble'){ g.fillStyle='rgba(40,30,28,.22)'; g.beginPath(); g.ellipse(cx,cy+19,13,6,0,0,Math.PI*2); g.fill(); }
+  if(LK && LK.beard==='goatee'){ g.fillStyle=P.hair; g.beginPath(); g.moveTo(cx-5,cy+19); g.quadraticCurveTo(cx,cy+26,cx+5,cy+19); g.closePath(); g.fill(); }
   // 코 · 입
   g.fillStyle=P.skinD; g.beginPath(); g.ellipse(cx,cy+11,1.5,1.1,0,0,Math.PI*2); g.fill();
   if(xp==='grit'){
@@ -35251,6 +35514,10 @@ function sdFace(D,C){
   // 챙 — 카메라 쪽으로 튀어나온다
   sdCel(D,()=>{ g.beginPath(); g.ellipse(cx,cy-2.5,26,5.6,0,0,Math.PI*2); },P.teamD,null,
     ()=>{ g.fillStyle=P.team; g.beginPath(); g.ellipse(cx+2,cy-4.2,22,3.2,0,0,Math.PI*2); g.fill(); });
+  /* 목걸이 — 금줄 하나 */
+  if(LK && LK.chain){ g.strokeStyle='#e8c14a'; g.lineWidth=1.6;
+    g.beginPath(); g.moveTo(cx-10,cy+25); g.quadraticCurveTo(cx,cy+33,cx+10,cy+25); g.stroke();
+    g.fillStyle='#ffd15c'; g.beginPath(); g.arc(cx,cy+31.5,1.9,0,Math.PI*2); g.fill(); }
 }
 
 /* ---------- 포수 — 쪼그려 앉은 뒷모습 ---------- */
@@ -35722,7 +35989,7 @@ function mvPaint(mound, o){
   /* 투수 — 통짜 그림. 그림은 우완이 던지는 자세라 좌완일 때만 뒤집는다.
      [제보] "투수 타자는 이렇게 연결 되어야지" — 관절 조립을 그만뒀다. */
   mvFootRing(g, MV_MOUND.x, MV_MOUND.y+14, 20, true);     // 답지 — 투수 발밑
-  if(!mvFig(g, st.pit, MV_MOUND.x, MV_MOUND.y+14, du, !!st.pitLeft))
+  if(!mvFig(g, st.pit, MV_MOUND.x, MV_MOUND.y+14, du, !!st.pitLeft, {look:st.pitLook||null}))
     mvGuy(g,MV_MOUND.x,MV_MOUND.y+12,40,du,st.pit,!st.pitLeft);
   // 포수 — 존 뒤에 앉는다
   /* 포수는 화면에서 제일 앞이라 제일 커야 한다. 대신 아래가 잘려 나가게
@@ -35743,7 +36010,7 @@ function mvPaint(mound, o){
      바깥(포수 반대쪽)으로 키의 1할 비켜 세운다 */
   const bx=(st.batLeft?MV_BOXC[1]:MV_BOXC[0]) + (st.batLeft?1:-1)*MV_FIG_H.bat*0.13;
   mvFootRing(g, bx, MV_BOXC[2], 34, true);               // 답지 — 타자 발밑
-  if(!mvFig(g, st.bat, bx, MV_BOXC[2], ou, !!st.batLeft, {no:st.batNo, swT:st.swT, swQ:st.swQ}))
+  if(!mvFig(g, st.bat, bx, MV_BOXC[2], ou, !!st.batLeft, {no:st.batNo, swT:st.swT, swQ:st.swQ, look:st.batLook||null}))
     mvGuy(g, bx, MV_BOXC[2]-2, 80, ou, st.bat, !st.batLeft);
   g.restore();                              // 카메라 끝
 }
@@ -35827,10 +36094,10 @@ function mvPaintRev(g,st,C,du,ou){
   const S=(st.bat==='swing')?sdSwing(st.swT||0):null;
   mvShadow(g,bx,by,bh*0.9);
   mvSD(g,bx,by,bh*((S&&S.zoom)?S.zoom:1),ou,st.bat==='swing'?'swing':'stand',!st.batLeft,
-       {front:true, swT:st.swT, swQ:st.swQ});
+       {front:true, swT:st.swT, swQ:st.swQ, look:st.batLook||null});
   // 투수 — 등. 우완이면 던지는 팔이 화면 오른쪽이다
   mvShadow(g,C.px,C.py,C.ph*0.9);
-  mvSD(g,C.px,C.py,C.ph,du,st.pit||'idle',!st.pitLeft,{back:true, no:(st.pitNo==null?null:st.pitNo)});
+  mvSD(g,C.px,C.py,C.ph,du,st.pit||'idle',!st.pitLeft,{back:true, no:(st.pitNo==null?null:st.pitNo), look:st.pitLook||null});
 }
 /* ---------- 팀마다 다른 유니폼 색 ----------
    [제보] "옷이 같아서 헷갈려"
@@ -35909,7 +36176,7 @@ function handTag(pit){
 /* 마운드 그림을 이 투수에 맞춰 다시 그린다 (교체하면 손도 바뀐다) */
 function setPitFig(mound, pit){
   if(!mound) return;
-  mvPaint(mound,{pitLeft:throwHandOf(pit)==='L', pitNo:(pit&&pit.no!=null)?pit.no:null});
+  mvPaint(mound,{pitLeft:throwHandOf(pit)==='L', pitNo:(pit&&pit.no!=null)?pit.no:null, pitLook:sdLookOf(pit)});
   mvScore(mound);
 }
 /* 중계 화면 뼈대를 만든다. mode: 'bat'(타격) | 'pit'(투구) */
@@ -35930,6 +36197,7 @@ function moundView(opts){
   m._camMode=mode;
   mvPaint(m,{pitLeft:!!o.pitLeft, batLeft:!!o.batLeft, usDef:!!o.usDef,
              batNo:(o.batNo==null?null:o.batNo), pitNo:(o.pitNo==null?null:o.pitNo),
+             batLook:o.batLook||null, pitLook:o.pitLook||null,
              pit:'idle', bat:'stand', cam:mvCamPref(mode)});
   mvCamSync(m);
   const cb=m.querySelector('.mv-camb');
@@ -36152,7 +36420,7 @@ function throwBall(mound, type, opts){
   /* [v3.29.0] 카메라마다 릴리스 지점이 다르다. 캔버스 실제 사각형으로 옮긴다 */
   const CG=mvCamGeom((mound._mv&&mound._mv.cam)||'c');
   const REV=!!CG.rev;
-  let sx=W*0.5, sy=H*0.22;
+  let sx=W*0.5, sy=H*0.29;           // [v3.51.0] 마운드를 146 으로 내렸다 — 339+(146-339)*1.35 = 78 → 0.29
   { const cv=mound.querySelector('.mv-cv'); const cb=cv&&cv.getBoundingClientRect();
     const lefty=!!(mound._mv&&mound._mv.pitLeft);
     if(cb&&cb.width){ sx=cb.left-box.left+cb.width*(REV&&lefty?CG.rxL:CG.rx); sy=cb.top-box.top+cb.height*CG.ry; }
@@ -36934,7 +37202,7 @@ function renderSwing(box, d){
 
   const mv=moundView({label:`<b>${myP.name}</b>${handTag(myP)}`,
     pitLeft:throwHandOf(myP)==='L', batLeft:batLeft, usDef:false,
-    batNo:bat?jerseyNo(bat.id):null});
+    batNo:bat?jerseyNo(bat.id):null, batLook:sdLookOf(bat), pitLook:sdLookOf(myP)});
   mv.classList.add('tapon');
   w.appendChild(mv);
   if(bat) moundWho(mv,bat.id,'타석');
@@ -37655,7 +37923,7 @@ function renderSwing(box, d){
     /* 배트에 맞았으면 「돌까 설까」를 물어볼 수 있게 엔진에 예약해 둔다.
        예약만 하고 굴리지는 않는다 — 안타 종류가 정해진 뒤에,
        화면에서 타구를 다 보고 나서 고른다(showRun).                  */
-    if(kind==='contact' && (ST&&ST.runAsk!==false)) LIVE._stretch={ask:true};
+    if(kind==='contact' && (ST&&ST.runAsk!==false) && !autoOn('run')) LIVE._stretch={ask:true};
     /* [제보] "어떤 타구도 (…) 그 애니메이션 안 나오고 이건 야구가 아니야"
        땅볼이든 뜬공이든 실책이든 전부 그라운드에서 끝까지 보여준다.
        showRun 이 _lastPlay 를 보고 스스로 판단한다 — 탄 공이 없으면
@@ -39504,6 +39772,7 @@ function renderPitch(box, d){
   const head=el('div'); w.appendChild(head);
   const mv=moundView({pitLeft:throwHandOf(LIVE.curPitcher(def))==='L',
     pitNo:(function(){ const q=LIVE.curPitcher(def); return (q&&q.no!=null)?q.no:null; })(),
+    pitLook:sdLookOf(LIVE.curPitcher(def)),
     batLeft:(function(){const s0=off.slots[off.order%9];
       const b0=off.team.players.find(x=>x.id===s0.id); return !!(b0&&b0.bats==='L');})(),
     usDef:true});
@@ -39664,7 +39933,7 @@ function renderPitch(box, d){
     const cb=mv.querySelector('#cnt'); if(cb) cb.innerHTML=`<b>${c.b}</b>-<b>${c.s}</b>`;
     const lb=mv.querySelector('.lbl');
     if(lb) lb.innerHTML=`<b>${p.name}</b>${handTag(p)}`;
-    mvPaint(mv,{batLeft:!!(bat&&bat.bats==='L'), batNo:(bat&&bat.no!=null)?bat.no:null});
+    mvPaint(mv,{batLeft:!!(bat&&bat.bats==='L'), batNo:(bat&&bat.no!=null)?bat.no:null, batLook:sdLookOf(bat)});
     setPitFig(mv,p);                       // 교체하면 던지는 손도 바뀐다
     moundWho(mv,p.id,'마운드');
     const ars=arsenalOf(p);
@@ -47561,6 +47830,8 @@ function normalizeState(){
      옛 세이브를 옮길 때 하나가 다른 하나를 껐다. 「돌까 설까」를 꺼둔
      사람은 리드·도루까지 통째로 안 떴다. 서로 안 건드리게 갈랐다. */
   if(['off','key','all'].indexOf(ST.runMode)<0) ST.runMode='all';
+  /* [v3.51.0] 자동 경기 — 옛 세이브는 전부 직접 */
+  if(!ST.autoPlay||typeof ST.autoPlay!=='object') ST.autoPlay={bat:false,def:false,pit:false,run:false};
   if(ST.injMode!=='off') ST.injMode='on';           // [v2.73.0] 부상 (선수 모드)
   /* [v2.75.0] 감독과 한 약속 · 주전 보장 · 벤치 */
   if(typeof ST.myGuarantee!=='number')ST.myGuarantee=0;
