@@ -2882,6 +2882,68 @@ html.land .lob-top b{font-size:13.5px}
    위를 자르는 쪽이 맞다.
    존(#szone)은 fitZone() 이 **캔버스 rect 를 재서** 앉히니 잘려도
    홈플레이트 위에 그대로 붙어 있는다.                               */
+/* ---- 중계 화면(mvBcast) — 가로에서만 ----
+   [요청 v3.50.0] 프로스피 · 더쇼 같은 정석 중계 화면. 왼쪽 위 점수 띠 + 카드 두 장. */
+.bc-sb,.bc-cards{display:none}
+html.land .mound .bc-sb{display:flex;position:absolute;left:8px;top:6px;z-index:7;align-items:stretch;
+  background:rgba(10,14,20,.86);border:1px solid rgba(255,255,255,.14);border-radius:6px;overflow:hidden;
+  font-size:11px;color:#e9e4d8;box-shadow:0 2px 8px rgba(0,0,0,.35);pointer-events:none}
+html.land .mound .bc-inn{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:0 7px;background:#c9a227;color:#12161c;font-weight:900;font-size:14px;line-height:1}
+html.land .mound .bc-inn i{font-style:normal;font-size:9px;margin-top:1px}
+html.land .mound .bc-tm{display:flex;flex-direction:column;justify-content:center;padding:2px 6px;min-width:74px}
+html.land .mound .bc-tm p{display:flex;justify-content:space-between;gap:8px;margin:0;line-height:1.35;color:#aeb8c4}
+html.land .mound .bc-tm p.up{color:#fff}
+html.land .mound .bc-tm p.up span::before{content:'';display:inline-block;width:0;height:0;margin-right:3px;
+  border-left:4px solid #ffd15c;border-top:3px solid transparent;border-bottom:3px solid transparent;vertical-align:1px}
+html.land .mound .bc-tm b{font-weight:900;color:#fff}
+html.land .mound .bc-dia{position:relative;width:30px;margin:0 2px}
+html.land .mound .bc-dia u{position:absolute;width:8px;height:8px;background:rgba(255,255,255,.25);transform:rotate(45deg);top:14px}
+html.land .mound .bc-dia u.d1{left:19px}html.land .mound .bc-dia u.d3{left:3px}html.land .mound .bc-dia u.d2{left:11px;top:5px}
+html.land .mound .bc-dia u.on{background:#ffd15c}
+html.land .mound .bc-cnt{display:flex;flex-direction:column;justify-content:center;padding:2px 7px 2px 3px;gap:1px}
+html.land .mound .bc-cnt p{display:flex;align-items:center;gap:3px;margin:0;line-height:1}
+html.land .mound .bc-cnt em{font-style:normal;font-weight:900;font-size:9px;width:9px;color:#9fb0c4}
+html.land .mound .bc-cnt u{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.18)}
+html.land .mound .bc-cnt u.b{background:#7fc48f}html.land .mound .bc-cnt u.s{background:#ffd15c}html.land .mound .bc-cnt u.o{background:#e0574a}
+html.land .mound .bc-cards{display:flex;flex-direction:column;gap:4px;position:absolute;left:8px;top:58px;width:206px;z-index:7;pointer-events:none}
+html.land .mound .bc-card{background:rgba(10,14,20,.84);border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:3px 7px 4px;color:#e9e4d8}
+html.land .mound .bc-h{display:flex;align-items:baseline;gap:5px;white-space:nowrap;overflow:hidden}
+html.land .mound .bc-h em{font-style:normal;font-size:9px;font-weight:800;color:#12161c;background:#c9a227;border-radius:3px;padding:0 4px}
+html.land .mound .bc-b .bc-h em{background:#7fb4ff}
+html.land .mound .bc-h b{font-size:12.5px;font-weight:900;color:#fff}
+html.land .mound .bc-h i{font-style:normal;font-size:9px;color:#9fb0c4}
+html.land .mound .bc-np{margin-left:auto;font-size:10px;font-weight:900;color:#ffd15c}
+html.land .mound .bc-st{height:4px;margin:3px 0 2px;border-radius:2px;background:rgba(255,255,255,.12);overflow:hidden}
+html.land .mound .bc-st i{display:block;height:100%;background:#7fc48f}
+html.land .mound .bc-st i.mid{background:#ffd15c}html.land .mound .bc-st i.lo{background:#e0574a}
+html.land .mound .bc-l{font-size:9.5px;color:#aeb8c4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html.land .mound .bc-gr{display:flex;gap:8px;font-size:9.5px;color:#aeb8c4;margin:2px 0 1px}
+html.land .mound .bcg{display:inline-block;min-width:12px;text-align:center;font-weight:900;border-radius:3px;padding:0 2px;color:#12161c;background:#9fb0c4}
+.bcg-S{background:#ffd15c!important}.bcg-A{background:#f0a24a!important}.bcg-B{background:#e0574a!important;color:#fff!important}
+.bcg-C{background:#7fc48f!important}.bcg-D{background:#7fb4ff!important}
+/* 예전 머리말 · 전광판 · 이닝 띠 · 타자 카드는 가로에서 중계 화면으로 합친다 */
+html.land #decision.sheet.dk-swing .pl-wrap>div:first-child,
+html.land #decision.sheet.dk-swing .mv-board,
+html.land #decision.sheet.dk-swing .mv-top,
+html.land #decision.sheet.dk-swing .who,
+html.land #decision.sheet.dk-pitch .pl-wrap>div:first-child,
+html.land #decision.sheet.dk-pitch .mv-board,
+html.land #decision.sheet.dk-pitch .mv-top,
+html.land #decision.sheet.dk-pitch .who{display:none!important}
+/* 타석 · 고르는 동안 — 노림수 판은 카드 밑으로, 조이스틱은 공이 올 때만 */
+html.land #decision.sheet.dk-swing:not(.swf) .aim{top:172px!important;bottom:auto!important;left:8px!important;width:206px!important;max-height:calc(100% - 178px)!important}
+html.land #decision.sheet.dk-swing:not(.swf) .aim-l{display:none}
+html.land #decision.sheet.dk-swing:not(.swf) .bjoy{display:none}
+html.land #decision.sheet.dk-swing.swf .mv-camb{top:auto!important;bottom:118px!important;left:14px!important}
+/* 볼카운트는 점수 띠에 있다 — 오른쪽 위 따로 뜨던 「0-1」 은 뺀다. 그 자리에 구속을 올린다 */
+html.land #decision.sheet.dk-swing .mound #cnt,
+html.land #decision.sheet.dk-pitch .mound #cnt{display:none}
+html.land #decision.sheet.dk-swing.swf .mv-spd{top:8px!important;bottom:auto!important;right:8px!important;left:auto!important}
+/* 투구 — 머리말을 빼고 야구장을 맨 위까지 올린다. 구종은 오른쪽 칸 위로 */
+html.land #decision.sheet.dk-pitch .mound{grid-row:1/6!important}
+html.land #decision.sheet.dk-pitch .ptype{grid-column:2!important;grid-row:1/3!important;flex-wrap:wrap!important}
+html.land #decision.sheet.dk-pitch .ptype button{flex:1 1 30%}
 html.land #decision.sheet.dk-pitch{padding:6px 8px}
 html.land #decision.sheet.dk-pitch .pl-wrap{display:grid;height:100%;min-height:0;
   overflow:hidden;padding:0;gap:5px 8px;
@@ -9459,8 +9521,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.49.0';
-const APP_VERSION_NOTE = '배트 커서 · 주루는 경주 · 더쇼 식 도루';
+const APP_VERSION = '3.50.0';
+const APP_VERSION_NOTE = '정석 중계 화면';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9481,6 +9543,13 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.50.0', t:'정석 중계 화면', items:[
+    '가로 화면 왼쪽 위에 중계 점수 띠 — 이닝 ▲▼ · 두 팀 점수 · 주자 · B S O',
+    '그 밑에 투수 카드(선발/구원 · 투구수 · 체력 막대 · 오늘 기록)와 타자 카드(타순 · 포지션 · 컨택/파워/주력 등급 S~F · 오늘 기록)',
+    '예전 머리말 판 · 전광판 · 이닝 띠 · 타자 카드는 이 둘로 합쳤다 — 야구장이 위까지 보인다',
+    '투구 화면은 구종 버튼을 오른쪽 칸으로 올려서 야구장을 맨 위까지 넓혔다',
+    '공 오는 동안 구속은 오른쪽 위에',
+  ]},
   {v:'3.49.0', t:'배트 커서 · 주루는 경주 · 더쇼 식 도루', items:[
     '타석 — 왼쪽 조이스틱으로 배트 커서를 공 오는 자리로 옮기고 [스윙]. 가로로 긴 배트 모양이다',
     '치고 나면 「타이밍 82 (빨랐다 0.04초) · 배트 중심 49」 처럼 숫자로 보여준다. 공이 지나간 자리에 흰 점',
@@ -35627,6 +35696,64 @@ function mvScore(mound){
       `<b>${LIVE.inning}회 ${LIVE.half===0?'초':'말'}</b>`+
       `<span class="mvt-o">${outDots(LIVE.outs)}</span>`;
   }
+  try{ mvBcast(mound); }catch(e){}
+}
+/* ================= 중계 화면 (가로) =================
+   [요청 v3.50.0] 프로야구 스피리츠 · 더쇼 스크린샷 두 장 — "약간 이런 정석 중계화면 있잖아"
+   정석 중계는 이렇게 생겼다 —
+     왼쪽 위  작은 점수 띠: 이닝 ▲▼ · 두 팀 점수 · 주자 다이아 · B S O 불
+     그 아래  투수 카드: [선발/구원] 이름 · P:투구수 · 체력 막대 · 오늘 기록
+              타자 카드: [타순 포지션] 이름 · 좌/우 · 오늘 기록 · 컨택/파워/주력 등급(S~F)
+     가운데  야구장 — 아무것도 안 덮는다
+   예전 가로 화면은 머리말 판 · 전광판 · 타자 카드 · 이닝 띠가 따로 떠서
+   화면 위쪽 절반을 먹었다. 가로에서는 이 둘(띠 + 카드 두 장)로 합친다.
+   세로 화면은 스크롤되는 판이라 예전 그대로 둔다(CSS 가 가른다).          */
+function bcGrade(v){
+  v=Math.round(v||0);
+  const L=v>=85?'S':v>=75?'A':v>=65?'B':v>=55?'C':v>=45?'D':v>=35?'E':'F';
+  return `<b class="bcg bcg-${L}">${L}</b>`;
+}
+function mvBcast(mound){
+  if(!LIVE||!mound) return;
+  let sb=mound.querySelector('.bc-sb'), cd=mound.querySelector('.bc-cards');
+  if(!sb){ sb=el('div','bc-sb'); mound.appendChild(sb); }
+  if(!cd){ cd=el('div','bc-cards'); mound.appendChild(cd); }
+  const away=LIVE.away, home=LIVE.home, c=LIVE.count();
+  const nm=t=>String((t&&t.team&&t.team.name)||'').slice(0,4);
+  const atBat=LIVE.half===0?away:home;
+  const on=i=>LIVE.bases[i]?' on':'';
+  const dots=(n,max,cls)=>{ let o=''; for(let i=0;i<max;i++) o+=`<u class="${i<n?cls:''}"></u>`; return o; };
+  sb.innerHTML=
+    `<div class="bc-inn">${LIVE.inning}<i>${LIVE.half===0?'▲':'▼'}</i></div>`+
+    `<div class="bc-tm"><p class="${atBat===away?'up':''}"><span>${nm(away)}</span><b>${away.runs}</b></p>`+
+      `<p class="${atBat===home?'up':''}"><span>${nm(home)}</span><b>${home.runs}</b></p></div>`+
+    `<div class="bc-dia"><u class="d2${on(1)}"></u><u class="d3${on(2)}"></u><u class="d1${on(0)}"></u></div>`+
+    `<div class="bc-cnt"><p><em>B</em>${dots(c.b,3,'b')}</p><p><em>S</em>${dots(c.s,2,'s')}</p><p><em>O</em>${dots(LIVE.outs,2,'o')}</p></div>`;
+  /* 투수 카드 */
+  const def=LIVE.def(), off=LIVE.off();
+  const p=LIVE.curPitcher(def);
+  const pr=p?((def.team.players||[]).find(x=>x.id===p.id)||p):null;
+  const pb=(p&&LIVE.pbox&&LIVE.pbox[p.id])||{outs:0,h:0,er:0,k:0,bb:0,np:0};
+  const np=(LIVE.pitchCount?LIVE.pitchCount(p.id):pb.np)||0;
+  const fd=(p&&typeof pitFade==='function')?pitFade(p, pb.outs||0):{k:0};
+  const stam=Math.max(0.04, Math.min(1, 1-(fd.k||0)));
+  const starter=!!(def.rot&&def.rot[0]===p.id) || (def.startP===p.id);
+  const ip=Math.floor((pb.outs||0)/3)+'.'+((pb.outs||0)%3);
+  const bat=LIVE.batter();
+  const slot=(off.slots||[])[off.order%9]||{};
+  const tb=(bat&&LIVE.box[bat.id])||null;
+  const posNm=(typeof POSNAMES!=='undefined'&&POSNAMES[slot.pos])?POSNAMES[slot.pos]:(slot.pos||'');
+  const today=(tb&&tb.pa)?`${tb.ab}타수 ${tb.h}안타${tb.hr?` ${tb.hr}홈런`:''}${tb.rbi?` ${tb.rbi}타점`:''}`:'첫 타석';
+  cd.innerHTML=(p?
+    `<div class="bc-card bc-p"><div class="bc-h"><em>${starter?'선발':'구원'}</em><b>${pr.no!=null?pr.no+' ':''}${p.name}</b>`+
+      `<i>${throwHandOf(p)==='L'?'좌투':'우투'}</i><span class="bc-np">P ${np}</span></div>`+
+      `<div class="bc-st"><i style="width:${(stam*100).toFixed(0)}%" class="${stam<0.35?'lo':(stam<0.65?'mid':'')}"></i></div>`+
+      `<div class="bc-l">${ip}이닝 · ${pb.h||0}피안타 · ${pb.k||0}K · ${pb.er||0}자책</div></div>`:'')+
+    (bat?
+    `<div class="bc-card bc-b"><div class="bc-h"><em>${(off.order%9)+1} ${posNm}</em><b>${bat.no!=null?bat.no+' ':''}${bat.name}</b>`+
+      `<i>${bat.bats==='L'?'좌타':'우타'}</i></div>`+
+      `<div class="bc-gr"><span>컨택 ${bcGrade(bat.con)}</span><span>파워 ${bcGrade(bat.pow)}</span><span>주력 ${bcGrade(bat.spd)}</span></div>`+
+      `<div class="bc-l">오늘 ${today}</div></div>`:'');
 }
 /* 공을 날린다. 구종에 따라 늦게 휜다.
    cb(t) 로 매 프레임 진행도(0~1)를 알려주고, 끝나면 done() 을 부른다.  */
