@@ -4051,7 +4051,10 @@ function simPA(bat,pit,offTeam,defTeam,rng,tac,cond,park,mods){
   if(mods.defForce==='out') return {type:'OUT', gb: gbOf(0.62)};
   if(mods.defForce==='hit'){
     const eR=clamp(LG.ERR_PER_BIP*2.2*(mods.err||1), 0.02, 0.35);
-    return rng()<eR ? {type:'E'} : {type:'1B'};
+    if(rng()<eR) return {type:'E'};
+    /* 외야수 뒤로 빠진 공은 굴러간다 — 장타가 된다. 담장은 안 넘는다 */
+    if(mods.defOF){ const r3=rng(); return {type: r3<0.08?'3B':(r3<0.40?'2B':'1B')}; }
+    return {type:'1B'};
   }
 
   /* 수비 — 과감하게 달려들면 잡을 확률도 놓칠 확률도 같이 오른다.
@@ -9569,7 +9572,7 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.55.0';
+const APP_VERSION = '3.56.0';
 const APP_VERSION_NOTE = 'FM 프런트 — 명성 · 감독 · 상무 · 포스팅 · 뎁스표';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
@@ -9591,7 +9594,7 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
-  {v:'3.55.0', t:'FM 프런트 — 명성 · 감독 · 상무 · 포스팅 · 뎁스표', items:[
+  {v:'3.56.0', t:'FM 프런트 — 명성 · 감독 · 상무 · 포스팅 · 뎁스표', items:[
     '<b>명성이 생겼다.</b> 실력 · 연차 · 태극마크 · 드래프트 순번으로 정해진다. 1라운드 출신이나 이름 있는 선수는 못해도 쉽게 안 잘린다(안고 간다)',
     '스타가 1군에 있으면 <b>유니폼이 잘 팔려서</b> 금고에 매주 돈이 더 들어온다',
     '연봉 재계약 — 명성만큼 기대한다. 덜 주면 「서운」 해서 사기가 떨어지고, 스타면 기사가 난다. 시즌을 2군에서 끝낸 선수는 5% 까지만 오른다',
@@ -9607,6 +9610,14 @@ const CHANGELOG=[
     '<b>감독 계약</b> — 지금 감독 열 명은 실제 계약(만료 연도 · 총액)대로다. 계약이 끝나면 성적 따라 재계약하거나 결별하고, 성적이 나쁘면 계약 중에도 잘린다. 새 계약은 3년',
     '<b>재야의 감독</b> — 전에 KBO 감독을 했던 열두 명(가명)이 스타일을 갖고 기다린다. 불펜을 잘게 나누는 감독, 지키는 야구, 형님 리더십, 관리 야구, 벌떼 야구, 데이터 · 시프트… 잘린 감독도 재야로 돌아와 다른 구단의 부름을 기다린다',
     '우리 감독을 바꾸려면 새 감독 계약금(한 해 연봉) + 전 감독 잔여 연봉을 낸다. 감독 연봉은 매주 금고에서 나간다',
+  ]},
+  {v:'3.55.0', t:'수비 — 잡았으면 잡은 거다 · 2루 송구 야수선택 · 주력 · 수비 표시', items:[
+    '<b>「2루 쪽에서 잡았는데 100m 2루타」 를 고쳤다.</b> 글러브에 들어간 공인데 엔진이 확률로 다시 굴려서 2루타까지 나왔고, 비거리도 엔진이 따로 뽑은 숫자(70~100m)를 찍었다. 이제 화면이 본 대로 간다',
+    '땅볼을 잡아 던졌으면 — 아웃, 아니면 발로 산 <b>내야안타</b>(1루까지) · 실책뿐이다. 발 빠른 타자 · 늦은 송구 · 겨우 잡은 공일수록 내야안타가 난다',
+    '뜬공을 잡았으면 늘 아웃. 손이 안 닿았으면 아웃이 안 나온다 — 내야는 1루타, 외야 뒤로 빠지면 장타도 된다',
+    '비거리는 <b>화면에 그린 자리</b>다 — 24m 앞에서 잡은 공은 24m 로 적힌다',
+    '<b>2루로 던졌는데 병살이 안 되면 야수선택</b>이다 — 예전엔 공이 2루로 갔는데 타자가 1루에서 죽고 1루 주자는 그대로 있었다. 이제 1루 주자가 2루에서 죽고 타자가 1루에 산다. 3루 · 홈 송구도 그 주자를 노린 걸로 받는다',
+    '수비 화면 — 주자 머리 위에 <b>주력</b>, 야수 이름표에 <b>수비</b> 능력치가 붙는다(마구마구 · 컴프야처럼). 누가 빠른지 보고 어디로 던질지 정한다',
   ]},
   {v:'3.54.0', t:'타격 조이스틱 크게 · 빠르게 · 타자만 골랐는데 투수로 나가던 것', items:[
     '<b>타자만 하겠다고 골랐는데 프로에서 투수로만 나가던 것</b>을 고쳤다 — 사회인 때 투구 능력치가 남아 있으면 역할을 안 보고 선발 투수로 넣고 있었다. 이제 타자만 고르면 투수진에 안 들어가고 타순에 선다 (불러오면 바로 고쳐진다)',
@@ -13124,9 +13135,11 @@ LiveGame.prototype.consumePlayMods = function(off, def){
      [제보] "수비하라고 준비해서 가고 있었는데 삼진 나오거나" */
   const shown=(this._defShown===this.paSeq) && def.isUser;
   const wasAir=!!this._defAir; this._defAir=false;   // 한 타석짜리다. 여기서 지운다
+  let mpS=null;                 // 화면이 보여준 내 자리 — 아래 손으로 한 수비가 쓴다
   if(shown){
     this._defShown=-1;
     const mp=this._defShownPos||((typeof myPos==='function')?myPos():null);
+    mpS=mp;
     this._defShownPos=null;
     /* 내야 자리로 굴러온 공은 땅볼이고 외야로 뜬 공은 뜬공이다.
        [제보] "내가 잡은 땅볼은 안 나왔다"
@@ -13161,7 +13174,31 @@ LiveGame.prototype.consumePlayMods = function(off, def){
       out={...(out||{}), inPlay:true,
         babip:((out&&out.babip)||1)*Math.max(0.45,Math.min(1.45,1-(gq*0.34+skill)*hd)),
         err:((out&&out.err)||1)*Math.max(0.32,Math.min(2.2,1-(gq*0.55+skill*2)*hd))};
-      if(dp.q>=0.84) out.defForce='out';
+      /* [제보 v3.55.0] "2루쪽 잡았는데 갑자기 100m 2루타"
+         화면에서 **글러브에 들어간 공**인데 q 가 0.55~0.84 사이면 엔진이 확률로
+         다시 굴렸다 — 2루타까지 나왔고 비거리도 엔진 것(70~100m)을 찍었다.
+         이제 화면이 본 대로 간다:
+           · 뜬공을 잡았다          → 아웃
+           · 땅볼을 잡아 던졌다     → 아웃, 아니면 발로 산 내야안타(1루까지) · 실책
+           · 손이 안 닿았다         → 안타 (내야면 1루타, 외야면 빠진 만큼 장타도)
+         caught 꼬리가 없으면(옛 경로) 예전 문턱 그대로다. */
+      if(dp.caught===true){
+        if(dp.air) out.defForce='out';
+        else {
+          const b0=(typeof this.batter==='function')?this.batter():null;
+          const rs=b0&&b0.spd!=null?b0.spd:45;
+          const tq0=(this._throwQ!=null)?this._throwQ:0.5;
+          const pSafe=Math.max(0.03, Math.min(0.45,
+            0.10 + (rs-50)*0.006 + (0.84-dp.q)*0.45 + (0.5-tq0)*0.30));
+          out.defForce=(this.rng()<pSafe)?'hit':'out';
+          out.defMax='1B';
+        }
+      } else if(dp.caught===false){
+        out.defForce='hit';
+        const mp2=mpS||((typeof myPos==='function')?myPos():null);
+        out.defOF=!!(mp2 && typeof DEF_INFIELD!=='undefined' && DEF_INFIELD.indexOf(mp2)<0);
+      }
+      else if(dp.q>=0.84) out.defForce='out';
       else if(dp.q<=0.40) out.defForce='hit';
     } else if(dp.bold){
       /* 잘하는 수비수는 과감해도 덜 흘린다 */
@@ -14458,6 +14495,14 @@ LiveGame.prototype.stepPA = function(){
   const bbKind = (res.type==='OUT') ? (res.gb?'GB':(res.ld?'LD':'FB')) : res.type;
   const bb = ['1B','2B','3B','HR','OUT','E'].indexOf(res.type)>=0
     ? battedBall(this.paSeq, bbKind, this.park, bat.bats||'R', !!res.itp, this._spray) : null;
+  /* [제보 v3.55.0] "잡았는데 갑자기 100m 2루타" — 내가 수비한 타구는 **화면에 그린 자리**가
+     비거리다. 엔진이 따로 뽑은 거리(2루타면 70~100m)를 찍으니 30m 앞에서 잡은 공이
+     100m 로 적혔다. 빠져서 굴러간 장타만 굴러간 만큼 더 길 수 있다. */
+  if(bb && this._defSceneM && this._defSceneM.seq===this.paSeq){
+    const sm=Math.round(this._defSceneM.m);
+    bb.m = (res.type==='2B'||res.type==='3B') ? Math.max(sm, Math.min(bb.m, sm+35)) : sm;
+  }
+  this._defSceneM=null;
   this._bb=bb;
   /* [제보] "돈다 누르면 그냥 그 화면이 사라지는데 공 날라갈때 수비가
      따라가고 어떻게 할 것인지 상황판단이 되어야 되잖아"
@@ -14669,6 +14714,27 @@ LiveGame.prototype.stepPA = function(){
       this.dpCount=(this.dpCount||0)+1;
       events.push({text:`${bat.name} 병살타`+(ta==='lead'?' — 2루로 던져 둘 다 잡았다':'')+bbTag(bb),cls:'out'});
       this.hl('dp',off,bat.name,'');}
+    /* [제보 v3.55.0] "2루송구를 해도 이상하고" — 2루로 던졌는데 병살이 안 되면
+       **타자가 1루에서 죽고 1루 주자는 그대로 1루에** 서 있었다. 공은 2루로 갔는데.
+       이제 야수선택이다 — 던진 베이스로 가던 주자가 죽고, 타자는 1루에 산다.
+       포스로 밀리는 주자는 한 베이스씩 간다(만루면 3루 주자가 들어온다).
+       3루 · 홈 송구도 같다. */
+    else if(res.gb && this.outs<3 && (ta==='lead'||ta==='third'||ta==='home')
+            && this.bases[{lead:0,third:1,home:2}[ta]]){
+      const bi={lead:0,third:1,home:2}[ta];
+      const was=this.bases.slice();
+      const forced=[!!was[0], !!(was[0]&&was[1]), !!(was[0]&&was[1]&&was[2])];
+      const rid=was[bi];
+      this.bases[bi]=null; delete this.runnerP[rid];
+      for(let b=2;b>=0;b--){
+        if(b===bi || !was[b] || !forced[b]) continue;
+        if(b===2){ score(was[2],false); bl.rbi++; this.bases[2]=null; }
+        else { this.bases[b+1]=was[b]; this.bases[b]=null; }
+      }
+      this.bases[0]=bat.id; onBase(bat.id);
+      const bnm={lead:'2루',third:'3루',home:'홈'}[ta];
+      events.push({text:`${bat.name} 야수선택 — ${bnm}로 던져 ${this.nameOf(rid)} 아웃, 타자는 1루에 산다${bbTag(bb)}`,cls:'out'});
+    }
     else if(this._runGo && this.bases[0] && this.outs<3 && !res.gb && rng()<0.34){
       /* 뛰고 있는데 뜬공이 잡혔다. 되돌아갈 시간이 없다 — 병살이다.
          이게 히트앤런의 값이다: 안타면 크게 벌고 뜬공이면 크게 잃는다. */
@@ -14754,6 +14820,8 @@ LiveGame.prototype.stepPA = function(){
      지금 상황을 남겨둔다. 갈 베이스가 비어 있어야 물어볼 값어치가 있다 —
      2루에 주자가 서 있으면 애초에 갈 데가 없다.                        */
   this._runGo=false; this._runPlan0go=false; this._spray=null;
+  /* 송구 선택은 한 타석짜리다 — 안타로 끝난 타석의 「2루 송구」 가 다음 땅볼로 새지 않게 */
+  this._throwAt=null; this._throwQ=null;
   this._stretchOffer=null;
   if(res.stretchAsk && this.outs<3){
     const sfrom=(res.stretchAsk==='1B')?0:1;
@@ -15168,7 +15236,11 @@ LiveGame.prototype.applyDecision = function(choice){
   if(typeof choice==='string' && choice.indexOf('def:q:')===0){
     this._lastDefPA=this.paSeq;
     const q=parseFloat(choice.slice(6));
-    this._defPlay={q:isFinite(q)?Math.max(0,Math.min(1,q)):0.5};
+    /* 'def:q:0.700:c1a0' — 화면에서 글러브에 들어갔나(c) · 공중이었나(a).
+       꼬리가 없으면(옛 경로 · 캔버스 없는 테스트) 예전처럼 q 만 본다 */
+    const cm=/:c([01])/.exec(choice), am=/a([01])$/.exec(choice);
+    this._defPlay={q:isFinite(q)?Math.max(0,Math.min(1,q)):0.5,
+      caught:cm?(cm[1]==='1'):null, air:am?(am[1]==='1'):false};
     return;
   }
   /* 포수 송구 — 뛰면 던질 것인가 */
@@ -15203,8 +15275,8 @@ LiveGame.prototype.applyDecision = function(choice){
      [참고] 마구마구가 수비에서 송구 대상을 고르게 한다. 그 조각만 가져온다.
      땅볼에 1루 주자가 있으면 그게 야수의 진짜 판단이다 —
      2루로 던져 병살을 노리느냐, 1루로 던져 하나를 확실히 잡느냐.   */
-  if(choice==='at:lead' || choice==='at:first'){
-    this._throwAt=(choice==='at:lead')?'lead':'first';
+  if(choice==='at:lead' || choice==='at:first' || choice==='at:third' || choice==='at:home'){
+    this._throwAt=choice.slice(3);
     return;
   }
 
@@ -15835,7 +15907,7 @@ function oppRep(team){
   if(!main) main=OPP_REPS[OPP_REPS.length-1];
   let hk=OPP_HOOKS[oppHash(team.id)%OPP_HOOKS.length];
   let run=main.tac.run||'normal';
-  /* [v3.55.0] 프로 — 교체 · 도루는 그 팀 감독 성향이 정한다(PRO_MGR_STYLE) */
+  /* [v3.56.0] 프로 — 교체 · 도루는 그 팀 감독 성향이 정한다(PRO_MGR_STYLE) */
   try{ if(isPro() && team.proKey){ const m=proMgrOf(team.proKey);
     hk=OPP_HOOKS.find(h=>h.hook===m.hook)||hk; if(m.run&&m.run!=='normal') run=m.run; } }catch(e){}
   const r={k:main.k, name:main.n, desc:main.d,
@@ -17814,8 +17886,8 @@ function pfWeek(){
   const gate=ph.fans*1.25*(rk<=5?1.15:0.9), media=2.2;
   const col=(F.collab&&F.collab.year===ST.pro.year)?(PF_COLLABS.find(c=>c.id===F.collab.id)||{rev:0}).rev*(0.6+ph.fans*0.14):0;
   const pay=pfPayroll().total/10000/24, ops=1.2;
-  const jersey=pfJerseyRev();                   // [v3.55.0] 스타 유니폼 · 굿즈
-  let msal=0; try{ msal=(stfState().mgr.sal||0)/24; }catch(e){}   // [v3.55.0] 감독 연봉 한 주치
+  const jersey=pfJerseyRev();                   // [v3.56.0] 스타 유니폼 · 굿즈
+  let msal=0; try{ msal=(stfState().mgr.sal||0)/24; }catch(e){}   // [v3.56.0] 감독 연봉 한 주치
   F.cash=Math.round((F.cash+gate+media+col+jersey-pay-ops-msal)*10)/10;
   /* 내 연봉 — 한 주치가 내 통장으로 */
   const me=ST.playerId||MYID; const mc=pfCon({id:me},ST.pro.team);
@@ -17883,7 +17955,7 @@ function pfRenewals(){
     if(c.svc+1>=8 && c.type==='annual') return;            // 이번 겨울 FA 로 나간다
     const s=pfSeasonLine(p), grow=(pfGrade(p)-45)*0.008;
     let pct=clamp(s.score+grow, -0.30, 1.20);
-    /* [v3.55.0] [요청] "1군에 오래 있거나 경기를 뛰면 그 해 연봉이 달라지겠지" — 시즌 끝에 2군이면 5% 까지만 */
+    /* [v3.56.0] [요청] "1군에 오래 있거나 경기를 뛰면 그 해 연봉이 달라지겠지" — 시즌 끝에 2군이면 5% 까지만 */
     if(p.farm) pct=Math.min(pct,0.05);
     const nw=Math.max(kboMinSal(y+1), Math.round(c.sal*(1+pct)/100)*100);
     /* 명성이 기대치를 만든다 — 명성 80 이면 20% 는 올려 주길 바란다. 10%p 넘게 모자라면 서운하다 */
@@ -18065,7 +18137,7 @@ function pfTradeEval(o){
   const give=pfPkgValue(gp,k)+gk.reduce((s,x)=>s+pfPickValue(x,k),0)+cash*6;
   const get=pfPkgValue(tp,k)+tk.reduce((s,x)=>s+pfPickValue(x,k),0);
   const ratio=get>0?give/get:(give>0?9:0);
-  /* [v3.55.0] 빡세게 — [요청] "트레이드도 좀 빡세게". 예전엔 5% 손해(0.95)도 받아 줬다.
+  /* [v3.56.0] 빡세게 — [요청] "트레이드도 좀 빡세게". 예전엔 5% 손해(0.95)도 받아 줬다.
      이제 이득(1.02)이어야 받고, 자기네 간판(명성 70+)이 끼어 있으면 25% 웃돈을 요구한다 */
   const star=tp.some(p=>pfRep(p)>=70), need=star?1.25:1.02;
   return {give:Math.round(give), get:Math.round(get), ratio, need, star, gp, tp, gk, tk, cash,
@@ -18100,7 +18172,7 @@ function pfTradeMulti(o){
 /* 옛 이름 — 1:1 */
 function pfTradeAdj(p, key){
   const ph=proPhil(key), a=pfAge(p); let v=pfValue(p);
-  v*=1+(pfRep(p)-40)/250;                       // [v3.55.0] 이름값 — 명성 90 이면 1.2배, 무명이면 0.85배
+  v*=1+(pfRep(p)-40)/250;                       // [v3.56.0] 이름값 — 명성 90 이면 1.2배, 무명이면 0.85배
   if(ph.mode==='rebuild') v*= a<=26?1.25:(a>=31?0.8:1);
   if(ph.mode==='win') v*= a>=30?1.15:(a<=23?0.9:1);
   return v;
@@ -18116,7 +18188,7 @@ function pfTrade(ourId, theirId){
   const k=proKeyOf(b.t.id);
   const give=pfTradeAdj(a.p,k), get=pfTradeAdj(b.p,k);
   F.tradeRound=ST.round||0;
-  /* [v3.55.0] 빡세게 — [요청] "트레이드도 좀 빡세게". 예전엔 5% 손해도 받아 줬다.
+  /* [v3.56.0] 빡세게 — [요청] "트레이드도 좀 빡세게". 예전엔 5% 손해도 받아 줬다.
      이제 이득이어야 받고, 자기네 스타(명성 70+)는 25% 웃돈 없이는 안 내준다 */
   const need=get*(pfRep(b.p)>=70?1.25:1.02);
   if(give<need){ pfLog('트레이드 제안 거절 — '+proName(k)+'에 '+a.p.name+' ↔ '+b.p.name);
@@ -18503,7 +18575,7 @@ function pfDevRoll(){
       if(!p||p.id===me||p.custom||(p.rookie&&p.pot&&pfGrade(p)<p.pot)) return;
       const age=pfAge(p)+1;                                   // 다음 시즌 나이로 굴린다
       let mu=age<=23?2.5:(age<=26?1.5:(age<=29?0.3:(age<=31?-0.6:(age<=33?-1.5:(age<=35?-2.5:-3.5)))));
-      /* [v3.55.0] 감독 — 투수 육성(pdev) · 젊은 선수(youth). 리그 평균 되돌리기가 뒤에 있으니 「남보다」 크는 몫이다 */
+      /* [v3.56.0] 감독 — 투수 육성(pdev) · 젊은 선수(youth). 리그 평균 되돌리기가 뒤에 있으니 「남보다」 크는 몫이다 */
       const mg=proMgrOf(key); if(pfIsPit(p)) mu+=(mg.pdev||0)*0.6; if(age<=25) mu+=(mg.youth||0)*0.4;
       if(p.pot && mu>0) mu=0;                                 // 잠재를 다 채운 신인은 더 안 큰다(흔들림만)
       const form=(rng()-0.5)*6;                               // 그 사람 올해 겨울 — 전체가 같이 움직인다
@@ -18631,7 +18703,7 @@ function pfFarmOver(){
 /* 2군에서 내보낼 순서 — 나이 먹었는데 잘하지도 크지도 않는 사람부터 */
 function pfRelScore(p){
   const age=pfAge(p), room=(p.pot?Math.max(0,p.pot-pfGrade(p)):0);
-  /* [v3.55.0] 명성 — 1라운드 출신 · 태극마크 · 이름 있는 선수는 못해도 쉽게 안 자른다(안고 간다) */
+  /* [v3.56.0] 명성 — 1라운드 출신 · 태극마크 · 이름 있는 선수는 못해도 쉽게 안 자른다(안고 간다) */
   return pfGrade(p)+room*1.5-Math.max(0,age-27)*2.5+pfRep(p)*0.8;
 }
 /* 1군 인원 — 겨울이 끝날 때 맞춘다. FA · 트레이드 · 은퇴로 빠지거나 넘친 자리를 2군과 바꾼다.
@@ -18655,7 +18727,7 @@ function pfRosterBalance(){
       while((t[k]||[]).length>hi && g++<12){
         const c=(t[k]||[]).filter(p=>p.id!==me && !p.custom).sort((a,b)=>pfValue(a)-pfValue(b))[0];
         if(!c) break; pfMove(c, key, key, '2군행', '2군'); }
-      /* [v3.55.0] 감독이 1 · 2군을 고른다 — 감독 눈(베테랑 · 젊은 선수 · 이름값)으로 2군의 나은 사람과
+      /* [v3.56.0] 감독이 1 · 2군을 고른다 — 감독 눈(베테랑 · 젊은 선수 · 이름값)으로 2군의 나은 사람과
          1군의 못한 사람을 두 번까지 바꾼다. 우리 팀도 감독이 한다(나는 빼고) */
       const m=proMgrOf(key);
       for(let sw=0; sw<2; sw++){
@@ -18666,7 +18738,7 @@ function pfRosterBalance(){
       }
       /* 2군 정원 — 타자 · 투수 각 30. 넘치면 가망 없는 사람부터 방출(외국인 · 나는 빼고) */
       const farm=(t.farm||[]).filter(p=>p.id!==me && !p.custom && pfIsPit(p)===pit && !pfIsForeign(p,key));
-      /* [v3.55.0] [요청] "내가 선택한 선수 있는팀은 내가 방출한선수 고를 수 있게" — 우리 팀은 자동으로 안 자른다.
+      /* [v3.56.0] [요청] "내가 선택한 선수 있는팀은 내가 방출한선수 고를 수 있게" — 우리 팀은 자동으로 안 자른다.
          프런트 「뎁스표」 에서 내가 고른다. 다만 마흔 명을 넘기면(몇 해 방치) 안전장치로 정리한다 */
       const cap=(t.id==='wwzw')?40:30;
       farm.sort((a,b)=>pfRelScore(a)-pfRelScore(b)).slice(0,Math.max(0,farm.length-cap)).forEach(p=>{
@@ -18839,9 +18911,9 @@ function stfState(){
   const F=pfState(), ph=proPhil(ST.pro.team);
   if(!F.coach||typeof F.coach!=='object'){ const b=Math.max(1,Math.min(5,Math.round((ph.farm+ph.wealth)/2))); F.coach={bat:b,pit:b,def:Math.max(1,b-1)}; }
   if(!F.mgr||typeof F.mgr!=='object'||F.mgr.name==='현 감독'){ const m=proMgrOf(ST.pro.team);
-    /* [v3.55.0] 그 팀 실제 감독(가명) · 성향으로 시작한다 — 예전엔 「현 감독」 이라는 빈 이름이었다 */
+    /* [v3.56.0] 그 팀 실제 감독(가명) · 성향으로 시작한다 — 예전엔 「현 감독」 이라는 빈 이름이었다 */
     F.mgr={name:m.name, style:m.style||(ph.mode==='rebuild'?'dev':(ph.mode==='win'?'win':'small')), since:(F.mgr&&F.mgr.since)||ST.pro.year}; }
-  /* [v3.55.0] 감독 계약 — 옛 세이브는 비어 있다. 그 팀 실제 계약(PRO_MGR_CON)으로 메운다 */
+  /* [v3.56.0] 감독 계약 — 옛 세이브는 비어 있다. 그 팀 실제 계약(PRO_MGR_CON)으로 메운다 */
   if(F.mgr.until==null){ const m=proMgrOf(ST.pro.team); F.mgr.until=(F.mgr.name===m.name?m.until:ST.pro.year+2); F.mgr.sal=(F.mgr.name===m.name?m.sal:5); }
   return F;
 }
@@ -18859,7 +18931,7 @@ function stfMgrPool(){
   const F=stfState(), y=ST.pro.year;
   if(F.mgrPool&&F.mgrPool.year===y) return F.mgrPool;
   const rng=makeRng(((ST.seed||1)*8231+y)>>>0), used=new Set();
-  /* [v3.55.0] 후보는 재야에서 셋(예전과 같은 수) — 전 감독 · 잘린 감독 · 레전드. 모자라면 지어낸 사람으로 채운다.
+  /* [v3.56.0] 후보는 재야에서 셋(예전과 같은 수) — 전 감독 · 잘린 감독 · 레전드. 모자라면 지어낸 사람으로 채운다.
      계약은 3년, 계약금은 한 해 연봉만큼이다 */
   const free=pfMgrFreeList().sort(()=>rng()-0.5);
   const pick=free.filter(m=>m.age<75).slice(0,3);
@@ -18874,7 +18946,7 @@ function stfMgrPool(){
 }
 function stfHireMgr(i){
   const F=stfState(), c=stfMgrPool().list[i]; if(!c) return '없는 후보다';
-  /* [v3.55.0] 계약 중인 감독을 자르면 남은 해 연봉을 다 준다 */
+  /* [v3.56.0] 계약 중인 감독을 자르면 남은 해 연봉을 다 준다 */
   const left=Math.max(0,(F.mgr.until||ST.pro.year)-ST.pro.year), buy=Math.round(left*(F.mgr.sal||5)*10)/10;
   const need=Math.round((c.cost+buy)*10)/10;
   if(F.cash<need) return '금고가 모자라다 (계약금 '+c.cost+'억'+(buy?' + 잔여 연봉 '+buy+'억':'')+')';
@@ -18904,7 +18976,7 @@ function stfApplyTeam(t){
 function stfRookieMul(){ try{ const F=stfState(); const avg=(F.coach.bat+F.coach.pit+F.coach.def)/3;
   return (1+0.04*(avg-3))*(F.mgr.style==='dev'?1.2:(F.mgr.style==='win'?0.9:1)); }catch(e){ return 1; } }
 /* 콜업 기준 — [요청] "플레이어도 감독에 따라야지 (…) 늙은 선수 선호하는 감독 · 명성높은애만 쓴다거나"
-   육성형은 3푼 낮다. [v3.55.0] 감독 성향을 더한다 — 젊은 선수 선호면 최대 1푼 더 낮고, 베테랑 선호면
+   육성형은 3푼 낮다. [v3.56.0] 감독 성향을 더한다 — 젊은 선수 선호면 최대 1푼 더 낮고, 베테랑 선호면
    최대 1푼 높고, 이름값을 보는 감독은 내 명성이 낮으면 조금 더 높다 */
 function stfFarmBarAdj(){ try{ const F=stfState(), m=proMgrOf(ST.pro.team);
   let a=F.mgr.style==='dev'?-0.030:0;
@@ -38783,7 +38855,9 @@ function renderDefPlay(box, d){
       (def.slots||[]).forEach(sl=>{
         const q=def.team.players.find(x=>x.id===sl.id);
         if(!q) return;
-        out[sl.pos]=(q.no!=null?(q.no+' '):'')+q.name;
+        /* [참고 v3.55.0] 마구마구 · 컴프야 수비 화면 — 야수마다 **수비 능력치**가 붙어 있다.
+           누가 잘 잡는지 보여야 어느 쪽으로 몰지 판단이 선다 */
+        out[sl.pos]=(q.no!=null?(q.no+' '):'')+q.name+(q.def!=null?' · 수'+Math.round(q.def):'');
       });
       /* 지명타자를 쓰면 투수가 타순(slots)에 없다 — 마운드만 이름표가
          비어 있었다. 지금 던지는 사람을 따로 넣는다.                 */
@@ -38824,7 +38898,7 @@ function renderDefPlay(box, d){
   const SPEED = 50+sv*0.66+dv*0.34;
 
   /* 판정이 나면 같은 캔버스 위에 결과를 재생한다 — 새 창을 안 띄운다 */
-  const finish=(q, where, tq, air)=>{
+  const finish=(q, where, tq, air, caught)=>{
     if(picked)return; picked=true;
     /* 공중에서 잡았으면 **뜬공**이다. 여태 기록의 땅볼/뜬공을 내 수비
        자리로만 갈랐다 — 내야수가 잡은 팝플라이가 땅볼 아웃으로 남았다. */
@@ -38836,8 +38910,11 @@ function renderDefPlay(box, d){
       const hard=(1-Math.max(0,Math.min(1,q)));
       LIVE.rollMyInjury('타구', (inf?2.6:1.2)*(0.5+hard*1.6));
     }catch(e){}
-    LIVE.applyDecision('def:q:'+q.toFixed(3));
+    /* 화면에서 글러브에 들어갔나 — 엔진이 이걸 보고 결과를 맞춘다(v3.55.0) */
+    const cflag=(caught===true||caught===false)?(':c'+(caught?1:0)+'a'+(air?1:0)):'';
     if(tq!=null) LIVE._throwQ=tq;
+    LIVE._defSceneM={seq:LIVE.paSeq, m:mDraw};
+    LIVE.applyDecision('def:q:'+q.toFixed(3)+cflag);
     plLock(false);
     if(LIVE._badCall && LIVE._badCall.kind==='play') showArgue(note, null);
     playThenClose(box, null, where||'def:none', null, null, (r,evs,fin)=>{
@@ -38863,7 +38940,10 @@ function renderDefPlay(box, d){
     ? (dir+'으로 직선타! — 순식간이다')
     : (dir+'으로 온다 — 쫓아가라');
   try{
+    /* 주자 주력 — 누가 빠른지 보여야 어디로 던질지 정한다(마구마구 · 컴프야 주자 표시) */
+    const spdOf=(rid)=>{ const q2=rid&&off.team.players.find(x=>x.id===rid); return q2&&q2.spd!=null?Math.round(q2.spd):null; };
     sc=defScene(stage, {park, ang:d.ang, m:mDraw, pos, flyMs, names:fieldNames, ld:isLD,
+      runSpd:(LIVE.bases||[null,null,null]).map(spdOf).concat([spdOf(bat&&bat.id)]),
       reach:REACH, grab:GRAB, pxPerM, speed:SPEED, arm:av,
       bases:(LIVE.bases||[null,null,null]).slice(),
       hasFirst:!!LIVE.bases[0], outs:LIVE.outs,
@@ -38912,7 +38992,7 @@ function renderDefPlay(box, d){
       },
       onTitle:(t2,col)=>{ const t=box2.querySelector('.rb-t');
         if(t){ t.textContent=t2; if(col) t.style.color=col; } },
-      onDone:(q, where, tq, air)=>finish(q, where, tq, air)});
+      onDone:(q, where, tq, air)=>finish(q, where, tq, air, (!!where && where!=='def:none') || !!air)});
   }catch(e){ sc=null; }
   if(!sc){
     /* 캔버스가 없는 환경(테스트 등) — 능력치대로 알아서 잡고 1루로 */
@@ -39011,8 +39091,9 @@ function defScene(host, o){
 
   /* 주자 — 타석 전 베이스 상태에서 만든다. 전부 그린다 */
   const runners=[];
-  (o.bases||[]).forEach((rid,i)=>{ if(rid) runners.push({from:i+1, to:i+2}); });
-  runners.push({from:0, to:1, batter:true});          // 타자주자
+  const RS=o.runSpd||[];
+  (o.bases||[]).forEach((rid,i)=>{ if(rid) runners.push({from:i+1, to:i+2, spd:RS[i]}); });
+  runners.push({from:0, to:1, batter:true, spd:RS[3]});          // 타자주자
   const runAt=(b)=>{ const i=Math.max(0,Math.min(3,Math.floor(b))), f=b-i;
     return {x:BP[i].x+(BP[i+1].x-BP[i].x)*f, y:BP[i].y+(BP[i+1].y-BP[i].y)*f}; };
   /* [제보] "1루 뛰는속도 너프해야할듯 나도 그렇고 다른 타자도 그렇고
@@ -39116,7 +39197,9 @@ function defScene(host, o){
       : bestB.label+'로 던졌다'+(tq>0.6?' — 좋은 송구':(tq<0.25?' — 늦었다':'')),'#ffd15c');
     if(o.onTick) o.onTick('공이 '+bestB.label+'로 간다');
     /* 2루 송구는 병살을 노린 것이다 — 엔진이 그렇게 받는다 */
-    const where=(bestB.b===2 && o.hasFirst)?'at:lead':'at:first';
+    /* 3루 · 홈으로 던졌으면 그 주자를 노린 것이다(야수선택) — 예전엔 전부 1루 송구로 받았다 */
+    const where=(bestB.b===2 && o.hasFirst)?'at:lead'
+      :(bestB.b===3?'at:third':(bestB.b===0?'at:home':'at:first'));
     setTimeout(()=>{ if(o.onDone) o.onDone(q, where, tq, airOut); }, 520);
   };
   /* 캔버스를 눌러도 되고 아래 버튼을 눌러도 된다 — 같은 일을 한다 */
@@ -39341,6 +39424,7 @@ function defScene(host, o){
       const at=r.from+(r.to-r.from)*rk;
       const pt=runAt(at);
       man(pt.x,pt.y,PS_UNI.them,rk<1,at>=1&&at<3);
+      if(r.spd!=null && camZ<1.7) psLabel(g,pt.x,pt.y-9,'주력 '+r.spd,false);
     });
     /* 타구 */
     if(phase==='chase'){

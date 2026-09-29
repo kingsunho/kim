@@ -69,7 +69,7 @@ const T=(n,f)=>{try{const r=f();const ok=r===true||(typeof r==='string'&&r.lengt
     ' · 1군 최소 타자 '+last.minH+' 투수 '+last.minP);
 
   console.log('\n[은퇴 · 환생]');
-  /* [v3.55.0] 하한 8 → 5. 명성 높은 베테랑이 한 해씩 더 버티고(은퇴 확률 ×0.7), 선수가 방출 · 포스팅으로도
+  /* [v3.56.0] 하한 8 → 5. 명성 높은 베테랑이 한 해씩 더 버티고(은퇴 확률 ×0.7), 선수가 방출 · 포스팅으로도
      나가면서 10년쯤 지나면 34~36세 층이 얇아진다(재 봤다 — 38명 → 21명). 한 해 7명인 해가 나왔다 */
   T('해마다 은퇴가 나온다 — 한 해 5~60명', ()=>{ const n=ret.map(r=>r.length); return n.every(x=>x>=5&&x<=60)?n.join(' · '):'!'+n.join(' · '); });
   T('은퇴한 사람은 대부분 서른 넘었다', ()=>{ const a=[].concat(...ret); const o=a.filter(x=>x.a>=31).length/Math.max(1,a.length); return o>=0.9?(Math.round(o*100)+'%'):'!'+Math.round(o*100)+'%'; });

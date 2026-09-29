@@ -148,7 +148,7 @@ const reload=()=>{ const snap=ev("JSON.stringify(ST)");
     return (n>30 && mine.every(id=>ev(`!!pfAll(TBYID.wwzw).find(p=>p.id==='${id}')`)))?'이동 '+n+'건':'!'+n; });
   ev("proNextYear()"); await wait(30);
   T('다음 시즌이 열린다', ()=>ev("ST.pro.year")===2028);
-  /* [v3.55.0] 받아 온 사람(상대 1군에서 제일 약한 사람)이 그 겨울 2차 드래프트에 노출돼 다른 구단에 뽑혀
+  /* [v3.56.0] 받아 온 사람(상대 1군에서 제일 약한 사람)이 그 겨울 2차 드래프트에 노출돼 다른 구단에 뽑혀
      가기도 한다 — 그건 이동이 사라진 게 아니라 이동이 하나 더 생긴 거다. 트레이드 기록이 남아 있고,
      선수는 **마지막 이동이 가리키는 팀**에 있어야 한다 */
   T('다음 시즌에도 이동이 남는다', ()=>{ const r=JSON.parse(ev(`JSON.stringify((function(){ const F=pfState(), f=pfFind('${pair.b}');
