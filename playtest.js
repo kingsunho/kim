@@ -194,10 +194,21 @@ setTimeout(async()=>{
     const b=[...d.querySelectorAll('#decision button')].find(x=>/지켜본다/.test(x.textContent));
     return (b && !b.disabled) ? '지켜본다 풀림' : false;
   });
-  T('화면을 치면 그 공의 판정이 난다', ()=>{
+  /* [v3.54.0] "빈공간 클릭하면 스윙 되는거 개빡치네" — 야구장 탭 스윙은 없앴다.
+     야구장을 눌러도 아무 일 없고, [스윙] 버튼을 눌러야 판정이 난다 */
+  T('야구장을 눌러도 스윙이 안 나간다', ()=>{
     const mv=d.querySelector('.mound');
     const before=ev("LIVE.count().b+LIVE.count().s");
     mv.dispatchEvent(new w.Event('pointerdown',{bubbles:true}));
+    const after=ev("LIVE.count().b+LIVE.count().s");
+    const cq=ev("LIVE._contactQ");
+    return (after===before && cq==null) ? '그대로' : '!카운트 '+before+'→'+after;
+  });
+  T('[스윙] 을 누르면 그 공의 판정이 난다', ()=>{
+    const before=ev("LIVE.count().b+LIVE.count().s");
+    const sb=[...d.querySelectorAll('#decision button')].find(x=>/^스윙/.test(x.textContent.trim()));
+    if(!sb) return '!스윙 버튼 없음';
+    sb.dispatchEvent(new w.Event('pointerdown',{bubbles:true}));
     const after=ev("LIVE.count().b+LIVE.count().s");
     const cq=ev("LIVE._contactQ");
     const ended=ev("LIVE._contact===true||LIVE._forceRes!=null");
