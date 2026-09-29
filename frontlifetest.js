@@ -64,14 +64,19 @@ const J=s=>JSON.parse(ev('JSON.stringify('+s+')'));
   console.log('\n[열두 겨울]');
   const base=J("pfLgMean()");
   const log=[]; let postN=0, mgrChg=0, milMax=0, legendMgr=false, milReturn=false, jersey=0;
+  /* 신문은 60건까지만 남는다 — 끝에 한 번 읽으면 앞쪽 겨울 기사는 이미 밀려나 있다.
+     해마다 새로 나온 기사를 모은다 */
+  const heads=[];
   for(let i=0;i<12;i++){
     ev("pfRookiePool()");
     jersey=Math.max(jersey, ev("pfJerseyRev()"));
+    ev("(ST.pro.news||[]).forEach(x=>{ x._seen=1; })");
     ev("proNextYear()"); await wait(10);
+    J("(ST.pro.news||[]).filter(x=>!x._seen).map(x=>x.head)").forEach(h=>heads.push(h));
     const s=J(`(function(){ const F=pfState(); return {mil:Object.keys(F.mil||{}).length, done:Object.keys(F.milDone||{}).length, mlb:(F.mlb||[]).length,
       mg:Object.keys(ST.pro.mgrs||{}).filter(k=>k!==ST.pro.team).length, leg:Object.values(ST.pro.mgrs||{}).some(m=>m.from==='legend'),
       farm:(TBYID.wwzw.farm||[]).length}; })()`);
-    milMax=Math.max(milMax,s.mil); if(s.done>0) milReturn=true; postN=s.mlb; mgrChg=s.mg; if(s.leg) legendMgr=true;
+    milMax=Math.max(milMax,s.mil); if(s.done>0) milReturn=true; postN=Math.max(postN,s.mlb); mgrChg=s.mg; if(s.leg) legendMgr=true;
     log.push(s);
   }
   console.log('   '+log.map((s,i)=>(2028+i)+' 복무'+s.mil+'·전역'+s.done+'·MLB'+s.mlb+'·교체'+s.mg+'·우리2군'+s.farm).join(' | '));
@@ -80,9 +85,12 @@ const J=s=>JSON.parse(ev('JSON.stringify('+s+')'));
   T('전역자는 2군에서 다시 시작한다', ()=>{ const r=J(`(function(){ const F=pfState(); const ids=Object.keys(F.milDone||{}); let farm=0,n=0;
       ids.forEach(id=>{ const f=pfFind(id); if(f){ n++; if(f.p.farm) farm++; } }); return [n,farm]; })()`);
     return r[0]>0?(r[0]+'명 중 2군 '+r[1]+'명'):'!없다'; });
-  T('포스팅 — 누군가는 메이저에 갔다', ()=>postN>=1?postN+'명':'!없다');
+  /* 도전은 해마다 30% · 성공은 45~90% 라, 열두 해에 한 명도 못 가는 판이 있다(재 봤다).
+     도전 기사(「응찰 없어 잔류」)까지 센다 — 포스팅이 돌고 있는지가 보고 싶은 것이다 */
+  T('포스팅 — 메이저에 도전한 사람이 있다', ()=>{ const tr=heads.filter(h=>/메이저/.test(h)).length;
+    return (postN+tr)>=1?('진출 '+postN+'명 · 도전 기사 '+tr+'건'):'!없다'; });
   T('성적 나쁜 구단은 감독을 바꾼다', ()=>mgrChg>=2?mgrChg+'구단':'!'+mgrChg);
-  T('계약이 끝나면 재계약하거나 결별한다', ()=>{ const N=J("(ST.pro.news||[]).filter(x=>/재계약|결별|경질/.test(x.head)).map(x=>x.head)"); return N.length?N.length+'건 — '+N[0]:'!없다'; });
+  T('계약이 끝나면 재계약하거나 결별한다', ()=>{ const N=heads.filter(h=>/재계약|결별|경질/.test(h)); return N.length?N.length+'건 — '+N[0]:'!없다'; });
   T('잘린 감독은 재야로 간다', ()=>{ const n=ev("(ST.pro.mgrFree||[]).length"); return n>0?n+'명':'!0'; });
   T('우리 감독을 바꾸면 잔여 연봉을 낸다', ()=>{ const r=J(`(function(){ const F=stfState(); F.mgr.until=ST.pro.year+2; F.mgr.sal=5; F.mgrPool=null; F.cash=200;
       const before=F.cash, c=stfMgrPool().list[0], e=stfHireMgr(0); return {e, paid:Math.round((before-F.cash)*10)/10, cost:c.cost, name:F.mgr.name, until:F.mgr.until, y:ST.pro.year}; })()`);
@@ -90,6 +98,7 @@ const J=s=>JSON.parse(ev('JSON.stringify('+s+')'));
   T('레전드 출신 감독도 나온다', ()=>legendMgr?'나왔다':(ev("(pfState().legends||[]).length")>0?'레전드 '+ev("(pfState().legends||[]).length")+'명 대기':'!레전드 없음'));
   T('스타 유니폼 수입이 있다', ()=>jersey>0?'한 주 최대 '+jersey+'억':'!0');
   const last=J("pfLgMean()");
+  console.log('   [리그 평균 변화] '+['con','pow','eye','stf','ctl'].map(k=>k+' '+(last[k]-base[k]).toFixed(1)).join(' · '));
   T('열두 해 뒤에도 리그 평균이 그대로다(±4)', ()=>{ const ks=['con','pow','eye','stf','ctl']; const dd=ks.map(k=>last[k]-base[k]);
     return dd.every(x=>Math.abs(x)<=4)?ks.map((k,i)=>k+' '+(dd[i]>=0?'+':'')+dd[i].toFixed(1)).join(' · '):'!'+ks.map((k,i)=>k+' '+dd[i].toFixed(1)).join(' · '); });
   T('1군 인원이 모자라지 않는다', ()=>{ const n=J("TEAMS.map(t=>[t.players.length,t.pitchers.length])"); return n.every(x=>x[0]>=13&&x[1]>=11)?'최소 타자 '+Math.min(...n.map(x=>x[0]))+' · 투수 '+Math.min(...n.map(x=>x[1])):'!'+JSON.stringify(n); });

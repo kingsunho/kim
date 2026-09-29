@@ -9631,8 +9631,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.56.0';
-const APP_VERSION_NOTE = 'FM 프런트 — 명성 · 감독 · 상무 · 포스팅 · 뎁스표';
+const APP_VERSION = '3.57.0';
+const APP_VERSION_NOTE = '캐릭터 얼굴 — 사람마다 다르게';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9653,6 +9653,12 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.57.0', t:'캐릭터 얼굴 — 사람마다 다르게', items:[
+    '<b>캐릭터 얼굴을 새로 그렸다.</b> 예전엔 모두가 같은 얼굴이었다(반짝이 눈 · 볼터치 · 광택 헬멧). 이제 선수마다 턱 · 눈 · 눈썹 · 코 · 입 · 수염 · 피부색이 다르다 — 매서운 눈, 콩알 눈, 반쯤 감긴 눈, 주먹코, 각진 턱, 씩 웃는 입…',
+    '굵은 눈썹이 드디어 보인다 — 예전엔 모자챙 밑에 깔려서 한 번도 안 보였다',
+    '로비의 나도 내 얼굴로 선다. 헬멧 · 모자는 광택 덩어리 대신 무광에 이음선',
+    '프로 — 해가 갈수록 리그 투수만 조금씩 세지던 걸 고쳤다(12년에 구위 +2~4 → ±1)',
+  ]},
   {v:'3.56.0', t:'FM 프런트 — 명성 · 감독 · 상무 · 포스팅 · 뎁스표', items:[
     '<b>명성이 생겼다.</b> 실력 · 연차 · 태극마크 · 드래프트 순번으로 정해진다. 1라운드 출신이나 이름 있는 선수는 못해도 쉽게 안 잘린다(안고 간다)',
     '스타가 1군에 있으면 <b>유니폼이 잘 팔려서</b> 금고에 매주 돈이 더 들어온다',
@@ -18628,6 +18634,12 @@ function pfDevRoll(){
   if(F.devYear===y) return;
   F.devYear=y; if(!F.dev||typeof F.dev!=='object') F.dev={};
   if(!F.lgBase) F.lgBase=pfLgMean();                          // 첫 겨울 — 2026 명단 그대로의 주전 평균
+  /* [v3.57.0] 되돌리기 **뒤에** 일어나는 1 · 2군 정리(pfRosterBalance — 상무 전역자 · 신인 콜업)가
+     해마다 주전 평균을 한쪽으로 민다 — 투수 구위(stf)가 12년에 +2~+4 씩 올라 있었다
+     (frontlifetest 여섯 판을 재 봤다). 겨울 끝에서 잰 그 몫(F.lgDrift — pfYearRoll 끝)만큼 덜 되돌린다.
+     [버그 이력] 처음엔 겨울 **시작**에서 쟀다. 그 사이엔 은퇴(못하는 베테랑이 빠진다 → 평균 ↑)가
+     끼어 있어서 타자 평균을 해마다 깎아 12년에 −4 가 됐다 */
+  if(!F.lgDrift||typeof F.lgDrift!=='object') F.lgDrift={};
   const rng=makeRng(((ST.seed||1)*6151+y*29)>>>0);
   const ours=[];
   TEAMS.forEach(t=>{
@@ -18660,7 +18672,7 @@ function pfDevRoll(){
   /* 잠재까지 크는 신인(pfGrow 몫)도 같이 옮긴다 — 안 옮기면 신인만 절대값으로 커서 주전을 차지하고,
      되돌리기가 기존 선수만 해마다 깎는다(12년 만에 전원 12 가 됐다). 잠재도 같은 만큼 옮긴다 */
   const now=pfLgMean(), shift={};
-  Object.keys(now).forEach(k=>{ const sh=Math.round((F.lgBase[k]-now[k])*10)/10; if(Math.abs(sh)>=0.3) shift[k]=sh; });
+  Object.keys(now).forEach(k=>{ const sh=Math.round((F.lgBase[k]-(F.lgDrift[k]||0)-now[k])*10)/10; if(Math.abs(sh)>=0.3) shift[k]=sh; });
   if(Object.keys(shift).length){
     Object.keys(F.dev).forEach(id=>{ const f=pfFind(id); if(!f) return;
       pfDevKeys(f.p).forEach((k,i)=>{ if(shift[k]==null) return; const nv=Math.round(clamp(F.dev[id][i]+shift[k],12,90)); F.dev[id][i]=nv; f.p[k]=nv; }); });
@@ -18671,6 +18683,7 @@ function pfDevRoll(){
       sn.pot=Math.round(clamp(sn.pot+tot/ks.length,20,90));
       const f=pfFind(sn.id); if(f){ ks.forEach(k=>f.p[k]=sn[k]); f.p.pot=sn.pot; } });
   }
+  { const post=pfLgMean(); F.lgPost={}; Object.keys(post).forEach(k=>F.lgPost[k]=Math.round(post[k]*100)/100); }
   ours.forEach(x=>x.d=pfValue(x.p)-x.before);
   ours.sort((a,b)=>b.d-a.d);
   F.devLast={year:y, up:ours.filter(x=>x.d>=4).slice(0,3), down:ours.filter(x=>x.d<=-4).slice(-3).reverse()};
@@ -18944,6 +18957,10 @@ function pfYearRoll(){
   try{ pfDevRoll(); }catch(e){ try{ console.warn('pfDevRoll',e); }catch(e2){} }
   try{ pfRosterBalance(); }catch(e){ try{ console.warn('pfRosterBalance',e); }catch(e2){} }
   try{ pfCompactMoves(); }catch(e){}
+  /* 되돌린 뒤 정리가 평균을 얼마나 밀었나 — 다음 겨울 pfDevRoll 이 그만큼 덜 되돌린다 (반씩 쌓는다) */
+  try{ if(F.lgPost){ const e=pfLgMean(); if(!F.lgDrift||typeof F.lgDrift!=='object') F.lgDrift={};
+    Object.keys(e).forEach(k=>{ if(F.lgPost[k]==null) return;
+      F.lgDrift[k]=Math.round(clamp((F.lgDrift[k]||0)*0.5+(e[k]-F.lgPost[k])*0.5,-4,4)*100)/100; }); } }catch(e){}
 }
 
 /* ---- 화면 ---- */
@@ -20285,7 +20302,7 @@ function proTalkFace(cv, who, face){
     const mgr=(who==='{mgr}');
     /* [제보] "염경업 감독 모자가 T가 아니네 서울 쌍둥이팀인데" — 감독만 모자를 남색 민무늬로
        덮어써서 팀 글자(ltr)가 빠졌었다. 모자 · 글자는 팀 것 그대로, 윗도리만 팀색 점퍼로 */
-    mvSD(g, 90, 232, 210, mgr?Object.assign({},u,{sh:u.cap,pants:'#2b3140',gl:'#333'}):u, 'talk', false, {face});
+    mvSD(g, 90, 232, 210, mgr?Object.assign({},u,{sh:u.cap,pants:'#2b3140',gl:'#333'}):u, 'talk', false, {face, look:sdLookOf({id:String(who||'')})});
   }catch(e){}
 }
 function proTalkShow(T, done){
@@ -25393,8 +25410,10 @@ function lobbyPaint(cv){
     const isPit=!!(ST&&(ST.role==='pit'));
     const feet=off+vh*0.80, hgt=vh*0.60, x=MVW*0.44;
     mvShadow(g, x, feet, hgt*1.0);
-    if(isPit) mvSD(g, x, feet, hgt*0.92, U, 'idle', false, {no:(pl&&pl.no!=null)?pl.no:null});
-    else mvSD(g, x, feet, hgt, U, 'stand', true, {front:true, no:(pl&&pl.no!=null)?pl.no:null});
+    /* [v3.57.0] 내 얼굴도 내 것이다(sdLookOf) — 예전엔 로비만 기본 얼굴이었다 */
+    const lk=(typeof sdLookOf==='function')?sdLookOf(pl||(me?{id:me}:null)):null;
+    if(isPit) mvSD(g, x, feet, hgt*0.92, U, 'idle', false, {no:(pl&&pl.no!=null)?pl.no:null, look:lk});
+    else mvSD(g, x, feet, hgt, U, 'stand', true, {front:true, no:(pl&&pl.no!=null)?pl.no:null, look:lk});
     g.restore();
   }catch(e){ try{ g.restore(); }catch(e2){} return false; }
   return true;
@@ -35686,8 +35705,26 @@ function sdLookOf(p){
   const f=r();
   L.form = f<0.58?'tq':(f<0.80?'over':(f<0.93?'side':'sub'));
   L.kick = r()<0.28?'high':'std';
+  /* [v3.57.0] 얼굴 — 사람마다 다르게. 위의 뽑기 순서는 그대로 두고 뒤에 붙였다
+     (그래야 예전에 긴 머리였던 사람이 계속 긴 머리다) */
+  L.jaw  = pick(['round','round','square','square','chin']);
+  L.fw   = Math.round((0.94+r()*0.12)*100)/100;
+  L.fh   = Math.round((0.95+r()*0.08)*100)/100;
+  L.eyes = pick(['sharp','sharp','bead','bead','round','sleepy','squint']);
+  L.brow = pick(['thick','thick','angle','angle','flat','arch','bushy','uni']);
+  L.nose = pick(['dot','dot','button','big','big']);
+  L.mouth= pick(['smirk','smirk','smile','flat','teeth','grin','smile','open']);
+  const b2=r();
+  if(L.beard==='none') L.beard = b2<0.06?'mous':(b2<0.10?'full':'none');
+  L.side = r()<0.30;
+  L.ears = r()<0.15?'big':'std';
+  const sk=r();
+  L.skin = sk<0.30?'#f8d6b4':(sk<0.70?'#efc49c':(sk<0.92?'#e0aa7e':'#bf875c'));
+  L.hairC= (star&&r()<0.25)?'#8a5a2e':null;               // 스타는 가끔 염색
   return L;
 }
+/* 이름 없는 사람(로비의 나 말고 · 컷인 코치 등)이 쓰는 기본 얼굴 — 매서운 눈 · 굵은 눈썹 · 한쪽 입꼬리 */
+const SD_HERO={jaw:'round',fw:1,fh:1,eyes:'sharp',brow:'thick',nose:'button',mouth:'smirk',beard:'none',hair:'short',eye:'none',ears:'std'};
 /* 사람 하나. (x,y) 발바닥 가운데, h 키(논리 px). pose 는 기존 이름 그대로.
    o.no 등번호 · o.swT 스윙 진행 · o.swQ 얼마나 잘 맞았나              */
 function mvSD(g,x,y,h,u,pose,flip,o){
@@ -35701,8 +35738,12 @@ function mvSD(g,x,y,h,u,pose,flip,o){
   try{ const T=g.getTransform(); dev=Math.hypot(T.a,T.b)||1; }catch(e){ dev=s*3; }
   const LW=Math.max(1.3,Math.min(5.5,dev*2.3))/dev;
   g.lineJoin='round'; g.lineCap='round';
-  const D={g,P,LW,dir,o,U:u||{}};
   const LK=o.look||null;
+  /* [v3.57.0] 피부색 · 머리색도 사람마다 */
+  const PP=(LK&&(LK.skin||LK.hairC))?Object.assign({},P,
+    LK.skin?{skin:LK.skin, skinD:sdMix(LK.skin,'#8a4a30',0.28)}:{},
+    LK.hairC?{hair:LK.hairC, hairL:sdMix(LK.hairC,'#ffffff',0.2)}:{}):P;
+  const D={g,P:PP,LW,dir,o,U:u||{}};
   if(LK && LK.build && LK.build!==1) g.scale(LK.build,1);        // 체격 — 옆으로 넓게/좁게
   try{
     if(pose==='stand'||pose==='swing'){
@@ -35980,11 +36021,12 @@ function sdBatHead(D,C){
   sdCel(D,helm,P.team,()=>{
       g.fillStyle=P.teamD; g.beginPath(); g.rect(cx-40,cy-40,80,80);
       g.ellipse(cx+6,cy-8,28,25,0,0,Math.PI*2); g.fill('evenodd'); },
-    ()=>{ // 광택
-      g.fillStyle='rgba(255,255,255,.55)'; g.beginPath();
-      g.ellipse(cx+10,cy-17,10,5.2,-0.45,0,Math.PI*2); g.fill();
-      g.fillStyle='rgba(255,255,255,.85)'; g.beginPath();
-      g.ellipse(cx+18,cy-11,2.4,1.6,-0.45,0,Math.PI*2); g.fill();
+    ()=>{ /* [v3.57.0] 광택 덩어리(흰 타원 두 개)를 뺐다 — 스티커처럼 보였다.
+             무광 헬멧에 빛 받는 쪽 테두리만 한 줄 */
+      g.strokeStyle=P.teamL; g.lineWidth=2.2; g.globalAlpha=0.7; g.beginPath();
+      g.ellipse(cx,cy-3,26,23.5,0,Math.PI*1.45,Math.PI*1.9); g.stroke(); g.globalAlpha=1;
+      // 귀 구멍 자리 — 헬멧 옆 통풍구
+      g.fillStyle=P.teamD; g.beginPath(); g.arc(cx-2,cy-24,1.6,0,Math.PI*2); g.arc(cx+8,cy-23,1.6,0,Math.PI*2); g.fill();
       // 챙 끝 — 마운드 쪽(오른쪽)으로 살짝 보인다
       g.fillStyle=P.teamD; g.beginPath(); g.ellipse(cx+26,cy+4,8,4,-0.3,0,Math.PI*2); g.fill();
     });
@@ -36150,115 +36192,181 @@ function sdFront(D,pose){
 /* 얼굴 — 모자 · 큰 눈 · 발그레한 뺨 */
 function sdFace(D,C){
   const g=D.g, P=D.P, cx=C[0], cy=C[1];
-  const LK=D.o.look;
+  /* [v3.57.0] 얼굴을 새로 그렸다.
+     [요청] "캐릭터좀 바꾸자 뭐 마구마구처럼 특색있는 것도 아니고 너무 ai티가 나서 별로야"
+     예전 얼굴은 **모두가 똑같았다** — 반짝이 눈(흰 점 두 개) · 볼터치 동그라미 ·
+     모자 광택 덩어리. 스티커 캐릭터 공식 그대로라 누가 봐도 찍어낸 그림이었다.
+     눈썹은 아예 챙 밑에 깔려서 **한 번도 안 보였다.**
+     이제 사람마다 얼굴이 다르다(sdLookOf) — 턱 · 눈 · 눈썹 · 코 · 입 · 수염 · 피부색.
+     반짝이 · 볼터치 · 광택은 뺐다. 대신 굵은 눈썹과 입꼬리로 성깔을 준다.       */
+  const LK=D.o.look||SD_HERO;
+  const fw=LK.fw||1, fh=LK.fh||1;
+  const RX=25*fw, RY=23*fh, fy=cy+3;
   /* 긴 머리 · 파마 — 얼굴 뒤로 모자 밑에서 삐져나온다 */
-  if(LK && LK.hair==='long'){
-    sdCel(D,()=>{ g.beginPath(); g.moveTo(cx-27,cy-6); g.quadraticCurveTo(cx-33,cy+18,cx-22,cy+28);
-      g.lineTo(cx+22,cy+28); g.quadraticCurveTo(cx+33,cy+18,cx+27,cy-6); g.closePath(); },P.hair);
-  } else if(LK && LK.hair==='perm'){
+  if(LK.hair==='long'){
+    sdCel(D,()=>{ g.beginPath(); g.moveTo(cx-RX-2,cy-6); g.quadraticCurveTo(cx-RX-8,cy+18,cx-RX+3,cy+28);
+      g.lineTo(cx+RX-3,cy+28); g.quadraticCurveTo(cx+RX+8,cy+18,cx+RX+2,cy-6); g.closePath(); },P.hair);
+  } else if(LK.hair==='perm'){
     [[-27,4],[-28,14],[-22,23],[27,4],[28,14],[22,23]].forEach(([dx,dy])=>
-      sdCel(D,()=>{ g.beginPath(); g.arc(cx+dx,cy+dy,6.4,0,Math.PI*2); },P.hair));
+      sdCel(D,()=>{ g.beginPath(); g.arc(cx+dx*fw,cy+dy,6.4,0,Math.PI*2); },P.hair));
   }
-  // 귀
-  [[-1],[1]].forEach(([k])=>sdCel(D,()=>{ g.beginPath(); g.ellipse(cx+k*24.5,cy+6,4.8,6,0,0,Math.PI*2); },P.skin,
-    ()=>{ g.fillStyle=P.skinD; g.beginPath(); g.ellipse(cx+k*24.5,cy+6.5,2.2,3.2,0,0,Math.PI*2); g.fill(); }));
-  // 얼굴
-  const face=()=>{ g.beginPath(); g.ellipse(cx,cy+3,25,23,0,0,Math.PI*2); };
+  // 귀 — 큰 귀도 있다
+  const er=LK.ears==='big'?1.25:1;
+  [-1,1].forEach(k=>sdCel(D,()=>{ g.beginPath(); g.ellipse(cx+k*(RX-0.5),cy+7,4.8*er,6*er,0,0,Math.PI*2); },P.skin,
+    ()=>{ g.fillStyle=P.skinD; g.beginPath(); g.ellipse(cx+k*(RX-0.5),cy+7.5,2.2*er,3.2*er,0,0,Math.PI*2); g.fill(); }));
+  // 얼굴 — 턱 모양이 셋이다(둥근 · 각진 · 뾰족)
+  const face=()=>{ g.beginPath();
+    if(LK.jaw==='square'){
+      g.moveTo(cx-RX,fy-4);
+      g.ellipse(cx,fy-4,RX,RY-4,0,Math.PI,Math.PI*2);
+      g.lineTo(cx+RX,fy+6); g.quadraticCurveTo(cx+RX-1,fy+RY-2,cx+RX*0.55,fy+RY);
+      g.lineTo(cx-RX*0.55,fy+RY); g.quadraticCurveTo(cx-RX+1,fy+RY-2,cx-RX,fy+6); g.closePath();
+    } else if(LK.jaw==='chin'){
+      g.ellipse(cx,fy-2,RX,RY-2,0,Math.PI*0.92,Math.PI*2.08);
+      g.quadraticCurveTo(cx+RX*0.55,fy+RY+1,cx,fy+RY+2); g.quadraticCurveTo(cx-RX*0.55,fy+RY+1,cx-RX*0.98,fy+4); g.closePath();
+    } else g.ellipse(cx,fy,RX,RY,0,0,Math.PI*2);
+  };
   sdCel(D,face,P.skin,()=>{
+      // 셀 그림자 — 왼쪽 아래 한 겹 + 모자챙이 떨군 띠(딱 끊어지게)
       g.fillStyle=P.skinD; g.beginPath(); g.rect(cx-40,cy-40,80,80);
-      g.ellipse(cx+4,cy+1,25,23,0,0,Math.PI*2); g.fill('evenodd');
-      // 모자챙 그림자
-      g.fillStyle='rgba(170,90,60,.30)'; g.beginPath(); g.ellipse(cx,cy-9,30,9,0,0,Math.PI*2); g.fill(); });
-  // 옆머리
+      g.ellipse(cx+4,fy-2,RX,RY,0,0,Math.PI*2); g.fill('evenodd');
+      g.beginPath(); g.moveTo(cx-RX-2,cy-4); g.lineTo(cx+RX+2,cy-4); g.lineTo(cx+RX+2,cy+1.2);
+      g.quadraticCurveTo(cx,cy+4.2,cx-RX-2,cy+1.2); g.closePath(); g.fill(); });
+  // 옆머리 · 구레나룻
   g.fillStyle=P.hair;
-  g.beginPath(); g.moveTo(cx-24,cy-6); g.quadraticCurveTo(cx-22,cy+4,cx-19,cy+6); g.lineTo(cx-17,cy-6); g.closePath(); g.fill();
-  g.beginPath(); g.moveTo(cx+24,cy-6); g.quadraticCurveTo(cx+22,cy+4,cx+19,cy+6); g.lineTo(cx+17,cy-6); g.closePath(); g.fill();
-  /* 표정 — o.face. 컷인에서만 바뀐다.
-       grit  이를 악문다(>< 눈, 벌린 입)    — 몸 날릴 때
-       shock 동그란 눈, 오 벌린 입           — 실책
-       joy   웃는 눈(^^), 활짝 웃는 입       — 호수비·세이프 뒤  */
+  const sb=LK.side?12:6;
+  [-1,1].forEach(k=>{ g.beginPath(); g.moveTo(cx+k*(RX-1),cy-6); g.quadraticCurveTo(cx+k*(RX-3),cy+sb*0.7,cx+k*(RX-5.5),cy+sb);
+    g.lineTo(cx+k*(RX-8),cy-6); g.closePath(); g.fill(); });
   const xp=D.o.face;
+  const ink='#1d1616', ey=cy+9, ex=9.6*fw;
+  g.lineCap='round'; g.lineJoin='round';
+  /* 눈 */
   if(xp==='grit'){
-    g.strokeStyle='#231b1a'; g.lineWidth=2.2; g.lineCap='round'; g.lineJoin='round';
-    g.beginPath(); g.moveTo(cx-13,cy+2); g.lineTo(cx-7,cy+5); g.lineTo(cx-13,cy+8);
-    g.moveTo(cx+13,cy+2); g.lineTo(cx+7,cy+5); g.lineTo(cx+13,cy+8); g.stroke();
-  } else if(xp==='joy'){
-    g.strokeStyle='#231b1a'; g.lineWidth=2.2; g.lineCap='round';
-    g.beginPath(); g.arc(cx-9.5,cy+7,3.6,Math.PI*1.1,Math.PI*1.9);
-    g.moveTo(cx+13.1,cy+7); g.arc(cx+9.5,cy+7,3.6,Math.PI*1.1,Math.PI*1.9); g.stroke();
+    g.strokeStyle=ink; g.lineWidth=2.4;
+    g.beginPath(); g.moveTo(cx-ex-4,ey-3); g.lineTo(cx-ex+2,ey); g.lineTo(cx-ex-4,ey+3);
+    g.moveTo(cx+ex+4,ey-3); g.lineTo(cx+ex-2,ey); g.lineTo(cx+ex+4,ey+3); g.stroke();
+  } else if(xp==='joy' || (!xp && LK.eyes==='squint')){
+    g.strokeStyle=ink; g.lineWidth=2.4;
+    [-1,1].forEach(k=>{ g.beginPath(); g.arc(cx+k*ex,ey+2,3.8,Math.PI*1.12,Math.PI*1.88); g.stroke(); });
+  } else if(xp==='shock'){
+    [-1,1].forEach(k=>{ sdCel(D,()=>{ g.beginPath(); g.ellipse(cx+k*ex,ey,4,5,0,0,Math.PI*2); },'#ffffff');
+      g.fillStyle=ink; g.beginPath(); g.arc(cx+k*ex,ey+0.5,1.5,0,Math.PI*2); g.fill(); });
   } else {
-    const er=xp==='shock'?1.25:1;
-    [-9.5,9.5].forEach(ex=>{
-      g.fillStyle='#231b1a'; g.beginPath(); g.ellipse(cx+ex,cy+5,3.8*er,5.2*(xp==='shock'?1.05:1),0,0,Math.PI*2); g.fill();
-      if(xp==='shock'){ g.fillStyle='#ffffff'; g.beginPath(); g.ellipse(cx+ex,cy+5,2.6,3.6,0,0,Math.PI*2); g.fill();
-        g.fillStyle='#231b1a'; g.beginPath(); g.arc(cx+ex,cy+5.5,1.5,0,Math.PI*2); g.fill(); return; }
-      g.fillStyle='#5a3a2c'; g.beginPath(); g.ellipse(cx+ex,cy+7,2.6,2.8,0,0,Math.PI*2); g.fill();
-      g.fillStyle='#ffffff'; g.beginPath(); g.arc(cx+ex+1.2,cy+2.9,1.5,0,Math.PI*2); g.fill();
-      g.beginPath(); g.arc(cx+ex-1.2,cy+7.6,0.7,0,Math.PI*2); g.fill();
+    const E=LK.eyes||'sharp';
+    [-1,1].forEach(k=>{
+      const x=cx+k*ex;
+      if(E==='bead'){                          // 콩알 눈 — 작고 까맣다
+        g.fillStyle=ink; g.beginPath(); g.ellipse(x,ey+0.5,2.1,2.9,0,0,Math.PI*2); g.fill();
+      } else if(E==='round'){                  // 흰자 있는 동그란 눈 — 눈동자가 가운데로 몰린다
+        sdCel(D,()=>{ g.beginPath(); g.ellipse(x,ey,4,4.6,0,0,Math.PI*2); },'#ffffff');
+        g.fillStyle=ink; g.beginPath(); g.arc(x-k*0.9,ey+0.8,2.1,0,Math.PI*2); g.fill();
+      } else if(E==='sleepy'){                 // 반쯤 감긴 눈 — 두꺼운 윗꺼풀이 일자로 덮는다
+        g.fillStyle=ink; g.beginPath(); g.ellipse(x,ey+1.2,2.9,2.4,0,0,Math.PI); g.fill();
+        g.strokeStyle=ink; g.lineWidth=2.2; g.beginPath(); g.moveTo(x-4.4,ey+0.6); g.lineTo(x+4.4,ey+0.6); g.stroke();
+      } else {                                 // 매서운 눈 — 흰자에 눈동자, 윗꺼풀이 안쪽으로 처진다
+        const eye=()=>{ g.beginPath(); g.moveTo(x-k*4.8,ey-1.4); g.quadraticCurveTo(x,ey-3.2,x+k*4.6,ey+0.6);
+          g.quadraticCurveTo(x,ey+4.4,x-k*4.8,ey-1.4); g.closePath(); };
+        eye(); g.fillStyle='#ffffff'; g.fill();
+        g.save(); eye(); g.clip(); g.fillStyle=ink; g.beginPath(); g.arc(x+k*0.4,ey+0.9,2.5,0,Math.PI*2); g.fill(); g.restore();
+        g.strokeStyle=ink; g.lineWidth=2.1; g.beginPath(); g.moveTo(x-k*5.2,ey-1.8); g.quadraticCurveTo(x,ey-3.6,x+k*5,ey+0.8); g.stroke();
+      }
     });
   }
-  // 눈썹 — 결연하게 (놀라면 올라간다)
-  g.strokeStyle=P.hair; g.lineWidth=1.8; g.lineCap='round';
-  const by=xp==='shock'?-3:0;
-  g.beginPath(); g.moveTo(cx-14,cy-3+by); g.lineTo(cx-6,cy-1.6+(xp==='grit'?1.2:by));
-  g.moveTo(cx+14,cy-3+by); g.lineTo(cx+6,cy-1.6+(xp==='grit'?1.2:by)); g.stroke();
-  // 뺨
-  g.fillStyle=P.blush;
-  g.beginPath(); g.ellipse(cx-15,cy+13,4.6,2.6,0,0,Math.PI*2); g.fill();
-  g.beginPath(); g.ellipse(cx+15,cy+13,4.6,2.6,0,0,Math.PI*2); g.fill();
-  /* 아이블랙 — 눈 밑 검은 패치(햇빛 반사 막는 그거) */
-  if(LK && LK.eye==='black'){ g.fillStyle='#15171c';
-    g.beginPath(); mvRR(g,cx-14,cy+10.5,9,2.8,1); g.fill();
-    g.beginPath(); mvRR(g,cx+5,cy+10.5,9,2.8,1); g.fill(); }
-  /* 선글라스 — 스포츠 고글. 렌즈에 하늘이 비친다 */
-  if(LK && LK.eye==='shades'){
-    g.fillStyle='#10131a'; g.beginPath(); mvRR(g,cx-18,cy+1.5,16,10,4.5); g.fill();
-    g.beginPath(); mvRR(g,cx+2,cy+1.5,16,10,4.5); g.fill();
-    g.fillRect(cx-3,cy+4,6,2);
-    g.fillStyle='rgba(120,200,255,.6)'; g.beginPath(); mvRR(g,cx-15.5,cy+3,6,2.6,1.2); g.fill();
-    g.beginPath(); mvRR(g,cx+4.5,cy+3,6,2.6,1.2); g.fill(); }
-  /* 수염 */
-  if(LK && LK.beard==='stubble'){ g.fillStyle='rgba(40,30,28,.22)'; g.beginPath(); g.ellipse(cx,cy+19,13,6,0,0,Math.PI*2); g.fill(); }
-  if(LK && LK.beard==='goatee'){ g.fillStyle=P.hair; g.beginPath(); g.moveTo(cx-5,cy+19); g.quadraticCurveTo(cx,cy+26,cx+5,cy+19); g.closePath(); g.fill(); }
-  // 코 · 입
-  g.fillStyle=P.skinD; g.beginPath(); g.ellipse(cx,cy+11,1.5,1.1,0,0,Math.PI*2); g.fill();
+  /* 눈썹 — 이게 성깔이다. 머리색으로 굵게 칠한다(선이 아니라 덩어리) */
+  const B=LK.brow||'thick', by=(xp==='shock')?-2.6:0;
+  g.fillStyle=P.hair;
+  [-1,1].forEach(k=>{
+    const o=cx+k*(ex+5.6), i=cx+k*(ex-4.6), y0=ey-5.2+by;
+    let tIn=0, th=2.6, bend=0;
+    if(B==='angle' || xp==='grit'){ tIn=2.8; th=3.0; }
+    else if(B==='flat'){ th=1.8; }
+    else if(B==='arch'){ bend=-2.2; th=2.2; }
+    else if(B==='bushy'){ th=3.8; tIn=0.8; }
+    else { tIn=1.3; th=3.0; }                                  // thick
+    if(xp==='shock'){ tIn=-1.2; bend=-1.6; }
+    g.beginPath(); g.moveTo(o,y0); g.quadraticCurveTo((o+i)/2,y0+bend-0.6,i,y0+tIn);
+    g.lineTo(i,y0+tIn+th*0.8); g.quadraticCurveTo((o+i)/2,y0+bend+th,o,y0+th*0.6); g.closePath(); g.fill();
+    if(B==='bushy'){ g.beginPath(); g.moveTo(o+k*0.5,y0+0.4); g.lineTo(o-k*1.6,y0-1.6); g.lineTo(o-k*2.8,y0+0.2); g.fill(); }
+  });
+  if(LK.brow==='uni'){ g.fillRect(cx-3,ey-4.8+by,6,1.8); }
+  /* 아이블랙 · 선글라스 */
+  if(LK.eye==='black'){ g.fillStyle='#15171c';
+    g.beginPath(); mvRR(g,cx-ex-4.5,ey+4.8,9,2.8,1); g.fill();
+    g.beginPath(); mvRR(g,cx+ex-4.5,ey+4.8,9,2.8,1); g.fill(); }
+  if(LK.eye==='shades'){
+    g.fillStyle='#10131a'; g.beginPath(); mvRR(g,cx-ex-8,ey-4,16,9.5,4.5); g.fill();
+    g.beginPath(); mvRR(g,cx+ex-8,ey-4,16,9.5,4.5); g.fill();
+    g.fillRect(cx-3,ey-1.5,6,2);
+    g.fillStyle='rgba(120,200,255,.55)'; g.beginPath(); mvRR(g,cx-ex-5.5,ey-2.6,6,2.4,1.2); g.fill();
+    g.beginPath(); mvRR(g,cx+ex-5.5,ey-2.6,6,2.4,1.2); g.fill(); }
+  /* 코 — 점 · 단추 · 주먹코 */
+  const ny=cy+15;
+  if(LK.nose==='big'){
+    sdCel(D,()=>{ g.beginPath(); g.ellipse(cx+0.5,ny,4.4,3.4,0,0,Math.PI*2); },P.skin,
+      ()=>{ g.fillStyle=P.skinD; g.beginPath(); g.ellipse(cx-1.5,ny+1.6,4,2.4,0,0,Math.PI*2); g.fill(); });
+  } else if(LK.nose==='button'){
+    g.strokeStyle=P.skinDD||P.skinD; g.lineWidth=1.5; g.beginPath(); g.arc(cx,ny-0.5,2.6,Math.PI*0.15,Math.PI*0.85); g.stroke();
+  } else { g.fillStyle=P.skinD; g.beginPath(); g.ellipse(cx,ny,1.7,1.2,0,0,Math.PI*2); g.fill(); }
+  /* 수염 — 입보다 먼저(입이 수염 위로 보인다) */
+  const my=cy+20.5;
+  if(LK.beard==='stubble'){ g.save(); face(); g.clip(); g.fillStyle='rgba(40,30,28,.20)';
+    g.beginPath(); g.ellipse(cx,fy+RY-2,RX*0.62,9,0,0,Math.PI*2); g.fill(); g.restore(); }
+  if(LK.beard==='full'){ g.save(); face(); g.clip(); g.fillStyle=P.hair;
+    g.beginPath(); g.moveTo(cx-RX,cy+8); g.quadraticCurveTo(cx-RX*0.7,my+1,cx-5,my-1.2); g.lineTo(cx+5,my-1.2);
+    g.quadraticCurveTo(cx+RX*0.7,my+1,cx+RX,cy+8); g.lineTo(cx+RX,cy+40); g.lineTo(cx-RX,cy+40); g.closePath(); g.fill(); g.restore(); }
+  if(LK.beard==='goatee'){ g.fillStyle=P.hair; g.beginPath(); g.moveTo(cx-5,my+2.6); g.quadraticCurveTo(cx,my+10,cx+5,my+2.6); g.closePath(); g.fill(); }
+  if(LK.beard==='mous'||LK.beard==='full'){ g.fillStyle=P.hair; g.beginPath(); g.moveTo(cx,my-3.2);
+    g.quadraticCurveTo(cx-6.5,my-3.6,cx-7.4,my); g.quadraticCurveTo(cx-3.2,my-1.8,cx,my-1.6);
+    g.quadraticCurveTo(cx+3.2,my-1.8,cx+7.4,my); g.quadraticCurveTo(cx+6.5,my-3.6,cx,my-3.2); g.fill(); }
+  /* 입 */
+  const M=LK.mouth||'smirk', lip='#6e2f28';
+  g.strokeStyle=lip; g.lineWidth=1.6;
   if(xp==='grit'){
-    sdCel(D,()=>{ g.beginPath(); mvRR(g,cx-5,cy+13.5,10,4.6,1.6); },'#ffffff');
-    g.strokeStyle='#8a4a3a'; g.lineWidth=0.7; g.beginPath(); g.moveTo(cx-4.6,cy+15.8); g.lineTo(cx+4.6,cy+15.8); g.stroke();
+    sdCel(D,()=>{ g.beginPath(); mvRR(g,cx-5.5,my-2,11,5,1.6); },'#ffffff');
+    g.lineWidth=0.7; g.beginPath(); g.moveTo(cx-5,my+0.5); g.lineTo(cx+5,my+0.5); g.stroke();
   } else if(xp==='shock'){
-    sdCel(D,()=>{ g.beginPath(); g.ellipse(cx,cy+16.5,3,3.8,0,0,Math.PI*2); },'#7a2e2a');
-  } else if(xp==='joy'){
-    sdCel(D,()=>{ g.beginPath(); g.moveTo(cx-5.5,cy+14); g.quadraticCurveTo(cx,cy+22,cx+5.5,cy+14); g.closePath(); },'#7a2e2a');
-  } else {
-    g.strokeStyle='#8a4a3a'; g.lineWidth=1.3;
-    g.beginPath(); g.moveTo(cx-3.2,cy+16); g.quadraticCurveTo(cx,cy+17.6,cx+3.2,cy+16); g.stroke();
+    sdCel(D,()=>{ g.beginPath(); g.ellipse(cx,my+1,3,3.8,0,0,Math.PI*2); },lip);
+  } else if(xp==='joy' || M==='grin'){
+    sdCel(D,()=>{ g.beginPath(); g.moveTo(cx-6.5,my-1.6); g.quadraticCurveTo(cx,my-0.4,cx+6.5,my-1.6);
+      g.quadraticCurveTo(cx+4,my+6.5,cx,my+6.5); g.quadraticCurveTo(cx-4,my+6.5,cx-6.5,my-1.6); g.closePath(); },lip,
+      ()=>{ g.fillStyle='#ffffff'; g.fillRect(cx-7,my-2,14,2.6); });
+  } else if(M==='teeth'){                      // 씩 — 한쪽으로 이를 드러낸다
+    sdCel(D,()=>{ g.beginPath(); g.moveTo(cx-5,my); g.quadraticCurveTo(cx+1,my+2.6,cx+6.5,my-2.2);
+      g.quadraticCurveTo(cx+3,my+4.8,cx-5,my); g.closePath(); },'#ffffff');
+  } else if(M==='flat'){
+    g.beginPath(); g.moveTo(cx-4,my); g.lineTo(cx+4,my); g.stroke();
+  } else if(M==='smile'){                     // 입꼬리 둘 다 살짝 — 여유 있는 웃음
+    g.beginPath(); g.moveTo(cx-4.6,my-1); g.quadraticCurveTo(cx,my+2.8,cx+4.6,my-1); g.stroke();
+  } else if(M==='open'){
+    sdCel(D,()=>{ g.beginPath(); g.ellipse(cx,my+0.6,3.4,2.4,0,0,Math.PI*2); },lip);
+  } else {                                     // smirk — 한쪽 입꼬리만 올라간다
+    g.beginPath(); g.moveTo(cx-4.5,my+0.4); g.quadraticCurveTo(cx+1,my+1.8,cx+5,my-1.8); g.stroke();
   }
-  // 모자 — 둥근 크라운
+  // 모자 — 둥근 크라운. 광택 덩어리 대신 판 이음선 두 줄 · 꼭지 단추
   const crown=()=>{ g.beginPath();
-    g.ellipse(cx,cy-9,27.5,24,0,Math.PI,Math.PI*2);
-    g.quadraticCurveTo(cx+27.5,cy-3,cx+25,cy-2.5); g.lineTo(cx-25,cy-2.5);
-    g.quadraticCurveTo(cx-27.5,cy-3,cx-27.5,cy-9); g.closePath(); };
+    g.ellipse(cx,cy-9,27.5*Math.max(1,fw),24,0,Math.PI,Math.PI*2);
+    g.quadraticCurveTo(cx+27.5*Math.max(1,fw),cy-3,cx+25*Math.max(1,fw),cy-2.5); g.lineTo(cx-25*Math.max(1,fw),cy-2.5);
+    g.quadraticCurveTo(cx-27.5*Math.max(1,fw),cy-3,cx-27.5*Math.max(1,fw),cy-9); g.closePath(); };
   sdCel(D,crown,P.team,()=>{
       g.fillStyle=P.teamD; g.beginPath(); g.rect(cx-40,cy-50,80,60);
-      g.ellipse(cx+6,cy-13,26,22,0,0,Math.PI*2); g.fill('evenodd'); },
-    ()=>{ g.fillStyle='rgba(255,255,255,.45)'; g.beginPath();
-      g.ellipse(cx+10,cy-24,9,4.4,-0.3,0,Math.PI*2); g.fill();
-      // 이음선
-      g.strokeStyle=P.teamD; g.lineWidth=0.9; g.beginPath();
-      g.moveTo(cx,cy-33); g.quadraticCurveTo(cx+1,cy-18,cx,cy-3); g.stroke(); });
+      g.ellipse(cx+7,cy-12,26,23,0,0,Math.PI*2); g.fill('evenodd'); },
+    ()=>{ g.strokeStyle=P.teamD; g.lineWidth=1; g.beginPath();
+      g.moveTo(cx-9,cy-32); g.quadraticCurveTo(cx-15,cy-17,cx-14,cy-3);
+      g.moveTo(cx+9,cy-32); g.quadraticCurveTo(cx+15,cy-17,cx+14,cy-3); g.stroke(); });
+  sdCel(D,()=>{ g.beginPath(); g.ellipse(cx,cy-32.6,3.6,1.8,0,0,Math.PI*2); },P.teamD);
   // 모자 앞 — 팀 글자가 있으면 글자 하나, 없으면(사회인 · 고교) 흰 동그라미
   const U=D.U||{};
-  if(U.ltr){ g.save(); g.translate(cx,cy-15.5); g.scale(D.dir,1);
+  if(U.ltr){ g.save(); g.translate(cx,cy-16); g.scale(D.dir,1);
     g.font='900 17px Georgia, "Times New Roman", serif'; g.textAlign='center'; g.textBaseline='middle';
     g.lineJoin='round'; g.lineWidth=2.4; g.strokeStyle=P.teamD; g.strokeText(U.ltr,0,0.5);
     g.fillStyle=U.lc||'#ffffff'; g.fillText(U.ltr,0,0.5); g.restore(); }
   else { sdCel(D,()=>{ g.beginPath(); g.arc(cx,cy-16,5.2,0,Math.PI*2); },'#ffffff');
     g.fillStyle=P.team; g.beginPath(); g.arc(cx,cy-16,2.4,0,Math.PI*2); g.fill(); }
-  // 챙 — 카메라 쪽으로 튀어나온다
-  sdCel(D,()=>{ g.beginPath(); g.ellipse(cx,cy-2.5,26,5.6,0,0,Math.PI*2); },P.teamD,null,
-    ()=>{ g.fillStyle=P.team; g.beginPath(); g.ellipse(cx+2,cy-4.2,22,3.2,0,0,Math.PI*2); g.fill(); });
+  // 챙 — 얇게. 두꺼우면 눈썹을 덮는다(예전엔 눈썹이 한 번도 안 보였다)
+  sdCel(D,()=>{ g.beginPath(); g.ellipse(cx,cy-3.2,26.5*Math.max(1,fw),4.2,0,0,Math.PI*2); },P.teamD,null,
+    ()=>{ g.fillStyle=P.team; g.beginPath(); g.ellipse(cx+2,cy-4.4,22*Math.max(1,fw),2.4,0,0,Math.PI*2); g.fill(); });
   /* 목걸이 — 금줄 하나 */
-  if(LK && LK.chain){ g.strokeStyle='#e8c14a'; g.lineWidth=1.6;
+  if(LK.chain){ g.strokeStyle='#e8c14a'; g.lineWidth=1.6;
     g.beginPath(); g.moveTo(cx-10,cy+25); g.quadraticCurveTo(cx,cy+33,cx+10,cy+25); g.stroke();
     g.fillStyle='#ffd15c'; g.beginPath(); g.arc(cx,cy+31.5,1.9,0,Math.PI*2); g.fill(); }
 }
@@ -36317,9 +36425,7 @@ function sdCapBack(D,C){
   sdCel(D,crown,P.team,()=>{
       g.fillStyle=P.teamD; g.beginPath(); g.rect(cx-40,cy-50,80,60);
       g.ellipse(cx+6,cy-13,26,22,0,0,Math.PI*2); g.fill('evenodd'); },
-    ()=>{ g.fillStyle='rgba(255,255,255,.35)'; g.beginPath();
-      g.ellipse(cx+10,cy-24,9,4.4,-0.3,0,Math.PI*2); g.fill();
-      g.strokeStyle=P.teamD; g.lineWidth=0.9; g.beginPath();
+    ()=>{ g.strokeStyle=P.teamD; g.lineWidth=0.9; g.beginPath();
       g.moveTo(cx,cy-33); g.quadraticCurveTo(cx+1,cy-18,cx,cy-1); g.stroke(); });
   sdCel(D,()=>{ g.beginPath(); g.ellipse(cx,cy-3,6.5,4.2,0,Math.PI,Math.PI*2); g.closePath(); },P.hair);
   g.fillStyle=P.teamD; g.fillRect(cx-7,cy-2.6,14,1.8);
