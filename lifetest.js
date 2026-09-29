@@ -120,13 +120,21 @@ const statSum=()=>ev("(function(){ const p=TBYID.wwzw.players.find(x=>x.id===(ST
   const si=pool.indexOf('small');
   if(si>=0){ const sb0=ev("TBYID.wwzw.tend.sb"); ev("stfHireMgr("+si+")");
     T('스몰볼 감독 — 도루 성향이 오른다', ()=>ev("TBYID.wwzw.tend.sb")>sb0 ? sb0.toFixed(2)+'→'+ev("TBYID.wwzw.tend.sb").toFixed(2) : '!'); }
-  const fx=JSON.parse(ev("JSON.stringify(fxPool().list.map(x=>({n:x.p.name,pit:x.pit,usd:x.usd})))"));
-  T('외국인 후보 넷 · 100만 달러 이하', ()=>fx.length===4 && fx.every(x=>x.usd<=100) ? fx.map(x=>x.n+' '+x.usd).join(', ') : '!'+JSON.stringify(fx));
-  const nOurs=ev("fxOurs(true).length"), c1=ev("pfState().cash");
-  ev("fxSign(0)");
-  T('영입 — 우리 팀에 온다', ()=>ev("!!pfAll(TBYID.wwzw).find(p=>p.id===fxPool().list[0].p.id)"));
-  T('같은 쪽 외국인 수는 그대로(한 명 방출)', ()=>ev("fxOurs(true).length")===Math.max(1,nOurs) ? ev("fxOurs(true).map(p=>p.name).join(',')") : '!'+nOurs+'→'+ev("fxOurs(true).length"));
+  const fx=JSON.parse(ev("JSON.stringify(fxPool().list.map(x=>({n:x.p.name,pit:x.pit,usd:x.usd,cap:x.cap})))"));
+  const FX_MAX_T=ev('FX_MAX');
+  T('외국인 후보 넷 · 상한 이하', ()=>fx.length===4 && fx.every(x=>x.usd<=x.cap) ? fx.map(x=>x.n+' '+x.usd).join(', ') : '!'+JSON.stringify(fx));
+  T('자리가 꽉 차면 못 데려온다', ()=>{ if(ev("fxUsed()")<FX_MAX_T) return '빈 자리 — 건너뜀'; const e=ev("fxSign(0,'full')"); return /꽉 찼다/.test(e||'') ? e : '!'+e; });
+  T('능력치는 범위로 보인다', ()=>{ const r=JSON.parse(ev("JSON.stringify(fxRange(fxPool().list[0], fxPool().list[0].pit?'stf':'con'))")); const v=ev("fxPool().list[0].p[fxPool().list[0].pit?'stf':'con']"); return r[0]<=v&&v<=r[1]&&r[1]>r[0] ? r.join('~')+' (참값 '+v+')' : '!'+r+'/'+v; });
+  const rel=ev("fxOurs(true)[0]&&fxOurs(true)[0].id");
+  const cR=ev("pfState().cash");
+  if(rel){ ev("fxRelease('"+rel+"')"); T('먼저 내보낸다 — 잔여 연봉 절반', ()=>ev("!pfAll(TBYID.wwzw).find(p=>p.id==='"+rel+"')") && ev("pfState().cash")<cR); }
+  ev("Math.random=()=>0.01");
+  const c1=ev("pfState().cash"); const se=ev("fxSign(0,'full')");
+  T('계약 — 비자 나오기 전엔 아직 안 왔다', ()=>!se && ev("!pfAll(TBYID.wwzw).find(p=>p.id===fxPool().list[0].p.id)") && ev("pfState().fxVisa.length")===1 ? '비자 대기' : '!'+se);
   T('금고에서 계약금 · 이적료가 나간다', ()=>ev("pfState().cash")<c1);
+  ev("fxWeek(); fxWeek();");
+  T('비자 나오면 우리 팀에 온다', ()=>ev("!!pfAll(TBYID.wwzw).find(p=>p.id===fxPool().list[0].p.id)"));
+  T('✕ 하고 스카우트를 보내면 한 주 뒤 새 후보', ()=>{ const n0=ev("fxPool().list.length"); ev("fxCut(1); fxRescout(); fxWeek();"); return ev("fxPool().list.length")===n0+1; });
   reloadPro();
   T('불러와도 그 외국인이 우리 팀', ()=>ev("!!pfAll(TBYID.wwzw).find(p=>p.id===fxPool().list[0].p.id)"));
   ev("renderProFront('staff')"); await wait(20);

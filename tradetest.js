@@ -30,7 +30,8 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   await wait(60);
   const K="'kia'";
   ev(`window._us=pfAll(TBYID.wwzw).filter(p=>p.id!=='ksh').sort((a,b)=>pfValue(b)-pfValue(a));
-      window._th=pfAll(TBYID[pfIdOf(${K})]).sort((a,b)=>pfValue(b)-pfValue(a));`);
+      window._th=pfAll(TBYID[pfIdOf(${K})]).sort((a,b)=>pfValue(b)-pfValue(a));
+      window._U=pfUntouch(${K}); window._thAll=_th; window._th=_th.filter(p=>!_U.has(p.id));`);
 
   console.log('[값 매기기]');
   T('함수가 한 번씩만 선언', ()=>['pfTradeMulti','pfTradeEval','pfPicksOf','pfPickOwner','pfPkgValue'].every(n=>(html.match(new RegExp('^function '+n+'\\(','mg'))||[]).length===1));
@@ -39,10 +40,10 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
     const a=ev(`pfTradeEval({team:${K}, give:[_us[8].id], get:[_th[3].id]}).give`);
     const b=ev(`pfTradeEval({team:${K}, give:[_us[8].id], get:[_th[3].id], givePicks:[pfPicksOf(ST.pro.team)[0].id]}).give`);
     return b>a+60 ? a+' → 1라운드 얹으면 '+b : '!'+a+'/'+b; });
-  T('현금이 값을 올린다(1억에 6)', ()=>{
+  T('현금이 값을 올린다(1억에 9)', ()=>{
     const a=ev(`pfTradeEval({team:${K}, give:[_us[8].id], get:[_th[3].id]}).give`);
     const b=ev(`pfTradeEval({team:${K}, give:[_us[8].id], get:[_th[3].id], cash:10}).give`);
-    return b===a+60 ? a+' → 10억 얹으면 '+b : '!'+a+'/'+b; });
+    return b===a+90 ? a+' → 10억 얹으면 '+b : '!'+a+'/'+b; });
   T('묶음 할인 — 그저 그런 셋 < 합계', ()=>{
     const pk=ev(`pfPkgValue([_us[20],_us[21],_us[22]], ${K})`), sum=ev(`[_us[20],_us[21],_us[22]].reduce((s,p)=>s+pfTradeAdj(p,${K}),0)`);
     return pk<sum*0.8 ? Math.round(pk)+' < 합계 '+Math.round(sum) : '!'+pk+'/'+sum; });
@@ -53,6 +54,10 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
     const [a,b]=JSON.parse(r); return a>b ? '리빌딩 '+Math.round(a)+' > 윈나우 '+Math.round(b) : '!'+r; });
 
   console.log('\n[제안]');
+  T('절대 불가 — 간판·유망주는 아무리 얹어도 안 판다', ()=>{ const r=JSON.parse(ev(`(function(){ var u=_thAll.find(p=>_U.has(p.id)); if(!u) return JSON.stringify({skip:1});
+      return JSON.stringify(pfTradeMulti({team:${K}, give:[_us[0].id,_us[1].id,_us[2].id], get:[u.id], givePicks:pfPicksOf(ST.pro.team).map(x=>x.id), cash:30})); })()`));
+    ev("pfState().tradeRound=-99");
+    return r.skip ? '불가 선수 없음' : (!r.ok && /절대 안 판다/.test(r.why) ? r.why : '!'+JSON.stringify(r)); });
   T('모자라면 거절', ()=>{ const r=JSON.parse(ev(`JSON.stringify(pfTradeMulti({team:${K}, give:[_us[_us.length-1].id], get:[_th[0].id]}))`));
     return !r.ok && /거절/.test(r.why) ? r.why : '!'+JSON.stringify(r); });
   ev("pfState().tradeRound=-99");
