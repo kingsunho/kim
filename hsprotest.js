@@ -31,8 +31,10 @@ const btn=re=>[...d.querySelectorAll('#view .btn')].find(b=>re.test(b.textConten
   ev("ST.tutDone=true; ST.tutStep=99; ST.mode='player'; ST.role='bat'; ST.myPos='CF';");
 
   console.log('[라운드 규칙]');
-  T('고졸 바로 신청은 5~10 라운드', ()=>{ const r=[40,50,60,70,80,85].map(s=>ev(`proDraftSlot(${s},'hs').round`));
-    return r.every(x=>x>=5&&x<=10) ? r.join('·') : '!'+r.join('·'); });
+  /* [v3.51.0] "고교때 막 계속 홈런치거나 하면 고교 드래프트도 윗순번 가능하려나" —
+     평범한 고교 성적(~72점)은 예전처럼 5~10 라운드, 압도하면(88+) 1라운드까지 열린다 */
+  T('고졸 바로 신청 — 평범하면 5~10, 압도하면 1라운드까지', ()=>{ const r=[40,50,60,70,80,85,90].map(s=>ev(`proDraftSlot(${s},'hs').round`));
+    return r.slice(0,4).every(x=>x>=5&&x<=10) && r[6]===1 && r[4]<5 ? r.join('·') : '!'+r.join('·'); });
   T('같은 점수면 사회인 트라이아웃이 늘 더 위(작은 라운드)', ()=>{ const ok=[45,55,65,75,85].every(s=>ev(`proDraftSlot(${s}).round<=proDraftSlot(${s},'hs').round`));
     return ok ? '맞다' : '!아니다'; });
   T('사회인 1라운드는 열려 있다', ()=>ev("proDraftSlot(90).round")===1);
