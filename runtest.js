@@ -223,8 +223,11 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
      여러 줄로 늘어났다. 붙어 있는 글자를 재는 게 아니라 뜻을 잰다. */
   T('결과와 안 어긋난다 — 주자 속도를 결과에 맞춘다', ()=>ev(
     "/if\\(play\\.gb && isOut\\) runMs = Math\\.max/.test(livePlay.toString()) && /!isOut && !HR\\)[\\s\\S]{0,120}runMs = Math\\.min/.test(livePlay.toString())"));
+  /* [v3.49.0] 한 베이스 더는 이제 경주다 — 뛰기 시작한 시각(goStart)부터 주자 도착(rA =
+     goStart+runMs)까지 **한 베이스 시간을 통째로** 뛴다. 결과에 맞춰 늘리거나 당기지 않으니
+     순간이동이 날 수가 없다. 그 뜻을 잰다. */
   T('한 베이스 더 가는 구간이 순간이동이 아니다', ()=>ev(
-    "/T_THROW-160\\)\\/Math\\.max\\(1,base\\)/.test(livePlay.toString()) && /Math\\.max\\(420,\\(endT-tBase\\)\\)/.test(livePlay.toString())"));
+    "/T_THROW-160\\)\\/Math\\.max\\(1,base\\)/.test(livePlay.toString()) && /rA=goStart\\+runMs/.test(livePlay.toString()) && /\\(t-gs\\)\\/Math\\.max\\(1,\\(endA-gs\\)\\)/.test(livePlay.toString())"));
   T('도는 버튼 · 돌아가는 버튼이 수비 송구와 같은 베이스 버튼이다', ()=>ev(
     "renderSwing.toString().indexOf('sc[fn]')>0 && renderSwing.toString().indexOf('baserow')>0"));
 
