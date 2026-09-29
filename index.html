@@ -9736,8 +9736,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.60.0';
-const APP_VERSION_NOTE = 'KBO 명예의 전당 · 영구결번 · 등번호 겹침 정리';
+const APP_VERSION = '3.61.0';
+const APP_VERSION_NOTE = '연봉 구조 현실화 · 실제 큰 계약 · 옆구리 투수';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9758,6 +9758,13 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.61.0', t:'연봉 구조 현실화 · 실제 큰 계약 · 옆구리 투수', items:[
+    '<b>연봉이 실제처럼 쏠린다.</b> 예전엔 국내 선수 최고가 9억, 구단 상위 40명 합이 42~65억이라 다들 비슷하게 나눠 가졌다. 이제 간판 두셋이 20~40억을 가져가고 나머지 대부분은 1억 안팎 — 구단 합은 70~130억대(샐러리캡 151억)',
+    '<b>실제 큰 계약</b> — 양의지 42억(2026 연봉 공시), 최정 · 류현진 · 오지환 · 고영표는 공개된 계약 총액 ÷ 연수로 넣었다(가명으로 나온다)',
+    'FA 전 선수는 잘해도 연차만큼만 받는다(4년차 특급이 8억 안팎). FA 로 계약한 사람은 몸값에 FA 프리미엄이 붙는다',
+    '<b>트레이드가 연봉을 본다</b> — 제 값보다 많이 받는 선수는 남은 계약만큼 트레이드 값이 떨어진다. 나이 든 고액 연봉자는 받는 쪽에 짐이다',
+    '<b>옆구리 투수</b> — 박치국 · 정우영 · 우강훈 · 임기영이 사이드암으로 던진다(우규민 · 고영표 포함)',
+  ]},
   {v:'3.60.0', t:'KBO 명예의 전당 · 영구결번 · 등번호 겹침 정리', items:[
     '<b>KBO 명예의 전당</b> — 은퇴하는 선수 중 통산 기록이 선을 넘거나(대략 여덟 시즌을 잘 뛴 만큼) 리그를 대표한 이름이면 헌액된다. 기록실 → 명예의전당 탭에서 헌액자 · 통산 10걸 · <b>나의 헌액 진행</b>을 본다',
     '<b>영구결번</b> — 한 구단에서 대부분을 뛰고 상징이 된 사람이 은퇴하면 그 구단이 번호를 건다. 건 번호는 그 구단에서 다시 안 준다. 구단별 영구결번이 기록실에 모여 있다',
@@ -18163,10 +18170,19 @@ function pfFaLeft(p, key){
 /* 등급에 맞는 연봉(만원) — [제보] "연봉도 제대로 해 못하는 애가 5억 받는게 말이 되냐"
    그전엔 리그 백분위만 봐서 등급 45~49(벤치 · 백업)도 FA 계약이면 4~7억을 받았다.
    등급 45 ≈ 0.7억 · 50 ≈ 1.7억 · 55 ≈ 4.2억 · 60 ≈ 10억 · 65 ≈ 24억. 이름값(명성)은 최대 1.6배까지 더 받는다 */
-function pfSalFair(p){ return Math.round(3000*Math.exp((pfGrade(p)-40)*0.175)/100)*100; }
+function pfSalFair(p){
+  /* [v3.61.0] 시장 몸값 — 등급 50 ≈ 2억 · 55 ≈ 5.4억 · 60 ≈ 15억 · 64 ≈ 33억. 명성(이름값)이 최대 1.4배 */
+  const g=pfGrade(p), r=pfRep(p);
+  return Math.round(3000*Math.exp((g-40)*0.2)*(1+clamp((r-50)/100,0,0.4))/100)*100;
+}
 function pfSalCap(p, sal){
-  const cap=pfSalFair(p)*(1.2+clamp((pfRep(p)-40)/100,0,0.4));
+  const cap=pfSalFair(p)*1.25;
   return Math.max(kboMinSal(ST.pro.year), Math.round(Math.min(sal, cap)/100)*100);
+}
+/* FA 시장 한 해 몸값 — pfCon 의 FA 계약과 같은 식(몸값 + 3억 프리미엄, 나이 깎기, 30억 상한) */
+function pfFAAsk(p, age){
+  const ag=age>=36?0.65:(age>=34?0.8:1);
+  return Math.round(clamp((pfSalFair(p)+30000)*ag, 10000, 300000)/100)*100;
 }
 function pfFASal(pct, age){          // FA 한 해 몸값(만원) — 1억 ~ 26억
   const a=age>=34?0.6:(age>=32?0.8:1);
@@ -18182,22 +18198,42 @@ function pfCon(p, key){
   if(p.rookie) return {sal:kboMinSal(y), type:'rookie', left:1, svc:Math.max(0,y-(p.draftYear||y)), fa:0, gen:true};
   if(p.farm && age<=24) return {sal:kboMinSal(y)+(h%6)*500, type:'annual', left:1, svc:Math.max(0,age-19), fa:0, gen:true};
   const svc=Math.max(0,age-19), pct=pfPct(p);
-  /* [손봄 v3.36.0] 처음엔 8시즌 넘은 사람을 전부 FA 계약으로 깔았더니 구단 상위 40명 합이 240억 —
-     샐러리캡(143억)의 1.7배였다. 실제로 FA 를 선언해서 큰 계약을 하는 건 주전급뿐이다.
-     벤치 베테랑은 FA 자격이 있어도 연봉 재계약으로 남는다 */
+  /* [v3.61.0] 실제 큰 계약 — 공개된 계약(총액 ÷ 연수, 계약금 포함)과 KBO 연봉 공시. 가명 기준 */
+  const R=PF_REAL_CON[key+'|'+(p._orig||p.name)];
+  if(R){ const left=R.end-y+1; return {sal:R.sal, type:'fa', left:Math.max(0,left), svc, fa:1, gen:true, real:true}; }
+  const mv=pfSalFair(p);
+  /* [v3.61.0] [제보] "연봉 비중이 실제로 생각하면 말이 안되게 다 5억 나누고 있네 — 양의지 혼자 40억대"
+     예전 식은 리그 백분위로 연봉을 폈다. 그래서 국내 선수 최고가 9억, 구단 상위 40명 합이 42~65억이었다
+     (샐러리캡 151억의 3분의 1). 실제 KBO 는 간판 두셋이 20~40억을 가져가고 나머지 대부분이 1억 안팎이다.
+     이제 등급 · 명성으로 시장 몸값(mv)을 매기고, FA 로 계약한 사람은 그걸 거의 다 받는다.
+     FA 전(연봉 재계약)은 연차만큼만 따라간다 — 잘해도 FA 전엔 싸다(그래서 FA 가 대박이다) */
   if(svc>=8 && pct>=0.5){
-    /* 이미 한 번 FA 를 한 사람 — 2027 시즌에 남은 해가 1~4 년. 해가 갈수록 줄고 0 이면 이번 겨울 FA.
-       연봉은 총액에서 계약금을 뺀 몫이다 — 「4년 80억, 계약금 34억」 이면 한 해 11.5억.
-       (0.65 로 뒀더니 구단 셋이 샐러리캡을 넘었다. 실제로 넘는 구단은 한 해 한둘이다) */
-    const left0=1+(h%4), left=left0-(y-2027), sal=pfSalCap(p, Math.round(pfFASal(pct, age)*0.58/100)*100);
+    const left0=1+(h%4), left=left0-(y-2027);
+    const ag=age>=36?0.65:(age>=34?0.8:1);
+    /* FA 프리미엄 — 실제 FA 시장은 중간급(4년 40~60억)도 한 해 10억 안팎을 받는다. 몸값에 3억을 얹는다 */
+    const sal=Math.round(clamp((mv+30000)*ag*(0.85+(h%30)/100), 10000, 300000)/100)*100;
     if(left>=1) return {sal, type:'fa', left, svc, fa:1+(age>=33?1:0), gen:true};
     return {sal, type:'fa', left:0, svc, fa:1, gen:true};
   }
-  /* 연봉 재계약 — 7년차 주전은 6~11억까지 오른다(A 등급 FA 가 여기서 나온다) */
-  const sv=Math.min(svc,7), old=svc>7?Math.max(0.5,1-(svc-7)*0.06):1;
-  const sal=pfSalCap(p, Math.max(kboMinSal(y), Math.round((kboMinSal(y)+Math.pow(pct,2.4)*110000*(0.3+sv*0.1)*old)/100)*100));
+  /* FA 전 — 잘해도 연차만큼만(김도영 급 4년차가 5억 안팎). 벤치 베테랑은 1억 언저리 */
+  const min=kboMinSal(y), share=clamp(0.05+Math.min(svc,8)*0.05, 0.05, 0.45);
+  const floor=svc>=8?8000:(svc>=5?5000:min);
+  const sal=Math.round(clamp(min+(mv-min)*share, floor, 80000)/100)*100;
   return {sal, type:'annual', left:1, svc, fa:0, gen:true};
 }
+/* 공개된 큰 계약 — [가명키] = {sal:한 해(만원), end:마지막 해}. 확인된 것만 넣는다(지어내지 않는다).
+     양의지  — 2026 KBO 연봉 공시 42억(4+2년 계약 마지막 구간)
+     류현진  — 8년 170억(2024~2031) → 한 해 21.3억
+     최정    — 4년 110억(2025~2028) → 27.5억
+     오지환  — 6년 124억(2024~2029) → 20.7억
+     고영표  — 비FA 5년 107억(2025~2029) → 21.4억                                   */
+const PF_REAL_CON={
+  'dsn|양의진':{sal:420000, end:2028},
+  'hh|류현전':{sal:212500, end:2031},
+  'ssg|최전':{sal:275000, end:2028},
+  'lg|오지헌':{sal:206700, end:2029},
+  'kt|고영포':{sal:214000, end:2029},
+};
 /* 내 계약 — 드래프트 순번 계약금 + 첫해 최저연봉 */
 /* [버그 이력 v3.40.0] ST.pro.round 는 없다(proEnter 는 ST.pro.draft 에 둔다) — 누구든 5라운드 5순위 계약금이 찍혔다 */
 function pfMyStartCon(){ const D=ST.pro.draft||{};
@@ -18364,7 +18400,7 @@ function pfFAOpen(){
       if(!newFA && !expire) return;
       const age=pfAge(p)+1, g=pfFAGrade(p,t,c);
       const yrs=age<=30?4:(age<=32?3:(age<=34?2:1));
-      const per=pfSalCap(p, pfFASal(pfPct(p), age));
+      const per=pfFAAsk(p, age);
       list.push({id:p.id, name:p.name, from:key, grade:g, yrs, total:Math.round(per*yrs/1000)*1000, last:c.sal,
         v:pfValue(p), pit:pfIsPit(p), age, ours:t.id==='wwzw', done:null});
     });
@@ -18498,6 +18534,11 @@ function pfTradeWorth(p, key, giving){
   let v=Math.pow(Math.max(0,g-35),1.9);
   v*=1+(pfRep(p)-40)/200;
   const pot=pfPot(p)||g; if(a<=24) v+=Math.pow(Math.max(0,pot-g),1.5)*2.2;
+  /* [v3.61.0] 몸값 — 받는 쪽은 남은 계약 동안 제 값보다 더 주는 돈만큼 깎는다(나이 든 40억 포수는 짐이다).
+     [제보] "트레이드 현실성 너무 떨어지고" — 연봉을 전혀 안 봤다 */
+  try{ const ck=proKeyOf(pfFind(p.id).t.id)||key, c=pfCon(p,ck), over=Math.max(0,(c.sal||0)-pfSalFair(p)*1.1)/10000;
+    if(over>0) v-=over*6*Math.max(1,c.left||1); }catch(e){}
+  v=Math.max(v,0);
   if(ph.mode==='rebuild') v*= a<=26?1.25:(a>=31?0.75:1);
   if(ph.mode==='win') v*= a>=30?1.15:(a<=23?0.85:1);
   if(giving){ if(a<=24 && pot-g>=10) v*=1.3; }
@@ -36525,7 +36566,9 @@ function bodyOf(p){
   return {ht, wt:Math.round(bmi*ht*ht/10000)};
 }
 /* 이름난 투구 폼 — 널리 알려진 팔 각도만(가명 기준). 기록 말고는 옮기지 않는다 */
-const SD_KNOWN_FORM={'고영포':{form:'sub'}, '우규인':{form:'side'}};
+/* [제보] "박치국이나 이런애들 사이드인데" — 널리 알려진 옆구리 투수들(가명): 박치국 · 정우영 · 우강훈 · 임기영 · 우규민 · 고영표(잠수함에 가깝다).
+   명단(2026 등록)에 없는 사람(엄상백 · 박종훈 · 한현희 · 최원준 투수)은 못 넣었다 */
+const SD_KNOWN_FORM={'고영포':{form:'sub'}, '우규인':{form:'side'}, '박치구':{form:'side'}, '정우연':{form:'side'}, '우강후':{form:'side'}, '임기연':{form:'side'}};
 function sdLookOf(p){
   if(!p) return null;
   const L0=sdLookBase(p);
