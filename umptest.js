@@ -15,6 +15,8 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   await wait(700);
   d.querySelectorAll('.pickcard')[0].click(); await wait(60);
   [...d.querySelectorAll('#view .btn')].find(b=>b.textContent==='이 선수로 시작').click();
+  /* [v3.58.0] 이 검사는 예전 직접 플레이 화면(renderSwing · renderPitch)을 본다 — 기본값이 액션으로 바뀌었다 */
+  await new Promise(r=>setTimeout(r,300)); dom.window.eval("ST.playStyle='classic'");
   await wait(300); ev("ST.tutDone=true; ST.absent={}; ST.injury={};");
   // 우리가 수비인 상황에서 투구 화면을 연다
   const openPitch=()=>ev(`(function(){

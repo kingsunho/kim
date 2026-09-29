@@ -1130,6 +1130,70 @@ body.pl-lock{position:fixed;left:0;right:0;width:100%;overflow:hidden;overscroll
 #decision.sheet .pl-skip{margin-top:7px}
 body.pl-lock #view{touch-action:none}
 .pl-warn{font-size:12px;font-weight:800;color:#ffd15c;margin:6px 0 0;text-align:center}
+/* ---- 액션 플레이 (v3.58.0) ----
+   [참고] 사용자가 준 컴프야 · 이사만루 화면 — 야구장이 화면 전체고, 조작은 그 위에 떠 있다.
+   왼쪽 아래 조이스틱(커서 · 조준), 오른쪽 아래 큰 버튼(스윙 · 투구)과 구종. 화면을 나눠 쓰지 않는다. */
+#decision.acp-sheet{padding:0}
+#decision.acp-sheet .acp{position:relative;display:block;height:100%;min-height:0;overflow:hidden;padding:0}
+#decision.acp-sheet .acp .mound{position:absolute;inset:0;width:100%;height:100%;padding-top:0;margin:0;border:0;border-radius:0}
+html.land #decision.acp-sheet .acp .mound .mv-cv{width:100%;height:auto;left:0;top:0;bottom:auto;transform:none}
+html:not(.land) #decision.acp-sheet .acp .mound .mv-cv{width:auto;height:100%;left:50%;transform:translateX(-50%)}
+.acp-cv{position:absolute;left:0;top:0;width:100%;height:100%;touch-action:none}
+#decision.acp-sheet .mound .mv-camb,#decision.acp-sheet .mound .who{display:none}
+.acp-info{position:absolute;left:50%;bottom:calc(12px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:6;width:min(44%,420px);
+  font-size:12.5px;color:#cfd8e3;text-align:center;line-height:1.35;pointer-events:none;
+  background:rgba(8,12,18,.62);border-radius:9px;padding:4px 10px;text-shadow:0 1px 2px #000}
+.acp-info b{color:#fff}
+.acp-info .ok{color:#7fc48f}
+.acp-info .bad{color:#e08a70}
+.acp-ctl{position:absolute;left:0;right:0;bottom:0;z-index:6;display:flex;align-items:flex-end;justify-content:space-between;
+  gap:10px;padding:0 14px calc(24px + env(safe-area-inset-bottom));pointer-events:none}
+.acp-ctl>*{pointer-events:auto}
+.acp-joy{width:150px;height:150px;touch-action:none;flex:0 0 auto;background:rgba(10,14,20,.45)}
+.acp-joy.js-s{width:118px;height:118px}
+.acp-joy.js-l{width:176px;height:176px}
+.acp-joy.js-xl{width:210px;height:210px}
+.acp-joy .joy-k{width:40%;height:40%;margin:-20% 0 0 -20%}
+.acp-go.ready{background:radial-gradient(circle at 35% 30%,#7fe0a0,#2f9e5a 60%,#1f6f3a);box-shadow:0 5px 0 #16512a,0 0 0 3px rgba(255,255,255,.14);font-size:19px}
+.acp-r{display:flex;flex-direction:column;align-items:flex-end;gap:8px;min-width:0}
+.acp-go{width:104px;height:104px;border-radius:50%;border:0;font-size:21px;font-weight:900;color:#fff;
+  background:radial-gradient(circle at 35% 30%,#ff8a5c,#d8452b 60%,#9d2b18);
+  box-shadow:0 5px 0 #6d1d10,0 0 0 3px rgba(255,255,255,.14);touch-action:none;-webkit-user-select:none;user-select:none}
+.acp-go:active{transform:translateY(3px);box-shadow:0 2px 0 #6d1d10}
+.acp-auto{font-size:11.5px;font-weight:800;padding:5px 11px;border-radius:14px;border:1px solid rgba(255,255,255,.25);
+  background:rgba(10,14,20,.6);color:#cfd8e3}
+.acp-auto.on{border-color:#7fb4ff;color:#7fb4ff;background:rgba(20,40,70,.7)}
+.acp-types{display:flex;flex-wrap:wrap;gap:5px;justify-content:flex-end;max-width:250px}
+.acp-ty{font-size:12px;font-weight:800;padding:6px 10px;border-radius:16px;border:1px solid rgba(255,255,255,.22);
+  background:rgba(10,14,20,.7);color:#e6ecf3}
+.acp-ty.on{background:#d8452b;border-color:#ff8a5c;color:#fff}
+.acp-gauge{position:relative;width:190px;max-width:100%;height:12px;border-radius:6px;background:rgba(10,14,20,.8);
+  border:1px solid rgba(255,255,255,.25);opacity:.4}
+.acp-gauge.on{opacity:1}
+.acp-gz{position:absolute;top:0;bottom:0;background:#ffd15c;border-radius:4px}
+.acp-gn{position:absolute;top:-4px;left:0;width:3px;height:20px;margin-left:-1px;background:#fff;box-shadow:0 0 4px #000}
+.acp-field{position:absolute;inset:0;z-index:7;background:#0d1117;display:flex;align-items:center;justify-content:center}
+.acp-fcv{width:auto;max-width:100%;height:100%;max-height:100%}
+.acp-ban{position:absolute;left:50%;top:10%;transform:translateX(-50%);font-size:24px;font-weight:900;color:#ffd15c;
+  text-shadow:0 2px 6px #000;opacity:0;transition:opacity .15s;pointer-events:none;white-space:nowrap}
+.acp-ban.on{opacity:1}
+.acp-hud{position:absolute;left:10px;top:8px;z-index:3;font-size:12px;color:#dfe6ef;background:rgba(8,12,18,.72);
+  border-radius:8px;padding:4px 9px;pointer-events:none}
+.acp-hud b{color:#fff}
+.acp-hud b.o{color:#ffd15c}
+.acp-hint{position:absolute;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:3;
+  font-size:12.5px;font-weight:800;color:#ffd15c;text-shadow:0 1px 3px #000;pointer-events:none;white-space:nowrap}
+.acp-field .acp-fjoy{position:absolute;left:14px;bottom:calc(20px + env(safe-area-inset-bottom));z-index:4}
+.acp-bases{position:absolute;right:14px;bottom:calc(52px + env(safe-area-inset-bottom));z-index:4;width:170px;height:170px}
+.acp-bb{position:absolute;width:62px;height:62px;border-radius:12px;transform:rotate(45deg);border:2px solid rgba(255,255,255,.35);
+  background:rgba(20,26,36,.85);color:#fff;font-size:0;touch-action:none}
+.acp-bb::after{content:attr(data-n);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  transform:rotate(-45deg);font-size:14px;font-weight:900}
+.acp-bb:not(:disabled){border-color:#ffd15c;background:rgba(120,80,10,.85)}
+.acp-bb:disabled{opacity:.45}
+.acp-bb.b2{left:54px;top:0}.acp-bb.b3{left:0;top:54px}.acp-bb.b1{left:108px;top:54px}.acp-bb.b4{left:54px;top:108px}
+.acp-skip{position:absolute;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));font-size:12px;font-weight:800;padding:7px 12px;border-radius:14px;
+  border:1px solid rgba(255,255,255,.25);background:rgba(13,17,23,.8);color:#cfd8e3}
 .pl-hit{flex:0 0 38%;background:transparent;border:1px solid #7a4a2a;color:#e8a06c;
   font-size:13.5px;font-weight:800;padding:14px 0;border-radius:10px}
 .pl-hit:disabled{opacity:.45}
@@ -9631,8 +9695,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.57.0';
-const APP_VERSION_NOTE = '캐릭터 얼굴 — 사람마다 다르게';
+const APP_VERSION = '3.58.0';
+const APP_VERSION_NOTE = '직접 플레이를 갈아엎었다 — 친 만큼 날아가고, 뛴 만큼 잡는다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9653,6 +9717,16 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.58.0', t:'직접 플레이를 갈아엎었다 — 친 만큼 날아가고, 뛴 만큼 잡는다', items:[
+    '<b>결과가 정해져 있지 않다.</b> 예전 직접 플레이는 스윙 타이밍이 확률만 조금 밀고 결과는 엔진이 굴렸다. 이제 커서 자리 · 스윙 시각으로 <b>타구 속도 · 발사각 · 방향</b>이 정해지고, 공기저항 있는 비행으로 떨어진 자리에서 야수가 실제로 뛰어가 닿는 시각 · 송구 · 주자가 닿는 시각으로 아웃 · 세이프가 갈린다',
+    '<b>타격</b> — 커서는 가운데서 시작하고 조이스틱을 놓으면 가운데로 돌아온다. 타석마다 <b>준비</b> 를 한 번 누르면 그 뒤로는 공이 계속 온다. 빠르면 당기고 늦으면 밀고, 공이 커서보다 위에 맞으면 뜨고 아래면 구른다',
+    '조이스틱이 커졌다 — 설정에서 작게 · 보통 · 크게 · 아주 크게(기기마다 따로 저장). 오토 컨택(커서가 공을 따라감)도 켤 수 있다',
+    '<b>투구</b> — 구종 고르고 조준점 옮기고 [투구] → 게이지가 노란 칸에 올 때 한 번 더. 제구가 흩어지는 폭이 점선으로 보인다. AI 타자도 같은 물리로 친다 — 한가운데는 맞고 구석은 빗맞는다',
+    '<b>수비</b> — 내가 던지다 맞으면 공에 제일 먼저 닿을 야수가 내 손에 온다. 떨어질 자리에 원이 뜨고, 글러브가 닿으면 잡는다. 주우면 [1루] [2루] [3루] [홈] — 누른 순간 던진다. 병살이면 2루 → 1루 송구까지 보인다. 수비 화면에 이닝 · 아웃 · 주자 · 점수',
+    '예전 방식이 편하면 설정 → 직접 플레이 → 방식에서 「예전 방식」',
+    '[버그] 프로 지명 발표 화면에서 설정으로 나갔다 오면 사회인 홈으로 가던 것 — 입단 도장을 찍을 때까지 홈은 지명 화면이다',
+    '[버그] 프로 선발이 쉬는 날 마무리 · 셋업이 선발로 나오던 것(김택연 선발) — 선발은 선발진에서만 나온다',
+  ]},
   {v:'3.57.0', t:'캐릭터 얼굴 — 사람마다 다르게', items:[
     '<b>캐릭터 얼굴을 새로 그렸다.</b> 예전엔 모두가 같은 얼굴이었다(반짝이 눈 · 볼터치 · 광택 헬멧). 이제 선수마다 턱 · 눈 · 눈썹 · 코 · 입 · 수염 · 피부색이 다르다 — 매서운 눈, 콩알 눈, 반쯤 감긴 눈, 주먹코, 각진 턱, 씩 웃는 입…',
     '굵은 눈썹이 드디어 보인다 — 예전엔 모자챙 밑에 깔려서 한 번도 안 보였다',
@@ -14560,8 +14634,11 @@ LiveGame.prototype.stepPA = function(){
   /* [요청] "칠때마다 비거리도 적어주고"
      인플레이 타구면 방향·비거리를 만들어 둔다. 로그도 중계 화면도 이걸 쓴다. */
   const bbKind = (res.type==='OUT') ? (res.gb?'GB':(res.ld?'LD':'FB')) : res.type;
-  const bb = ['1B','2B','3B','HR','OUT','E'].indexOf(res.type)>=0
-    ? battedBall(this.paSeq, bbKind, this.park, bat.bats||'R', !!res.itp, this._spray) : null;
+  /* [v3.58.0] 액션 플레이 타구는 방향 · 비거리를 **실제로 날아간 대로** 쓴다(지어내지 않는다) */
+  const bb = (res.phys && res.phys.dist!=null)
+    ? {m:Math.round(res.phys.dist), ang:res.phys.ang, dir:dirName(res.phys.ang), fence:Math.round(fenceAt(this.park,res.phys.ang))}
+    : (['1B','2B','3B','HR','OUT','E'].indexOf(res.type)>=0
+    ? battedBall(this.paSeq, bbKind, this.park, bat.bats||'R', !!res.itp, this._spray) : null);
   /* [제보 v3.55.0] "잡았는데 갑자기 100m 2루타" — 내가 수비한 타구는 **화면에 그린 자리**가
      비거리다. 엔진이 따로 뽑은 거리(2루타면 70~100m)를 찍으니 30m 앞에서 잡은 공이
      100m 로 적혔다. 빠져서 굴러간 장타만 굴러간 만큼 더 길 수 있다. */
@@ -14608,7 +14685,76 @@ LiveGame.prototype.stepPA = function(){
   const adv=(n,e)=>{ for(let b=2;b>=0;b--){ if(this.bases[b]){ const nb=b+n;
     if(nb>=3){score(this.bases[b],e);bl.rbi++;} else this.bases[nb]=this.bases[b]; this.bases[b]=null; } } };
 
-  if(res.type==='K'){ bl.ab++;bl.k++;pl.k++;pl.outs++;this.outs++;
+  if(res.phys){
+    /* [v3.58.0] 액션 플레이 — 화면에서 공과 사람이 실제로 움직인 대로 적는다. 주사위가 없다.
+       res.phys.fin = 타자와 주자 한 사람 한 사람이 어디서 어디로 갔나(-1 아웃 · 4 홈인).
+       야수선택 · 병살 · 희생플라이 · 실책 출루도 전부 그 움직임에서 나온다.               */
+    const P=res.phys, fin=P.fin||[];
+    const POSK={P:'투수',C:'포수','1B':'1루수','2B':'2루수',SS:'유격수','3B':'3루수',LF:'좌익수',CF:'중견수',RF:'우익수'};
+    const BN=['','1루','2루','3루','홈'];
+    const who=P.fpos?(POSK[P.fpos]||''):'';
+    const hit=['1B','2B','3B','HR'].indexOf(P.kind)>=0;
+    const err=!!P.errId;
+    if(err){
+      def.errs++;
+      if(!this.errLed) this.errLed=newErrLedger();
+      this.errLed.outs++; if(P.kind==='E') this.errLed.roe[bat.id]=true;
+      this.box[P.errId]=this.box[P.errId]||newBoxL();
+      this.box[P.errId].e=(this.box[P.errId].e||0)+1;
+      this.lastErr={id:P.errId, pos:P.errPos};
+    }
+    bl.ab++;
+    if(hit){ bl.h++; pl.h++; off.hits++;
+      if(P.kind==='2B') bl.d2++; if(P.kind==='3B') bl.d3++; if(P.kind==='HR') bl.hr++; }
+    const nb=[null,null,null]; let nOut=0, nRun=0; const outNames=[];
+    fin.slice().sort((a,b)=>b.from-a.from).forEach(m=>{
+      if(m.to===-1){ nOut++; delete this.runnerP[m.id];
+        if(m.from>0) outNames.push(this.nameOf(m.id)+' '+BN[Math.max(1,Math.min(4,m.at||m.from+1))]+'에서 아웃');
+        return; }
+      if(m.to>=4){ score(m.id, !err); nRun++; return; }
+      nb[m.to-1]=m.id;
+    });
+    this.bases[0]=nb[0]; this.bases[1]=nb[1]; this.bases[2]=nb[2];
+    if(this.bases.indexOf(bat.id)>=0) onBase(bat.id);
+    this.outs+=nOut; pl.outs+=nOut;
+    const gidp=(nOut>=2 && P.gb);
+    const rbi=(err||gidp)?0:nRun; bl.rbi+=rbi;
+    if(nOut>=2){ this.dpCount=(this.dpCount||0)+1; this.hl('dp',off,bat.name,''); }
+    const tag=bbTag(bb), runs=nRun?(' · '+nRun+'점'):'';
+    let txt, cls;
+    if(P.kind==='HR' && !P.itp){
+      const slam=(nRun===4);
+      txt=(slam?`${bat.name} 만루홈런!! 4점`:`${bat.name} 홈런! ${nRun}점`)+tag; cls='hr';
+      this.hl('hr',off,bat.name, slam?'만루홈런':(nRun>1?`${nRun}점 홈런`:'솔로 홈런'));
+      if(slam) this.feats.push({kind:'만루홈런',pid:bat.id,us:!!off.isUser,detail:`${this.inning}회 ${this.half===0?'초':'말'}`});
+    } else if(P.kind==='HR'){
+      bl.itp=(bl.itp||0)+1;
+      txt=`${bat.name} 그라운드 홈런!! ${nRun}점 (담장은 안 넘었다)`+tag; cls='hr';
+      this.hl('hr',off,bat.name,'그라운드 홈런');
+      this.feats.push({kind:'그라운드 홈런',pid:bat.id,us:!!off.isUser,detail:`${this.inning}회 ${this.half===0?'초':'말'} · 발로 돌았다`});
+    } else if(hit){
+      const nm={'1B':(P.gb&&P.infield?'내야안타':'안타'),'2B':'2루타','3B':'3루타'}[P.kind];
+      txt=`${bat.name} ${nm}${runs}`+tag; cls=nRun?'score':'hit';
+      if(P.kind==='2B') this.hl('d2',off,bat.name,''); if(P.kind==='3B') this.hl('d3',off,bat.name,'');
+    } else if(P.kind==='E'){
+      txt=`${bat.name} ${who} ${P.errId?nameInSide(P.errId,def):''} ${P.throwErr?'송구 실책':'실책'}으로 출루${runs}`+tag; cls='err';
+    } else if(P.kind==='FC'){
+      txt=`${bat.name} 야수선택 — ${outNames.join(' · ')||'앞 주자 아웃'}, 타자는 1루${runs}`+tag; cls='out';
+    } else {
+      const sf=P.air && nRun>0 && !P.foulOut;
+      if(sf){ bl.ab--; bl.sf=(bl.sf||0)+1; }
+      const kindT = P.foulOut ? '파울 플라이' : (P.air ? (P.pu?'내야 뜬공':(P.ld?'직선타':'뜬공')) : '땅볼');
+      txt = gidp ? `${bat.name} ${who} 병살타${runs}`
+          : (sf ? `${bat.name} ${who} 희생플라이 · ${nRun}점` : `${bat.name} ${who} ${kindT} 아웃${runs}`);
+      txt+=tag; cls=nRun?'score':'out';
+    }
+    events.push({text:txt.replace(/\s+/g,' '), cls});
+    if(outNames.length && P.kind!=='FC') events.push({text:outNames.join(' · '), cls:'out'});
+    /* 아래 공통 코드(하이라이트 · 장면 · 트레잇)가 읽는 이름으로 바꿔 둔다 */
+    res.type = hit ? P.kind : (P.kind==='E' ? 'E' : 'OUT');
+    res.gb=!!P.gb; res.ld=!!P.ld; res.itp=!!P.itp;
+  }
+  else if(res.type==='K'){ bl.ab++;bl.k++;pl.k++;pl.outs++;this.outs++;
     /* [야구 규칙] **낫아웃** — 삼진 3구를 포수가 못 잡으면 타자는
        1루로 뛸 수 있다. 1루가 비어 있거나 2아웃일 때만이다(아니면
        포스로 잡히니 뛸 이유가 없다). 삼진은 그대로 기록되고 투수의
@@ -16899,6 +17045,15 @@ function applyLeagueCal(){ Object.assign(LG, isPro()?LG_PRO:LG_AMA); }
 
 function proDef(key){ return PRO_TEAMS.find(t=>t.key===key)||null; }
 /* 팀 이름 — 내가 바꾼 이름이 있으면 그걸 쓴다 */
+/* 우리 팀 이름 — 화면에 찍는 것. 프로면 그 구단(내가 바꾼 이름 포함), 아니면 우완좌완(바꿨으면 그 이름).
+   [제보] "두산왔는데도 인게임은 우완좌완이라 나오냐" — 여러 화면에 '우완좌완' 이 박혀 있었다 */
+function usTeamName(){
+  try{
+    if(isPro() && ST.pro) return proName(ST.pro.team);
+    const t=TBYID&&TBYID['wwzw']; if(t&&t.name) return t.name;
+  }catch(e){}
+  return '우완좌완';
+}
 function proName(key){
   const n=(typeof ST!=='undefined'&&ST&&ST.proNames&&ST.proNames[key])||null;
   const d=proDef(key); return n||(d?d.name:key);
@@ -20688,7 +20843,9 @@ function openMyMeet(){
   const me=ST.playerId||MYID;
   const b=(ST.bat&&ST.bat[me])||null;
   body.appendChild(el('div','sheet-note',
-    (cid?nameOf(cid):'감독')+' 을(를) 찾아갔다. '+
+    /* [제보] "감독님께 면담 요청했는데 왜 두산기준 박찬호를 찾아가는거냐" — coachId() 는 사회인 팀의
+       선수 겸 감독이다. 프로는 따로 있는 감독(proMgrName)을 찾아간다 */
+    ((typeof isPro==='function'&&isPro()&&ST.pro)?(proMgrName(ST.pro.team)+' 감독'):(cid?nameOf(cid):'감독'))+' 을(를) 찾아갔다. '+
     (ck.benched?'오늘 선발에서 빠졌다. ':'')+
     (b&&b.ab?`올해 ${b.ab}타수 ${b.h}안타 (${fmt3(b.h/b.ab)}). `:'')+
     '무슨 말을 할까 — 조건을 걸면 지켜야 한다.'));
@@ -22921,9 +23078,9 @@ function renderGlog(){
       return x+'<td class="rr">'+tot+'</td><td>'+hh+'</td><td>'+ee+'</td></tr>'; };
     const ls=el('div','linescore');
     ls.innerHTML='<table>'+h+
-      row(g.home?opp.name:'우완좌완', g.home?g.fline:g.line, g.home?g.them:g.us,
+      row(g.home?opp.name:usTeamName(), g.home?g.fline:g.line, g.home?g.them:g.us,
           g.home?g.th:g.h, g.home?g.te:g.e)+
-      row(g.home?'우완좌완':opp.name, g.home?g.line:g.fline, g.home?g.us:g.them,
+      row(g.home?usTeamName():opp.name, g.home?g.line:g.fline, g.home?g.us:g.them,
           g.home?g.h:g.th, g.home?g.e:g.te)+'</table>';
     head.appendChild(ls);
     c.appendChild(head);
@@ -30994,7 +31151,7 @@ function nextStepInfo(){
   const opp=TBYID[nx.opp];
   const head=opp?`${nx.round}차전 · ${opp.name} · ${nx.homeGame?'홈':'원정'}`:null;
   if(!ST.weekDone) return {head, label:'이번 주 시작 ▸',
-    sub:'회식·우취·개인 사정이 여기서 정해진다',
+    sub:isPro()?'이번 주 경기 — 다섯 경기는 자동, 한 경기는 직접':'회식·우취·개인 사정이 여기서 정해진다',
     run:()=>{ const r=runWeek(); saveGame(true); if(r)toast('우천 취소'); go('home'); }};
   if(ST.events&&ST.events.some(e=>e.type==='rain'||e.type==='postpone'))
     return {head, label:'다음 주로 ▸', sub:'우천 취소다',
@@ -32584,7 +32741,7 @@ function psPlay(d, done, opt){
   const box=el('div','ps-box');
   const inn=`${d.inning}회 ${d.half===0?'초':'말'}`;
   const usN=(LIVE&&(LIVE.userIsHome?LIVE.home:LIVE.away))
-    ? (LIVE.userIsHome?LIVE.home:LIVE.away).team.name : '우완좌완';
+    ? (LIVE.userIsHome?LIVE.home:LIVE.away).team.name : usTeamName();
   const thN=(LIVE&&(LIVE.userIsHome?LIVE.away:LIVE.home))
     ? (LIVE.userIsHome?LIVE.away:LIVE.home).team.name : '상대';
   /* 다시 보기 때 최종 점수가 찍히면 안 된다. 그 타석 직후 점수를 쓴다. */
@@ -33020,7 +33177,7 @@ function renderGame(){
   const next=ST.schedule[ST.round], opp=TBYID[next.opp];
   const head=el('div','card');
   head.innerHTML=`<div class="card-h">${next.po?(next.po==='final'?'단원리그 C 결승':'단원리그 C 준결승'):next.round+'차전'}</div>
-    <div class="vs"><span>${next.homeGame?opp.name:'우완좌완'}</span><b>vs</b><span>${next.homeGame?'우완좌완':opp.name}</span></div>
+    <div class="vs"><span>${next.homeGame?opp.name:usTeamName()}</span><b>vs</b><span>${next.homeGame?usTeamName():opp.name}</span></div>
     <div class="gdate">${(ST.calendar&&ST.calendar.label)||''} · ${(parkOf(ST.park)).name} · ${(WEATHERS.find(w=>w.id===ST.weather)||WEATHERS[0]).name}</div>
     <div class="daterow"><b>${(ST.calendar&&ST.calendar.label)||''}</b><span>${((WEATHERS.find(w=>w.id===ST.weather)||WEATHERS[0]).name)}</span></div>
     <p class="muted">${next.homeGame?'홈':'원정'} · 7이닝 · 콜드게임 있음</p>
@@ -33140,6 +33297,23 @@ function gameRotation(){
   const t=TBYID['wwzw'];
   sanitizeRotation();
   let rot=ST.rotation.filter(id=>isAvailable(id));
+  /* [제보] "왜 김택연이 선발인데 팀 1-5선발 각팀 데이터 그건 지켜야 될거 아니냐"
+     프로 로테이션은 「오늘 선발 + 불펜 순서」 다. 오늘 선발이 쉬는 날(휴식 · 부상)이면
+     위에서 빠지고 **불펜 첫 번째(마무리 · 셋업)가 선발로 올라섰다.** 선발은 선발진(SP)
+     에서만 나온다 — 오늘 선발이 못 나오면 다음 차례 선발을 당긴다. */
+  if(typeof isPro==='function' && isPro() && rot.length){
+    const role=id=>((t.pitchers.find(p=>p.id===id)||{}).role);
+    if(role(rot[0])!=='SP'){
+      const me=ST.playerId||MYID;
+      const sps=(typeof proSPs==='function'?proSPs(t):t.pitchers.filter(p=>p.role==='SP'))
+        .filter(p=>isAvailable(p.id) && (p.id!==me || rot[0]===me));
+      if(sps.length){
+        const k=((ST.pro&&ST.pro.rotIdx)||0)%sps.length;
+        const sp=sps[k].id;
+        rot=[sp].concat(rot.filter(x=>x!==sp));
+      }
+    }
+  }
   if(!rot.length){
     // 설정한 투수가 전부 결장이면 나온 사람 중에서 급히 채운다
     rot=t.pitchers.filter(p=>isAvailable(p.id))
@@ -33566,7 +33740,7 @@ function paintNpBar(){
   bar.innerHTML='';
   const dfn=LIVE.def();
   [[LIVE.oppSide(), (LIVE.userIsHome?LIVE.away:LIVE.home).team.name],
-   [LIVE.userSide(), '우완좌완']].forEach(([sd,label])=>{
+   [LIVE.userSide(), usTeamName()]].forEach(([sd,label])=>{
     const c=el('div','np-cell'+(sd===dfn?' on':''));
     const nn=npNow(sd);
     if(!nn){ c.innerHTML=`<span class="who">${label}</span><b>-</b>`; bar.appendChild(c); return; }
@@ -37366,6 +37540,1335 @@ function windup(mound, cb){
     setTimeout(()=>mvPaint(mound,{pit:'idle'}),520);
   },300);
 }
+/* ================= 액션 플레이 — 물리 (v3.58.0) =================
+   [요청] "직접플레이는 진짜 못해줄 수준이더라 갈아엎자 다시 만들어봐 공격이든 투수든 수비든
+           (…) 플레이어가 하는 느낌이 아니야 그냥 결과가 정해져 있는 느낌 플레이라 답답함"
+   맞는 말이었다. 예전 직접 플레이는 스윙 타이밍 · 코스를 **품질 점수(q)** 하나로 바꿔서
+   엔진(simPA)의 확률 배수만 밀었다(swingMods · consumePlayMods). 정타를 쳐도 엔진이 굴린
+   결과가 나오고 화면은 그걸 흉내 냈다. 주자도 advOdds 주사위로 갔다. 손이 한 일이 결과로
+   안 보이니 「정해진 결과」 로 느껴질 수밖에 없다.
+
+   액션 플레이는 순서를 뒤집는다 — **손이 공을 만들고, 공이 결과를 만든다.**
+     투구  구종 · 조준점 · 릴리스 게이지 → 실제 도착점(제구만큼 흔들린다) · 휘는 양
+     타격  커서 자리 · 스윙 누른 시각 → 맞았나 · 발사각 · 타구 속도 · 방향
+     타구  공기저항 있는 비행 → 떨어진 자리 · 시간 · 담장
+     수비  야수가 실제로 뛰어가 닿는 시각, 송구가 베이스에 닿는 시각 vs 주자가 닿는 시각
+   주사위는 **사람의 흔들림**에만 남는다 — 제구 산포, AI 타자의 손 떨림, 포구 실책.
+
+   좌표 — 미터 · 초. 홈이 (0,0), x 는 1루 쪽(+), y 는 중견수 쪽(+), z 는 높이.
+   각도(ang)는 기존 코드와 같다 — 0 이 중앙, 좌측이 음수, 파울선이 ±PS_FOUL.
+   존 좌표(u,w) — 존 가장자리가 ±1. u 는 포수 뒤에서 본 오른쪽(1루 쪽)이 +, w 는 위가 +. */
+const AP_B=[[0,0],[19.4,19.4],[0,38.8],[-19.4,19.4]];       // 홈 · 1 · 2 · 3루
+const AP_BALL_R=0.10;                                         // 공 반지름(존 반폭 단위)
+const AP_SW_T=0.15;                                           // 스윙 누름 → 배트가 홈 앞(초)
+function apPol(a,r){ const q=a*Math.PI/180; return [r*Math.sin(q), r*Math.cos(q)]; }
+function apAng(x,y){ return Math.atan2(x,y)*180/Math.PI; }
+function apClamp(v,a,b){ return v<a?a:(v>b?b:v); }
+function apGauss(rng){ const u=Math.max(1e-9,rng()), v=rng(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+/* 리그 — 0 사회인 · 1 프로. 같은 능력치 50 이라도 몸이 다르다 */
+function apLg(){ return (typeof isPro==='function'&&isPro())?1:0; }
+
+/* ---------- 몸 — 능력치를 미터 · 초로 ----------
+   [기준] 사회인 4부 — 1루까지 4.6초 안팎, 내야 송구 110km/h 안팎, 외야 뜬공 판단이 늦다.
+          프로 — 1루까지 4.3초, 내야 송구 130km/h 안팎.                                  */
+function apBody(p, L){
+  const spd=(p&&p.spd!=null)?p.spd:45, df=(p&&p.def!=null)?p.def:45, arm=(p&&p.arm!=null)?p.arm:45;
+  return {
+    run: L? 6.6+spd*0.036 : 5.8+spd*0.036,    // 달리기(m/s) — 사회인 45 → 7.4 · 프로 41 → 8.1
+    chase: L? 6.4+spd*0.036 : 5.5+spd*0.036,  // 공 쫓기(m/s) — 공을 보며 뛰면 전력질주보다 느리다
+    react: L? 0.42-df*0.0025 : 0.70-df*0.004, // 타구 반응(초)
+    reach: 0.95+df*0.006+L*0.25,              // 글러브가 닿는 거리(m) — 팔 길이 + 한 발
+    thr: L? 25+arm*0.22 : 19+arm*0.20,        // 송구(m/s) — 사회인 46 → 101km/h · 프로 54 → 133km/h
+    rel: L? 0.62-df*0.004 : 0.95-df*0.005,    // 잡고 던지기까지(초)
+    hands: df,
+  };
+}
+/* 수비 위치 — 구장 담장에 맞춰 외야가 앞뒤로 선다(psPosOf 와 같은 생각) */
+function apSpots(park){
+  const F=a=>fenceAt(park,a);
+  /* 사회인 외야는 앞에 선다 — 뒤로 넘어가는 공을 못 따라가니까 */
+  const L=apLg(), ko=L?0.70:0.60, kc=L?0.73:0.64, di=L?43:40, ci=L?27:25;
+  return { P:[0,17.6], C:[0,-1.1],
+    '1B':apPol(39,ci), '2B':apPol(13,di), SS:apPol(-13,di), '3B':apPol(-39,ci),
+    LF:apPol(-28,F(-28)*ko), CF:apPol(0,F(0)*kc), RF:apPol(28,F(28)*ko) };
+}
+
+/* ---------- 투구 ----------
+   구종마다 휘는 양(존 반폭 단위). 우완 기준 — 슬라이더는 포수 뒤에서 오른쪽(우타 바깥)으로,
+   체인지업은 왼쪽(팔 쪽)으로 흐른다. 좌완은 좌우만 뒤집는다. 구위(stf)가 크기를 키운다. */
+const AP_BRK={ ff:[0.06,0.12,0.50], sl:[0.62,-0.30,0.72], cu:[0.30,-0.95,0.50],
+               ch:[-0.40,-0.50,0.66], fk:[0.00,-0.85,0.80] };
+function apPitchPlan(pit, type, target, acc, rng, fatigue){
+  const B=AP_BRK[type]||AP_BRK.ff;
+  const hand=(typeof throwHandOf==='function'&&throwHandOf(pit)==='L')?-1:1;
+  const stf=(pit&&pit.stf)||40, ctl=(pit&&pit.ctl)||40;
+  const bm=0.65+stf*0.007;
+  const bu=B[0]*bm*hand, bw=B[1]*bm;
+  /* 제구 — 조준점에서 얼마나 흩어지나. 게이지(acc 0~1)가 좋으면 좁고, 지치면 넓다 */
+  const sig=(0.15+(100-ctl)*0.0070)*(1.75-1.2*apClamp(acc==null?0.6:acc,0,1))*(1+(fatigue||0)*0.8);
+  const u=target.u+apGauss(rng)*sig, w=target.w+apGauss(rng)*sig*0.9;
+  const kmh=(typeof pitchKmh==='function')?pitchKmh(pit,type,rng):120;
+  const T=17.0/Math.max(15,(kmh/3.6)*0.93);
+  return {type, kmh:Math.round(kmh), T, u, w, bu, bw, late:B[2], hand, tu:target.u, tw:target.w, sig};
+}
+/* p(0~1) 만큼 날아왔을 때 공이 존 평면 기준 어디로 보이나 — 막판에 휜다 */
+function apPitchAt(pl, p){
+  const k=Math.pow(apClamp(p,0,1), 1+pl.late*3);
+  return {u:pl.u-pl.bu+pl.bu*k, w:pl.w-pl.bw+pl.bw*k};
+}
+function apInZone(u,w){ return Math.abs(u)<=1+AP_BALL_R && Math.abs(w)<=1+AP_BALL_R; }
+
+/* ---------- 컨택 ----------
+   sw = {t: 스윙 누른 시각(투구 출발 기준 초), cu, cw: 그 순간 커서 자리}
+   · 커서 반지름 — 컨택이 키운다. 배트는 가로로 길어서 좌우는 너그럽다(×0.62)
+   · 타이밍 창 — 컨택이 넓힌다. 빠른 공일수록 좁다
+   · 공이 커서보다 **위**에 맞으면 배트가 공 아래를 쳐서 뜬다. **아래**면 땅볼
+   · 빠르면 당기고 늦으면 민다
+   반환 {miss} | {foul, tip} | {ev, la, spray, qs, qt}                                 */
+function apCursorR(bat, guessHit){
+  const con=(bat&&bat.con)||40;
+  return (0.22+con*0.0030)*(guessHit?1.18:1);
+}
+function apTimingWin(bat, kmh){
+  const con=(bat&&bat.con)||40;
+  return (0.060+con*0.00045)*apClamp(1.25-(kmh-90)*0.004,0.8,1.3);
+}
+function apContact(bat, pl, sw, L, rng, guessHit, human){
+  /* [제보] "진짜 배트 중앙 하기 개빡세네" — 사람 손가락은 AI 보다 거칠다(화면을 끌고 누르는
+     사이에 몇 픽셀이 흔들린다). 사람이 치는 타석은 배트 커서를 3할 키운다. 정타 자리(가운데)에서
+     조금 벗어나도 덜 깎인다. AI 는 그대로 — 리그 밸런스(apSimPA)는 이 값과 상관없다. */
+  const R=apCursorR(bat, guessHit)*(human?1.3:1)+AP_BALL_R;
+  const ex=(pl.u-sw.cu)*0.62, ey=pl.w-sw.cw;
+  const eff=Math.hypot(ex,ey);
+  const win=apTimingWin(bat, pl.kmh);
+  const dt=(sw.t+AP_SW_T)-pl.T;                   // + 늦었다 · - 빨랐다
+  if(eff>R || Math.abs(dt)>win*1.6) return {miss:true, dt, eff:eff/R};
+  const qs=1-eff/R, qt=1-Math.min(1,Math.abs(dt)/(win*1.6));
+  /* 스치기만 했다 — 뒤로 넘어가는 파울 */
+  if(qs<0.30 || qt<0.10) return {foul:true, tip:true, dt};
+  const pow=(bat&&bat.pow)||40;
+  const top=100+pow*1.15+L*5;                         // 이 사람이 낼 수 있는 제일 센 타구(km/h)
+  const ev=top*(0.42+0.58*Math.pow(qs,0.5))*(0.70+0.30*qt)
+          *(1+((pl.kmh||110)-110)*0.0012) + apGauss(rng)*3;
+  /* 발사각 — 공이 커서보다 위(ey>0)면 뜬다. 가운데면 12도 안팎 라이너 */
+  const la=apClamp(16+(ey/R)*44+apGauss(rng)*5 + (pl.type==='fk'||pl.type==='ch'?-4:0), -35, 85);
+  const pullDir=((bat&&bat.bats)==='L')?1:-1;
+  const spray=pullDir*(-dt/win)*95 + ex*14 + apGauss(rng)*9;
+  if(la>72) return {foul:true, tip:true, dt};                // 배트 밑동에 걸려 뒤로 솟는다
+  return {ev:Math.max(40,ev), la, spray, qs, qt, dt};
+}
+
+/* ---------- 타구 비행 ----------
+   공기저항 k=0.0045 — 165km/h · 28도면 119m 가 날아간다(메이저 400피트 근처).
+   바닥에 떨어지면 튀면서 느려지고(첫 바운드에 55%), 잔디 위를 굴러 멈춘다.
+   담장 — 넘어가면 홈런, 맞으면 튕겨 나온다.                                             */
+function apFenceH(L){ return L?3.0:2.2; }
+function apTraj(ev, la, spray, park, L){
+  const pts=[], a=la*Math.PI/180, s=spray*Math.PI/180;
+  let v=ev/3.6, vh=v*Math.cos(a), vz=v*Math.sin(a);
+  let x=0, y=0, z=0.9, t=0, dt=0.02;
+  let dx=Math.sin(s), dy=Math.cos(s);
+  let hr=false, wall=false, landT=null, land=null, out=false;
+  const FH=apFenceH(L), foul=Math.abs(spray)>((typeof PS_FOUL!=='undefined')?PS_FOUL:50.2);
+  let air=la>-2;
+  if(!air){ vh=v*Math.cos(a)*0.62; vz=0; z=0; }        // 땅에 먼저 꽂힌다 — 첫 바운드에 힘이 빠진다
+  pts.push({t,x,y,z});
+  let bounces=0;
+  while(t<14){
+    if(z>0 || vz>0){
+      const sp=Math.hypot(vh,vz), k=0.0045;
+      vh+=(-k*sp*vh)*dt; vz+=(-9.8-k*sp*vz)*dt;
+      x+=dx*vh*dt; y+=dy*vh*dt; z+=vz*dt;
+      if(z<=0){ z=0;
+        if(landT==null){ landT=t+dt; land={x,y}; }
+        bounces++;
+        vh*=(bounces===1?0.55:0.70); vz=-vz*(bounces===1?0.30:0.25);
+        if(vz<1.2) vz=0;
+      }
+    } else {
+      const dec=L?3.2:3.0;                           // 굴러가며 느려진다(잔디 · 흙)
+      vh=Math.max(0, vh-dec*dt);
+      x+=dx*vh*dt; y+=dy*vh*dt;
+    }
+    t+=dt;
+    /* 담장 */
+    if(!foul){
+      const r=Math.hypot(x,y), ang=apAng(x,y), F=fenceAt(park,ang);
+      if(r>=F){
+        if(z>FH && !wall){ hr=true; pts.push({t,x,y,z}); break; }
+        /* 맞고 튕긴다 — 안쪽으로 되돌아 굴러 나온다 */
+        wall=true; const k2=F/r; x*=k2*0.995; y*=k2*0.995;
+        dx=-dx; dy=-dy; vh*=0.30; vz=Math.min(vz,0); if(z>0) z=Math.min(z,FH*0.7);
+      }
+    } else if(Math.hypot(x,y)>130){ out=true; }
+    pts.push({t,x,y,z});
+    if(z<=0 && vz===0 && vh<=0.05){ break; }
+    if(out) break;
+  }
+  const last=pts[pts.length-1];
+  if(landT==null){ landT=last.t; land={x:last.x,y:last.y}; }
+  return {pts, hr, wall, foul, landT, land, stop:{t:last.t,x:last.x,y:last.y},
+          ev, la, spray, dist:Math.round(Math.hypot(land.x,land.y))};
+}
+/* ---------- 누가 먼저 공에 닿나 ----------
+   궤적 점 하나하나를 보면서, 그 시각까지 그 자리에 닿는 야수가 있나 본다.
+   공중에서 닿으면(2.4m 아래) 잡은 것, 땅에서 닿으면 막은 것. 제일 먼저 닿는 사람이 임자다.
+   margin — 여유 시간. 겨우 닿았으면(다이빙) 놓칠 수도 있다.                              */
+/* 뜬공은 외야수가 **읽는 시간**이 더 든다 — 사회인은 첫발이 늦다 */
+const AP_OF=['LF','CF','RF'];
+function apReachT(f, px, py, air){
+  const d=Math.max(0, Math.hypot(px-f.x, py-f.y)-f.b.reach);
+  const rd=(air && AP_OF.indexOf(f.pos)>=0)?(apLg()?0.04:0.12):0;
+  return d<=0 ? f.b.react*0.4 : f.b.react+rd+0.30+d/f.b.chase;
+}
+function apIntercept(tr, F, skip){
+  let best=null;
+  for(let i=1;i<tr.pts.length;i++){
+    const q=tr.pts[i];
+    if(q.z>2.4) continue;
+    for(const f of F){
+      if(skip&&skip[f.pos]) continue;
+      if(f.pos==='C' && Math.hypot(q.x,q.y)>14) continue;
+      if(f.pos==='P' && (q.z>0 || Math.hypot(q.x,q.y)>26) && q.t>0.6) continue;
+      const rt=apReachT(f,q.x,q.y,q.z>0.05);
+      if(rt<=q.t){ best={f, i, t:q.t, x:q.x, y:q.y, air:q.z>0.05, margin:q.t-rt}; break; }
+    }
+    if(best) break;
+  }
+  return best;
+}
+
+/* ---------- 주루 · 송구 — 누가 먼저 베이스에 닿나 ----------
+   주자 i 가 베이스 a 에서 b 까지 가는 시각 = 출발 + 거리/발 + 베이스를 돌 때마다 0.3초.
+   송구 = 잡은 시각 + 던지기까지 + 거리/어깨. 베이스 바로 옆이면 던지지 않고 밟는다.
+   이 둘을 비교해서 **먼저 닿은 쪽이 이긴다.** 판정에 주사위가 없다.
+   주자는 자기가 계산한 여유가 있을 때만 한 베이스 더 간다(과감함은 사람마다 조금 다르다).
+   수비는 잡을 수 있는 주자 중 제일 앞 주자를 노리고, 되면 병살까지 간다.               */
+const AP_LEG=27.43;
+function apRunAt(r, k){ return r.t0 + (k-r.from)*AP_LEG/r.b.run + Math.max(0,k-r.from-1)*0.25; }
+function apThrowAt(f, px, py, tp, k, first){
+  const B=AP_B[k%4], d=Math.hypot(B[0]-px, B[1]-py);
+  /* 베이스 옆에서 잡았으면 자기가 밟는다 — 내야수만(외야수가 베이스까지 뛰진 않는다) */
+  if(d<5.5 && ['1B','2B','SS','3B','P','C'].indexOf(f.pos)>=0) return tp+0.12+d/f.b.chase;
+  /* 먼 송구는 느려지고, 사회인은 70m 넘으면 중계를 한 번 거친다 */
+  const L=apLg();
+  const v=f.b.thr*(d>50?(L?0.90:0.80):1);
+  /* 외야수는 멈춰 서서 한 발 내딛고(크로우 홉) 던진다 — 내야수보다 반 박자 늦다 */
+  const hop=(AP_OF.indexOf(f.pos)>=0)?(L?0.45:0.30):0;
+  return tp + (first===false?0.32:f.b.rel) + hop + d/v + 0.08 + ((!L&&d>70)?0.20:0);
+}
+/* 주자들이 어디까지 갈지 정하고 수비가 어디로 던질지 정한다. 결과는 결정적이다. */
+function apRunPlay(ctx, pk){
+  const {runners, bat, outs, rng}=ctx;
+  const all=[];          // 앞 주자부터
+  for(let i=2;i>=0;i--) if(runners[i]) all.push(runners[i]);
+  all.push(bat);
+  /* 포스 — 뒤가 전부 차 있으면 밀린다 */
+  const occ=[!!runners[0],!!runners[1],!!runners[2]];
+  all.forEach(r=>{ r.forced = r.from===0 ? true
+    : (r.from===1 ? true : (r.from===2 ? occ[0] : (occ[0]&&occ[1]))); });
+  /* 목표 — 뒤에서부터가 아니라 앞에서부터 정한다(앞 주자를 앞지를 수 없다) */
+  let cap=4;
+  all.forEach(r=>{
+    const min=r.forced? r.from+1 : r.from;
+    let tgt=min;
+    for(let k=min+1;k<=4;k++){
+      if(k>cap && !(k===4&&cap===4)) break;
+      const m=apThrowAt(pk.f,pk.x,pk.y,pk.t,k)-apRunAt(r,k);
+      if(m>r.aggr) tgt=k; else break;
+    }
+    if(tgt>=cap && cap<4) tgt=Math.max(min, cap-1);
+    r.to=tgt; r.minTo=min;
+    if(tgt<4) cap=tgt;
+  });
+  /* 수비 — 잡을 수 있는 주자(여유 > 0.05초)를 찾는다. 앞 주자 우선, 포스 우선 */
+  const cand=all.filter(r=>r.to>r.from || r.from===0).map(r=>{
+    const tt=apThrowAt(pk.f,pk.x,pk.y,pk.t,r.to), tr=apRunAt(r,r.to);
+    return {r, tt, tr, m:tr-tt};
+  }).filter(c=>c.m>0.05 && c.r.to<=4);
+  let outs2=[], play=null;
+  if(cand.length){
+    cand.sort((a,b)=>(b.r.to-a.r.to) || (b.m-a.m));
+    const c=cand[0];
+    outs2.push({r:c.r, at:c.r.to, t:c.tt});
+    play={to:c.r.to, t:c.tt};
+    /* 병살 — 포스 아웃 뒤 1루로. 두 번째 송구는 베이스에 선 사람이 던진다 */
+    if(c.r.forced && c.r!==bat && outs+1<3 && bat.to===1){
+      const piv=ctx.F.find(f=>f.pos===(c.r.to===2?(pk.f.pos==='SS'?'2B':'SS'):(c.r.to===3?'3B':(c.r.to===4?'C':'1B'))))||pk.f;
+      const B=AP_B[c.r.to%4];
+      const t2=apThrowAt(piv,B[0],B[1],c.tt,1,false);
+      if(apRunAt(bat,1)-t2>0.02) outs2.push({r:bat, at:1, t:t2});
+    }
+  }
+  return {all, outs:outs2, play};
+}
+function apResolve(tr, ctx){
+  const {F, rng, L, outs}=ctx;
+  const res={tr, outs:[], moves:[], kind:null, air:false, gb:false, ld:false, pu:false,
+             err:null, errPos:null, pick:null, catchT:null, throwTo:null, runs:[], tagUps:[]};
+  if(tr.hr){ res.kind='HR'; return res; }
+  let I=apIntercept(tr, F);
+  let fumble=0;
+  /* 공중에서 닿았다 — 잡는다(겨우 닿았으면 놓칠 수도 있다) */
+  if(I && I.air){
+    const hands=I.f.b.hands;
+    const pErr=(L?0.020:0.150)*(1+(45-hands)*0.02);
+    const pCatch = I.margin>=0.35 ? 1 : apClamp(0.40+I.margin*1.7+(hands-45)*0.006,0.15,0.97);
+    const u=rng();
+    if(u<pCatch*(1-pErr)){
+      res.kind='OUT'; res.air=true; res.catchT=I.t; res.pick={f:I.f,t:I.t,x:I.x,y:I.y};
+      res.ld=tr.la<20; res.pu=tr.la>=50 && tr.dist<60;
+      return res;
+    }
+    /* 놓쳤다 — 여유 있게 닿은 공이면 실책, 다이빙이면 안타 */
+    if(I.margin>=0.35){ res.err=I.f.id; res.errPos=I.f.pos; res.dropFly=true; }
+    fumble=(I.margin<0.15)?0.95:0.65;
+    I={...I, air:false, t:I.t+fumble};
+  }
+  /* 땅에서 막는다 */
+  if(I && !I.air){
+    const hard=Math.max(0,(tr.ev-115)/55);
+    const hands=I.f.b.hands;
+    if(I.margin<0.12 && !fumble){
+      /* 몸을 날려야 닿는다 — 못 막으면 공이 빠져나간다 */
+      const pStop=apClamp(0.30+I.margin*3.5+(hands-45)*0.008,0.10,0.90);
+      if(rng()>pStop){
+        const skip={}; skip[I.f.pos]=true;
+        const J=apIntercept(tr,F,skip);
+        if(J) I=J;
+      }
+    }
+    if(!fumble && !res.err){
+      const pE=(L?0.070:0.320)*(1+hard*0.6)*(1+(45-hands)*0.02);
+      if(rng()<pE && ['1B','2B','SS','3B','P'].indexOf(I.f.pos)>=0){ res.err=I.f.id; res.errPos=I.f.pos; fumble=0.95; I={...I, t:I.t+fumble}; }
+    }
+  }
+  /* 아무도 못 닿았다 — 공이 멈춘 자리로 제일 빨리 가는 사람이 줍는다 */
+  if(!I){
+    let best=null;
+    F.forEach(f=>{ if(f.pos==='C'||f.pos==='P') return;
+      const rt=Math.max(tr.stop.t, apReachT(f,tr.stop.x,tr.stop.y))+0.25;
+      if(!best||rt<best.t) best={f, t:rt, x:tr.stop.x, y:tr.stop.y, air:false, margin:0}; });
+    I=best;
+  }
+  res.gb=tr.la<10; res.ld=tr.la>=10&&tr.la<22;
+  /* 외야에서 굴러가는 공을 주우면 멈추고 몸을 돌려야 한다 — 뜬공 포구보다 느리다 */
+  if(AP_OF.indexOf(I.f.pos)>=0 && !I.air) I={...I, t:I.t+(L?0.35:0.45)};
+  res.pick={f:I.f,t:I.t,x:I.x,y:I.y};
+  const RP=apRunPlay(ctx, res.pick);
+  res.run=RP;
+  /* 실책 없이 했으면 어땠나 — 실책으로 살았는지 가른다 */
+  let savedByErr=false;
+  if(res.err && fumble){
+    const clean={...res.pick, t:res.pick.t-fumble};
+    const ctx2={...ctx, runners:ctx.runners.map(r=>r?{...r}:null), bat:{...ctx.bat}};
+    const RP2=apRunPlay(ctx2, clean);
+    savedByErr = RP2.outs.some(o=>o.r.from===0) && !RP.outs.some(o=>o.r.from===0);
+    if(!savedByErr && !RP.outs.length && RP2.outs.length) savedByErr=true;
+    /* 여유 있게 닿은 뜬공을 떨어뜨렸다 — 잡았으면 아웃이었다 */
+    if(res.dropFly) savedByErr=true;
+  }
+  /* 송구 실책 — 먼 송구일수록 빠진다(사회인은 1루 송구가 제일 무섭다). 빠지면 아웃이 없던 일이
+     되고 다들 한 베이스씩 더 간다 */
+  if(RP.outs.length && !res.err){
+    const o=RP.outs[0], B=AP_B[o.at%4];
+    const d=Math.hypot(B[0]-res.pick.x, B[1]-res.pick.y);
+    const pT=(L?0.030:0.140)*apClamp(d/30,0.3,2.2);
+    if(d>6 && rng()<pT){
+      res.err=res.pick.f.id; res.errPos=res.pick.f.pos; res.throwErr=true;
+      RP.outs=[]; RP.all.forEach(r=>{ r.to=Math.min(4,r.to+1); });
+      res.kind='E';
+    }
+  }
+  /* 이닝이 끝나는 아웃 — 포스 아웃이면 그 플레이의 득점은 없다 */
+  const nOut=RP.outs.length;
+  res.outs=RP.outs.map(o=>({id:o.r.id, from:o.r.from, at:o.at, t:o.t}));
+  res.throwTo=RP.play?RP.play.to:null;
+  const third=(outs+nOut>=3);
+  const forceThird=third && RP.outs.some(o=>o.r.forced);
+  const outT=third?Math.min(...RP.outs.map(o=>o.t)):Infinity;
+  RP.all.forEach(r=>{
+    const out=RP.outs.find(o=>o.r===r);
+    if(out) { res.moves.push({id:r.id, from:r.from, to:-1, at:out.at, t:out.t}); return; }
+    let to=r.to;
+    if(third && to===4 && (forceThird || apRunAt(r,4)>outT)) to=Math.min(3,to);
+    if(third && to<4) { res.moves.push({id:r.id, from:r.from, to, t:apRunAt(r,to)}); return; }
+    res.moves.push({id:r.id, from:r.from, to, t:apRunAt(r,to)});
+  });
+  const bm=res.moves.find(m=>m.from===0);
+  if(res.throwErr) res.kind='E';
+  else if(res.err && savedByErr) res.kind='E';
+  else if(bm.to<0) res.kind='OUT';
+  else if(nOut>0 && (res.gb || RP.outs.some(o=>o.r.forced))) res.kind='FC';
+  else res.kind=['','1B','2B','3B','HR'][Math.min(4,bm.to)];
+  if(res.kind==='HR') res.itp=true;
+  return res;
+}
+/* 뜬공이 잡혔다 — 주자는 리터치 후 간다(여유가 충분할 때만). 두 아웃 전이어야 한다 */
+function apTagUps(res, ctx){
+  const {runners, outs, rng}=ctx;
+  const out=[];
+  if(outs+1>=3) return out;
+  const pk=res.pick;
+  let cap=4;
+  for(let i=2;i>=0;i--){
+    const r=runners[i]; if(!r) continue;
+    const k=r.from+1;
+    if(k>cap){ cap=r.from; continue; }
+    const tRun=pk.t+0.10+AP_LEG/r.b.run;
+    const tThr=apThrowAt(pk.f,pk.x,pk.y,pk.t,k);
+    const m=tThr-tRun;
+    /* 3루 주자는 조금 더 과감하다(점수가 걸려 있다) */
+    const need=(k===4?0.05:0.35)+r.aggr*0.5;
+    if(m>need){
+      const noise=apGauss(rng)*0.10;
+      out.push({id:r.id, from:r.from, to:(m+noise>0?k:-1), at:k, t:(m+noise>0?tRun:tThr)});
+      if(m+noise>0) cap=r.from; 
+    } else cap=r.from;
+    if(out.length && out[out.length-1].to===-1) break;   // 한 번 던지면 끝
+  }
+  return out;
+}
+
+/* ---------- 한 번의 타구를 끝까지 ----------
+   ctx = {F 야수들, runners[3] {id,b}, bat {id,b,bats}, outs, L, park, rng, runGo}      */
+function apFielders(defSide, park, L, pit){
+  const S=apSpots(park), T=defSide.team||{};
+  const find=id=>(T.players||[]).find(x=>x.id===id)||(T.pitchers||[]).find(x=>x.id===id)||null;
+  const F=[];
+  (defSide.slots||[]).forEach(s=>{ const q=S[s.pos]; if(!q||s.pos==='DH') return;
+    F.push({pos:s.pos, id:s.id, x:q[0], y:q[1], b:apBody(find(s.id)||{},L)}); });
+  if(!F.some(f=>f.pos==='P') && pit) F.push({pos:'P', id:pit.id, x:S.P[0], y:S.P[1], b:apBody(pit,L)});
+  if(!F.some(f=>f.pos==='C')) F.push({pos:'C', id:null, x:S.C[0], y:S.C[1], b:apBody({},L)});
+  return F;
+}
+function apAggr(rng, outs){ return (outs>=2?0.12:0.28)+(rng()-0.5)*0.30; }
+function apPlayBall(ctx, ev, la, spray){
+  const {L, park, rng}=ctx;
+  const tr=apTraj(ev, la, spray, park, L);
+  if(tr.foul){
+    /* 파울 뜬공도 잡으면 아웃이다 — 공중 점만 본다 */
+    const J=apIntercept({pts:tr.pts.filter(q=>q.z>0.05)}, ctx.F);
+    if(J && J.air && J.margin>0.15 && rng()<0.93)
+      return {tr, kind:'OUT', air:true, foulOut:true, pick:{f:J.f,t:J.t,x:J.x,y:J.y}, catchT:J.t, outs:[], moves:[], tagUps:[]};
+    return {tr, kind:'FOUL'};
+  }
+  const leg=r=>AP_LEG/r.b.run;
+  const fly=tr.la>=18, two=ctx.outs>=2;
+  ctx.bat.from=0; ctx.bat.t0=(ctx.bat.bats==='L'?0.86:0.95)-L*0.08; ctx.bat.aggr=apAggr(rng,ctx.outs);
+  /* 리드 — 주자는 공이 맞는 순간 이미 베이스에서 몇 걸음 나가 있고 움직이고 있다(2차 리드).
+     그 몇 걸음이 2루 주자가 단타에 홈을 밟느냐를 가른다. */
+  const LEAD=[4.2,5.2,3.6];
+  ctx.runners.forEach((r,i)=>{ if(!r) return; r.from=i+1; r.aggr=apAggr(rng,ctx.outs);
+    const lead=LEAD[i]/r.b.run;
+    if(two) r.t0=0.10-lead;
+    else if(fly) r.t0=Math.max(0.25, tr.landT-0.55*leg(r));
+    else r.t0=0.20-lead;
+    if(ctx.runGo && i===0) r.t0=-0.35-lead; });
+  const res=apResolve(tr, ctx);
+  if(res.kind==='OUT' && res.air) res.tagUps=apTagUps(res, ctx);
+  return res;
+}
+
+/* ---------- AI 투수 · AI 타자 ----------
+   사람이 안 잡는 쪽을 AI 가 한다. 같은 물리를 쓴다 — AI 타자도 커서와 타이밍으로 친다.
+   AI 타자의 눈(선구)은 공이 존 안인지 보는 정확도, 컨택은 커서 · 타이밍의 떨림이다.     */
+function apAIPitch(pit, bat, cnt, rng){
+  const type=(typeof pickPitch==='function')?pickPitch(pit,rng):'ff';
+  let u, w;
+  const r=rng();
+  if(cnt.b===3 && cnt.s<2){ u=apGauss(rng)*0.40; w=apGauss(rng)*0.40; }
+  else if(cnt.s===2 && cnt.b<2 && r<0.55){ u=(rng()<0.5?-1:1)*(0.95+rng()*0.40); w=-0.7-rng()*0.6; }
+  else if(r<0.40){ u=(rng()*2-1)*0.72; w=(rng()*2-1)*0.72; }
+  else if(r<0.76){ u=(rng()<0.5?-1:1)*(1.00+rng()*0.45); w=(rng()*2-1)*1.1; }   // 코너 밖
+  else { u=(rng()*2-1)*0.9; w=(rng()<0.35?1:-1)*(0.95+rng()*0.45); }           // 높게 · 낮게 빠진다
+  if(type!=='ff') w-=0.25;
+  return {type, target:{u,w}, acc:apClamp(0.62+apGauss(rng)*0.14,0,1)};
+}
+function apAISwing(bat, pl, cnt, rng, L, prevKmh){
+  const eye=(bat&&bat.eye)||45, con=(bat&&bat.con)||40;
+  const brk=Math.hypot(pl.bu,pl.bw);
+  /* 판단(칠까 말까)과 조준(커서)은 따로 흔들린다 — 볼은 잘 봐도 맞히는 건 다른 일이다 */
+  const sp=0.26-eye*0.0020+brk*0.14;
+  const pu=pl.u+apGauss(rng)*sp, pw=pl.w+apGauss(rng)*sp;
+  const au=pl.u+apGauss(rng)*(sp*0.9+0.06), aw=pl.w+apGauss(rng)*(sp*0.9+0.06);
+  const inP=apInZone(pu,pw);
+  let ps = inP ? 0.68 : (0.24-eye*0.0024+brk*0.07);
+  if(cnt.s===2) ps+= inP?0.20:0.14;
+  if(cnt.b===3 && cnt.s<2) ps-= inP?0.25:0.20;
+  if(cnt.b===0 && cnt.s===0) ps-=0.20;
+  if(cnt.b>cnt.s && cnt.s<2) ps-=0.06;             // 볼이 앞서면 기다린다
+  if(rng()>=apClamp(ps,0.02,0.97)) return null;
+  const sc=(0.29-con*0.0022)*(L?0.80:1);
+  const cu=au+apGauss(rng)*sc, cw=aw+apGauss(rng)*sc;
+  /* 타이밍 — 직구를 기다리다 변화구가 오면 앞으로 쏠린다 */
+  const ffK=prevKmh||pl.kmh;
+  const bias=(pl.type==='ff')?0:-(1-pl.kmh/Math.max(pl.kmh,ffK))*0.38*(1-eye/140);
+  const st=0.050-con*0.00025+Math.max(0,pl.kmh-120)*0.00015;
+  const dt=bias+apGauss(rng)*st;
+  return {t:pl.T-AP_SW_T+dt, cu, cw};
+}
+/* 사구 — 몸쪽으로 크게 빠진 공(타자 쪽 |u|>1.7) 은 맞는다 */
+function apHBP(pl, bats){
+  const inside=(bats==='L')? pl.u>2.30 : pl.u< -2.30;
+  return inside && pl.w>-1.3 && pl.w<1.6;
+}
+/* 한 타석 전체 — AI 대 AI. 밸런스를 재고, 내가 안 잡는 타석을 굴릴 때 쓴다 */
+function apSimPA(ctx, pit, bat, rng){
+  const cnt={b:0,s:0}; let n=0, prev=null, fouls=0;
+  while(n<30){
+    n++;
+    const ap=apAIPitch(pit,bat,cnt,rng);
+    const pl=apPitchPlan(pit,ap.type,ap.target,ap.acc,rng,0);
+    const sw=apAISwing(bat,pl,cnt,rng,ctx.L,prev);
+    prev=(ap.type==='ff')?pl.kmh:prev;
+    if(!sw){
+      if(apHBP(pl,bat.bats)) return {type:'HBP', n};
+      const call=apInZone(pl.u,pl.w);
+      if(call){ cnt.s++; if(cnt.s>=3) return {type:'K', n}; }
+      else { cnt.b++; if(cnt.b>=4) return {type:'BB', n}; }
+      continue;
+    }
+    const c=apContact(bat,pl,sw,ctx.L,rng,false);
+    if(c.miss){ cnt.s++; if(cnt.s>=3) return {type:'K', n}; continue; }
+    if(c.foul){ if(cnt.s<2) cnt.s++; fouls++; continue; }
+    const res=apPlayBall(ctx, c.ev, c.la, c.spray);
+    if(res.kind==='FOUL'){ if(cnt.s<2) cnt.s++; fouls++; continue; }
+    return {type:'PLAY', res, n, c};
+  }
+  return {type:'K', n};
+}
+
+/* ---------- 물리 결과 → 기록 ----------
+   LiveGame.step 의 res.phys 가 읽는 모양으로 바꾼다. 누가 어디서 어디로 갔나(fin) 하나로 다 적힌다.
+   ids = 타석 시작 때 루상 [1루, 2루, 3루] 주자 id                                          */
+function apCarry(tr){
+  if(!tr.hr) return tr.dist;
+  const t2=apTraj(tr.ev, tr.la, tr.spray, {dim:[999,999,999]}, apLg());
+  return t2.dist;
+}
+function apToRes(res, ids, batId){
+  const tr=res.tr;
+  const o={kind:res.kind, gb:!!res.gb, ld:!!res.ld, air:!!res.air, pu:!!res.pu, foulOut:!!res.foulOut,
+    itp:!!res.itp, errId:res.err||null, errPos:res.errPos||null, throwErr:!!res.throwErr,
+    fpos:res.pick&&res.pick.f?res.pick.f.pos:null, ang:tr?tr.spray:0, fin:[]};
+  o.infield = !!(res.pick && ['P','C','1B','2B','SS','3B'].indexOf(res.pick.f.pos)>=0);
+  const pk=res.pick;
+  o.dist = tr ? Math.max(1, Math.round(res.kind==='HR' ? apCarry(tr)
+         : ((res.air||res.gb) && pk ? Math.hypot(pk.x,pk.y) : tr.dist))) : null;
+  if(res.kind==='HR' && !res.itp){
+    o.fin.push({id:batId, from:0, to:4});
+    ids.forEach((id,i)=>{ if(id) o.fin.push({id, from:i+1, to:4}); });
+    return o;
+  }
+  if(res.kind==='OUT' && res.air){
+    o.fin.push({id:batId, from:0, to:-1, at:0});
+    const tu=res.tagUps||[];
+    ids.forEach((id,i)=>{ if(!id) return;
+      const t=tu.find(x=>x.from===i+1);
+      o.fin.push(t ? {id, from:i+1, to:t.to, at:t.at} : {id, from:i+1, to:i+1}); });
+    return o;
+  }
+  (res.moves||[]).forEach(m=>{
+    const id = m.from===0 ? batId : ids[m.from-1];
+    if(id) o.fin.push({id, from:m.from, to:m.to, at:m.at});
+  });
+  return o;
+}
+
+
+/* ================= 액션 플레이 — 화면 (v3.58.0) =================
+   포수 뒤 중계 화면(moundView) 위에 캔버스를 한 장 더 얹어서 공 · 커서 · 조준점을 그린다.
+   조작은 두 손이다 — 왼손(조이스틱 · 화면 끌기)이 자리, 오른손(버튼)이 시각.
+     타석  커서를 공 오는 자리로 옮기고, 공이 홈에 닿는 순간에 [스윙]
+     마운드 구종을 고르고, 조준점을 옮기고, [투구] → 게이지가 좋은 칸에 올 때 한 번 더
+   공은 실제 비행시간(18.44m ÷ 구속)을 난이도만큼 늘려서 보여준다(보통 2.2배).
+   판정은 늘린 시간을 다시 줄여서 한다 — 화면에서 맞춘 만큼 실제로 맞는다.
+   인플레이면 그라운드 화면으로 넘어가서 공 · 야수 · 주자가 **계산된 시각 그대로** 움직인다. */
+function acpOn(){ try{ return !(typeof ST!=='undefined' && ST && ST.playStyle==='classic'); }catch(e){ return true; } }
+function acpSlow(){ const d=(typeof ST!=='undefined'&&ST&&ST.acpDiff)||'norm'; return d==='easy'?2.8:(d==='hard'?1.7:2.2); }
+function acpCtx(){
+  const off=LIVE.off(), def=LIVE.def(), L=apLg(), park=LIVE.park||psPark();
+  const pit=LIVE.curPitcher(def), bat=LIVE.batter();
+  const find=id=>(off.team.players||[]).find(p=>p.id===id)||{};
+  return {F:apFielders(def,park,L,pit),
+    runners:LIVE.bases.map(id=>id?{id, b:apBody(find(id),L)}:null),
+    bat:{id:bat.id, b:apBody(bat,L), bats:bat.bats||'R'},
+    outs:LIVE.outs, L, park, rng:LIVE.rng, runGo:!!LIVE._runGo};
+}
+/* 지친 투수 — 엔진과 같은 식(pitFade)으로 구위 · 제구를 깎는다 */
+function acpPitE(pit){
+  try{ const pl=LIVE.pbox[pit.id]; const fd=pitFade(pit,(pl&&pl.outs)||0);
+    if(fd.k>0) return {...pit, stf:fd.stf, ctl:fd.ctl}; }catch(e){}
+  return pit;
+}
+/* 존 좌표 → 화면(중계 판 기준 px). 투수 뒤 카메라는 좌우가 거꾸로다 */
+function acpGeo(mv){
+  const box=mv.getBoundingClientRect(), zs=mv.querySelector('#szone'), cv=mv.querySelector('.mv-cv');
+  const W=box.width||320, H=box.height||240;
+  let zx=W*0.5, zy=H*0.64, zw=W*0.14, zh=zw*1.29;
+  if(zs){ const zb=zs.getBoundingClientRect(); if(zb.width){ zx=zb.left+zb.width/2-box.left; zy=zb.top+zb.height/2-box.top; zw=zb.width; zh=zb.height; } }
+  const CG=mvCamGeom((mv._mv&&mv._mv.cam)||'c');
+  const lefty=!!(mv._mv&&mv._mv.pitLeft);
+  let rx=W*0.5, ry=H*0.29;
+  const cb=cv&&cv.getBoundingClientRect();
+  if(cb&&cb.width){ rx=cb.left-box.left+cb.width*(CG.rev&&lefty?CG.rxL:CG.rx); ry=cb.top-box.top+cb.height*CG.ry; }
+  const sg=CG.rev?-1:1;
+  return {W,H,zx,zy,zw,zh,rx,ry,sg,
+    at:(u,w)=>({x:zx+u*zw/2*sg, y:zy-w*zh/2})};
+}
+/* 공이 p 만큼 왔을 때 화면 자리와 크기 — 멀리서는 작고 느리게, 가까이 오면 확 커진다 */
+function acpBallScr(G, pl, p){
+  const D0=18.6, D1=1.6, D=D0-(D0-D1)*p;
+  const e=(1/D-1/D0)/(1/D1-1/D0);
+  const q=apPitchAt(pl,p), z=G.at(q.u,q.w);
+  /* [제보] "공은 드럽게 작고" — 실제 비율(존 폭의 17%)이면 폰에서 점 하나다. 게임 공처럼 키운다 */
+  return {x:G.rx+(z.x-G.rx)*e, y:G.ry+(z.y-G.ry)*e, r:Math.max(2.2, G.zw*0.13*D1/D)};
+}
+const ACP_SWD=0.10;
+/* 조이스틱 크기 — 기기마다 다르다(손 · 화면). 세이브가 아니라 이 기기에 둔다 */
+function acpJoySize(v){
+  try{ if(v){ localStorage.setItem('wwzw_joy', v); return v; } return localStorage.getItem('wwzw_joy')||'l'; }catch(e){ return v||'l'; }
+}
+function acpUnis(){
+  let us={cap:'#2f5fb0', sh:'#eef2f8', pants:'#dfe4ec'}, them=PS_UNI.them;
+  try{ if(isPro()) us=proUni(ST.pro.team, !proUsHome()); }catch(e){}
+  try{ them=mvOppUniform()||them; }catch(e){}
+  return {us, them};
+}
+function acpPitchName(t){ return (PITCH_TYPES[t]&&PITCH_TYPES[t].n)||'직구'; }
+
+/* ---------- 조이스틱 · 끌기 · 키보드 ---------- */
+function acpStick(el0, onVec){
+  let id=null, cx=0, cy=0, R=40;
+  const k=el0.querySelector('.joy-k');
+  const set=(dx,dy)=>{ const m=Math.hypot(dx,dy), s=m>R?R/m:1;
+    if(k) k.style.transform='translate('+(dx*s).toFixed(1)+'px,'+(dy*s).toFixed(1)+'px)';
+    onVec(dx*s/R, dy*s/R); };
+  el0.addEventListener('pointerdown',ev=>{ ev.preventDefault(); id=ev.pointerId;
+    const b=el0.getBoundingClientRect(); cx=b.left+b.width/2; cy=b.top+b.height/2; R=b.width*0.36;
+    try{ el0.setPointerCapture(id); }catch(e){} set(ev.clientX-cx, ev.clientY-cy); });
+  el0.addEventListener('pointermove',ev=>{ if(ev.pointerId!==id) return; set(ev.clientX-cx, ev.clientY-cy); });
+  const up=ev=>{ if(ev.pointerId!==id) return; id=null; set(0,0); };
+  el0.addEventListener('pointerup',up); el0.addEventListener('pointercancel',up);
+}
+
+/* ---------- 한 타석 ---------- */
+function acpPA(box, d, mode){
+  const bat=LIVE.batter(), def=LIVE.def();
+  const pit0=LIVE.curPitcher(def), pit=acpPitE(pit0);
+  const me=ST.playerId||MYID;
+  const batLeft=!!(bat&&bat.bats==='L');
+  const L=apLg(), slow=acpSlow(), rng=LIVE.rng;
+  const w=el('div','pl-wrap acp');
+  const mv=moundView({label:`<b>${pit0.name}</b>${handTag(pit0)}<u class="np">${LIVE.pitchCount(pit0.id)+1}구</u>`,
+    pitLeft:throwHandOf(pit0)==='L', batLeft, usDef:mode==='pit',
+    batNo:bat?jerseyNo(bat.id):null, pitNo:pit0.no!=null?pit0.no:null,
+    batLook:sdLookOf(bat), pitLook:sdLookOf(pit0)});
+  w.appendChild(mv);
+  /* 투구도 포수 뒤 카메라로 본다 — 투수 뒤 카메라는 존이 손톱만 해서 조준이 안 된다
+     ([제보] 투수 뒤 화면의 투구폼 · 타자 자세도 어색했다) */
+  try{ mvPaint(mv,{cam:'c'}); mvCamSync(mv); setTimeout(()=>{ try{ fitZone(mv); }catch(e){} },30); }catch(e){}
+  try{ moundWho(mv, mode==='bat'?bat.id:pit0.id, mode==='bat'?'타석':'마운드'); }catch(e){}
+  try{ clutchShow(mv,mode); }catch(e){} try{ atmosShow(mv,mode); }catch(e){}
+  const cv=document.createElement('canvas'); cv.className='acp-cv';
+  { const base=mv.querySelector('.mv-cv'); if(base&&base.nextSibling) mv.insertBefore(cv, base.nextSibling); else mv.appendChild(cv); }
+  const info=el('div','acp-info'); w.appendChild(info);
+  const ctl=el('div','acp-ctl'); w.appendChild(ctl);
+  const joy=el('div','joy acp-joy js-'+acpJoySize()); joy.innerHTML='<i class="joy-k"></i><u class="joy-t">'+(mode==='bat'?'커서':'조준')+'</u>';
+  ctl.appendChild(joy);
+  const right=el('div','acp-r'); ctl.appendChild(right);
+  const gauge=el('div','acp-gauge'); gauge.innerHTML='<u class="acp-gz"></u><b class="acp-gn"></b>';
+  box.innerHTML=''; box.appendChild(w);
+
+  /* 상태 */
+  const cnt=LIVE.count();
+  let cu=0, cw=0, vx=0, vy=0;            // 커서(타석) · 조준점(마운드)
+  let phase='idle', pl=null, tRel=0, swing=null, cres=null, done=false, prevK=null;
+  /* 오토 컨택은 기본으로 켠다 — 커서를 몰라도 헛스윙 기계가 되지 않게. 타이밍은 여전히 내 손이다 */
+  /* [제보] "안움직이면 원은 항상 중앙으로 돌아와야지 디폴트가 중앙이고 내가 움직이는거지"
+     오토 컨택은 켜야 켜진다. 커서는 가운데서 시작하고, 손을 떼면 가운데로 돌아온다 */
+  let auto=(mode==='bat') && ST.acpAuto===true, autoT=null;
+  let ready=(mode!=='bat');                 // 타석은 「준비」 를 한 번 눌러야 공이 온다
+  let type='ff', gStart=0, acc=null, aiSw=null, aiSwAt=0;
+  const marks=[];                        // 이번 타석에 던진 공 자리
+  const tok=box._decTok;
+  const bodyE=(p0)=>p0;
+
+  const cntEl=mv.querySelector('#cnt');
+  const paintCnt=()=>{ if(cntEl) cntEl.innerHTML=`<b>${cnt.b}</b>-<b>${cnt.s}</b>`;
+    const l=mv.querySelector('.lbl'); if(l) l.innerHTML=`<b>${pit0.name}</b>${handTag(pit0)}<u class="np">${LIVE.pitchCount(pit0.id)+1}구</u>`; };
+  paintCnt();
+  const say=(t)=>{ info.innerHTML=t; };
+
+  /* 조이스틱 · 끌기 · 키보드 */
+  acpStick(joy,(x,y)=>{ vx=x; vy=y; if(mode==='bat'&&(x||y)&&auto){ /* 손대면 오토는 잠깐 쉰다 */ autoT=null; } });
+  let dragId=null, lx=0, ly=0;
+  cv.addEventListener('pointerdown',ev=>{ dragId=ev.pointerId; lx=ev.clientX; ly=ev.clientY; try{cv.setPointerCapture(dragId);}catch(e){} });
+  cv.addEventListener('pointermove',ev=>{ if(ev.pointerId!==dragId) return; const G=acpGeo(mv);
+    cu+=(ev.clientX-lx)/(G.zw/2)*G.sg; cw-=(ev.clientY-ly)/(G.zh/2); lx=ev.clientX; ly=ev.clientY; clampC(); });
+  cv.addEventListener('pointerup',ev=>{ if(ev.pointerId===dragId) dragId=null; });
+  const keys={};
+  const kd=ev=>{ if(done) return; const k=ev.key;
+    if(/^(ArrowLeft|ArrowRight|ArrowUp|ArrowDown|a|d|w|s)$/.test(k)){ keys[k]=1; ev.preventDefault(); }
+    if(k===' '||k==='Enter'){ ev.preventDefault(); act(); } };
+  const ku=ev=>{ keys[ev.key]=0; };
+  document.addEventListener('keydown',kd); document.addEventListener('keyup',ku);
+  const lim=mode==='bat'?1.5:1.9;
+  const clampC=()=>{ cu=apClamp(cu,-lim,lim); cw=apClamp(cw,-lim,lim); };
+
+  /* ---- 오른손 ---- */
+  let mainB;
+  if(mode==='bat'){
+    const ab=el('button','acp-auto'+(auto?' on':''),'오토 컨택');
+    ab.onclick=()=>{ auto=!auto; ST.acpAuto=auto; ab.classList.toggle('on',auto);
+      toast(auto?'오토 컨택 — 커서는 몸이 따라간다. 타이밍만 맞춰라':'직접 조준 — 조이스틱이나 화면을 끌어서 커서를 옮긴다'); };
+    right.appendChild(ab);
+    mainB=el('button','acp-go','스윙'); right.appendChild(mainB);
+  } else {
+    const ars=arsenalOf(pit);
+    const tr=el('div','acp-types');
+    ars.forEach(k=>{ const b=el('button','acp-ty'+(k===type?' on':''), acpPitchName(k));
+      b.onclick=()=>{ if(phase!=='idle') return; type=k; [...tr.children].forEach(c=>c.classList.toggle('on',c===b)); };
+      tr.appendChild(b); });
+    right.appendChild(tr);
+    right.appendChild(gauge);
+    mainB=el('button','acp-go','투구'); right.appendChild(mainB);
+  }
+  mainB.addEventListener('pointerdown',ev=>{ ev.preventDefault(); act(); });
+
+  /* ---- 한 구 ---- */
+  const startPitch=(ap)=>{
+    pl=apPitchPlan(pit, ap.type, ap.target, ap.acc, rng, 0);
+    phase='wind'; swing=null; cres=null; aiSw=null;
+    if(mode==='bat' && auto){ cu=0; cw=0; }             // 오토 — 공마다 가운데에서 다시 본다
+    windup(mv, ()=>{ tRel=performance.now(); phase='fly';
+      if(mode==='pit'){
+        aiSw=apAISwing(bat, pl, cnt, rng, L, prevK);
+        if(aiSw) aiSwAt=tRel+((aiSw.t+AP_SW_T)*slow-0.22)*1000;
+      } else if(auto){
+        /* 오토 컨택 — 눈(선구)만큼 흔들린 자리로 몸이 간다. 타이밍은 내 손이다 */
+        const eye=(bat&&bat.eye)||45, sd=0.30-eye*0.0026;
+        autoT={u:pl.u+apGauss(rng)*sd, w:pl.w+apGauss(rng)*sd};
+      }
+    });
+  };
+  const aiPitchNext=()=>{
+    if(done) return;
+    const ap=apAIPitch(pit, bat, cnt, rng);
+    say(`<b>${cnt.b}-${cnt.s}</b> · 공을 기다린다`+(auto?' · <i>오토 컨택</i>':''));
+    setTimeout(()=>{ if(!done) startPitch(ap); }, 650);
+  };
+  const act=()=>{
+    if(done) return;
+    if(mode==='bat' && !ready){
+      ready=true; mainB.textContent='스윙'; mainB.classList.remove('ready'); aiPitchNext(); return; }
+    if(mode==='bat'){
+      if(phase!=='fly' || swing) return;
+      const now=performance.now();
+      /* 화면에서는 공이 **홈에 닿기 0.1초 전**에 누르면 딱 맞게 한다(배트가 나오는 시간).
+         그 0.1초는 늘린 화면 시간이라 물리 시간으로 바꿔 넣는다 */
+      const t=((now-tRel)/1000+ACP_SWD)/slow-AP_SW_T;
+      swing={t, cu, cw, at:now};
+      mvSwing(mv);
+      cres=apContact(bat, pl, {t, cu, cw}, L, rng, false, true);
+      return;
+    }
+    /* 마운드 — 한 번 누르면 와인드업과 게이지, 두 번째에 놓는다 */
+    if(phase==='idle'){ phase='gauge'; gStart=performance.now(); acc=null; gauge.classList.add('on'); return; }
+    if(phase==='gauge'){ releaseAt(performance.now()); }
+  };
+  const gW=0.10+((pit.ctl||40)*0.0022);                // 좋은 칸 폭 — 제구가 넓힌다
+  const G_MS=1000, G_C=0.78;
+  const gz=gauge.querySelector('.acp-gz');
+  if(gz){ gz.style.left=((G_C-gW/2)*100).toFixed(1)+'%'; gz.style.width=(gW*100).toFixed(1)+'%'; }
+  const releaseAt=(now)=>{
+    const g=Math.min(1,(now-gStart)/G_MS);
+    const off=Math.abs(g-G_C);
+    acc = off<=gW/2 ? 1-off/(gW/2)*0.15 : Math.max(0, 0.85-(off-gW/2)*3.2);
+    gauge.classList.remove('on');
+    say(`${acpPitchName(type)} · 릴리스 `+(acc>=0.85?'<b class="ok">좋다</b>':(acc>=0.5?'보통':'<b class="bad">빠졌다</b>')));
+    startPitch({type, target:{u:cu,w:cw}, acc});
+  };
+
+  /* ---- 공이 홈을 지났다 — 판정 ---- */
+  const afterPitch=()=>{
+    const inZ=apInZone(pl.u,pl.w);
+    marks.push({u:pl.u, w:pl.w, n:marks.length+1});
+    const kmhT=`${acpPitchName(pl.type)} ${pl.kmh}km/h`;
+    prevK=(pl.type==='ff')?pl.kmh:prevK;
+    const sw = mode==='bat' ? (swing?{t:swing.t,cu:swing.cu,cw:swing.cw}:null) : aiSw;
+    let r=null, pre='', col='#9fb0c4';
+    if(!sw){
+      if(apHBP(pl, bat.bats||'R')){ LIVE.pitchResult('hbp'); endPA('몸에 맞는 공','#7fc48f'); return; }
+      const kind=inZ?'strike':'ball';
+      pre=inZ?'스트라이크':'볼'; col=inZ?'#e08a70':'#7fc48f';
+      r=LIVE.pitchResult(kind);
+      say(`${kmhT} · <b>${pre}</b>`+(mode==='bat'&&inZ?' — 존에 들어왔다':''));
+    } else {
+      const c = mode==='bat' ? cres : apContact(bat, pl, sw, L, rng, false);
+      const tm=(c.dt!=null)?(c.dt>0?`늦었다 ${c.dt.toFixed(2)}초`:`빨랐다 ${(-c.dt).toFixed(2)}초`):'';
+      if(c.miss){ pre='헛스윙'; col='#e08a70'; mvSwingQ(mv,0.1); r=LIVE.pitchResult('strike');
+        say(`${kmhT} · <b>헛스윙</b> — ${Math.abs(c.dt||0)>apTimingWin(bat,pl.kmh)*1.6?tm:'배트가 공 '+(pl.w>sw.cw?'밑으로':'위로')+' 지나갔다'}`); }
+      else if(c.foul){ pre='파울'; col='#c9a227'; mvSwingQ(mv,0.3); r=LIVE.pitchResult('foul');
+        say(`${kmhT} · <b>파울</b> — 스쳤다 · ${tm}`); }
+      else {
+        const ctx=acpCtx();
+        const ids=LIVE.bases.slice();
+        /* 내가 던지는 중이면 수비도 내가 한다 — 실시간(acpFieldLive). 설정에서 끌 수 있다 */
+        if(mode==='pit' && ST.acpDef!=='auto'){
+          const tr=apTraj(c.ev, c.la, c.spray, ctx.park, L);
+          if(!(tr.foul && tr.la<25)){
+            mvSwingQ(mv, Math.min(1,0.3+c.qs*0.7));
+            LIVE._paPitches=(LIVE._paPitches||0)+1;
+            phase='play';
+            say(kmhT+' · 타구 <b>'+Math.round(c.ev)+'km/h</b> — 수비!');
+            setTimeout(()=>acpFieldLive(w, tr, ctx, 'pit', null, (res)=>{
+              if(!res || res.kind==='FOUL'){
+                LIVE._paPitches=Math.max(0,(LIVE._paPitches||1)-1);
+                const st=w.querySelector('.acp-live'); if(st) st.remove();
+                const ce=w.querySelector('.acp-ctl'); if(ce) ce.style.display='';
+                const r2=LIVE.pitchResult('foul'); paintCnt(); moundResult(mv,'파울','#c9a227');
+                phase='post'; setTimeout(()=>{ if(done) return; phase='idle'; say(`<b>${cnt.b}-${cnt.s}</b> · 구종을 고르고 조준해서 [투구]`); }, 700);
+                return;
+              }
+              res.tr=tr;
+              LIVE._forceRes={type:'PHYS', phys:apToRes(res, ids, bat.id)};
+              endPA(null);
+            }), 300);
+            return;
+          }
+        }
+        const res=apPlayBall(ctx, c.ev, c.la, c.spray);
+        mvSwingQ(mv, Math.min(1,0.3+c.qs*0.7)); if(c.qs>0.7) mvImpact(mv, c.qs);
+        if(res.kind==='FOUL'){ pre='파울'; col='#c9a227'; r=LIVE.pitchResult('foul');
+          say(`${kmhT} · <b>파울</b> — ${c.spray<0?'3루':'1루'}쪽 선 밖 · 타구 ${Math.round(c.ev)}km/h · ${tm}`); }
+        else {
+          LIVE._paPitches=(LIVE._paPitches||0)+1;
+          const phys=apToRes(res, ids, bat.id);
+          LIVE._forceRes={type:'PHYS', phys};
+          say(`${kmhT} · 타구 <b>${Math.round(c.ev)}km/h</b> · 발사각 ${Math.round(c.la)}° · ${tm}`);
+          phase='play';
+          setTimeout(()=>acpField(w, res, ctx, mode, ()=>endPA(null)), 380);
+          return;
+        }
+      }
+    }
+    paintCnt();
+    moundResult(mv, pre, col);
+    if(r && r.end==='BB'){ endPA('볼넷','#7fc48f'); return; }
+    if(r && r.end==='K'){ endPA('삼진','#e08a70'); return; }
+    if(r && r.end==='HBP'){ endPA('몸에 맞는 공','#7fc48f'); return; }
+    phase='post';
+    setTimeout(()=>{ if(done) return; phase='idle';
+      if(mode==='bat') aiPitchNext(); else say(`<b>${cnt.b}-${cnt.s}</b> · 구종을 고르고 조준해서 [투구]`); }, 900);
+  };
+
+  /* ---- 그리기 ---- */
+  const g=cv.getContext&&cv.getContext('2d');
+  let raf=0, last=performance.now();
+  const frame=()=>{
+    if(done) return;
+    const now=performance.now(), dt=Math.min(0.05,(now-last)/1000); last=now;
+    /* 커서 이동 */
+    const kx=(keys.ArrowRight||keys.d?1:0)-(keys.ArrowLeft||keys.a?1:0), ky=(keys.ArrowDown||keys.s?1:0)-(keys.ArrowUp||keys.w?1:0);
+    const G=acpGeo(mv);
+    const sp=mode==='bat'?2.6:2.2;
+    if(vx||vy||kx||ky){ cu+=((vx+kx)*G.sg)*sp*dt; cw-=(vy+ky)*sp*dt; clampC(); }
+    else if(mode==='bat' && !auto && dragId==null){
+      /* 손을 뗐다 — 가운데로 돌아온다(스프링) */
+      const k=Math.min(1,dt*7); cu-=cu*k; cw-=cw*k; }
+    else if(auto && autoT && phase==='fly'){
+      const k=Math.min(1,dt*6); cu+=(autoT.u-cu)*k; cw+=(autoT.w-cw)*k; }
+    /* AI 타자 스윙 모션 */
+    if(mode==='pit' && aiSw && phase==='fly' && !aiSw.shown && now>=aiSwAt){ aiSw.shown=true; mvSwing(mv); }
+    let p=0;
+    if(phase==='fly'){ p=(now-tRel)/(pl.T*slow*1000); if(p>=1.12){ phase='judge'; afterPitch(); } }
+    if(g){
+      const W=Math.round(G.W), H=Math.round(G.H), dpr=Math.min(2,window.devicePixelRatio||1);
+      if(cv.width!==W*dpr||cv.height!==H*dpr){ cv.width=W*dpr; cv.height=H*dpr; cv.style.width=W+'px'; cv.style.height=H+'px'; }
+      g.setTransform(dpr,0,0,dpr,0,0); g.clearRect(0,0,W,H);
+      /* 지난 공 자리 */
+      marks.forEach(m=>{ const q=G.at(m.u,m.w); g.fillStyle=apInZone(m.u,m.w)?'rgba(224,138,112,.85)':'rgba(127,196,143,.85)';
+        g.beginPath(); g.arc(q.x,q.y,Math.max(5,G.zw*0.06),0,7); g.fill(); g.fillStyle='#10131a'; g.font='800 '+Math.max(8,G.zw*0.07).toFixed(0)+'px sans-serif';
+        g.textAlign='center'; g.textBaseline='middle'; g.fillText(String(m.n),q.x,q.y+0.5); });
+      if(mode==='bat'){
+        /* 배트 커서 — 가로로 길다(배트니까). 가운데 점이 정타 자리다 */
+        const R=apCursorR(bat,false)*1.3, q=G.at(cu,cw);
+        const rx=(R/0.62)*G.zw/2, ry=R*G.zh/2;
+        g.save(); g.globalAlpha=swing?0.45:0.9;
+        g.strokeStyle=auto?'#7fb4ff':'#ffd15c'; g.lineWidth=2.2; g.setLineDash([]);
+        g.beginPath(); g.ellipse(q.x,q.y,rx,ry,0,0,7); g.stroke();
+        g.fillStyle=auto?'rgba(127,180,255,.13)':'rgba(255,209,92,.13)'; g.fill();
+        g.fillStyle='#fff'; g.beginPath(); g.arc(q.x,q.y,3,0,7); g.fill(); g.restore();
+      } else if(phase==='idle'||phase==='gauge'||phase==='wind'){
+        /* 조준점 — 미트 */
+        const q=G.at(cu,cw), inZ=apInZone(cu,cw);
+        const sig=(0.15+(100-(pit.ctl||40))*0.0070)*0.9;           // 게이지 보통일 때 흩어지는 폭
+        g.strokeStyle='rgba(255,255,255,.35)'; g.setLineDash([3,3]); g.lineWidth=1;
+        g.beginPath(); g.ellipse(q.x,q.y,sig*G.zw/2,sig*G.zh/2,0,0,7); g.stroke(); g.setLineDash([]);
+        g.strokeStyle=inZ?'#ffd15c':'#7fb4ff'; g.lineWidth=2.4;
+        g.beginPath(); g.arc(q.x,q.y,Math.max(7,G.zw*0.09),0,7); g.stroke();
+        g.fillStyle='#fff'; g.beginPath(); g.arc(q.x,q.y,2.6,0,7); g.fill();
+      }
+      /* 게이지 */
+      if(phase==='gauge'){
+        const gg=Math.min(1,(now-gStart)/G_MS);
+        const nd=gauge.querySelector('.acp-gn'); if(nd) nd.style.left=(gg*100).toFixed(1)+'%';
+        if(gg>=1) releaseAt(now);
+      }
+      /* 공 */
+      if(phase==='fly'||phase==='judge'){
+        const pp=Math.min(1.12,p||1);
+        const b=acpBallScr(G,pl,Math.min(1,pp));
+        g.fillStyle='rgba(0,0,0,.25)'; g.beginPath(); g.ellipse(b.x,b.y+b.r*2.2,b.r*0.9,b.r*0.35,0,0,7); g.fill();
+        g.fillStyle='#fbfbf6'; g.strokeStyle='rgba(190,40,40,.9)'; g.lineWidth=Math.max(0.6,b.r*0.18);
+        g.beginPath(); g.arc(b.x,b.y,b.r,0,7); g.fill(); g.stroke();
+      }
+    }
+    raf=requestAnimationFrame(frame);
+  };
+  raf=requestAnimationFrame(frame);
+
+  /* ---- 끝 ---- */
+  const cleanup=()=>{ done=true; try{cancelAnimationFrame(raf);}catch(e){}
+    document.removeEventListener('keydown',kd); document.removeEventListener('keyup',ku); };
+  box._cleanup=cleanup;
+  /* 검사용 — 지금 몇 번째 단계인지, 공이 홈에 닿는 화면 시각이 언제인지 */
+  box._acp={phase:()=>phase, arrive:()=>(pl&&phase==='fly')?tRel+pl.T*slow*1000:null, act:()=>act(), mode,
+    aim:(u,w)=>{ cu=u; cw=w; }, type:(k)=>{ type=k; }, ball:()=>pl?{u:pl.u,w:pl.w}:null, auto:(v)=>{ auto=v; }};
+  const endPA=(label,color)=>{
+    if(done) return; cleanup(); plLock(false);
+    if(label) moundResult(mv,label,color,true);
+    setTimeout(()=>{
+      LIVE.applyDecision('playskip');
+      const before=LIVE.log.length; let guard=0;
+      while(!LIVE.over && guard++<40){ LIVE.step();
+        if(LIVE.log.slice(before).some(l=>l.t==='play')) break; if(LIVE.pending) break; }
+      const r=paResultText(LIVE.log.slice(before).filter(l=>l.t==='play'));
+      if(r && !label){ const bn=w.querySelector('.acp-ban'); if(bn){ bn.textContent=r.raw||r.label; bn.style.color=r.color||''; bn.classList.add('on'); } }
+      setTimeout(()=>decDone(box, tok), label?700:1300);
+    }, label?650:0);
+  };
+  plLock(true);
+  if(mode==='bat'){
+    /* [제보] "왜 갑자기 준비도 안했는데 공 날라와서" — 타석 첫 공은 [준비] 를 눌러야 온다.
+       한 번 누르면 그 타석이 끝날 때까지 계속 던진다 */
+    mainB.textContent='준비 ▸'; mainB.classList.add('ready');
+    say('<b>'+(bat?bat.name:'')+'</b> 타석 — 준비되면 <b>준비</b> · 커서는 조이스틱으로 · 공이 홈에 올 때 <b>스윙</b>');
+  }
+  else say('구종을 고르고 조준점을 옮긴 뒤 <b>투구</b> — 게이지가 노란 칸에 올 때 한 번 더');
+}
+
+/* ---------- 그라운드 — 인플레이 한 장면 ----------
+   계산된 시각표(공 궤적 · 누가 언제 어디서 잡았나 · 송구 · 주자) 그대로 움직인다.
+   화면이 결과를 만드는 게 아니라, 결과를 만든 움직임을 그대로 보여준다.          */
+/* [제보] "수비할땐 몇아웃인지 나오지도 않아서" — 그라운드 화면에도 이닝 · 아웃 · 주자 · 점수 */
+function acpHud(ctx){
+  const h=el('div','acp-hud');
+  try{
+    const L=LIVE, a=L.away, hm=L.home;
+    const on=[0,1,2].map(i=>L.bases[i]?'on':'').join(',');
+    h.innerHTML='<b>'+L.inning+'회'+(L.half===0?'초':'말')+'</b> · <b class="o">'+ctx.outs+'아웃</b> · '+
+      [1,2,3].filter(i=>L.bases[i-1]).map(i=>i+'루').join(',')+(L.bases.some(Boolean)?' 주자':'주자 없음')+
+      ' · '+(a.team.short||a.team.name)+' '+a.runs+' : '+hm.runs+' '+(hm.team.short||hm.team.name);
+  }catch(e){}
+  return h;
+}
+function acpM2P(x,y,P){ const r=Math.hypot(x,y); if(r<0.05) return {x:160,y:236};
+  const a=apAng(x,y); return psSpot(a, psMtoPx(r,P,Math.max(-PS_FOUL,Math.min(PS_FOUL,a)))); }
+function acpField(host, res, ctx, mode, onDone){
+  const P=ctx.park, tr=res.tr, pk=res.pick;
+  const stage=el('div','acp-field');
+  const cv=document.createElement('canvas'); cv.className='runcv acp-fcv'; cv.width=PSW*2; cv.height=PSH*2;
+  stage.appendChild(cv);
+  const ban=el('div','acp-ban'); stage.appendChild(ban);
+  const skip=el('button','acp-skip','건너뛰기 ▸'); stage.appendChild(skip);
+  stage.appendChild(acpHud(ctx));
+  const ctlEl=host.querySelector('.acp-ctl'); if(ctlEl) ctlEl.style.display='none';
+  host.appendChild(stage);
+  const g=cv.getContext&&cv.getContext('2d');
+  const usDef=(mode==='pit');
+  const UN=acpUnis(), DU=usDef?UN.us:UN.them, BU=usDef?UN.them:UN.us;
+  /* 시각표 */
+  const runs=(res.run&&res.run.all)||[];
+  const outs=res.outs||[];
+  const tagUps=res.tagUps||[];
+  const pickT=pk?pk.t:tr.stop.t;
+  /* 송구 — 아웃 노린 곳, 없으면 제일 앞 주자가 향한 베이스 */
+  const throws=[];
+  if(pk && !res.air){
+    let tgt=res.throwTo;
+    if(tgt==null){ const lead=runs.filter(r=>r.to<4).sort((a,b)=>b.to-a.to)[0]; tgt=lead?lead.to:null; }
+    if(tgt!=null && tgt>0){
+      const B=AP_B[tgt%4], t1=apThrowAt(pk.f,pk.x,pk.y,pk.t,tgt);
+      throws.push({x0:pk.x,y0:pk.y,x1:B[0],y1:B[1],t0:Math.max(pk.t,t1-Math.hypot(B[0]-pk.x,B[1]-pk.y)/pk.f.b.thr-0.08),t1});
+      if(outs.length>1){ const o2=outs[1], B2=AP_B[o2.at%4]; throws.push({x0:B[0],y0:B[1],x1:B2[0],y1:B2[1],t0:t1+0.3,t1:o2.t}); }
+    }
+  } else if(pk && res.air && tagUps.length){
+    const tu=tagUps[0], B=AP_B[tu.at%4], t1=apThrowAt(pk.f,pk.x,pk.y,pk.t,tu.at);
+    throws.push({x0:pk.x,y0:pk.y,x1:B[0],y1:B[1],t0:t1-Math.hypot(B[0]-pk.x,B[1]-pk.y)/pk.f.b.thr-0.08,t1});
+  }
+  const lastT=Math.max(pickT+1.2, ...throws.map(t=>t.t1+0.6), ...runs.map(r=>Math.min(14,apRunAt(r,Math.max(r.from,r.to))+0.4)),
+    ...tagUps.map(t=>t.t+0.5), (tr.hr?Math.min(tr.pts[tr.pts.length-1].t+1.2,7):0));
+  const END=Math.min(15,lastT);
+  const ballAt=(t)=>{
+    for(let i=throws.length-1;i>=0;i--){ const h=throws[i];
+      if(t>=h.t0){ const k=Math.min(1,(t-h.t0)/Math.max(0.05,h.t1-h.t0)); return {x:h.x0+(h.x1-h.x0)*k, y:h.y0+(h.y1-h.y0)*k, z:1.8+Math.sin(k*Math.PI)*1.5}; } }
+    if(pk && t>=pickT) return {x:pk.x,y:pk.y,z:1.2};
+    const pts=tr.pts; let i=1; while(i<pts.length-1 && pts[i].t<t) i++;
+    const a=pts[i-1], b=pts[i], k=Math.max(0,Math.min(1,(t-a.t)/Math.max(1e-3,b.t-a.t)));
+    return {x:a.x+(b.x-a.x)*k, y:a.y+(b.y-a.y)*k, z:a.z+(b.z-a.z)*k};
+  };
+  /* 야수 — 잡는 사람은 공 쪽으로, 나머지는 베이스 커버 */
+  const cover={};
+  if(pk){ const fk=pk.f.pos, lx=pk.x<0;
+    cover[fk==='1B'?'P':'1B']=1;
+    cover[fk==='2B'?'SS':(fk==='SS'?'2B':(lx?'2B':'SS'))]=2;
+    cover[fk==='3B'?'SS':'3B']=3;
+    cover[fk==='C'?'P':'C']=0; }
+  const fAt=(f,t)=>{
+    if(pk && f===pk.f){
+      const s0=f.b.react, s1=Math.max(s0+0.05,pickT-0.05), k=Math.max(0,Math.min(1,(t-s0)/(s1-s0)));
+      const tx=pk.x, ty=pk.y;
+      if(t<=pickT) return {x:f.x+(tx-f.x)*k, y:f.y+(ty-f.y)*k, run:k>0&&k<1};
+      return {x:tx,y:ty,run:false};
+    }
+    const cb=cover[f.pos];
+    if(cb!=null && !(pk&&f===pk.f)){ const B=AP_B[cb], k=Math.max(0,Math.min(1,(t-0.4)/1.6));
+      return {x:f.x+(B[0]*0.96-f.x)*k, y:f.y+(B[1]*0.96-f.y)*k, run:k>0&&k<1}; }
+    return {x:f.x,y:f.y,run:false};
+  };
+  /* 주자 — 베이스를 따라 달린다 */
+  const baseXY=(i)=>AP_B[i%4];
+  const runnerAt=(r,t)=>{
+    const out=outs.find(o=>o.id===r.id);
+    const goal=out?out.at:r.to;
+    const tt=Math.max(0,t-r.t0);
+    let dist=tt*r.b.run;
+    const segs=Math.max(0,goal-r.from);
+    const maxD=segs*AP_LEG - (out?1.2:0);
+    dist=Math.min(dist,maxD);
+    const k=Math.floor(dist/AP_LEG), f=(dist-k*AP_LEG)/AP_LEG;
+    const A=baseXY(r.from+k), B=baseXY(r.from+Math.min(segs,k+1));
+    return {x:A[0]+(B[0]-A[0])*f, y:A[1]+(B[1]-A[1])*f, run:dist<maxD&&t>r.t0, done:dist>=maxD, out:!!out, scored:!out&&goal===4&&dist>=maxD};
+  };
+  const tagAt=(u,t)=>{ const A=baseXY(u.from), B=baseXY(u.from+1);
+    const t0=pk.t+0.10, k=Math.max(0,Math.min(u.to<0?0.92:1,(t-t0)/Math.max(0.1,u.t-t0)));
+    return {x:A[0]+(B[0]-A[0])*k, y:A[1]+(B[1]-A[1])*k, run:k>0&&k<1}; };
+  const t0w=performance.now();
+  let stop=false, lastLbl='';
+  const label=(t)=>{
+    const o=outs.filter(x=>t>=x.t); const tu=tagUps.filter(x=>t>=x.t);
+    if(res.kind==='HR' && !res.itp && t>0.8) return '홈런!!';
+    if(res.air && res.kind==='OUT' && t>=pickT) return tu.some(x=>x.to===4)?'잡았다 — 3루 주자 홈으로!':(tu.some(x=>x.to<0)?'리터치 — 송구에 잡혔다':'잡았다! 아웃');
+    if(o.length>=2) return '병살!';
+    if(o.length===1) return (o[0].at===1?'1루':(o[0].at===4?'홈':(o[0].at+'루')))+' 아웃!';
+    return '';
+  };
+  const draw=()=>{
+    if(stop) return;
+    const t=Math.min(END,(performance.now()-t0w)/1000);
+    if(g){
+      g.setTransform(2,0,0,2,0,0);
+      psField(g,P);
+      /* 야수 */
+      ctx.F.forEach(f=>{ const q=fAt(f,t), s=acpM2P(q.x,q.y,P);
+        psMan(g,s.x,s.y+7,DU,q.run?(1+((performance.now()/110|0)%2)):0,false,false);
+        if(pk && f===pk.f){ g.strokeStyle='rgba(255,209,92,.7)'; g.lineWidth=1; g.beginPath(); g.arc(s.x,s.y+2,6,0,7); g.stroke(); } });
+      /* 주자 · 타자 */
+      if(res.air && res.kind==='OUT'){
+        ctx.runners.forEach(r=>{ if(!r) return; const u=tagUps.find(x=>x.from===r.from);
+          const q=(u&&t>pk.t)?tagAt(u,t):(()=>{ const B=baseXY(r.from); return {x:B[0],y:B[1],run:false}; })();
+          const s=acpM2P(q.x,q.y,P); psMan(g,s.x,s.y+7,BU,q.run?(1+((performance.now()/100|0)%2)):0,false,false); });
+        const hb=acpM2P(0,0,P), bk=Math.max(0,Math.min(1,(t-0.9)/2.2)), B1=acpM2P(19.4*bk,19.4*bk,P);
+        psMan(g,B1.x,B1.y+7,BU,t>0.9&&t<pickT?(1+((performance.now()/100|0)%2)):0,false,t<0.9);
+      } else if(!(res.kind==='HR'&&!res.itp)){
+        runs.forEach(r=>{ const q=runnerAt(r,t); if(q.scored && t>apRunAt(r,4)+0.6) return;
+          const s=acpM2P(q.x,q.y,P);
+          psMan(g,s.x,s.y+7,BU,q.run?(1+((performance.now()/100|0)%2)):0,false,r.from===0&&t<r.t0);
+          if(q.out && q.done){ g.fillStyle='#e08a70'; g.font='bold 9px sans-serif'; g.textAlign='center'; g.fillText('OUT',s.x,s.y-12); } });
+      } else {
+        const k=Math.max(0,Math.min(1,(t-1.0)/5));
+        [0,1,2,3].forEach(i=>{ if(i>0 && !ctx.runners[i-1]) return;
+          const d0=(i===0?0:i*AP_LEG), dist=Math.min(4*AP_LEG, d0+k*(4*AP_LEG-d0)), kk=Math.floor(dist/AP_LEG), f=(dist-kk*AP_LEG)/AP_LEG;
+          const A=baseXY(kk), B=baseXY(kk+1), s=acpM2P(A[0]+(B[0]-A[0])*f, A[1]+(B[1]-A[1])*f, P);
+          if(dist<4*AP_LEG) psMan(g,s.x,s.y+7,BU,1+((performance.now()/140|0)%2),false,false); });
+      }
+      /* 공 · 그림자 */
+      const b=ballAt(t), s=acpM2P(b.x,b.y,P);
+      g.fillStyle='rgba(0,0,0,.30)'; g.beginPath(); g.ellipse(s.x,s.y,2.2,1.1,0,0,7); g.fill();
+      const lift=Math.min(60,b.z*2.3);
+      g.fillStyle='#fff'; g.strokeStyle='#333'; g.lineWidth=0.6;
+      g.beginPath(); g.arc(s.x,s.y-lift,2+Math.min(3,b.z*0.10),0,7); g.fill(); g.stroke();
+    }
+    const lb=label(t);
+    if(lb && lb!==lastLbl){ lastLbl=lb; ban.textContent=lb; ban.classList.add('on'); }
+    if(t>=END){ stop=true; finish(); return; }
+    requestAnimationFrame(draw);
+  };
+  let fin=false;
+  const finish=()=>{ if(fin) return; fin=true; stop=true; setTimeout(onDone, 250); };
+  skip.onclick=()=>{ finish(); };
+  requestAnimationFrame(draw);
+}
+
+
+/* ---------- 직접 수비 — 내가 야수를 뛴다 ----------
+   [요청] "공격이든 투수든 수비든 (…) 플레이어가 하는 느낌이 아니야"
+   공이 맞는 순간부터 **실시간**으로 돈다. 계산해 둔 결과를 틀어주는 게 아니다.
+     · 공에 제일 먼저 닿을 야수가 내 손에 들어온다(마운드 · 내 자리). 공이 떨어질 자리에 원이 뜬다
+     · 조이스틱으로 뛴다. 글러브(팔 길이)가 공에 닿으면 잡는다 — 공중이면 아웃, 땅이면 줍는다
+     · 주우면 [1루] [2루] [3루] [홈] — 누른 그 순간에 던진다. 주자는 계속 뛰고 있다
+     · 놓치면 공은 계속 가고, 뒤에 있던 동료(AI)가 받친다
+   주자가 몇 베이스 갈지는 공을 주운 자리 · 시각을 보고 정한다(apRunPlay 와 같은 셈).
+   아웃 · 세이프는 송구가 닿은 시각과 주자가 닿은 시각 — 먼저 닿은 쪽이다.            */
+function apRunPlayUser(ctx, pk, base, tb, pivotF){
+  /* 주자 목표는 AI 수비를 가정하고 정한다(주자는 내가 어디로 던질지 모른다) */
+  const RP=apRunPlay(ctx, pk);
+  const outs=[];
+  if(base!=null){
+    const B=AP_B[base%4], d=Math.hypot(B[0]-pk.x, B[1]-pk.y);
+    const own=d<5.5 && ['1B','2B','SS','3B','P','C'].indexOf(pk.f.pos)>=0;
+    const hop=(AP_OF.indexOf(pk.f.pos)>=0)?(apLg()?0.45:0.30):0;
+    const v=pk.f.b.thr*(d>50?(apLg()?0.90:0.80):1);
+    const tt = own ? tb+0.12+d/pk.f.b.chase : tb+Math.max(0.15,pk.f.b.rel*0.6)+hop+d/v+0.08;
+    const r=RP.all.find(x=>x.to===base && (x.to>x.from || x.from===0));
+    if(r && apRunAt(r,base)-tt>0.02){
+      outs.push({r, at:base, t:tt});
+      /* 병살 — 포스 아웃이면 베이스 커버한 사람이 1루로 */
+      const bat=RP.all.find(x=>x.from===0);
+      if(r.forced && r!==bat && bat && bat.to===1 && ctx.outs+1<3 && base!==1){
+        const piv=pivotF||pk.f, t2=apThrowAt(piv,B[0],B[1],tt,1,false);
+        if(apRunAt(bat,1)-t2>0.02) outs.push({r:bat, at:1, t:t2});
+      }
+    }
+    RP.play={to:base, t:tt};
+  } else { RP.play=null; }
+  RP.outs=outs;
+  return RP;
+}
+/* 줍고 던진 결과(RP)를 apResolve 와 같은 모양으로 마무리한다 */
+function apFinishRun(res, RP, ctx){
+  const outs=ctx.outs, nOut=RP.outs.length;
+  res.run=RP;
+  res.outs=RP.outs.map(o=>({id:o.r.id, from:o.r.from, at:o.at, t:o.t}));
+  res.throwTo=RP.play?RP.play.to:null;
+  const third=(outs+nOut>=3);
+  const forceThird=third && RP.outs.some(o=>o.r.forced);
+  const outT=third?Math.min(...RP.outs.map(o=>o.t)):Infinity;
+  res.moves=[];
+  RP.all.forEach(r=>{
+    const out=RP.outs.find(o=>o.r===r);
+    if(out){ res.moves.push({id:r.id, from:r.from, to:-1, at:out.at, t:out.t}); return; }
+    let to=r.to;
+    if(third && to===4 && (forceThird || apRunAt(r,4)>outT)) to=3;
+    res.moves.push({id:r.id, from:r.from, to, t:apRunAt(r,to)});
+  });
+  const bm=res.moves.find(m=>m.from===0);
+  if(bm.to<0) res.kind='OUT';
+  else if(nOut>0 && (res.gb || RP.outs.some(o=>o.r.forced))) res.kind='FC';
+  else res.kind=['','1B','2B','3B','HR'][Math.min(4,bm.to)];
+  if(res.kind==='HR') res.itp=true;
+  return res;
+}
+/* 실시간 수비 화면. userPos — 내가 잡을 자리(없으면 공에 제일 먼저 닿는 야수) */
+function acpFieldLive(host, tr, ctx, mode, userPos, onDone){
+  const P=ctx.park, L=ctx.L, rng=ctx.rng;
+  const stage=el('div','acp-field acp-live');
+  const cv=document.createElement('canvas'); cv.className='runcv acp-fcv'; cv.width=PSW*2; cv.height=PSH*2;
+  stage.appendChild(cv);
+  const ban=el('div','acp-ban'); stage.appendChild(ban);
+  const hint=el('div','acp-hint'); stage.appendChild(hint);
+  stage.appendChild(acpHud(ctx));
+  const joy=el('div','joy acp-joy acp-fjoy'); joy.innerHTML='<i class="joy-k"></i><u class="joy-t">야수</u>'; stage.appendChild(joy);
+  const bases=el('div','acp-bases');
+  const BB=[[2,'2루'],[3,'3루'],[1,'1루'],[4,'홈']].map(([b,n])=>{ const x=el('button','acp-bb b'+b,''); x.dataset.n=n; x.disabled=true; bases.appendChild(x); return [b,x]; });
+  stage.appendChild(bases);
+  const autoB=el('button','acp-skip','자동 ▸'); stage.appendChild(autoB);
+  const ctlEl=host.querySelector('.acp-ctl'); if(ctlEl) ctlEl.style.display='none';
+  host.appendChild(stage);
+  const g=cv.getContext&&cv.getContext('2d');
+  const UN=acpUnis(), usDef=(mode==='pit'||mode==='def');
+  const DU=usDef?UN.us:UN.them, BU=usDef?UN.them:UN.us;
+  /* 누구를 쥐나 */
+  const I0=apIntercept(tr, ctx.F);
+  let fU = ctx.F.find(f=>f.pos===userPos) || (I0?I0.f:null);
+  if(!fU){ let best=null; ctx.F.forEach(f=>{ if(f.pos==='C') return; const d=Math.hypot(f.x-tr.stop.x,f.y-tr.stop.y); if(!best||d<best.d) best={f,d}; }); fU=best.f; }
+  const skip={}; skip[fU.pos]=true;
+  const I2=apIntercept(tr, ctx.F, skip);        // 내가 못 잡으면 받쳐 줄 동료
+  /* 주자 출발 — apPlayBall 과 같다 */
+  const fly=tr.la>=18, two=ctx.outs>=2, LEAD=[4.2,5.2,3.6];
+  ctx.bat.from=0; ctx.bat.t0=(ctx.bat.bats==='L'?0.86:0.95)-L*0.08; ctx.bat.aggr=apAggr(rng,ctx.outs);
+  ctx.runners.forEach((r,i)=>{ if(!r) return; r.from=i+1; r.aggr=apAggr(rng,ctx.outs);
+    const lead=LEAD[i]/r.b.run;
+    if(two) r.t0=0.10-lead; else if(fly) r.t0=Math.max(0.25, tr.landT-0.55*AP_LEG/r.b.run); else r.t0=0.20-lead;
+    if(ctx.runGo && i===0) r.t0=-0.35-lead; });
+  /* 상태 */
+  let t=0, last=performance.now(), vx=0, vy=0, ux=fU.x, uy=fU.y, touched=false, autoMode=false;
+  let pick=null, thrownAt=null, res=null, over=false, holdT=0, endT=null;
+  const keys={};
+  acpStick(joy,(x,y)=>{ vx=x; vy=y; if(x||y) touched=true; });
+  const kd=ev=>{ const k=ev.key; if(/^(ArrowLeft|ArrowRight|ArrowUp|ArrowDown|a|d|w|s)$/.test(k)){ keys[k]=1; touched=true; ev.preventDefault(); }
+    const m={'1':1,'2':2,'3':3,'4':4,h:4}; if(m[k]) throwTo(m[k]); };
+  const ku=ev=>{ keys[ev.key]=0; };
+  document.addEventListener('keydown',kd); document.addEventListener('keyup',ku);
+  const ballAtT=(tt)=>{ const pts=tr.pts; if(tt>=pts[pts.length-1].t) return {...pts[pts.length-1], end:true};
+    let i=1; while(i<pts.length-1 && pts[i].t<tt) i++;
+    const a=pts[i-1], b=pts[i], k=Math.max(0,Math.min(1,(tt-a.t)/Math.max(1e-3,b.t-a.t)));
+    return {x:a.x+(b.x-a.x)*k, y:a.y+(b.y-a.y)*k, z:a.z+(b.z-a.z)*k}; };
+  hint.textContent='공 쪽으로 뛰어라 — 조이스틱 · 방향키';
+  /* 주웠다 */
+  const onPick=(f, x, y, air, byUser)=>{
+    pick={f, t, x, y, air, byUser};
+    res={tr, outs:[], moves:[], kind:null, air:false, gb:tr.la<10, ld:tr.la>=10&&tr.la<22, pu:false,
+         err:null, errPos:null, pick:{f,t,x,y}, catchT:null, throwTo:null, tagUps:[]};
+    if(air && !tr.foul){
+      res.kind='OUT'; res.air=true; res.catchT=t; res.ld=tr.la<20; res.pu=tr.la>=50&&tr.dist<60;
+      res.tagUps=apTagUps(res, ctx);
+      ban.textContent='잡았다!'; ban.classList.add('on');
+      endT=t+ (res.tagUps.length?Math.max(...res.tagUps.map(u=>u.t))-t+0.8:1.1);
+      return;
+    }
+    if(air && tr.foul){ res.kind='OUT'; res.air=true; res.foulOut=true; res.catchT=t; ban.textContent='파울 플라이 잡았다!'; ban.classList.add('on'); endT=t+1.0; return; }
+    if(AP_OF.indexOf(f.pos)>=0) pick.t=res.pick.t=t+(L?0.35:0.45);
+    if(byUser && !autoMode){
+      BB.forEach(([b,x])=>x.disabled=false);
+      hint.textContent='어디로 던질까 — 누르는 순간 던진다';
+      holdT=t;
+    } else {
+      const RP=apRunPlay(ctx, res.pick); apFinishRun(res, RP, ctx); thrownAt=t; endT=acpEndT(res);
+    }
+  };
+  const throwTo=(b)=>{
+    if(!pick || thrownAt!=null || !res || res.air) return;
+    BB.forEach(([bb,x])=>x.disabled=true);
+    const piv=ctx.F.find(f=>f.pos===(b===2?(pick.f.pos==='SS'?'2B':'SS'):(b===3?'3B':(b===4?'C':'1B'))))||pick.f;
+    const RP=apRunPlayUser(ctx, res.pick, b, Math.max(t,res.pick.t), piv);
+    apFinishRun(res, RP, ctx); thrownAt=t; res.userThrow=b; endT=acpEndT(res);
+    hint.textContent='';
+  };
+  BB.forEach(([b,x])=>{ x.addEventListener('pointerdown',ev=>{ ev.preventDefault(); throwTo(b); }); });
+  autoB.onclick=()=>{ autoMode=true; hint.textContent='자동 수비';
+    if(pick && thrownAt==null && !res.air){ const RP=apRunPlay(ctx, res.pick); apFinishRun(res, RP, ctx); thrownAt=t; endT=acpEndT(res); } };
+  const acpEndT=(r)=>{ const runs=(r.run&&r.run.all)||[];
+    return Math.min(t+9, Math.max(t+0.9, ...runs.map(x=>apRunAt(x,Math.max(x.from, x.to<0?x.from:x.to))+0.3), ...(r.outs||[]).map(o=>o.t+0.5))); };
+  const cleanup=()=>{ document.removeEventListener('keydown',kd); document.removeEventListener('keyup',ku); };
+  /* 홈런 · 파울 — 잡을 게 없다 */
+  if(tr.hr){ res={tr, kind:'HR', outs:[], moves:[], air:false}; endT=Math.min(tr.pts[tr.pts.length-1].t+1.5,6); ban.textContent='홈런!!'; ban.classList.add('on'); hint.textContent=''; }
+  const frame=()=>{
+    if(over) return;
+    const now=performance.now(), dt=Math.min(0.05,(now-last)/1000); last=now; t+=dt;
+    const b=pick? null : ballAtT(t);
+    /* 내 야수 */
+    if(!pick){
+      const kx=(keys.ArrowRight||keys.d?1:0)-(keys.ArrowLeft||keys.a?1:0), ky=(keys.ArrowDown||keys.s?1:0)-(keys.ArrowUp||keys.w?1:0);
+      let mx=vx+kx, my=vy+ky;
+      /* 화면 위쪽이 외야(+y). 화면 오른쪽이 1루(+x) — 그라운드 그림 방향 그대로 */
+      if(autoMode || (!touched && t>0.9)){
+        /* 손을 안 대면 몸이 알아서 공 쪽으로 간다(늦게) — 멈춰 서 있지는 않는다 */
+        const tgt=I0&&I0.f===fU?{x:I0.x,y:I0.y}:{x:tr.land.x,y:tr.land.y};
+        const dx=tgt.x-ux, dy=tgt.y-uy, m=Math.hypot(dx,dy);
+        if(m>0.3){ mx=dx/m*(autoMode?1:0.75); my=-dy/m*(autoMode?1:0.75); } else { mx=0; my=0; }
+      }
+      const m=Math.hypot(mx,my); if(m>1){ mx/=m; my/=m; }
+      if(t>fU.b.react*0.5){ ux+=mx*fU.b.chase*dt; uy+=(-my)*fU.b.chase*dt; }
+      if(b && b.z<=2.4){
+        const d=Math.hypot(b.x-ux,b.y-uy);
+        if(d<=fU.b.reach+0.25){ fU._x=ux; fU._y=uy; onPick(fU, b.x, b.y, b.z>0.05, true); }
+      }
+      /* 동료가 받친다 */
+      if(!pick && I2 && t>=I2.t){ onPick(I2.f, I2.x, I2.y, I2.air, false); }
+      if(!pick && b && b.end && !tr.hr){
+        /* 공이 멈췄다 — 제일 빠른 사람이 줍는다(내가 붙어 있으면 나) */
+        const dU=Math.hypot(b.x-ux,b.y-uy)/fU.b.chase;
+        let best=null; ctx.F.forEach(f=>{ if(f===fU||f.pos==='C') return; const rt=apReachT(f,b.x,b.y,false); if(!best||rt<best.rt) best={f,rt}; });
+        if(tr.foul){ res={tr,kind:'FOUL'}; endT=t+0.6; pick={f:fU,t,x:b.x,y:b.y}; ban.textContent='파울'; ban.classList.add('on'); }
+        else if(dU<0.5) { ux=b.x; uy=b.y; onPick(fU,b.x,b.y,false,true); }
+        else if(best && t>=best.rt) onPick(best.f,b.x,b.y,false,false);
+      }
+    } else if(thrownAt==null && !res.air && t-holdT>2.2){
+      /* 2초 넘게 안 던지면 몸이 알아서 던진다 */
+      const RP=apRunPlay(ctx, res.pick); apFinishRun(res, RP, ctx); thrownAt=t; endT=acpEndT(res);
+      hint.textContent='';
+    }
+    acpDrawLive(g, P, ctx, tr, t, {fU, ux, uy, pick, res, I0, DU, BU, thrownAt});
+    if(endT!=null && t>=endT){ over=true; cleanup(); setTimeout(()=>onDone(res), 350); return; }
+    requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+}
+/* 실시간 수비 그림 — 야수 · 주자 · 공 · 떨어질 자리 */
+function acpDrawLive(g, P, ctx, tr, t, s){
+  if(!g) return;
+  g.setTransform(2,0,0,2,0,0);
+  psField(g,P);
+  const {fU, pick, res}=s;
+  const man=(x,y,u,run,bat)=>{ const q=acpM2P(x,y,P); psMan(g,q.x,q.y+7,u,run?(1+((performance.now()/105|0)%2)):0,false,!!bat); return q; };
+  /* 떨어질 자리 — 뜬공이면 원 */
+  if(!pick && tr.la>=10 && !tr.hr){ const q=acpM2P(tr.land.x,tr.land.y,P);
+    g.strokeStyle='rgba(255,209,92,.85)'; g.lineWidth=1.3; g.beginPath(); g.arc(q.x,q.y,5+Math.sin(performance.now()/150)*1.2,0,7); g.stroke(); }
+  /* 야수 */
+  ctx.F.forEach(f=>{
+    let x=f.x, y=f.y, run=false;
+    if(f===fU){ x=s.ux; y=s.uy; run=!pick; }
+    else if(pick && pick.f===f){ x=pick.x; y=pick.y; }
+    else if(!pick && s.I0 && s.I0.f!==fU && s.I0.f===f){ const k=Math.max(0,Math.min(1,(t-f.b.react)/Math.max(0.1,s.I0.t-f.b.react))); x=f.x+(s.I0.x-f.x)*k; y=f.y+(s.I0.y-f.y)*k; run=k>0&&k<1; }
+    const q=man(x,y,s.DU,run,false);
+    if(f===fU){ g.strokeStyle='#ffd15c'; g.lineWidth=1.4; g.beginPath(); g.arc(q.x,q.y+2,7,0,7); g.stroke();
+      g.fillStyle='#ffd15c'; g.beginPath(); g.moveTo(q.x,q.y-16); g.lineTo(q.x-3,q.y-21); g.lineTo(q.x+3,q.y-21); g.fill(); }
+  });
+  /* 주자 */
+  const outs=(res&&res.outs)||[];
+  const runs=(res&&res.run&&res.run.all)||null;
+  const list=[ctx.bat].concat(ctx.runners.filter(Boolean));
+  list.forEach(r=>{
+    if(res && res.air && res.kind==='OUT'){
+      if(r.from===0){ const k=Math.max(0,Math.min(0.6,(t-0.9)/3.4)); man(19.4*k,19.4*k,s.BU,t>0.9&&t<(res.catchT||0),false); return; }
+      const u=(res.tagUps||[]).find(x=>x.from===r.from);
+      let q=AP_B[r.from];
+      if(u && t>res.catchT){ const A=AP_B[r.from], B=AP_B[(r.from+1)%4], kk=Math.max(0,Math.min(u.to<0?0.92:1,(t-res.catchT-0.1)/Math.max(0.1,u.t-res.catchT-0.1))); q=[A[0]+(B[0]-A[0])*kk, A[1]+(B[1]-A[1])*kk]; }
+      man(q[0],q[1],s.BU,!!u&&t>res.catchT,false); return;
+    }
+    if(res && res.kind==='HR' && !res.itp){
+      const k=Math.max(0,Math.min(1,(t-1.0)/5)), d0=r.from*AP_LEG, dist=d0+k*(4*AP_LEG-d0);
+      if(dist>=4*AP_LEG) return; const kk=Math.floor(dist/AP_LEG), f=(dist-kk*AP_LEG)/AP_LEG, A=AP_B[kk%4], B=AP_B[(kk+1)%4];
+      man(A[0]+(B[0]-A[0])*f, A[1]+(B[1]-A[1])*f, s.BU, true, false); return;
+    }
+    /* 목표가 정해지기 전에는 다음 베이스(포스) · 제자리 쪽으로 */
+    const rr=runs?runs.find(x=>x.id===r.id)||r:r;
+    const out=outs.find(o=>o.id===r.id);
+    const goal = out?out.at : (runs?rr.to:(r.from===0?1:(r.forced?r.from+1:r.from)));
+    const tt=Math.max(0,t-r.t0), segs=Math.max(0,goal-r.from);
+    let dist=Math.min(tt*r.b.run, segs*AP_LEG-(out?1.2:0));
+    if(dist<0) dist=0;
+    const kk=Math.floor(dist/AP_LEG), f=(dist-kk*AP_LEG)/AP_LEG;
+    const A=AP_B[(r.from+kk)%4], B=AP_B[(r.from+Math.min(segs,kk+1))%4];
+    if(goal===4 && dist>=segs*AP_LEG && !out) return;
+    const q=man(A[0]+(B[0]-A[0])*f, A[1]+(B[1]-A[1])*f, s.BU, dist<segs*AP_LEG && t>r.t0, r.from===0&&t<r.t0);
+    if(out && t>=out.t){ g.fillStyle='#e08a70'; g.font='bold 9px sans-serif'; g.textAlign='center'; g.fillText('OUT',q.x,q.y-13); }
+  });
+  /* 공 */
+  let bx, by, bz;
+  if(!pick){ const pts=tr.pts; let i=1; while(i<pts.length-1 && pts[i].t<t) i++;
+    const a=pts[i-1], b=pts[i], k=Math.max(0,Math.min(1,(t-a.t)/Math.max(1e-3,b.t-a.t)));
+    bx=a.x+(b.x-a.x)*k; by=a.y+(b.y-a.y)*k; bz=a.z+(b.z-a.z)*k; }
+  else if(res && res.throwTo!=null && s.thrownAt!=null && res.run){
+    const B=AP_B[res.throwTo%4], o=(res.outs||[])[0];
+    const t1=(res.run.play&&res.run.play.t)||(o?o.t:s.thrownAt+1);
+    const t0=Math.max(s.thrownAt, pick.t);
+    const k=Math.max(0,Math.min(1,(t-t0)/Math.max(0.1,t1-t0)));
+    bx=pick.x+(B[0]-pick.x)*k; by=pick.y+(B[1]-pick.y)*k; bz=1.6+Math.sin(k*Math.PI)*1.4;
+    const o2=(res.outs||[])[1];
+    if(o2 && t>t1){ const B2=AP_B[o2.at%4], k2=Math.max(0,Math.min(1,(t-t1-0.3)/Math.max(0.1,o2.t-t1-0.3))); bx=B[0]+(B2[0]-B[0])*k2; by=B[1]+(B2[1]-B[1])*k2; }
+  } else { bx=pick.x; by=pick.y; bz=1.2; }
+  const q=acpM2P(bx,by,P);
+  g.fillStyle='rgba(0,0,0,.30)'; g.beginPath(); g.ellipse(q.x,q.y,2.2,1.1,0,0,7); g.fill();
+  const lift=Math.min(60,bz*2.3);
+  g.fillStyle='#fff'; g.strokeStyle='#333'; g.lineWidth=0.6;
+  g.beginPath(); g.arc(q.x,q.y-lift,2+Math.min(3,bz*0.10),0,7); g.fill(); g.stroke();
+}
+
 /* ---------- 심판 항의 ----------
    [요청] "심판 판정에 항의하기 (물병 걷어차기를 이런 데 활용하면 좋겠네)"
    오심이 나면 항의 버튼이 뜬다. 감독 액션을 한 번 쓰고, 결과는 셋이다.
@@ -41145,6 +42648,14 @@ function showDecision(d){
   ['swing','pitch','lead','defplay','throw','defense','benched']
     .forEach(k=>box.classList.toggle('dk-'+k, !!(d && d.kind===k)));
   box._decTok=(++DEC_TOKEN);
+  /* [v3.58.0] 액션 플레이 — 타석 · 마운드는 새 화면이 통째로 맡는다(물리 판정) */
+  box.classList.remove('acp-sheet');
+  if(d && (d.kind==='swing'||d.kind==='pitch') && acpOn()){
+    box.classList.remove('dk-swing','dk-pitch');
+    box.classList.add('sheet','acp-sheet');
+    acpPA(box, d, d.kind==='swing'?'bat':'pit');
+    return;
+  }
   /* 처음 보는 자리면 설명을 한 장 깔고, 「알겠다」 를 누르면 그때 시작한다.
      타이머가 도는 판단(포수 송구)도 설명을 읽는 동안에는 안 돌아간다 —
      여기서 막고 다시 들어오기 때문이다.                              */
@@ -45158,13 +46669,43 @@ function renderMore(){
   const pl=el('div','card');
   pl.appendChild(el('div','card-h','직접 플레이'));
   const pn=el('p','muted');
-  pn.innerHTML='<b>직접 지휘</b>로 경기할 때 타이밍 스윙과 코스 선택을 넣는다.<br>'+
-    '잘 맞혀도 <b>확률이 조금 오를 뿐</b> 결과가 정해지지는 않는다. 못 맞혀도 경기는 굴러간다.<br>'+
+  pn.innerHTML='<b>직접 지휘</b>로 경기할 때 타석 · 마운드를 손으로 한다.<br>'+
+    '<b>액션</b> — 커서와 타이밍으로 친 만큼 공이 날아가고, 야수 · 주자가 실제로 뛰어서 아웃 · 세이프가 갈린다. '+
+    '<b>예전 방식</b> — 타이밍 품질이 확률만 조금 민다.<br>'+
     '<b>타석</b>(공격)과 <b>마운드</b>(수비)를 따로 정한다 — 치는 것만 하고 던지는 건 자동으로 둘 수 있다.<br>'+
     '<span class="dimx">내 선수만 = 내가 고른 선수가 타석에 서거나 마운드에 있을 때만 · '+
     '중요한 순간만 = 득점권 · 후반 접전 · 내 선수</span>';
   pl.appendChild(pn);
-  [['bat','타석 — 타이밍 스윙','playBat'],['pit','마운드 — 코스 선택','playPit']].forEach(([which,label,skey])=>{
+  /* [v3.58.0] 방식 · 난이도 */
+  { pl.appendChild(el('div','set-sub','방식'));
+    const r1=el('div','btn-row');
+    [['action','액션'],['classic','예전 방식']].forEach(([k,n])=>{
+      const b=el('button','btn'+(((ST.playStyle||'action')===k)?' primary':''),n);
+      b.onclick=()=>{ ST.playStyle=k; saveGame(true); renderMore(); toast('직접 플레이 · '+n); };
+      r1.appendChild(b); });
+    pl.appendChild(r1);
+    pl.appendChild(el('div','set-sub','액션 난이도 — 공이 오는 속도'));
+    const r2=el('div','btn-row');
+    [['easy','쉬움'],['norm','보통'],['hard','어려움']].forEach(([k,n])=>{
+      const b=el('button','btn'+(((ST.acpDiff||'norm')===k)?' primary':''),n);
+      b.onclick=()=>{ ST.acpDiff=k; saveGame(true); renderMore(); toast('난이도 · '+n); };
+      r2.appendChild(b); });
+    pl.appendChild(r2);
+    pl.appendChild(el('div','set-sub','조이스틱 크기 — 이 기기에만 저장된다'));
+    const r3=el('div','btn-row');
+    [['s','작게'],['m','보통'],['l','크게'],['xl','아주 크게']].forEach(([k,n])=>{
+      const b=el('button','btn'+(acpJoySize()===k?' primary':''),n);
+      b.onclick=()=>{ acpJoySize(k); renderMore(); toast('조이스틱 · '+n); };
+      r3.appendChild(b); });
+    pl.appendChild(r3);
+    pl.appendChild(el('div','set-sub','오토 컨택 — 켜면 커서가 공을 따라간다(타이밍만 내가)'));
+    const r4=el('div','btn-row');
+    [[false,'끄기 (직접 조준)'],[true,'켜기']].forEach(([k,n])=>{
+      const b=el('button','btn'+((ST.acpAuto===true)===k?' primary':''),n);
+      b.onclick=()=>{ ST.acpAuto=k; saveGame(true); renderMore(); toast('오토 컨택 · '+n); };
+      r4.appendChild(b); });
+    pl.appendChild(r4); }
+  [['bat','타석','playBat'],['pit','마운드','playPit']].forEach(([which,label,skey])=>{
     pl.appendChild(el('div','set-sub',label));
     const row=el('div','btn-row');
     PLAY_OPTS.forEach(([k,n])=>{
@@ -48542,6 +50083,14 @@ function go(v){
      [제보] "메인화면 갈 수 있는 버튼이 없는데" — 메인화면과 세이브 슬롯은
      본편이 아니라 그 위에 있는 것이라 막으면 안 됐다. 프롤로그 도중에
      다른 슬롯으로 갈아타거나 판을 새로 파는 길이 통째로 막혀 있었다. */
+  /* [제보] "프로드래프트 뽑혔는데 설정누르고 다시 홈가니깐 사회인야구로 가있냐"
+     지명 발표 화면(renderProDraft)은 경로(VIEWS)가 없는 화면이라, 「입단한다」 를 누르기 전에
+     설정 · 다른 탭으로 나가면 돌아올 길이 없었다. 홈은 사회인 로비를 그렸다.
+     지명은 받았는데 아직 입단 도장을 안 찍었으면 홈은 그 화면으로 돌아간다. */
+  if(v==='home' && ST && ST.proSlot && ST.tryout && !(typeof isPro==='function'&&isPro())
+     && typeof renderProDraft==='function'){
+    curView='home'; try{ paintTabs(); }catch(e){} renderProDraft(); return;
+  }
   const HS_OK={hs:1, tutorial:1, more:1, start:1, slots:1};
   if(typeof hsActive==='function' && hsActive() && !HS_OK[v]){
     v='hs';

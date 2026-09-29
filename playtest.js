@@ -17,6 +17,8 @@ setTimeout(async()=>{
   await wait(800);
   d.querySelectorAll('.pickcard')[0].click();await wait(50);
   [...d.querySelectorAll('#view .btn')].find(b=>b.textContent==='이 선수로 시작').click();
+  /* [v3.58.0] 이 검사는 예전 직접 플레이 화면(renderSwing · renderPitch)을 본다 — 기본값이 액션으로 바뀌었다 */
+  await new Promise(r=>setTimeout(r,300)); dom.window.eval("ST.playStyle='classic'");
   await wait(250);
   ev("ST.tutDone=true; ST.weekDone=true; ST.absent={}; ST.injury={};");
   ev("ST.lineup=recommendLineup(); ST.rotation=recommendRotation();");
