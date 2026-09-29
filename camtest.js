@@ -55,7 +55,9 @@ const T=(ok,n,extra)=>{console.log((ok?'  ✅ ':'  ❌ ')+n+(extra?' :: '+extra:
     '흙 윗선 y='+dirtTop.toFixed(0)+' < '+C.H);
   const batTop=scr(C.boxc-C.bat), batBot=scr(C.boxc);
   const fill=(Math.min(C.H,batBot)-Math.max(0,batTop))/C.H;
-  T(fill>0.55, '타자가 화면 높이의 절반을 넘게 먹는다 — 어깨 뒤 카메라다',
+  /* [v3.49.0] "타자가 너무 크게 나옴 이게 비율이 말이 안되는데" — 56% 에서 42% 로 줄였다.
+     여전히 투수보다 한참 크고(어깨 뒤 카메라) 화면의 1/3 은 넘되, 절반은 안 먹는다 */
+  T(fill>0.35 && fill<0.50, '타자가 화면 높이의 1/3~1/2 — 크지만 야구장을 안 가린다',
     (fill*100).toFixed(0)+'%');
   T(C.pit/C.bat<0.45, '투수는 타자보다 한참 작다',
     C.pit+'/'+C.bat+' = '+(C.pit/C.bat*100).toFixed(0)+'%');
