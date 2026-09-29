@@ -3479,6 +3479,65 @@ html.land .pp-ov,html.land #sheet{left:env(safe-area-inset-left,0px)!important;r
 @media (min-width:600px){ .kd-our .kd-cand{display:inline-block;width:calc(50% - 4px);vertical-align:top;margin:3px 0}
   .kd-our .kd-cand:nth-of-type(odd){margin-right:8px} }
 .kd-ctl{display:flex;flex-direction:column;gap:7px;margin:10px 0}
+/* =========================================================
+   [v3.56.0] FM 테마 — [요청] "ui 좀 세련되게 바꾸자 요런 느낌" (FM26 스크린샷 다섯 장)
+   짙은 남보라 바탕 · 얇은 테두리 판 · 보라 제목 · 보라→자주 그라데이션은 **가장 중요한 버튼 하나에만** ·
+   밑줄 탭 · 줄무늬 표 · 알약 배지.
+   [주의] v3.26.0 에 「남색 별로 · AI 가 만든 티」 제보로 무채색 테마를 만들었다. 그 방향과 반대라서
+   **바꿀 수 있게** 했다 — <html class="fm"> 일 때만 이 블록이 먹는다(설정 → 화면 테마 · 기본 FM).
+   빛번짐 · 그라데이션 글씨 · 이모지 장식은 여기서도 안 쓴다. FM 도 그렇게 절제한다.
+   이 블록은 스타일시트 **맨 끝**이어야 한다(v3.26.0 테마 위에 덮는다).
+   ========================================================= */
+html.fm{
+  --bg:#0f0d22; --panel:#17153a; --panel2:#201d49; --line:#2e2a5e;
+  --ink:#eeebff; --dim:#9d97cc; --gold:#b98cff; --pt:#e042c8; --clay:#e042c8;
+  --turf:#35d39a; --red:#ff5d73; --blue:#6aa8ff;
+  --fm-grad:linear-gradient(90deg,#7c3aed,#db2777); --fm-row:#1c1a42; --fm-head:#b98cff;
+}
+html.fm body{background:var(--bg)}
+html.fm .topbar{background:#0b0a1c;border-bottom:1px solid var(--line)}
+html.fm .topbar .ver{background:var(--panel2);color:var(--dim)}
+html.fm .topbar .ver.new{background:var(--fm-grad);color:#fff}
+html.fm .tabbar{background:#0b0a1c;border-top:1px solid var(--line)}
+html.fm .tab{color:#6f6a9c}
+html.fm .tab.on{color:#fff;box-shadow:inset 0 2px 0 var(--pt)}
+html.fm .card{background:var(--panel);border:1px solid var(--line);border-radius:10px}
+html.fm .card-h{color:var(--fm-head);font-weight:900;letter-spacing:-.02em}
+html.fm .btn{background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:#fff}
+html.fm .btn.primary{background:var(--fm-grad);border:0;color:#fff}
+html.fm .btn.danger{background:rgba(255,93,115,.12);border:1px solid rgba(255,93,115,.35);color:#ff8a9a}
+html.fm .subtabs{border-bottom:1px solid var(--line)}
+html.fm .subtab{border-radius:0;background:transparent;color:var(--dim);box-shadow:inset 0 -2px 0 transparent}
+html.fm .subtab.on{background:transparent;color:#fff;box-shadow:inset 0 -2px 0 var(--pt)}
+html.fm #toast{background:#fff;color:#1a1438}
+html.fm select,html.fm input[type=text],html.fm input[type=number]{background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:8px}
+html.fm .lob-go{background:var(--fm-grad)}
+html.fm .lob-ic,html.fm .lob-bn,html.fm .lob-bn.alt{background:rgba(15,13,34,.86)}
+html.fm .tip-box{background:var(--panel);border:1px solid var(--line)}
+/* 표 — FM 처럼 머리는 작고 옅게, 줄은 번갈아 */
+html.fm table.box th,html.fm table.stand th{color:var(--dim);border-bottom:1px solid var(--line)}
+html.fm table.box tr:nth-child(even) td,html.fm table.stand tr:nth-child(even) td{background:var(--fm-row)}
+html.fm table.box td,html.fm table.stand td{border-bottom:0}
+html.fm table.box th.sortable.on{color:var(--fm-head)}
+/* 프런트 */
+html.fm .pf-opt{background:var(--panel2);border:1px solid var(--line);border-radius:8px}
+html.fm .pf-opt.on{border-color:var(--pt);background:rgba(224,66,200,.10)}
+html.fm .pf-sub{color:var(--fm-head)}
+html.fm .pf-rrow{border-bottom:0;padding:7px 6px;border-radius:6px}
+html.fm .pf-rrow:nth-child(even){background:var(--fm-row)}
+html.fm .pf-rrow.me{background:rgba(224,66,200,.14)}
+html.fm .pf-mv{background:var(--panel2);border:1px solid var(--line);border-radius:6px}
+html.fm .pf-capbar{background:#221f4a}
+html.fm .pf-capbar i{background:linear-gradient(90deg,#35d39a,#b98cff)}
+html.fm .kd-row.mine,html.fm .dr-row.mine{background:var(--fm-grad)}
+/* FM 식 등급 — 별(현재 · 잠재)과 색 알약 */
+.fm-st{font-style:normal;letter-spacing:-1px;color:#f5c542;white-space:nowrap;font-size:11px}
+.fm-st s{text-decoration:none;color:#4a4578}
+.fm-st u{text-decoration:none;color:#8f84d8}
+.fm-g{font-style:normal;display:inline-block;min-width:26px;text-align:center;font-size:10.5px;font-weight:900;border-radius:999px;padding:1px 6px;color:#0f0d22;background:#9d97cc}
+.fm-g.g1{background:#35d39a}.fm-g.g2{background:#8fe0b0}.fm-g.g3{background:#f5c542}.fm-g.g4{background:#ff9f5a}.fm-g.g5{background:#ff5d73}
+.stf-theme{display:flex;gap:8px;margin-top:8px}
+.stf-theme .btn{flex:1}
 </style>
 <div id="lock">
   <div class="lock-box">
@@ -9610,6 +9669,8 @@ const CHANGELOG=[
     '<b>감독 계약</b> — 지금 감독 열 명은 실제 계약(만료 연도 · 총액)대로다. 계약이 끝나면 성적 따라 재계약하거나 결별하고, 성적이 나쁘면 계약 중에도 잘린다. 새 계약은 3년',
     '<b>재야의 감독</b> — 전에 KBO 감독을 했던 열두 명(가명)이 스타일을 갖고 기다린다. 불펜을 잘게 나누는 감독, 지키는 야구, 형님 리더십, 관리 야구, 벌떼 야구, 데이터 · 시프트… 잘린 감독도 재야로 돌아와 다른 구단의 부름을 기다린다',
     '우리 감독을 바꾸려면 새 감독 계약금(한 해 연봉) + 전 감독 잔여 연봉을 낸다. 감독 연봉은 매주 금고에서 나간다',
+    '<b>화면이 FM 느낌으로 바뀌었다.</b> 짙은 남색 바탕에 보라 · 분홍 강조, 줄무늬 표, 그라데이션 버튼. 뎁스표에는 등급 배지와 별(현재 · 잠재)이 붙는다',
+    '예전 흑백 화면이 편하면 더보기 → 「화면 테마」 에서 <b>심플</b>로 돌릴 수 있다',
   ]},
   {v:'3.55.0', t:'수비 — 잡았으면 잡은 거다 · 2루 송구 야수선택 · 주력 · 수비 표시', items:[
     '<b>「2루 쪽에서 잡았는데 100m 2루타」 를 고쳤다.</b> 글러브에 들어간 공인데 엔진이 확률로 다시 굴려서 2루타까지 나왔고, 비거리도 엔진이 따로 뽑은 숫자(70~100m)를 찍었다. 이제 화면이 본 대로 간다',
@@ -19268,6 +19329,25 @@ function renderRenewals(rec){
   if(!R.done){ const b=el('button','btn primary','전원 도장'); b.onclick=async()=>{ pfRenewSign(); await saveGame(true); renderRenewals(rec); }; c.appendChild(b); }
   c.appendChild(pfBack(rec));
 }
+/* ================= 화면 테마 =================
+   [요청 v3.56.0] FM26 같은 남보라 · 보라 포인트. v3.26.0 의 무채색(「심플」)도 남겨 둔다.
+   고르는 건 이 기기에만 남는다(localStorage) — 세이브와 상관없다. 기본은 FM. */
+function uiTheme(){ try{ return localStorage.getItem('wwzw_theme')||'fm'; }catch(e){ return 'fm'; } }
+function applyTheme(t){
+  try{ if(t) localStorage.setItem('wwzw_theme', t); }catch(e){}
+  try{ document.documentElement.classList.toggle('fm', (t||uiTheme())==='fm'); }catch(e){}
+}
+applyTheme();
+/* FM 식 등급 — 20~80 눈금을 별 다섯 개로(반 개 단위). 잠재가 있으면 옅은 별로 잇는다 */
+function fmStars(g, pot){
+  const st=v=>Math.max(0,Math.min(10,Math.round((v-20)/6)));        // 20 → 0 · 80 → 10(반 개 단위)
+  const a=st(g), b=pot!=null?Math.max(a,st(pot)):a;
+  let h='';
+  for(let i=0;i<5;i++){ const k=i*2;
+    h+= a>=k+2?'★':(a===k+1?'<u>★</u>':(b>=k+1?'<u>☆</u>':'<s>☆</s>')); }
+  return '<i class="fm-st">'+h+'</i>';
+}
+function fmGrade(g){ const c=g>=60?'g1':(g>=52?'g2':(g>=45?'g3':(g>=38?'g4':'g5'))); return '<i class="fm-g '+c+'">'+g+'</i>'; }
 /* ---- 뎁스표 ----
    [요청] "뎁스표 만들어야겠네 누굴 방출할지 쉽게 볼 수 있게"
    포지션마다 1군 → 2군 순서로, 등급(20~80) · 명성 · 나이. 2군 선수 옆에 방출 버튼. */
@@ -19290,7 +19370,7 @@ function renderDepthTab(c){
     L.forEach(p=>{ const f1=first.has(p.id), rp=pfRep(p);
       const r=el('div','pf-rrow'+(p.id===me?' me':''));
       r.onclick=(ev2)=>{ if(ev2.target&&ev2.target.tagName==='BUTTON') return; try{ openPlayerCard(p.id); }catch(e){} };
-      r.innerHTML='<span class="pf-rn">'+(f1?'':'<em class="pf-farm">2군</em> ')+p.name+'</span><span class="pf-rp">등급 '+pfGrade(p)+(p.pot?' (잠재 '+p.pot+')':'')+' · '+pfAge(p)+'세 · 명성 '+rp+' '+pfRepTxt(rp)+'</span>'+
+      r.innerHTML='<span class="pf-rn">'+fmGrade(pfGrade(p))+' '+(f1?'':'<em class="pf-farm">2군</em> ')+p.name+' '+fmStars(pfGrade(p),p.pot)+'</span><span class="pf-rp">'+pfAge(p)+'세 · 명성 '+rp+' '+pfRepTxt(rp)+(p.pot?' · 잠재 '+p.pot:'')+'</span>'+
         '<span class="pf-rs">'+wonStr2(pfCon(p,key).sal)+'</span>';
       if(p.id!==me && !pfIsForeign(p,key)){ const b=el('button','pf-mv',f1?'말소':'방출');
         b.onclick=async()=>{
@@ -44906,6 +44986,13 @@ function renderMore(){
   rv.appendChild(rvb);
   c.appendChild(rv);
 
+  /* [v3.56.0] 화면 테마 — FM(남보라) · 심플(무채색) */
+  { const th=el('div','card'); th.appendChild(el('div','card-h','화면 테마'));
+    th.appendChild(el('p','muted','FM — 짙은 남보라 · 보라 포인트. 심플 — 무채색 · 주황 포인트(예전 화면). 이 기기에만 남는다.'));
+    const row=el('div','stf-theme');
+    [['fm','FM'],['simple','심플']].forEach(([k,n])=>{ const b=el('button','btn'+(uiTheme()===k?' primary':''),n);
+      b.onclick=()=>{ applyTheme(k); renderMore(); }; row.appendChild(b); });
+    th.appendChild(row); c.appendChild(th); }
   /* [v3.31.0] 이름 · 등번호 · 팀명 — 내 세이브 안에서만 */
   const rnc=el('div','card');
   rnc.appendChild(el('div','card-h','이름 · 등번호 · 팀명'));
