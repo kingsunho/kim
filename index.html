@@ -9736,8 +9736,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.61.0';
-const APP_VERSION_NOTE = '연봉 구조 현실화 · 실제 큰 계약 · 옆구리 투수';
+const APP_VERSION = '3.62.0';
+const APP_VERSION_NOTE = '2026 실제 연봉 · 명성 높은 선수 트레이드 불가 · 배 나온 체형';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9758,6 +9758,11 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.62.0', t:'2026 실제 연봉 · 명성 높은 선수 트레이드 불가 · 배 나온 체형', items:[
+    '<b>2026 실제 연봉</b> — 타자 · 투수 연봉 상위 약 100명씩(KBO 공시 기준 순위표)을 그대로 넣었다(168명). 양의지 42억 · 고영표 26억 · 최정 22억 · 박세웅 21억 · 류현진 21억 … 외국인은 달러를 원화로. 순위표 밖 선수는 타자 1.1억 · 투수 1.4억을 넘지 않는다',
+    '<b>명성 높은 선수는 거의 못 데려온다</b> — 명성 80 이상은 어느 구단이든 「절대 불가」. 명성 70 이상은 50%, 60 이상은 25% 웃돈을 얹어야 판다. 큰 연봉도 이름값으로 친다',
+    '<b>체형</b> — 힘이 세고 무거운 타자는 배가 나온다. 유니폼 줄무늬 그대로 옆 · 아래로 불룩',
+  ]},
   {v:'3.61.0', t:'연봉 구조 현실화 · 실제 큰 계약 · 옆구리 투수', items:[
     '<b>연봉이 실제처럼 쏠린다.</b> 예전엔 국내 선수 최고가 9억, 구단 상위 40명 합이 42~65억이라 다들 비슷하게 나눠 가졌다. 이제 간판 두셋이 20~40억을 가져가고 나머지 대부분은 1억 안팎 — 구단 합은 70~130억대(샐러리캡 151억)',
     '<b>실제 큰 계약</b> — 양의지 42억(2026 연봉 공시), 최정 · 류현진 · 오지환 · 고영표는 공개된 계약 총액 ÷ 연수로 넣었다(가명으로 나온다)',
@@ -18194,13 +18199,22 @@ function pfCon(p, key){
   if(p.id===me) return F.con[me]=pfMyStartCon();
   const y=ST.pro.year, h=clayHash(String(p.id)), age=pfAge(p);
   const fr=pfIsForeign(p, key);
+  if(fr && PF_REAL_SAL[key+'|'+(p._orig||p.name)]) return {sal:PF_REAL_SAL[key+'|'+(p._orig||p.name)], type:'foreign', left:1, svc:0, fa:0, gen:true, real:true};
   if(fr) return {sal:fr==='아시아쿼터'?Math.min(28000,18000+(h%10)*1000):Math.round((70000+pfPct(p)*110000)/1000)*1000, type:'foreign', left:1, svc:0, fa:0, gen:true};
   if(p.rookie) return {sal:kboMinSal(y), type:'rookie', left:1, svc:Math.max(0,y-(p.draftYear||y)), fa:0, gen:true};
   if(p.farm && age<=24) return {sal:kboMinSal(y)+(h%6)*500, type:'annual', left:1, svc:Math.max(0,age-19), fa:0, gen:true};
   const svc=Math.max(0,age-19), pct=pfPct(p);
-  /* [v3.61.0] 실제 큰 계약 — 공개된 계약(총액 ÷ 연수, 계약금 포함)과 KBO 연봉 공시. 가명 기준 */
-  const R=PF_REAL_CON[key+'|'+(p._orig||p.name)];
-  if(R){ const left=R.end-y+1; return {sal:R.sal, type:'fa', left:Math.max(0,left), svc, fa:1, gen:true, real:true}; }
+  /* [v3.62.0] 실제 2026 연봉 — PF_REAL_SAL(타자 · 투수 연봉 상위 각 100명쯤, 가명 키). 여기 없는 사람은
+     상위 100 밖이라는 뜻이니 타자 1.1억 · 투수 1.4억을 넘지 않게 한다 */
+  const RS=PF_REAL_SAL[key+'|'+(p._orig||p.name)];
+  if(RS){
+    if(fr) return {sal:RS, type:'foreign', left:1, svc:0, fa:0, gen:true, real:true};
+    const E=PF_REAL_END[key+'|'+(p._orig||p.name)];
+    if(E) return {sal:RS, type:'fa', left:Math.max(0,E-y+1), svc, fa:1, gen:true, real:true};
+    if(RS>=50000 && svc>=8) return {sal:RS, type:'fa', left:Math.max(0,1+(h%4)-(y-2027)), svc, fa:1+(age>=33?1:0), gen:true, real:true};
+    return {sal:RS, type:'annual', left:1, svc, fa:0, gen:true, real:true};
+  }
+  const topCap=pfIsPit(p)?14000:11000;
   const mv=pfSalFair(p);
   /* [v3.61.0] [제보] "연봉 비중이 실제로 생각하면 말이 안되게 다 5억 나누고 있네 — 양의지 혼자 40억대"
      예전 식은 리그 백분위로 연봉을 폈다. 그래서 국내 선수 최고가 9억, 구단 상위 40명 합이 42~65억이었다
@@ -18212,6 +18226,7 @@ function pfCon(p, key){
     const ag=age>=36?0.65:(age>=34?0.8:1);
     /* FA 프리미엄 — 실제 FA 시장은 중간급(4년 40~60억)도 한 해 10억 안팎을 받는다. 몸값에 3억을 얹는다 */
     const sal=Math.round(clamp((mv+30000)*ag*(0.85+(h%30)/100), 10000, 300000)/100)*100;
+    if(y<=2027){ const s2=Math.min(sal, topCap); if(left>=1) return {sal:s2, type:'fa', left, svc, fa:1+(age>=33?1:0), gen:true}; return {sal:s2, type:'fa', left:0, svc, fa:1, gen:true}; }
     if(left>=1) return {sal, type:'fa', left, svc, fa:1+(age>=33?1:0), gen:true};
     return {sal, type:'fa', left:0, svc, fa:1, gen:true};
   }
@@ -18219,21 +18234,183 @@ function pfCon(p, key){
   const min=kboMinSal(y), share=clamp(0.05+Math.min(svc,8)*0.05, 0.05, 0.45);
   const floor=svc>=8?8000:(svc>=5?5000:min);
   const sal=Math.round(clamp(min+(mv-min)*share, floor, 80000)/100)*100;
-  return {sal, type:'annual', left:1, svc, fa:0, gen:true};
+  return {sal:(y<=2027?Math.min(sal,topCap):sal), type:'annual', left:1, svc, fa:0, gen:true};
 }
-/* 공개된 큰 계약 — [가명키] = {sal:한 해(만원), end:마지막 해}. 확인된 것만 넣는다(지어내지 않는다).
-     양의지  — 2026 KBO 연봉 공시 42억(4+2년 계약 마지막 구간)
-     류현진  — 8년 170억(2024~2031) → 한 해 21.3억
-     최정    — 4년 110억(2025~2028) → 27.5억
-     오지환  — 6년 124억(2024~2029) → 20.7억
-     고영표  — 비FA 5년 107억(2025~2029) → 21.4억                                   */
-const PF_REAL_CON={
-  'dsn|양의진':{sal:420000, end:2028},
-  'hh|류현전':{sal:212500, end:2031},
-  'ssg|최전':{sal:275000, end:2028},
-  'lg|오지헌':{sal:206700, end:2029},
-  'kt|고영포':{sal:214000, end:2029},
+/* 2026 실제 연봉(만원) — 사용자가 연봉 순위표(타자 · 투수 상위 약 100명씩, KBO 공시 기준)를 붙여 줬다.
+   구단 + 이름으로 우리 명단(가명)과 맞췄다. **이름은 가명 키로만** 둔다(CLAUDE.md — 실명 금지).
+   외국인은 달러를 원화로 바꾼 값. 명단(2026 등록)에 없는 사람 · 동명이인(삼성 투수 둘)은 뺐다 */
+const PF_REAL_SAL={
+  'dsn|양의진':420000,
+  'kt|고영포':260000,
+  'kia|네힐':224000,
+  'ssg|최전':220000,
+  'hh|류현전':210000,
+  'lot|박세운':210000,
+  'sam|디아츠':182000,
+  'sam|후라더':182000,
+  'sam|최원티':160000,
+  'lg|오스텐':154000,
+  'lg|장현신':150000,
+  'lg|오지헌':140000,
+  'kw|데이비선':137000,
+  'ssg|에레디야':112000,
+  'lot|레이에스':112000,
+  'hh|화이드':112000,
+  'lg|톨허스드':112000,
+  'hh|노시헌':100000,
+  'sam|원태운':100000,
+  'kia|카스트노':98000,
+  'kt|힐리어트':98000,
+  'hh|페라사':98000,
+  'kw|알칸타러':98000,
+  'kia|올너':98000,
+  'dsn|잭로거':98000,
+  'lot|비슬니':91000,
+  'lot|로드리게서':91000,
+  'ssg|한유선':90000,
+  'hh|강백헌':90000,
+  'nc|구창오':90000,
+  'nc|라일레':84000,
+  'kt|김현후':80000,
+  'kia|나성훈':80000,
+  'lg|박해밍':80000,
+  'nc|박밍우':80000,
+  'dsn|박찬홍':80000,
+  'kia|양현중':80000,
+  'ssg|문승운':80000,
+  'sam|김재운':80000,
+  'lg|함덕중':80000,
+  'lot|김원증':80000,
+  'lot|전준후':70000,
+  'kt|허경밍':70000,
+  'lot|유강난':70000,
+  'sam|류지헌':70000,
+  'sam|페댁':66000,
+  'kw|이형중':60000,
+  'lot|노진현':60000,
+  'kia|김태곤':60000,
+  'dsn|정수번':60000,
+  'kt|최원중':60000,
+  'dsn|이영화':60000,
+  'kia|김선민':60000,
+  'nc|박건운':60000,
+  'nc|테일려':59000,
+  'kt|대니헬':57000,
+  'kw|히우러':56000,
+  'ssg|아빌러':53000,
+  'lg|홍창긴':52000,
+  'ssg|김재헌':50000,
+  'lg|박동운':50000,
+  'ssg|오태군':50000,
+  'sam|구자혁':50000,
+  'lg|카라스쿠':50000,
+  'kw|원종헌':50000,
+  'lg|고우서':50000,
+  'lg|문보견':48000,
+  'kw|안우잔':48000,
+  'lg|김진순':45000,
+  'ssg|박성현':42000,
+  'hh|짐머멘':42000,
+  'sam|최형운':40000,
+  'hh|최재헌':40000,
+  'sam|박세형':40000,
+  'kt|김상순':40000,
+  'hh|심우주':40000,
+  'kia|조상운':40000,
+  'kia|김범순':40000,
+  'nc|블레힌':39000,
+  'lg|신민제':38000,
+  'ssg|최지헌':37000,
+  'nc|김주운':35000,
+  'kt|소형존':33000,
+  'kia|전상헌':31000,
+  'dsn|곽반':30500,
+  'kw|최주한':30000,
+  'kt|장성운':30000,
+  'dsn|양석헌':30000,
+  'lot|구승밍':30000,
+  'sam|김태후':30000,
+  'sam|임기연':30000,
+  'kia|정해용':30000,
+  'kt|박영헌':30000,
+  'sam|강민헌':30000,
+  'dsn|강승헌':29800,
+  'kt|김민현':29000,
+  'sam|이재헌':29000,
+  'lg|손주연':29000,
+  'lg|문성준':28000,
+  'ssg|타케타':28000,
+  'kia|이태야':27000,
+  'lg|이정요':27000,
+  'hh|박상운':26300,
+  'nc|권희돈':25000,
+  'kia|김호련':25000,
+  'kia|김도형':25000,
+  'lg|김강율':25000,
+  'ssg|조병연':25000,
+  'nc|김휘지':24000,
+  'lg|구본헉':23000,
+  'sam|김지천':23000,
+  'hh|문현밴':23000,
+  'kt|오원서':23000,
+  'sam|김영운':22000,
+  'dsn|김택윤':22000,
+  'kw|하영빈':21000,
+  'ssg|김인':21000,
+  'ssg|이지연':20000,
+  'kw|안이홍':20000,
+  'dsn|조수해':20000,
+  'kia|하주서':20000,
+  'sam|김성헌':20000,
+  'nc|김형중':20000,
+  'kt|우규인':20000,
+  'kt|김민순':20000,
+  'lg|임찬구':20000,
+  'kt|배제서':20000,
+  'ssg|이로훈':20000,
+  'hh|주현사':18700,
+  'dsn|박치구':18700,
+  'lot|고승밍':18500,
+  'kt|안현밍':18000,
+  'lot|윤동헌':18000,
+  'lot|나균앙':18000,
+  'kt|로간':18000,
+  'hh|김서헌':16800,
+  'lot|한동휘':16200,
+  'nc|이우서':16000,
+  'ssg|고명주':16000,
+  'dsn|최승영':15500,
+  'kt|한승태':15000,
+  'nc|서호천':15000,
+  'ssg|김택현':15000,
+  'lot|김태규':15000,
+  'kt|주원':15000,
+  'kt|손동헌':15000,
+  'hh|강재인':14500,
+  'kw|유투':14000,
+  'nc|토타':14000,
+  'hh|왕옌창':14000,
+  'lot|최준요':14000,
+  'kt|문상천':13500,
+  'kt|오윤서':13500,
+  'hh|정은언':13500,
+  'kw|이주영':13500,
+  'hh|김해연':13300,
+  'ssg|정준해':13000,
+  'ssg|조형웅':12500,
+  'hh|이도운':12100,
+  'kw|서건찬':12000,
+  'kia|오선후':12000,
+  'dsn|이유한':11200,
+  'dsn|오명전':11200,
+  'dsn|세베리누':11000,
+  'sam|이성국':11000,
+  'hh|이진연':11000,
+  'lot|황성밴':11000,
+  'lot|전민제':11000
 };
+/* 다년 계약 끝나는 해 — 공개된 것만 */
+const PF_REAL_END={'dsn|양의진':2028, 'hh|류현전':2031, 'ssg|최전':2028, 'lg|오지헌':2029, 'kt|고영포':2029};
 /* 내 계약 — 드래프트 순번 계약금 + 첫해 최저연봉 */
 /* [버그 이력 v3.40.0] ST.pro.round 는 없다(proEnter 는 ST.pro.draft 에 둔다) — 누구든 5라운드 5순위 계약금이 찍혔다 */
 function pfMyStartCon(){ const D=ST.pro.draft||{};
@@ -18523,6 +18700,8 @@ function pfUntouch(key){
   const t=TBYID[pfIdOf(key)], out=new Set(); if(!t||key===ST.pro.team) return out;
   const L=pfAll(t);
   L.filter(p=>pfRep(p)>=60).sort((a,b)=>pfRep(b)-pfRep(a)).slice(0,2).forEach(p=>out.add(p.id));
+  /* [v3.62.0] [제보] "명성 높다 하는애들은 트레이드 난이도가 진짜 높아야지" — 명성 80 넘으면 누구든 안 판다 */
+  L.filter(p=>pfRep(p)>=80).forEach(p=>out.add(p.id));
   const top=L.slice().sort((a,b)=>pfGrade(b)-pfGrade(a))[0]; if(top) out.add(top.id);
   L.filter(p=>pfAge(p)<=23 && (pfPot(p)||0)>=68).sort((a,b)=>(pfPot(b)||0)-(pfPot(a)||0)).slice(0,2).forEach(p=>out.add(p.id));
   return out;
@@ -18571,7 +18750,8 @@ function pfTradeEval(o){
   const ratio=get>0?give/get:(give>0?9:0);
   /* [v3.56.0] 빡세게 — [요청] "트레이드도 좀 빡세게". 예전엔 5% 손해(0.95)도 받아 줬다.
      이제 이득(1.02)이어야 받고, 자기네 간판(명성 70+)이 끼어 있으면 25% 웃돈을 요구한다 */
-  const star=tp.some(p=>pfRep(p)>=70), need=star?1.25:1.02;
+  /* [v3.62.0] 명성 70+ 는 50% · 60+ 는 25% 웃돈이 있어야 판다 */
+  const topRep=tp.reduce((m,p)=>Math.max(m,pfRep(p)),0), star=topRep>=60, need=topRep>=70?1.5:(topRep>=60?1.25:1.02);
   return {give:Math.round(give), get:Math.round(get), ratio, need, star, gp, tp, gk, tk, cash, blocked,
     mood: blocked.length?'no':(ratio>=need+0.13?'good':(ratio>=need?'ok':(ratio>=need*0.85?'close':'no')))};
 }
@@ -19197,6 +19377,10 @@ function pfRep(p){
   if(p.draftRound){ const yrs=Math.max(0,y-(p.draftYear||y)), fade=Math.max(0,1-yrs/5);
     const d=p.draftRound===1?(14+(p.draftPick<=3?6:0)):(p.draftRound===2?7:(p.draftRound===3?3:0)); r+=d*fade; }
   if(p.phenom) r+=18;
+  /* [v3.62.0] 몸값도 이름값이다 — 실제 연봉 10억이면 +6, 20억 +12, 40억 +18(상한).
+     pfCon 을 부르면 pfSalFair → pfRep 로 돌아서 끝이 안 난다 — 표를 바로 본다 */
+  try{ const k=proKeyOf((pfFind(p.id)||{t:{}}).t.id); const RS=k&&PF_REAL_SAL[k+'|'+(p._orig||p.name)];
+    if(RS && !pfIsForeign(p,k)) r+=Math.min(18, RS/10000*0.6); }catch(e){}
   return Math.round(clamp(r,0,100));
 }
 function pfRepTxt(r){ return r>=80?'슈퍼스타':(r>=65?'스타':(r>=50?'인기':(r>=35?'알려짐':'무명'))); }
@@ -36576,6 +36760,8 @@ function sdLookOf(p){
   const B=bodyOf(p), bmi=B.wt*10000/(B.ht*B.ht);
   L0.build=Math.round(clamp(0.86+(bmi-22)*0.028,0.86,1.16)*100)/100;
   L0.tall=Math.round(clamp(B.ht/182,0.94,1.07)*100)/100;
+  /* 배 — [요청] "이대호 같은애들 배 튀어나오게 하고 이런게 보통 킬포인트" · 체질량 28 넘으면 나온다 */
+  L0.belly=Math.round(clamp((bmi-27.5)/3.5,0,1)*100)/100;
   const K=SD_KNOWN_FORM[p._orig||p.name]; if(K) Object.assign(L0,K);
   return L0;
 }
@@ -36786,6 +36972,13 @@ function sdBatter(D,S){
       g.quadraticCurveTo(-17,-19,-8,-19); g.quadraticCurveTo(0,-21,8,-19);
       g.quadraticCurveTo(17,-19,15,-30); g.closePath(); },P.pan,
     ()=>{ g.fillStyle=P.panD; g.beginPath(); g.ellipse(-9,-22,9,6,0,0,Math.PI*2); g.fill(); });
+  /* 배 — [요청] "배 튀어나오게". 몸통 **밑에** 먼저 그려서 옆 · 아래로만 불룩 나온다(등번호는 안 가린다).
+     벨트가 그 위를 지나간다 */
+  { const bl=(D.o.look&&D.o.look.belly)||0;
+    if(bl>0){ const bx=2+sx*0.3, rx=15+bl*5, ry=7+bl*4;
+      sdCel(D,()=>{ g.beginPath(); g.ellipse(bx,-32+bl,rx,ry,0,0,Math.PI*2); },P.jer,
+        ()=>{ g.fillStyle=P.jerD; g.beginPath(); g.ellipse(bx-6,-27+bl,rx*0.8,ry*0.5,0,0,Math.PI*2); g.fill(); },
+        ()=>{ sdPin(D,bx-rx,bx+rx,-32-ry,-26+ry); }); } }
   const torso=()=>{ g.beginPath(); g.moveTo(-15,-47);
     g.quadraticCurveTo(0,-51,15+sx*0.4,-47);
     g.quadraticCurveTo(19,-37,15,-27); g.lineTo(-15,-27);
