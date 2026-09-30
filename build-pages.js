@@ -18,6 +18,8 @@ const src=fs.readFileSync(path.join(__dirname,'index.html'),'utf8');
 const code=(src.match(/const GATE_CODE = '([^']+)'/)||[])[1];
 const ver=(src.match(/const APP_VERSION = '([^']+)'/)||[])[1];
 if(!code||!ver){ console.error('GATE_CODE · APP_VERSION 을 못 찾았다'); process.exit(1); }
+const KEYS_SRC=((src.match(/function gateKeys\(v\)\{([\s\S]*?)\n\}/)||[])[1]||'').trim();
+if(!KEYS_SRC){ console.error('gateKeys 를 못 찾았다'); process.exit(1); }
 const ITER=250000;
 const salt=crypto.randomBytes(16), iv=crypto.randomBytes(12);
 const key=crypto.pbkdf2Sync(code.trim().toLowerCase(), salt, ITER, 32, 'sha256');
@@ -60,17 +62,19 @@ const APP_VERSION = '${ver}';
 const P={s:'${b64(salt)}',i:'${b64(iv)}',n:${ITER}};
 const D='${b64(ct)}';
 const ub=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+function keys(v){ ${KEYS_SRC} }
 function gh(v){ let h=2166136261; for(let i=0;i<v.length;i++){ h^=v.charCodeAt(i); h=Math.imul(h,16777619); } return (h>>>0).toString(36); }
 async function open_(pw, quiet){
   const m=document.getElementById('m');
   if(!(window.crypto&&crypto.subtle&&window.DecompressionStream)){ m.textContent='브라우저가 너무 오래됐다. 크롬 · 사파리를 업데이트해라.'; return; }
   m.style.color='#cfc6ff'; m.textContent='여는 중…';
   try{
-    const pk=await crypto.subtle.importKey('raw', new TextEncoder().encode(pw.trim().toLowerCase()), 'PBKDF2', false, ['deriveKey']);
+    pw=keys(pw.trim()).toLowerCase();           // 한글로 쳐도 자판 글쇠로 바꾼다(비밀번호 칸은 폰에서 영문 자판)
+    const pk=await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveKey']);
     const k=await crypto.subtle.deriveKey({name:'PBKDF2', salt:ub(P.s), iterations:P.n, hash:'SHA-256'}, pk, {name:'AES-GCM', length:256}, false, ['decrypt']);
     const gz=await crypto.subtle.decrypt({name:'AES-GCM', iv:ub(P.i)}, k, ub(D));
     const html=await new Response(new Blob([gz]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
-    try{ localStorage.setItem('wwzw_pw', pw); localStorage.setItem('wwzw_gate', gh(pw.trim())); }catch(e){}
+    try{ localStorage.setItem('wwzw_pw', pw); localStorage.setItem('wwzw_gate', gh(pw)); }catch(e){}
     document.open(); document.write(html); document.close();
   }catch(e){
     try{ localStorage.removeItem('wwzw_pw'); }catch(e2){}
@@ -96,10 +100,13 @@ if(process.argv.includes('--check')){
     const d=crypto.createDecipheriv('aes-256-gcm', k, iv); d.setAuthTag(ct.subarray(ct.length-16));
     return zlib.gunzipSync(Buffer.concat([d.update(ct.subarray(0,ct.length-16)), d.final()])).toString('utf8'); }catch(e){ return null; } };
   const ok=back(code)===src, bad=back('001012')===null;
+  const kf=new Function('v', KEYS_SRC);
+  const kor=back(kf('김선호홈런왕1012').toLowerCase())===src;
+  console.log((kor?'✅':'❌')+' 한글(김선호홈런왕1012)로 쳐도 풀린다');
   const leak=['양의지','김광현','PF_REAL_SAL','GATE_CODE'].filter(w=>page.indexOf(w)>=0);
   console.log((ok?'✅':'❌')+' 코드로 풀면 원본과 같다');
   console.log((bad?'✅':'❌')+' 옛 코드(001012)로는 안 풀린다');
   console.log((leak.length?'❌ 배포본에 글자가 샌다: '+leak.join(','):'✅ 배포본에 실명 · 코드가 안 보인다'));
   console.log((gateHash(code)===gateHash(code.trim())?'✅':'❌')+' 안쪽 입장 화면 해시가 맞는다');
-  if(!ok||!bad||leak.length) process.exit(1);
+  if(!ok||!bad||!kor||leak.length) process.exit(1);
 }
