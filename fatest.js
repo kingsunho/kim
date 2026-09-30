@@ -1,0 +1,62 @@
+/* FA 벽 · 메이저 — v3.66.0
+   [제보] "곽빈 fa 나왔다 (…) C급으로 나오는데 (…) 곽빈 90억 · 문동주는 120억 (…) 안우진도 데려와야지"
+          "돈 있다고 이렇게 쉽게 프렌차이즈들 mlb갈만한 선수들이 쉽게 사지는게 많냐?"
+   확인하는 것
+     · 곽빈(명성 89 · 한 구단) — 프랜차이즈다. 스물여덟이라 영구결번 후보는 아니다
+     · 포스팅 기준이 리그 눈금(등급 60)이다 — 예전 72 는 아무도 못 넘었다
+     · FA 로 메이저 — 등급 60+ · 서른둘 아래는 시장 전에 나간다 · 시장 목록에 없다
+     · 우리 제안도 원 소속 구단의 벽을 넘어야 한다 — 프랜차이즈 90% · 젊은 주전 70% · 30% 얹으면 준다
+     · 거절은 그 겨울 끝 · 다시 눌러도 같은 결과                                          */
+const {JSDOM,VirtualConsole}=require('jsdom');
+const html=require('fs').readFileSync(process.argv[2]||'index.html','utf8');
+const bad=[]; const vc=new VirtualConsole();
+vc.on('jsdomError',e=>{ if(!/scrollTo|Could not load|stylesheet|[Nn]ot implemented|getContext/.test(e.message)) bad.push('JSDOM: '+e.message.split('\n')[0]); });
+const dom=new JSDOM(html,{runScripts:'dangerously',pretendToBeVisual:true,url:'https://x.test/',virtualConsole:vc,
+  beforeParse(w){ w.scrollTo=()=>{}; w.TextEncoder=TextEncoder; w.TextDecoder=TextDecoder; }});
+const w=dom.window,d=w.document,ev=s=>w.eval(s); w.confirm=()=>true;
+const T=(n,f)=>{try{const r=f();const ok=r===true||(typeof r==='string'&&r.length>0&&!/^!/.test(r));
+  console.log((ok?'  ✅ ':'  ❌ ')+n+(typeof r==='string'?' :: '+r.replace(/^!/,''):''));if(!ok)bad.push(n);}
+  catch(e){console.log('  ❌ '+n+' :: '+e.message);bad.push(n+': '+e.message)}};
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+(async()=>{
+  await wait(700);
+  d.querySelectorAll('.pickcard')[0].click(); await wait(60);
+  [...d.querySelectorAll('#view .btn')].find(b=>b.textContent==='이 선수로 시작').click(); await wait(300);
+  ev(`ST.tutDone=true; ST.mode='player'; ST.role='bat'; ST.playerId='ksh'; MYID='ksh'; proEnter({team:'lg', round:3, pick:10, level:'1군'});`);
+  const find=n=>JSON.parse(ev(`(function(){ var r=null; TEAMS.forEach(function(t){ pfAll(t).forEach(function(p){ if(p.name==='${n}') r={id:p.id,k:proKeyOf(t.id)}; }); }); return JSON.stringify(r); })()`));
+
+  console.log('[프랜차이즈]');
+  const gb=find('곽빈');
+  T('곽빈 — 프랜차이즈(두산)', ()=>{ const f=ev(`pfFranchise(pfFind('${gb.id}').p,'${gb.k}')`); return f===1?'프랜차이즈':'!'+f; });
+  T('옮겨 다닌 사람은 기록이 없으면 프랜차이즈가 아니다', ()=>/!moved/.test(ev("String(pfFranchise)")));
+
+  console.log('\n[메이저]');
+  T('포스팅 기준 등급 60 (리그 최고가 67)', ()=>/if\(g<60\|\|age<24/.test(ev("String(pfPostRun)")) && ev("Math.max.apply(null,TEAMS.map(function(t){return Math.max.apply(null,pfAll(t).map(pfGrade));}))")>=60);
+  ev("pfState().cash=900");
+  const fa=JSON.parse(ev("JSON.stringify(pfFAOpen())"));
+  T('FA 로 메이저 간 사람은 시장 목록에 없고 리그에서 빠졌다', ()=>{
+    const m=fa.mlb||[]; if(!m.length) return '올해는 없다';
+    const inList=m.some(z=>fa.list.some(x=>x.name===z.name));
+    const still=m.some(z=>ev(`TEAMS.some(function(t){return pfAll(t).some(function(p){return p.name==='${z.name}';});})`));
+    return !inList&&!still ? m.map(z=>z.name).join(' · ') : '!'+JSON.stringify(m); });
+  T('메이저 확률 — 등급 60 0.22 · 67 0.7(최대) · 스물아홉 이하 +0.1 · 불펜 절반', ()=>
+    /clamp\(0\.22\+\(pfGrade\(p\)-60\)\*0\.07\+\(age<=29\?0\.1:0\),0\.2,0\.7\)\*\(rp\?0\.5:1\)/.test(ev("String(pfFAOpen)")));
+
+  console.log('\n[우리 제안 — 원 소속 구단의 벽]');
+  T('붙잡을 확률 — 프랜차이즈 0.9 · 젊은 주전 0.7 · 명성 65+ 0.35 · 얹으면 준다', ()=>{
+    const s=ev("String(pfFAKeepP)");
+    return /fr\?0\.9:\(young\?0\.7:\(rp>=65\?0\.35:0\)\)/.test(s) && /if\(over\) k=fr\?0\.7:k\*0\.5/.test(s); });
+  const K=fa.list.find(x=>!x.ours && ev(`pfFAKeepP(${JSON.stringify(x)}, pfFind('${x.id}').p, false)`)>0);
+  if(K){
+    const r1=JSON.parse(ev(`JSON.stringify(pfSign('${K.id}', true))`));
+    T('30% 얹어 부르면 총액이 오른다(또는 거절)', ()=>{
+      const x=JSON.parse(ev(`JSON.stringify(pfState().fa.list.find(function(z){return z.id==='${K.id}';}))`));
+      return x.total>=Math.round(K.total*1.3/1000)*1000-1000 ? (r1.ok?'계약 '+x.total:'거절 — '+r1.why) : '!'+x.total+'/'+K.total; });
+    T('끝난 FA 는 다시 못 부른다', ()=>{ const r2=JSON.parse(ev(`JSON.stringify(pfSign('${K.id}'))`)); return !r2.ok ? r2.why : '!'+JSON.stringify(r2); });
+  } else T('붙잡히는 FA 가 있다', ()=>'올해는 없다');
+  T('AI 도 붙잡는다(pfFAClose) — 우리 제안과 같은 벽', ()=>/young && rng\(\)<0\.8/.test(ev("String(pfFAClose)")));
+  T('젊은 에이스는 6년', ()=>/const yrs=star\?6:/.test(ev("String(pfFAOpen)")));
+  ev("go('front')"); await wait(30);
+  console.log(bad.length?('\n❌ '+bad.length+'건:\n'+bad.slice(0,12).join('\n')):'\n✅ 이상 없음');
+  process.exit(bad.length?1:0);
+})();

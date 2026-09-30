@@ -99,7 +99,18 @@ const reload=()=>{ const snap=ev("JSON.stringify(ST)");
   const fa=JSON.parse(ev("JSON.stringify(pfFAOpen())"));
   T('FA 에 등급이 붙는다', ()=>fa.list.length && fa.list.every(x=>/^[ABC]$/.test(x.grade)) ? fa.list.map(x=>x.grade).join('') : '!'+fa.list.length);
   /* A·B 는 보상선수가 붙는다(A 20인 · B 25인 보호 밖). 해에 따라 A 가 없을 수 있어서 둘 다 본다 */
-  const A=fa.list.find(x=>x.grade==='A'&&!x.ours)||fa.list.find(x=>x.grade==='B'&&!x.ours);
+  /* [v3.66.0] 원 소속 구단이 붙잡는 사람(프랜차이즈 · 젊은 주전 · 명성 65+)은 거절할 수 있다 —
+     보상선수 검사는 안 붙잡히는 사람으로 한다 */
+  const free=x=>!x.ours && ev(`pfFAKeepP(${JSON.stringify(x)}, pfFind('${x.id}').p, false)`)===0;
+  const A=fa.list.find(x=>x.grade==='A'&&free(x))||fa.list.find(x=>x.grade==='B'&&free(x));
+  const K=fa.list.find(x=>!x.ours && ev(`pfFAKeepP(${JSON.stringify(x)}, pfFind('${x.id}').p, false)`)>=0.7);
+  if(K){
+    const r1=JSON.parse(ev(`JSON.stringify(pfSign('${K.id}'))`));
+    T('붙잡히는 FA — 계약하거나 거절, 거절이면 그 겨울엔 끝', ()=>{
+      if(r1.ok) return K.name+' 왔다(30% 확률 쪽)';
+      const r2=JSON.parse(ev(`JSON.stringify(pfSign('${K.id}'))`));
+      return r1.refused && !r2.ok && !r2.refused ? K.name+' — '+r1.why : '!'+JSON.stringify([r1,r2]); });
+  }
   if(A){
     const before=ev("pfAll(TBYID.wwzw).length");
     const r=JSON.parse(ev(`JSON.stringify(pfSign('${A.id}'))`));

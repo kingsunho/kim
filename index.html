@@ -9770,8 +9770,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.65.0';
-const APP_VERSION_NOTE = '전체 진루 · 전체 귀루 — 안타 치고 앞 주자도 내가 보낸다';
+const APP_VERSION = '3.66.0';
+const APP_VERSION_NOTE = '시즌 마무리 렉 · FA 는 돈만으론 안 된다 · 메이저 진출';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9792,6 +9792,14 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.66.0', t:'시즌 마무리 렉 · FA 는 돈만으론 안 된다 · 메이저 진출', items:[
+    '<b>시즌 마무리 렉</b> — 「시즌 마무리」 가 15초, 「다음 시즌」 이 7초쯤 걸렸다. FA 시장을 열 때 후보마다 리그 600명 연봉을 처음부터 다시 셌고, 명성을 잴 때마다 통산 기록 전체를 훑었다. 이제 둘 다 1초 안쪽이다',
+    '<b>FA 는 돈만으론 안 된다</b> — 예전엔 금고만 차 있으면 누구든 왔다. 이제 원 소속 구단이 먼저 붙잡는다: 프랜차이즈 90% · 젊은 주전 70% · 이름난 선수 35%',
+    '<b>30% 얹어 부르기</b> — 붙잡힐 확률이 반으로 준다(프랜차이즈는 90 → 70%). 한 번 거절당하면 그 겨울엔 끝이다',
+    '<b>메이저리그 진출</b> — 포스팅 기준이 등급 72 라 아무도 못 넘었다(리그 최고가 67). 이제 리그 상위권(60+)이 포스팅으로, 또 FA 자격으로 메이저에 간다. 시장에 안 나오고 떠난 사람은 FA 화면 위에 적힌다',
+    '<b>프랜차이즈</b> — 곽빈처럼 한 구단에서만 뛴 명성 75+ 는 스물여섯부터 프랜차이즈다(예전엔 서른 넘어야 했다)',
+    '젊은 에이스(등급 58+ · 스물아홉 아래)는 FA 6년 계약',
+  ]},
   {v:'3.65.0', t:'전체 진루 · 전체 귀루 — 안타 치고 앞 주자도 내가 보낸다', items:[
     '<b>내 타석에서 안타를 치면 앞 주자도 내가 정한다.</b> 1루타면 한 베이스, 2루타면 두 베이스까지는 무조건 가고, 한 베이스 더는 버튼으로 — 「◂ 전체 귀루」 「▸ 전체 진루」',
     '주자가 둘 이상이면 <b>주자별 버튼</b>도 뜬다(2루 → 홈 · 1루 → 3루). 앞 주자가 서면 뒤 주자는 막혀서 못 간다',
@@ -17544,9 +17552,10 @@ function proRebuild(){
    새로 그 번호를 받은 사람), 트레이드 · FA · 신인이 들어오면서 또 겹쳤다.
    구단마다 한 번 훑어서 **나 · 내가 직접 정한 번호 · 1군 · 등급 높은 사람** 순으로 번호를 지키고,
    밀린 사람은 빈 번호를 받는다. 매번 같은 순서로 돌아서 같은 사람은 늘 같은 번호다 */
-function pfDedupNos(){
+function pfDedupNos(keys){
   const me=ST.playerId||MYID, NO=ST.renum||{};
-  TEAMS.forEach(t=>{ if(!proKeyOf(t.id)) return;
+  const only=Array.isArray(keys)?new Set(keys.filter(Boolean)):null;
+  TEAMS.forEach(t=>{ if(!proKeyOf(t.id)) return; if(only && !only.has(proKeyOf(t.id))) return;
     const L=pfAll(t).filter(p=>p.no!=null);
     const rank=p=>(p.id===me?0:(NO[p.id]!=null?1:(p.farm?3:2)));
     L.sort((a,b)=>rank(a)-rank(b) || pfGrade(b)-pfGrade(a) || String(a.id).localeCompare(String(b.id)));
@@ -18401,7 +18410,7 @@ function pfMove(p, fromKey, toKey, why, slot){
   F.moves.push({snap, from:fromKey, to:toKey, why:why||'', year:ST.pro.year, slot:slot||'1군'});
   pfApplyMoves(TEAMS, [F.moves[F.moves.length-1]]);
   try{ const t=TBYID[pfIdOf(toKey)]; if(t&&t.id==='wwzw'){ pfFillPlayer(snap.id); } }catch(e){}
-  try{ pfDedupNos(); }catch(e){}                 // 들어온 사람 번호가 겹치면 빈 번호로
+  try{ pfDedupNos(toKey?[toKey]:[]); }catch(e){}   // 들어온 사람 번호가 겹치면 빈 번호로 — 받은 팀만 보면 된다
   return true;
 }
 function pfApplyMoves(teams, only){
@@ -18409,17 +18418,21 @@ function pfApplyMoves(teams, only){
   const F=ST&&ST.pro&&ST.pro.front; if(!F) return;
   const list=only||F.moves||[];
   const byId={}; (teams||[]).forEach(t=>byId[t.id]=t);
+  /* [v3.66.0] 한 건만 옮길 때(only)는 **건드린 팀만** 다시 계산한다.
+     예전엔 한 명 옮길 때마다 열 팀을 전부 finalizeTeam 했다 — 겨울 정리(2군행 · 콜업 · 방출)가
+     수십 건이라 「다음 시즌」 이 2초 넘게 걸렸다(폰이면 그 몇 배) */
+  const touched=new Set();
   list.forEach(m=>{
     const s=m.snap, isP=pfIsPit(s);
     const from=m.from?byId[pfIdOf(m.from)]:null, to=m.to?byId[pfIdOf(m.to)]:null;
     /* 어디 있든 한 번 빼고(같은 사람이 여러 번 옮겨질 수 있다) 새 자리에 넣는다 */
     (teams||[]).forEach(t=>['players','pitchers','farm'].forEach(k=>{
       const i=(t[k]||[]).findIndex(x=>x.id===s.id || (t===from && x.name===s.name && x.no===s.no && !x.custom));
-      if(i>=0) t[k].splice(i,1); }));
-    if(to){ const o=JSON.parse(JSON.stringify(s));
+      if(i>=0){ t[k].splice(i,1); touched.add(t); } }));
+    if(to){ const o=JSON.parse(JSON.stringify(s)); touched.add(to);
       if(m.slot==='2군'){ o.farm=true; to.farm.push(o); } else (isP?to.pitchers:to.players).push(o); }
   });
-  (teams||[]).forEach(t=>{ try{ finalizeTeam(t); }catch(e){} });
+  (only ? [...touched] : (teams||[])).forEach(t=>{ try{ finalizeTeam(t); }catch(e){} });
 }
 /* 우리 팀에 새로 온 사람 — 컨디션·기록 칸을 채운다(비어 있으면 NaN 경기가 난다) */
 function pfFillPlayer(id){
@@ -18910,13 +18923,24 @@ function pfRenewSign(){
   return R;
 }
 /* ---- FA ---- */
-function pfFAGrade(p, t, c){
+/* 연봉표 — 구단별 · 리그 전체 국내 선수 연봉(외국인 뺌). pfFAGrade 가 후보마다 리그 600명을
+   두 번씩 다시 셌다 — [제보 v3.66.0] "시즌 마무리에 렉걸린다" 의 범인이다. 재 보니 FA 시장 여는 데 14.7초.
+   한 번 만들어서 넘긴다 */
+function pfSalTable(){
+  const team={}, all=[];
+  TEAMS.forEach(tt=>{ const k=proKeyOf(tt.id), a=[];
+    pfAll(tt).forEach(q=>{ const cc=pfCon(q,k); if(cc.type!=='foreign'){ a.push(cc.sal); all.push(cc.sal); } });
+    team[tt.id]=a; });
+  return {team, all};
+}
+function pfFAGrade(p, t, c, ST0){
   const age=pfAge(p);
   if(c.fa===0 && age>=35) return 'C';
   const sal=c.sal;
   /* 등급 산정 연봉 순위에서 외국인은 뺀다 — 구단 안에서도 리그 전체에서도 */
-  const teamRank=pfAll(t).map(q=>pfCon(q,proKeyOf(t.id))).filter(x=>x.type!=='foreign'&&x.sal>sal).length+1;
-  const lg=TEAMS.reduce((n,tt)=>n+pfAll(tt).filter(q=>pfCon(q,proKeyOf(tt.id)).type!=='foreign'&&pfCon(q,proKeyOf(tt.id)).sal>sal).length,0)+1;
+  const S=ST0||pfSalTable();
+  const teamRank=(S.team[t.id]||[]).filter(x=>x>sal).length+1;
+  const lg=S.all.filter(x=>x>sal).length+1;
   let g=(teamRank<=3&&lg<=30)?'A':((teamRank<=10&&lg<=60)?'B':'C');
   if(c.fa>=1 && g==='A') g='B';            // 재자격 — 게임 단순화
   return g;
@@ -18925,7 +18949,7 @@ function pfFAOpen(){
   const F=pfState(), y=ST.pro.year, me=ST.playerId||MYID;
   if(F.fa&&F.fa.year===y) return F.fa;
   try{ pfRetireRun(); }catch(e){}
-  const list=[];
+  const list=[], mlbGo=[], salT=pfSalTable();
   TEAMS.forEach(t=>{
     const key=proKeyOf(t.id);
     pfAll(t).forEach(p=>{
@@ -18934,15 +18958,32 @@ function pfFAOpen(){
       const newFA = (c.type==='annual' && c.svc+1>=8);
       const expire= (c.type==='fa' && c.left<=1);
       if(!newFA && !expire) return;
-      const age=pfAge(p)+1, g=pfFAGrade(p,t,c);
-      const yrs=age<=30?4:(age<=32?3:(age<=34?2:1));
+      const age=pfAge(p)+1, g=pfFAGrade(p,t,c,salT);
+      /* [v3.66.0] FA 로 메이저 — 포스팅 없이 FA 자격으로 나가는 길(양현종 · 김광현처럼).
+         리그 상위 1%(등급 60+) · 서른둘 아래면 시장에 나오기 전에 먼저 두드린다. 젊고 셀수록 간다 */
+      if(key && !pfIsForeign(p,key) && pfGrade(p)>=60 && age<=32){
+        const r0=makeRng(((ST.seed||1)*8831+y*41+clayHash(String(p.id)))>>>0)();
+        /* 한 해 한둘 — 실제로도 그쯤 나간다. 불펜은 메이저가 덜 부른다(절반) */
+        const rp=pfIsPit(p)&&!(t.pitchers||[]).slice(0,5).some(q=>q.id===p.id)&&p.role!=='SP';
+        const pm=clamp(0.22+(pfGrade(p)-60)*0.07+(age<=29?0.1:0),0.2,0.7)*(rp?0.5:1);
+        if(r0<pm){ mlbGo.push({p, t, key, age}); return; }
+      }
+      const star=pfGrade(p)>=58 && age<=29;
+      /* 젊은 에이스는 길게 묶는다 — 노시환 10년 · 구창모 · 고영표처럼 */
+      const yrs=star?6:(age<=30?4:(age<=32?3:(age<=34?2:1)));
       const per=pfFAAsk(p, age);
       list.push({id:p.id, name:p.name, from:key, grade:g, yrs, total:Math.round(per*yrs/1000)*1000, last:c.sal,
         v:pfValue(p), pit:pfIsPit(p), age, ours:t.id==='wwzw', done:null});
     });
   });
   list.sort((a,b)=>b.total-a.total);
-  F.fa={year:y, list:list.slice(0,24)};
+  F.fa={year:y, list:list.slice(0,24), mlb:mlbGo.map(z=>({name:z.p.name, from:z.key}))};
+  mlbGo.forEach(z=>{
+    pfMove(z.p, z.key, null, 'FA — 메이저리그 진출'); pfForget(z.p.id);
+    if(!Array.isArray(F.mlb)) F.mlb=[]; F.mlb.push({name:z.p.name, team:z.key, year:y, fee:0, fa:true}); F.mlb=F.mlb.slice(-30);
+    if(z.key===ST.pro.team) pfLog('FA '+z.p.name+' — 메이저리그 진출. 잡을 수 없었다');
+    proNews('FA', proName(z.key)+' '+z.p.name+', FA 로 메이저리그 간다', 'KBO 시장에는 안 나온다. 「더 큰 무대에서 붙어 보겠다」.');
+  });
   return F.fa;
 }
 /* 보호명단 — n 명. 나는 자동 보호. 직접 고른 게(F.protect) 있으면 그걸 먼저 */
@@ -18974,10 +19015,39 @@ function pfFAComp(x, toKey){
 function pfSignCon(id, x){
   pfSetCon(id, {sal:Math.round(x.total*0.65/x.yrs/100)*100, type:'fa', left:x.yrs, svc:(x.age-19), fa:1+((pfCon({id},x.from).fa)||0), bonus:Math.round(x.total*0.35)});
 }
-function pfSign(id){
+/* [제보 v3.66.0] "돈 있다고 이렇게 쉽게 프렌차이즈들 mlb갈만한 선수들이 쉽게 사지는게 많냐?"
+   맞다. AI 끼리는 원 소속 구단이 먼저 잡는데(pfFAClose), **우리가 부르면 돈만 있으면 무조건** 왔다.
+   이제 우리 제안도 같은 벽을 넘어야 한다 —
+     · 원 소속 구단이 먼저 붙잡는다: 프랜차이즈 90% · 젊은 주전(서른 이하 · 등급 55+) 70% · 명성 65+ 35%
+     · 30% 얹어 부르면(over) 흔들린다 — 붙잡힐 확률이 반으로 준다(프랜차이즈는 0.9 → 0.7)
+     · 한 번 거절하면 끝이다(같은 겨울 다시 못 부른다). 주사위는 선수 · 해마다 정해져 있어 다시 눌러도 같다 */
+function pfFAKeepP(x, fp, over){
+  const fr=pfFranchise(fp, x.from), young=x.age<=30&&pfGrade(fp)>=55, rp=pfRep(fp);
+  let k=fr?0.9:(young?0.7:(rp>=65?0.35:0));
+  if(over) k=fr?0.7:k*0.5;
+  return k;
+}
+function pfSign(id, over){
   const F=pfState(), fa=F.fa; if(!fa) return {ok:false, why:'FA 시장이 안 열렸다'};
   const x=fa.list.find(z=>z.id===id); if(!x||x.done) return {ok:false, why:'이미 끝났다'};
   const f=pfFind(id); if(!f) return {ok:false, why:'선수를 못 찾았다'};
+  if(!x.ours){
+    const u=makeRng(((ST.seed||1)*5261+ST.pro.year*13+clayHash(String(id)))>>>0)();
+    const kp=pfFAKeepP(x, f.p, !!over);
+    if(over){ x.total=Math.round(x.total*1.3/1000)*1000; }
+    const bonus0=x.total*0.35/10000, cm0=pfFAComp(x, ST.pro.team).money/10000;
+    if(F.cash<bonus0+cm0){ if(over) x.total=Math.round(x.total/1.3/1000)*1000;
+      return {ok:false, why:'금고가 모자라다 — 계약금 '+bonus0.toFixed(1)+'억 + 보상금 '+cm0.toFixed(1)+'억 필요 (지금 '+F.cash+'억)'}; }
+    if(u<kp){
+      x.done='stay'; pfSignCon(id,x);
+      const fr=pfFranchise(f.p, x.from);
+      pfLog('FA '+x.name+' 영입 실패 — '+proName(x.from)+'가 붙잡았다'+(over?' (30% 얹었는데도)':''));
+      proNews('FA', proName(x.from)+', '+x.name+' 붙잡았다 — '+x.yrs+'년 '+wonStr2(x.total),
+        fr?'「이 팀에서 끝내겠다」. '+proName(ST.pro.team)+'의 제안은 정중히 거절했다.'
+          :proName(ST.pro.team)+'도 뛰어들었지만 원 소속 구단이 먼저 도장을 받았다.');
+      return {ok:false, refused:true, why:x.name+' — '+proName(x.from)+'가 붙잡았다. 이번 겨울엔 끝이다'};
+    }
+  }
   const bonus=x.total*0.35/10000;
   if(x.ours){
     /* 우리 FA 잔류 — 보상 없음 */
@@ -19665,11 +19735,13 @@ function pfPostRun(){
     pfAll(t).slice().forEach(p=>{
       if(!p||p.id===me||p.custom||pfIsForeign(p,key)) return;
       const g=pfGrade(p), age=pfAge(p), c=pfCon(p,key);
-      if(g<72||age<24||age>31||(c.svc||0)<7||!pfMilServed(p)) return;
-      if(rng()>=0.30) return;
-      const ok=rng()<clamp(0.45+(g-72)*0.05,0.45,0.9);
+      /* [v3.66.0] 기준이 등급 72 였는데 리그 최고가 67 이라(재 봤다) **아무도 메이저에 안 갔다.**
+         안우진 · 김도영 · 문동주 같은 애들이 KBO 에 눌러앉아 FA 로 팔려 다녔다. 등급 60(리그 상위 1%쯤)으로 */
+      if(g<60||age<24||age>31||(c.svc||0)<7||!pfMilServed(p)) return;
+      if(rng()>=0.35) return;
+      const ok=rng()<clamp(0.40+(g-60)*0.07,0.40,0.9);
       if(!ok){ proNews('포스팅', proName(key)+' '+p.name+', 메이저 도전했지만 응찰 없어 잔류', '「아쉽지만 여기서 더 증명하겠다」.'); return; }
-      const fee=Math.round(30+(g-72)*8+rng()*10);
+      const fee=Math.round(30+(g-60)*8+rng()*10);
       pfMove(p, key, null, '포스팅 — 메이저리그 진출'); pfForget(p.id);
       if(!Array.isArray(F.mlb)) F.mlb=[]; F.mlb.push({name:p.name, team:key, year:y, fee}); F.mlb=F.mlb.slice(-30);
       if(key===ST.pro.team){ F.cash=Math.round((F.cash+fee)*10)/10; pfLog('포스팅 — '+p.name+' 메이저 진출 · 포스팅 금액 '+fee+'억 입금'); }
@@ -19784,8 +19856,13 @@ function pfFranchise(p, key){
   const rp=pfRep(p); if(rp<70) return 0;
   const nm=p._orig||p.name; let rec=0, only=true;
   try{ Object.keys(PRO_HIST_CAREER).forEach(k=>PRO_HIST_CAREER[k].forEach(r=>{ if(r[0]===nm){ rec++; if(!(r[1].length===1&&r[1][0]===key)) only=false; } })); }catch(e){}
-  if(rec? !only : !(rp>=75&&pfAge(p)>=30)) return 0;
-  return (rec>0||rp>=85)?2:1;         // 2 = 영구결번 후보
+  /* [제보 v3.66.0] "곽빈 fa 나왔다 (…) 곽빈 90억" — 명성 89 리그 1위 에이스가 프랜차이즈가 아니었다.
+     통산 10걸 기록이 없으면 **서른 넘어야** 쳐줬기 때문이다. 스물여섯 넘어 한 구단에서만 뛴(이적 기록이 없는)
+     명성 75+ 도 프랜차이즈다. 영구결번 후보는 여전히 기록이 있거나 서른 넘은 85+ 만 */
+  const moved=(()=>{ try{ return (pfState().moves||[]).some(m=>m.snap&&m.snap.id===p.id); }catch(e){ return false; } })();
+  const age=pfAge(p);
+  if(rec? !only : !(rp>=75 && (age>=30 || (age>=26 && !moved)))) return 0;
+  return (rec>0||(rp>=85&&age>=30))?2:1;         // 2 = 영구결번 후보
 }
 function pfFranchiseTag(p, key){ const f=pfFranchise(p,key); return f===2?'영구결번 후보':(f===1?'프랜차이즈':''); }
 function pfRep(p){
@@ -19802,14 +19879,29 @@ function pfRep(p){
   if(p.phenom) r+=18;
   /* [v3.64.0] 쌓아 온 이름 — [제보] "김광현 같은 사람은 돌아오기만 하면 바로 주장달텐데 (…) 통산기록이나 메이저 다녀온 사람"
      통산 10걸(PRO_HIST_CAREER) 한 부문마다 +5(최대 +20) · 메이저리그를 뛰고 온 사람 +12 */
-  try{ const nm=p._orig||p.name; let hc=0;
-    Object.keys(PRO_HIST_CAREER).forEach(k=>{ if(PRO_HIST_CAREER[k].some(r=>r[0]===nm)) hc++; });
-    r+=Math.min(20,hc*5); if(PRO_MLB_EXP.indexOf(nm)>=0) r+=12; }catch(e){}
+  try{ const nm=p._orig||p.name, L=pfRepLook();
+    r+=Math.min(20,(L.hc.get(nm)||0)*5); if(PRO_MLB_EXP.indexOf(nm)>=0) r+=12; }catch(e){}
   /* [v3.62.0] 몸값도 이름값이다 — 실제 연봉 10억이면 +6, 20억 +12, 40억 +18(상한).
      pfCon 을 부르면 pfSalFair → pfRep 로 돌아서 끝이 안 난다 — 표를 바로 본다 */
-  try{ const k=proKeyOf((pfFind(p.id)||{t:{}}).t.id); const RS=k&&PF_REAL_SAL[k+'|'+(p._orig||p.name)];
-    if(RS && !pfIsForeign(p,k)) r+=Math.min(18, RS/10000*0.6); }catch(e){}
+  try{ const nm=p._orig||p.name, E=pfRepLook().sal.get(nm);
+    if(E){ /* 이름이 한 구단에만 있으면 팀을 안 찾는다. 동명이인이면 그때만 찾는다 */
+      const k=(E.length===1)?E[0][0]:proKeyOf((pfFind(p.id)||{t:{}}).t.id);
+      const RS=k&&PF_REAL_SAL[k+'|'+nm];
+      if(RS && !pfIsForeign(p,k)) r+=Math.min(18, RS/10000*0.6); } }catch(e){}
   return Math.round(clamp(r,0,100));
+}
+/* [v3.66.0] 명성 계산의 고정 표 — 통산 10걸 부문 수 · 실제 연봉 표를 이름으로 한 번만 묶어 둔다.
+   예전엔 pfRep 한 번에 통산 기록 전체를 훑고 열 팀에서 그 사람을 찾았다. 정렬 비교 안에서
+   수천 번 불려서 「다음 시즌」 이 2초 넘게 걸렸다([제보] "시즌 마무리에 렉걸린다") */
+let PF_REP_LOOK=null;
+function pfRepLook(){
+  if(PF_REP_LOOK) return PF_REP_LOOK;
+  const hc=new Map(), sal=new Map();
+  try{ Object.keys(PRO_HIST_CAREER).forEach(k=>{ const seen=new Set();
+    PRO_HIST_CAREER[k].forEach(r=>{ if(seen.has(r[0])) return; seen.add(r[0]); hc.set(r[0],(hc.get(r[0])||0)+1); }); }); }catch(e){}
+  try{ Object.keys(PF_REAL_SAL).forEach(kk=>{ const i=kk.indexOf('|'); const k=kk.slice(0,i), nm=kk.slice(i+1);
+    if(!sal.has(nm)) sal.set(nm,[]); sal.get(nm).push([k]); }); }catch(e){}
+  return PF_REP_LOOK={hc, sal};
 }
 function pfRepTxt(r){ return r>=80?'슈퍼스타':(r>=65?'스타':(r>=50?'인기':(r>=35?'알려짐':'무명'))); }
 /* 유니폼 · 굿즈 — 우리 1군에 명성 60 넘는 사람이 있으면 한 주에 조금씩 더 판다(억) */
@@ -19884,10 +19976,13 @@ function pfRosterBalance(){
       /* [v3.56.0] 감독이 1 · 2군을 고른다 — 감독 눈(베테랑 · 젊은 선수 · 이름값)으로 2군의 나은 사람과
          1군의 못한 사람을 두 번까지 바꾼다. 우리 팀도 감독이 한다(나는 빼고) */
       const m=proMgrOf(key);
+      /* 점수는 한 번씩만 잰다 — 정렬 비교 안에서 재면 사람 수 × log 번 명성을 다시 계산한다 */
+      const best=(arr,f,hi)=>{ let bp=null, bv=0; arr.forEach(p=>{ const v=f(p); if(bp===null || (hi?v>bv:v<bv)){ bp=p; bv=v; } }); return bp?{p:bp,v:bv}:null; };
       for(let sw=0; sw<2; sw++){
-        const up=(t.farm||[]).filter(p=>p.id!==me && pfIsPit(p)===pit).sort((a,b)=>pfMgrScore(b,m)-pfMgrScore(a,m))[0];
-        const dn=(t[k]||[]).filter(p=>p.id!==me && !p.custom && !pfIsForeign(p,key)).sort((a,b)=>pfMgrScore(a,m)-pfMgrScore(b,m))[0];
-        if(!up||!dn || pfMgrScore(up,m)<=pfMgrScore(dn,m)*1.05) break;
+        const U=best((t.farm||[]).filter(p=>p.id!==me && pfIsPit(p)===pit), p=>pfMgrScore(p,m), true);
+        const D=best((t[k]||[]).filter(p=>p.id!==me && !p.custom && !pfIsForeign(p,key)), p=>pfMgrScore(p,m), false);
+        const up=U&&U.p, dn=D&&D.p;
+        if(!up||!dn || U.v<=D.v*1.05) break;
         pfMove(dn, key, key, '2군행', '2군'); pfMove(up, key, key, '콜업', '1군');
       }
       /* 2군 정원 — 타자 · 투수 각 30. 넘치면 가망 없는 사람부터 방출(외국인 · 나는 빼고) */
@@ -19895,7 +19990,8 @@ function pfRosterBalance(){
       /* [v3.56.0] [요청] "내가 선택한 선수 있는팀은 내가 방출한선수 고를 수 있게" — 우리 팀은 자동으로 안 자른다.
          프런트 「뎁스표」 에서 내가 고른다. 다만 마흔 명을 넘기면(몇 해 방치) 안전장치로 정리한다 */
       const cap=(t.id==='wwzw')?40:30;
-      farm.sort((a,b)=>pfRelScore(a)-pfRelScore(b)).slice(0,Math.max(0,farm.length-cap)).forEach(p=>{
+      const rs=new Map(farm.map(p=>[p.id,pfRelScore(p)]));
+      farm.sort((a,b)=>rs.get(a.id)-rs.get(b.id)).slice(0,Math.max(0,farm.length-cap)).forEach(p=>{
         if(pfMove(p, key, null, '방출')) pfForget(p.id); });
     });
   });
@@ -20726,7 +20822,9 @@ function renderProFA(rec){
   hd.innerHTML='<div class="card-h">FA 시장 · 금고 '+F.cash.toFixed(1)+'억</div>'+
     '<p class="muted">등급은 직전 연봉 순위 — A 구단 3위·리그 30위 안 · B 구단 10위·리그 60위 안 · 만 35세 신규 FA 는 C.<br>'+
     '데려가면 원 소속 구단이 보상을 고른다 — A 직전 연봉 200% + 보상선수(우리 20인 보호 외) 또는 300% · B 100% + 보상선수(25인 외) 또는 200% · C 150%.<br>'+
-    '계약금(총액 35%)은 바로 나가고 나머지는 해마다 연봉으로 나간다. 우리 FA 는 잔류 계약을 할 수 있다 — 떠나면 보상을 받는다.</p>';
+    '계약금(총액 35%)은 바로 나가고 나머지는 해마다 연봉으로 나간다. 우리 FA 는 잔류 계약을 할 수 있다 — 떠나면 보상을 받는다.<br>'+
+    '<b>돈만으론 안 된다.</b> 프랜차이즈 · 젊은 주전 · 이름난 선수는 원 소속 구단이 먼저 붙잡는다. 거절당하면 그 겨울엔 끝이다.</p>'+
+    ((fa.mlb&&fa.mlb.length)?'<p class="muted">🇺🇸 시장에 안 나온 사람 — '+fa.mlb.map(z=>z.name+'('+proName(z.from)+')').join(' · ')+' : FA 로 메이저리그 진출</p>':'');
   c.appendChild(hd);
   const lc=el('div','card');
   fa.list.forEach(x=>{
@@ -20739,6 +20837,14 @@ function renderProFA(rec){
         (x.yrs+'년 '+wonStr2(x.total)+' · 직전 연봉 '+wonStr2(x.last)+(comp?' · 보상 '+wonStr2(comp.money)+(comp.player?' + '+comp.player.name:''):'')+' · 가치 '+x.v))+'</span>';
     if(!x.done&&!fa.closed) b.onclick=async()=>{ const r=pfSign(x.id); toast(r.ok?('계약 — '+wonStr2(r.total)+(r.lost?' · 보상선수 '+r.lost+' 떠남':'')):r.why); await saveGame(true); renderProFA(rec); };
     lc.appendChild(b);
+    /* 원 소속 구단이 붙잡을 것 같으면 — 30% 얹어 부를 수 있다 */
+    const kp0=(!x.ours&&!x.done&&!fa.closed&&fp)?pfFAKeepP(x, fp.p, false):0;
+    if(kp0>0){
+      const o=el('button','btn sm pf-over');
+      o.innerHTML='30% 얹어 부른다 — '+wonStr2(Math.round(x.total*1.3/1000)*1000)+' <i>('+proName(x.from)+'가 붙잡을 확률 '+Math.round(kp0*100)+'% → '+Math.round(pfFAKeepP(x, fp.p, true)*100)+'%)</i>';
+      o.onclick=async()=>{ const r=pfSign(x.id, true); toast(r.ok?('계약 — '+wonStr2(r.total)+(r.lost?' · 보상선수 '+r.lost+' 떠남':'')):r.why); await saveGame(true); renderProFA(rec); };
+      lc.appendChild(o);
+    }
   });
   c.appendChild(lc);
   if(!fa.closed){ const cl=el('button','btn primary','시장 닫기 — 남은 FA 는 다른 구단이 데려간다');
