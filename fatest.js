@@ -36,11 +36,19 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   T('재자격 — 첫 FA 가 A · B 면 B, C 면 C', ()=>gr({fa:1,fg:'A',sal:900000})==='B' && gr({fa:1,fg:'B',sal:1})==='B' && gr({fa:1,fg:'C',sal:900000})==='C');
   T('등급은 최근 3년 평균 연봉 순위', ()=>/pfSalAvg3\(q,k\)/.test(ev("String(pfSalTable)")) && /S0\.by\[p\.id\]/.test(ev("String(pfFAGrade)")));
   T('만 35세 이상 신규 FA 는 C', ()=>/if\(age>=35\) return 'C'/.test(ev("String(pfFAGrade)")));
-  T('곽빈 — 2028 시즌 뒤 FA (부상으로 늦었다)', ()=>{ const r=ev(`(function(){ var f=pfFind('${gb.id}'); return pfFaLeft(f.p,'${gb.k}'); })()`); return r===1?'FA 까지 한 시즌 더':'!'+r; });
+  T('곽빈 — 2028 시즌 뒤 FA (부상으로 늦었다)', ()=>{ const r=ev(`(function(){ var f=pfFind('${gb.id}'); return pfFaLeft(f.p,'${gb.k}'); })()`); return r===2?'이번 시즌 포함 두 시즌':'!'+r; });
   T('비FA 연봉도 오른다 — 곽빈 2026 3억 500만 → 2027 더', ()=>{ const v=ev(`pfCon(pfFind('${gb.id}').p,'${gb.k}').sal`); return v>30500 ? (v/10000).toFixed(1)+'억' : '!'+v; });
   T('예비 FA — 구단이 등급 올리려고 연봉을 끌어올린다(FA 2년 전 5억 · 1년 전 7억 · FA 해 9억)',
     ()=>ev("pfPreFAPush(2,999999,60)")===50000 && ev("pfPreFAPush(1,999999,60)")===70000 && ev("pfPreFAPush(0,999999,60)")===90000 && ev("pfPreFAPush(1,999999,50)")===0);
   T('우리 팀 재계약도 예비 FA 는 등급 관리', ()=>/예비 FA — 등급 관리로 크게 올렸다/.test(ev("String(pfRenewals)")));
+
+  console.log('\n[예비 FA 표 · AI 비FA 다년계약 (v3.68.0)]');
+  T('기사로 찾은 예비 FA 가 명단과 다 맞는다', ()=>{ const r=JSON.parse(ev("JSON.stringify(Object.keys(PF_FA_DUE).filter(function(kk){ var k=kk.split('|')[0], n=kk.split('|')[1], t=TBYID[pfIdOf(k)]; return !(t&&pfAll(t).some(function(x){return (x._orig||x.name)===n;})); }))"));
+    return r.length===0 ? ev("Object.keys(PF_FA_DUE).length")+'명' : '!'+r.join(','); });
+  T('2026 시즌 뒤 FA(원태인 · 구자욱)는 개막 전에 FA 계약을 맺은 걸로', ()=>{ const k=ev(`(function(){ var t=TBYID[pfIdOf('sam')], p=pfAll(t).find(function(x){return x.name==='원태인';}); return pfCon(p,'sam').type; })()`); return k==='fa'?'FA 계약':'!'+k; });
+  T('NC 김형준 — 2027 시즌 뒤 FA', ()=>{ const r=ev(`(function(){ var t=TBYID[pfIdOf('nc')], p=pfAll(t).find(function(x){return x.name==='김형준';}); return pfFaLeft(p,'nc'); })()`); return r===1?'이번 시즌 뒤':'!'+r; });
+  T('AI 구단은 간판을 비FA 다년계약으로 묶는다(프랜차이즈 55% · 젊은 에이스 45%)', ()=>/비FA 다년계약/.test(ev("String(pfFAOpen)")) && /u<\(fr0\?0\.55:0\.45\)/.test(ev("String(pfFAOpen)")));
+  T('AI 보호명단은 어린 유망주의 잠재까지 친다', ()=>/protV/.test(ev("String(pfCompPick)")));
 
   console.log('\n[메이저]');
   T('포스팅 기준 등급 60 (리그 최고가 67)', ()=>/if\(g<60\|\|age<24/.test(ev("String(pfPostRun)")) && ev("Math.max.apply(null,TEAMS.map(function(t){return Math.max.apply(null,pfAll(t).map(pfGrade));}))")>=60);

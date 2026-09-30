@@ -9771,8 +9771,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.67.0';
-const APP_VERSION_NOTE = '국가대표 직접 뛴다 · 상대국 실제 선수 · FA 등급 실제 규정';
+const APP_VERSION = '3.68.0';
+const APP_VERSION_NOTE = '프로 올스타전(드림 vs 나눔) · AI 비FA 다년계약 · 실제 예비 FA';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9793,6 +9793,16 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.68.0', t:'프로 올스타전(드림 vs 나눔) · AI 비FA 다년계약 · 실제 예비 FA', items:[
+    '<b>프로 올스타전</b> — 7월 중순(86경기째) 홈에 「올스타 주간」 이 뜬다. <b>드림(삼성 · 롯데 · 두산 · SSG · KT) vs 나눔(LG · KIA · NC · 한화 · 키움)</b>, 9이닝 · 투수 1이닝씩',
+    '올스타 명단 — 포지션별 베스트(포수 · 1루 · 2루 · 3루 · 유격 · 외야 셋 · 지명)에 감독 추천까지 야수 15 · 투수 11. 성적과 이름값(팬 투표)으로 뽑는다',
+    '뽑히면 <b>직접 뛴다</b> — 드림 파랑 · 나눔 빨강 유니폼. 전야제 홈런더비도 그대로 있다. 기록에는 안 들어간다',
+    '해마다 새 올스타가 열린다(예전엔 한 번 끝나면 다시 안 열렸다)',
+    '<b>AI 구단이 간판을 지킨다</b> — FA 직전의 프랜차이즈 · 젊은 에이스는 절반 가까이 <b>비FA 다년계약</b>으로 미리 묶는다(4~6년). 시장에 안 나온다',
+    'AI 보호명단이 어린 유망주의 잠재까지 친다 — 보상선수로 쉽게 안 뺏긴다',
+    '<b>실제 예비 FA 30명</b> — 기사로 찾은 명단(원태인 · 구자욱 · 홍창기 · 박동원 · 김형준 · 박건우 · 곽빈 …)을 실제 FA 해에 맞췄다. 2026 시즌 뒤 FA 는 개막 전에 원 소속팀과 계약한 걸로 친다',
+    '<b>LA 올림픽(2028)에도 메이저리거가 나온다</b> — 본토 올림픽이라 나온다 쪽으로 잡았다(아직 공식 발표 전)',
+  ]},
   {v:'3.67.0', t:'국가대표 직접 뛴다 · 상대국 실제 선수 · FA 등급 실제 규정', items:[
     '<b>국가대표를 직접 뛴다</b> — 대회 화면에서 경기마다 「직접 뛴다」 「결과만 본다」. 직접 뛰면 본편 경기 화면 그대로 내 타석 · 내 공 · 내 수비다. 「한 번에 다 굴린다」 도 남겨 뒀다',
     '<b>대표팀 유니폼</b> — 한국은 남색 모자에 흰 유니폼(원정은 남색), 일본 · 미국 · 도미니카 … 나라마다 색이 다르다. 경기가 끝나면 원래 유니폼으로 돌아온다',
@@ -18256,7 +18266,9 @@ function ntUni(key, away){
 /* 이 대회에 나오는 실제 선수 — WBC 만 메이저리거가 나온다. APBC(스물넷 아래)는 전부 지어낸다 */
 function ntRealOf(key, ev){
   const R=NT_REAL[key]; if(!R||ev==='apbc') return {h:[],p:[]};
-  const ok=x=>(ev==='wbc')||!x[x.length-1];
+  /* [v3.68.0] LA 올림픽(2028)도 메이저리거가 나온다고 본다 — [요청] "la올림픽은 다 나올 것 같던데 (…) 너가 알아서 해라"
+     (MLB 참가는 아직 확정 발표 전이다. 본토 올림픽이라 나온다 쪽으로 잡았다) */
+  const ok=x=>(ev==='wbc'||ev==='olympic')||!x[x.length-1];
   return {h:R.h.filter(ok), p:R.p.filter(ok)};
 }
 function ntTeamForeign(key, rng, sOver, ev){
@@ -18327,7 +18339,7 @@ function ntTeamKor(ev){
   let pitchers=P.pit.map(x=>{ const q=x.p; return q.stf!=null?q:{id:q.id,name:q.name,no:q.no,stf:q.pitch.stf,ctl:q.pitch.ctl,sta:q.pitch.sta,role:'SP'}; });
   /* WBC — 메이저리거가 온다. 이정후 · 김하성 같은 실제 해외파, 그리고 이 게임에서 메이저로 간 사람(F.mlb).
      그만큼 KBO 에서 뽑힌 제일 약한 사람이 빠진다(나는 안 빠진다) */
-  if(ev==='wbc'){
+  if(ev==='wbc'||ev==='olympic'){
     const me=ST.playerId||MYID, add=[], addP=[];
     NT_KOR_MLB.h.forEach((x,i)=>add.push({id:'nt_kor_m'+i, name:x[0], no:1+(clayHash(x[0])%98), bats:x[2], con:x[3],pow:x[4],eye:x[5],spd:x[6],def:x[7],arm:x[8], pos:[x[1]], pitch:null, real:true, pro:true}));
     try{ const F=pfState(), gone=(F.mlb||[]).map(z=>z.name);
@@ -18505,7 +18517,7 @@ function renderNT(){
   const E=NT_EVENTS[R.ev];
   const card=el('div','card nt-card');
   card.innerHTML='<div class="card-h">🇰🇷 '+R.year+' '+E.name+'</div>'+
-    '<p class="muted">조별 '+R.group.map(k=>NT_COUNTRIES[k].name).join(' · ')+' — 2승이면 준결승'+(R.ev==='wbc'?' · <b>메이저리거가 온다</b>':'')+'</p>'+
+    '<p class="muted">조별 '+R.group.map(k=>NT_COUNTRIES[k].name).join(' · ')+' — 2승이면 준결승'+((R.ev==='wbc'||R.ev==='olympic')?' · <b>메이저리거가 온다</b>':'')+'</p>'+
     (R.games.length?R.games.map(g=>'<div class="nt-g '+(g.won?'w':'l')+'"><b>'+g.stage+'</b> 대한민국 '+g.us+' : '+g.them+' '+g.opp+
       (g.mine?' <i>'+g.mine+'</i>':'')+(g.live?' <em class="nt-live">직접</em>':'')+'</div>').join(''):'');
   c.appendChild(card);
@@ -18557,7 +18569,7 @@ function ntCard(c, rec){
   }
   card.innerHTML='<div class="card-h">국가대표 발탁 — '+E.name+'</div>'+
     '<p class="nt-call">태극마크다. <b>'+nameOf(ST.playerId||MYID)+'</b> — 대표팀 명단에 이름이 올랐다.</p>'+
-    '<p class="muted">'+(milNeeds()?(E.ag?'금메달이면 병역 특례다. ':(ev==='olympic'?'동메달 이상이면 병역 특례다. ':'')):'')+'조별 세 경기 · 2승이면 준결승. <b>경기마다 직접 뛰거나 결과만 본다.</b>'+(ev==='wbc'?' 메이저리거가 온다.':'')+'</p>';
+    '<p class="muted">'+(milNeeds()?(E.ag?'금메달이면 병역 특례다. ':(ev==='olympic'?'동메달 이상이면 병역 특례다. ':'')):'')+'조별 세 경기 · 2승이면 준결승. <b>경기마다 직접 뛰거나 결과만 본다.</b>'+((ev==='wbc'||ev==='olympic')?' 메이저리거가 온다.':'')+'</p>';
   const b=el('button','btn primary','대회 나간다 ▸');
   b.onclick=()=>{ ntStart(ev, rec.year); saveGame(true); renderNT(); };
   const b2=el('button','btn','한 번에 다 굴린다');
@@ -18729,6 +18741,8 @@ function pfFaLeft(p, key){
     const c=pfCon(p,key); if(!c) return null;
     if(c.type==='foreign') return null;
     if(c.type==='fa') return Math.max(0,(c.left||1)-1);
+    /* 실제 예정 해를 아는 사람 — 국대 보상까지 이미 들어간 해다. 이번 시즌 포함 남은 시즌 */
+    { const due=PF_FA_DUE[key+'|'+(p._orig||p.name)]; if(due && (c.fa||0)===0) return Math.max(0, due-ST.pro.year+1); }
     const nt=pfNTOf(p._orig||p.name);
     const bonus=nt?Math.min(1.2,(nt[0]||[]).length*0.2+((nt[1]&&String(nt[1]).indexOf('특례')===0)?0.4:0)):0;
     const need=(c.fa||0)>=1 ? 4 : ((p.draftAge||19)>=22 ? 7 : 8);
@@ -18760,7 +18774,19 @@ function pfFASal(pct, age){          // FA 한 해 몸값(만원) — 1억 ~ 26�
    부상 · 군 복무로 1군 등록일수(145일)를 못 채운 해를 모른다.
    [제보] "곽빈은 2년뒤가 fa일텐데" — 2018 입단, 2019~2020 팔꿈치 수술로 빠졌다.
    2027 시즌 뒤 포스팅 자격(7시즌) · 2028 시즌 뒤 FA 다(기사로 확인했다) */
-const PF_FA_DUE={'dsn|곽빈':2028};
+/* [v3.68.0] 기사로 찾은 예비 FA — [요청] "다른 선수들도 저런 디테일 찾아줘"
+   2026 = 2026 시즌 뒤(「2027 FA」). 게임은 2027 시즌부터라 **개막 전 겨울에 원 소속팀과 FA 계약**을 맺은 걸로 친다
+   (코리아미디어 「KBO 2027 FA 시장」 · 서울신문 2026-08-17 예상 명단).
+   2027 = 2027 시즌 뒤(「2028 FA」 — NC 김영규 · 박건우 · 김형준). 2028 = 곽빈.
+   여기 없는 사람은 여전히 나이로 어림한다 — 1군 수백 명 전부의 등록일수는 공개된 표가 없다 */
+const PF_FA_DUE={
+  'sam|원태인':2026,'sam|구자욱':2026,'sam|전병우':2026,'sam|박세혁':2026,
+  'kt|김민수':2026,'kt|최동환':2026,'kt|한승혁':2026,'kt|김상수':2026,'kt|오윤석':2026,'kt|김민혁':2026,'kt|배정대':2026,
+  'lg|홍창기':2026,'lg|박동원':2026,'kia|이창진':2026,'kia|김호령':2026,'kia|김태군':2026,
+  'dsn|정수빈':2026,'dsn|박치국':2026,'hh|최재훈':2026,'hh|박상원':2026,'nc|권희동':2026,'lot|박승욱':2026,
+  'ssg|최지훈':2026,'ssg|문승원':2026,'ssg|서진용':2026,'ssg|오태곤':2026,
+  'nc|김영규':2027,'nc|박건우':2027,'nc|김형준':2027,
+  'dsn|곽빈':2028};
 /* 예비 FA 연봉 끌어올리기 — [제보] "보통 팀들이 이런 선수는 등급 올리려고 연봉협상 되게 강하게함"
    FA 등급은 **최근 3년 평균 연봉** 순위다(A 구단 3위 · 리그 30위 안). 구단은 FA 3년 전부터 스타
    연봉을 올려 A 등급을 만든다 — 그래야 데려가는 구단이 보상선수 + 200% 를 물어서 쉽게 못 데려간다.
@@ -18793,6 +18819,12 @@ function pfCon(p, key, yy){
     if(FA0 && y>2026 && y<2026+FA0.y && !fr){ const i=y-2026;
       return {sal:pfYearSal(FA0.tot,FA0.y,i,pfYearShape(p._orig||p.name)), type:'fa', left:FA0.y-i, svc, fa:1, gen:true, real:true}; } }
   const RS=PF_REAL_SAL[key+'|'+(p._orig||p.name)];
+  /* 2026 시즌 뒤 FA — 개막 전 겨울(2026~27)에 원 소속팀과 도장. 나이만큼 년수, 시장 몸값 + 프리미엄 */
+  { const due=PF_FA_DUE[key+'|'+(p._orig||p.name)];
+    if(due && due<=2026 && !fr){ const a27=age-(y-2027), yrs=a27<=30?4:(a27<=32?3:(a27<=34?2:1));
+      const ag=a27>=36?0.65:(a27>=34?0.8:1);
+      const sal=Math.max(RS||0, Math.round(clamp((pfSalFair(p)+30000)*ag*0.9,10000,300000)/100)*100);
+      return {sal, type:'fa', left:Math.max(0,yrs-(y-2027)), svc, fa:1, gen:true, real:true}; } }
   if(RS){
     if(fr) return {sal:RS, type:'foreign', left:1, svc:0, fa:0, gen:true, real:true};
     const FA=PF_REAL_FA[key+'|'+(p._orig||p.name)];
@@ -19270,6 +19302,22 @@ function pfFAOpen(){
       const newFA = (c.type==='annual' && c.svc+1>=8);
       const expire= (c.type==='fa' && c.left<=1);
       if(!newFA && !expire) return;
+      /* [v3.68.0] AI 구단의 비FA 다년계약 — [요청] "ai 구단이 머리 잘쓰게 해주고 (…) 팀 선수 지켜야 될거아니냐"
+         실제로 구단은 간판을 시장에 안 내보낸다(구자욱 2022 5년 120억 · 원태인 협상 — 기사).
+         FA 직전에 프랜차이즈 · 젊은 에이스(서른하나 아래 · 등급 56+)는 절반 가까이 미리 묶는다.
+         시장 몸값보다 조금 싸게(안정을 사는 값) · 4~6년. 비FA 계약이라 끝나면 **첫 FA** 로 나온다 */
+      if(t.id!=='wwzw' && newFA){
+        const g0=pfGrade(p), a0=pfAge(p)+1, fr0=pfFranchise(p,key);
+        if(fr0 || (g0>=56 && a0<=31)){
+          const u=makeRng(((ST.seed||1)*9173+y*53+clayHash(String(p.id)))>>>0)();
+          if(u<(fr0?0.55:0.45)){
+            const yrs=a0<=28?6:(a0<=31?5:4), per=Math.round(clamp((pfSalFair(p)+30000)*0.9,10000,300000)/100)*100;
+            pfSetCon(p.id, {sal:per, type:'fa', left:yrs, svc:c.svc, fa:0, ext:true});
+            proNews('계약', proName(key)+', '+p.name+'과 비FA 다년계약 — '+yrs+'년 '+wonStr2(per*yrs), 'FA 시장에 내보내지 않는다. 「우리 팀의 얼굴」.');
+            return;
+          }
+        }
+      }
       const age=pfAge(p)+1, g=pfFAGrade(p,t,c,salT);
       /* [v3.66.0] FA 로 메이저 — 포스팅 없이 FA 자격으로 나가는 길(양현종 · 김광현처럼).
          리그 상위 1%(등급 60+) · 서른둘 아래면 시장에 나오기 전에 먼저 두드린다. 젊고 셀수록 간다 */
@@ -19310,7 +19358,9 @@ function pfProtected(n){
 /* 원 소속 구단이 보상을 고른다 — 쓸 만한 사람이 있으면 선수+돈, 없으면 돈만 */
 function pfCompPick(fromTeam, toTeam, grade, faId){
   const n=grade==='A'?20:25;
-  const prot=(toTeam.id==='wwzw')?pfProtected(n):new Set(pfAll(toTeam).slice().sort((a,b)=>pfValue(b)-pfValue(a)).slice(0,n).map(p=>p.id));
+  /* AI 보호명단 — 지금 가치만 보면 스무 살 유망주가 풀린다. 잠재가 남은 어린 선수는 그만큼 더 쳐서 묶는다 */
+  const protV=p=>pfValue(p)+((pfAge(p)<=25&&p.pot)?Math.max(0,p.pot-pfGrade(p))*1.5:0);
+  const prot=(toTeam.id==='wwzw')?pfProtected(n):new Set(pfAll(toTeam).slice().sort((a,b)=>protV(b)-protV(a)).slice(0,n).map(p=>p.id));
   const cand=pfAll(toTeam).filter(p=>!prot.has(p.id)&&p.id!==faId&&pfCon(p,proKeyOf(toTeam.id)).type!=='foreign'&&!p.rookie)
     .sort((a,b)=>pfValue(b)-pfValue(a));
   const best=cand[0]||null;
@@ -24637,6 +24687,7 @@ function farmRunLive(){
 }
 function farmLiveEnd(){
   if(LIVE && LIVE._nt) return ntLiveEnd();          // 국가대표 — 끝나는 자리가 다르다
+  if(LIVE && LIVE._asl) return allstarLiveEnd();    // 올스타전
   clearInterval(playTimer);
   if(!LIVE||!FARM_B){ ST.farmPlaying=false; go('home'); return; }
   LIVE.finish();
@@ -27559,7 +27610,8 @@ function renderHomePlayer(){
        주가 바뀌면 딱 한 번 저절로 펼쳐진다. 같은 주에 홈을 몇 번 들락거려도
        다시 안 뜬다 — 그러면 그건 광고지 신문이 아니다.             */
     /* [요청] "시즌 중반 7월쯤에 올스타전" — 그 주가 오면 홈에서 잡는다 */
-    if(isPlayerMode() && (ST.round||0)>=allstarWeek() && !(ST.allstar&&ST.allstar.done)){
+    if(isPlayerMode() && (ST.round||0)>=allstarWeek() && (ST.round||0)<((ST.schedule||[]).length||1e9)
+       && !(ST.allstar&&ST.allstar.done&&(ST.allstar.year==null||ST.allstar.year===asYear()))){
       const ab=el('button','mystatus in tapon');
       const A=ST.allstar;
       ab.innerHTML='<div class="ms-big">⭐ 올스타 주간</div>'+
@@ -50325,25 +50377,82 @@ function trainRun(def0){
    여기서 잘하면 남는 건 신문 기사와 명예다.
    [뽑히는 게 목표다] 못 뽑히면 신문으로 본다. 그게 다음 시즌의 동기다. */
 const AS_INN=5;
+/* [v3.68.0] 프로 올스타 — [요청] "올스타전도 넣어줘 그팀 나눠진건알지 실제처럼 해주고"
+   KBO 는 **드림(삼성 · 롯데 · 두산 · SSG · KT) vs 나눔(LG · KIA · NC · 한화 · 키움)** 이다.
+   베스트 12(포지션별 1명 — 선발 · 중간 · 마무리 · 포수 · 1루 · 2루 · 3루 · 유격 · 외야 셋 · 지명)에
+   감독 추천을 더해 한 팀 24명쯤. 9이닝 · 투수는 1이닝씩. 7월 중순 — 일정의 60% 지점.
+   사회인 리그는 예전 그대로(동부 · 서부 · 5이닝) */
+const AS_DREAM=['sam','lot','dsn','ssg','kt'];
+function asPro(){ return (typeof isPro==='function')&&isPro()&&!!ST.pro; }
+function asYear(){ return asPro()?ST.pro.year:(ST.year||2026); }
+function asInn(){ return asPro()?9:AS_INN; }
 const DERBY_N=10;
 const DERBY_SWINGS=10;
 function allstarWeek(){
   const n=((ST&&ST.schedule)||[]).length||22;
+  if(asPro()) return Math.floor(n*0.6);        // 7월 중순 — 144경기 중 86경기쯤
   return Math.max(3, Math.floor(n/2));
 }
 /* 팀을 번갈아 가른다 — 실제 순위로 자르면 동부가 다 세진다 */
 function asSide(tid){
+  if(asPro()){ const k=proKeyOf(tid); return (k&&AS_DREAM.indexOf(k)>=0)?'east':'west'; }
   const i=(typeof TEAMS!=='undefined')?TEAMS.findIndex(t=>t&&t.id===tid):-1;
   return (i<0||i%2===0)?'east':'west';
 }
-const AS_NAME={east:'동부 올스타', west:'서부 올스타'};
+const AS_NAME={ get east(){ return asPro()?'드림 올스타':'동부 올스타'; },
+                get west(){ return asPro()?'나눔 올스타':'서부 올스타'; } };
+/* 프로 올스타 유니폼 — 드림 파랑 · 나눔 빨강(로고 없음) */
+function asUni(sd, away){
+  const d=sd==='east'?{cap:'#1f4e9c', aw:'#1f4e9c', sub:'#1f4e9c', ltr:'D'}:{cap:'#c8102e', aw:'#c8102e', sub:'#c8102e', ltr:'N'};
+  const c=sdRgb(d.cap), A=!!away;
+  return {cap:d.cap, sh:A?d.aw:'#ffffff', pants:A?'#e9ecf2':'#f1f3f7', st:'rgba('+c[0]+','+c[1]+','+c[2]+',.30)', gl:'#5b3a1e',
+    ltr:d.ltr, lc:'#ffffff', pin:null, trim:A?'#ffffff':null, pip:A?'#ffffff':d.sub};
+}
 const AS_UNI={east:{cap:'#2f5fb0',top:'#e8edf5',num:'#2f5fb0'},
               west:{cap:'#b23a34',top:'#2a2f36',num:'#e8762c'}};
 function asStatOf(tid,pid){
   return (tid==='wwzw') ? ((ST.bat||{})[pid]||null) : ((ST.lgBat||{})[pid]||null);
 }
 /* 올스타 명단 — 야수 아홉 · 투수 다섯. 리그 성적으로 뽑는다 */
+function allstarBuildPro(){
+  const rng=makeRng(rvSeedOf('as|pro|'+ST.pro.year));
+  const me=ST.playerId||MYID;
+  const HB={east:[],west:[]}, PB={east:[],west:[]};
+  TEAMS.forEach(t=>{ if(!t) return; const sd=asSide(t.id);
+    (t.players||[]).forEach(p=>{ const b=asStatOf(t.id,p.id);
+      const pa=b?(b.ab||0)+(b.bb||0):0;
+      /* 성적(OPS · 홈런) + 이름값(팬 투표) — 타석이 적으면 성적은 반만 */
+      const v=(b&&b.ab>=20?(ops(b)*100+b.hr*0.8):40)*(pa>=100?1:0.5)+pfRep(p)*0.35+pfGrade(p)*0.4;
+      HB[sd].push({t,p,v,pos:(p.pos&&p.pos[0])||'1B'}); });
+    (t.pitchers||[]).forEach(q=>{ const l=(t.id==='wwzw')?((ST.pit||{})[q.id]):((ST.lgPit||{})[q.id]);
+      const ip=l?((l.outs||0)/3):0, era=ip>=10?(l.er*9/ip):6;
+      const v=(ip>=10?(8-era)*6+Math.min(ip,120)*0.12:0)+pfRep(q)*0.35+pfGrade(q)*0.4;
+      PB[sd].push({t,q,v,role:q.role||'RP'}); }); });
+  const mk=(sd)=>{
+    const H=HB[sd].sort((a,b)=>b.v-a.v), P=PB[sd].sort((a,b)=>b.v-a.v);
+    const pick=[], used=new Set();
+    const take=(x)=>{ if(!x||used.has(x.p.id)) return; used.add(x.p.id); pick.push(x); };
+    /* 베스트 — 포지션별 1명(외야는 셋) */
+    ['C','1B','2B','3B','SS'].forEach(ps=>take(H.find(x=>x.pos===ps&&!used.has(x.p.id))));
+    for(let i=0;i<3;i++) take(H.find(x=>['LF','CF','RF'].indexOf(x.pos)>=0&&!used.has(x.p.id)));
+    take(H.find(x=>!used.has(x.p.id)));                           // 지명타자
+    /* 감독 추천 — 남은 자리 중 성적순, 야수 열다섯까지 */
+    H.forEach(x=>{ if(pick.length<15) take(x); });
+    const pp=[], pu=new Set(); const tp=(x)=>{ if(!x||pu.has(x.q.id)) return; pu.add(x.q.id); pp.push(x); };
+    P.filter(x=>x.role==='SP').slice(0,4).forEach(tp);
+    tp(P.find(x=>x.role==='CL'&&!pu.has(x.q.id)));
+    P.forEach(x=>{ if(pp.length<11) tp(x); });
+    const players=pick.map(x=>({...x.p, _team:x.t.name}));
+    const pitchers=pp.map(x=>({...x.q, _team:x.t.name, sta:17}));   // 1이닝씩
+    return finalizeTeam({id:'as_'+sd, name:AS_NAME[sd], ops:.80, avg:.29,
+      tend:{k:1.0,bb:1.0,sb:1.1,babip:1.0,pow:1.10,err:0.9}, players, pitchers, isUser:false});
+  };
+  const east=mk('east'), west=mk('west');
+  const inE=east.players.concat(east.pitchers).some(p=>p.id===me), inW=west.players.concat(west.pitchers).some(p=>p.id===me);
+  return {east, west, mySide:inE?'east':(inW?'west':null), rng};
+}
 function allstarBuild(){
+  if(asPro()) return allstarBuildPro();
   const rng=makeRng(rvSeedOf('as|'+((ST.year||2026))+'|'+((ST.seasonNo||1))));
   const bats={east:[],west:[]}, pits={east:[],west:[]};
   TEAMS.forEach(t=>{
@@ -50427,8 +50536,10 @@ function derbySwing(p, rng, swings){
 }
 /* ---------- 올스타 주간 화면 ---------- */
 function asSlot(){
-  if(!ST.allstar) ST.allstar={year:(ST.year||2026), step:'derby', done:false,
-                              derby:null, game:null};
+  /* [v3.68.0] 해가 바뀌면 새 올스타 — 예전엔 한 번 끝나면(done) 프로 몇 년을 가도 다시 안 열렸다 */
+  const y=asYear();
+  if(!ST.allstar || (ST.allstar.year!=null && ST.allstar.year!==y))
+    ST.allstar={year:y, step:'derby', done:false, derby:null, game:null};
   return ST.allstar;
 }
 function renderAllstar(){
@@ -50436,7 +50547,7 @@ function renderAllstar(){
   const A=asSlot();
   const me=ST.playerId||MYID;
   const head=el('div','card');
-  head.innerHTML='<div class="hs-yr">'+(ST.year||2026)+' 올스타 주간</div>'+
+  head.innerHTML='<div class="hs-yr">'+asYear()+' 올스타 주간</div>'+
     '<div class="card-h">'+(A.step==='derby'?'전야제 · 홈런더비'
       :(A.step==='game'?'올스타전':'올스타 주간 끝'))+'</div>'+
     '<p class="muted">시즌 중반, 리그가 하루 쉰다. '+
@@ -50489,7 +50600,7 @@ function renderAllstar(){
     const B=allstarBuild();
     const info=el('div','card');
     info.innerHTML='<div class="card-h">'+AS_NAME.east+' vs '+AS_NAME.west+'</div>'+
-      '<p class="muted">'+AS_INN+'이닝 · <b>투수는 1이닝씩</b> 돌아간다.<br>'+
+      '<p class="muted">'+asInn()+'이닝 · <b>투수는 1이닝씩</b> 돌아간다.'+(asPro()?' 드림(삼성 · 롯데 · 두산 · SSG · KT) vs 나눔(LG · KIA · NC · 한화 · 키움)':'')+'<br>'+
       (B.mySide? '<b style="color:#ffd15c">'+AS_NAME[B.mySide]+'에 뽑혔다.</b> 직접 뛴다.'
                : '이번엔 못 뽑혔다. 중계로 본다.')+'</p>';
     c.appendChild(info);
@@ -50497,14 +50608,14 @@ function renderAllstar(){
       const rc=el('div','card');
       rc.appendChild(el('div','card-h',AS_NAME[sd]));
       const wrap=el('div','as-list');
-      t.players.slice(0,11).forEach(p=>{
+      t.players.slice(0,asPro()?15:11).forEach(p=>{
         const sp=el('span','as-p'+(p.id===me?' me':''));
         sp.innerHTML=p.name+'<i>'+(p._team||'')+'</i>';
         wrap.appendChild(sp);
       });
       rc.appendChild(wrap);
       const pw=el('div','as-list pit');
-      t.pitchers.slice(0,5).forEach(q=>{
+      t.pitchers.slice(0,asPro()?11:5).forEach(q=>{
         const sp=el('span','as-p'+(q.id===me?' me':''));
         sp.innerHTML='⚾ '+q.name+'<i>'+(q._team||'')+'</i>';
         pw.appendChild(sp);
@@ -50526,8 +50637,10 @@ function renderAllstar(){
       return;
     }
     const b=el('button','btn primary', B.mySide?'올스타전 뛴다 ▸':'경기를 본다 ▸');
-    b.onclick=()=>allstarPlay(B);
+    /* 뽑혔으면 직접 뛴다 — 본편 경기 화면(내 타석 · 내 공). 결과만 보려면 아래 */
+    b.onclick=()=>{ if(B.mySide && asPro()) allstarLiveStart(B); else allstarPlay(B); };
     c.appendChild(b);
+    if(B.mySide && asPro()){ const b2=el('button','btn','결과만 본다'); b2.onclick=()=>allstarPlay(B); c.appendChild(b2); }
     return;
   }
   const hb=el('button','btn primary','홈으로'); hb.onclick=()=>go('home'); c.appendChild(hb);
@@ -50632,14 +50745,68 @@ function derbyPlay(field){
     saveGame(true); renderAllstar();
   };
 }
+/* [v3.68.0] 올스타전 직접 뛴다 — 국가대표처럼 2군 경기 진행(farmRunLive)을 타고, 끝나는 자리만 다르다 */
+let AS_B=null;
+function allstarLiveStart(B){
+  const me=ST.playerId||MYID, mine=B.mySide==='east'?B.east:B.west, foe=B.mySide==='east'?B.west:B.east;
+  const homeUs=(B.mySide==='east');                      // 드림이 홈
+  const uLine=aiLineup(mine).slice();
+  if(mine.players.some(p=>p.id===me) && ST.role!=='pit'){
+    let mi=uLine.findIndex(x=>x.id===me);
+    if(mi<0){ uLine[uLine.length-1]={id:me, pos:ST.myPos||uLine[uLine.length-1].pos}; }
+  }
+  let uRot=aiRotation(mine).slice();
+  if(mine.pitchers.some(p=>p.id===me)) uRot=[me].concat(uRot.filter(x=>x!==me));
+  AS_B=B;
+  const c=$('#view'); c.innerHTML='';
+  const head=el('div','card');
+  head.innerHTML='<div class="hs-yr">'+asYear()+' 올스타전</div>'+
+    '<div class="card-h">'+AS_NAME.east+' vs '+AS_NAME.west+'</div>'+
+    '<div class="hs-kind">'+asInn()+'이닝 · 투수 1이닝씩 · 기록에는 안 들어간다</div>';
+  c.appendChild(head);
+  const st=el('div','stage'); st.id='stage'; c.appendChild(st);
+  const T={bat:'normal',run:'normal',hook:'normal'};
+  LIVE=new LiveGame({
+    away:B.west, home:B.east,
+    awayLineup:homeUs?aiLineup(B.west):uLine, homeLineup:homeUs?uLine:aiLineup(B.east),
+    awayRotation:homeUs?aiRotation(B.west):uRot, homeRotation:homeUs?uRot:aiRotation(B.east),
+    awayTactics:T, homeTactics:T, awayCond:{}, homeCond:{},
+    userIsHome:homeUs, myId:me, rng:B.rng, innings:asInn(),
+    park:{hr:1.20,d2:1.05,d3:1.00,err:0.90,babip:1.02},
+  });
+  LIVE._ntUni={us:asUni(B.mySide, !homeUs), them:asUni(B.mySide==='east'?'west':'east', homeUs)};
+  NT_PS0={us:Object.assign({},PS_UNI.us), them:Object.assign({},PS_UNI.them)};
+  Object.assign(PS_UNI.us, LIVE._ntUni.us); Object.assign(PS_UNI.them, LIVE._ntUni.them);
+  LIVE.manual=true; LIVE._farm=true; LIVE._asl=true; LIVE._logSeen=0;
+  buildLiveStage();
+  flushLog(); updateLiveUI();
+  farmRunLive();
+}
+function allstarLiveEnd(){
+  clearInterval(playTimer);
+  const A=asSlot();
+  if(LIVE){ LIVE.finish();
+    const e=LIVE.home.runs, w=LIVE.away.runs;
+    let mvp=null, bv=-1;
+    Object.keys(LIVE.box||{}).forEach(id=>{ const b=LIVE.box[id]; if(!b||!b.pa) return;
+      const v=b.h*2+b.hr*3+b.rbi; if(v>bv){ bv=v; mvp=LIVE.nameOf?LIVE.nameOf(id):id; } });
+    A.game={e, w, mvp, live:true};
+    ST.notices=ST.notices||[];
+    ST.notices.push({type:'fa', title:'올스타전 — '+AS_NAME.east+' '+e+' : '+w+' '+AS_NAME.west,
+      body:(mvp?('MVP '+mvp):'')+(AS_B&&AS_B.mySide?(' · 나는 '+AS_NAME[AS_B.mySide]+'로 뛰었다'):''), effect:'기록에는 안 들어간다'});
+  }
+  ntUniRestore();
+  LIVE=null; AS_B=null;
+  saveGame(true); renderAllstar();
+}
 /* 올스타전 — 두 팀을 붙인다 */
 function allstarPlay(B){
   const A=asSlot();
   const c=$('#view'); c.innerHTML='';
   const head=el('div','card');
-  head.innerHTML='<div class="hs-yr">'+(ST.year||2026)+' 올스타전</div>'+
+  head.innerHTML='<div class="hs-yr">'+asYear()+' 올스타전</div>'+
     '<div class="card-h">'+AS_NAME.east+' vs '+AS_NAME.west+'</div>'+
-    '<div class="hs-kind">'+AS_INN+'이닝 · 투수 1이닝씩</div>';
+    '<div class="hs-kind">'+asInn()+'이닝 · 투수 1이닝씩</div>';
   c.appendChild(head);
   const st=el('div','stage'); st.id='stage'; c.appendChild(st);
   const T={bat:'normal',run:'normal',hook:'normal'};
@@ -50651,7 +50818,7 @@ function allstarPlay(B){
     awayRotation:aiRotation(B.west), homeRotation:aiRotation(B.east),
     awayTactics:T, homeTactics:T, awayCond:{}, homeCond:{},
     userIsHome:(B.mySide!=='west'), myId:B.mySide?me:null,
-    rng:B.rng, innings:AS_INN,
+    rng:B.rng, innings:asInn(),
     park:{hr:1.35,d2:1.05,d3:1.00,err:0.90,babip:1.02},
   });
   LIVE.manual=false; LIVE._as=true; LIVE._logSeen=0;
