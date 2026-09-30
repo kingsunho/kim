@@ -34,9 +34,16 @@ const clean=tag=>{ const t=(d.getElementById('view')||{}).textContent||'';
   const me=ev("ST.playerId");
   const con=()=>ev("TBYID.wwzw.players.find(p=>p.id===ST.playerId).con");
   /* 등급 배수 */
+  /* [v3.64.0] 특훈은 높은 능력치일수록 덜 붙는다 — 재는 건 컨택 50 에서 */
+  ev("TBYID.wwzw.players.find(p=>p.id===ST.playerId).con=50");
   const c0=con(); ev("trainSessApply(trainSessionDef('bat'),'S')"); const dS=con()-c0;
   const c1=con(); ev("trainSessApply(trainSessionDef('bat'),'C')"); const dC=con()-c1;
   T('S 가 C 보다 많이 붙는다', ()=>dS>dC&&dC>0 ? 'S +'+dS.toFixed(1)+' · C +'+dC.toFixed(1) : '!'+dS+' / '+dC);
+  T('특훈 한 판이 사기가 아니다 — S 도 +0.5 아래', ()=>dS>0&&dS<=0.5 ? 'S +'+dS.toFixed(1) : '!'+dS);
+  ev("TBYID.wwzw.players.find(p=>p.id===ST.playerId).con=80");
+  const c2=con(); ev("trainSessApply(trainSessionDef('bat'),'S')"); const dHi=con()-c2;
+  T('높은 능력치는 덜 붙는다', ()=>dHi<dS ? '50 → +'+dS.toFixed(1)+' · 80 → +'+dHi.toFixed(1) : '!'+dHi+' / '+dS);
+  ev("TBYID.wwzw.players.find(p=>p.id===ST.playerId).con=50");
   /* 한 판 — 매번 초록 칸 한가운데에 마커를 세우고 누른다 */
   ev("go('trainplay')"); await wait(30);
   const card=[...d.querySelectorAll('.trncard')].find(b=>/배팅/.test(b.textContent));

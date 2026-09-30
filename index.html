@@ -1218,6 +1218,10 @@ html:not(.land) #decision.acp-sheet .acp .mound .mv-cv{width:auto;height:100%;le
 .facon-d{flex-basis:100%;font-size:12px;opacity:.85}
 .facon-real{font-style:normal;background:var(--gold);color:#14181e;border-radius:4px;padding:0 4px;font-size:10px}
 .psq-fr{background:var(--gold);color:#14181e;font-style:normal;font-size:10px;padding:0 4px;border-radius:4px}
+.fm-st.pot{color:#8fd1ff;opacity:.85}
+.fm-pt{font-style:normal;font-size:10px;opacity:.7}
+.more-fold{margin:14px 0}
+.more-fold>summary{cursor:pointer;padding:12px 14px;border:1px dashed var(--line);border-radius:10px;opacity:.8;font-size:13px}
 .psq-row{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:7px 4px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink)}
 .psq-row.me{background:rgba(255,209,92,.08)}
 .psq-no{flex:0 0 26px;text-align:center;font-weight:800;color:var(--dim)}
@@ -4536,6 +4540,16 @@ function simGame(home,away,opts){
     const pid=s.rot[Math.min(s.pIdx,s.rot.length-1)];
     return s.team.pitchers.find(x=>x.id===pid)||s.team.pitchers[0];
   };
+  function s_midPull(s, pit, pl, inn){
+    const hard=isPro()?125:105;
+    s._innR=(s._innI===inn+'|'+s.pIdx)?s._innR:pl.r; s._innI=inn+'|'+s.pIdx;
+    if(((pl.np||0)>=hard || pl.r-s._innR>=5) && s.pIdx<s.rot.length-1){
+      s.pIdx++;
+      log.push({t:'sub',inning:inn,text:`투수 교체 · ${s.team.name}: ${pit.name} → ${cur(s).name}`});
+      return true;
+    }
+    return false;
+  }
   function change(s,inn){
     const p=cur(s),l=pbox[p.id];
     const hk=s.tac?s.tac.hook:'normal';
@@ -4543,7 +4557,9 @@ function simGame(home,away,opts){
     const lim=pitLimOuts(p.sta,mul);   // LiveGame 과 같은 기준
     const bbLim = hk==='quick'?3:(hk==='long'?7:5);
     const rLim  = hk==='quick'?4:(hk==='long'?9:6);
-    if((l.outs>=lim||l.bb+l.hbp>=bbLim||l.r>=rLim)&&s.pIdx<s.rot.length-1){
+    /* 투구수 — LiveGame 과 같은 기준(프로 100~115 · 125 에서 무조건) */
+    const npLim=Math.round((isPro()?(95+Math.max(-10,Math.min(15,(p.sta-60)*0.6))):90)*(hk==='quick'?0.9:(hk==='long'?1.08:1)));
+    if((l.outs>=lim||l.bb+l.hbp>=bbLim||l.r>=rLim||(l.np||0)>=npLim)&&s.pIdx<s.rot.length-1){
       s.pIdx++;   // simGame 은 타순 교체가 없어서 '빠진 투수' 자체가 안 생긴다
       log.push({t:'sub',inning:inn,text:`투수 교체 · ${s.team.name}: ${p.name} → ${cur(s).name}`});
     }
@@ -4668,6 +4684,9 @@ function simGame(home,away,opts){
           if(inn>=INN && lead>0){ over=true; break; }
           if(coldGame(inn,lead)){ over=true; mercy=true; break; }
         }
+        /* 이닝 도중 교체 — 한 이닝에 무너지면(이 이닝 5실점) · 125구(사회인 105)면 이닝 중이라도 내린다.
+           [제보] "류현진이 169구 던졌다" — 교체를 반이닝 시작에만 봐서, 한 이닝에 68명을 상대한 투수가 나왔다(327구) */
+        if(outs<3 && s_midPull(def, pit, pl, inn)){}
       }
       off.line.push(ir);
       if(over)break;
@@ -9745,8 +9764,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.63.0';
-const APP_VERSION_NOTE = '프로 실명 · 부상자 명단 · FA 계약 현황';
+const APP_VERSION = '3.64.0';
+const APP_VERSION_NOTE = '선수 카드 · 별 · 1군 28명 · 투구수 교체 · 특훈 조정 · 내 체격 · 트레이드 마감';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9767,6 +9786,20 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.64.0', t:'선수 카드 · 별 · 1군 28명 · 투구수 교체 · 특훈 조정 · 내 체격 · 트레이드 마감', items:[
+    '<b>프로 선수 카드</b> — 몸값이 깨진 글자 · 12만원으로 나오던 걸 등급 · 잠재 · 실제 연봉. 계약 · FA 까지 · 명성 · 체격이 나오고, 사회인용 줄(출석 · 회식 · 이동)은 뺐다. 나이도 화면마다 같게',
+    '<b>별을 리그 기준으로</b> — KBO 전체에서 몇 등쯤인지로 매긴다(상위 2% 다섯 개). 잠재력은 파란 별로 따로',
+    '<b>1군은 28명</b> — KBO 엔트리 규정. 구단마다 40명 안팎이 1군에 있던 걸 투수 13 · 타자 15 로 맞추고 나머지는 2군',
+    '<b>투구수로도 바꾼다</b> — 류현진 169구 같은 일이 없다. 선발은 체력에 따라 85~110구, 125구면 그 타석을 마치고 무조건 내린다. 한 이닝에 5점 넘게 주면 이닝 중에도 바꾼다',
+    '상대 팀 라인업 화면의 로테이션이 보직대로 — 마무리(조병현)가 선발로 찍히던 것 고침',
+    '<b>특훈 조정</b> — S 한 판이 컨택 +0.4 · 파워 +0.2 쯤이고 능력치가 높을수록 덜 오른다(예전엔 +1.6 · +0.8 이라 바로 천장을 뚫었다)',
+    '<b>내 체격</b> — 키 · 몸무게를 직접 정한다(새 선수 만들기 · 홈 · 훈련 화면). 식단(벌크업 · 보통 · 감량)과 루틴 강도로 몸무게가 바뀌고 그림 체격 · 파워 · 주루가 따라간다',
+    '<b>트레이드 마감</b> — 7월 31일(시즌 96경기째). 시즌이 끝나면 다시 열린다. 홈에 「프런트」 카드가 생겼다(트레이드 · FA · 드래프트 · 외국인)',
+    '2027 신인이 팀에 안 들어가던 옛 세이브 — 불러오면 이제 들어간다',
+    '오늘 선발 같은 자리에 「wwzw_p4」 처럼 아이디가 찍히던 것 고침',
+    '<b>군 생활 컷신</b> — 입영 · 훈련소 · 상무/자대 · 면회 · 전역',
+    '설정에서 잘 안 쓰는 카드는 맨 아래 「자주 안 쓰는 설정」 으로 접었다',
+  ]},
   {v:'3.63.0', t:'프로 실명 · 부상자 명단 · FA 계약 현황', items:[
     '<b>프로는 전부 실명</b> — 선수 · 외국인 · 감독 · 역대 기록 · 영구결번 · 2027 신인 · 구단 이름(두산 베어스 · LG 트윈스 …). 우완좌완과 사회인 리그는 그대로다. 옛 세이브도 불러오면 한 번에 실명으로 바뀐다',
     '<b>부상자 명단</b> — 9월 등록 명단에서 빠져 있던 부상 선수 24명(김광현 · 문동주 · 엄상백 · 채은성 …)이 2군 명단에 「부상」 표시로 들어왔다. 능력치는 2025~2026 실제 기록',
@@ -12921,7 +12954,17 @@ LiveGame.prototype.checkPitcherChange = function(s){
   const lim=pitLimOuts(p.sta,mul);   // sta56 → 11아웃(3.7이닝)
   const bbLim = hk==='quick'?3:(hk==='long'?7:5);
   const rLim  = hk==='quick'?4:(hk==='long'?9:6);
-  if((l.outs>=lim||l.bb+l.hbp>=bbLim||l.r>=rLim) && this.hasNextPitcher(s)){
+  /* 투구수 — [제보] "류현진이 169구 던졌다는데 안 내리고 이게 말이 되나"
+     아웃 · 볼넷 · 실점만 보고 공 개수는 안 봤다. 잘 막는 날엔 끝없이 던졌다.
+     프로 선발은 체력에 따라 85~110구, 무슨 일이 있어도 125구에서 내린다(그 타석까지는 마친다)(사회인은 90 · 105) */
+  const npLim=Math.round((isPro()?(95+Math.max(-10,Math.min(15,(p.sta-60)*0.6))):90)*(hk==='quick'?0.9:(hk==='long'?1.08:1)));
+  const npHard=isPro()?125:105;
+  if((l.np||0)>=npHard && this.hasNextPitcher(s)){
+    const outId=p.id; this.advancePitcher(s); this.applyPitcherSubs(s,outId,this.curPitcher(s).id);
+    this.log.push({t:'sub',text:`투수 교체 · ${s.team.name}: ${p.name} → ${this.curPitcher(s).name} (${l.np}구)`});
+    return false;
+  }
+  if((l.outs>=lim||l.bb+l.hbp>=bbLim||l.r>=rLim||(l.np||0)>=npLim) && this.hasNextPitcher(s)){
     /* 유저 팀이면 교체 여부를 물어본다.
        [설정] 매번 묻는 게 성가시면 설정에서 끌 수 있다 — 그러면 알아서 바꾼다.  */
     /* 선수 모드면 투수 교체도 감독이 한다 — 나한테 물어볼 일이 아니다 */
@@ -16412,11 +16455,18 @@ function isAvailable(pid){
    화면에 그대로 찍혔다. 기록은 남는데 이름이 사라지면 안 된다.
    원년 멤버는 WWZW 상수에, 나중에 들어온 사람은 ST.names 에 남아 있다.  */
 function nameOf(pid){
-  const p=TBYID['wwzw'].players.find(x=>x.id===pid);
+  const us=TBYID['wwzw'];
+  const p=us.players.find(x=>x.id===pid);
   if(p) return p.name;
+  /* [제보] "오늘 선발투수나 뭐 오류나면 wwzw_p4 이름 이걸로 나오냐" — 투수 · 2군은 안 찾고 있었다(아이디가 그대로 찍혔다) */
+  const q=(us.pitchers||[]).find(x=>x.id===pid)||(us.farm||[]).find(x=>x.id===pid);
+  if(q) return q.name;
   const w=WWZW.find(x=>x.id===pid);
   if(w) return w.name;
-  return (typeof ST!=='undefined'&&ST&&ST.names&&ST.names[pid])||pid;
+  for(const t of (TEAMS||[])){ const r=[].concat(t.players||[],t.pitchers||[],t.farm||[]).find(x=>x.id===pid); if(r) return r.name; }
+  const nm=(typeof ST!=='undefined'&&ST&&ST.names&&ST.names[pid]);
+  if(nm) return nm;
+  return /^(wwzw|p_|dc27_|fx)/.test(String(pid))?'선수':pid;     // 떠난 사람 — 아이디 대신
 }
 /* 몸값 변동 화살표 — 지난 경기 대비 */
 function valDelta(pid, now){
@@ -16429,10 +16479,10 @@ function valDelta(pid, now){
 /* 우리 팀·상대 팀 가리지 않고 투수 이름을 찾는다 (승패투수 표시용) */
 function pitcherName(pid){
   for(const t of TEAMS){
-    const p=(t.pitchers||[]).find(x=>x.id===pid)||(t.players||[]).find(x=>x.id===pid);
+    const p=(t.pitchers||[]).find(x=>x.id===pid)||(t.players||[]).find(x=>x.id===pid)||(t.farm||[]).find(x=>x.id===pid);
     if(p)return p.name;
   }
-  return pid;
+  return nameOf(pid);
 }
 function isMe(pid){ return pid===(ST?ST.playerId:MYID); }
 
@@ -17259,6 +17309,25 @@ function proMeObj(){
   if(o.pitch && R.pitch) ['stf','ctl','sta','brk'].forEach(k=>{ if(R.pitch[k]!=null) o.pitch[k]=R.pitch[k]; });
   return o;
 }
+/* 1군 엔트리 28명 — KBO 규정(경기엔 26명). [질문] "40인명단이던데 이것도 kbo룰 맞아?"
+   아니다 — 40 은 샐러리캡(상위 40명 연봉) 셈법이고, 1군은 28명이다. 명단 자료(9/27 등록 + 아시안게임 차출 +
+   등록에서 빠진 주전급)를 그대로 1군에 넣어서 구단마다 40명 안팎이 1군에 있었다.
+   투수 13 · 타자 15 까지 남기고(선발 · 마무리 · 나는 무조건 남는다) 나머지는 2군으로 내린다 */
+function pfCap28(t){
+  if(!t||!proKeyOf(t.id)) return;
+  const me=ST.playerId||MYID;
+  t.farm=t.farm||[];
+  const cut=(arr, n, keep)=>{
+    if(arr.length<=n) return arr;
+    const must=arr.filter(keep), rest=arr.filter(p=>!keep(p)).sort((a,b)=>pfGrade(b)-pfGrade(a));
+    const stay=must.concat(rest).slice(0,Math.max(n,must.length)), ids=new Set(stay.map(p=>p.id));
+    arr.filter(p=>!ids.has(p.id)).forEach(p=>{ p.farm=true; if(!t.farm.some(q=>q.id===p.id)) t.farm.push(p); });
+    return arr.filter(p=>ids.has(p.id));
+  };
+  t.pitchers=cut(t.pitchers||[], 13, p=>p.id===me||p.role==='SP'||p.role==='CL');
+  const pitIds=new Set(t.pitchers.map(p=>p.id));
+  t.players=cut(t.players||[], 15, p=>p.id===me||pitIds.has(p.id));
+}
 function buildProTeams(){
   const P=ST.pro, out=[];
   PRO_TEAMS.forEach((def,i)=>{
@@ -17280,6 +17349,7 @@ function buildProTeams(){
     out.push(t);
   });
   try{ pfApplyMoves(out); }catch(e){}        // 트레이드 · FA · 드래프트로 옮긴 사람
+  try{ out.forEach(pfCap28); }catch(e){}     // 1군 엔트리 28명
   try{ pfApplyDev(out); out.forEach(t=>finalizeTeam(t)); }catch(e){}   // 해마다 오르내린 능력치
   try{ stfApplyTeam(out.find(t=>t.id==='wwzw')); }catch(e){}   // 감독 색
   try{ applyRenames(out); }catch(e){}
@@ -17320,7 +17390,7 @@ function proRebuild(){
   if(typeof buildPitcherPool==='function') buildPitcherPool();
   applyLeagueCal();
   proFillState();
-  try{ if(ST.pro && ST.pro.draftClass && ST.pro.front && !ST.pro.front.dc27) pfAddDraftClass(); }catch(e){}
+  try{ if(ST.pro && ST.pro.front && ST.pro.year<=2028) pfAddDraftClass(); }catch(e){}     // 없으면 넣는다(있으면 바로 돌아온다)
   /* 내 등번호가 그 팀 누구와 겹치면 빈 번호로 — 옛 세이브도 여기서 고쳐진다(한 번 바뀌면 그대로 남는다) */
   try{ const me=ST.playerId||MYID, us=TBYID.wwzw, mp=pfAll(us).find(p=>p.id===me);
     if(mp && mp.no!=null && pfAll(us).some(p=>p.id!==me && +p.no===+mp.no)){
@@ -17850,6 +17920,7 @@ function proNextYear(){
   proNewSeason();
   saveGame(true);
   go('home');
+  if(mil){ try{ milCutscene(mil); }catch(e){} }
 }
 function proSeasonScreen(rec, ps){
   const c=$('#view'); c.innerHTML='';
@@ -18934,8 +19005,16 @@ function pfTradeEval(o){
   return {give:Math.round(give), get:Math.round(get), ratio, need, star, gp, tp, gk, tk, cash, blocked,
     mood: blocked.length?'no':(ratio>=need+0.13?'good':(ratio>=need?'ok':(ratio>=need*0.85?'close':'no')))};
 }
+/* 트레이드 마감 — KBO 는 7월 31일. 시즌 144경기 중 96경기째쯤이다. 시즌이 끝나면(포스트시즌 · 겨울) 다시 열린다.
+   [제보] "트레이드 마감 기한 있는건 알지?" */
+const PF_TRADE_DEADLINE=96;
+function pfTradeClosed(){
+  try{ if(!isPro()) return false; const n=(ST.schedule||[]).length, r=ST.round||0;
+    return r>=PF_TRADE_DEADLINE && r<n; }catch(e){ return false; }
+}
 function pfTradeMulti(o){
   const F=pfState(), k=o.team, me=ST.playerId||MYID;
+  if(pfTradeClosed()) return {ok:false, why:'트레이드 마감(7월 31일)이 지났다 — 시즌이 끝나면 다시 된다'};
   if((ST.round||0)-(F.tradeRound??-99)<4) return {ok:false, why:'트레이드는 네 주에 한 번이다'};
   if((o.give||[]).indexOf(me)>=0) return {ok:false, why:'나는 못 판다'};
   if((o.give||[]).length>3||(o.get||[]).length>3) return {ok:false, why:'선수는 한쪽에 셋까지다'};
@@ -19180,8 +19259,17 @@ function pfFreeNo(key, want, exclId){
    한 번만 각 구단 2군에 신인으로 넣는다(F.dc27). 잠재 등급(1~5)으로 현재 · 잠재를 잡는다 */
 function pfAddDraftClass(){
   if(!isPro()||!ST.pro) return 0;
-  const F=pfState(); if(F.dc27) return 0;
+  const F=pfState();
+  /* [제보] "드래프트 뽑힌애들은 왜 팀에 안들어가냐" (두 번째)
+     v3.59 전에 프로에 들어간 세이브는 ST.pro.draftClass 가 아예 없었다. 그러면 여기서 아무도 안 넣고
+     dc27 표시만 세워서 영영 안 들어갔다. 이제 명단이 없으면 PRO_DRAFT_2027 표에서 다시 만들고,
+     표시가 서 있어도 리그에 dc27 선수가 한 명도 없으면 다시 넣는다 */
+  const has=TEAMS.some(t=>pfAll(t).some(p=>/^dc27_/.test(p.id)));
+  if(F.dc27 && has) return 0;
   F.dc27=true;
+  if(!Array.isArray(ST.pro.draftClass)||!ST.pro.draftClass.length){
+    ST.pro.draftClass=[].concat.apply([],PRO_DRAFT_2027.map((row,ri)=>row.map((p,ki)=>({r:ri+1,k:ki+1,team:(PRO_DRAFT_SWAP[ri+'-'+ki]||PRO_DRAFT_ORDER[ki]),name:p[0],school:p[1],pos:p[2],grade:p[3]}))));
+  }
   const cls=ST.pro.draftClass||[]; if(!cls.length) return 0;
   const me=ST.pro.draft||{}, y=ST.pro.year;
   let n=0;
@@ -20192,6 +20280,7 @@ function renderProFront(tab){
     const card=el('div','card');
     card.appendChild(el('div','card-h','트레이드 제안 — 선수 · 지명권 · 현금'));
     const wait=4-((ST.round||0)-(F.tradeRound??-99));
+    if(pfTradeClosed()) card.appendChild(Object.assign(el('p','fx-visa'),{innerHTML:'⛔ <b>트레이드 마감(7월 31일)이 지났다.</b> 제안은 해 볼 수 있지만 시즌이 끝날 때까지 성사되지 않는다.'}));
     card.appendChild(el('p','muted', wait>0?('다음 제안까지 '+wait+'주'):
       '한쪽에 선수 셋까지 · 신인 드래프트 1~3라운드 지명권 · 현금(최대 30억)을 얹을 수 있다. 상대 구단 기조가 값을 매긴다 — 여럿을 묶으면 덜 쳐준다.'));
     const selT=d0('select'); selT.className='rn-sel';
@@ -20342,13 +20431,32 @@ function applyTheme(t){
 }
 applyTheme();
 /* FM 식 등급 — 20~80 눈금을 별 다섯 개로(반 개 단위). 잠재가 있으면 옅은 별로 잇는다 */
+/* 별 — 리그 안에서 몇 등쯤인가(반 개 단위, 1~10).
+   [제보] "별 갯수 다시설정해라 리그 수준에 맞게 잠재력 별도 따로 하고"
+   예전엔 (등급-20)/6 이라 리그 등급(40~67)이 별 1.5~4 에 몰려서 누가 누군지 안 갈렸다.
+   이제 KBO 열 구단 전원의 지금 등급 분포에서 자리를 잰다 — 상위 2% 다섯 개 · 상위 7% 네 개 반 …
+   잠재력도 같은 잣대(지금 리그 선수들 등급)에 댄다 — 「크면 리그 몇 등감인가」 */
+let PF_STAR_D=null, PF_STAR_K='';
+function pfStarHalf(v){
+  const k=(ST&&ST.pro?ST.pro.year:0)+'|'+(TEAMS||[]).length;
+  if(!PF_STAR_D||PF_STAR_K!==k){ PF_STAR_K=k;
+    PF_STAR_D=[]; (TEAMS||[]).forEach(t=>{ if(proKeyOf(t.id)) pfAll(t).forEach(p=>PF_STAR_D.push(pfGrade(p))); });
+    PF_STAR_D.sort((a,b)=>a-b); }
+  const A=PF_STAR_D; if(!A.length) return Math.max(1,Math.min(10,Math.round((v-20)/6)));
+  let lo=0,hi=A.length; while(lo<hi){ const m=(lo+hi)>>1; if(A[m]<v) lo=m+1; else hi=m; }
+  const pct=lo/A.length;
+  const T=[0.98,0.93,0.85,0.72,0.55,0.40,0.27,0.15,0.06];
+  for(let i=0;i<T.length;i++) if(pct>=T[i]) return 10-i;
+  return 1;
+}
+function fmStarRow(h, cls){
+  let o=''; for(let i=0;i<5;i++){ const k=i*2; o+= h>=k+2?'★':(h===k+1?'<u>★</u>':'<s>☆</s>'); }
+  return '<i class="fm-st'+(cls?' '+cls:'')+'">'+o+'</i>';
+}
 function fmStars(g, pot){
-  const st=v=>Math.max(0,Math.min(10,Math.round((v-20)/6)));        // 20 → 0 · 80 → 10(반 개 단위)
-  const a=st(g), b=pot!=null?Math.max(a,st(pot)):a;
-  let h='';
-  for(let i=0;i<5;i++){ const k=i*2;
-    h+= a>=k+2?'★':(a===k+1?'<u>★</u>':(b>=k+1?'<u>☆</u>':'<s>☆</s>')); }
-  return '<i class="fm-st">'+h+'</i>';
+  const a=pfStarHalf(g);
+  const b=pot!=null?Math.max(a,pfStarHalf(pot)):null;
+  return fmStarRow(a)+(b!=null&&b>a?' <i class="fm-pt">잠재</i>'+fmStarRow(b,'pot'):'');
 }
 function fmGrade(g){ const c=g>=60?'g1':(g>=52?'g2':(g>=45?'g3':(g>=38?'g4':'g5'))); return '<i class="fm-g '+c+'">'+g+'</i>'; }
 /* ---- 뎁스표 ----
@@ -20891,6 +20999,37 @@ const DCEL_CHAT_R24=['오 불렸다!!','축하한다 진짜로','몇 라운드�
 const DCEL_PRESS_Q=['1라운드 지명 소감 한마디 부탁드립니다','롤모델이 있나요?','어떤 선수가 되고 싶습니까?','가족에게 한마디 해주세요'];
 const DCEL_PRESS_A=['아직 실감이 안 납니다. 불러주신 만큼 증명하겠습니다','꾸준한 선수요. 매일 나가는 선수가 되고 싶습니다',
   '팬분들이 이름 외워주시는 선수가 되겠습니다','엄마 아빠, 이제 시작입니다. 고생 많으셨습니다'];
+/* ================= 군 생활 컷신 =================
+   [요청] "군생활도 컷신 넣어주고"
+   입대하는 해 겨울에 한 번 — 입영 → 훈련소 → 상무 · 자대 → 면회 · 단톡방 → 전역.
+   지명 컷신(draftCelebrate)과 같은 화면틀(.dcel)을 쓴다. 대사는 풀에서 pickFresh 로 */
+const MIL_GO=['머리 깎고 나니 거울 속 사람이 누군지 모르겠다','부모님이 정문 앞에서 끝까지 손을 흔드셨다','입영 열차 안에서 휴대폰을 꺼내 마지막으로 단톡방을 봤다'];
+const MIL_BOOT=['새벽 여섯 시 기상 나팔 — 야구장 새벽 훈련보다 빡세다','행군 20km. 발에 물집이 잡혔는데 투수 발이라 더 신경 쓰인다','사격에서 만발 — 교관이 「야구하는 놈이라 눈이 좋네」 한다','훈련소 동기가 「진짜 프로 선수냐」 고 사인을 받아 갔다'];
+const MIL_SANGMU=['상무 합격 통보 — 퓨처스에서 매일 경기를 뛴다','상무 감독 「여기서 뭘 가져갈지는 너한테 달렸다」','상무 동기들과 밤마다 스윙 영상을 돌려 본다','퓨처스 올스타에 뽑혔다. 군복 입고 트로피를 받았다'];
+const MIL_ACTIVE=['자대 배치 — 야구공은 연병장 구석에서 몰래 던진다','중대장이 「부대 야구팀 좀 맡아 줘라」 한다','주말마다 체력 단련 — 방망이 대신 삽을 쥔다','휴가 나와서 배팅센터부터 갔다. 손이 굳었다'];
+const MIL_VISIT=['면회 온 동료가 치킨을 한 상자 들고 왔다','단톡방에 「너 없으니까 외야가 비었다」 가 올라왔다','구단 매니저가 편지를 보냈다 — 「자리 비워 두고 기다린다」','팬이 부대로 응원 편지를 보냈다. 동기들이 부러워한다'];
+const MIL_OUT=['전역 — 경례 하나 하고 정문을 나섰다. 야구장이 보고 싶다','전역 날 바로 구장으로 갔다. 유니폼이 조금 끼인다','「돌아왔습니다」 — 라커룸 이름표가 그대로 붙어 있었다'];
+function milCutscene(kind, cb){
+  if(typeof document==='undefined'){ if(cb) cb(); return; }
+  const me=ST.playerId||MYID, t=proDef(ST.pro.team)||{};
+  const mates=(TBYID['wwzw'].players||[]).filter(x=>x.id!==me);
+  const S=[
+    {role:'입영', who:kind==='sangmu'?'국군체육부대(상무)':'현역 입대', line:pickFresh(MIL_GO,'milGo')},
+    {role:'훈련소', who:'기초 군사훈련 5주', line:pickFresh(MIL_BOOT,'milBoot')},
+    {role:kind==='sangmu'?'상무 피닉스':'자대', who:kind==='sangmu'?'퓨처스리그':'복무', line:pickFresh(kind==='sangmu'?MIL_SANGMU:MIL_ACTIVE,'milMid')},
+    {role:'면회 · 단톡방', who:(mates[0]&&mates[0].name)||'동료', line:pickFresh(MIL_VISIT,'milVisit')},
+    {role:'전역', who:nameOf(me), line:pickFresh(MIL_OUT,'milOut')}];
+  const ov=el('div','dcel'); ov.style.setProperty('--tc', t.cap||'#556b2f');
+  let i=0;
+  const paint=()=>{ const x=S[i];
+    ov.innerHTML='<div class="dcel-card"><div class="dcel-role">'+x.role+'</div><div class="dcel-who">'+x.who+'</div><div class="dcel-line">「'+x.line+'」</div></div>'+
+      '<div class="dcel-foot">'+(i+1)+' / '+S.length+' · 눌러서 넘기기</div><button class="dcel-skip">건너뛰기</button>';
+    ov.querySelector('.dcel-skip').onclick=(e)=>{ e.stopPropagation(); close(); }; };
+  const close=()=>{ if(ov.parentNode) ov.parentNode.removeChild(ov); if(cb) cb(); };
+  ov.onclick=()=>{ i++; if(i>=S.length) close(); else paint(); };
+  paint(); document.body.appendChild(ov);
+  return ov;
+}
 function draftCelebrate(o, cb){
   if(!o || o.round>4 || typeof document==='undefined'){ if(cb) cb(); return; }
   const top=o.round===1, t=proDef(o.team);
@@ -25447,6 +25586,7 @@ function renderMake(){
     '<div class="mk-f"><label>이름<input id="mk-nm" maxlength="6" placeholder="예: 김야구"></label>'+
     '<label>등번호<input id="mk-no" type="number" min="0" max="99" value="7"></label></div>'+
     '<div class="mk-f"><label>태어난 해 (1995~2007)<input id="mk-born" type="number" min="1995" max="2007" value="2000"></label></div>'+
+    '<div class="mk-f"><label>키(cm)<input id="mk-ht" type="number" min="150" max="210" value="178"></label><label>몸무게(kg)<input id="mk-wt" type="number" min="50" max="140" value="78"></label></div>'+
     '<div class="mk-g" data-k="school"><span>학교</span><button data-v="군포고" class="on">군포고</button><button data-v="흥진고">흥진고</button><button data-v="__own">직접 적기</button></div>'+
     '<div class="mk-f mk-own" style="display:none"><label>학교 이름<input id="mk-sch" maxlength="10" placeholder="예: 휘문고"></label></div>'+
     '<div class="mk-g" data-k="throws"><span>던지는 손</span><button data-v="R" class="on">우투</button><button data-v="L">좌투</button></div>'+
@@ -25479,6 +25619,8 @@ function renderMake(){
     MYID=CUSTOM_ID;
     TEAMS=buildAllTeams(); TBYID={}; TEAMS.forEach(t=>TBYID[t.id]=t); buildPitcherPool();
     ST=newSeason(); ST.custom=CUSTOM_PENDING; ST.playerId=CUSTOM_ID;
+    { const ht=parseInt((card.querySelector('#mk-ht')||{}).value,10), wt=parseFloat((card.querySelector('#mk-wt')||{}).value);
+      if(ht>=150&&ht<=210&&wt>=50&&wt<=140) ST.myBody={ht, wt, diet:'keep'}; }
     ST.lineup=recommendLineup(); ST.rotation=recommendRotation();
     await saveGame(true);
     if(isPlayerMode() && !ST.role){ go('role'); return; }
@@ -26887,6 +27029,21 @@ function renderHomePlayer(){
       row('주루', askModeOf('run'), [['all','전부'],['key','승부처'],['off','안 함']], v=>{ ST.runMode=v; if(ST.autoPlay) ST.autoPlay.run=(v==='off'); });
       row('화면', ST.playStyle==='classic'?'classic':'action', [['action','직접 플레이'],['classic','예전 방식']], v=>{ ST.playStyle=v; });
       c.appendChild(pc);
+      /* [제보] "드래프트 트레이드 칸은 어디갔어 어디서 해" — 프로 프런트가 가로 로비 아이콘 · 설정 안쪽에만 있었다 */
+      const fb=el('button','mystatus in tapon');
+      const dl=pfTradeClosed();
+      fb.innerHTML='<div class="ms-big">🏢 프런트</div><div class="ms-sub">트레이드 · FA · 드래프트 · 외국인 · 선수단 · 돈</div>'+
+        '<div class="ms-why">'+(dl?'트레이드 마감(7월 31일) 지남 — 시즌 끝나면 다시 열린다':'트레이드 마감은 7월 31일(시즌 96경기째)')+'</div>';
+      fb.onclick=()=>go('front');
+      c.appendChild(fb);
+    }
+    /* 내 체격 — 한 번도 안 정했으면 홈에서 물어본다(건너뛰면 다시 안 묻는다 · 훈련 화면에서 언제든) */
+    if(!ST.myBody && !ST.myBodySkip){
+      const q=el('div','card');
+      q.innerHTML='<div class="card-h">내 키 · 몸무게</div><p class="muted">그림 체격과 파워 · 주루가 여기에 맞춰진다. 나중에 훈련 화면 「체격 · 식단」 에서 바꿀 수 있다.</p>';
+      const a=el('button','btn primary','정하기'); a.onclick=()=>{ q.replaceWith(myBodyCard(()=>go('home'))); };
+      const k=el('button','btn','나중에'); k.onclick=async()=>{ ST.myBodySkip=true; await saveGame(true); q.remove(); };
+      q.appendChild(a); q.appendChild(k); c.appendChild(q);
     }
     {
       const key=((ST.seasonNo||1)*100)+((ST.round||0));
@@ -29224,6 +29381,7 @@ function renderHall(){
         <div class="ot-ovi"><span>팀 타이틀</span><b>${teamTitles.length}</b></div>
         <div class="ot-ovi"><span>몸값</span><b>${(function(){
           const p=us.players.find(x=>x.id===who);
+          if(p&&typeof isPro==='function'&&isPro()) return wonStr2((pfCon(p,ST.pro.team)||{}).sal||0);
           return p?wonStr(playerValue(p,META[who],ST.bat[who])):'-';})()}</b></div>
       </div>
     </div>`;
@@ -29692,6 +29850,10 @@ function renderPlayer(){
   const meId=ST.playerId||MYID;
 
   const wrap=el('div','ot');
+  /* [제보] 프로 선수 카드에 「몸값 NaN천원 · 12만원」 · 출석 · 회식 · 이동이 찍혔다 — 사회인 카드를 그대로 썼다.
+     프로면 등급 · 잠재 · 실제 연봉 · 계약을 보여 주고 사회인 전용 줄은 뺀다 */
+  const PRO=(typeof isPro==='function'&&isPro());
+  const PCON=PRO?(pfCon(p,ST.pro.team)||{sal:0}):null;
 
   /* ---- 머리띠 ---- */
   const top=el('div','ot-top');
@@ -29699,12 +29861,17 @@ function renderPlayer(){
     <div class="ot-nm">
       <div class="ot-n1">${p.name}${p.no!=null?`<i class="ot-no">#${p.no}</i>`:''}${formTag(p.id)?`<span class="ftag">${formTag(p.id)}</span>`:''}<b>${main?POSNAMES[main]:'DH'}</b></div>
       <div class="ot-n2">${nickOf(p.id)?`'${nickOf(p.id)}' · `:''}${ageOf(p.id)}세 · 타/투 ${p.bats==='L'?'좌':'우'}/${m.throws==='L'?'좌':'우'}${bdayTag(p.id)}</div>
-      <div class="ot-ov">
+      ${PRO?`<div class="ot-ov">
+        <div class="ot-ovi"><span>등급</span><b>${pfGrade(p)}</b></div>
+        <div class="ot-ovi"><span>잠재</span><b class="dim">${pfPot(p)||pfGrade(p)}</b></div>
+        <div class="ot-ovi"><span>연봉</span><b>${wonStr2(PCON.sal)}</b></div>
+      </div>
+      <div class="ot-st">${fmStars(pfGrade(p), pfPot(p))}</div>`:`<div class="ot-ov">
         <div class="ot-ovi"><span>전체</span><b>${ca.toFixed(0)}</b></div>
         <div class="ot-ovi"><span>포텐셜</span><b class="dim">${pa.toFixed(0)}</b></div>
         <div class="ot-ovi"><span>몸값</span><b>${wonStr(playerValue(p,m,ST.bat[p.id]))}</b></div>
       </div>
-      <div class="ot-st">${starHTML(ca)}${starHTML(pa,true)}</div>
+      <div class="ot-st">${starHTML(ca)}${starHTML(pa,true)}</div>`}
     </div>`;
   wrap.appendChild(top);
 
@@ -29725,6 +29892,14 @@ function renderPlayer(){
       `${BIRTHDAY[p.id].replace('-','월 ')}일${(isBirthday(p.id)||dleft===0)
         ? ' — <b style="color:#ffd15c">오늘이다 🎂</b>' : ` · D-${dleft}`}`);
   }
+  if(PRO){
+    const tp={fa:'FA 계약',annual:'연봉 계약',rookie:'신인',foreign:'외국인'}[PCON.type]||'계약';
+    detail+=otRow('계약', tp+(PCON.left?' · 남은 '+PCON.left+'년':'')+(PCON.real?' · 실제':''));
+    const fl=pfFaLeft(p,ST.pro.team); if(fl!=null) detail+=otRow('FA 까지', fl<=0?'올겨울 FA':fl+'년');
+    const ft=pfFranchiseTag(p,ST.pro.team);
+    detail+=otRow('명성', pfRep(p)+' · '+pfRepTxt(pfRep(p))+(ft?' · '+ft:''));
+    try{ const B=bodyOf(p); detail+=otRow('체격', B.ht+'cm · '+B.wt+'kg'); }catch(e){}
+  } else {
   detail+=otRow('출신교', m.school||'-');
   detail+=otRow('출석', `${Math.round((m.attend!=null?m.attend:.85)*100)}%`
     +(m.attend<0.6?' · 자주 빠진다':m.attend>=0.85?' · 웬만하면 나온다':''));
@@ -29732,6 +29907,7 @@ function renderPlayer(){
   detail+=otRow('이동', m.car?'차가 있다':'차가 없다');
   detail+=otRow('나와의 관계', p.id===meId?'나':`${bondLabel(bondOf(p.id))} (${Math.round(bondOf(p.id))})`,
     p.id===meId);
+  }
   add(otSec('개인 세부 사항', detail));
 
   /* ---- 상태 ---- */
@@ -36970,6 +37146,8 @@ function sdSwing(t){
    투수는 조금 크다. 같은 사람은 늘 같은 체형이다(아이디로 굴린다) */
 function bodyOf(p){
   if(!p) return {ht:180, wt:80};
+  /* [v3.64.0] 나 — 내가 정한 키 · 몸무게(ST.myBody). 먹는 것 · 운동으로 몸무게가 바뀐다(myBodyWeek) */
+  try{ if(ST&&ST.myBody&&p.id===(ST.playerId||MYID)) return {ht:ST.myBody.ht, wt:Math.round(ST.myBody.wt)}; }catch(e){}
   if(p.ht && p.wt) return {ht:p.ht, wt:p.wt};
   const id=String(p._orig||p.id||p.name||''); let h=2166136261;
   for(let i=0;i<id.length;i++){ h^=id.charCodeAt(i); h=Math.imul(h,16777619)>>>0; }
@@ -45174,6 +45352,54 @@ function canAffordQ(t){
 }
 
 /* 주간 처리 때 한 번 적용한다 — 이번 주에 산 것을 전부 */
+/* 내 몸 — [요청] "처음 시작할때 본인의 키 몸무게 설정할 수 있게 하고 들어와서 음식을 많이 먹거나 운동 하면
+   몸무게랑 게임안에서 몸뚱아리 변하게 하자"
+   ST.myBody={ht, wt, diet:'bulk'|'keep'|'cut'}. 한 주에 — 벌크업 +0.4kg · 감량 −0.4kg, 빡센 루틴 −0.2kg · 가벼운 루틴 +0.1kg.
+   몸무게가 움직이면 파워 · 주루가 조금씩 따라간다(벌크업은 힘 +, 발 −). 그림 체격(bodyOf → sdLookOf)도 따라 바뀐다 */
+const MY_DIET={bulk:['많이 먹기 (벌크업)',0.4], keep:['보통',0], cut:['감량',-0.4]};
+function myBodyWeek(){
+  if(!ST||!ST.myBody) return null;
+  const B=ST.myBody, me=ST.playerId||MYID, p=TBYID.wwzw&&TBYID.wwzw.players.find(x=>x.id===me);
+  let d=(MY_DIET[B.diet||'keep']||MY_DIET.keep)[1];
+  try{ const lv=(ST.routine&&ST.routine.lv); d+= lv===2?-0.2:(lv===0?0.1:0); }catch(e){}
+  const bmi0=B.wt*10000/(B.ht*B.ht);
+  B.wt=Math.round(Math.max(55,Math.min(135,B.wt+d))*10)/10;
+  const bmi=B.wt*10000/(B.ht*B.ht);
+  if(p && d){
+    /* 적정(체질량 23~28) 안에서 찌우면 힘이 붙고 빼면 발이 가벼워진다. 너무 찌면 발만 무거워진다 */
+    if(d>0){ if(bmi<28.5) p.pow=Math.min(99,(p.pow||40)+0.06); p.spd=Math.max(20,(p.spd||40)-0.05); }
+    else { p.spd=Math.min(99,(p.spd||40)+0.05); if(bmi<23) p.pow=Math.max(20,(p.pow||40)-0.04); }
+    try{ ST.myRatings=ST.myRatings||{}; ST.myRatings.pow=p.pow; ST.myRatings.spd=p.spd; }catch(e){}
+  }
+  return {from:Math.round(bmi0*10)/10, to:Math.round(bmi*10)/10, wt:B.wt};
+}
+function myBodyDefault(){
+  const me=ST.playerId||MYID, p=TBYID.wwzw&&TBYID.wwzw.players.find(x=>x.id===me);
+  const b=bodyOf(Object.assign({},p||{id:'x'},{id:'__guess'}));
+  return {ht:b.ht, wt:b.wt, diet:'keep'};
+}
+/* 체격 정하기 카드 — 홈에서 한 번 · 훈련 화면에서 언제든 */
+function myBodyCard(onDone){
+  const B=ST.myBody||myBodyDefault();
+  const cd=el('div','card mybody');
+  cd.innerHTML='<div class="card-h">내 체격</div>'+
+    '<div class="mk-f"><label>키(cm)<input id="mb-ht" type="number" min="150" max="210" value="'+B.ht+'"></label>'+
+    '<label>몸무게(kg)<input id="mb-wt" type="number" min="50" max="140" value="'+Math.round(B.wt)+'"></label></div>'+
+    '<div class="mk-g" data-k="diet"><span>식단</span>'+Object.keys(MY_DIET).map(k=>'<button data-v="'+k+'"'+((B.diet||'keep')===k?' class="on"':'')+'>'+MY_DIET[k][0]+'</button>').join('')+'</div>'+
+    '<p class="muted">벌크업은 한 주에 0.4kg 씩 찌고 힘이 조금 붙는 대신 발이 무거워진다. 감량은 반대. 루틴을 빡세게 돌리면 살이 빠진다. 그림 체격도 따라 바뀐다.</p>';
+  cd.querySelectorAll('.mk-g button').forEach(b=>b.onclick=()=>{ cd.querySelectorAll('.mk-g button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); });
+  const sv=el('button','btn primary','저장');
+  sv.onclick=async()=>{
+    let ht=parseInt(cd.querySelector('#mb-ht').value,10), wt=parseFloat(cd.querySelector('#mb-wt').value);
+    if(!(ht>=150&&ht<=210)){ toast('키는 150~210cm'); return; }
+    if(!(wt>=50&&wt<=140)){ toast('몸무게는 50~140kg'); return; }
+    const on=cd.querySelector('.mk-g button.on');
+    ST.myBody={ht, wt, diet:on?on.getAttribute('data-v'):'keep'};
+    await saveGame(true); toast('체격 저장 — '+ht+'cm · '+Math.round(wt)+'kg'); if(onDone) onDone();
+  };
+  cd.appendChild(sv);
+  return cd;
+}
 function applyMyTrain(){
   if(!isPlayerMode()) return null;
   const me=ST.playerId||MYID;
@@ -45184,6 +45410,7 @@ function applyMyTrain(){
   /* [v3.41.0] 루틴 — 코인 없이 매주 저절로 돈다. 코인으로 산 건 그 위에 얹는 「특훈」 이다 */
   let RT=null; try{ RT=rtWeek(); }catch(e){ RT=null; }
   try{ mtWeek(); }catch(e){}
+  try{ myBodyWeek(); }catch(e){}
   if(!Q.length && !RT){
     ST.myTrainLog='이번 주는 아무것도 안 샀다 — 아무것도 안 올랐다';
     ST.notices=ST.notices||[];
@@ -45802,6 +46029,7 @@ function renderTrainPlayer(){
   try{ const cd=el('div','ocd-wrap'); cd.innerHTML=pcMine(); c.appendChild(cd);
     const bar=el('div','ocd-bar');
     const cb=el('button','btn sm','커리어 · WAR'); cb.onclick=()=>crrOpen(); bar.appendChild(cb);
+    const bb=el('button','btn sm','체격 · 식단'); bb.onclick=()=>{ const w=c.querySelector('.mybody'); if(w){ w.remove(); return; } c.insertBefore(myBodyCard(()=>renderTrainPlayer()), bar.nextSibling); }; bar.appendChild(bb);
     if(ST.gev){ const eb=el('button','btn sm gev-go','이벤트가 있다 ▸'); eb.onclick=()=>gevOpen(); bar.appendChild(eb); }
     c.appendChild(bar); }catch(e){}
   try{ rtCard(c); mtCard(c); }catch(e){}
@@ -48531,6 +48759,19 @@ function renderMore(){
     tr.appendChild(row);
   });
   c.appendChild(tr);
+  try{ moreTidy(); }catch(e){}          // 잘 안 쓰는 카드는 맨 아래 접기
+}
+/* 설정 정리 — [제보] "설정 누르면 나오는게 너무 많아서 복잡해 안쓰는 기능들은 좀 버리자 이제 뭐 나한테 물어보던가"
+   지우기 전에 사용자에게 묻기로 했다. 그동안은 잘 안 쓰는 카드를 맨 아래 「자주 안 쓰는 설정 ▾」 에 접어 둔다 */
+const MORE_FOLD=['선수단 둘러보기','화면 크기','자동 교체','환경 정보','장비','플레이 선수','만약에','데이터','경기장','특성 설명','세이브 슬롯'];
+function moreTidy(){
+  const c=$('#view'); if(!c) return;
+  const cards=[...c.querySelectorAll(':scope > .card')].filter(cd=>{ const h=cd.querySelector('.card-h'); return h && MORE_FOLD.indexOf(h.textContent.trim())>=0; });
+  if(!cards.length) return;
+  const d=document.createElement('details'); d.className='more-fold';
+  const sm=document.createElement('summary'); sm.textContent='자주 안 쓰는 설정 ▾ ('+cards.length+')'; d.appendChild(sm);
+  cards.forEach(cd=>d.appendChild(cd));
+  c.appendChild(d);
 }
 
 /* ---------- 선수단 둘러보기 (v2.82.0) ----------
@@ -48781,6 +49022,10 @@ function seasonYear(){
   return (typeof ST!=='undefined'&&ST&&ST.year)?ST.year:2026;
 }
 function ageOf(pid){
+  /* [제보] 한규 — 로스터에선 21세, 카드에선 29세. 프로에선 나이를 하나로(pfAge — 드래프트 · 입단 기준) */
+  try{ if(typeof isPro==='function'&&isPro()){ const me=ST.playerId||MYID;
+    if(pid===me) return pfAge({id:me});
+    const f=pfFind(pid); if(f) return pfAge(f.p); } }catch(e){}
   /* [주의] 2군 명단(ST.farm)이 먼저다. META 는 세이브에 안 들어가서
      매번 다시 만드는데, **아이디를 돌려 쓰기 때문에** 새 시즌에 다른
      사람이 같은 아이디를 받으면 낡은 META 가 그대로 남는다. 그때
@@ -49155,13 +49400,19 @@ function trainSessionDef(id){ return TRAIN_SESSIONS.find(x=>x.id===id)||null; }
 /* [요청 v3.44.0] 「특훈을 미니게임 한 판으로 — 등급 따라 보너스」
    세션이 코인만 벌어 오던 걸 바꾼다: 한 판이 곧 특훈이다. 등급만큼 그 자리에서 능력치가 붙는다.
    코인은 덤으로 그대로 준다(상점 특훈을 더 사고 싶은 사람). 점수는 맞힘 + PERFECT 반 개(칸 한가운데 30%) */
-const TRAIN_SESS_GAIN={bat:{con:1, pow:0.5}, pit:{ctl:1, stf:0.5}, def:{def:1, arm:0.5}};
-const TRAIN_SESS_MUL={S:1.6, A:1.2, B:0.8, C:0.3};
+/* [v3.64.0] [제보] "특훈이 너무 사기라서 컨택 1.6 파워 0.8 이래 올려줘서 바로 천장 뚫었대 난이도가 너무 쉬워진대"
+   한 주에 한 판인데 S 면 +1.6 — 시즌이면 +38 이었다. 루틴(매주 저절로)이 따로 있는데 그 위에 이게 얹혔다.
+   이제 S 한 판이 컨택 +0.4 · 파워 +0.2 쯤이고, 능력치가 높을수록 덜 오른다(65 면 절반 · 75 넘으면 2할 반) */
+const TRAIN_SESS_GAIN={bat:{con:0.4, pow:0.2}, pit:{ctl:0.4, stf:0.2}, def:{def:0.4, arm:0.2}};
+const TRAIN_SESS_MUL={S:1, A:0.75, B:0.45, C:0.15};
 function trainSessApply(def0, g){
   const me=ST.playerId||MYID, p=TBYID.wwzw.players.find(x=>x.id===me); if(!p) return [];
   const G=TRAIN_SESS_GAIN[def0.id]||{}, m=(TRAIN_SESS_MUL[g]||0.3)*((typeof mtTrainMul==='function')?mtTrainMul():1);
   const KN={con:'컨택',pow:'파워',ctl:'제구',stf:'구위',def:'수비',arm:'어깨'}, out=[];
-  Object.keys(G).forEach(k=>{ const v=Math.round(G[k]*m*10)/10; if(!v) return;
+  Object.keys(G).forEach(k=>{
+    const cur=(k==='ctl'||k==='stf')?((p.pitch&&p.pitch[k])||30):(p[k]||30);
+    const dim=Math.max(0.25,Math.min(1,(85-cur)/40));          // 높을수록 덜 오른다(바닥 2할 반)
+    const v=Math.round(G[k]*m*dim*10)/10; if(!v) return;
     if(k==='ctl'||k==='stf'){ if(!p.pitch) return; p.pitch[k]=Math.min(99,(p.pitch[k]||30)+v); }
     else p[k]=Math.min(99,(p[k]||30)+v);
     out.push(KN[k]+' +'+v); });
@@ -50928,6 +51179,9 @@ function rvLineup(box, roster){
   } else {
     const t=rvFakeTeam(roster);
     line=aiLineup(t); rot=aiRotation(t);
+    /* [제보] "조병현은 왜 선발이고" — 프로 1군은 보직(SP)대로 선발 다섯을 보여 준다. 예전엔 사회인처럼
+       구위 · 제구 · 체력 합으로 여섯을 뽑아서 마무리가 선발로 찍혔다 */
+    try{ if(isPro() && rvLevel==='first'){ const rt=TBYID[rvTeam]; if(rt){ const sp=proSPs(rt).slice(0,5).map(p=>p.id); if(sp.length) rot=sp; } } }catch(e){}
     why=rvLevel==='farm'?'2군 능력치로 짠 예상 라인업이다.':'상대 감독이 이렇게 짤 것 같다는 예상이다.';
   }
   box.appendChild(el('div','set-note',why));

@@ -77,7 +77,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
     return r.kia1===2 && r.us1===0 && r.us3===2 ? '1라운드 — 호랑이 두 번 · 우리 0번 / 3라운드 우리 두 번' : '!'+JSON.stringify(r); });
   T('한 번 하면 네 주 쉰다', ()=>{ const r=JSON.parse(ev(`JSON.stringify(pfTradeMulti({team:${K}, give:[_us[5].id], get:[_th[20].id]}))`)); return !r.ok && /네 주/.test(r.why); });
   ev("pfState().tradeRound=-99");
-  T('옛 1:1 함수도 돈다', ()=>{ const r=JSON.parse(ev(`JSON.stringify(pfTrade(_us[1].id, _th[30].id))`)); return r.ok ? '성사' : '!'+JSON.stringify(r); });
+  T('옛 1:1 함수도 돈다 (연봉 반영 뒤 — 값이 맞는 짝으로)', ()=>{ const r=JSON.parse(ev(`JSON.stringify((function(){ const g=_us.slice().sort((a,b)=>pfTradeWorth(b,'kia',false)-pfTradeWorth(a,'kia',false))[0], r=_th.slice().sort((a,b)=>pfTradeWorth(a,'kia',true)-pfTradeWorth(b,'kia',true))[0]; return pfTrade(g.id, r.id); })())`)); return r.ok ? '성사' : '!'+JSON.stringify(r); });
   T('신문에 트레이드가 난다', ()=>ev("(ST.pro.news||[]).some(n=>n.tag==='트레이드' && /지명권 포함/.test(n.head))"));
 
   console.log('\n[화면]');
