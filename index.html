@@ -2253,6 +2253,9 @@ html.land #view.hs-pickv .hs-opt{padding:8px 10px}
    [높이] 송구 단계에서는 조이스틱이 숨으니(112px) 늘어나는 만큼 상쇄된다. */
 .baserow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin:10px 0 2px}
 /* 전체 진루 · 전체 귀루 [v3.65.0] — 주자별 버튼은 둘째 줄 */
+.pp-thx{margin:6px 0 2px;padding:6px 10px;border-radius:8px;text-align:center;font-size:12px;font-weight:700;color:#5a3d00;
+  background:linear-gradient(90deg,#f7d774,#ffe9a8 45%,#e9bf45);border:1px solid #c89a2a;box-shadow:0 1px 0 rgba(255,255,255,.6) inset}
+.pp-thx b{color:#3b2600;letter-spacing:.5px}
 .nt-live{font-style:normal;font-size:10px;font-weight:800;color:#0f2a6b;background:#e9eefb;border-radius:6px;padding:1px 5px;margin-left:4px}
 .advrow{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:8px 0 2px}
 .advrow .adv-b{padding:9px 3px}
@@ -9771,8 +9774,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.69.0';
-const APP_VERSION_NOTE = '2차 드래프트 보호명단 · 등번호는 원래 달던 사람이 지킨다';
+const APP_VERSION = '3.70.0';
+const APP_VERSION_NOTE = '설정 정리 · 프로에선 사회인 실제 기록 숨김 · 김한규 명예기자';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9793,6 +9796,13 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.70.0', t:'설정 정리 · 프로에선 사회인 실제 기록 숨김 · 김한규 명예기자', items:[
+    '<b>설정 정리</b> — 위에는 화면 테마 · 직접 플레이 · 세이브 · 사운드 · 버전만 남겼다. 나머지는 「자주 안 쓰는 설정」 안에 접었다',
+    '<b>프로에선 사회인 전용 설정을 뺐다</b> — 장비 · 경기장 · 특성 설명 · 만약에 · 플레이 선수(프로에서 누르면 판이 꼬였다)',
+    '<b>프로 기록실에서 「실제」 탭을 뺐다</b> — 2026 사회인 실제 기록은 사회인 모드에서만 보인다. 기록실은 내 기록부터 연다',
+    '<b>신문 제호 밑에 금색 띠</b> — 버그를 제일 많이 찾아 준 <b>김한규</b> 명예기자께 매 호 감사 인사를 박는다',
+    '프로 신문 꼬리말의 「구단 · 선수 이름은 실제와 다릅니다」 를 뺐다(이제 실명이다)',
+  ]},
   {v:'3.69.0', t:'2차 드래프트 보호명단 · 등번호는 원래 달던 사람이 지킨다', items:[
     '<b>2차 드래프트</b> — 김도영 · 구자욱 · 노시환이 명단에 떴다. 보호 35명에서 1~3년차 · 외국인 수를 빼고 세는 바람에, 2군까지 60명이 넘는 팀은 보호가 0명이 됐다',
     '이제 실제 규정처럼 제외 대상과 <b>따로 35명</b>을 묶는다. 풀리는 건 자리가 막힌 백업 · 2군 베테랑이다 — 원래 그런 선수들한테 기회를 주는 제도다',
@@ -48130,8 +48140,10 @@ function renderRecords(){
   const c=$('#view'); c.innerHTML='';
   const tabs=el('div','subtabs');
   tabs.classList.add('sub6');
+  /* [요청 v3.70.0] "크보 오면 우리 사회인 야구 실제 기록은 안보여도 된다니깐" — 프로에선 「실제」 탭을 뺀다 */
+  if(isPro() && recTab==='real') recTab='mine';
   [['real','실제'],['feat','진기록'],['mine','내 기록'],['career','통산'],['team','구단'],
-   ['hof','명예의전당']].forEach(([k,n])=>{
+   ['hof','명예의전당']].filter(([k])=>!(isPro()&&k==='real')).forEach(([k,n])=>{
     const b=el('button','subtab'+(recTab===k?' on':''),n);
     b.onclick=()=>{recTab=k;renderRecords();}; tabs.appendChild(b);
   });
@@ -49575,9 +49587,16 @@ function renderMore(){
 }
 /* 설정 정리 — [제보] "설정 누르면 나오는게 너무 많아서 복잡해 안쓰는 기능들은 좀 버리자 이제 뭐 나한테 물어보던가"
    지우기 전에 사용자에게 묻기로 했다. 그동안은 잘 안 쓰는 카드를 맨 아래 「자주 안 쓰는 설정 ▾」 에 접어 둔다 */
-const MORE_FOLD=['선수단 둘러보기','화면 크기','자동 교체','환경 정보','장비','플레이 선수','만약에','데이터','경기장','특성 설명','세이브 슬롯'];
+const MORE_FOLD=['선수단 둘러보기','화면 크기','자동 교체','환경 정보','장비','플레이 선수','만약에','데이터','경기장','특성 설명','세이브 슬롯',
+  '이름 · 등번호 · 팀명','입장 코드','플레이타임','이 게임에 대해'];
+/* [요청 v3.70.0] "설정 세팅 다했어? 그 지저분한것들?" — 프로에선 사회인 전용 카드를 아예 뺀다.
+   장비(운영비) · 경기장(사회인 구장) · 특성 설명 · 만약에(2026 사회인 판) · 플레이 선수(사회인 선수 고르기 —
+   프로에서 누르면 판이 꼬인다). 함수는 그대로 두고 화면에서만 뺀다 */
+const MORE_PRO_HIDE=['장비','경기장','특성 설명','만약에','플레이 선수'];
 function moreTidy(){
   const c=$('#view'); if(!c) return;
+  if(isPro()) [...c.querySelectorAll(':scope > .card')].forEach(cd=>{ const h=cd.querySelector('.card-h');
+    if(h && MORE_PRO_HIDE.indexOf(h.textContent.trim())>=0) cd.remove(); });
   const cards=[...c.querySelectorAll(':scope > .card')].filter(cd=>{ const h=cd.querySelector('.card-h'); return h && MORE_FOLD.indexOf(h.textContent.trim())>=0; });
   if(!cards.length) return;
   const d=document.createElement('details'); d.className='more-fold';
@@ -51533,6 +51552,16 @@ function newsIssue(){
   };
 }
 /* 신문을 띄운다. 홈에서 주가 바뀔 때 한 번, 더보기에서 언제든 */
+/* [요청 v3.70.0] "한규가 너무 열심히 찾아주니깐 신문에 계속 금장으로 이름 박아주자 감사합니다 하면서"
+   김한규 — 프로 모드를 제일 많이 뛰면서 2차 드래프트 · 등번호 · 선발명단 · 렉 · FA 등급을 찾아 줬다.
+   매 호 제호 밑에 금색 띠로 박는다. 문구는 호마다 돌아간다 */
+const PP_THANKS=[
+  '버그 제보 명예기자 <b>김한규</b> — 덕분에 이 신문이 더 정확해졌습니다. 감사합니다',
+  '이번 호도 <b>김한규</b> 명예기자의 제보로 만들었습니다. 감사합니다',
+  '「치명적 버그 발견」 — 오늘도 <b>김한규</b> 명예기자가 리그를 지켰습니다. 감사합니다',
+  '2차 드래프트 · 등번호 · FA 등급을 바로잡은 <b>김한규</b> 명예기자께 감사드립니다',
+  '편집국 일동, <b>김한규</b> 명예기자의 끝없는 플레이에 경의를 표합니다',
+];
 function showPaper(){
   const N=newsIssue(); if(!N) return;
   const host=$('#view')||document.body;
@@ -51541,6 +51570,7 @@ function showPaper(){
   pg.innerHTML=
     '<div class="pp-mast"><span class="pp-no">제 '+N.no+' 호</span>'+
       '<b>'+N.name+'</b><span class="pp-dt">'+N.date+'</span></div>'+
+    '<div class="pp-thx">🏅 '+PP_THANKS[(N.no||0)%PP_THANKS.length]+'</div>'+
     '<div class="pp-rule"></div>'+
     '<div class="pp-lead"><h1>'+N.lead.h+'</h1><p>'+N.lead.b+'</p></div>'+
     (N.subs.length? '<div class="pp-cols">'+N.subs.map(x=>
@@ -51561,7 +51591,7 @@ function showPaper(){
       '<div class="pp-ad"><b>'+N.ad[0]+'</b><span>'+N.ad[1]+'</span></div>'+
       '<div class="pp-for"><b>'+N.fortune[0]+'</b><span>'+N.fortune[1]+'</span></div>'+
     '</div>'+
-    '<div class="pp-foot">'+(isPro()?'구단 · 선수 이름은 실제와 다릅니다 · 연예·사회면 인물은 모두 가상입니다':'기록실은 실제 기록입니다 · 연예·사회면 인물은 모두 가상입니다')+'</div>';
+    '<div class="pp-foot">'+(isPro()?'연예·사회면 인물은 모두 가상입니다':'기록실은 실제 기록입니다 · 연예·사회면 인물은 모두 가상입니다')+'</div>';
   const x=el('button','pp-x','닫기');
   x.onclick=()=>{ try{ov.parentNode.removeChild(ov);}catch(e){} };
   pg.appendChild(x);
