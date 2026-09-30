@@ -6,7 +6,7 @@
      · 잘하면 명단에 들고, 못하면(능력치가 낮으면) 안 든다 — 2군이면 안 든다
      · 대회를 치르면 조별 셋 이상 경기가 돌고, 점수가 말이 된다
      · 결과가 ST.pro.nt · 경력(history)에 남는다 · 아시안게임 금이면 병역 특례
-     · 상대 나라 선수 이름은 지어낸 이름이다(실제 대표 명단이 아니다)
+     · [v3.67.0] 상대국은 실제 선수(WBC 는 메이저리거까지) · 경기마다 직접 뛰거나 결과만 본다 · 대표팀 유니폼
      · 저장해도 남고, 다음 시즌으로 넘어간다                              */
 const {JSDOM,VirtualConsole}=require('jsdom');
 const html=require('fs').readFileSync(process.argv[2]||'index.html','utf8');
@@ -49,14 +49,43 @@ const clean=tag=>{ const t=(d.getElementById('view')||{}).textContent||'';
   ev("ST.pro.year=2027; proSeasonEnd();"); await wait(30);
   T('시즌 끝 화면에 국가대표 카드가 뜬다', ()=>{ const c=d.querySelector('.nt-card'); return c&&/발탁/.test(c.textContent)?'발탁':'!'+(c?c.textContent.slice(0,40):'없다'); });
   [...d.querySelectorAll('.nt-card .btn')].find(b=>/대회 나간다/.test(b.textContent)).click(); await wait(40);
+  /* [v3.67.0] 대회 화면 — 경기마다 직접 뛰거나 결과만 본다 */
+  T('대회 화면이 열린다 — 직접 뛴다 · 결과만 본다', ()=>{ const t=d.getElementById('view').textContent;
+    return /직접 뛴다/.test(t)&&/결과만 본다/.test(t) ? '열렸다' : '!'+t.slice(0,60); });
+  console.log('\n[직접 뛴다 — 대표팀 유니폼]');
+  ev("ntLiveStart()"); await wait(40);
+  T('경기가 열린다 — 대한민국 vs 상대국', ()=>ev("!!(LIVE&&LIVE._nt)") && /대한민국 vs/.test(d.getElementById('view').textContent) ? ev("LIVE.away.team.name+' @ '+LIVE.home.team.name") : '!안 열렸다');
+  T('내가 대표팀 라인업에 있다', ()=>ev("(LIVE.userIsHome?LIVE.home:LIVE.away).slots.some(function(s){return s.id==='ksh';})") ? '있다' : '!없다');
+  T('유니폼 — 대표팀 남색 모자 · 상대국 색', ()=>{ const u=JSON.parse(ev("JSON.stringify(LIVE._ntUni)"));
+    return u.us.cap==='#0f2a6b' && ev("PS_UNI.us.cap")==='#0f2a6b' && ev("mvOppUniform().cap")===u.them.cap ? 'K '+u.us.cap+' · 상대 '+u.them.cap : '!'+JSON.stringify(u); });
+  const psBefore=ev("JSON.stringify(PS_UNI)");
+  ev("LIVE.manual=false; var gg=0; while(!LIVE.over && gg++<4000){ if(LIVE.pending) LIVE.applyDecision('auto'); LIVE.step(); } farmLiveEnd();"); await wait(40);
+  T('끝나면 대회 화면으로 돌아오고 한 경기가 적힌다', ()=>{ const n=ev("ST.pro.ntRun?ST.pro.ntRun.games.length:(ST.pro.nt[2027]?ST.pro.nt[2027].games.length:0)");
+    const live=ev("(ST.pro.ntRun||ST.pro.nt[2027]).games[0].live"); return n===1&&live ? '1경기 · 직접' : '!'+n+'/'+live; });
+  T('유니폼이 원래대로 돌아온다', ()=>ev("PS_UNI.us.cap")==='#2f5fb0' ? '되돌렸다' : '!'+ev("PS_UNI.us.cap"));
+  T('기록은 시즌 기록에 안 섞인다', ()=>ev("!(LIVE)") ? '따로' : '!');
+  /* 나머지는 결과만 본다 */
+  for(let i=0;i<6 && ev("!!ST.pro.ntRun");i++){
+    const b=[...d.querySelectorAll('#view .btn')].find(x=>/결과만 본다/.test(x.textContent)); if(!b) break; b.click(); await wait(30); }
   const R=JSON.parse(ev("JSON.stringify(ST.pro.nt[2027])"));
   T('대회가 돌았다 — 조별 셋 이상', ()=>R.games.length>=3 ? R.games.map(g=>g.stage+' '+g.us+':'+g.them).join(' · ') : '!'+R.games.length);
   T('점수가 말이 된다 (한 경기 25점 아래)', ()=>R.games.every(g=>g.us<25&&g.them<25&&g.us>=0) ? '정상' : '!'+JSON.stringify(R.games));
   T('내 대회 기록이 남는다', ()=>(R.my.pa>0) ? R.my.ab+'타수 '+R.my.h+'안타' : '!타석 없음');
   T('결과 카드가 다시 그려진다', ()=>/국가대표 · 프리미어12/.test(d.querySelector('.nt-card').textContent));
   T('경력(history)에 대회가 붙는다', ()=>{ const h=JSON.parse(ev("JSON.stringify(ST.pro.history[ST.pro.history.length-1])")); return h.nt&&h.nt.name==='프리미어12' ? h.nt.name+' '+(h.nt.medal||'노메달') : '!'+JSON.stringify(h.nt); });
-  T('상대 나라 선수는 지어낸 이름이다 (한 글자 성+이름이 아니라 「이름 성」)', ()=>{
-    const nm=ev("ntTeamForeign('jpn', makeRng(7)).players[0].name"); return / /.test(nm) ? nm : '!'+nm; });
+  console.log('\n[상대국 — 실제 선수 (v3.67.0)]');
+  T('WBC 일본 — 오타니 · 야마모토가 나온다', ()=>{ const t=JSON.parse(ev("JSON.stringify((function(){ var t=ntTeamForeign('jpn', makeRng(7), null, 'wbc'); return t.players.map(function(p){return p.name;}).concat(t.pitchers.map(function(q){return q.name;})); })())"));
+    return t.indexOf('오타니 쇼헤이')>=0 && t.indexOf('야마모토 요시노부')>=0 ? t.length+'명' : '!'+t.slice(0,5).join(','); });
+  T('프리미어12 일본 — 메이저리거는 안 나온다(오타니 없음 · 자국 리그 선수는 나온다)', ()=>{ const t=JSON.parse(ev("JSON.stringify(ntTeamForeign('jpn', makeRng(7), null, 'premier12').players.map(function(p){return p.name;}))"));
+    return t.indexOf('오타니 쇼헤이')<0 && t.indexOf('마키 슈고')>=0 ? '마키 슈고 · 겐다 소스케 …' : '!'+t.slice(0,5).join(','); });
+  T('WBC 미국 — 저지 · 스킨스', ()=>{ const t=ev("(function(){ var t=ntTeamForeign('usa', makeRng(7), null, 'wbc'); return t.players.concat(t.pitchers).map(function(p){return p.name;}).join(','); })()");
+    return /에런 저지/.test(t)&&/폴 스킨스/.test(t) ? '나온다' : '!'+t.slice(0,60); });
+  T('대표팀은 14 · 11 을 채운다(모자라면 지어낸 선수)', ()=>{ const k=JSON.parse(ev("JSON.stringify((function(){ var t=ntTeamForeign('pur', makeRng(7), null, 'wbc'); return [t.players.length,t.pitchers.length]; })())"));
+    return k[0]===14&&k[1]===11 ? '14 · 11' : '!'+k; });
+  T('WBC 한국 — 이정후 · 김하성이 온다', ()=>{ const t=ev("ntTeamKor('wbc').players.map(function(p){return p.name;}).join(',')");
+    return /이정후/.test(t)&&/김하성/.test(t)&&/김혜성/.test(t) ? '이정후 · 김하성 · 김혜성 · 송성문' : '!'+t; });
+  T('프리미어12 한국엔 메이저리거가 없다', ()=>!/이정후/.test(ev("ntTeamKor('premier12').players.map(function(p){return p.name;}).join(',')")));
+  T('WBC 에도 내가 빠지지 않는다', ()=>ev("ntTeamKor('wbc').players.some(function(p){return p.id==='ksh';})") ? '있다' : '!빠졌다');
   clean('대회 결과');
 
   console.log('\n[아시안게임 금 → 병역 특례]');

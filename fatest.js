@@ -30,6 +30,18 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   T('곽빈 — 프랜차이즈(두산)', ()=>{ const f=ev(`pfFranchise(pfFind('${gb.id}').p,'${gb.k}')`); return f===1?'프랜차이즈':'!'+f; });
   T('옮겨 다닌 사람은 기록이 없으면 프랜차이즈가 아니다', ()=>/!moved/.test(ev("String(pfFranchise)")));
 
+  console.log('\n[FA 등급 — KBO 규정 (v3.67.0)]');
+  const gr=(o)=>ev(`(function(){ var f=pfFind('${gb.id}'); return pfFAGrade(f.p, f.t, ${JSON.stringify(o)}); })()`);
+  T('세 번째 FA 는 C', ()=>gr({fa:2,sal:900000})==='C');
+  T('재자격 — 첫 FA 가 A · B 면 B, C 면 C', ()=>gr({fa:1,fg:'A',sal:900000})==='B' && gr({fa:1,fg:'B',sal:1})==='B' && gr({fa:1,fg:'C',sal:900000})==='C');
+  T('등급은 최근 3년 평균 연봉 순위', ()=>/pfSalAvg3\(q,k\)/.test(ev("String(pfSalTable)")) && /S0\.by\[p\.id\]/.test(ev("String(pfFAGrade)")));
+  T('만 35세 이상 신규 FA 는 C', ()=>/if\(age>=35\) return 'C'/.test(ev("String(pfFAGrade)")));
+  T('곽빈 — 2028 시즌 뒤 FA (부상으로 늦었다)', ()=>{ const r=ev(`(function(){ var f=pfFind('${gb.id}'); return pfFaLeft(f.p,'${gb.k}'); })()`); return r===1?'FA 까지 한 시즌 더':'!'+r; });
+  T('비FA 연봉도 오른다 — 곽빈 2026 3억 500만 → 2027 더', ()=>{ const v=ev(`pfCon(pfFind('${gb.id}').p,'${gb.k}').sal`); return v>30500 ? (v/10000).toFixed(1)+'억' : '!'+v; });
+  T('예비 FA — 구단이 등급 올리려고 연봉을 끌어올린다(FA 2년 전 5억 · 1년 전 7억 · FA 해 9억)',
+    ()=>ev("pfPreFAPush(2,999999,60)")===50000 && ev("pfPreFAPush(1,999999,60)")===70000 && ev("pfPreFAPush(0,999999,60)")===90000 && ev("pfPreFAPush(1,999999,50)")===0);
+  T('우리 팀 재계약도 예비 FA 는 등급 관리', ()=>/예비 FA — 등급 관리로 크게 올렸다/.test(ev("String(pfRenewals)")));
+
   console.log('\n[메이저]');
   T('포스팅 기준 등급 60 (리그 최고가 67)', ()=>/if\(g<60\|\|age<24/.test(ev("String(pfPostRun)")) && ev("Math.max.apply(null,TEAMS.map(function(t){return Math.max.apply(null,pfAll(t).map(pfGrade));}))")>=60);
   ev("pfState().cash=900");

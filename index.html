@@ -2253,6 +2253,7 @@ html.land #view.hs-pickv .hs-opt{padding:8px 10px}
    [높이] 송구 단계에서는 조이스틱이 숨으니(112px) 늘어나는 만큼 상쇄된다. */
 .baserow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin:10px 0 2px}
 /* 전체 진루 · 전체 귀루 [v3.65.0] — 주자별 버튼은 둘째 줄 */
+.nt-live{font-style:normal;font-size:10px;font-weight:800;color:#0f2a6b;background:#e9eefb;border-radius:6px;padding:1px 5px;margin-left:4px}
 .advrow{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:8px 0 2px}
 .advrow .adv-b{padding:9px 3px}
 .advrow .adv-b span{font-size:13px}
@@ -9770,8 +9771,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.66.0';
-const APP_VERSION_NOTE = '시즌 마무리 렉 · FA 는 돈만으론 안 된다 · 메이저 진출';
+const APP_VERSION = '3.67.0';
+const APP_VERSION_NOTE = '국가대표 직접 뛴다 · 상대국 실제 선수 · FA 등급 실제 규정';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9792,6 +9793,16 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.67.0', t:'국가대표 직접 뛴다 · 상대국 실제 선수 · FA 등급 실제 규정', items:[
+    '<b>국가대표를 직접 뛴다</b> — 대회 화면에서 경기마다 「직접 뛴다」 「결과만 본다」. 직접 뛰면 본편 경기 화면 그대로 내 타석 · 내 공 · 내 수비다. 「한 번에 다 굴린다」 도 남겨 뒀다',
+    '<b>대표팀 유니폼</b> — 한국은 남색 모자에 흰 유니폼(원정은 남색), 일본 · 미국 · 도미니카 … 나라마다 색이 다르다. 경기가 끝나면 원래 유니폼으로 돌아온다',
+    '<b>상대국 실제 선수</b> — WBC 일본은 오타니 · 야마모토, 미국은 저지 · 스킨스, 도미니카는 소토 · 게레로 주니어. 프리미어12 · 올림픽엔 메이저리거가 안 나온다(자국 리그 선수만)',
+    '<b>WBC 한국에 메이저리거가 온다</b> — 이정후 · 김하성 · 김혜성 · 송성문, 그리고 이 게임에서 메이저로 간 선수도 부른다',
+    '<b>FA 등급 — 실제 규정 그대로</b>: 최근 3년 평균 연봉 순위 · 만 35세 이상 신규 FA 는 C · 재자격은 첫 FA 때 A·B 면 B, C 면 C · 세 번째부터 C',
+    '<b>비FA 연봉이 해마다 오른다</b> — 예전엔 2026 연봉에 영원히 묶여 있었다(곽빈 3억 500만 그대로라 C 등급이었다)',
+    '<b>예비 FA 등급 관리</b> — 구단이 스타의 연봉을 FA 3년 전부터 끌어올려 A 등급을 만든다(다른 구단이 쉽게 못 데려가게). 우리 팀 재계약도 그렇게 한다',
+    '<b>곽빈 FA 는 2028 시즌 뒤</b> — 팔꿈치 수술로 빠진 해가 있다. 나이로 어림하던 연차를 실제 예정 해로 바로잡았다',
+  ]},
   {v:'3.66.0', t:'시즌 마무리 렉 · FA 는 돈만으론 안 된다 · 메이저 진출', items:[
     '<b>시즌 마무리 렉</b> — 「시즌 마무리」 가 15초, 「다음 시즌」 이 7초쯤 걸렸다. FA 시장을 열 때 후보마다 리그 600명 연봉을 처음부터 다시 셌고, 명성을 잴 때마다 통산 기록 전체를 훑었다. 이제 둘 다 1초 안쪽이다',
     '<b>FA 는 돈만으론 안 된다</b> — 예전엔 금고만 차 있으면 누구든 왔다. 이제 원 소속 구단이 먼저 붙잡는다: 프랜차이즈 90% · 젊은 주전 70% · 이름난 선수 35%',
@@ -18160,15 +18171,115 @@ const NT_COUNTRIES={
   phi:{name:'필리핀', s:26, cap:'#0f3fa0', sur:['산토스','레예스','크루스','바우티스타','오캄포','가르시아','멘도사','토레스','비야누에바','라모스'],
        giv:['마크','존','조세프','라이언','미겔','카를로','제롬','패트릭','앤젤로','케빈']},
 };
-function ntTeamForeign(key, rng, sOver){
+/* [v3.67.0] 실제 대표 선수 — [요청] "국대도 플레이할 수 있게 하자 유니폼 대충 비슷하게 하고 상대국 넣어줘 대충 걔네도"
+   "wbc면 미국 mlb 뛰는애들 다 오잖아 일본도 오타니 그런애들가고 한국은 이정후 김하성 이런애들 오잖아"
+   [결정 2026-09-29] 프로는 실명 — 대표팀도 이름과 숫자만 넣는다(사진 · 로고 없음).
+   능력치는 KBO 눈금(리그 평균 50 · KBO 최고 타자 컨택 60~70 · 최고 투수 구위 68)에 맞춰 **대충** 매겼다.
+   기록을 옮긴 게 아니라 「이 정도 급」 이다. m:1 은 메이저리거 — WBC 에만 나온다
+   (프리미어12 · 올림픽 · APBC 는 메이저 40인 선수가 안 나온다. 그 자리는 지어낸 선수로 채운다).
+   타자 [이름, 자리, 타석, 컨택, 파워, 선구, 주력, 수비, 어깨, m]
+   투수 [이름, 손, 역할, 구위, 제구, 체력, 구속, m]                                       */
+const NT_REAL={
+  jpn:{h:[['오타니 쇼헤이','DH','L',80,92,78,66,45,70,1],['스즈키 세이야','RF','R',70,76,72,55,60,68,1],['요시다 마사타카','LF','L',76,62,70,45,45,50,1],
+         ['무라카미 무네타카','3B','L',62,86,70,42,50,58,1],['오카모토 가즈마','1B','R',70,78,64,44,58,60,1],['곤도 겐스케','LF','L',72,58,80,48,52,52,0],
+         ['마키 슈고','2B','R',70,60,58,50,60,58,0],['겐다 소스케','SS','L',64,40,56,62,76,66,0],['나카무라 유헤이','C','R',58,48,58,38,66,64,0],
+         ['사카모토 세이시로','C','R',55,50,55,40,64,62,0],['누트바 라스','CF','L',62,62,72,60,64,62,1],['고조노 가이토','SS','L',68,44,60,62,70,64,0],
+         ['마키하라 다이세이','2B','L',64,40,55,66,66,58,0],['사토 데루아키','3B','L',60,82,58,50,58,64,0]],
+       p:[['야마모토 요시노부','R','SP',84,80,68,155,1],['오타니 쇼헤이','R','SP',86,66,60,160,1],['이마나가 쇼타','L','SP',76,80,62,148,1],
+         ['사사키 로키','R','SP',84,62,55,159,1],['센가 고다이','R','SP',78,64,60,155,1],['기쿠치 유세이','L','SP',74,64,64,154,1],
+         ['이토 히로미','R','SP',72,72,64,150,0],['다카하시 히로토','R','RP',76,62,45,156,0],['마쓰이 유키','L','RP',74,62,40,150,1],
+         ['이시이 다이치','R','RP',74,66,40,151,0],['다이라 가이마','R','RP',70,70,40,150,0]]},
+  usa:{h:[['에런 저지','RF','R',76,94,86,50,58,66,1],['보비 위트 주니어','SS','R',76,76,60,80,72,72,1],['칼 롤리','C','S',58,90,64,40,70,70,1],
+         ['카일 슈워버','DH','L',58,90,80,40,30,40,1],['브라이스 하퍼','1B','L',70,78,80,50,56,55,1],['거너 헨더슨','3B','L',70,78,70,62,66,66,1],
+         ['피트 크로암스트롱','CF','L',62,70,50,76,84,72,1],['코빈 캐럴','LF','L',66,70,70,80,68,58,1],['알렉스 브레그먼','3B','R',70,66,72,45,64,60,1],
+         ['윌 스미스','C','R',64,66,72,40,62,60,1],['로먼 앤서니','LF','L',64,74,76,55,58,62,1],['브라이스 투랑','2B','L',68,52,64,72,70,60,1],
+         ['브렌트 루커','DH','R',58,80,64,42,36,45,1]],
+       p:[['폴 스킨스','R','SP',90,76,70,160,1],['태릭 스쿠발','L','SP',88,82,70,156,1],['로건 웹','R','SP',74,80,72,150,1],
+         ['개릿 크로셰','L','SP',86,72,64,157,1],['헌터 그린','R','SP',82,62,58,160,1],['조 라이언','R','SP',74,78,62,151,1],
+         ['메이슨 밀러','R','RP',90,62,40,166,1],['데이비드 베드너','R','RP',76,66,40,156,1],['조시 헤이더','L','RP',78,64,40,153,1],
+         ['캐드 스미스','R','RP',78,70,40,154,1],['그리핀 잭스','R','RP',76,66,40,156,1]]},
+  dom:{h:[['후안 소토','LF','L',76,84,94,50,50,55,1],['블라디미르 게레로 주니어','1B','R',80,80,74,40,50,55,1],['페르난도 타티스 주니어','RF','R',68,80,66,70,70,80,1],
+         ['매니 마차도','3B','R',68,76,64,44,66,72,1],['훌리오 로드리게스','CF','R',66,76,56,76,72,70,1],['케텔 마르테','2B','S',74,74,72,50,58,60,1],
+         ['엘리 데 라 크루스','SS','S',60,74,56,90,66,84,1],['주니어 카미네로','3B','R',64,82,56,50,58,66,1],['라파엘 데버스','DH','L',64,82,70,40,40,55,1],
+         ['오닐 크루스','CF','L',56,86,56,72,60,80,1],['헤레미 페냐','SS','R',70,60,56,66,74,70,1],['아구스틴 라미레스','C','R',58,74,58,58,48,55,1],
+         ['테오스카 에르난데스','RF','R',64,76,56,48,50,64,1]],
+       p:[['크리스토퍼 산체스','L','SP',80,76,68,152,1],['샌디 알칸타라','R','SP',78,70,70,158,1],['프람베르 발데스','L','SP',76,68,70,152,1],
+         ['루이스 카스티요','R','SP',74,70,66,153,1],['카밀로 도발','R','RP',78,58,40,159,1],['펠릭스 바티스타','R','RP',88,60,40,162,1],
+         ['그레고리 소토','L','RP',74,54,40,156,1],['데니스 산타나','R','RP',70,64,40,153,1]]},
+  ven:{h:[['로널드 아쿠냐 주니어','RF','R',72,82,72,86,62,70,1],['호세 알투베','2B','R',72,64,64,55,55,55,1],['루이스 아라에스','1B','L',86,40,64,46,46,48,1],
+         ['살바도르 페레스','C','R',62,76,44,30,60,66,1],['윌리엄 콘트레라스','C','R',68,66,68,40,56,62,1],['에우헤니오 수아레스','3B','R',58,84,60,40,60,66,1],
+         ['잭슨 추리오','CF','R',66,72,52,76,66,64,1],['글레이버 토레스','2B','R',68,66,68,45,56,58,1],['안드레스 히메네스','SS','L',60,52,58,66,88,72,1],
+         ['윌리어 아브레우','RF','L',60,72,60,60,64,74,1],['에세키엘 토바르','SS','R',64,64,48,56,76,72,1]],
+       p:[['파블로 로페스','R','SP',74,74,70,150,1],['레인저 수아레스','L','SP',72,76,70,146,1],['헤수스 루사르도','L','SP',78,62,60,156,1],
+         ['호세 부토','R','SP',72,64,62,152,1],['에두아르도 로드리게스','L','SP',68,68,64,147,1],['로베르트 수아레스','R','RP',80,70,40,158,1]]},
+  pur:{h:[['프란시스코 린도어','SS','S',70,76,64,66,72,70,1],['카를로스 코레아','SS','R',66,66,68,42,66,72,1],['하비에르 바에스','2B','R',56,64,36,58,66,72,1],
+         ['엔리케 에르난데스','LF','R',58,62,58,48,64,60,1],['에디 로사리오','LF','L',60,64,46,50,54,58,1],['크리스티안 바스케스','C','R',52,44,50,36,68,70,1],
+         ['엠마누엘 리베라','3B','R',58,58,50,40,60,62,1],['넬슨 벨라스케스','RF','R',56,68,48,52,56,62,1]],
+       p:[['호세 베리오스','R','SP',72,70,72,150,1],['세스 루고','R','SP',72,76,68,148,1],['에드윈 디아스','R','RP',88,62,40,159,1],
+         ['알렉시스 디아스','R','RP',76,58,40,154,1]]},
+  mex:{h:[['랜디 아로사레나','LF','R',64,70,64,66,58,62,1],['알레한드로 커크','C','R',72,58,74,30,60,60,1],['아이작 파레데스','3B','R',64,70,72,36,60,58,1],
+         ['조나단 아란다','1B','L',70,62,66,40,48,50,1],['재런 듀란','CF','L',70,68,58,78,62,60,1],['알렉 토머스','CF','L',58,52,52,70,72,62,1],
+         ['조이 메네세스','1B','R',62,60,50,36,44,50,1],['라몬 우리아스','2B','R',60,54,56,44,62,60,1]],
+       p:[['타이후안 워커','R','SP',66,64,64,149,1],['하비에르 아사드','R','SP',64,66,64,148,1],['호세 우르키디','R','SP',64,68,60,149,1],
+         ['안드레스 무뇨스','R','RP',86,60,40,161,1],['조반니 가예고스','R','RP',70,66,40,150,1]]},
+  tpe:{h:[['천제셴','LF','L',66,44,66,60,60,55,0],['린리','2B','R',60,58,58,52,60,58,0],['린안커','1B','L',58,62,56,40,48,50,0],['린자정','RF','L',56,56,58,50,56,60,0]],
+       p:[['린위민','L','SP',72,70,62,148,0],['구린루이양','R','SP',72,64,58,152,0],['쉬러시','R','SP',72,62,60,153,0],['장이','R','SP',66,64,60,149,0]]},
+};
+/* 메이저리그에서 뛰는 한국 선수 — WBC 에만 온다 */
+const NT_KOR_MLB={h:[['이정후','CF','L',76,60,70,60,66,62],['김하성','SS','R',62,58,64,66,74,70],['김혜성','2B','L',66,44,54,80,70,60],['송성문','3B','L',66,60,60,56,60,60]], p:[]};
+/* 대표팀 유니폼 — 모자 글자 하나 · 팀 색 · 원정 유색까지만(로고 없음) */
+const NT_UNI={
+  kor:{cap:'#0f2a6b', sh:'#ffffff', pants:'#f1f3f7', aw:'#0f2a6b', awp:'#e9ecf2', sub:'#c8102e', ltr:'K'},
+  jpn:{cap:'#101c44', sh:'#ffffff', pants:'#f1f3f7', aw:'#101c44', sub:'#c5a44e', ltr:'J'},
+  usa:{cap:'#0a2351', sh:'#ffffff', pants:'#f1f3f7', aw:'#0a2351', sub:'#b31942', ltr:'A'},
+  dom:{cap:'#002d62', sh:'#ffffff', pants:'#f1f3f7', aw:'#ce1126', sub:'#ce1126', ltr:'D'},
+  ven:{cap:'#7a1022', sh:'#ffffff', pants:'#f1f3f7', aw:'#7a1022', sub:'#f4c430', ltr:'V'},
+  pur:{cap:'#b3212e', sh:'#ffffff', pants:'#f1f3f7', aw:'#0050a0', sub:'#0050a0', ltr:'P'},
+  mex:{cap:'#0b6b3a', sh:'#ffffff', pants:'#f1f3f7', aw:'#0b6b3a', sub:'#c8102e', ltr:'M'},
+  tpe:{cap:'#123a8c', sh:'#ffffff', pants:'#f1f3f7', aw:'#123a8c', sub:'#c8102e', ltr:'T'},
+  cub:{cap:'#b3121c', sh:'#ffffff', pants:'#f1f3f7', aw:'#b3121c', sub:'#1a3a7a', ltr:'C'},
+  ned:{cap:'#e2711d', sh:'#ffffff', pants:'#f1f3f7', aw:'#e2711d', sub:'#1f3a93', ltr:'N'},
+  aus:{cap:'#0b5f3a', sh:'#ffffff', pants:'#f1f3f7', aw:'#0b5f3a', sub:'#f2c200', ltr:'A'},
+  isr:{cap:'#1f4fa0', sh:'#ffffff', pants:'#f1f3f7', aw:'#1f4fa0', sub:'#ffffff', ltr:'I'},
+  chn:{cap:'#b3121c', sh:'#ffffff', pants:'#f1f3f7', aw:'#b3121c', sub:'#f2c200', ltr:'C'},
+  hkg:{cap:'#b3121c', sh:'#ffffff', pants:'#f1f3f7', aw:'#b3121c', sub:'#ffffff', ltr:'H'},
+  tha:{cap:'#1d2f7a', sh:'#ffffff', pants:'#f1f3f7', aw:'#1d2f7a', sub:'#c8102e', ltr:'T'},
+  phi:{cap:'#0f3fa0', sh:'#ffffff', pants:'#f1f3f7', aw:'#0f3fa0', sub:'#c8102e', ltr:'P'},
+};
+function ntUni(key, away){
+  const d=NT_UNI[key]||{cap:(NT_COUNTRIES[key]||{}).cap||'#333', sh:'#ffffff', pants:'#f1f3f7', aw:(NT_COUNTRIES[key]||{}).cap||'#333', ltr:null};
+  const c=sdRgb(d.cap), A=!!away;
+  return {cap:d.cap, sh:A?d.aw:d.sh, pants:A?(d.awp||'#b9bec7'):d.pants,
+    st:'rgba('+c[0]+','+c[1]+','+c[2]+',.30)', gl:'#5b3a1e', ltr:d.ltr||null, lc:'#ffffff', pin:null,
+    trim:A?'#ffffff':null, pip:A?'#ffffff':(d.sub||null)};
+}
+/* 이 대회에 나오는 실제 선수 — WBC 만 메이저리거가 나온다. APBC(스물넷 아래)는 전부 지어낸다 */
+function ntRealOf(key, ev){
+  const R=NT_REAL[key]; if(!R||ev==='apbc') return {h:[],p:[]};
+  const ok=x=>(ev==='wbc')||!x[x.length-1];
+  return {h:R.h.filter(ok), p:R.p.filter(ok)};
+}
+function ntTeamForeign(key, rng, sOver, ev){
   const C0=NT_COUNTRIES[key], C=(sOver!=null)?Object.assign({},C0,{s:sOver}):C0;
-  const nm=()=>{ const s=C.sur[(rng()*C.sur.length)|0], g=C.giv[(rng()*C.giv.length)|0]; return g+' '+s; };
+  /* 같은 이름이 한 팀에 둘 나오면 중계가 헷갈린다(네덜란드에 「유리 피서르」 가 둘 있었다) — 겹치면 다시 뽑는다 */
+  const used=new Set();
+  const nm=()=>{ let n='', g0=0; do{ const s=C.sur[(rng()*C.sur.length)|0], g=C.giv[(rng()*C.giv.length)|0]; n=g+' '+s; }while(used.has(n)&&g0++<20); used.add(n); return n; };
   const r=(sp)=>clamp(Math.round(C.s+(rng()-0.5)*sp),15,90);
   const POS=['C','1B','2B','3B','SS','LF','CF','RF','1B','CF','SS','C','LF','2B'];
-  const players=POS.map((pos,i)=>({id:'nt_'+key+'_h'+i, name:nm(), no:1+((rng()*98)|0), bats:rng()<0.35?'L':'R',
-    con:r(20),pow:r(24),eye:r(20),spd:r(24),def:r(18),arm:r(18), pos:[pos], pitch:null, real:null, pro:true}));
-  const pitchers=Array.from({length:11},(_,i)=>({id:'nt_'+key+'_p'+i, name:nm(), no:10+((rng()*89)|0),
-    throws:rng()<0.3?'L':'R', role:i<4?'SP':'RP', stf:r(18), ctl:r(18), sta:i<4?r(10)+4:r(10)-8}));
+  const RL=ntRealOf(key, ev||null);
+  RL.h.concat(RL.p).forEach(x=>used.add(x[0]));
+  const players=RL.h.map((x,i)=>({id:'nt_'+key+'_r'+i, name:x[0], no:1+((clayHash(x[0])%98)), bats:x[2]==='S'?'L':x[2],
+    con:x[3],pow:x[4],eye:x[5],spd:x[6],def:x[7],arm:x[8], pos:[x[1]==='DH'?'1B':x[1]], pitch:null, real:true, pro:true}));
+  /* 모자란 자리는 지어낸 선수로 — 자리가 겹치지 않게 비어 있는 자리부터 */
+  const have=new Set(players.map(p=>p.pos[0]));
+  const need=POS.filter(p=>{ if(have.has(p)){ have.delete(p); return false; } return true; });
+  for(let i=0; players.length<14; i++){ const pos=need[i]||POS[i%POS.length];
+    players.push({id:'nt_'+key+'_h'+i, name:nm(), no:1+((rng()*98)|0), bats:rng()<0.35?'L':'R',
+      con:r(20),pow:r(24),eye:r(20),spd:r(24),def:r(18),arm:r(18), pos:[pos], pitch:null, real:null, pro:true}); }
+  const pitchers=RL.p.map((x,i)=>({id:'nt_'+key+'_rp'+i, name:x[0], no:10+(clayHash(x[0]+'p')%89), throws:x[1], role:x[2], stf:x[3], ctl:x[4], sta:x[5], kmh:x[6], real:true}));
+  for(let i=0; pitchers.length<11; i++){ const sp=pitchers.filter(q=>q.role==='SP').length<4;
+    pitchers.push({id:'nt_'+key+'_p'+i, name:nm(), no:10+((rng()*89)|0),
+      throws:rng()<0.3?'L':'R', role:sp?'SP':'RP', stf:r(18), ctl:r(18), sta:sp?r(10)+4:r(10)-8}); }
   const d=(C.s-50);
   const tend={k:clamp(1-d*0.006,0.85,1.15), bb:1, sb:1, babip:clamp(1+d*0.003,0.94,1.06), pow:clamp(1+d*0.01,0.8,1.25), err:clamp(1-d*0.008,0.85,1.2)};
   return finalizeTeam({id:'nt_'+key, name:C.name, ops:.720+d*0.004, avg:.260+d*0.002, tend, players, pitchers, cap:C.cap});
@@ -18212,63 +18323,205 @@ function ntQualifies(ev){
 }
 function ntTeamKor(ev){
   const P=ntPool(ev);
-  const players=P.hit.map(x=>x.p);
-  const pitchers=P.pit.map(x=>{ const q=x.p; return q.stf!=null?q:{id:q.id,name:q.name,no:q.no,stf:q.pitch.stf,ctl:q.pitch.ctl,sta:q.pitch.sta,role:'SP'}; });
-  /* 투수로 뽑힌 내가 타자 명단(players)에도 있어야 라인업·기록이 안 꼬인다 — 경기는 AI 가 짠다 */
+  let players=P.hit.map(x=>x.p);
+  let pitchers=P.pit.map(x=>{ const q=x.p; return q.stf!=null?q:{id:q.id,name:q.name,no:q.no,stf:q.pitch.stf,ctl:q.pitch.ctl,sta:q.pitch.sta,role:'SP'}; });
+  /* WBC — 메이저리거가 온다. 이정후 · 김하성 같은 실제 해외파, 그리고 이 게임에서 메이저로 간 사람(F.mlb).
+     그만큼 KBO 에서 뽑힌 제일 약한 사람이 빠진다(나는 안 빠진다) */
+  if(ev==='wbc'){
+    const me=ST.playerId||MYID, add=[], addP=[];
+    NT_KOR_MLB.h.forEach((x,i)=>add.push({id:'nt_kor_m'+i, name:x[0], no:1+(clayHash(x[0])%98), bats:x[2], con:x[3],pow:x[4],eye:x[5],spd:x[6],def:x[7],arm:x[8], pos:[x[1]], pitch:null, real:true, pro:true}));
+    try{ const F=pfState(), gone=(F.mlb||[]).map(z=>z.name);
+      /* 게임 안에서 메이저로 간 사람 — 떠날 때 남긴 스냅샷(F.moves)으로 다시 부른다 */
+      (F.moves||[]).forEach(m=>{ if(m.to!==null||!/메이저/.test(m.why||'')||!m.snap||gone.indexOf(m.snap.name)<0) return;
+        const s=Object.assign({}, m.snap, {id:'nt_kor_g_'+m.snap.id, farm:false});
+        if(add.concat(addP).some(q=>q.name===s.name)) return;
+        (pfIsPit(s)?addP:add).push(s); }); }catch(e){}
+    const cutH=players.filter(p=>p.id!==me).sort((a,b)=>pfValue(a)-pfValue(b)).slice(0,add.length).map(p=>p.id);
+    players=players.filter(p=>cutH.indexOf(p.id)<0).concat(add);
+    if(addP.length){ const cutP=pitchers.filter(p=>p.id!==me).sort((a,b)=>(a.stf+a.ctl)-(b.stf+b.ctl)).slice(0,addP.length).map(p=>p.id);
+      pitchers=pitchers.filter(p=>cutP.indexOf(p.id)<0).concat(addP.map(q=>({id:q.id,name:q.name,no:q.no,throws:q.throws,role:q.role||'SP',stf:q.stf,ctl:q.ctl,sta:q.sta,kmh:q.kmh}))); }
+  }
   const tend={k:0.97,bb:1.02,sb:1.05,babip:1.01,pow:1.04,err:0.95};
   return finalizeTeam({id:'nt_kor', name:'대한민국', ops:.760, avg:.275, tend, players, pitchers, cap:'#1a2f78'});
 }
-/* 대회 한 판 — 조별 셋 → 2승 이상이면 준결승 → 결승(이기면 금·지면 은), 준결승 지면 동메달 결정전 */
-function ntPlay(ev, year){
-  const E=NT_EVENTS[ev], me=ST.playerId||MYID;
+/* ---------- 대회 진행 — 한 경기씩 ----------
+   [요청 v3.67.0] "국대도 플레이할 수 있게 하자"
+   예전엔 「대회 나간다」 한 번에 대회가 통째로 끝났다(simGame). 이제 경기마다 고른다 —
+   **직접 뛴다**(본편 경기 화면 · 내 타석 · 내 공) 또는 **결과만 본다**.
+   진행 상태는 ST.pro.ntRun 에 둔다 — 중간에 꺼도 그 경기부터 다시 한다.
+   대진은 예전과 같다: 조별 셋 → 2승이면 준결승 → 결승(금 · 은) / 동메달 결정전 */
+function ntStart(ev, year){
+  if(ST.pro.ntRun && ST.pro.ntRun.year===year) return ST.pro.ntRun;
+  const E=NT_EVENTS[ev];
   const rng=makeRng(((ST.seed||1)*7349 + year*31)>>>0);
-  const kor=ntTeamKor(ev);
   const field=E.field.slice().sort((a,b)=>NT_COUNTRIES[b].s-NT_COUNTRIES[a].s);
-  const pickGroup=field.slice().sort(()=>rng()-0.5).slice(0,3);
-  const games=[], my={pa:0,ab:0,h:0,hr:0,rbi:0,bb:0,k:0,outs:0,er:0,pk:0};
-  const play=(oppKey, stage)=>{
-    const sEff=(E.soft&&E.soft[oppKey]!=null)?E.soft[oppKey]:NT_COUNTRIES[oppKey].s;
-    const opp=ntTeamForeign(oppKey, makeRng(((ST.seed||1)+year*97+oppKey.charCodeAt(0)*13+oppKey.charCodeAt(1)*7)>>>0), sEff);
-    const homeUs=(games.length%2===0);
-    const res=simGame(homeUs?kor:opp, homeUs?opp:kor, {rng, innings:9,
-      homeLineup:aiLineup(homeUs?kor:opp), homeRotation:aiRotation(homeUs?kor:opp),
-      awayLineup:aiLineup(homeUs?opp:kor), awayRotation:aiRotation(homeUs?opp:kor)});
-    const us=homeUs?res.home:res.away, th=homeUs?res.away:res.home;
-    /* 국제대회는 비기지 않는다 — 9회까지 같으면 승부치기(무사 1·2루) 한 점으로 가른다.
-       어느 쪽이 가져가나는 두 팀 강함 차이만큼 기운다 */
-    let tb=false;
-    if(us.runs===th.runs){ tb=true; const edge=0.5+(58-sEff)*0.012;
-      if(rng()<clamp(edge,0.2,0.8)) us.runs++; else th.runs++; }
-    const b=res.box&&res.box[me], q=res.pbox&&res.pbox[me];
-    if(b){ ['pa','ab','h','hr','rbi','bb','k'].forEach(k=>my[k]+=b[k]||0); }
-    if(q&&q.bf){ my.outs+=q.outs||0; my.er+=q.er||0; my.pk+=q.k||0; }
-    const won=us.runs>th.runs;
-    games.push({stage:stage+(tb?' (승부치기)':''), opp:NT_COUNTRIES[oppKey].name, us:us.runs, them:th.runs, won,
-      mine:b?((b.ab||0)+'타수 '+(b.h||0)+'안타'+(b.hr?' '+b.hr+'홈런':'')+(b.rbi?' '+b.rbi+'타점':'')):(q&&q.bf?('등판 '+ipStr(q)+'이닝 '+(q.er||0)+'자책'):'')});
-    return won;
-  };
-  let wins=0; pickGroup.forEach(k=>{ if(play(k,'조별')) wins++; });
+  const group=field.slice().sort(()=>rng()-0.5).slice(0,3);
+  return ST.pro.ntRun={ev, year, field, group, games:[], wins:0, semiOpp:null, lost:false, medal:null, done:false,
+    my:{pa:0,ab:0,h:0,hr:0,rbi:0,bb:0,k:0,outs:0,er:0,pk:0}};
+}
+/* 다음 경기 — 없으면 null(대회 끝) */
+function ntNext(R){
+  const n=R.games.length, gW=R.games.slice(0,3).filter(g=>g.won).length;
+  if(n<3) return {opp:R.group[n], stage:'조별 '+(n+1)+'차전'};
+  if(n===3){ if(gW<2) return null;
+    R.semiOpp=R.field.find(k=>!R.group.includes(k))||R.field[1]; return {opp:R.semiOpp, stage:'준결승'}; }
+  if(n===4){ const semiW=R.games[3].won;
+    if(semiW) return {opp:R.field.find(k=>k!==R.semiOpp)||R.field[0], stage:'결승'};
+    return {opp:R.field.slice().reverse().find(k=>k!==R.semiOpp)||R.field[R.field.length-1], stage:'동메달 결정전'}; }
+  return null;
+}
+function ntOpp(R, key){
+  const E=NT_EVENTS[R.ev], sEff=(E.soft&&E.soft[key]!=null)?E.soft[key]:NT_COUNTRIES[key].s;
+  return {sEff, team:ntTeamForeign(key, makeRng(((ST.seed||1)+R.year*97+key.charCodeAt(0)*13+key.charCodeAt(1)*7)>>>0), sEff, R.ev)};
+}
+/* 한 경기를 적는다 — 직접 뛰었든 굴렸든 같은 자리로 온다 */
+function ntRecord(R, nx, usRuns, themRuns, box, pbox, sEff, rng){
+  const me=ST.playerId||MYID;
+  /* 국제대회는 비기지 않는다 — 같으면 승부치기(무사 1·2루) 한 점으로 가른다. 두 팀 강함 차이만큼 기운다 */
+  let tb=false;
+  if(usRuns===themRuns){ tb=true; const edge=0.5+(58-sEff)*0.012;
+    if(rng()<clamp(edge,0.2,0.8)) usRuns++; else themRuns++; }
+  const b=box&&box[me], q=pbox&&pbox[me];
+  if(b){ ['pa','ab','h','hr','rbi','bb','k'].forEach(k=>R.my[k]+=b[k]||0); }
+  if(q&&q.bf){ R.my.outs+=q.outs||0; R.my.er+=q.er||0; R.my.pk+=q.k||0; }
+  const won=usRuns>themRuns;
+  R.games.push({stage:nx.stage+(tb?' (승부치기)':''), opp:NT_COUNTRIES[nx.opp].name, us:usRuns, them:themRuns, won,
+    mine:b?((b.ab||0)+'타수 '+(b.h||0)+'안타'+(b.hr?' '+b.hr+'홈런':'')+(b.rbi?' '+b.rbi+'타점':'')):(q&&q.bf?('등판 '+ipStr(q)+'이닝 '+(q.er||0)+'자책'):''),
+    live:!!R._live});
+  R._live=false;
+  if(!ntNext(R)) ntFinish(R);
+}
+function ntSimOne(R){
+  const nx=ntNext(R); if(!nx) return null;
+  const kor=ntTeamKor(R.ev), O=ntOpp(R, nx.opp), opp=O.team;
+  const rng=makeRng(((ST.seed||1)*7349 + R.year*31 + R.games.length*977)>>>0);
+  const homeUs=(R.games.length%2===0);
+  const res=simGame(homeUs?kor:opp, homeUs?opp:kor, {rng, innings:9,
+    homeLineup:aiLineup(homeUs?kor:opp), homeRotation:aiRotation(homeUs?kor:opp),
+    awayLineup:aiLineup(homeUs?opp:kor), awayRotation:aiRotation(homeUs?opp:kor)});
+  const us=homeUs?res.home:res.away, th=homeUs?res.away:res.home;
+  ntRecord(R, nx, us.runs, th.runs, res.box, res.pbox, O.sEff, rng);
+  return R;
+}
+function ntFinish(R){
+  if(R.done) return ST.pro.nt&&ST.pro.nt[R.year];
+  const n=R.games.length;
   let medal=null;
-  if(wins>=2){
-    const semiOpp=field.find(k=>!pickGroup.includes(k))||field[1];
-    if(play(semiOpp,'준결승')){
-      const fin=field.find(k=>k!==semiOpp)||field[0];
-      medal=play(fin,'결승')?'gold':'silver';
-    } else {
-      const br=field.slice().reverse().find(k=>k!==semiOpp)||field[field.length-1];
-      medal=play(br,'동메달 결정전')?'bronze':null;
-    }
-  }
+  if(n>=5){ const last=R.games[4];
+    if(/결승/.test(last.stage)&&!/동메달/.test(last.stage)) medal=last.won?'gold':'silver';
+    else medal=last.won?'bronze':null; }
+  const E=NT_EVENTS[R.ev];
   /* 병역 특례 — [요청 v3.38.0] "올림픽은 동메달 이상, 아시안게임은 금메달, 나머지 국대는 없고"
      (실제 병역법 시행령 — 올림픽 3위 이상 · 아시안게임 1위. WBC · 프리미어12 · APBC 는 해당 없음) */
   try{ const M=mtState(); M.prog.star=(M.prog.star||0)+1; }catch(e){}         // 태극마크 — 「인기스타」
-  const rec={ev, name:E.name, year, games, medal, my, called:true,
-    exempt:!!((E.ag && medal==='gold') || (ev==='olympic' && !!medal))};
-  ST.pro.nt=ST.pro.nt||{}; ST.pro.nt[year]=rec;
-  if(rec.exempt) ST.pro.exempt=true;          // 병역 특례
+  const rec={ev:R.ev, name:E.name, year:R.year, games:R.games, medal, my:R.my, called:true,
+    exempt:!!((E.ag && medal==='gold') || (R.ev==='olympic' && !!medal))};
+  ST.pro.nt=ST.pro.nt||{}; ST.pro.nt[R.year]=rec;
+  if(rec.exempt) ST.pro.exempt=true;
   const h=ST.pro.history&&ST.pro.history[ST.pro.history.length-1];
-  if(h&&h.year===year) h.nt={name:E.name, medal};
+  if(h&&h.year===R.year) h.nt={name:E.name, medal};
+  R.done=true; delete ST.pro.ntRun;
   return rec;
+}
+/* 대회를 끝까지 굴린다 — 옛 호출(시즌 넘기기 · 테스트)은 이걸 쓴다. 치르던 대회가 있으면 거기서 잇는다 */
+function ntPlay(ev, year){
+  if(ST.pro.nt&&ST.pro.nt[year]) return ST.pro.nt[year];
+  const R=ntStart(ev, year);
+  let g=0; while(!R.done && g++<8) ntSimOne(R);
+  return ST.pro.nt[year];
+}
+/* ---- 직접 뛴다 — 2군 경기 진행(farmRunLive)을 그대로 탄다. 끝나는 자리만 다르다(ntLiveEnd) ---- */
+let NT_B=null, NT_PS0=null;
+function ntLiveStart(){
+  const R=ST.pro.ntRun; if(!R) return;
+  const nx=ntNext(R); if(!nx) return;
+  const me=ST.playerId||MYID;
+  const kor=ntTeamKor(R.ev), O=ntOpp(R, nx.opp), opp=O.team;
+  const rng=makeRng(((ST.seed||1)*7349 + R.year*31 + R.games.length*977)>>>0);
+  const homeUs=(R.games.length%2===0);
+  /* 내 자리 — 타순 셋째 안쪽, 고른 자리. 투수면 조별 첫 경기 · 준결승에 선발 */
+  const uLine=aiLineup(kor).slice();
+  const pitMe=(ST.role==='pit');
+  if(!pitMe){
+    let mi=uLine.findIndex(x=>x.id===me);
+    const want=ST.myPos||null;
+    if(mi<0){ uLine[uLine.length-1]={id:me, pos:want||uLine[uLine.length-1].pos}; mi=uLine.length-1; }
+    if(want){ const hd=uLine.findIndex(x=>x.pos===want); if(hd>=0&&hd!==mi) uLine[hd].pos=uLine[mi].pos; uLine[mi].pos=want; }
+    const k=uLine.findIndex(x=>x.id===me); if(k>3){ const row=uLine.splice(k,1)[0]; uLine.splice(3,0,row); }
+  }
+  let uRot=aiRotation(kor).slice();
+  if((ST.role==='pit'||ST.role==='two') && kor.pitchers.some(p=>p.id===me) && (R.games.length===0||R.games.length===3))
+    uRot=[me].concat(uRot.filter(x=>x!==me));
+  NT_B={R, nx, sEff:O.sEff, rng, homeUs};
+  R._live=true;
+  const c=$('#view'); c.innerHTML='';
+  const head=el('div','card');
+  head.innerHTML='<div class="hs-yr">'+R.year+' '+NT_EVENTS[R.ev].name+' · '+nx.stage+'</div>'+
+    '<div class="card-h">대한민국 vs '+NT_COUNTRIES[nx.opp].name+'</div>'+
+    '<div class="hs-kind">9이닝 · 비기면 승부치기</div>';
+  c.appendChild(head);
+  const st=el('div','stage'); st.id='stage'; c.appendChild(st);
+  const T={bat:'normal',run:'normal',hook:'normal'};
+  LIVE=new LiveGame({
+    away: homeUs?opp:kor, home: homeUs?kor:opp,
+    awayLineup: homeUs?aiLineup(opp):uLine, homeLineup: homeUs?uLine:aiLineup(opp),
+    awayRotation: homeUs?aiRotation(opp):uRot, homeRotation: homeUs?uRot:aiRotation(opp),
+    awayTactics:T, homeTactics:T, awayCond:{}, homeCond:{},
+    userIsHome:homeUs, myId:me, rng, innings:9,
+    park:{hr:1.00,d2:1.00,d3:1.00,err:0.95,babip:1.00},
+  });
+  /* 유니폼 — 대표팀 색으로 갈아입는다. 경기가 끝나면 되돌린다 */
+  LIVE._ntUni={us:ntUni('kor', !homeUs), them:ntUni(nx.opp, homeUs)};
+  NT_PS0={us:Object.assign({},PS_UNI.us), them:Object.assign({},PS_UNI.them)};
+  Object.assign(PS_UNI.us, LIVE._ntUni.us); Object.assign(PS_UNI.them, LIVE._ntUni.them);
+  LIVE.manual=true; LIVE._farm=true; LIVE._nt=true; LIVE._logSeen=0;
+  buildLiveStage();
+  flushLog(); updateLiveUI();
+  farmRunLive();
+}
+function ntUniRestore(){
+  if(NT_PS0){ Object.keys(PS_UNI.us).forEach(k=>delete PS_UNI.us[k]); Object.assign(PS_UNI.us, NT_PS0.us);
+    Object.keys(PS_UNI.them).forEach(k=>delete PS_UNI.them[k]); Object.assign(PS_UNI.them, NT_PS0.them); NT_PS0=null; }
+}
+function ntLiveEnd(){
+  clearInterval(playTimer);
+  if(!LIVE||!NT_B){ ntUniRestore(); LIVE=null; renderNT(); return; }
+  LIVE.finish();
+  const res=LIVE.result, B=NT_B;
+  const usS=LIVE.userIsHome?LIVE.home:LIVE.away, thS=LIVE.userIsHome?LIVE.away:LIVE.home;
+  ntRecord(B.R, B.nx, usS.runs, thS.runs, res.box, res.pbox, B.sEff, B.rng);
+  ntUniRestore();
+  LIVE=null; NT_B=null;
+  saveGame(true);
+  renderNT();
+}
+/* 대회 화면 — 대진 · 지난 경기 · 다음 경기(직접 뛴다 / 결과만 본다) */
+function renderNT(){
+  const c=$('#view'); c.innerHTML='';
+  const R=ST.pro.ntRun;
+  const rec0=ST.pro.history&&ST.pro.history[ST.pro.history.length-1];
+  const back=()=>{ try{ proSeasonScreen(rec0, ST.pro.lastPost); }catch(e){ go('home'); } };
+  if(!R){ back(); return; }
+  const E=NT_EVENTS[R.ev];
+  const card=el('div','card nt-card');
+  card.innerHTML='<div class="card-h">🇰🇷 '+R.year+' '+E.name+'</div>'+
+    '<p class="muted">조별 '+R.group.map(k=>NT_COUNTRIES[k].name).join(' · ')+' — 2승이면 준결승'+(R.ev==='wbc'?' · <b>메이저리거가 온다</b>':'')+'</p>'+
+    (R.games.length?R.games.map(g=>'<div class="nt-g '+(g.won?'w':'l')+'"><b>'+g.stage+'</b> 대한민국 '+g.us+' : '+g.them+' '+g.opp+
+      (g.mine?' <i>'+g.mine+'</i>':'')+(g.live?' <em class="nt-live">직접</em>':'')+'</div>').join(''):'');
+  c.appendChild(card);
+  const nx=ntNext(R);
+  if(!nx){ ntFinish(R); saveGame(true); back(); return; }
+  const O=ntOpp(R, nx.opp), opp=O.team;
+  const nc=el('div','card');
+  const stars=opp.players.filter(p=>p.real).slice(0,4).map(p=>p.name).concat(opp.pitchers.filter(q=>q.real).slice(0,2).map(q=>q.name));
+  nc.innerHTML='<div class="card-h">다음 — '+nx.stage+' · '+NT_COUNTRIES[nx.opp].name+'</div>'+
+    (stars.length?'<p class="muted">상대 — '+stars.join(' · ')+'</p>':'<p class="muted">상대 전력 '+O.sEff+'</p>');
+  const go1=el('button','btn primary','직접 뛴다 ▸');
+  go1.onclick=()=>ntLiveStart();
+  const sim=el('button','btn','결과만 본다');
+  sim.onclick=async()=>{ ntSimOne(R); await saveGame(true); renderNT(); };
+  nc.appendChild(go1); nc.appendChild(sim);
+  c.appendChild(nc);
 }
 const NT_MEDAL={gold:'🥇 금메달', silver:'🥈 은메달', bronze:'🥉 동메달'};
 /* 시즌 끝 화면에 붙는 카드 */
@@ -18288,6 +18541,14 @@ function ntCard(c, rec){
       (R.exempt?'<p class="nt-ex"><b>병역 특례.</b> 군대 걱정 없이 다음 시즌을 맞는다.</p>':'');
     c.appendChild(card); return R;
   }
+  /* 치르던 대회 — 이어서 */
+  if(ST.pro.ntRun && ST.pro.ntRun.year===rec.year){
+    const R=ST.pro.ntRun;
+    card.innerHTML='<div class="card-h">국가대표 · '+E.name+' — 치르는 중</div>'+
+      '<p class="muted">'+R.games.length+'경기 치렀다 · '+R.games.map(g=>(g.won?'승':'패')).join(' ')+'</p>';
+    const b0=el('button','btn primary','대회로 ▸'); b0.onclick=()=>renderNT(); card.appendChild(b0);
+    c.appendChild(card); return 'pending';
+  }
   const called=ntQualifies(ev);
   if(!called){
     card.innerHTML='<div class="card-h">국가대표 · '+E.name+' 명단 발표</div>'+
@@ -18296,9 +18557,12 @@ function ntCard(c, rec){
   }
   card.innerHTML='<div class="card-h">국가대표 발탁 — '+E.name+'</div>'+
     '<p class="nt-call">태극마크다. <b>'+nameOf(ST.playerId||MYID)+'</b> — 대표팀 명단에 이름이 올랐다.</p>'+
-    '<p class="muted">'+(milNeeds()?(E.ag?'금메달이면 병역 특례다. ':(ev==='olympic'?'동메달 이상이면 병역 특례다. ':'')):'')+'조별 세 경기 · 2승이면 준결승.</p>';
+    '<p class="muted">'+(milNeeds()?(E.ag?'금메달이면 병역 특례다. ':(ev==='olympic'?'동메달 이상이면 병역 특례다. ':'')):'')+'조별 세 경기 · 2승이면 준결승. <b>경기마다 직접 뛰거나 결과만 본다.</b>'+(ev==='wbc'?' 메이저리거가 온다.':'')+'</p>';
   const b=el('button','btn primary','대회 나간다 ▸');
-  b.onclick=()=>{ ntPlay(ev, rec.year); saveGame(true); proSeasonScreen(rec, ST.pro.lastPost); };
+  b.onclick=()=>{ ntStart(ev, rec.year); saveGame(true); renderNT(); };
+  const b2=el('button','btn','한 번에 다 굴린다');
+  b2.onclick=()=>{ ntPlay(ev, rec.year); saveGame(true); proSeasonScreen(rec, ST.pro.lastPost); };
+  card.appendChild(b2);
   card.appendChild(b);
   c.appendChild(card);
   return 'pending';
@@ -18492,17 +18756,34 @@ function pfFASal(pct, age){          // FA 한 해 몸값(만원) — 1억 ~ 26�
   const a=age>=34?0.6:(age>=32?0.8:1);
   return Math.round((10000+Math.pow(pct,3)*250000)*a/100)*100;
 }
-function pfCon(p, key){
+/* [v3.67.0] FA 연차 — 실제 FA 예정 해(그 시즌이 끝나면 FA). 나이에서 열아홉을 빼는 어림은
+   부상 · 군 복무로 1군 등록일수(145일)를 못 채운 해를 모른다.
+   [제보] "곽빈은 2년뒤가 fa일텐데" — 2018 입단, 2019~2020 팔꿈치 수술로 빠졌다.
+   2027 시즌 뒤 포스팅 자격(7시즌) · 2028 시즌 뒤 FA 다(기사로 확인했다) */
+const PF_FA_DUE={'dsn|곽빈':2028};
+/* 예비 FA 연봉 끌어올리기 — [제보] "보통 팀들이 이런 선수는 등급 올리려고 연봉협상 되게 강하게함"
+   FA 등급은 **최근 3년 평균 연봉** 순위다(A 구단 3위 · 리그 30위 안). 구단은 FA 3년 전부터 스타
+   연봉을 올려 A 등급을 만든다 — 그래야 데려가는 구단이 보상선수 + 200% 를 물어서 쉽게 못 데려간다.
+   toFA — 이번 시즌 포함 FA 까지 남은 시즌(0 = 이번 시즌이 끝나면 FA). 등급 56+(리그 상위 5%쯤)만 */
+function pfPreFAPush(toFA, mv, g){
+  if(g<56 || toFA<0 || toFA>2) return 0;
+  const tgt=({2:50000,1:70000,0:90000})[toFA];
+  return Math.round(Math.min(tgt, Math.max(mv, 30000))/100)*100;
+}
+function pfCon(p, key, yy){
   const F=pfState(), me=ST.playerId||MYID;
-  if(F.con[p.id]) return F.con[p.id];
-  if(p.id===me) return F.con[me]=pfMyStartCon();
-  const y=ST.pro.year, h=clayHash(String(p.id)), age=pfAge(p);
+  const past=(yy!=null && yy!==ST.pro.year);          // 3년 평균용 — 지난해 · 지지난해 몸값
+  if(!past && F.con[p.id]) return F.con[p.id];
+  if(p.id===me) return past?Object.assign({},pfCon(p,key)):(F.con[me]=pfMyStartCon());
+  const y=past?yy:ST.pro.year, h=clayHash(String(p.id)), age=pfAge(p)-(ST.pro.year-y);
   const fr=pfIsForeign(p, key);
   if(fr && PF_REAL_SAL[key+'|'+(p._orig||p.name)]) return {sal:PF_REAL_SAL[key+'|'+(p._orig||p.name)], type:'foreign', left:1, svc:0, fa:0, gen:true, real:true};
   if(fr) return {sal:fr==='아시아쿼터'?Math.min(28000,18000+(h%10)*1000):Math.round((70000+pfPct(p)*110000)/1000)*1000, type:'foreign', left:1, svc:0, fa:0, gen:true};
   if(p.rookie) return {sal:kboMinSal(y), type:'rookie', left:1, svc:Math.max(0,y-(p.draftYear||y)), fa:0, gen:true};
   if(p.farm && age<=24) return {sal:kboMinSal(y)+(h%6)*500, type:'annual', left:1, svc:Math.max(0,age-19), fa:0, gen:true};
-  const svc=Math.max(0,age-19), pct=pfPct(p);
+  let svc=Math.max(0,age-19); const pct=pfPct(p);
+  { const due=PF_FA_DUE[key+'|'+(p._orig||p.name)]; if(due) svc=Math.max(0,7-(due-y)); }
+  const gP=pfGrade(p), toFA=7-svc;
   /* [v3.62.0] 실제 2026 연봉 — PF_REAL_SAL(타자 · 투수 연봉 상위 각 100명쯤, 가명 키). 여기 없는 사람은
      상위 100 밖이라는 뜻이니 타자 1.1억 · 투수 1.4억을 넘지 않게 한다 */
   { const LG=PF_REAL_LONG[key+'|'+(p._orig||p.name)];
@@ -18518,7 +18799,12 @@ function pfCon(p, key){
     const E=PF_REAL_END[key+'|'+(p._orig||p.name)]||(FA?2026+FA.y-1:0);
     if(E) return {sal:RS, type:'fa', left:Math.max(0,E-y+1), svc, fa:1, gen:true, real:true};
     if(RS>=50000 && svc>=8) return {sal:RS, type:'fa', left:Math.max(0,1+(h%4)-(y-2027)), svc, fa:1+(age>=33?1:0), gen:true, real:true};
-    return {sal:RS, type:'annual', left:1, svc, fa:0, gen:true, real:true};
+    /* [v3.67.0] 비FA 연봉도 해마다 오른다 — 예전엔 2026 실제 연봉에 영원히 묶여 있었다(곽빈 3억 500만 그대로).
+       잘하는 사람일수록 가파르게(등급 60 이면 한 해 +30%), 시장 몸값의 90% 까지 */
+    const n=Math.max(0,y-2026), gr=clamp((gP-48)*0.025,0,0.30);
+    let s1=Math.round(Math.min(RS*Math.pow(1+gr,n), Math.max(RS, pfSalFair(p)*0.9))/100)*100;
+    s1=Math.max(s1, pfPreFAPush(toFA, pfSalFair(p), gP));
+    return {sal:s1, type:'annual', left:1, svc, fa:0, gen:true, real:true};
   }
   { const FA=PF_REAL_FA[key+'|'+(p._orig||p.name)];
     if(FA && !fr) return {sal:Math.round(FA.tot/FA.y*10000/100)*100, type:'fa', left:Math.max(0,2026+FA.y-y), svc, fa:1, gen:true, real:true}; }
@@ -18542,7 +18828,17 @@ function pfCon(p, key){
   const min=kboMinSal(y), share=clamp(0.05+Math.min(svc,8)*0.05, 0.05, 0.45);
   const floor=svc>=8?8000:(svc>=5?5000:min);
   const sal=Math.round(clamp(min+(mv-min)*share, floor, 80000)/100)*100;
-  return {sal:(y<=2027?Math.min(sal,topCap):sal), type:'annual', left:1, svc, fa:0, gen:true};
+  const s2=Math.max(y<=2027?Math.min(sal,topCap):sal, pfPreFAPush(toFA, mv, gP));
+  return {sal:s2, type:'annual', left:1, svc, fa:0, gen:true};
+}
+/* 최근 3년 평균 연봉 — FA 등급 산정 기준(KBO 규정). 저장된 계약은 hist(지난 연봉 둘)를 쓰고,
+   아니면 그해 식으로 지난해 · 지지난해를 다시 뽑는다(2026 이 첫 해) */
+function pfSalAvg3(p, key){
+  const F=pfState(), c=pfCon(p,key), y=ST.pro.year;
+  const a=[c.sal];
+  if(F.con[p.id]) (c.hist||[]).slice(-2).forEach(v=>a.push(v));
+  else for(let k=1;k<=2 && y-k>=2026;k++) a.push(pfCon(p,key,y-k).sal);
+  return a.reduce((x,v)=>x+v,0)/a.length;
 }
 /* 2026 실제 연봉(만원) — 사용자가 연봉 순위표(타자 · 투수 상위 약 100명씩, KBO 공시 기준)를 붙여 줬다.
    구단 + 이름으로 우리 명단과 맞췄다(v3.63.0 부터 키도 실명).
@@ -18787,7 +19083,13 @@ const PF_REAL_END={'dsn|양의지':2028, 'hh|류현진':2031, 'ssg|최정':2028,
 /* [버그 이력 v3.40.0] ST.pro.round 는 없다(proEnter 는 ST.pro.draft 에 둔다) — 누구든 5라운드 5순위 계약금이 찍혔다 */
 function pfMyStartCon(){ const D=ST.pro.draft||{};
   return {sal:kboMinSal(ST.pro.year), type:'rookie', left:1, svc:0, fa:0, bonus:(D.bonus!=null?D.bonus:pfBonusOf(D.round||5, D.pick||5))}; }
-function pfSetCon(id, c){ const F=pfState(); const o=Object.assign({},c); delete o.gen; F.con[id]=o; return o; }
+function pfSetCon(id, c){ const F=pfState(); const o=Object.assign({},c); delete o.gen;
+  /* 지난 연봉 둘을 남긴다 — FA 등급(최근 3년 평균)용 */
+  const prev=F.con[id];
+  let h0=prev?(prev.hist||[]).concat([prev.sal]):null;
+  if(!h0){ try{ const f=pfFind(id); if(f){ const g=pfCon(f.p, proKeyOf(f.t.id)); h0=[g.sal]; } }catch(e){} }
+  if(h0 && !(prev && prev.sal===o.sal && prev===c)) o.hist=h0.filter(v=>v!=null).slice(-2);
+  F.con[id]=o; return o; }
 /* 신인 계약금(만원) — 1R 1순위 5억 · 1R 1.5~3.5억 · 2R 1억 안팎 · 뒤로 갈수록 3천까지 */
 /* 괴물 신인 계약금 — 잠재 86 → 5억 · 90 → 10억.
    [요청 v3.40.0] "역대급 신인 보면 계약금 최소 15억 이런 소리도" 로 10~15억을 줬다가
@@ -18900,10 +19202,13 @@ function pfRenewals(){
     if(p.farm) pct=Math.min(pct,0.05);
     /* 등급보다 한참 많이 받던 사람은 깎인다 · 올라도 등급 몸값의 1.3배까지 */
     const fair=pfSalFair(p); if(c.sal>fair*1.6) pct=Math.min(pct,-0.15);
-    const nw=Math.max(kboMinSal(y+1), Math.min(Math.round(c.sal*(1+pct)/100)*100, Math.max(c.sal, Math.round(fair*1.3/100)*100)));
+    let nw=Math.max(kboMinSal(y+1), Math.min(Math.round(c.sal*(1+pct)/100)*100, Math.max(c.sal, Math.round(fair*1.3/100)*100)));
+    /* 예비 FA — 등급을 올려 둔다(다른 구단이 쉽게 못 데려가게). 내년이 FA 2년 전 · 1년 전 · FA 해 */
+    const push=pfPreFAPush(7-(c.svc+1), fair, pfGrade(p)), pushed=push>nw;
+    if(pushed) nw=push;
     /* 명성이 기대치를 만든다 — 명성 80 이면 20% 는 올려 주길 바란다. 10%p 넘게 모자라면 서운하다 */
     const want=Math.max(0,(pfRep(p)-40)/200), upset=(pct<want-0.10);
-    list.push({id:p.id, name:p.name, old:c.sal, sal:nw, txt:s.txt+(p.farm?' · 시즌 끝 2군':''), pct, want, upset, rep:pfRep(p)});
+    list.push({id:p.id, name:p.name, old:c.sal, sal:nw, txt:s.txt+(p.farm?' · 시즌 끝 2군':'')+(pushed?' · 예비 FA — 등급 관리로 크게 올렸다':''), pct:pushed?(nw/Math.max(1,c.sal)-1):pct, want, upset:pushed?false:upset, rep:pfRep(p)});
   });
   F.renew={year:y, list, done:false};
   return F.renew;
@@ -18927,23 +19232,30 @@ function pfRenewSign(){
    두 번씩 다시 셌다 — [제보 v3.66.0] "시즌 마무리에 렉걸린다" 의 범인이다. 재 보니 FA 시장 여는 데 14.7초.
    한 번 만들어서 넘긴다 */
 function pfSalTable(){
-  const team={}, all=[];
+  const team={}, all=[], by={};
   TEAMS.forEach(tt=>{ const k=proKeyOf(tt.id), a=[];
-    pfAll(tt).forEach(q=>{ const cc=pfCon(q,k); if(cc.type!=='foreign'){ a.push(cc.sal); all.push(cc.sal); } });
+    pfAll(tt).forEach(q=>{ const cc=pfCon(q,k); if(cc.type!=='foreign'){ const v=pfSalAvg3(q,k); by[q.id]=v; a.push(v); all.push(v); } });
     team[tt.id]=a; });
-  return {team, all};
+  return {team, all, by};
 }
+/* FA 등급 — [v3.67.0] KBO 규정 그대로 (2021~, 기사로 다시 확인했다)
+     · 신규 FA — 최근 3년 평균 연봉이 구단 3위 · 리그 30위 안 A, 구단 10위 · 리그 60위 안 B, 아니면 C
+       만 35세 이상 신규 FA 는 연봉과 상관없이 C
+     · 두 번째(재자격) — 첫 FA 때 A · B 였으면 B, C 였으면 C
+     · 세 번째부터 C
+   [제보] "연봉 순위도 맞는데 나이로 따져야지" */
 function pfFAGrade(p, t, c, ST0){
   const age=pfAge(p);
-  if(c.fa===0 && age>=35) return 'C';
-  const sal=c.sal;
+  if((c.fa||0)>=2) return 'C';
+  if((c.fa||0)===1) return c.fg==='C'?'C':'B';
+  if(age>=35) return 'C';
+  const S0=ST0||pfSalTable();
+  const sal=(S0.by&&S0.by[p.id]!=null)?S0.by[p.id]:pfSalAvg3(p,proKeyOf(t.id));
   /* 등급 산정 연봉 순위에서 외국인은 뺀다 — 구단 안에서도 리그 전체에서도 */
-  const S=ST0||pfSalTable();
+  const S=S0;
   const teamRank=(S.team[t.id]||[]).filter(x=>x>sal).length+1;
   const lg=S.all.filter(x=>x>sal).length+1;
-  let g=(teamRank<=3&&lg<=30)?'A':((teamRank<=10&&lg<=60)?'B':'C');
-  if(c.fa>=1 && g==='A') g='B';            // 재자격 — 게임 단순화
-  return g;
+  return (teamRank<=3&&lg<=30)?'A':((teamRank<=10&&lg<=60)?'B':'C');
 }
 function pfFAOpen(){
   const F=pfState(), y=ST.pro.year, me=ST.playerId||MYID;
@@ -19013,7 +19325,10 @@ function pfFAComp(x, toKey){
   return pl?{money:x.last, player:pl}:{money:x.last*2, player:null};
 }
 function pfSignCon(id, x){
-  pfSetCon(id, {sal:Math.round(x.total*0.65/x.yrs/100)*100, type:'fa', left:x.yrs, svc:(x.age-19), fa:1+((pfCon({id},x.from).fa)||0), bonus:Math.round(x.total*0.35)});
+  const f=pfFind(id), c0=f?pfCon(f.p, proKeyOf(f.t.id)):{};
+  /* 첫 FA 때 받은 등급을 남긴다 — 재자격 등급(B/C)이 이걸 본다 */
+  pfSetCon(id, {sal:Math.round(x.total*0.65/x.yrs/100)*100, type:'fa', left:x.yrs, svc:(x.age-19), fa:1+(c0.fa||0),
+    fg:(c0.fa||0)===0?x.grade:(c0.fg||x.grade), bonus:Math.round(x.total*0.35)});
 }
 /* [제보 v3.66.0] "돈 있다고 이렇게 쉽게 프렌차이즈들 mlb갈만한 선수들이 쉽게 사지는게 많냐?"
    맞다. AI 끼리는 원 소속 구단이 먼저 잡는데(pfFAClose), **우리가 부르면 돈만 있으면 무조건** 왔다.
@@ -19737,7 +20052,7 @@ function pfPostRun(){
       const g=pfGrade(p), age=pfAge(p), c=pfCon(p,key);
       /* [v3.66.0] 기준이 등급 72 였는데 리그 최고가 67 이라(재 봤다) **아무도 메이저에 안 갔다.**
          안우진 · 김도영 · 문동주 같은 애들이 KBO 에 눌러앉아 FA 로 팔려 다녔다. 등급 60(리그 상위 1%쯤)으로 */
-      if(g<60||age<24||age>31||(c.svc||0)<7||!pfMilServed(p)) return;
+      if(g<60||age<24||age>31||((c.svc||0)+(c.gen?1:0))<7||!pfMilServed(p)) return;   // 이번 시즌까지 7시즌
       if(rng()>=0.35) return;
       const ok=rng()<clamp(0.40+(g-60)*0.07,0.40,0.9);
       if(!ok){ proNews('포스팅', proName(key)+' '+p.name+', 메이저 도전했지만 응찰 없어 잔류', '「아쉽지만 여기서 더 증명하겠다」.'); return; }
@@ -20820,7 +21135,7 @@ function renderProFA(rec){
   const F=pfState(), fa=pfFAOpen();
   const hd=el('div','card');
   hd.innerHTML='<div class="card-h">FA 시장 · 금고 '+F.cash.toFixed(1)+'억</div>'+
-    '<p class="muted">등급은 직전 연봉 순위 — A 구단 3위·리그 30위 안 · B 구단 10위·리그 60위 안 · 만 35세 신규 FA 는 C.<br>'+
+    '<p class="muted">등급은 <b>최근 3년 평균 연봉</b> 순위 — A 구단 3위·리그 30위 안 · B 구단 10위·리그 60위 안 · 만 35세 이상 신규 FA 는 C. 재자격은 첫 FA 때 A·B 였으면 B, C 면 C · 세 번째부터 C.<br>'+
     '데려가면 원 소속 구단이 보상을 고른다 — A 직전 연봉 200% + 보상선수(우리 20인 보호 외) 또는 300% · B 100% + 보상선수(25인 외) 또는 200% · C 150%.<br>'+
     '계약금(총액 35%)은 바로 나가고 나머지는 해마다 연봉으로 나간다. 우리 FA 는 잔류 계약을 할 수 있다 — 떠나면 보상을 받는다.<br>'+
     '<b>돈만으론 안 된다.</b> 프랜차이즈 · 젊은 주전 · 이름난 선수는 원 소속 구단이 먼저 붙잡는다. 거절당하면 그 겨울엔 끝이다.</p>'+
@@ -24321,6 +24636,7 @@ function farmRunLive(){
   farmLiveEnd();
 }
 function farmLiveEnd(){
+  if(LIVE && LIVE._nt) return ntLiveEnd();          // 국가대표 — 끝나는 자리가 다르다
   clearInterval(playTimer);
   if(!LIVE||!FARM_B){ ST.farmPlaying=false; go('home'); return; }
   LIVE.finish();
@@ -38677,7 +38993,8 @@ function mvPaint(mound, o){
   mvSheetInit(); mvFigInit();
   g.setTransform(MVS,0,0,MVS,0,0);          // 논리 좌표(480x270) 로 그린다
   g.clearRect(0,0,MVW,MVH);
-  const home=isPro()?proUni(ST.pro.team, !proUsHome()):{cap:'#2f5fb0', sh:'#eef2f8', pants:'#dfe4ec', st:'rgba(47,95,176,.35)', gl:'#5b3a1e'};
+  const NTU=(typeof LIVE!=='undefined'&&LIVE&&LIVE._ntUni)||null;      // 국가대표 경기 — 대표팀 유니폼
+  const home=NTU?NTU.us:(isPro()?proUni(ST.pro.team, !proUsHome()):{cap:'#2f5fb0', sh:'#eef2f8', pants:'#dfe4ec', st:'rgba(47,95,176,.35)', gl:'#5b3a1e'});
   const away=mvOppUniform();
   const du=st.usDef?home:away, ou=st.usDef?away:home;
   const CAM=MV_CAMS[st.cam]||MV_CAMS.c;
@@ -38834,6 +39151,7 @@ function mvHexFromHue(h,s,v){
 }
 /* 이번 경기 상대의 유니폼. 경기 중이 아니면 예전 기본색(빨강) 을 쓴다 */
 function mvOppUniform(){
+  if(typeof LIVE!=='undefined'&&LIVE&&LIVE._ntUni) return LIVE._ntUni.them;     // 국가대표 — 상대국 유니폼
   /* 프로 — 상대 팀 진짜 색 */
   if(isPro()){
     try{ const sc=(ST.schedule||[])[ST.round]; const k=sc?proKeyOf(sc.opp):null;
@@ -39821,6 +40139,7 @@ function acpJoySize(v){
 function acpUnis(){
   let us={cap:'#2f5fb0', sh:'#eef2f8', pants:'#dfe4ec'}, them=PS_UNI.them;
   try{ if(isPro()) us=proUni(ST.pro.team, !proUsHome()); }catch(e){}
+  try{ if(typeof LIVE!=='undefined'&&LIVE&&LIVE._ntUni) us=LIVE._ntUni.us; }catch(e){}
   try{ them=mvOppUniform()||them; }catch(e){}
   return {us, them};
 }
