@@ -37,28 +37,28 @@ const J=s=>JSON.parse(ev('JSON.stringify('+s+')'));
   await wait(80);
 
   console.log('[감독 스타일]');
-  T('실제 감독(가명)이 붙어 있다', ()=>{ const a=ev("proMgrName('kt')"), b=ev("proMgrName('lg')"); return (a==='이강천'&&b==='염경업')?a+' · '+b:'!'+a+' / '+b; });
+  T('실제 감독(가명)이 붙어 있다', ()=>{ const a=ev("proMgrName('kt')"), b=ev("proMgrName('lg')"); return (a==='이강철'&&b==='염경엽')?a+' · '+b:'!'+a+' / '+b; });
   T('교체 성향이 감독에서 온다 — 마법사 일찍 · 거인 오래', ()=>{ const k=J("oppTactics(TBYID.p_kt)"), l=J("oppTactics(TBYID.p_lot)");
     return (k.hook==='quick'&&l.hook==='long')?'마법사 '+k.hook+' · 거인 '+l.hook:'!'+k.hook+' / '+l.hook; });
-  T('우리 팀 감독 칸이 실제 감독으로 시작한다', ()=>{ const m=J("stfState().mgr"); return m.name==='염경업'?m.name+' · '+m.style:'!'+m.name; });
+  T('우리 팀 감독 칸이 실제 감독으로 시작한다', ()=>{ const m=J("stfState().mgr"); return m.name==='염경엽'?m.name+' · '+m.style:'!'+m.name; });
   T('가상 감독은 가상이라고 적혀 있다', ()=>{ const v=J("['kia','ssg','kw'].map(k=>PRO_MGR_STYLE[k].src)"); return v.every(x=>x==='가상')?'셋 다':'!'+v.join(','); });
   T('현재 감독 계약이 실제대로다 — 쌍둥이 2028년까지 연 10억', ()=>{ const m=J("proMgrOf('lg')"); return (m.until===2028&&m.sal===10)?'2028 · 10억':'!'+m.until+' / '+m.sal; });
   T('2026 만료 계약은 2027 한 해 연장으로 시작한다', ()=>{ const u=J("['kt','lot','hh'].map(k=>proMgrOf(k).until)"); return u.every(x=>x===2027)?'셋 다 2027':'!'+u.join(','); });
-  T('재야의 감독이 열 명 넘게 있다', ()=>{ const L=J("pfMgrFreeList().map(m=>m.name)"); return (L.length>=10&&L.includes('이승연'))?L.length+'명 ('+L.slice(0,4).join(' · ')+' …)':'!'+L.join(','); });
+  T('재야의 감독이 열 명 넘게 있다', ()=>{ const L=J("pfMgrFreeList().map(m=>m.name)"); return (L.length>=10&&L.includes('이승엽'))?L.length+'명 ('+L.slice(0,4).join(' · ')+' …)':'!'+L.join(','); });
   T('우리 감독 후보가 재야에서 나온다', ()=>{ const L=J("stfMgrPool().list.map(m=>m.career)"); return L.some(x=>/전 .+ 감독|레전드/.test(x))?L.join(' / '):'!'+L.join(' / '); });
 
   console.log('\n[명성]');
   const reps=J(`(function(){ const L=[]; TEAMS.forEach(t=>pfAll(t).forEach(p=>L.push(pfRep(p)))); L.sort((a,b)=>a-b);
     return {n:L.length, med:L[L.length>>1], top:L[L.length-1], hi:L.filter(x=>x>=70).length}; })()`);
   T('명성이 퍼져 있다 — 가운데는 낮고 위는 드물다', ()=>(reps.med<40&&reps.hi>=5&&reps.hi<=80)?('가운데 '+reps.med+' · 70+ '+reps.hi+'명 · 최고 '+reps.top):'!'+JSON.stringify(reps));
-  T('태극마크 · 주전은 명성이 높다(곽반)', ()=>{ const r=ev("pfRep(pfAll(TBYID.p_dsn).find(p=>p.name==='곽반'))"); return r>=65?'명성 '+r:'!'+r; });
+  T('태극마크 · 주전은 명성이 높다(곽반)', ()=>{ const r=ev("pfRep(pfAll(TBYID.p_dsn).find(p=>p.name==='곽빈'))"); return r>=65?'명성 '+r:'!'+r; });
   T('1라운드 신인은 못해도 안고 간다', ()=>{ const r=J(`(function(){ const a={id:'t1',name:'가',con:30,pow:30,eye:30,spd:30,def:30,arm:30,pos:['SS'],age:20,ageYear:ST.pro.year,draftRound:1,draftPick:2,draftYear:ST.pro.year};
       const b=Object.assign({},a,{id:'t2',draftRound:9}); return [pfRelScore(a),pfRelScore(b)]; })()`);
     return r[0]>r[1]+10?('1R '+r[0].toFixed(0)+' > 9R '+r[1].toFixed(0)):'!'+r.join(' / '); });
 
   console.log('\n[트레이드 — 빡세게]');
   T('상대 스타(명성 70+)는 같은 값으론 안 내준다', ()=>{ const r=J(`(function(){ const F=pfState(); F.tradeRound=-99;
-      const star=pfAll(TBYID.p_dsn).find(p=>p.name==='곽반'); const ours=pfAll(TBYID.wwzw).filter(p=>p.id!=='ksh').sort((a,b)=>Math.abs(pfValue(a)-pfValue(star))-Math.abs(pfValue(b)-pfValue(star)))[0];
+      const star=pfAll(TBYID.p_dsn).find(p=>p.name==='곽빈'); const ours=pfAll(TBYID.wwzw).filter(p=>p.id!=='ksh').sort((a,b)=>Math.abs(pfValue(a)-pfValue(star))-Math.abs(pfValue(b)-pfValue(star)))[0];
       return pfTrade(ours.id, star.id); })()`); return !r.ok?(r.why||'거절'):'!받아 줬다'; });
 
   console.log('\n[열두 겨울]');
