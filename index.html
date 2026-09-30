@@ -9771,8 +9771,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.68.0';
-const APP_VERSION_NOTE = '프로 올스타전(드림 vs 나눔) · AI 비FA 다년계약 · 실제 예비 FA';
+const APP_VERSION = '3.69.0';
+const APP_VERSION_NOTE = '2차 드래프트 보호명단 · 등번호는 원래 달던 사람이 지킨다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9793,6 +9793,12 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.69.0', t:'2차 드래프트 보호명단 · 등번호는 원래 달던 사람이 지킨다', items:[
+    '<b>2차 드래프트</b> — 김도영 · 구자욱 · 노시환이 명단에 떴다. 보호 35명에서 1~3년차 · 외국인 수를 빼고 세는 바람에, 2군까지 60명이 넘는 팀은 보호가 0명이 됐다',
+    '이제 실제 규정처럼 제외 대상과 <b>따로 35명</b>을 묶는다. 풀리는 건 자리가 막힌 백업 · 2군 베테랑이다 — 원래 그런 선수들한테 기회를 주는 제도다',
+    'AI 구단은 어린 유망주의 남은 잠재까지 쳐서 묶는다. 우리 보호명단도 제외 대상과 따로 35명',
+    '<b>등번호</b> — 트레이드 · FA 로 온 선수가 등급이 높으면 원래 달던 선수 번호를 가져갔다(문동주 → 고영표). 이제 원래 달던 사람이 지키고 새로 온 사람이 바꾼다',
+  ]},
   {v:'3.68.0', t:'프로 올스타전(드림 vs 나눔) · AI 비FA 다년계약 · 실제 예비 FA', items:[
     '<b>프로 올스타전</b> — 7월 중순(86경기째) 홈에 「올스타 주간」 이 뜬다. <b>드림(삼성 · 롯데 · 두산 · SSG · KT) vs 나눔(LG · KIA · NC · 한화 · 키움)</b>, 9이닝 · 투수 1이닝씩',
     '올스타 명단 — 포지션별 베스트(포수 · 1루 · 2루 · 3루 · 유격 · 외야 셋 · 지명)에 감독 추천까지 야수 15 · 투수 11. 성적과 이름값(팬 투표)으로 뽑는다',
@@ -17579,7 +17585,15 @@ function pfDedupNos(keys){
   TEAMS.forEach(t=>{ if(!proKeyOf(t.id)) return; if(only && !only.has(proKeyOf(t.id))) return;
     const L=pfAll(t).filter(p=>p.no!=null);
     const rank=p=>(p.id===me?0:(NO[p.id]!=null?1:(p.farm?3:2)));
-    L.sort((a,b)=>rank(a)-rank(b) || pfGrade(b)-pfGrade(a) || String(a.id).localeCompare(String(b.id)));
+    /* [제보 v3.69.0] "문동주 고영표한테 등번호 뺏겼네" — 번호가 겹치면 등급 높은 쪽이 가져갔다.
+       실제로는 **원래 달던 사람이 지키고, 새로 온 사람이 바꾼다**(베테랑이 오면 협의해서 사 오기도 하지만 그건 드물다).
+       이 팀에 들어온 순서(F.moves 에서 이 팀으로 온 마지막 기록)로 줄 세운다. 기록이 없으면 원래 있던 사람 */
+    const key0=proKeyOf(t.id), arr={};
+    /* 같은 팀 안 1 · 2군 오르내림(from===to)은 들어온 게 아니다 */
+    try{ (pfState().moves||[]).forEach((m,i)=>{ if(m.to===key0&&m.from!==key0&&m.snap) arr[m.snap.id]=i+1; }); }catch(e){}
+    const came=p=>arr[p.id]||0;
+    const r0=p=>(p.id===me?0:(NO[p.id]!=null?1:2));
+    L.sort((a,b)=>r0(a)-r0(b) || came(a)-came(b) || rank(a)-rank(b) || pfGrade(b)-pfGrade(a) || String(a.id).localeCompare(String(b.id)));
     const used=new Set(), bump=[];
     /* 영구결번 — 게임 안에서 새로 건 번호를 누가 달고 있으면(그 뒤 입단한 사람) 비켜 준다. 나는 예외 */
     let RN=[]; try{ const F=pfState(); RN=(((F.retNos||{})[proKeyOf(t.id)])||[]).map(r=>+r.no); }catch(e){}
@@ -19664,13 +19678,18 @@ function pfD2Exempt(p, key){
   const fa=pfState().fa; if(fa&&fa.year===ST.pro.year&&fa.list.some(x=>x.id===p.id)) return true;
   return false;
 }
+/* [제보 v3.69.0] "2차 드랩 개혜자인데 (…) 너 2차 드래프트 모르지 그거 포지션 겹쳐서 1군 못들어가는 선수들을 위한 제도인데"
+   [버그 이력] 보호 35명에서 **제외 대상(1~3년차 · 외국인 · FA) 수를 빼고** 있었다. 2군까지 60명이 넘는 팀은
+   어린 선수만 35명이 넘어서 보호가 0명이 됐고, 김도영 · 구자욱 · 노시환이 명단에 떴다.
+   실제 규정은 제외 대상과 **따로** 35명을 묶는다. 풀리는 건 36번째부터 — 자리가 막힌 백업 · 2군 베테랑이다.
+   AI 구단은 지금 가치 + 어린 선수의 남은 잠재로 묶는다(유망주를 쉽게 안 푼다) */
+function pfD2ProtV(p){ return pfValue(p)+((pfAge(p)<=25&&p.pot)?Math.max(0,p.pot-pfGrade(p))*1.5:0); }
 function pfD2Pool(){
   const out=[];
   TEAMS.filter(t=>t.id!=='wwzw').forEach(t=>{
     const key=proKeyOf(t.id);
-    const all=pfAll(t).filter(p=>!pfD2Exempt(p,key)).sort((a,b)=>pfValue(b)-pfValue(a));
-    const exempt=pfAll(t).length-all.length;
-    all.slice(Math.max(0,PF_D2_PROTECT-exempt)).forEach(p=>out.push({p,t,v:pfValue(p),age:pfAge(p)}));
+    const all=pfAll(t).filter(p=>!pfD2Exempt(p,key)).sort((a,b)=>pfD2ProtV(b)-pfD2ProtV(a));
+    all.slice(PF_D2_PROTECT).forEach(p=>out.push({p,t,v:pfValue(p),age:pfAge(p)}));
   });
   return out.sort((a,b)=>b.v-a.v).slice(0,24);
 }
@@ -19684,8 +19703,13 @@ function pfD2Run(picks){
     const c=pfCon(f.p,proKeyOf(f.t.id));
     pfMove(f.p, proKeyOf(f.t.id), ST.pro.team, '2차 드래프트', '2군'); pfSetCon(id,c); got.push(f.p.name);
   });
-  const prot=pfProtected(PF_D2_PROTECT), us=TBYID.wwzw, rng=makeRng(((ST.seed||1)*313+y)>>>0);
-  const expo=pfAll(us).filter(p=>!prot.has(p.id)&&!pfD2Exempt(p,ST.pro.team)).sort((a,b)=>pfValue(b)-pfValue(a));
+  /* 우리 보호명단도 제외 대상과 따로 35명 — 내가 고른 사람(F.protect) 먼저, 모자라면 가치순 */
+  const us=TBYID.wwzw, rng=makeRng(((ST.seed||1)*313+y)>>>0), me0=ST.playerId||MYID;
+  const need=pfAll(us).filter(p=>p.id!==me0&&!pfD2Exempt(p,ST.pro.team)).sort((a,b)=>pfValue(b)-pfValue(a));
+  const mine=(Array.isArray(F.protect)?F.protect:[]).filter(id=>need.some(p=>p.id===id)).slice(0,PF_D2_PROTECT);
+  need.forEach(p=>{ if(mine.length<PF_D2_PROTECT && mine.indexOf(p.id)<0) mine.push(p.id); });
+  const prot=new Set(mine.concat([me0]));
+  const expo=need.filter(p=>!prot.has(p.id));
   PRO_TEAMS.map(d=>d.key).filter(k=>k!==ST.pro.team).forEach(k=>{
     if(lost.length>=4||!expo.length) return;
     if(rng()<0.25){ const p=expo.shift(); const c=pfCon(p,ST.pro.team);

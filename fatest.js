@@ -50,6 +50,15 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   T('AI 구단은 간판을 비FA 다년계약으로 묶는다(프랜차이즈 55% · 젊은 에이스 45%)', ()=>/비FA 다년계약/.test(ev("String(pfFAOpen)")) && /u<\(fr0\?0\.55:0\.45\)/.test(ev("String(pfFAOpen)")));
   T('AI 보호명단은 어린 유망주의 잠재까지 친다', ()=>/protV/.test(ev("String(pfCompPick)")));
 
+  console.log('\n[2차 드래프트 · 등번호 (v3.69.0)]');
+  T('2차 드래프트 — 보호 35명은 제외 대상과 따로, 스타는 명단에 없다', ()=>{ const n=ev("pfD2Pool().filter(function(x){return pfGrade(x.p)>=58;}).length");
+    const top=ev("(pfD2Pool()[0]||{p:{name:''}}).p.name"); return n===0 ? '맨 위가 '+top+' 급' : '!등급 58+ '+n+'명'; });
+  T('등번호 — 원래 달던 사람이 지키고 새로 온 사람이 바꾼다', ()=>{
+    const r=ev(`(function(){ var hh=TBYID[pfIdOf('hh')], kt=TBYID[pfIdOf('kt')]; var md=pfAll(hh).find(function(p){return p.name==='문동주';}), gy=pfAll(kt).find(function(p){return p.name==='고영표';});
+      if(!md||!gy) return 'skip'; var n0=md.no; gy.no=md.no; pfMove(gy,'kt','hh','트레이드');
+      var a=pfAll(hh).find(function(p){return p.name==='문동주';}).no, b=pfAll(hh).find(function(p){return p.name==='고영표';}).no; return (a===n0&&b!==n0)?'문동주 '+a+' 그대로 · 고영표 '+b:'!'+a+'/'+b; })()`);
+    return r; });
+
   console.log('\n[메이저]');
   T('포스팅 기준 등급 60 (리그 최고가 67)', ()=>/if\(g<60\|\|age<24/.test(ev("String(pfPostRun)")) && ev("Math.max.apply(null,TEAMS.map(function(t){return Math.max.apply(null,pfAll(t).map(pfGrade));}))")>=60);
   ev("pfState().cash=900");
