@@ -214,7 +214,8 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   T('타석에서 livePlay 한 판만 튼다', ()=>ev(
     "typeof livePlay==='function' && /livePlay\\(stage/.test(renderSwing.toString())"));
   T('묻는 창이 없다 — 송구 순간에 몸으로 갈린다', ()=>ev(
-    "/if\\(t>=T_THROW\\) decide\\(\\)/.test(livePlay.toString()) && /onDecide/.test(livePlay.toString())"));
+    /* [v3.65.0] 앞 주자 판정(decideAdv)이 같은 순간 먼저 돈다 — 글자가 아니라 뜻을 잰다 */
+    "/if\\(t>=T_THROW\\)\\{? ?(decideAdv\\(\\); )?decide\\(\\)/.test(livePlay.toString()) && /onDecide/.test(livePlay.toString())"));
   /* [v3.25.0] 예전 검사는 `1-seg(goAt…)` 라는 **글자**를 찾았다 — 그 식이
      거꾸로(일찍 누를수록 위험)였는데 검사가 그걸 붙잡아두고 있었다.
      이제 위험은 seg(goAt…) 그대로다: 늦게 누를수록 커진다.          */

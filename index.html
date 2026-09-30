@@ -2252,6 +2252,12 @@ html.land #view.hs-pickv .hs-opt{padding:8px 10px}
    가운데(마운드 자리)는 「안 던진다」 가 쓴다.
    [높이] 송구 단계에서는 조이스틱이 숨으니(112px) 늘어나는 만큼 상쇄된다. */
 .baserow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin:10px 0 2px}
+/* 전체 진루 · 전체 귀루 [v3.65.0] — 주자별 버튼은 둘째 줄 */
+.advrow{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:8px 0 2px}
+.advrow .adv-b{padding:9px 3px}
+.advrow .adv-b span{font-size:13px}
+.advrow .adv-one.on{outline:2px solid #7fc48f}
+.advrow .adv-one.hold{outline:2px solid #e08a70}
 .baserow .base-b{padding:9px 3px}
 .baserow .base-b span{font-size:14px}
 .baserow .base-b[data-b="2"]{grid-column:2;grid-row:1}
@@ -9764,8 +9770,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.64.0';
-const APP_VERSION_NOTE = '선수 카드 · 별 · 1군 28명 · 투구수 교체 · 특훈 조정 · 내 체격 · 트레이드 마감';
+const APP_VERSION = '3.65.0';
+const APP_VERSION_NOTE = '전체 진루 · 전체 귀루 — 안타 치고 앞 주자도 내가 보낸다';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9786,6 +9792,15 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.65.0', t:'전체 진루 · 전체 귀루 — 안타 치고 앞 주자도 내가 보낸다', items:[
+    '<b>내 타석에서 안타를 치면 앞 주자도 내가 정한다.</b> 1루타면 한 베이스, 2루타면 두 베이스까지는 무조건 가고, 한 베이스 더는 버튼으로 — 「◂ 전체 귀루」 「▸ 전체 진루」',
+    '주자가 둘 이상이면 <b>주자별 버튼</b>도 뜬다(2루 → 홈 · 1루 → 3루). 앞 주자가 서면 뒤 주자는 막혀서 못 간다',
+    '<b>송구는 한 곳으로만 간다</b> — 제일 앞에서 뛰는 주자가 송구와 경주한다. 먼저 닿으면 세이프, 늦으면 주루사. 뒤에서 같이 뛴 주자는 그 사이에 한 베이스 산다',
+    '경주는 발 · 언제 눌렀나 · 타구 깊이 · 상대 어깨로 갈린다. 얕은 안타에 2루 주자 홈 쇄도는 거의 죽고, 깊으면 여유 있게 산다',
+    '2루타 때 1루 주자가 <b>홈까지</b> 노릴 수 있다(예전엔 늘 3루에 섰다)',
+    '화면에서 잡힌 주자 · 들어온 점수가 그대로 기록된다 — 득점 · 타점 · 투수 실점 · 주루사 · 끝내기까지',
+    '안 누르면 3루 코치가 예전처럼 정한다(아웃 없이). 자동 경기 · 감독 모드는 하나도 안 바뀌었다',
+  ]},
   {v:'3.64.0', t:'선수 카드 · 별 · 1군 28명 · 투구수 교체 · 특훈 조정 · 내 체격 · 트레이드 마감', items:[
     '<b>프로 선수 카드</b> — 몸값이 깨진 글자 · 12만원으로 나오던 걸 등급 · 잠재 · 실제 연봉. 계약 · FA 까지 · 명성 · 체격이 나오고, 사회인용 줄(출석 · 회식 · 이동)은 뺐다. 나이도 화면마다 같게',
     '<b>별을 리그 기준으로</b> — KBO 전체에서 몇 등쯤인지로 매긴다(상위 2% 다섯 개). 잠재력은 파란 별로 따로',
@@ -13587,6 +13602,117 @@ LiveGame.prototype.resolveStretch = function(go, risk, force){
   return {go:true, ok:false, type:of.hit, runOut:of.hit};
 };
 
+/* ---------- 전체 진루 · 전체 귀루 ----------
+   [요청 v3.65.0] "안타가 났을 때 앞 주자 진루도 _stretchOffer 처럼 「제안」 으로 남겨라.
+                   「전체 진루」 「전체 귀루」 버튼(가능하면 주자별 버튼도)"
+
+   여태 앞 주자는 advOdds 주사위 한 번으로 한 베이스 더 갔다 — 내 타석인데
+   2루 주자가 홈에 들어오는지 3루에 서는지를 내가 못 정했다.
+   이제 안타가 정해진 순간 **보장된 만큼만**(1루타 한 베이스 · 2루타 두 베이스)
+   옮겨 두고, 한 베이스 더는 제안으로 남긴다.
+
+   [야구] 송구는 한 곳으로만 간다. 수비는 **제일 앞에서 뛰는 주자**를 노린다.
+   그 주자만 송구와 경주하고, 뒤에서 같이 뛴 주자는 송구 사이에 한 베이스 산다.
+   그래서 「전체 진루」 는 선두 주자 하나를 거는 거다.
+
+   [원칙] 창을 여는 건 엔진이다. 아무것도 안 누르면(auto) 예전 주사위(autoGo)
+   그대로 **다 같이 안전하게** 간다 — 자동 경기 · 옛 경로와 기록이 똑같다.  */
+LiveGame.prototype.makeAdvOffer = function(was, n, autoGo, bat, pit, def, bb){
+  const off=this.off();
+  const rs=[];
+  for(let b=2;b>=0;b--){
+    const rid=was[b]; if(!rid) continue;
+    const at=b+n; if(at>=3) continue;                     // 이미 들어왔다
+    if(this.bases[at]!==rid) continue;
+    const p=(off.team.players||[]).find(x=>x.id===rid)||{};
+    rs.push({rid, name:this.nameOf(rid), from:b, at, spd:p.spd||40});
+  }
+  if(!rs.length) return;
+  this._advOffer={hit:n===1?'1B':'2B', half:this.half, batId:bat.id, pitId:pit.id,
+    defTeam:def.team, autoGo:!!autoGo, dist:(bb&&bb.m)||60, runners:rs};
+};
+LiveGame.prototype.advOffer = function(){ return this._advOffer||null; };
+/* 선두 주자가 송구보다 먼저 닿을 확률 — 화면이 경주 시각(force)을 안 넘겼을 때만 쓴다.
+   얕은 안타면 어렵고 깊으면 쉽다. 홈은 포수가 기다리지만 3루보다 한 발 더 멀다. */
+function advRunOdds(at, runner, defTeam, dist){
+  const spd=(runner&&runner.spd)||40;
+  const dv=(defTeam&&defTeam._slotDef!=null)?defTeam._slotDef
+          :((defTeam&&defTeam.mean&&defTeam.mean.def)||46);
+  let p=0.60+(spd-45)*0.012-(dv-46)*0.009+((dist||60)-60)*0.006;
+  if(at===2) p+=0.04;
+  return Math.max(0.08, Math.min(0.94, p));
+}
+/* plan — 'auto'(안 눌렀다 · 예전 주사위) · 'go'(전체 진루) · 'hold'(전체 귀루)
+          · {go:{rid:true|false}, force:{rid:true|false}} (주자별 · 화면이 잰 경주 결과)
+   돌려주는 것 — moves:[{rid,name,from,to,go,ok,scored}] · 화면은 이걸 그대로 그린다. */
+LiveGame.prototype.resolveAdvance = function(plan){
+  const of=this._advOffer; this._advOffer=null;
+  if(!of || this.over || this.half!==of.half) return null;
+  const side=this.sides[of.half];
+  const bl=this.box[of.batId], pl=this.pbox[of.pitId]||{outs:0,r:0,er:0};
+  const auto=(plan==null||plan==='auto');
+  const goOf=(rid)=> auto ? of.autoGo
+    : plan==='go' ? true : plan==='hold' ? false
+    : !!(plan.go&&plan.go[rid]);
+  const moves=[]; let lead=null;
+  const score=(rid)=>{
+    if(this.box[rid]) this.box[rid].r++;
+    side.runs++; this.curIR=(this.curIR||0)+1;
+    const own=this.runnerP[rid], opl=(own&&this.pbox[own])?this.pbox[own]:pl;
+    opl.r++; if(isEarned(true,rid,this.outs,this.errLed)) opl.er++;
+    delete this.runnerP[rid];
+    this.scoreLog.push({d:of.pitId, f:this.curPitcher(side).id, a:this.away.runs, h:this.home.runs});
+    if(bl) bl.rbi++;
+  };
+  for(const r of of.runners){                              // 앞 주자부터
+    if(this.outs>=3) break;
+    if(this.bases[r.at]!==r.rid) continue;
+    const to=r.at+1;
+    let go=goOf(r.rid);
+    if(go && to<3 && this.bases[to]) go=false;             // 앞 주자가 섰다 — 막혔다
+    if(!go){ moves.push({rid:r.rid,name:r.name,from:r.at,to:r.at,go:false,ok:true}); continue; }
+    let ok=true;
+    if(!auto && !lead){
+      /* 선두 주자 — 송구와 경주한다 */
+      lead=r.rid;
+      const f=plan&&plan.force&&plan.force[r.rid];
+      ok=(typeof f==='boolean') ? f : (this.rng()<advRunOdds(r.at, r, of.defTeam, of.dist));
+    }
+    this.bases[r.at]=null;
+    const BN=['1루','2루','3루'];
+    if(ok){
+      if(to>=3){ score(r.rid);
+        this.log.push({t:'play', cls:'score', text:`${r.name} ${BN[r.at]}에서 홈까지! 1점`+(auto?'':' — 한 베이스 더 갔다')}); }
+      else { this.bases[to]=r.rid;
+        this.log.push({t:'play', cls:'hit', text:`${r.name} ${BN[to]}까지 갔다`+(lead===r.rid?' — 송구보다 먼저':(auto?'':' — 송구 사이에'))}); }
+      moves.push({rid:r.rid,name:r.name,from:r.at,to,go:true,ok:true,scored:to>=3});
+    } else {
+      delete this.runnerP[r.rid];
+      pl.outs++; this.outs++;
+      this.log.push({t:'play', cls:'out', text:`${r.name} ${to>=3?'홈':BN[to]}에서 아웃 — 송구가 먼저 왔다 (주루사)`});
+      this.maybeBadCall(`${to>=3?'홈':BN[to]} 접전`);
+      moves.push({rid:r.rid,name:r.name,from:r.at,to,go:true,ok:false});
+    }
+  }
+  if(this.lastPlay){ this.lastPlay.after=this.bases.slice();
+    this.lastPlay.runs=(this.lastPlay.runs||0)+moves.filter(m=>m.scored).length; }
+  /* 끝내기 · 콜드 — stepPA 끝의 검사와 같다. 제안으로 미룬 점수도 여기서 경기를 끝낸다 */
+  if(this.half===1 && !this.over && this.outs<3){
+    const lead2=this.home.runs-this.away.runs;
+    const walkoff=this.inning>=this.INN && lead2>0;
+    if(walkoff || coldGame(this.inning,lead2)){
+      this.off().line.push(this.curIR||0); this.curIR=0;
+      if(!walkoff) this.mercy=true;
+      this._stretchOffer=null;
+      this.finish();
+      return {moves, outs:this.outs, done:true};
+    }
+  }
+  /* 앞 주자가 세 번째 아웃이면 타자의 「돌까」 도 없던 일이다 — 다음 반이닝으로 새면 안 된다 */
+  if(this.outs>=3){ this._stretchOffer=null; this.endHalf(); }
+  return {moves, outs:this.outs};
+};
+
 /* ---------- 주루 — 리드 · 도루 · 견제 ----------
    [요청] "주루는 주자 나갔을때 도루할건지 말건지 베이스에서 리드 유지하면서
            막 리드 더나갈건지 너무 나가면 견제 날라오고"
@@ -14212,6 +14338,8 @@ LiveGame.prototype.tickTactics = function(offWasUser){
 /* 한 타석 진행 — 실제 계산은 stepPA, step 은 지시 만료를 처리하는 껍데기 */
 LiveGame.prototype.step = function(){
   if(this.over) return {done:true};
+  /* 화면이 진루 제안을 못 받아 갔으면(창을 건너뜀 · 자동으로 넘김) 예전 주사위대로 보낸다 */
+  if(this._advOffer) this.resolveAdvance('auto');
   this.flushHurt();                 // 다친 사람은 다음 타석 전에 뺀다
   if(this.pending) return {pending:this.pending};
   const offWasUser=this.off().isUser;
@@ -14796,6 +14924,7 @@ LiveGame.prototype.stepPA = function(){
   } : null;
   // 번트 앤 런은 주자가 한 베이스 더 간다
   /* 뛰고 있었으면 한 베이스를 더 간다 — 그게 히트앤런의 값이다 */
+  this._advOffer=null;
   let advOdds = this._runGo ? 0.92 : ((off.isUser && this._buntRun) ? 0.62 : 0.35);
   /* [요청] "수비할때는 수비자의 판단에 따라 결과가 달라져야"
      **내가 수비했으면 그 판단이 상대 주자를 정한다.** 딱 붙어서 잡으면
@@ -15126,7 +15255,15 @@ LiveGame.prototype.stepPA = function(){
         events.push({text:`${bat.name} 안타 — ${of.name} 홈 보살! 3루 주자 아웃${bbTag(bb)}`,cls:'sb'});
         if(this.outs<3){ adv(rng()<advOdds?2:1,true); this.bases[0]=bat.id; onBase(bat.id); }
       } else {
-        adv(rng()<advOdds?2:1,true);this.bases[0]=bat.id; onBase(bat.id);
+        /* [요청 v3.65.0] 전체 진루 · 전체 귀루 — 내 타석(ask)이면 앞 주자 진루도 「제안」 으로 남긴다.
+           주사위는 **같은 자리에서 먼저 굴려둔다**(autoGo). 화면에서 아무것도 안 누르면
+           예전과 똑같이 그 주사위대로 간다 — 난수 흐름도, 자동 경기 기록도 안 바뀐다. */
+        const autoGo=rng()<advOdds;
+        if(res.stretchAsk && this.outs<3 && (this.bases[0]||this.bases[1])){
+          const was=this.bases.slice();
+          adv(1,true); this.bases[0]=bat.id; onBase(bat.id);
+          this.makeAdvOffer(was, 1, autoGo, bat, pit, def, bb);
+        } else { adv(autoGo?2:1,true);this.bases[0]=bat.id; onBase(bat.id); }
         /* 번트를 굴려서 산 거면 그렇게 적는다 — 「안타」 한 글자로는
            1루쪽으로 굴린 보람이 안 보인다.                          */
         const bh=(res.bunt==='hit')
@@ -15135,7 +15272,11 @@ LiveGame.prototype.stepPA = function(){
         events.push({text:`${bat.name} ${bh}${bbTag(bb)}`,cls:'hit'});
       }
     }
-    else if(res.type==='2B'){bl.d2++;adv(2,true);this.bases[1]=bat.id; onBase(bat.id);
+    else if(res.type==='2B'){bl.d2++;
+      /* 2루타 — 1루 주자가 3루에 선다. 홈까지 노릴지는 제안으로 남긴다(예전엔 늘 3루에 섰다) */
+      const was=this.bases.slice();
+      adv(2,true);this.bases[1]=bat.id; onBase(bat.id);
+      if(res.stretchAsk && this.outs<3 && was[0]) this.makeAdvOffer(was, 2, false, bat, pit, def, bb);
       events.push({text:`${bat.name} 2루타${bbTag(bb)}`,cls:'hit'});
       this.hl('d2',off,bat.name,'');}
     else if(res.type==='3B'){bl.d3++;adv(3,true);this.bases[2]=bat.id; onBase(bat.id);
@@ -33377,6 +33518,25 @@ function livePlay(host, o){
   const t0=Date.now();
   const now=()=>Date.now()-t0;
 
+  /* ---- 앞 주자 — 한 베이스 더 보낼까 [요청 v3.65.0] ----
+     엔진이 안타만큼(1루타 한 베이스 · 2루타 두 베이스) 옮겨 둔 주자들이다(o.adv = advOffer).
+     공이 맞는 순간 같이 뛰기 시작해서 보장된 베이스에는 송구 전에 닿는다.
+     한 베이스 더는 버튼으로 정한다 — 안 누르면 3루 코치(엔진의 예전 주사위)가 정한다.
+     누르면 **선두 주자 하나가 송구와 경주한다.** 공은 한 곳으로만 간다 —
+     뒤에서 같이 뛴 주자는 그 사이에 한 베이스 산다.
+     경주는 타자 경주와 같은 방식이다: 주자 도착(rR) < 송구 도착(bR) + 태그 → 세이프.
+       rR  보장된 베이스에 닿은 시각(또는 누른 시각+0.18초) + 한 베이스 뛰는 시간(발)
+       bR  송구가 손을 떠나는 시각 + 타구 깊이만큼의 송구 시간 × 어깨 · 이번 송구(jit)  */
+  const ADV=(o.adv&&o.adv.runners&&o.adv.runners.length&&!HR&&!isOut)?o.adv:null;
+  const advR=ADV?ADV.runners.map(r=>{
+    const ms=Math.max(1600,Math.min(2500,Math.round(2150-((r.spd||40)-45)*10)));
+    const legs=Math.max(1,r.at-r.from);
+    const per=Math.max(300, Math.min(ms,(T_THROW-160)/legs));
+    return {rid:r.rid, name:r.name, from:r.from, at:r.at, s:r.from+1, g:r.at+1,
+      ms, per, tG:per*legs, intent:'auto', pressAt:null, goStart:0, rR:0, res:null};
+  }):[];
+  let advDone=null, advThrow=null;
+
   const BP=[{x:HX,y:HY}, PS_B[1], PS_B[2], PS_B[3], {x:HX,y:HY}];
   const runAt=(b)=>{ const i=Math.max(0,Math.min(3,Math.floor(b))), f=b-i;
     return {x:BP[i].x+(BP[i+1].x-BP[i].x)*f, y:BP[i].y+(BP[i+1].y-BP[i].y)*f}; };
@@ -33436,6 +33596,62 @@ function livePlay(host, o){
     return Math.min(cap, raw);
   };
 
+  /* 앞 주자가 지금 몇 루에 있나 — 결과가 나면 그 결과 그대로 움직인다 */
+  const advPos=(r,t)=>{
+    if(t<r.tG) return Math.min(r.g, r.s+t/r.per);
+    const mv=r.res;
+    if(advDone){
+      if(!mv||!mv.go||t<=r.goStart) return r.g;
+      const k=(t-r.goStart)/Math.max(1,r.rR-r.goStart);
+      return mv.ok ? Math.min(r.g+1, r.g+k) : Math.min(r.g+0.86, r.g+k);
+    }
+    if(r.intent==='go'){
+      const gs=goStartOf(r.pressAt, r.tG);
+      return t<=gs ? r.g : Math.min(r.g+0.9, r.g+(t-gs)/r.ms);
+    }
+    return r.g;
+  };
+  /* 송구가 손을 떠나는 순간 — 앞 주자 판정. 타자 판정(decide)보다 먼저 한다:
+     공이 앞 주자한테 가면 타자는 그 사이에 한 베이스 더 벌 수 있다. */
+  const decideAdv=()=>{
+    if(!ADV||advDone) return;
+    const touched=advR.some(r=>r.intent!=='auto');
+    let plan='auto';
+    if(touched){
+      const go={}, force={};
+      const occ={}; advR.forEach(r=>{ occ[r.g]=r; });
+      let lead=null;
+      for(const r of advR){                                 // 앞 주자부터
+        const nx=r.g+1;
+        let gg=(r.intent==='go');
+        if(gg && nx<4 && occ[nx] && !go[occ[nx].rid]) gg=false;   // 앞 주자가 섰다 — 막혔다
+        go[r.rid]=gg;
+        if(gg && !lead){
+          lead=r;
+          r.goStart=goStartOf(r.pressAt, r.tG); r.rR=r.goStart+r.ms;
+          const jit=(rnd()-0.5)*0.24;
+          const tMs=(600+Math.min(110,m)*18)*(1+armF*2+jit);
+          const bR=T_THROW+Math.max(350,tMs);
+          force[r.rid]=(r.rR < bR+TAG);
+          advThrow={tgt:nx, bR, rid:r.rid};
+        }
+      }
+      plan={go, force};
+    }
+    advDone=(o.onAdvance?o.onAdvance(plan):null)||{moves:[]};
+    (advDone.moves||[]).forEach(mv=>{
+      const r=advR.find(x=>x.rid===mv.rid); if(!r) return;
+      r.res=mv;
+      if(mv.go && !r.rR){
+        r.goStart=(r.intent==='go')?goStartOf(r.pressAt,r.tG):Math.max(T_THROW,r.tG);
+        r.rR=r.goStart+r.ms;
+      }
+    });
+  };
+  /* 공은 앞 주자한테 간다 — 타자 판정이 송구 목표를 덮어써도 여기서 되돌린다 */
+  const fixThrow=()=>{ if(advThrow){ tgtBase=advThrow.tgt; THROW_MS=advThrow.bR-T_THROW; } };
+  const advEnd=()=>advR.reduce((a,r)=>Math.max(a, (r.res&&r.res.go?r.rR:r.tG)+460), 0);
+
   /* 송구가 손을 떠나는 순간 — 여기서 「돌았는지」가 갈린다 */
   const decide=()=>{
     if(decided||pend) return;
@@ -33454,6 +33670,8 @@ function livePlay(host, o){
       const jit=(rnd()-0.5)*0.24;                     // 이번 송구 — 좋게 갔나 빗나갔나
       bA=R0*(base+1)+R0*(-0.02+depthF+foeF+armF+jit);
       bA=Math.max(T_THROW+350, bA);                    // 공이 순간이동하진 않는다
+      /* 공이 앞 주자한테 갔다 — 받아서 다시 던지는 사이에 간다 */
+      if(advThrow) bA=Math.max(bA, advThrow.bR+650);
       THROW_MS=bA-T_THROW; tgtBase=base+1; arrive1=bA;
     }
     if(went && o.slide!==false && !pend){
@@ -33517,7 +33735,7 @@ function livePlay(host, o){
   };
 
   /* 최종 판정 문구 */
-  const verdict=()=>{
+  const verdictB=()=>{
     if(HR) return ['홈런!','#ffd15c'];
     if(flyOut) return ['뜬공 아웃','#e08a70'];
     if(isOut) return ['땅볼 아웃 — 1루에서','#e08a70'];
@@ -33532,12 +33750,22 @@ function livePlay(host, o){
       return ['아웃 — 송구가 먼저 왔다 (안타는 인정)','#e08a70'];
     return [base===1?'안타':(base+'루타'),'#7fc48f'];
   };
+  /* 앞 주자 결과를 뒤에 붙인다 — 몇 점 들어왔나 · 누가 잡혔나 */
+  const verdict=()=>{
+    const v=verdictB();
+    if(!advDone||!advDone.moves||HR||isOut) return v;
+    const sc=advDone.moves.filter(x=>x.scored).length;
+    const outN=advDone.moves.filter(x=>x.go&&!x.ok).length;
+    if(outN) return [v[0]+' · 주자 아웃', sc?v[1]:'#e08a70'];
+    if(sc) return [v[0]+' · '+sc+'점', '#ffd15c'];
+    return v;
+  };
   /* 지금 무슨 일이 벌어지고 있나 — 마디마다 한 줄 */
   const beat=(t)=>{
     if(HR) return t<T_LAND?['넘어간다','#e9e4d8']:null;
     if(t<T_CATCH) return null;
     if(flyOut) return ['뜬공 — 그대로 잡혔다','#e08a70'];
-    if(t<T_THROW) return canGo&&intent!=='go'
+    if(t<T_THROW) return (canGo&&intent!=='go') || (ADV&&!advR.some(r=>r.intent!=='auto'))
       ? ['잡았다 — 지금 정해라','#ffd15c'] : ['잡았다','#e9e4d8'];
     if(t<T_THROW+THROW_MS) return (tgtBase===1&&psSelfTag(fkey,land,1))
       ? ['1루수가 직접 밟는다','#ffd15c'] : [(tgtBase>=4?'홈':tgtBase+'루')+'로 송구','#ffd15c'];
@@ -33601,15 +33829,16 @@ function livePlay(host, o){
     g.beginPath(); g.arc(cx,cy,10+k*60,0,Math.PI*2); g.stroke();
   };
 
-  const T_END=()=>HR ? (trotMs*4+600)
+  const T_END=()=>Math.max(advEnd(), HR ? (trotMs*4+600)
     : stage2 ? (Math.max(T2_THROW+(TH2||THROW_GO), rA2||0)+760)
-    : Math.max(T_THROW+THROW_MS+620, runMs*Math.max(1,Math.max(tgtBase,runTo))+460);
+    : Math.max(T_THROW+THROW_MS+620, runMs*Math.max(1,Math.max(tgtBase,runTo))+460));
 
   const draw=()=>{
     if(stop) return;
     const t=now();
-    if(t>=T_THROW) decide();
+    if(t>=T_THROW){ decideAdv(); decide(); }
     if(pend && !decided && t>=Math.min(rA,bA)-60) resolvePend(t);
+    if(t>=T_THROW) fixThrow();
     if(stage2 && t>=T2_THROW) decide2();
     const sh=hrShake(t);
     const sx=sh?(Math.sin(t/26)*sh):0, sy=sh?(Math.cos(t/19)*sh*0.7):0;
@@ -33706,6 +33935,23 @@ function livePlay(host, o){
     }
     const rp=runAt(rk);
     man(rp.x,rp.y,BU,rk<4&&t<T_END()-300,rk>=1&&rk<3);
+    /* 앞 주자들 — 들어왔으면 사라지고, 잡혔으면 태그된 자리에 잠깐 남는다 */
+    advR.forEach(r=>{
+      const q=advPos(r,t), mv=r.res;
+      const outR=!!(mv&&mv.go&&!mv.ok);
+      if(outR && t>(advThrow?advThrow.bR:r.rR)+700) return;
+      if(q>=4 && t>r.rR+450) return;
+      const pp=runAt(Math.min(4,q));
+      const moving = mv&&mv.go ? (t<r.rR) : (t<r.tG || (!advDone&&r.intent==='go'));
+      man(pp.x,pp.y,BU,moving,q>=1&&q<3);
+      g.font='900 9px system-ui,-apple-system,sans-serif'; g.textAlign='center';
+      if(outR && t>(advThrow?advThrow.bR:r.rR)){ g.fillStyle='#e08a70'; g.fillText('아웃', pp.x, pp.y-14); }
+      else if(!advDone && r.intent!=='auto'){
+        g.fillStyle=r.intent==='go'?'#7fc48f':'#e9e4d8';
+        g.fillText(r.intent==='go'?'▸ 간다':'■ 선다', pp.x, pp.y-14);
+      }
+      g.textAlign='left';
+    });
     /* 누를 수 있는 베이스를 띄운다 — 수비의 송구 탭과 같은 그림.
        송구가 손을 떠나면 사라진다(그때부터는 이미 결정이 났다). */
     if(!decided && !HR && !flyOut){
@@ -33833,6 +34079,17 @@ function livePlay(host, o){
     phase:()=>(stage2 ? (decided2?2:1) : (decided?2:0)),
     nextBase:()=>(stage2&&!decided2)?Math.min(4,base+2):Math.min(4,base+1),
     heldBase:()=>(stage2&&!decided2)?(base+1):base,
+    /* 앞 주자 — 다 보내기 · 다 세우기 · 주자별. 송구가 손을 떠나면 잠긴다 */
+    advOpen:()=>!!(ADV && !advDone),
+    advAll:(go)=>{ if(!ADV||advDone) return false; const t=now();
+      advR.forEach(r=>{ if(go){ if(r.intent!=='go'){ r.intent='go'; r.pressAt=t; } } else { r.intent='back'; r.pressAt=null; } });
+      return true; },
+    advOne:(i,go)=>{ const r=advR[i]; if(!r||advDone) return false;
+      if(go){ if(r.intent!=='go'){ r.intent='go'; r.pressAt=now(); } } else { r.intent='back'; r.pressAt=null; }
+      return true; },
+    advState:()=>advR.map(r=>({rid:r.rid, name:r.name, at:r.at, intent:r.intent, res:r.res, rR:r.rR})),
+    advRace:()=>advThrow,
+    advResult:()=>advDone,
   };
   return api;
 }
@@ -41260,6 +41517,7 @@ function renderSwing(box, d){
     if(!play){ setTimeout(doneCb, r?(r.big?1150:850):260); return; }
     hideBat();
     const offer=(LIVE&&LIVE.stretchOffer)?LIVE.stretchOffer():null;
+    const advO=(LIVE&&LIVE.advOffer)?LIVE.advOffer():null;
     const box2=el('div','runbox');
     box2.innerHTML='<div class="rb-t"></div>';
     const t=box2.querySelector('.rb-t');
@@ -41322,6 +41580,43 @@ function renderSwing(box, d){
         bSl.innerHTML='<span>미끄러진다</span><i>흙먼지</i>'; } };
     bSl.addEventListener('pointerdown',doSlide); bSl.onclick=doSlide;
     row.appendChild(bSl);
+    /* [요청 v3.65.0] 전체 진루 · 전체 귀루 — 앞 주자는 여기서 보낸다.
+       주자가 둘 이상이면 주자별 버튼도 깐다. 송구가 손을 떠나면 잠긴다.
+       안 누르면 3루 코치가 정한다(예전과 같다). */
+    let advRow=null, advBtns=[];
+    const esc=(x)=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    const BNm=['1루','2루','3루'], TOm=['2루','3루','홈'];
+    const paintAdv=()=>{
+      if(!advRow) return;
+      const open=!!(sc&&sc.advOpen&&sc.advOpen());
+      const stt=(sc&&sc.advState)?sc.advState():[];
+      advBtns.forEach(b=>{ b.disabled=!open;
+        const i=b._i;
+        if(i!=null){ const r=stt[i]; b.classList.toggle('on', !!(r&&r.intent==='go'));
+          b.classList.toggle('hold', !!(r&&r.intent==='back')); }
+      });
+      advRow.style.opacity=open?'':'.45';
+    };
+    if(advO && advO.runners && advO.runners.length){
+      advRow=el('div','advrow');
+      const all=(go)=>{ const b=el('button','base-b adv-b'+(go?' hot':''));
+        b.innerHTML=go?'<span>▸ 전체 진루</span><i>한 베이스 더</i>':'<span>◂ 전체 귀루</span><i>여기서 선다</i>';
+        const f=(ev)=>{ if(ev&&ev.preventDefault)ev.preventDefault(); if(sc&&sc.advAll) sc.advAll(go); paintAdv(); };
+        b.addEventListener('pointerdown',f); b.onclick=f; advBtns.push(b); advRow.appendChild(b); };
+      all(false); all(true);
+      if(advO.runners.length>1) advO.runners.forEach((r,i)=>{
+        const b=el('button','base-b adv-b adv-one'); b._i=i;
+        b.innerHTML='<span>'+BNm[r.at]+' → '+TOm[r.at]+'</span><i>'+esc(r.name||'주자')+'</i>';
+        const f=(ev)=>{ if(ev&&ev.preventDefault)ev.preventDefault();
+          const st2=(sc&&sc.advState)?sc.advState():[]; const cur=st2[i]&&st2[i].intent==='go';
+          if(sc&&sc.advOne) sc.advOne(i, !cur); paintAdv(); };
+        b.addEventListener('pointerdown',f); b.onclick=f; advBtns.push(b); advRow.appendChild(b);
+      });
+      box2.insertBefore(advRow, row);
+      if(note) note.innerHTML=(offer?note.innerHTML+'<br>':'')+
+        '<b>앞 주자</b> — '+advO.runners.map(r=>esc(r.name||'주자')+' '+BNm[r.at]).join(' · ')+
+        ' · 한 베이스 더 보낼까? <i>(안 누르면 코치가 정한다)</i>';
+    }
     /* [계획 B] 버튼 글씨가 판단 단계를 따라간다.
          0 첫 판단(1루 코치) · 1 두 번째(3루 코치) · 2 이미 던졌다      */
     let lastPh=-1;
@@ -41352,7 +41647,20 @@ function renderSwing(box, d){
 
     try{
       sc=livePlay(stage, {
-        park:LIVE.park, play, offer, spd:(bat&&bat.spd)||45,
+        park:LIVE.park, play, offer, adv:advO, spd:(bat&&bat.spd)||45,
+        /* 앞 주자 — 화면이 잰 경주(force)를 엔진에 넘긴다. 엔진이 돌려준 그대로 그린다 */
+        onAdvance:(plan)=>{
+          const out=(LIVE&&LIVE.resolveAdvance)?LIVE.resolveAdvance(plan):null;
+          flushLog(); updateLiveUI(); paintAdv();
+          if(out && out.moves && plan!=='auto'){
+            const sc2=out.moves.filter(x=>x.scored).length, ot=out.moves.filter(x=>x.go&&!x.ok);
+            if(note) note.innerHTML = ot.length
+              ? '<b style="color:#e08a70">'+esc(ot[0].name)+' '+(ot[0].to>=3?'홈':BNm[ot[0].to])+'에서 아웃</b> — 송구가 먼저 왔다'
+              : (sc2?'<b style="color:#ffd15c">'+sc2+'점!</b> 앞 주자가 들어왔다':'앞 주자 — '+(out.moves.some(x=>x.go)?'한 베이스 더 갔다':'그대로 선다'));
+          }
+          if(LIVE && LIVE._badCall && LIVE._badCall.kind==='play') showArgue(row, null);
+          return out;
+        },
         /* 송구 속도 — 상대 수비 어깨. 경주는 이 값과 내 발로 정해진다 */
         arm:(offer&&offer.defTeam&&offer.defTeam.mean&&offer.defTeam.mean.arm)||46,
         rng:()=>(LIVE&&LIVE.rng)?LIVE.rng():Math.random(),
@@ -41375,7 +41683,8 @@ function renderSwing(box, d){
           /* 접전이 아웃으로 불렸으면 그 자리에서 따질 수 있다 */
           if(LIVE._badCall && LIVE._badCall.kind==='play') showArgue(row, null);
           /* again — 엔진이 「3루도 노려볼 수 있다」 고 창을 하나 더 열었다 */
-          return out ? {go:!!out.go, ok:!!out.ok, again:!!out.again} : {go:go, ok:!go};
+          /* out 이 없으면 제안이 사라진 거다(앞 주자가 세 번째 아웃) — 타자는 그대로 선다 */
+          return out ? {go:!!out.go, ok:!!out.ok, again:!!out.again} : {go:false, ok:true};
         },
         /* [계획 B] 3루 코치 — 2루를 돌면서 한 번 더 정한다.
            엔진이 같은 자리(_stretchOffer)를 다시 채워놨으므로
@@ -41391,6 +41700,7 @@ function renderSwing(box, d){
           return out ? {go:!!out.go, ok:!!out.ok} : {go:go, ok:!go};
         },
         onTick:(t2,tot)=>{ const b=bar(); if(b) b.style.width=Math.min(100,t2/tot*100).toFixed(0)+'%';
+          paintAdv();
           /* 송구가 손을 떠나는 순간 버튼을 잠근다.
              [제보] "돌아간다 누르는데 2루로 귀루도 안하고" — 이미 결정이
              난 뒤라 아무 일도 안 났는데 버튼은 살아 있었다. 그건 고장이다.
@@ -41422,6 +41732,7 @@ function renderSwing(box, d){
     }catch(e){ sc=null; }
     if(!sc){
       /* 캔버스를 못 쓰는 환경(테스트 등) — 결과만 짧게 두고 닫는다 */
+      if(advO && LIVE.resolveAdvance) LIVE.resolveAdvance('auto');
       if(offer && LIVE.resolveStretch) LIVE.resolveStretch(false, 0);
       if(t && r){ t.textContent=r.raw||r.label; t.style.color=r.color||''; }
       setTimeout(fin, 420);

@@ -274,7 +274,8 @@ const btns=()=>[...d.querySelectorAll('#decision .rb-b')].map(b=>b.textContent);
     '잡고 나서 던지기까지 0.72초 — 그 사이에 정한다 (예전엔 0.36초라 못 눌렀다)');
   T(ev("/psMtoPx\\(m, P, play\\.ang/.test(livePlay.toString())"),
     '진짜 비거리로 날아간다 — 「저 멀리 갔는데 땅볼아웃」 이 안 나온다');
-  T(ev("/if\\(t>=T_THROW\\) decide\\(\\)/.test(livePlay.toString())"),
+  /* [v3.65.0] 같은 순간에 앞 주자 판정(decideAdv)이 먼저 돈다 */
+  T(ev("/if\\(t>=T_THROW\\)\\{? ?(decideAdv\\(\\); )?decide\\(\\)/.test(livePlay.toString())"),
     '송구가 손을 떠나는 순간에 「돌았는지」가 갈린다 (묻는 창이 없다)');
   T(ev("renderSwing.toString().indexOf('baserow')>0 && renderSwing.toString().indexOf('<span>\u25b8 ')>0"),
     '주루 버튼도 수비 송구와 같은 베이스 버튼이다');
