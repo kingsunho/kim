@@ -20,11 +20,11 @@ const all=()=>[...d.querySelectorAll('#view .card-h')].map(h=>h.textContent.trim
   [...d.querySelectorAll('#view .btn')].find(b=>b.textContent==='이 선수로 시작').click(); await wait(250);
   console.log('[설정 — 사회인]');
   ev("ST.tutDone=true; go('more')"); await wait(20);
-  T('위에는 다섯 장만', ()=>{ const t=top(); return t.join(',')==='화면 테마,직접 플레이,세이브 · 로드,사운드,버전' ? t.join(' · ') : '!'+t.join(','); });
+  T('위에는 여덟 장만(테마 · 직접 플레이 · 세이브 · 사운드 · 버전 · 선수단 · 이름 · 플레이타임)', ()=>{ const t=top(); return t.length===8 ? t.join(' · ') : '!'+t.join(','); });
   T('사회인은 장비 · 만약에가 접힌 데 남아 있다', ()=>all().indexOf('장비')>=0 && all().indexOf('만약에')>=0);
   ev(`ST.mode='player'; ST.role='bat'; ST.playerId='ksh'; MYID='ksh'; proEnter({team:'lg', round:3, pick:10, level:'1군'}); go('more');`); await wait(20);
   console.log('\n[설정 — 프로]');
-  T('위에는 다섯 장만', ()=>top().length===5);
+  T('위에는 여덟 장만', ()=>top().length===8);
   T('사회인 전용(장비 · 경기장 · 특성 설명 · 만약에 · 플레이 선수)은 아예 없다', ()=>{ const a=all(); const left=['장비','경기장','특성 설명','만약에','플레이 선수'].filter(x=>a.indexOf(x)>=0); return left.length?'!'+left:'없다'; });
   console.log('\n[기록실 — 프로]');
   ev("recTab='real'; go('records')"); await wait(20);

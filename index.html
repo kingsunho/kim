@@ -9774,8 +9774,8 @@ function toggleSound(){
    세이브에 마지막으로 돌린 버전을 남겨두고, 접속했을 때 다르면 알려준다.
    애들이 "업데이트된 거 맞냐"고 물을 때 상단 배지만 보면 되게 하려는 것이다.
    같은 링크면 기록은 그대로 남는다 — 버전이 올라가도 세이브는 안 건드린다.   */
-const APP_VERSION = '3.70.0';
-const APP_VERSION_NOTE = '설정 정리 · 프로에선 사회인 실제 기록 숨김 · 김한규 명예기자';
+const APP_VERSION = '3.71.0';
+const APP_VERSION_NOTE = '선발명단 버그 · AI 구단끼리 트레이드 · 등번호 선물 · 2차 드래프트 보호 손봄';
 /* 어느 브라우저인지 한 줄로. 제보를 좁히는 데만 쓴다. */
 function browserTag(){
   const u=navigator.userAgent||'';
@@ -9796,6 +9796,15 @@ function browserTag(){
    업그레이드되면 이안·지우가 나와서 무엇이 바뀌었는지 알려준다.
    새 버전을 올릴 때 여기 한 줄 추가하는 걸 잊지 마라.        */
 const CHANGELOG=[
+  {v:'3.71.0', t:'선발명단 버그 · AI 구단끼리 트레이드 · 등번호 선물 · 2차 드래프트 보호 손봄', items:[
+    '<b>잘해도 선발명단에서 빠지던 버그</b>(김한규 제보) — 감독이 한 주에 한 명 바꿀 때 나도 뺐다. 내 평가값이 사회인 시절 숫자로 남아 있어서 프로 선수들보다 한참 낮게 잡혔다. 이제 감독은 나를 못 빼고(면담 벤치 · 2군만 예외), 빠져 있으면 다음 주에 다시 들어간다',
+    '<b>AI 구단끼리 트레이드</b> — 트레이드 마감 전까지, 우승을 노리는 팀이 리빌딩 팀의 베테랑을 유망주 주고 데려간다. 한 시즌 몇 건. 신문에 기사가 난다',
+    '<b>대형 트레이드</b> — 프랜차이즈 · 대형 계약 선수도 부진한 해에 사는 팀 그 자리가 급하면 가끔 나온다. [대형 트레이드] 로 1면에 뜬다',
+    '<b>대형 FA 기사</b> — AI 구단끼리 FA 도 30억 넘으면 기사, 80억 넘거나 이름난 선수면 [대형 FA]',
+    '<b>등번호 선물</b> — 기본은 원래 달던 사람이 지킨다. 이름값이 훨씬 큰 스타가 오면 번호를 물려받고 선물(시계 · 정장 · 골프 클럽 …)로 답례한다 — 기사도 난다. 원래 주인도 이름난 선수(문동주 같은)면 안 넘긴다',
+    '<b>2차 드래프트 보호</b> — 기존 선수의 잠재를 0 으로 보던 걸 고쳤다(최준용 같은 스물다섯 1군급이 풀렸다). 젊을수록 · 잠재가 남을수록 묶고, 프랜차이즈 · 이름난 선수(류현진 · 김광현)는 무조건 묶는다',
+    '설정 — 선수단 둘러보기 · 이름/등번호/팀명 · 플레이타임은 다시 위로 꺼냈다',
+  ]},
   {v:'3.70.0', t:'설정 정리 · 프로에선 사회인 실제 기록 숨김 · 김한규 명예기자', items:[
     '<b>설정 정리</b> — 위에는 화면 테마 · 직접 플레이 · 세이브 · 사운드 · 버전만 남겼다. 나머지는 「자주 안 쓰는 설정」 안에 접었다',
     '<b>프로에선 사회인 전용 설정을 뺐다</b> — 장비 · 경기장 · 특성 설명 · 만약에 · 플레이 선수(프로에서 누르면 판이 꼬였다)',
@@ -16619,7 +16628,10 @@ function devTickTime(){
   }
 }
 
-function effCA(pid){const b=ST&&ST.ca?ST.ca[pid]:null; if(b!=null)return b;
+function effCA(pid){
+  /* [v3.71.0] 프로는 지금 능력치로 잰다 — ST.ca 에는 사회인 시절 값이 남아 있다(한규 선발명단 제보) */
+  if(typeof isPro==='function'&&isPro()){ const q=TBYID['wwzw'].players.find(x=>x.id===pid); if(q) return calcCA(q); }
+  const b=ST&&ST.ca?ST.ca[pid]:null; if(b!=null)return b;
   const p=TBYID['wwzw'].players.find(x=>x.id===pid); return p?calcCA(p):30;}
 function effPA(pid){
   const p=TBYID['wwzw'].players.find(x=>x.id===pid); if(!p)return 40;
@@ -17608,7 +17620,28 @@ function pfDedupNos(keys){
     /* 영구결번 — 게임 안에서 새로 건 번호를 누가 달고 있으면(그 뒤 입단한 사람) 비켜 준다. 나는 예외 */
     let RN=[]; try{ const F=pfState(); RN=(((F.retNos||{})[proKeyOf(t.id)])||[]).map(r=>+r.no); }catch(e){}
     RN.forEach(n=>used.add(n));
-    L.forEach(p=>{ const n=+p.no; if(used.has(n) && p.id!==me) bump.push(p); else used.add(n); });
+    /* [요청 v3.71.0] "번호 겹치면 뭐 원래 있던애 번호 뺏으면 막 선물주고 그러잖아 그만큼 번호 의미가 있으니깐"
+       그래서 기본은 원래 달던 사람이 지킨다. 다만 **이름값이 훨씬 큰 스타(명성 70+, 20 넘게 차이)** 가 오면
+       원래 주인이 양보하고, 스타가 선물로 답례한다(실제로 시계 · 정장 · 식사 대접이 오간다).
+       원래 주인이 프랜차이즈거나 나거나, 내가 번호를 바꿔 준 사람(ST.renum)이면 안 판다 */
+    const owner={}, F0=pfState();
+    L.forEach(p=>{ const n=+p.no;
+      if(!used.has(n)){ used.add(n); owner[n]=p; return; }
+      if(p.id===me) return;
+      const o=owner[n];
+      if(o && o.id!==me && RN.indexOf(n)<0 && NO[o.id]==null && came(p)>came(o)
+         && pfRep(p)>=70 && pfRep(p)-pfRep(o)>=20 && pfRep(o)<55 && !pfFranchise(o,key0)){   // 원래 주인도 이름난 선수(문동주 같은)면 안 넘긴다
+        bump.push(o); owner[n]=p;
+        const gk=p.id+'|'+n; F0.noGift=F0.noGift||{};
+        if(!F0.noGift[gk]){ F0.noGift[gk]=ST.pro.year;
+          const G=['명품 시계','맞춤 정장','최신 휴대폰','한우 세트','골프 클럽','고급 가방'];
+          const gift=G[clayHash(p.name+o.name)%G.length];
+          proNews('등번호', p.name+', '+o.name+'에게 '+n+'번 물려받았다 — 답례는 '+gift,
+            n+'번은 '+p.name+'이(가) 오래 달던 번호다. '+o.name+'은(는) 새 번호로 바꾼다.'); }
+        return;
+      }
+      bump.push(p);
+    });
     if(!bump.length) return;
     const order=[]; for(let n=60;n<=99;n++) order.push(n); for(let n=40;n<60;n++) order.push(n); for(let n=1;n<40;n++) order.push(n);
     bump.forEach(p=>{ const n=order.find(x=>!used.has(x)); if(n==null) return; used.add(n);
@@ -19177,8 +19210,66 @@ const PF_COLLABS=[
 ];
 /* 매주 — 입장 수입(관중★) + 중계권·스폰서 + 콜라보 − 선수단 연봉(한 주치) − 운영비.
    24주 한 시즌이라 연봉 총액 ÷ 24 가 한 주치다 */
+/* [요청 v3.71.0] "ai들이 똑똑하게 (…) 프런트쪽으로 자기들끼리도 트레이드나 영입 알아서 하고 있겠지?
+                   대형트레이드 뜨면 뉴스 나오고 해야함(확률이 적으니깐)"
+   AI 구단끼리 시즌 중 트레이드 — 트레이드 마감(7월 31일) 전까지 한 주에 18% 쯤.
+   · 사는 쪽: 순위 5위 안 또는 윈나우. 파는 쪽: 6위 아래 또는 리빌딩
+   · 파는 쪽은 1군 베테랑(스물여덟+ · 등급 52+)을 내놓고, 사는 쪽은 유망주(스물다섯 아래)로 값을 맞춘다
+     (값은 우리 트레이드와 같은 저울 pfTradeWorth — 받는 쪽 기조로 매긴다). 트레이드 불가 명단은 안 건드린다
+   · 명성 65+ 거나 등급 58+ 이 오가면 **[대형 트레이드]** 로 1면에 낸다 */
+function pfAiTradeWeek(){
+  if(!isPro() || pfTradeClosed()) return null;
+  const y=ST.pro.year, r=ST.round||0, F=pfState();
+  /* 시드가 가까우면 첫 난수가 붙어 다닌다 — 문자열 해시로 섞는다(안 섞었더니 시즌에 0건 아니면 9건이었다) */
+  const rng=makeRng(rvSeedOf('aitr|'+(ST.seed||1)+'|'+y+'|'+r)); rng(); rng();
+  if(rng()>0.18) return null;
+  if((F.aiTrades||[]).filter(t=>t.year===y).length>=6) return null;     // 한 시즌 여섯 건까지
+  const R=proRank().map(x=>x.id==='wwzw'?null:proKeyOf(x.id));
+  const keys=PRO_TEAMS.map(d=>d.key).filter(k=>k!==ST.pro.team);
+  const rk=k=>R.indexOf(k);
+  const buyers=keys.filter(k=>rk(k)>=0&&rk(k)<=4 || proPhil(k).mode==='win');
+  const sellers=keys.filter(k=>rk(k)>=5 || proPhil(k).mode==='rebuild');
+  if(!buyers.length||!sellers.length) return null;
+  const b=buyers[(rng()*buyers.length)|0], s0=sellers.filter(k=>k!==b); if(!s0.length) return null;
+  const s=s0[(rng()*s0.length)|0];
+  const bT=TBYID[pfIdOf(b)], sT=TBYID[pfIdOf(s)]; if(!bT||!sT) return null;
+  const unS=pfUntouch(s), unB=pfUntouch(b);
+  /* 10억 넘는 대형 계약(막 도장 찍은 FA 등)과 프랜차이즈는 보통 안 판다.
+     [요청] "얘네도 부진하고 당장 포지션이 급하면 할 수는 있는데" — 그래서 **부진한 해**(타율 .240 · OPS .650 아래,
+     투수는 평균자책 5.50 넘게)에 **사는 쪽이 그 자리가 급하면**(그 자리 1군 최고가 이 선수보다 3 넘게 낮다)
+     열에 셋쯤은 나온다. 그게 대형 트레이드다(2023 최원태 LG행 · 2024 정철원 ↔ 김민석처럼) */
+  const slump=(p)=>{ try{ const bb=(ST.lgBat||{})[p.id], pp=(ST.lgPit||{})[p.id];
+      if(pfIsPit(p)){ const ip=pp?(pp.outs||0)/3:0; return ip>=40 && (pp.er*9/ip)>5.5; }
+      return bb && bb.ab>=150 && (bb.h/bb.ab<0.240 || ops(bb)<0.650); }catch(e){ return false; } };
+  const posOf=p=>pfIsPit(p)?(p.role==='SP'?'SP':'RP'):((p.pos&&p.pos[0])||'1B');
+  const needAt=(pos,g)=>{ const same=[].concat(bT.players||[],bT.pitchers||[]).filter(q=>!q.farm&&posOf(q)===pos);
+      const top=same.length?Math.max.apply(null,same.map(pfGrade)):0; return top<g-3; };
+  const bigOK=(p)=>slump(p) && needAt(posOf(p),pfGrade(p)) && rng()<0.3;
+  const vets=[].concat(sT.players||[],sT.pitchers||[]).filter(p=>!p.farm&&!unS.has(p.id)&&!pfIsForeign(p,s)&&pfAge(p)>=28&&pfGrade(p)>=52
+      &&(((pfCon(p,s).sal||0)<100000&&!pfFranchise(p,s)) || bigOK(p)))
+    .sort((x,z)=>(needAt(posOf(z),pfGrade(z))?5:0)+pfGrade(z)-(needAt(posOf(x),pfGrade(x))?5:0)-pfGrade(x)).slice(0,5);
+  if(!vets.length) return null;
+  const vet=vets[(rng()*vets.length)|0], need=pfTradeWorth(vet,b)*0.9;
+  /* 내주는 건 아직 자리 못 잡은 유망주다(등급 55 아래) — 박영현 같은 1군 핵심은 유망주 값으로 안 판다 */
+  const pros=pfAll(bT).filter(p=>!unB.has(p.id)&&!pfIsForeign(p,b)&&pfAge(p)<=25&&!p.rookie&&pfGrade(p)<55&&p.role!=='CL'&&p.role!=='SP'&&pfRep(p)<55)
+    .map(p=>({p, v:pfTradeWorth(p,s,true)})).sort((x,z)=>z.v-x.v);
+  const pay=[]; let sum=0;
+  for(const x of pros){ if(sum>=need||pay.length>=3) break; if(x.v<=0) continue; pay.push(x.p); sum+=x.v*(pay.length===1?1:(pay.length===2?0.75:0.55)); }
+  if(sum<need || !pay.length) return null;
+  const keep=(p,k)=>pfCon(p,k);
+  const cv=keep(vet,s); pfMove(vet, s, b, '트레이드', '1군'); pfSetCon(vet.id, cv);
+  pay.forEach(p=>{ const c=keep(p,b); pfMove(p, b, s, '트레이드', p.farm?'2군':'1군'); pfSetCon(p.id, c); });
+  const big=pfRep(vet)>=65 || pfGrade(vet)>=58 || pfFranchise(vet,s) || (pfCon(vet,b).sal||0)>=100000;
+  const got=pay.map(p=>p.name).join(' · ');
+  proNews('트레이드', (big?'[대형 트레이드] ':'')+proName(b)+', '+proName(s)+'에서 '+vet.name+' 데려왔다 — '+got+' 내줬다',
+    big ? proName(b)+'이(가) 우승을 노리고 승부수를 던졌다. '+proName(s)+'은(는) 미래를 택했다.'
+        : proName(s)+'은(는) 젊은 선수를 받아 리빌딩을 이어간다.');
+  F.aiTrades=(F.aiTrades||[]).concat([{year:y, round:r, from:s, to:b, vet:vet.name, got, big}]).slice(-40);
+  return {from:s, to:b, vet:vet.name, got, big};
+}
 function pfWeek(){
   if(!isPro()) return null;
+  try{ pfAiTradeWeek(); }catch(e){}
   try{ fxWeek().forEach(m=>proNews('외국인', m)); }catch(e){}   // [v3.59.0] 스카우트 보고 · 비자
   const F=pfState(), ph=proPhil(ST.pro.team);
   const R=proRank(); const rk=R.findIndex(x=>x.id==='wwzw')+1;
@@ -19479,7 +19570,9 @@ function pfFAClose(){
     const young=x.age<=30&&pfGrade(f.p)>=55;
     const keep = !x.ours && ((fr && rng()<0.95) || (young && rng()<0.8) || (perY<=W(x.from)*star*1.1 && rng()<0.75));
     if(keep && fr) proNews('FA', proName(x.from)+', 프랜차이즈 '+x.name+' 잔류 — '+x.yrs+'년 '+wonStr2(x.total), '「이 선수 없는 '+proName(x.from)+'는 생각할 수 없다」.');
-    if(keep){ x.done='stay'; pfSignCon(x.id,x); return; }     // 원 소속 팀 잔류
+    if(keep){ x.done='stay'; pfSignCon(x.id,x);
+      if(!fr && x.total>=800000) proNews('FA', '[대형 FA] '+x.name+', '+proName(x.from)+' 잔류 — '+x.yrs+'년 '+wonStr2(x.total), '시장에 나왔지만 원 소속 구단이 잡았다.');
+      return; }     // 원 소속 팀 잔류
     /* 한 구단이 한 겨울에 외부 FA 를 둘 넘게 못 산다(돈 · 보상 부담) — 첫 부자 구단이 다 쓸어 가던 걸 막는다 */
     const nBuy=fa.buyN||(fa.buyN={});
     const order=buyers.slice().sort(()=>rng()-0.5).sort((a,b)=>(nBuy[a]||0)-(nBuy[b]||0));
@@ -19508,7 +19601,13 @@ function pfFAClose(){
     if(x.ours){ F.cash=Math.round((F.cash+comp.money/10000)*10)/10;
       pfLog('우리 FA '+x.name+' → '+proName(k)+' · 보상금 '+wonStr2(comp.money)+got);
       proNews('FA', x.name+', '+proName(ST.pro.team)+' 떠나 '+proName(k)+'로 — '+x.yrs+'년 '+wonStr2(x.total)); }
-    else pfLog('FA '+x.name+' → '+proName(k)+got);
+    else {
+      pfLog('FA '+x.name+' → '+proName(k)+got);
+      /* [v3.71.0] AI 끼리 FA 도 기사가 난다 — 30억 넘으면 한 줄, 80억 넘거나 이름난 선수면 [대형 FA] */
+      if(x.total>=300000){ const bigF=x.total>=800000||pfRep(f.p)>=70;
+        proNews('FA', (bigF?'[대형 FA] ':'')+proName(k)+', '+proName(x.from)+'의 '+x.name+' 영입 — '+x.yrs+'년 '+wonStr2(x.total),
+          x.grade+'등급 · 보상 '+wonStr2(comp.money)+(comp.player?' + 보상선수 '+comp.player.name:'')+'.'); }
+    }
   });
   fa.closed=true;
 }
@@ -19693,7 +19792,14 @@ function pfD2Exempt(p, key){
    어린 선수만 35명이 넘어서 보호가 0명이 됐고, 김도영 · 구자욱 · 노시환이 명단에 떴다.
    실제 규정은 제외 대상과 **따로** 35명을 묶는다. 풀리는 건 36번째부터 — 자리가 막힌 백업 · 2군 베테랑이다.
    AI 구단은 지금 가치 + 어린 선수의 남은 잠재로 묶는다(유망주를 쉽게 안 푼다) */
-function pfD2ProtV(p){ return pfValue(p)+((pfAge(p)<=25&&p.pot)?Math.max(0,p.pot-pfGrade(p))*1.5:0); }
+/* [v3.71.0] "최준용같은애 포텐 높지 않나" — 잠재를 p.pot(신인만 있다)으로 봐서 기존 선수의 잠재가 0 이었다.
+   pfPot 으로 보고, 스물여덟 아래 1군급은 나이만큼 더 친다(구단은 서른 넘은 백업부터 푼다) */
+/* 프랜차이즈 · 이름값(명성 75+)은 무조건 묶는다 — 류현진 · 김광현이 명단에 뜨면 팬이 들고 일어난다.
+   (실제로 2023 년 김강민이 풀려서 한화로 간 게 큰 사건이었다 — 그 정도 이름은 이제 안 푼다) */
+function pfD2ProtV(p){ const a=pfAge(p), g=pfGrade(p), pt=pfPot(p)||g;
+  let k=null; try{ const f=pfFind(p.id); k=f?proKeyOf(f.t.id):null; }catch(e){}
+  const fr=k?pfFranchise(p,k):0, rp=pfRep(p);
+  return pfValue(p)+(a<=27?Math.max(0,pt-g)*2+(28-a)*1.5:0)-(a>=32?(a-31)*2:0)+(fr?999:0)+(rp>=75?60:0); }
 function pfD2Pool(){
   const out=[];
   TEAMS.filter(t=>t.id!=='wwzw').forEach(t=>{
@@ -22380,8 +22486,14 @@ function managerTweak(){
                                   && !(typeof isFarm==='function' && isFarm(q.id)));
   if(!bench.length) return null;
   let best=null;
+  const meT=ST.playerId||MYID;
   ST.lineup.forEach((sl,i)=>{
     if(!isAvailable(sl.id)) return;                 // 결장자는 autoFixLineup 몫이다
+    /* [제보 v3.71.0] "3년차 되니까 선발명단에 나를 안넣어주는데" — 한규(잘하는데도 빠졌다)
+       감독이 한 주에 한 명 바꾸는 이 자리에서 **나도** 빠졌다. 내 평가값(effCA)은 ST.ca 에 남은
+       사회인 시절 숫자라 프로 선수들보다 한참 낮게 나왔고, 한 번 빠지면 라인업이 「안 깨진」 상태라
+       다시 안 넣어 줬다. 선수 모드에서 나를 빼는 건 면담(벤치 처분) · 2군뿐이다 */
+    if(isPlayerMode() && sl.id===meT) return;
     bench.forEach(q=>{
       if(sl.pos!=='DH' && fit(q.id,sl.pos)<=0) return;   // 그 자리를 못 보면 안 된다
       const gain=ca(q.id)-ca(sl.id);
@@ -23665,7 +23777,11 @@ function runWeek(){
        이제 **지난주 것을 그대로 들고 간다.** 라인업이 깨졌을 때만 새로 짜고,
        그 밖에는 감독이 한 주에 한 명만 손본다(managerTweak).
        못 나오는 사람은 바로 아래 autoFixLineup 이 메운다.            */
-    if(lineupBroken()){ ST.lineup=recommendLineup(); optimizePositions(); }
+    /* 뛸 수 있고 벤치 처분도 없는데 내가 라인업에 없으면 — 다시 짠다(내 자리부터 잡는다) */
+    const meW=ST.playerId||MYID, meOut=isPlayerMode() && ST.role!=='pit' && isAvailable(meW) && (ST.myBenched||0)<=0
+      && (ST.myFarm||0)<=0 && Array.isArray(ST.lineup) && !ST.lineup.some(x=>x.id===meW)
+      && TBYID['wwzw'].players.some(p=>p.id===meW);
+    if(lineupBroken() || meOut){ ST.lineup=recommendLineup(); optimizePositions(); }
     else {
       const tw=managerTweak();
       if(tw) evs.push({type:'lineup',pid:tw.inId,
@@ -49587,8 +49703,9 @@ function renderMore(){
 }
 /* 설정 정리 — [제보] "설정 누르면 나오는게 너무 많아서 복잡해 안쓰는 기능들은 좀 버리자 이제 뭐 나한테 물어보던가"
    지우기 전에 사용자에게 묻기로 했다. 그동안은 잘 안 쓰는 카드를 맨 아래 「자주 안 쓰는 설정 ▾」 에 접어 둔다 */
-const MORE_FOLD=['선수단 둘러보기','화면 크기','자동 교체','환경 정보','장비','플레이 선수','만약에','데이터','경기장','특성 설명','세이브 슬롯',
-  '이름 · 등번호 · 팀명','입장 코드','플레이타임','이 게임에 대해'];
+/* [요청 v3.71.0] "선수단 둘러보기 · 이름/등번호/팀명, 플레이타임은 (…) 어딘가 볼 수 있으면 좋을텐데" — 위로 다시 꺼냈다 */
+const MORE_FOLD=['화면 크기','자동 교체','환경 정보','장비','플레이 선수','만약에','데이터','경기장','특성 설명','세이브 슬롯',
+  '입장 코드','이 게임에 대해'];
 /* [요청 v3.70.0] "설정 세팅 다했어? 그 지저분한것들?" — 프로에선 사회인 전용 카드를 아예 뺀다.
    장비(운영비) · 경기장(사회인 구장) · 특성 설명 · 만약에(2026 사회인 판) · 플레이 선수(사회인 선수 고르기 —
    프로에서 누르면 판이 꼬인다). 함수는 그대로 두고 화면에서만 뺀다 */
