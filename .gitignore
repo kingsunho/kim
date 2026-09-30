@@ -9,3 +9,4 @@ loading-preview.html
 art/_*.png
 art/_sheet.png
 art/_*.webp
+dist/
