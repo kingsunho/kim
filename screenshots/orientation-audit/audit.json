@@ -1,0 +1,104 @@
+{
+  "commit": "787e700",
+  "camera2D": {
+    "name": "포수 뒤",
+    "zoom": 1.35,
+    "cx": 240,
+    "cy": 339
+  },
+  "modelProjection": {
+    "yaw": 0.55,
+    "pitchCoefficient": 0.28,
+    "viewForward": [
+      -0.5033289950243345,
+      -0.26962992551997095,
+      0.8209504406673334
+    ],
+    "viewerDirection": [
+      0.5033289950243345,
+      0.26962992551997095,
+      -0.8209504406673334
+    ],
+    "finiteEyePosition": null
+  },
+  "frontNormal": [
+    -0.8,
+    0,
+    0.6
+  ],
+  "backNormal": [
+    0.8,
+    0,
+    -0.6
+  ],
+  "backVsViewerHorizontalAngle": 21.61742362196073,
+  "rigStrideAxis": [
+    0.6,
+    0,
+    0.8
+  ],
+  "rigStrideProjected": [
+    0.9296644963802307,
+    -0.10315403848097854
+  ],
+  "fieldPitcherScreenDirection": [
+    53.91999999999999,
+    -102
+  ],
+  "fieldPitcherAngle": -62.137840469351374,
+  "rigStrideAngle": -6.3315457671566655,
+  "directionDifference": 55.806294702194705,
+  "ready": {
+    "state": "back",
+    "front": 0,
+    "side": 0.1531626251052044,
+    "back": 0.8468373748947956,
+    "chestNormal": [
+      -0.8,
+      0,
+      0.6
+    ],
+    "backNormal": [
+      0.8,
+      0,
+      -0.6
+    ],
+    "pelvisAngle": 0,
+    "shoulderAngle": 0,
+    "cameraYaw": 31.51267873219528
+  },
+  "plant": {
+    "state": "back",
+    "front": 0,
+    "side": 0.15316262510520443,
+    "back": 0.8468373748947956,
+    "chestNormal": [
+      -0.8,
+      0,
+      0.6
+    ],
+    "backNormal": [
+      0.8,
+      0,
+      -0.6
+    ],
+    "pelvisAngle": 0,
+    "shoulderAngle": 0,
+    "cameraYaw": 31.51267873219528
+  },
+  "materialArea": {
+    "front": 0.012246871511940744,
+    "back": 0.9877531284880591
+  },
+  "numberSurface": {
+    "material": "back",
+    "angle": -1.5707963267948966,
+    "v": 0.375,
+    "point": [
+      6.487500000000002,
+      49.683063500256516,
+      -3.5999999999999988
+    ]
+  },
+  "explicitWorldPitcherOrGazeBinding": false
+}
