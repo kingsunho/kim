@@ -1,0 +1,73 @@
+{
+  "nonOpeningHTMLByteIdentical": true,
+  "approvedBattingBundleByteIdentical": true,
+  "approvedBundleSHA256": "563755d1e1857db996c38215441c56ea7f6e685b9f45014b4344ccbe00ff1f68",
+  "rows": [
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "clips": [],
+      "maxHandError": 0,
+      "maxJump": 0.006745388038518141,
+      "gameStateUnchanged": true,
+      "cast": [
+        {
+          "name": "곽빈",
+          "team": "두산 베어스",
+          "no": 47
+        },
+        {
+          "name": "김도영",
+          "team": "KIA 타이거즈",
+          "no": 5
+        },
+        {
+          "name": "박해민",
+          "team": "LG 트윈스",
+          "no": 17
+        }
+      ],
+      "duration": 8850,
+      "errors": []
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "clips": [],
+      "maxHandError": 5.684341886080802e-14,
+      "maxJump": 0.0071615319021410394,
+      "gameStateUnchanged": true,
+      "cast": [
+        {
+          "name": "곽빈",
+          "team": "두산 베어스",
+          "no": 47
+        },
+        {
+          "name": "김도영",
+          "team": "KIA 타이거즈",
+          "no": 5
+        },
+        {
+          "name": "박해민",
+          "team": "LG 트윈스",
+          "no": 17
+        }
+      ],
+      "duration": 8850,
+      "errors": []
+    }
+  ],
+  "openingFinishStopsRAF": true,
+  "resizeExercised": true,
+  "closeCallbackExactlyOnce": true,
+  "lifecycleErrors": [],
+  "noExternalPhotoAsset": true,
+  "actualIPhoneTested": false,
+  "merged": false,
+  "deployed": false
+}

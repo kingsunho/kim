@@ -1,0 +1,24 @@
+[
+  {
+    "kind": "before",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "errors": [],
+    "trimSeconds": 1.642999999999999,
+    "recordedNormalSpeed": true,
+    "output": "/tmp/opening-work/video/before-mobile.mp4"
+  },
+  {
+    "kind": "after",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "errors": [],
+    "trimSeconds": 1.8779999999999983,
+    "recordedNormalSpeed": true,
+    "output": "/tmp/opening-work/video/after-mobile.mp4"
+  }
+]

@@ -1,0 +1,31 @@
+{
+  "base": "d738712",
+  "branch": "visual/opening-presentation",
+  "approvedBattingSource": "337e440",
+  "battingBundleMatchesDeployedV5171": true,
+  "sourceSHA256": "7fd97c5e3289351f8d811034eaf58393572a588ad28c1f94f84df101e5182392",
+  "officialReferences": [
+    {
+      "name": "곽빈",
+      "profile": "https://www.koreabaseball.com/Record/Player/PitcherDetail/Basic.aspx?playerId=68220",
+      "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/68220.jpg"
+    },
+    {
+      "name": "김도영",
+      "profile": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=52605",
+      "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/52605.jpg"
+    },
+    {
+      "name": "박해민",
+      "profile": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=62415",
+      "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/62415.jpg"
+    }
+  ],
+  "externalPhotosInProduct": false,
+  "merged": false,
+  "deployed": false,
+  "actualIPhoneTested": false,
+  "videoDecodeChecks": "passed; 25fps recorder, not a performance benchmark",
+  "smokeExit": 0,
+  "lintExit": 0
+}
