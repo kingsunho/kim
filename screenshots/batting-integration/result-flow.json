@@ -1,0 +1,42 @@
+{
+  "before": {
+    "id": "swm",
+    "pa": 0,
+    "round": 0,
+    "player": "ksh"
+  },
+  "forced": "1B",
+  "after": {
+    "box": {
+      "pa": 1,
+      "ab": 1,
+      "h": 1,
+      "d2": 0,
+      "d3": 0,
+      "hr": 0,
+      "bb": 0,
+      "hbp": 0,
+      "k": 0,
+      "rbi": 0,
+      "r": 0,
+      "sb": 0,
+      "cs": 0,
+      "e": 0,
+      "sv": {
+        "R": [
+          1,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "forceConsumed": true,
+    "loaded": true,
+    "round": 0,
+    "player": "ksh"
+  },
+  "errors": []
+}

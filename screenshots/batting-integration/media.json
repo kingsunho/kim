@@ -1,0 +1,62 @@
+[
+  {
+    "name": "hit",
+    "width": 390,
+    "height": 844,
+    "r_frame_rate": "25/1",
+    "duration": 5.4,
+    "nb_frames": "135",
+    "ended": true,
+    "decoded": 135
+  },
+  {
+    "name": "miss",
+    "width": 390,
+    "height": 844,
+    "r_frame_rate": "25/1",
+    "duration": 4.8,
+    "nb_frames": "120",
+    "ended": true,
+    "decoded": 120
+  },
+  {
+    "name": "foul",
+    "width": 390,
+    "height": 844,
+    "r_frame_rate": "25/1",
+    "duration": 5.32,
+    "nb_frames": "133",
+    "ended": true,
+    "decoded": 133
+  },
+  {
+    "name": "hr",
+    "width": 390,
+    "height": 844,
+    "r_frame_rate": "25/1",
+    "duration": 5.72,
+    "nb_frames": "143",
+    "ended": true,
+    "decoded": 143
+  },
+  {
+    "name": "strikeout",
+    "width": 390,
+    "height": 844,
+    "r_frame_rate": "25/1",
+    "duration": 4.76,
+    "nb_frames": "119",
+    "ended": true,
+    "decoded": 119
+  },
+  {
+    "name": "left",
+    "width": 390,
+    "height": 844,
+    "r_frame_rate": "25/1",
+    "duration": 5.24,
+    "nb_frames": "131",
+    "ended": true,
+    "decoded": 131
+  }
+]

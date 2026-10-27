@@ -1,0 +1,40 @@
+{
+  "base": "db31b7e (v5.160.25)",
+  "approved": "86369a5",
+  "checks": {
+    "lint": {
+      "passed": true,
+      "failureLines": []
+    },
+    "smoke": {
+      "passed": true,
+      "failureLines": []
+    },
+    "compatibility": {
+      "passed": true,
+      "failureLines": []
+    },
+    "proSeason": {
+      "passed": true,
+      "failureLines": []
+    },
+    "growth": {
+      "passed": false,
+      "failure": "중계를 고르면 로테이션에서 두 번째다 — 선발이 내려가면 올라간다",
+      "sameOnUnmodifiedBase": true,
+      "baselineTestSource": "4b5cb06 v5.160.22",
+      "growthEntryPointUnchangedAtLatest": true
+    },
+    "packaging": {
+      "passed": true,
+      "checksPassed": 7,
+      "localBuildOnly": true
+    }
+  },
+  "backup": {
+    "version": "5.160.25",
+    "pagesCommit": "9eb24b48c8b46c537bfc5fc8cfeef14cb3a03b72",
+    "remoteBranch": "backup/v5.160.25-pre-batting",
+    "encryptedIndexSHA256": "cae4cd3f9d88752f52aeeccf4b250db2c48b68aaa6b0e73246fe0bc7e8af27ba"
+  }
+}
