@@ -1,0 +1,20 @@
+{
+  "chromium": "154.0.8037.57",
+  "cpu": "AMD EPYC 9V74 80-Core Processor",
+  "cpuQuota": "400000 100000",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+  "viewports": [
+    [
+      390,
+      844
+    ],
+    [
+      1280,
+      720
+    ]
+  ],
+  "iphoneSafari": "not tested",
+  "afterBenchmarkCommit": "0f6acf4",
+  "latestBase": "de2d44b",
+  "measuredSourceSHA256": "ab242a7f1d8012682a4745ec8181e69389a3c4de2a9c61405afded7e9e03fb44"
+}

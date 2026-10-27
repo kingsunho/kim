@@ -1,0 +1,38 @@
+[
+  {
+    "name": "before-supported",
+    "width": 390,
+    "height": 844,
+    "duration": "5.240000",
+    "nb_frames": "131",
+    "ended": true,
+    "decoded": 131
+  },
+  {
+    "name": "before-fallback",
+    "width": 390,
+    "height": 844,
+    "duration": "5.200000",
+    "nb_frames": "130",
+    "ended": true,
+    "decoded": 130
+  },
+  {
+    "name": "after-supported",
+    "width": 390,
+    "height": 844,
+    "duration": "5.080000",
+    "nb_frames": "127",
+    "ended": true,
+    "decoded": 127
+  },
+  {
+    "name": "after-fallback",
+    "width": 390,
+    "height": 844,
+    "duration": "5.000000",
+    "nb_frames": "125",
+    "ended": true,
+    "decoded": 125
+  }
+]

@@ -1,0 +1,45 @@
+{
+  "lint": {
+    "passed": true,
+    "failures": []
+  },
+  "smoke": {
+    "passed": true,
+    "failures": []
+  },
+  "compat": {
+    "passed": true,
+    "failures": []
+  },
+  "prosoak": {
+    "passed": true,
+    "failures": []
+  },
+  "packaging": {
+    "passed": true,
+    "passedChecks": 7,
+    "localOnly": true
+  },
+  "isolation": {
+    "baseline": "de2d44b",
+    "protectedFunctionCount": 20,
+    "windup": "motion body equal after removing RAF timestamp plumbing"
+  },
+  "geometry": {
+    "passed": true,
+    "evidence": "geometry.json"
+  },
+  "bounds": {
+    "passed": true,
+    "evidence": "bounds.json"
+  },
+  "resultFlow": {
+    "passed": true,
+    "evidence": "result-flow.json"
+  },
+  "knownGrowthFailure": "Prior growtest relief-rotation expectation failure is not fixed or claimed passed.",
+  "videoDecode": {
+    "passed": true,
+    "clips": 4
+  }
+}

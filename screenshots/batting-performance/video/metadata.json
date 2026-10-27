@@ -1,0 +1,46 @@
+[
+  {
+    "mode": "before",
+    "group": "supported",
+    "input": {
+      "input": 2660.699999988079,
+      "end": 2788.699999988079,
+      "arrival": 2760.8605387141215
+    },
+    "errors": [],
+    "file": "gpt-review/batting-performance/video/before-supported.mp4"
+  },
+  {
+    "mode": "before",
+    "group": "fallback",
+    "input": {
+      "input": 2632,
+      "end": 2727.699999988079,
+      "arrival": 2732.260538630675
+    },
+    "errors": [],
+    "file": "gpt-review/batting-performance/video/before-fallback.mp4"
+  },
+  {
+    "mode": "after",
+    "group": "supported",
+    "input": {
+      "input": 2604.800000011921,
+      "end": 2634.199999988079,
+      "arrival": 2705.360538654517
+    },
+    "errors": [],
+    "file": "gpt-review/batting-performance/video/after-supported.mp4"
+  },
+  {
+    "mode": "after",
+    "group": "fallback",
+    "input": {
+      "input": 2576.699999988079,
+      "end": 2581.600000023842,
+      "arrival": 2677.2605386902796
+    },
+    "errors": [],
+    "file": "gpt-review/batting-performance/video/after-fallback.mp4"
+  }
+]

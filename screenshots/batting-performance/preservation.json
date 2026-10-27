@@ -1,0 +1,119 @@
+{
+  "maxWorld": 0,
+  "frames": [
+    {
+      "ms": 0,
+      "changedChannels": 0,
+      "maxChannel": 0,
+      "armsEqual": true
+    },
+    {
+      "ms": 450,
+      "changedChannels": 0,
+      "maxChannel": 0,
+      "armsEqual": true
+    },
+    {
+      "ms": 900,
+      "changedChannels": 0,
+      "maxChannel": 0,
+      "armsEqual": true
+    },
+    {
+      "ms": 950,
+      "changedChannels": 0,
+      "maxChannel": 0,
+      "armsEqual": true
+    },
+    {
+      "ms": 1000,
+      "changedChannels": 0,
+      "maxChannel": 0,
+      "armsEqual": true
+    },
+    {
+      "ms": 1050,
+      "changedChannels": 0,
+      "maxChannel": 0,
+      "armsEqual": true
+    },
+    {
+      "ms": 1100,
+      "changedChannels": 0,
+      "maxChannel": 0,
+      "armsEqual": true
+    },
+    {
+      "ms": 1120,
+      "changedChannels": 0,
+      "maxChannel": 0,
+      "armsEqual": true
+    },
+    {
+      "ms": 1140,
+      "changedChannels": 0,
+      "maxChannel": 0,
+      "armsEqual": true
+    },
+    {
+      "ms": 1170,
+      "changedChannels": 0,
+      "maxChannel": 0,
+      "armsEqual": true
+    },
+    {
+      "ms": 1220,
+      "changedChannels": 0,
+      "maxChannel": 0,
+      "armsEqual": true
+    },
+    {
+      "ms": 1270,
+      "changedChannels": 0,
+      "maxChannel": 0,
+      "armsEqual": true
+    },
+    {
+      "ms": 1350,
+      "changedChannels": 0,
+      "maxChannel": 0,
+      "armsEqual": true
+    },
+    {
+      "ms": 1430,
+      "changedChannels": 0,
+      "maxChannel": 0,
+      "armsEqual": true
+    },
+    {
+      "ms": 1510,
+      "changedChannels": 0,
+      "maxChannel": 0,
+      "armsEqual": true
+    },
+    {
+      "ms": 1630,
+      "changedChannels": 0,
+      "maxChannel": 0,
+      "armsEqual": true
+    },
+    {
+      "ms": 1750,
+      "changedChannels": 0,
+      "maxChannel": 0,
+      "armsEqual": true
+    }
+  ],
+  "readback": {
+    "before": {
+      "calls": 102,
+      "bytes": 12871344
+    },
+    "after": {
+      "calls": 102,
+      "bytes": 4572156
+    }
+  },
+  "checksSampled": 86,
+  "worldSamples": 351
+}
