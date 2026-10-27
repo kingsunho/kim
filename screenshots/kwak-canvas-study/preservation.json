@@ -1,0 +1,18 @@
+{
+  "index.html": {
+    "identicalToBase": true,
+    "sha256": "7fd97c5e3289351f8d811034eaf58393572a588ad28c1f94f84df101e5182392"
+  },
+  "visual/opening/film.js": {
+    "identicalToBase": true,
+    "sha256": "6298423d5e4988e416193a672d982cc552c07d57d88a043f1c904755e208f524"
+  },
+  "visual/opening/intro.js": {
+    "identicalToBase": true,
+    "sha256": "54e0fa077afd78aed96846b5324955632acf3f8df7a3f52cf09f142555960227"
+  },
+  "visual/opening/build.cjs": {
+    "identicalToBase": true,
+    "sha256": "1b3519798727895675e798961f643df9019937021910e1d7cb98858f380a0b28"
+  }
+}

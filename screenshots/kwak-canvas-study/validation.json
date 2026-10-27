@@ -1,0 +1,53 @@
+{
+  "cases": [
+    {
+      "yaw": 0,
+      "bounds": {
+        "left": 154.04950495049505,
+        "right": 235.95049504950495,
+        "top": 180.84549865669575,
+        "bottom": 420.3155098830066
+      },
+      "polygons": 13845,
+      "finite": true,
+      "inside": true
+    },
+    {
+      "yaw": 38,
+      "bounds": {
+        "left": 164.642583306388,
+        "right": 234.68102763487698,
+        "top": 180.77265616876898,
+        "bottom": 421.6534688169528
+      },
+      "polygons": 13882,
+      "finite": true,
+      "inside": true
+    },
+    {
+      "yaw": 90,
+      "bounds": {
+        "left": 171.23762376237624,
+        "right": 232.22772277227722,
+        "top": 180.58076905857035,
+        "bottom": 421.66443331407675
+      },
+      "polygons": 13807,
+      "finite": true,
+      "inside": true
+    }
+  ],
+  "smallBendProbe": {
+    "maxBoneLengthError": 1.4210854715202004e-14,
+    "notAnAnimationTest": true
+  },
+  "isolatedRendererCPU": {
+    "coldCompileAndSubmitMs": 61.90000000037253,
+    "drawCommands": 188,
+    "samples": 12,
+    "medianMs": 0.20000000018626451,
+    "maxMs": 2,
+    "note": "Headless Chromium host. Cold = geometry + Path2D compilation + submission. Median/max = repeated cached static-path submission only. Does not include compositor raster, game FPS or mobile hardware."
+  },
+  "errors": []
+}
