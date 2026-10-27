@@ -1,0 +1,43 @@
+{
+  "maxBoneError": 1.4210854715202004e-14,
+  "bounds": [
+    {
+      "view": "front",
+      "bent": false,
+      "inside": true,
+      "calls": 16
+    },
+    {
+      "view": "front",
+      "bent": true,
+      "inside": true,
+      "calls": 16
+    },
+    {
+      "view": "quarter",
+      "bent": false,
+      "inside": true,
+      "calls": 16
+    },
+    {
+      "view": "quarter",
+      "bent": true,
+      "inside": true,
+      "calls": 16
+    },
+    {
+      "view": "side",
+      "bent": false,
+      "inside": true,
+      "calls": 16
+    },
+    {
+      "view": "side",
+      "bent": true,
+      "inside": true,
+      "calls": 16
+    }
+  ],
+  "finite": true,
+  "errors": []
+}
