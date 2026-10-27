@@ -1,0 +1,302 @@
+[
+  {
+    "size": {
+      "width": 844,
+      "height": 390
+    },
+    "park": "jamsil",
+    "weather": "clear",
+    "mode": "off",
+    "file": "gpt-review/stadium-final/screens/844-jamsil-off.png"
+  },
+  {
+    "size": {
+      "width": 844,
+      "height": 390
+    },
+    "park": "jamsil",
+    "weather": "clear",
+    "mode": "cold",
+    "file": "gpt-review/stadium-final/screens/844-jamsil-cold.png"
+  },
+  {
+    "size": {
+      "width": 844,
+      "height": 390
+    },
+    "park": "jamsil",
+    "weather": "clear",
+    "mode": "warm",
+    "file": "gpt-review/stadium-final/screens/844-jamsil-warm.png"
+  },
+  {
+    "size": {
+      "width": 844,
+      "height": 390
+    },
+    "park": "gocheok",
+    "weather": "clear",
+    "mode": "off",
+    "file": "gpt-review/stadium-final/screens/844-gocheok-off.png"
+  },
+  {
+    "size": {
+      "width": 844,
+      "height": 390
+    },
+    "park": "gocheok",
+    "weather": "clear",
+    "mode": "cold",
+    "file": "gpt-review/stadium-final/screens/844-gocheok-cold.png"
+  },
+  {
+    "size": {
+      "width": 844,
+      "height": 390
+    },
+    "park": "gocheok",
+    "weather": "clear",
+    "mode": "warm",
+    "file": "gpt-review/stadium-final/screens/844-gocheok-warm.png"
+  },
+  {
+    "size": {
+      "width": 844,
+      "height": 390
+    },
+    "park": "gwangju",
+    "weather": "rainy",
+    "mode": "off",
+    "file": "gpt-review/stadium-final/screens/844-gwangju-off.png"
+  },
+  {
+    "size": {
+      "width": 844,
+      "height": 390
+    },
+    "park": "gwangju",
+    "weather": "rainy",
+    "mode": "cold",
+    "file": "gpt-review/stadium-final/screens/844-gwangju-cold.png"
+  },
+  {
+    "size": {
+      "width": 844,
+      "height": 390
+    },
+    "park": "gwangju",
+    "weather": "rainy",
+    "mode": "warm",
+    "file": "gpt-review/stadium-final/screens/844-gwangju-warm.png"
+  },
+  {
+    "size": {
+      "width": 844,
+      "height": 390
+    },
+    "park": "mlb_bos",
+    "weather": "cloud",
+    "mode": "off",
+    "file": "gpt-review/stadium-final/screens/844-mlb_bos-off.png"
+  },
+  {
+    "size": {
+      "width": 844,
+      "height": 390
+    },
+    "park": "mlb_bos",
+    "weather": "cloud",
+    "mode": "cold",
+    "file": "gpt-review/stadium-final/screens/844-mlb_bos-cold.png"
+  },
+  {
+    "size": {
+      "width": 844,
+      "height": 390
+    },
+    "park": "mlb_bos",
+    "weather": "cloud",
+    "mode": "warm",
+    "file": "gpt-review/stadium-final/screens/844-mlb_bos-warm.png"
+  },
+  {
+    "size": {
+      "width": 844,
+      "height": 390
+    },
+    "park": "mlb_nyy",
+    "weather": "clear",
+    "mode": "off",
+    "file": "gpt-review/stadium-final/screens/844-mlb_nyy-off.png"
+  },
+  {
+    "size": {
+      "width": 844,
+      "height": 390
+    },
+    "park": "mlb_nyy",
+    "weather": "clear",
+    "mode": "cold",
+    "file": "gpt-review/stadium-final/screens/844-mlb_nyy-cold.png"
+  },
+  {
+    "size": {
+      "width": 844,
+      "height": 390
+    },
+    "park": "mlb_nyy",
+    "weather": "clear",
+    "mode": "warm",
+    "file": "gpt-review/stadium-final/screens/844-mlb_nyy-warm.png"
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "park": "jamsil",
+    "weather": "clear",
+    "mode": "off",
+    "file": "gpt-review/stadium-final/screens/1280-jamsil-off.png"
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "park": "jamsil",
+    "weather": "clear",
+    "mode": "cold",
+    "file": "gpt-review/stadium-final/screens/1280-jamsil-cold.png"
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "park": "jamsil",
+    "weather": "clear",
+    "mode": "warm",
+    "file": "gpt-review/stadium-final/screens/1280-jamsil-warm.png"
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "park": "gocheok",
+    "weather": "clear",
+    "mode": "off",
+    "file": "gpt-review/stadium-final/screens/1280-gocheok-off.png"
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "park": "gocheok",
+    "weather": "clear",
+    "mode": "cold",
+    "file": "gpt-review/stadium-final/screens/1280-gocheok-cold.png"
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "park": "gocheok",
+    "weather": "clear",
+    "mode": "warm",
+    "file": "gpt-review/stadium-final/screens/1280-gocheok-warm.png"
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "park": "gwangju",
+    "weather": "rainy",
+    "mode": "off",
+    "file": "gpt-review/stadium-final/screens/1280-gwangju-off.png"
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "park": "gwangju",
+    "weather": "rainy",
+    "mode": "cold",
+    "file": "gpt-review/stadium-final/screens/1280-gwangju-cold.png"
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "park": "gwangju",
+    "weather": "rainy",
+    "mode": "warm",
+    "file": "gpt-review/stadium-final/screens/1280-gwangju-warm.png"
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "park": "mlb_bos",
+    "weather": "cloud",
+    "mode": "off",
+    "file": "gpt-review/stadium-final/screens/1280-mlb_bos-off.png"
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "park": "mlb_bos",
+    "weather": "cloud",
+    "mode": "cold",
+    "file": "gpt-review/stadium-final/screens/1280-mlb_bos-cold.png"
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "park": "mlb_bos",
+    "weather": "cloud",
+    "mode": "warm",
+    "file": "gpt-review/stadium-final/screens/1280-mlb_bos-warm.png"
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "park": "mlb_nyy",
+    "weather": "clear",
+    "mode": "off",
+    "file": "gpt-review/stadium-final/screens/1280-mlb_nyy-off.png"
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "park": "mlb_nyy",
+    "weather": "clear",
+    "mode": "cold",
+    "file": "gpt-review/stadium-final/screens/1280-mlb_nyy-cold.png"
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "park": "mlb_nyy",
+    "weather": "clear",
+    "mode": "warm",
+    "file": "gpt-review/stadium-final/screens/1280-mlb_nyy-warm.png"
+  }
+]

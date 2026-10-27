@@ -1,0 +1,820 @@
+[
+  {
+    "size": {
+      "width": 844,
+      "height": 390
+    },
+    "mode": "off-off",
+    "comparisons": [
+      {
+        "pair": [
+          0,
+          1
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          1,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          2,
+          3
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          3,
+          4
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          4,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      }
+    ],
+    "cacheStats": {
+      "calls": 13,
+      "hits": 0,
+      "misses": 0,
+      "buildMs": [],
+      "bytes": 0,
+      "evictions": 0,
+      "bypasses": 13
+    }
+  },
+  {
+    "size": {
+      "width": 844,
+      "height": 390
+    },
+    "mode": "off-on",
+    "comparisons": [
+      {
+        "pair": [
+          0,
+          1
+        ],
+        "changed": 433,
+        "max": 9,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          1,
+          2
+        ],
+        "changed": 433,
+        "max": 9,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          2,
+          3
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          3,
+          4
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          4,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      }
+    ],
+    "cacheStats": {
+      "calls": 13,
+      "hits": 4,
+      "misses": 1,
+      "buildMs": [
+        4.5
+      ],
+      "bytes": 4665600,
+      "evictions": 0,
+      "bypasses": 8
+    }
+  },
+  {
+    "size": {
+      "width": 844,
+      "height": 390
+    },
+    "mode": "on-on",
+    "comparisons": [
+      {
+        "pair": [
+          0,
+          1
+        ],
+        "changed": 433,
+        "max": 9,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          1,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          2,
+          3
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          3,
+          4
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          4,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          2
+        ],
+        "changed": 433,
+        "max": 9,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          5
+        ],
+        "changed": 433,
+        "max": 9,
+        "alpha": 0
+      }
+    ],
+    "cacheStats": {
+      "calls": 13,
+      "hits": 5,
+      "misses": 1,
+      "buildMs": [
+        6.5
+      ],
+      "bytes": 4665600,
+      "evictions": 0,
+      "bypasses": 7
+    }
+  },
+  {
+    "size": {
+      "width": 844,
+      "height": 390
+    },
+    "mode": "off-state",
+    "comparisons": [
+      {
+        "pair": [
+          0,
+          1
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          1,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          2,
+          3
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          3,
+          4
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          4,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      }
+    ],
+    "cacheStats": {
+      "calls": 8,
+      "hits": 0,
+      "misses": 0,
+      "buildMs": [],
+      "bytes": 0,
+      "evictions": 0,
+      "bypasses": 8
+    }
+  },
+  {
+    "size": {
+      "width": 844,
+      "height": 390
+    },
+    "mode": "off-matrix",
+    "comparisons": [
+      {
+        "pair": [
+          0,
+          1
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          1,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          2,
+          3
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          3,
+          4
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          4,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      }
+    ],
+    "cacheStats": {
+      "calls": 8,
+      "hits": 0,
+      "misses": 0,
+      "buildMs": [],
+      "bytes": 0,
+      "evictions": 0,
+      "bypasses": 8
+    }
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "mode": "off-off",
+    "comparisons": [
+      {
+        "pair": [
+          0,
+          1
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          1,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          2,
+          3
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          3,
+          4
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          4,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      }
+    ],
+    "cacheStats": {
+      "calls": 13,
+      "hits": 0,
+      "misses": 0,
+      "buildMs": [],
+      "bytes": 0,
+      "evictions": 0,
+      "bypasses": 13
+    }
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "mode": "off-on",
+    "comparisons": [
+      {
+        "pair": [
+          0,
+          1
+        ],
+        "changed": 433,
+        "max": 9,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          1,
+          2
+        ],
+        "changed": 433,
+        "max": 9,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          2,
+          3
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          3,
+          4
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          4,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      }
+    ],
+    "cacheStats": {
+      "calls": 13,
+      "hits": 4,
+      "misses": 1,
+      "buildMs": [
+        4.100000023841858
+      ],
+      "bytes": 4665600,
+      "evictions": 0,
+      "bypasses": 8
+    }
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "mode": "on-on",
+    "comparisons": [
+      {
+        "pair": [
+          0,
+          1
+        ],
+        "changed": 433,
+        "max": 9,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          1,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          2,
+          3
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          3,
+          4
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          4,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          2
+        ],
+        "changed": 433,
+        "max": 9,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          5
+        ],
+        "changed": 433,
+        "max": 9,
+        "alpha": 0
+      }
+    ],
+    "cacheStats": {
+      "calls": 13,
+      "hits": 5,
+      "misses": 1,
+      "buildMs": [
+        8.399999976158142
+      ],
+      "bytes": 4665600,
+      "evictions": 0,
+      "bypasses": 7
+    }
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "mode": "off-state",
+    "comparisons": [
+      {
+        "pair": [
+          0,
+          1
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          1,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          2,
+          3
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          3,
+          4
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          4,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      }
+    ],
+    "cacheStats": {
+      "calls": 8,
+      "hits": 0,
+      "misses": 0,
+      "buildMs": [],
+      "bytes": 0,
+      "evictions": 0,
+      "bypasses": 8
+    }
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "mode": "off-matrix",
+    "comparisons": [
+      {
+        "pair": [
+          0,
+          1
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          1,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          2,
+          3
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          3,
+          4
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          4,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      }
+    ],
+    "cacheStats": {
+      "calls": 8,
+      "hits": 0,
+      "misses": 0,
+      "buildMs": [],
+      "bytes": 0,
+      "evictions": 0,
+      "bypasses": 8
+    }
+  }
+]

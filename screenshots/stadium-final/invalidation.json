@@ -1,0 +1,458 @@
+[
+  {
+    "size": {
+      "width": 390,
+      "height": 844
+    },
+    "rows": [
+      {
+        "park": "jamsil",
+        "weather": "clear",
+        "t": 0,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4320000
+      },
+      {
+        "park": "jamsil",
+        "weather": "clear",
+        "t": 1120,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4320000
+      },
+      {
+        "park": "jamsil",
+        "weather": "clear",
+        "t": 1750,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4320000
+      },
+      {
+        "park": "gocheok",
+        "weather": "clear",
+        "t": 0,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4320000
+      },
+      {
+        "park": "gocheok",
+        "weather": "clear",
+        "t": 1120,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4320000
+      },
+      {
+        "park": "gocheok",
+        "weather": "clear",
+        "t": 1750,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4320000
+      },
+      {
+        "park": "gwangju",
+        "weather": "rainy",
+        "t": 0,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4320000
+      },
+      {
+        "park": "gwangju",
+        "weather": "rainy",
+        "t": 1120,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4320000
+      },
+      {
+        "park": "gwangju",
+        "weather": "rainy",
+        "t": 1750,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4320000
+      },
+      {
+        "park": "mlb_bos",
+        "weather": "cloud",
+        "t": 0,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4320000
+      },
+      {
+        "park": "mlb_bos",
+        "weather": "cloud",
+        "t": 1120,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4320000
+      },
+      {
+        "park": "mlb_bos",
+        "weather": "cloud",
+        "t": 1750,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4320000
+      },
+      {
+        "park": "mlb_nyy",
+        "weather": "clear",
+        "t": 0,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4320000
+      },
+      {
+        "park": "mlb_nyy",
+        "weather": "clear",
+        "t": 1120,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4320000
+      },
+      {
+        "park": "mlb_nyy",
+        "weather": "clear",
+        "t": 1750,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4320000
+      }
+    ],
+    "fontMiss": 1,
+    "independentActorKeepsBackground": true,
+    "hostInvalidations": 4,
+    "budget": {
+      "peak": 8640000,
+      "limit": 12582912,
+      "resident": 4320000,
+      "detachedRemaining": 0
+    }
+  },
+  {
+    "size": {
+      "width": 844,
+      "height": 390
+    },
+    "rows": [
+      {
+        "park": "jamsil",
+        "weather": "clear",
+        "t": 0,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "jamsil",
+        "weather": "clear",
+        "t": 1120,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "jamsil",
+        "weather": "clear",
+        "t": 1750,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "gocheok",
+        "weather": "clear",
+        "t": 0,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "gocheok",
+        "weather": "clear",
+        "t": 1120,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "gocheok",
+        "weather": "clear",
+        "t": 1750,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "gwangju",
+        "weather": "rainy",
+        "t": 0,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "gwangju",
+        "weather": "rainy",
+        "t": 1120,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "gwangju",
+        "weather": "rainy",
+        "t": 1750,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "mlb_bos",
+        "weather": "cloud",
+        "t": 0,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "mlb_bos",
+        "weather": "cloud",
+        "t": 1120,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "mlb_bos",
+        "weather": "cloud",
+        "t": 1750,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "mlb_nyy",
+        "weather": "clear",
+        "t": 0,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "mlb_nyy",
+        "weather": "clear",
+        "t": 1120,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "mlb_nyy",
+        "weather": "clear",
+        "t": 1750,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      }
+    ],
+    "fontMiss": 1,
+    "independentActorKeepsBackground": true,
+    "hostInvalidations": 4,
+    "budget": {
+      "peak": 9331200,
+      "limit": 12582912,
+      "resident": 4665600,
+      "detachedRemaining": 0
+    }
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "rows": [
+      {
+        "park": "jamsil",
+        "weather": "clear",
+        "t": 0,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "jamsil",
+        "weather": "clear",
+        "t": 1120,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "jamsil",
+        "weather": "clear",
+        "t": 1750,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "gocheok",
+        "weather": "clear",
+        "t": 0,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "gocheok",
+        "weather": "clear",
+        "t": 1120,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "gocheok",
+        "weather": "clear",
+        "t": 1750,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "gwangju",
+        "weather": "rainy",
+        "t": 0,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "gwangju",
+        "weather": "rainy",
+        "t": 1120,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "gwangju",
+        "weather": "rainy",
+        "t": 1750,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "mlb_bos",
+        "weather": "cloud",
+        "t": 0,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "mlb_bos",
+        "weather": "cloud",
+        "t": 1120,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "mlb_bos",
+        "weather": "cloud",
+        "t": 1750,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "mlb_nyy",
+        "weather": "clear",
+        "t": 0,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "mlb_nyy",
+        "weather": "clear",
+        "t": 1120,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      },
+      {
+        "park": "mlb_nyy",
+        "weather": "clear",
+        "t": 1750,
+        "changed": 0,
+        "max": 0,
+        "alphaChanged": 0,
+        "totalChannels": 4665600
+      }
+    ],
+    "fontMiss": 1,
+    "independentActorKeepsBackground": true,
+    "hostInvalidations": 4,
+    "budget": {
+      "peak": 9331200,
+      "limit": 12582912,
+      "resident": 4665600,
+      "detachedRemaining": 0
+    }
+  }
+]

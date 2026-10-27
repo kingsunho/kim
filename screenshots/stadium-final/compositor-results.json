@@ -1,0 +1,322 @@
+[
+  {
+    "variant": "screens-old",
+    "width": 844,
+    "park": "gocheok",
+    "mode": "cold",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens-old",
+    "width": 844,
+    "park": "gocheok",
+    "mode": "warm",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens-old",
+    "width": 844,
+    "park": "gwangju",
+    "mode": "cold",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens-old",
+    "width": 844,
+    "park": "gwangju",
+    "mode": "warm",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens-old",
+    "width": 844,
+    "park": "jamsil",
+    "mode": "cold",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens-old",
+    "width": 844,
+    "park": "jamsil",
+    "mode": "warm",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens-old",
+    "width": 844,
+    "park": "mlb_bos",
+    "mode": "cold",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens-old",
+    "width": 844,
+    "park": "mlb_bos",
+    "mode": "warm",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens-old",
+    "width": 844,
+    "park": "mlb_nyy",
+    "mode": "cold",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens-old",
+    "width": 844,
+    "park": "mlb_nyy",
+    "mode": "warm",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens-old",
+    "width": 1280,
+    "park": "gocheok",
+    "mode": "cold",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens-old",
+    "width": 1280,
+    "park": "gocheok",
+    "mode": "warm",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens-old",
+    "width": 1280,
+    "park": "gwangju",
+    "mode": "cold",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens-old",
+    "width": 1280,
+    "park": "gwangju",
+    "mode": "warm",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens-old",
+    "width": 1280,
+    "park": "jamsil",
+    "mode": "cold",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens-old",
+    "width": 1280,
+    "park": "jamsil",
+    "mode": "warm",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens-old",
+    "width": 1280,
+    "park": "mlb_bos",
+    "mode": "cold",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens-old",
+    "width": 1280,
+    "park": "mlb_bos",
+    "mode": "warm",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens-old",
+    "width": 1280,
+    "park": "mlb_nyy",
+    "mode": "cold",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens-old",
+    "width": 1280,
+    "park": "mlb_nyy",
+    "mode": "warm",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens",
+    "width": 844,
+    "park": "gocheok",
+    "mode": "cold",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens",
+    "width": 844,
+    "park": "gocheok",
+    "mode": "warm",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens",
+    "width": 844,
+    "park": "gwangju",
+    "mode": "cold",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens",
+    "width": 844,
+    "park": "gwangju",
+    "mode": "warm",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens",
+    "width": 844,
+    "park": "jamsil",
+    "mode": "cold",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens",
+    "width": 844,
+    "park": "jamsil",
+    "mode": "warm",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens",
+    "width": 844,
+    "park": "mlb_bos",
+    "mode": "cold",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens",
+    "width": 844,
+    "park": "mlb_bos",
+    "mode": "warm",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens",
+    "width": 844,
+    "park": "mlb_nyy",
+    "mode": "cold",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens",
+    "width": 844,
+    "park": "mlb_nyy",
+    "mode": "warm",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens",
+    "width": 1280,
+    "park": "gocheok",
+    "mode": "cold",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens",
+    "width": 1280,
+    "park": "gocheok",
+    "mode": "warm",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens",
+    "width": 1280,
+    "park": "gwangju",
+    "mode": "cold",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens",
+    "width": 1280,
+    "park": "gwangju",
+    "mode": "warm",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens",
+    "width": 1280,
+    "park": "jamsil",
+    "mode": "cold",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens",
+    "width": 1280,
+    "park": "jamsil",
+    "mode": "warm",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens",
+    "width": 1280,
+    "park": "mlb_bos",
+    "mode": "cold",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens",
+    "width": 1280,
+    "park": "mlb_bos",
+    "mode": "warm",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens",
+    "width": 1280,
+    "park": "mlb_nyy",
+    "mode": "cold",
+    "changedChannels": 0,
+    "max": 0
+  },
+  {
+    "variant": "screens",
+    "width": 1280,
+    "park": "mlb_nyy",
+    "mode": "warm",
+    "changedChannels": 0,
+    "max": 0
+  }
+]

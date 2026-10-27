@@ -1,0 +1,10 @@
+{
+  "base": "35e9e5b",
+  "version": "v5.168.0",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+  "cpuQuota": "400000 100000",
+  "physicalIPhone": false,
+  "primaryTrials": 200,
+  "oldSnapshotDiagnosticTrials": 50,
+  "recordingsSeparate": true
+}

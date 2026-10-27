@@ -1,0 +1,920 @@
+[
+  {
+    "size": {
+      "width": 844,
+      "height": 390
+    },
+    "mode": "off-off",
+    "mainContext": {
+      "alpha": true,
+      "colorSpace": "srgb",
+      "colorType": "unorm8",
+      "desynchronized": false,
+      "toneMapping": {
+        "mode": "standard"
+      },
+      "willReadFrequently": false
+    },
+    "comparisons": [
+      {
+        "pair": [
+          0,
+          1
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          1,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          2,
+          3
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          3,
+          4
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          4,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      }
+    ],
+    "cacheStats": {
+      "calls": 12,
+      "hits": 0,
+      "misses": 0,
+      "buildMs": [],
+      "bytes": 0,
+      "evictions": 0,
+      "bypasses": 12
+    }
+  },
+  {
+    "size": {
+      "width": 844,
+      "height": 390
+    },
+    "mode": "off-on",
+    "mainContext": {
+      "alpha": true,
+      "colorSpace": "srgb",
+      "colorType": "unorm8",
+      "desynchronized": false,
+      "toneMapping": {
+        "mode": "standard"
+      },
+      "willReadFrequently": false
+    },
+    "comparisons": [
+      {
+        "pair": [
+          0,
+          1
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          1,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          2,
+          3
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          3,
+          4
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          4,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      }
+    ],
+    "cacheStats": {
+      "calls": 13,
+      "hits": 4,
+      "misses": 1,
+      "buildMs": [
+        4.600000023841858
+      ],
+      "bytes": 4665600,
+      "evictions": 0,
+      "bypasses": 8
+    }
+  },
+  {
+    "size": {
+      "width": 844,
+      "height": 390
+    },
+    "mode": "on-on",
+    "mainContext": {
+      "alpha": true,
+      "colorSpace": "srgb",
+      "colorType": "unorm8",
+      "desynchronized": false,
+      "toneMapping": {
+        "mode": "standard"
+      },
+      "willReadFrequently": false
+    },
+    "comparisons": [
+      {
+        "pair": [
+          0,
+          1
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          1,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          2,
+          3
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          3,
+          4
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          4,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      }
+    ],
+    "cacheStats": {
+      "calls": 13,
+      "hits": 5,
+      "misses": 1,
+      "buildMs": [
+        7.600000023841858
+      ],
+      "bytes": 4665600,
+      "evictions": 0,
+      "bypasses": 7
+    }
+  },
+  {
+    "size": {
+      "width": 844,
+      "height": 390
+    },
+    "mode": "off-state",
+    "mainContext": {
+      "alpha": true,
+      "colorSpace": "srgb",
+      "colorType": "unorm8",
+      "desynchronized": false,
+      "toneMapping": {
+        "mode": "standard"
+      },
+      "willReadFrequently": false
+    },
+    "comparisons": [
+      {
+        "pair": [
+          0,
+          1
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          1,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          2,
+          3
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          3,
+          4
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          4,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      }
+    ],
+    "cacheStats": {
+      "calls": 8,
+      "hits": 0,
+      "misses": 0,
+      "buildMs": [],
+      "bytes": 0,
+      "evictions": 0,
+      "bypasses": 8
+    }
+  },
+  {
+    "size": {
+      "width": 844,
+      "height": 390
+    },
+    "mode": "off-matrix",
+    "mainContext": {
+      "alpha": true,
+      "colorSpace": "srgb",
+      "colorType": "unorm8",
+      "desynchronized": false,
+      "toneMapping": {
+        "mode": "standard"
+      },
+      "willReadFrequently": false
+    },
+    "comparisons": [
+      {
+        "pair": [
+          0,
+          1
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          1,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          2,
+          3
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          3,
+          4
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          4,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      }
+    ],
+    "cacheStats": {
+      "calls": 8,
+      "hits": 0,
+      "misses": 0,
+      "buildMs": [],
+      "bytes": 0,
+      "evictions": 0,
+      "bypasses": 8
+    }
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "mode": "off-off",
+    "mainContext": {
+      "alpha": true,
+      "colorSpace": "srgb",
+      "colorType": "unorm8",
+      "desynchronized": false,
+      "toneMapping": {
+        "mode": "standard"
+      },
+      "willReadFrequently": false
+    },
+    "comparisons": [
+      {
+        "pair": [
+          0,
+          1
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          1,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          2,
+          3
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          3,
+          4
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          4,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      }
+    ],
+    "cacheStats": {
+      "calls": 13,
+      "hits": 0,
+      "misses": 0,
+      "buildMs": [],
+      "bytes": 0,
+      "evictions": 0,
+      "bypasses": 13
+    }
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "mode": "off-on",
+    "mainContext": {
+      "alpha": true,
+      "colorSpace": "srgb",
+      "colorType": "unorm8",
+      "desynchronized": false,
+      "toneMapping": {
+        "mode": "standard"
+      },
+      "willReadFrequently": false
+    },
+    "comparisons": [
+      {
+        "pair": [
+          0,
+          1
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          1,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          2,
+          3
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          3,
+          4
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          4,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      }
+    ],
+    "cacheStats": {
+      "calls": 13,
+      "hits": 4,
+      "misses": 1,
+      "buildMs": [
+        8.200000047683716
+      ],
+      "bytes": 4665600,
+      "evictions": 0,
+      "bypasses": 8
+    }
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "mode": "on-on",
+    "mainContext": {
+      "alpha": true,
+      "colorSpace": "srgb",
+      "colorType": "unorm8",
+      "desynchronized": false,
+      "toneMapping": {
+        "mode": "standard"
+      },
+      "willReadFrequently": false
+    },
+    "comparisons": [
+      {
+        "pair": [
+          0,
+          1
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          1,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          2,
+          3
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          3,
+          4
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          4,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      }
+    ],
+    "cacheStats": {
+      "calls": 13,
+      "hits": 5,
+      "misses": 1,
+      "buildMs": [
+        10.699999928474426
+      ],
+      "bytes": 4665600,
+      "evictions": 0,
+      "bypasses": 7
+    }
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "mode": "off-state",
+    "mainContext": {
+      "alpha": true,
+      "colorSpace": "srgb",
+      "colorType": "unorm8",
+      "desynchronized": false,
+      "toneMapping": {
+        "mode": "standard"
+      },
+      "willReadFrequently": false
+    },
+    "comparisons": [
+      {
+        "pair": [
+          0,
+          1
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          1,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          2,
+          3
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          3,
+          4
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          4,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      }
+    ],
+    "cacheStats": {
+      "calls": 8,
+      "hits": 0,
+      "misses": 0,
+      "buildMs": [],
+      "bytes": 0,
+      "evictions": 0,
+      "bypasses": 8
+    }
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "mode": "off-matrix",
+    "mainContext": {
+      "alpha": true,
+      "colorSpace": "srgb",
+      "colorType": "unorm8",
+      "desynchronized": false,
+      "toneMapping": {
+        "mode": "standard"
+      },
+      "willReadFrequently": false
+    },
+    "comparisons": [
+      {
+        "pair": [
+          0,
+          1
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          1,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          2,
+          3
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          3,
+          4
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          4,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          2
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      },
+      {
+        "pair": [
+          0,
+          5
+        ],
+        "changed": 0,
+        "max": 0,
+        "alpha": 0
+      }
+    ],
+    "cacheStats": {
+      "calls": 8,
+      "hits": 0,
+      "misses": 0,
+      "buildMs": [],
+      "bytes": 0,
+      "evictions": 0,
+      "bypasses": 8
+    }
+  }
+]

@@ -1,0 +1,10 @@
+{
+  "factory": {
+    "identical": true,
+    "sha256": "e2ec70bff118e1d482229ac59f9ea7ab8ca78fa754d0fe891da3e1852b5f697d"
+  },
+  "adapter": {
+    "identical": true,
+    "sha256": "ba134f44093d34545959952f53aefc8a5b04675978b07fa915166b985bf6ebf8"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "performanceP95": true,
+  "native45Equal": true,
+  "visibleCasesEqual": true,
+  "checksPass": true,
+  "recommendCandidate": true,
+  "defaultCache": "OFF",
+  "merged": false,
+  "deployed": false,
+  "actualIPhoneTested": false
+}

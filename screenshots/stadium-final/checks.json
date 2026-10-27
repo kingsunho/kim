@@ -1,0 +1,87 @@
+[
+  {
+    "command": [
+      "node",
+      "lintcheck.js"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "node",
+      "smoketest.js"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "node",
+      "compattest.js"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "node",
+      "build-pages.js",
+      "--check"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "node",
+      "gpt-review/stadium-final/isolation.cjs"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "node",
+      "gpt-review/stadium-final/pose-proof.cjs"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "node",
+      "gpt-review/stadium-final/geometry-cache.cjs"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "node",
+      "gpt-review/stadium-final/bounds-cache.cjs"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "node",
+      "gpt-review/stadium-final/result-cache.cjs"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "node",
+      "gpt-review/stadium-final/lifecycle.cjs"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "node",
+      "gpt-review/stadium-final/invalidation.cjs"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "node",
+      "gpt-review/stadium-final/clock-proof.cjs"
+    ],
+    "exit": 0
+  }
+]

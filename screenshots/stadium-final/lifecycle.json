@@ -1,0 +1,87 @@
+[
+  {
+    "before": {
+      "bytes": 4320000,
+      "entries": 1,
+      "observer": true
+    },
+    "after": {
+      "bytes": 0,
+      "entries": 0,
+      "observer": false,
+      "canvasWidth": 0,
+      "canvasHeight": 0
+    },
+    "afterStaleDrawBytes": 0,
+    "afterStaleDrawEntries": 0,
+    "entryCollected": true
+  },
+  {
+    "before": {
+      "bytes": 4320000,
+      "entries": 1,
+      "observer": true
+    },
+    "after": {
+      "bytes": 0,
+      "entries": 0,
+      "observer": false,
+      "canvasWidth": 0,
+      "canvasHeight": 0
+    },
+    "afterStaleDrawBytes": 0,
+    "afterStaleDrawEntries": 0,
+    "entryCollected": true
+  },
+  {
+    "before": {
+      "bytes": 4320000,
+      "entries": 1,
+      "observer": true
+    },
+    "after": {
+      "bytes": 0,
+      "entries": 0,
+      "observer": false,
+      "canvasWidth": 0,
+      "canvasHeight": 0
+    },
+    "afterStaleDrawBytes": 0,
+    "afterStaleDrawEntries": 0,
+    "entryCollected": true
+  },
+  {
+    "before": {
+      "bytes": 4320000,
+      "entries": 1,
+      "observer": true
+    },
+    "after": {
+      "bytes": 0,
+      "entries": 0,
+      "observer": false,
+      "canvasWidth": 0,
+      "canvasHeight": 0
+    },
+    "afterStaleDrawBytes": 0,
+    "afterStaleDrawEntries": 0,
+    "entryCollected": true
+  },
+  {
+    "before": {
+      "bytes": 4320000,
+      "entries": 1,
+      "observer": true
+    },
+    "after": {
+      "bytes": 0,
+      "entries": 0,
+      "observer": false,
+      "canvasWidth": 0,
+      "canvasHeight": 0
+    },
+    "afterStaleDrawBytes": 0,
+    "afterStaleDrawEntries": 0,
+    "entryCollected": true
+  }
+]

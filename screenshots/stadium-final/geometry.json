@@ -1,0 +1,123 @@
+{
+  "base": "35e9e5b",
+  "approved": "86369a5",
+  "hashes": {
+    "ready.js": "9bed07ac2b73629d189d2c53ef313577d0c82b6c4c5b01ef2ebbd97ccfebc80f",
+    "plant.js": "f1d677bc95678a71d4853d9239a7bf40cf933397f347d2b48127d54699517ee6",
+    "contact.js": "3fd1c6e1f095e22ed27a470f6f39d1e537b37bb5fa7d39ec74b8bdcdf8e8cd59",
+    "extension.js": "80f5dbf19b749dbc091a9b61498b3d9e975d1c6068d82b33b92269802b3a046d",
+    "follow.js": "7cab3d4c41af85fe429e82760d17af1c103c221997c9d7b2c95087ea0723166f"
+  },
+  "geometry": [
+    {
+      "u": -1,
+      "w": -1,
+      "errorPx": 1.2710574864626038e-13,
+      "maxBone": 4.263256414560601e-14
+    },
+    {
+      "u": -1,
+      "w": 0,
+      "errorPx": 0,
+      "maxBone": 1.0658141036401503e-14
+    },
+    {
+      "u": -1,
+      "w": 1,
+      "errorPx": 5.684341886080802e-14,
+      "maxBone": 1.0658141036401503e-14
+    },
+    {
+      "u": 0,
+      "w": -1,
+      "fallback": {
+        "reason": "approved-arm-reach",
+        "aim": {
+          "u": 0,
+          "w": -1
+        },
+        "maxBone": 1.0232158811866015,
+        "failedAt": 1060
+      }
+    },
+    {
+      "u": 0,
+      "w": 0,
+      "errorPx": 2.842170943040401e-14,
+      "maxBone": 1.0658141036401503e-14
+    },
+    {
+      "u": 0,
+      "w": 1,
+      "errorPx": 2.842170943040401e-14,
+      "maxBone": 1.0658141036401503e-14
+    },
+    {
+      "u": 1,
+      "w": -1,
+      "fallback": {
+        "reason": "approved-arm-reach",
+        "aim": {
+          "u": 1,
+          "w": -1
+        },
+        "maxBone": 0.9199720855641615,
+        "failedAt": 1010
+      }
+    },
+    {
+      "u": 1,
+      "w": 0,
+      "fallback": {
+        "reason": "approved-arm-reach",
+        "aim": {
+          "u": 1,
+          "w": 0
+        },
+        "maxBone": 0.3711215561558916,
+        "failedAt": 1020
+      }
+    },
+    {
+      "u": 1,
+      "w": 1,
+      "fallback": {
+        "reason": "approved-arm-reach",
+        "aim": {
+          "u": 1,
+          "w": 1
+        },
+        "maxBone": 1.9068203210443002,
+        "failedAt": 1030
+      }
+    }
+  ],
+  "clock": [
+    [
+      1000,
+      900
+    ],
+    [
+      1050,
+      1010
+    ],
+    [
+      1100,
+      1120
+    ],
+    [
+      1250,
+      1270
+    ],
+    [
+      1730,
+      1750
+    ]
+  ],
+  "left": {
+    "enabled": false,
+    "actor": false,
+    "left": true
+  },
+  "errors": []
+}

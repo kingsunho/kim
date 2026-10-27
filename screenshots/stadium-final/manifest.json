@@ -1,0 +1,47 @@
+{
+  "c1-mobile.json": {
+    "productSHA256": "da8eacfee2aa99fbf63e5fbf544f5b3641131d35f4db268a72bce91fa2275543",
+    "chromium": "154.0.8037.57",
+    "count": 50,
+    "viewport": {
+      "width": 390,
+      "height": 844
+    }
+  },
+  "c1-pc.json": {
+    "productSHA256": "da8eacfee2aa99fbf63e5fbf544f5b3641131d35f4db268a72bce91fa2275543",
+    "chromium": "154.0.8037.57",
+    "count": 50,
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "cache-mobile.json": {
+    "productSHA256": "da8eacfee2aa99fbf63e5fbf544f5b3641131d35f4db268a72bce91fa2275543",
+    "chromium": "154.0.8037.57",
+    "count": 50,
+    "viewport": {
+      "width": 390,
+      "height": 844
+    }
+  },
+  "cache-pc.json": {
+    "productSHA256": "da8eacfee2aa99fbf63e5fbf544f5b3641131d35f4db268a72bce91fa2275543",
+    "chromium": "154.0.8037.57",
+    "count": 50,
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "old-snapshot-pc.json": {
+    "productSHA256": "79a5a55b2a1a527cba50779eb147d8c505f724fb060286010d4377e6db656368",
+    "chromium": "154.0.8037.57",
+    "count": 50,
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    }
+  }
+}
