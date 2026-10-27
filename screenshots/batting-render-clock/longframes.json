@@ -1,0 +1,124 @@
+[
+  {
+    "size": "pc",
+    "config": {
+      "group": "supported",
+      "outcome": "whiff",
+      "index": 4,
+      "hitOnly": false,
+      "clockMode": null
+    },
+    "intervalMs": 66.5,
+    "sinceInput": 49.70000007152703,
+    "sinceArrival": -565.0605386783573,
+    "sinceField": null,
+    "drawMax": 9.700000047683716,
+    "longtasks": []
+  },
+  {
+    "size": "pc",
+    "config": {
+      "group": "supported",
+      "outcome": "hr",
+      "index": 6,
+      "hitOnly": false,
+      "clockMode": null
+    },
+    "intervalMs": 50.099999999998545,
+    "sinceInput": 326.3000000715256,
+    "sinceArrival": 226.33946139316686,
+    "sinceField": -937.3999999761581,
+    "drawMax": 15.5,
+    "longtasks": []
+  },
+  {
+    "size": "pc",
+    "config": {
+      "group": "fallback",
+      "outcome": "whiff",
+      "index": 29,
+      "hitOnly": false,
+      "clockMode": null
+    },
+    "intervalMs": 66.70000000001164,
+    "sinceInput": -290.50000002383604,
+    "sinceArrival": -928.460538702202,
+    "sinceField": null,
+    "drawMax": 8.800000071525574,
+    "longtasks": [
+      {
+        "at": 89468.60000002384,
+        "duration": 55
+      }
+    ]
+  },
+  {
+    "size": "pc",
+    "config": {
+      "group": "supported",
+      "outcome": "hit",
+      "index": 32,
+      "hitOnly": false,
+      "clockMode": null
+    },
+    "intervalMs": 50.09999999999127,
+    "sinceInput": 314.80000002383895,
+    "sinceArrival": 213.83946134547296,
+    "sinceField": -943.9000000238448,
+    "drawMax": 8.100000023841858,
+    "longtasks": []
+  },
+  {
+    "size": "pc",
+    "config": {
+      "group": "supported",
+      "outcome": "hr",
+      "index": 38,
+      "hitOnly": false,
+      "clockMode": null
+    },
+    "intervalMs": 66.59999999999127,
+    "sinceInput": 434.70000007151975,
+    "sinceArrival": 334.53946134547004,
+    "sinceField": -833.3999999523221,
+    "drawMax": 7.100000023841858,
+    "longtasks": []
+  },
+  {
+    "size": "pc",
+    "config": {
+      "group": "fallback",
+      "outcome": "hr",
+      "index": 39,
+      "hitOnly": false,
+      "clockMode": null
+    },
+    "intervalMs": 116.69999999999709,
+    "sinceInput": 1180.0,
+    "sinceArrival": 1079.9394612977921,
+    "sinceField": -109.19999992847443,
+    "drawMax": 2.600000023841858,
+    "longtasks": [
+      {
+        "at": 119319.10000002384,
+        "duration": 118
+      }
+    ]
+  },
+  {
+    "size": "pc",
+    "config": {
+      "group": "supported",
+      "outcome": "hit",
+      "index": 40,
+      "hitOnly": false,
+      "clockMode": null
+    },
+    "intervalMs": 66.60000000000582,
+    "sinceInput": -1361.5999999761552,
+    "sinceArrival": -1461.760538702205,
+    "sinceField": -2623.800000023839,
+    "drawMax": 9.800000071525574,
+    "longtasks": []
+  }
+]

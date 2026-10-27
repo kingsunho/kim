@@ -1,0 +1,67 @@
+[
+  {
+    "command": [
+      "node",
+      "lintcheck.js"
+    ],
+    "exit": 0,
+    "log": "check-0.log"
+  },
+  {
+    "command": [
+      "node",
+      "smoketest.js"
+    ],
+    "exit": 0,
+    "log": "check-1.log"
+  },
+  {
+    "command": [
+      "node",
+      "compattest.js"
+    ],
+    "exit": 0,
+    "log": "check-2.log"
+  },
+  {
+    "command": [
+      "node",
+      "build-pages.js",
+      "--check"
+    ],
+    "exit": 0,
+    "log": "check-3.log"
+  },
+  {
+    "command": [
+      "node",
+      "gpt-review/batting-integration/isolation.cjs"
+    ],
+    "exit": 0,
+    "log": "check-4.log"
+  },
+  {
+    "command": [
+      "node",
+      "gpt-review/batting-integration/verify.cjs"
+    ],
+    "exit": 0,
+    "log": "check-5.log"
+  },
+  {
+    "command": [
+      "node",
+      "gpt-review/batting-integration/bounds.cjs"
+    ],
+    "exit": 0,
+    "log": "check-6.log"
+  },
+  {
+    "command": [
+      "node",
+      "gpt-review/batting-integration/result-flow.cjs"
+    ],
+    "exit": 0,
+    "log": "check-7.log"
+  }
+]
