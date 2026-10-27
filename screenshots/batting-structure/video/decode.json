@@ -1,0 +1,74 @@
+[
+  {
+    "file": "after-fallback.mp4",
+    "decodeExit": 0,
+    "info": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "width": 390,
+          "height": 844,
+          "r_frame_rate": "25/1"
+        }
+      ],
+      "format": {
+        "duration": "4.600000"
+      }
+    }
+  },
+  {
+    "file": "after-supported.mp4",
+    "decodeExit": 0,
+    "info": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "width": 390,
+          "height": 844,
+          "r_frame_rate": "25/1"
+        }
+      ],
+      "format": {
+        "duration": "4.640000"
+      }
+    }
+  },
+  {
+    "file": "before-fallback.mp4",
+    "decodeExit": 0,
+    "info": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "width": 390,
+          "height": 844,
+          "r_frame_rate": "25/1"
+        }
+      ],
+      "format": {
+        "duration": "4.560000"
+      }
+    }
+  },
+  {
+    "file": "before-supported.mp4",
+    "decodeExit": 0,
+    "info": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "width": 390,
+          "height": 844,
+          "r_frame_rate": "25/1"
+        }
+      ],
+      "format": {
+        "duration": "4.640000"
+      }
+    }
+  }
+]

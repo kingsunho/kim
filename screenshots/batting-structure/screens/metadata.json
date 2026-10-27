@@ -1,0 +1,110 @@
+[
+  {
+    "size": {
+      "width": 390,
+      "height": 844
+    },
+    "candidate": false,
+    "t": 0,
+    "path": "gpt-review/batting-structure/screens/390-c1-0.png"
+  },
+  {
+    "size": {
+      "width": 390,
+      "height": 844
+    },
+    "candidate": false,
+    "t": 1120,
+    "path": "gpt-review/batting-structure/screens/390-c1-1120.png"
+  },
+  {
+    "size": {
+      "width": 390,
+      "height": 844
+    },
+    "candidate": false,
+    "t": 1750,
+    "path": "gpt-review/batting-structure/screens/390-c1-1750.png"
+  },
+  {
+    "size": {
+      "width": 390,
+      "height": 844
+    },
+    "candidate": true,
+    "t": 0,
+    "path": "gpt-review/batting-structure/screens/390-cache-0.png"
+  },
+  {
+    "size": {
+      "width": 390,
+      "height": 844
+    },
+    "candidate": true,
+    "t": 1120,
+    "path": "gpt-review/batting-structure/screens/390-cache-1120.png"
+  },
+  {
+    "size": {
+      "width": 390,
+      "height": 844
+    },
+    "candidate": true,
+    "t": 1750,
+    "path": "gpt-review/batting-structure/screens/390-cache-1750.png"
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "candidate": false,
+    "t": 0,
+    "path": "gpt-review/batting-structure/screens/1280-c1-0.png"
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "candidate": false,
+    "t": 1120,
+    "path": "gpt-review/batting-structure/screens/1280-c1-1120.png"
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "candidate": false,
+    "t": 1750,
+    "path": "gpt-review/batting-structure/screens/1280-c1-1750.png"
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "candidate": true,
+    "t": 0,
+    "path": "gpt-review/batting-structure/screens/1280-cache-0.png"
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "candidate": true,
+    "t": 1120,
+    "path": "gpt-review/batting-structure/screens/1280-cache-1120.png"
+  },
+  {
+    "size": {
+      "width": 1280,
+      "height": 720
+    },
+    "candidate": true,
+    "t": 1750,
+    "path": "gpt-review/batting-structure/screens/1280-cache-1750.png"
+  }
+]

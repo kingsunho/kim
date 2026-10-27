@@ -1,0 +1,56 @@
+[
+  {
+    "width": 390,
+    "sourceTime": 0,
+    "sameShape": true,
+    "changedChannels": 0,
+    "changedPixels": 0,
+    "maxChannel": 0,
+    "totalChannels": 811200
+  },
+  {
+    "width": 390,
+    "sourceTime": 1120,
+    "sameShape": true,
+    "changedChannels": 0,
+    "changedPixels": 0,
+    "maxChannel": 0,
+    "totalChannels": 811200
+  },
+  {
+    "width": 390,
+    "sourceTime": 1750,
+    "sameShape": true,
+    "changedChannels": 0,
+    "changedPixels": 0,
+    "maxChannel": 0,
+    "totalChannels": 811200
+  },
+  {
+    "width": 1280,
+    "sourceTime": 0,
+    "sameShape": true,
+    "changedChannels": 0,
+    "changedPixels": 0,
+    "maxChannel": 0,
+    "totalChannels": 3686400
+  },
+  {
+    "width": 1280,
+    "sourceTime": 1120,
+    "sameShape": true,
+    "changedChannels": 0,
+    "changedPixels": 0,
+    "maxChannel": 0,
+    "totalChannels": 3686400
+  },
+  {
+    "width": 1280,
+    "sourceTime": 1750,
+    "sameShape": true,
+    "changedChannels": 0,
+    "changedPixels": 0,
+    "maxChannel": 0,
+    "totalChannels": 3686400
+  }
+]

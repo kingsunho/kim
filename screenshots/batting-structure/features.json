@@ -1,0 +1,19 @@
+{
+  "offscreenCanvas": true,
+  "webgl2": true,
+  "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+  "vendor": "Google Inc. (Google)",
+  "maxTextureSize": 8192,
+  "context2D": {
+    "alpha": true,
+    "colorSpace": "srgb",
+    "colorType": "unorm8",
+    "desynchronized": false,
+    "toneMapping": {
+      "mode": "standard"
+    },
+    "willReadFrequently": false
+  },
+  "devicePixelRatio": 1,
+  "physicalIPhone": false
+}

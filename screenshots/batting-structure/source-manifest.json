@@ -1,0 +1,110 @@
+{
+  "c1-control-mobile.json": {
+    "productSHA256": "82d8088944591a1e00bad9372565ed4e0cc55c0b8dc64efc0070d0ba6861b609",
+    "chromium": "154.0.8037.57",
+    "count": 50,
+    "viewport": {
+      "width": 390,
+      "height": 844
+    }
+  },
+  "c1-control-pc.json": {
+    "productSHA256": "82d8088944591a1e00bad9372565ed4e0cc55c0b8dc64efc0070d0ba6861b609",
+    "chromium": "154.0.8037.57",
+    "count": 50,
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "hits-c1-mobile.json": {
+    "productSHA256": "82d8088944591a1e00bad9372565ed4e0cc55c0b8dc64efc0070d0ba6861b609",
+    "chromium": "154.0.8037.57",
+    "count": 4,
+    "viewport": {
+      "width": 390,
+      "height": 844
+    }
+  },
+  "hits-c1-pc.json": {
+    "productSHA256": "82d8088944591a1e00bad9372565ed4e0cc55c0b8dc64efc0070d0ba6861b609",
+    "chromium": "154.0.8037.57",
+    "count": 4,
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "hits-cache-mobile.json": {
+    "productSHA256": "1ba31bcc5346f9ebd2e1fd6bb9a6c91dc70bbdce04fd5132a92087af884ec4e4",
+    "chromium": "154.0.8037.57",
+    "count": 4,
+    "viewport": {
+      "width": 390,
+      "height": 844
+    }
+  },
+  "hits-cache-pc.json": {
+    "productSHA256": "1ba31bcc5346f9ebd2e1fd6bb9a6c91dc70bbdce04fd5132a92087af884ec4e4",
+    "chromium": "154.0.8037.57",
+    "count": 4,
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "latest-smoke-mobile.json": {
+    "productSHA256": "e94c343cca1b72e06d76ccc893c23a3e952f938da5b994ffa9655d6a68159759",
+    "chromium": "154.0.8037.57",
+    "count": 10,
+    "viewport": {
+      "width": 390,
+      "height": 844
+    }
+  },
+  "latest-smoke-pc.json": {
+    "productSHA256": "e94c343cca1b72e06d76ccc893c23a3e952f938da5b994ffa9655d6a68159759",
+    "chromium": "154.0.8037.57",
+    "count": 10,
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "legacy-now-mobile.json": {
+    "productSHA256": "7ff8ae9b3fdc798bbb8f364c991ab25d8de32df9028c68ea90597f2775708f62",
+    "chromium": "154.0.8037.57",
+    "count": 10,
+    "viewport": {
+      "width": 390,
+      "height": 844
+    }
+  },
+  "legacy-now-pc.json": {
+    "productSHA256": "7ff8ae9b3fdc798bbb8f364c991ab25d8de32df9028c68ea90597f2775708f62",
+    "chromium": "154.0.8037.57",
+    "count": 10,
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "stadium-cache-mobile.json": {
+    "productSHA256": "1ba31bcc5346f9ebd2e1fd6bb9a6c91dc70bbdce04fd5132a92087af884ec4e4",
+    "chromium": "154.0.8037.57",
+    "count": 50,
+    "viewport": {
+      "width": 390,
+      "height": 844
+    }
+  },
+  "stadium-cache-pc.json": {
+    "productSHA256": "1ba31bcc5346f9ebd2e1fd6bb9a6c91dc70bbdce04fd5132a92087af884ec4e4",
+    "chromium": "154.0.8037.57",
+    "count": 50,
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    }
+  }
+}

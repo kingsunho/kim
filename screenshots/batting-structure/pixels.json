@@ -1,0 +1,80 @@
+{
+  "rows": [
+    {
+      "t": 0,
+      "changed": 0,
+      "max": 0
+    },
+    {
+      "t": 450,
+      "changed": 0,
+      "max": 0
+    },
+    {
+      "t": 900,
+      "changed": 0,
+      "max": 0
+    },
+    {
+      "t": 950,
+      "changed": 0,
+      "max": 0
+    },
+    {
+      "t": 1000,
+      "changed": 0,
+      "max": 0
+    },
+    {
+      "t": 1050,
+      "changed": 0,
+      "max": 0
+    },
+    {
+      "t": 1100,
+      "changed": 0,
+      "max": 0
+    },
+    {
+      "t": 1120,
+      "changed": 0,
+      "max": 0
+    },
+    {
+      "t": 1170,
+      "changed": 0,
+      "max": 0
+    },
+    {
+      "t": 1270,
+      "changed": 0,
+      "max": 0
+    },
+    {
+      "t": 1350,
+      "changed": 0,
+      "max": 0
+    },
+    {
+      "t": 1510,
+      "changed": 0,
+      "max": 0
+    },
+    {
+      "t": 1750,
+      "changed": 0,
+      "max": 0
+    }
+  ],
+  "stats": {
+    "calls": 33,
+    "hits": 12,
+    "misses": 1,
+    "buildMs": [
+      4.099999904632568
+    ],
+    "bytes": 4320000,
+    "evictions": 0,
+    "bypasses": 20
+  }
+}

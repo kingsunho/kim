@@ -1,0 +1,66 @@
+[
+  {
+    "command": [
+      "node",
+      "lintcheck.js"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "node",
+      "smoketest.js"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "node",
+      "compattest.js"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "node",
+      "build-pages.js",
+      "--check"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "node",
+      "gpt-review/batting-structure/isolation.cjs"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "node",
+      "gpt-review/batting-structure/pose-proof.cjs"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "node",
+      "gpt-review/batting-integration/verify.cjs"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "node",
+      "gpt-review/batting-integration/bounds.cjs"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "node",
+      "gpt-review/batting-integration/result-flow.cjs"
+    ],
+    "exit": 0
+  }
+]

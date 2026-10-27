@@ -1,0 +1,7168 @@
+{
+  "c1-control-mobile": {
+    "count": 50,
+    "errors": [],
+    "groups": {
+      "all": {
+        "n": 50,
+        "frames": {
+          "n": 7688,
+          "mean": 17.656737773152962,
+          "p95": 33.299999999995634,
+          "p99": 33.400000000001455,
+          "maximum": 66.70000000000073,
+          "over33_3": 330,
+          "over50": 3
+        },
+        "draws": {
+          "n": 5914,
+          "mean": 5.425853905119039,
+          "p95": 9.100000023841858,
+          "p99": 11.60000000834465,
+          "maximum": 34.699999928474426,
+          "over33_3": 1,
+          "over50": 0
+        },
+        "actor": {
+          "n": 3779,
+          "mean": 4.41442180556827,
+          "p95": 6.600000023841858,
+          "p99": 8.921999981403332,
+          "maximum": 23.600000023841858,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 50,
+          "mean": 4.997999992370605,
+          "p95": 7.954999989271164,
+          "p99": 8.250999940633774,
+          "maximum": 8.299999952316284,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 50,
+          "mean": 5.319461321636918,
+          "p95": 28.329461319253078,
+          "p99": 32.24146130900139,
+          "maximum": 32.33946127395029,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 50,
+          "mean": 12.053999996185302,
+          "p95": 21.23999992609024,
+          "p99": 23.863000023365018,
+          "maximum": 24.5,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 0,
+          "missesDuringPitch": 0,
+          "hitRate": null,
+          "residentMax": 0,
+          "buildDuringPitch": null
+        },
+        "poseReuse": [
+          {
+            "index": 0,
+            "samples": 92,
+            "moving": 34,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 1,
+            "samples": 59,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 2,
+            "samples": 99,
+            "moving": 41,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 3,
+            "samples": 58,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 4,
+            "samples": 83,
+            "moving": 30,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 5,
+            "samples": 45,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 6,
+            "samples": 93,
+            "moving": 36,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 7,
+            "samples": 57,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 8,
+            "samples": 92,
+            "moving": 39,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 9,
+            "samples": 58,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 10,
+            "samples": 103,
+            "moving": 42,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 11,
+            "samples": 58,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 12,
+            "samples": 87,
+            "moving": 35,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 13,
+            "samples": 47,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 14,
+            "samples": 91,
+            "moving": 34,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 15,
+            "samples": 58,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 16,
+            "samples": 99,
+            "moving": 38,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 17,
+            "samples": 56,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 18,
+            "samples": 102,
+            "moving": 42,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 19,
+            "samples": 59,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 20,
+            "samples": 82,
+            "moving": 33,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 21,
+            "samples": 46,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 22,
+            "samples": 94,
+            "moving": 34,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 23,
+            "samples": 61,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 24,
+            "samples": 96,
+            "moving": 34,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 25,
+            "samples": 58,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 26,
+            "samples": 99,
+            "moving": 38,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 27,
+            "samples": 58,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 28,
+            "samples": 89,
+            "moving": 37,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 29,
+            "samples": 46,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 30,
+            "samples": 93,
+            "moving": 35,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 31,
+            "samples": 56,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 32,
+            "samples": 95,
+            "moving": 36,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 33,
+            "samples": 60,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 34,
+            "samples": 102,
+            "moving": 42,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 35,
+            "samples": 59,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 36,
+            "samples": 84,
+            "moving": 35,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 37,
+            "samples": 49,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 38,
+            "samples": 98,
+            "moving": 37,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 39,
+            "samples": 59,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 40,
+            "samples": 102,
+            "moving": 37,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 41,
+            "samples": 61,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 42,
+            "samples": 104,
+            "moving": 44,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 43,
+            "samples": 62,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 44,
+            "samples": 93,
+            "moving": 40,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 45,
+            "samples": 48,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 46,
+            "samples": 102,
+            "moving": 40,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 47,
+            "samples": 64,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 48,
+            "samples": 100,
+            "moving": 37,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 49,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "HR": 26,
+          "foul": 12,
+          "whiff": 12
+        }
+      },
+      "supported": {
+        "n": 25,
+        "frames": {
+          "n": 3764,
+          "mean": 18.047582359192344,
+          "p95": 33.30000000000291,
+          "p99": 33.400000000001455,
+          "maximum": 66.70000000000073,
+          "over33_3": 227,
+          "over50": 1
+        },
+        "draws": {
+          "n": 2415,
+          "mean": 7.050517597603255,
+          "p95": 9.800000071525574,
+          "p99": 13.257999958992043,
+          "maximum": 30.199999928474426,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": {
+          "n": 2374,
+          "mean": 4.45585509785706,
+          "p95": 6.600000023841858,
+          "p99": 9.026999974250792,
+          "maximum": 23.600000023841858,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 25,
+          "mean": 6.919999990463257,
+          "p95": 8.15999994277954,
+          "p99": 8.275999946594238,
+          "maximum": 8.299999952316284,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 25,
+          "mean": 6.419461316868547,
+          "p95": 30.73946134548312,
+          "p99": 32.291461291118175,
+          "maximum": 32.33946127395029,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 25,
+          "mean": 12.23600000858307,
+          "p95": 22.720000028610222,
+          "p99": 24.18800001144409,
+          "maximum": 24.5,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 0,
+          "missesDuringPitch": 0,
+          "hitRate": null,
+          "residentMax": 0,
+          "buildDuringPitch": null
+        },
+        "poseReuse": [
+          {
+            "index": 0,
+            "samples": 92,
+            "moving": 34,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 2,
+            "samples": 99,
+            "moving": 41,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 4,
+            "samples": 83,
+            "moving": 30,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 6,
+            "samples": 93,
+            "moving": 36,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 8,
+            "samples": 92,
+            "moving": 39,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 10,
+            "samples": 103,
+            "moving": 42,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 12,
+            "samples": 87,
+            "moving": 35,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 14,
+            "samples": 91,
+            "moving": 34,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 16,
+            "samples": 99,
+            "moving": 38,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 18,
+            "samples": 102,
+            "moving": 42,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 20,
+            "samples": 82,
+            "moving": 33,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 22,
+            "samples": 94,
+            "moving": 34,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 24,
+            "samples": 96,
+            "moving": 34,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 26,
+            "samples": 99,
+            "moving": 38,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 28,
+            "samples": 89,
+            "moving": 37,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 30,
+            "samples": 93,
+            "moving": 35,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 32,
+            "samples": 95,
+            "moving": 36,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 34,
+            "samples": 102,
+            "moving": 42,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 36,
+            "samples": 84,
+            "moving": 35,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 38,
+            "samples": 98,
+            "moving": 37,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 40,
+            "samples": 102,
+            "moving": 37,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 42,
+            "samples": 104,
+            "moving": 44,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 44,
+            "samples": 93,
+            "moving": 40,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 46,
+            "samples": 102,
+            "moving": 40,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 48,
+            "samples": 100,
+            "moving": 37,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "HR": 13,
+          "foul": 6,
+          "whiff": 6
+        }
+      },
+      "fallback": {
+        "n": 25,
+        "frames": {
+          "n": 3924,
+          "mean": 17.28182976554536,
+          "p95": 16.80000000000291,
+          "p99": 33.39999999999698,
+          "maximum": 50.099999999998545,
+          "over33_3": 103,
+          "over50": 2
+        },
+        "draws": {
+          "n": 3499,
+          "mean": 4.304515574924876,
+          "p95": 8.200000047683716,
+          "p99": 10.399999976158142,
+          "maximum": 34.699999928474426,
+          "over33_3": 1,
+          "over50": 0
+        },
+        "actor": {
+          "n": 1405,
+          "mean": 4.344412812049703,
+          "p95": 6.480000019073482,
+          "p99": 8.699999928474426,
+          "maximum": 13.900000095367432,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 25,
+          "mean": 3.075999994277954,
+          "p95": 3.6399999618530265,
+          "p99": 4.155999946594237,
+          "maximum": 4.299999952316284,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 25,
+          "mean": 4.219461326405289,
+          "p95": 19.55946135025005,
+          "p99": 28.347461309237964,
+          "maximum": 30.93946129779215,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 25,
+          "mean": 11.871999983787537,
+          "p95": 14.519999957084654,
+          "p99": 19.9439999103546,
+          "maximum": 21.59999990463257,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 0,
+          "missesDuringPitch": 0,
+          "hitRate": null,
+          "residentMax": 0,
+          "buildDuringPitch": null
+        },
+        "poseReuse": [
+          {
+            "index": 1,
+            "samples": 59,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 3,
+            "samples": 58,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 5,
+            "samples": 45,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 7,
+            "samples": 57,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 9,
+            "samples": 58,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 11,
+            "samples": 58,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 13,
+            "samples": 47,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 15,
+            "samples": 58,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 17,
+            "samples": 56,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 19,
+            "samples": 59,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 21,
+            "samples": 46,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 23,
+            "samples": 61,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 25,
+            "samples": 58,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 27,
+            "samples": 58,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 29,
+            "samples": 46,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 31,
+            "samples": 56,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 33,
+            "samples": 60,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 35,
+            "samples": 59,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 37,
+            "samples": 49,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 39,
+            "samples": 59,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 41,
+            "samples": 61,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 43,
+            "samples": 62,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 45,
+            "samples": 48,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 47,
+            "samples": 64,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 49,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "HR": 13,
+          "foul": 6,
+          "whiff": 6
+        }
+      }
+    }
+  },
+  "c1-control-pc": {
+    "count": 50,
+    "errors": [],
+    "groups": {
+      "all": {
+        "n": 50,
+        "frames": {
+          "n": 7436,
+          "mean": 18.219136632598175,
+          "p95": 33.30000000000291,
+          "p99": 33.400000000001455,
+          "maximum": 50.10000000000582,
+          "over33_3": 502,
+          "over50": 3
+        },
+        "draws": {
+          "n": 5653,
+          "mean": 5.426233858592359,
+          "p95": 8.599999952316285,
+          "p99": 10.699999928474426,
+          "maximum": 23.100000023841858,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": {
+          "n": 3553,
+          "mean": 4.097889107078221,
+          "p95": 5.600000023841858,
+          "p99": 7.099999961853027,
+          "maximum": 13.899999976158142,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 50,
+          "mean": 5.520000002384186,
+          "p95": 9.355000084638595,
+          "p99": 9.754999999999999,
+          "maximum": 10,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 50,
+          "mean": 6.179461309716134,
+          "p95": 28.80446131924982,
+          "p99": 37.652461334273745,
+          "maximum": 40.73946136931772,
+          "over33_3": 2,
+          "over50": 0
+        },
+        "boot": {
+          "n": 50,
+          "mean": 11.557999997138976,
+          "p95": 14.830000042915337,
+          "p99": 17.367000024318692,
+          "maximum": 18.200000047683716,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 0,
+          "missesDuringPitch": 0,
+          "hitRate": null,
+          "residentMax": 0,
+          "buildDuringPitch": null
+        },
+        "poseReuse": [
+          {
+            "index": 0,
+            "samples": 86,
+            "moving": 31,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 1,
+            "samples": 56,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 2,
+            "samples": 91,
+            "moving": 35,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 3,
+            "samples": 55,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 4,
+            "samples": 78,
+            "moving": 32,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 5,
+            "samples": 47,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 6,
+            "samples": 85,
+            "moving": 30,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 7,
+            "samples": 59,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 8,
+            "samples": 88,
+            "moving": 32,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 9,
+            "samples": 54,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 10,
+            "samples": 92,
+            "moving": 37,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 11,
+            "samples": 57,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 12,
+            "samples": 85,
+            "moving": 36,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 13,
+            "samples": 46,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 14,
+            "samples": 91,
+            "moving": 31,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 15,
+            "samples": 57,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 16,
+            "samples": 85,
+            "moving": 28,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 17,
+            "samples": 53,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 18,
+            "samples": 96,
+            "moving": 39,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 19,
+            "samples": 55,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 20,
+            "samples": 82,
+            "moving": 32,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 21,
+            "samples": 46,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 22,
+            "samples": 86,
+            "moving": 28,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 23,
+            "samples": 53,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 24,
+            "samples": 89,
+            "moving": 32,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 25,
+            "samples": 58,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 26,
+            "samples": 99,
+            "moving": 39,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 27,
+            "samples": 56,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 28,
+            "samples": 84,
+            "moving": 36,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 29,
+            "samples": 43,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 30,
+            "samples": 86,
+            "moving": 29,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 31,
+            "samples": 58,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 32,
+            "samples": 89,
+            "moving": 29,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 33,
+            "samples": 57,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 34,
+            "samples": 95,
+            "moving": 36,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 35,
+            "samples": 57,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 36,
+            "samples": 83,
+            "moving": 35,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 37,
+            "samples": 46,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 38,
+            "samples": 86,
+            "moving": 28,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 39,
+            "samples": 60,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 40,
+            "samples": 92,
+            "moving": 33,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 41,
+            "samples": 57,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 42,
+            "samples": 95,
+            "moving": 38,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 43,
+            "samples": 59,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 44,
+            "samples": 84,
+            "moving": 35,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 45,
+            "samples": 46,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 46,
+            "samples": 88,
+            "moving": 29,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 47,
+            "samples": 58,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 48,
+            "samples": 87,
+            "moving": 30,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 49,
+            "samples": 58,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          }
+        ],
+        "results": {
+          "HR": 26,
+          "foul": 12,
+          "whiff": 12
+        }
+      },
+      "supported": {
+        "n": 25,
+        "frames": {
+          "n": 3589,
+          "mean": 18.890331568682072,
+          "p95": 33.39999999999418,
+          "p99": 33.40000000000873,
+          "maximum": 50.10000000000582,
+          "over33_3": 349,
+          "over50": 3
+        },
+        "draws": {
+          "n": 2242,
+          "mean": 6.962667263213489,
+          "p95": 9.100000023841858,
+          "p99": 11.359000015258804,
+          "maximum": 23.100000023841858,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": {
+          "n": 2202,
+          "mean": 4.151044505710065,
+          "p95": 5.600000023841858,
+          "p99": 7.397999976873354,
+          "maximum": 13.799999952316284,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 25,
+          "mean": 7.5680000114440915,
+          "p95": 9.480000019073486,
+          "p99": 9.879999999999999,
+          "maximum": 10,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 25,
+          "mean": 6.131461305424746,
+          "p95": 25.819461316867088,
+          "p99": 28.243461303514188,
+          "maximum": 28.93946129779215,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 25,
+          "mean": 11.531999988555908,
+          "p95": 13.36000006198883,
+          "p99": 15.756000022888177,
+          "maximum": 16.5,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 0,
+          "missesDuringPitch": 0,
+          "hitRate": null,
+          "residentMax": 0,
+          "buildDuringPitch": null
+        },
+        "poseReuse": [
+          {
+            "index": 0,
+            "samples": 86,
+            "moving": 31,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 2,
+            "samples": 91,
+            "moving": 35,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 4,
+            "samples": 78,
+            "moving": 32,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 6,
+            "samples": 85,
+            "moving": 30,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 8,
+            "samples": 88,
+            "moving": 32,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 10,
+            "samples": 92,
+            "moving": 37,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 12,
+            "samples": 85,
+            "moving": 36,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 14,
+            "samples": 91,
+            "moving": 31,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 16,
+            "samples": 85,
+            "moving": 28,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 18,
+            "samples": 96,
+            "moving": 39,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 20,
+            "samples": 82,
+            "moving": 32,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 22,
+            "samples": 86,
+            "moving": 28,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 24,
+            "samples": 89,
+            "moving": 32,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 26,
+            "samples": 99,
+            "moving": 39,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 28,
+            "samples": 84,
+            "moving": 36,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 30,
+            "samples": 86,
+            "moving": 29,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 32,
+            "samples": 89,
+            "moving": 29,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 34,
+            "samples": 95,
+            "moving": 36,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 36,
+            "samples": 83,
+            "moving": 35,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 38,
+            "samples": 86,
+            "moving": 28,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 40,
+            "samples": 92,
+            "moving": 33,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 42,
+            "samples": 95,
+            "moving": 38,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 44,
+            "samples": 84,
+            "moving": 35,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 46,
+            "samples": 88,
+            "moving": 29,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 48,
+            "samples": 87,
+            "moving": 30,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "HR": 13,
+          "foul": 6,
+          "whiff": 6
+        }
+      },
+      "fallback": {
+        "n": 25,
+        "frames": {
+          "n": 3847,
+          "mean": 17.592955549779067,
+          "p95": 33.29999999998836,
+          "p99": 33.400000000001455,
+          "maximum": 50,
+          "over33_3": 153,
+          "over50": 0
+        },
+        "draws": {
+          "n": 3411,
+          "mean": 4.416358838609781,
+          "p95": 8.100000023841858,
+          "p99": 10.090000021457682,
+          "maximum": 20.799999952316284,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": {
+          "n": 1351,
+          "mean": 4.011250922187534,
+          "p95": 5.600000023841858,
+          "p99": 6.950000047683716,
+          "maximum": 13.899999976158142,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 25,
+          "mean": 3.47199999332428,
+          "p95": 4.9200000047683705,
+          "p99": 5.608000054359435,
+          "maximum": 5.800000071525574,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 25,
+          "mean": 6.227461314007524,
+          "p95": 33.2794613073347,
+          "p99": 39.22746135215332,
+          "maximum": 40.73946136931772,
+          "over33_3": 2,
+          "over50": 0
+        },
+        "boot": {
+          "n": 25,
+          "mean": 11.584000005722046,
+          "p95": 15.399999999999991,
+          "p99": 17.67200003623962,
+          "maximum": 18.200000047683716,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 0,
+          "missesDuringPitch": 0,
+          "hitRate": null,
+          "residentMax": 0,
+          "buildDuringPitch": null
+        },
+        "poseReuse": [
+          {
+            "index": 1,
+            "samples": 56,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 3,
+            "samples": 55,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 5,
+            "samples": 47,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 7,
+            "samples": 59,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 9,
+            "samples": 54,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 11,
+            "samples": 57,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 13,
+            "samples": 46,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 15,
+            "samples": 57,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 17,
+            "samples": 53,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 19,
+            "samples": 55,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 21,
+            "samples": 46,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 23,
+            "samples": 53,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 25,
+            "samples": 58,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 27,
+            "samples": 56,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 29,
+            "samples": 43,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 31,
+            "samples": 58,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 33,
+            "samples": 57,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 35,
+            "samples": 57,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 37,
+            "samples": 46,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 39,
+            "samples": 60,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 41,
+            "samples": 57,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 43,
+            "samples": 59,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 45,
+            "samples": 46,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 47,
+            "samples": 58,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 49,
+            "samples": 58,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          }
+        ],
+        "results": {
+          "HR": 13,
+          "foul": 6,
+          "whiff": 6
+        }
+      }
+    }
+  },
+  "hits-c1-mobile": {
+    "count": 4,
+    "errors": [],
+    "groups": {
+      "all": {
+        "n": 4,
+        "frames": {
+          "n": 638,
+          "mean": 17.789341692789968,
+          "p95": 33.29999999999927,
+          "p99": 33.399999999999636,
+          "maximum": 33.400000000001455,
+          "over33_3": 31,
+          "over50": 0
+        },
+        "draws": {
+          "n": 470,
+          "mean": 5.662127661451381,
+          "p95": 9.455000042915339,
+          "p99": 12.782000038623815,
+          "maximum": 21.299999952316284,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": {
+          "n": 308,
+          "mean": 4.409090909864996,
+          "p95": 6.664999961853025,
+          "p99": 8.878999979496005,
+          "maximum": 14.200000047683716,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 4,
+          "mean": 5.099999934434891,
+          "p95": 7.404999911785126,
+          "p99": 7.5609999060630795,
+          "maximum": 7.599999904632568,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 4,
+          "mean": 2.064461387206393,
+          "p95": 8.294461382438017,
+          "p99": 9.530461391021088,
+          "maximum": 9.839461393166857,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 4,
+          "mean": 11.575000017881393,
+          "p95": 12.505000036954879,
+          "p99": 12.661000045537948,
+          "maximum": 12.700000047683716,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 0,
+          "missesDuringPitch": 0,
+          "hitRate": null,
+          "residentMax": 0,
+          "buildDuringPitch": null
+        },
+        "poseReuse": [
+          {
+            "index": 0,
+            "samples": 93,
+            "moving": 38,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 1,
+            "samples": 57,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 2,
+            "samples": 99,
+            "moving": 40,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 3,
+            "samples": 59,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          }
+        ],
+        "results": {
+          "3B": 4
+        }
+      },
+      "supported": {
+        "n": 2,
+        "frames": {
+          "n": 310,
+          "mean": 18.279032258064515,
+          "p95": 33.30000000000109,
+          "p99": 33.399999999999636,
+          "maximum": 33.400000000001455,
+          "over33_3": 23,
+          "over50": 0
+        },
+        "draws": {
+          "n": 192,
+          "mean": 7.523437502483527,
+          "p95": 10.08999996781349,
+          "p99": 18.06300000429154,
+          "maximum": 21.299999952316284,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": {
+          "n": 192,
+          "mean": 4.458854168653488,
+          "p95": 6.699999982118607,
+          "p99": 8.717000019550328,
+          "maximum": 13,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 2,
+          "mean": 6.949999928474426,
+          "p95": 7.534999907016754,
+          "p99": 7.586999905109406,
+          "maximum": 7.599999904632568,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 2,
+          "mean": -0.5105386306750006,
+          "p95": -0.46553867359034484,
+          "p99": -0.4615386774050421,
+          "maximum": -0.4605386783587164,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 2,
+          "mean": 11.100000023841858,
+          "p95": 11.19000004529953,
+          "p99": 11.198000047206879,
+          "maximum": 11.200000047683716,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 0,
+          "missesDuringPitch": 0,
+          "hitRate": null,
+          "residentMax": 0,
+          "buildDuringPitch": null
+        },
+        "poseReuse": [
+          {
+            "index": 0,
+            "samples": 93,
+            "moving": 38,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 2,
+            "samples": 99,
+            "moving": 40,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "3B": 2
+        }
+      },
+      "fallback": {
+        "n": 2,
+        "frames": {
+          "n": 328,
+          "mean": 17.326524390243897,
+          "p95": 16.800000000000455,
+          "p99": 33.399999999999636,
+          "maximum": 33.400000000001455,
+          "over33_3": 8,
+          "over50": 0
+        },
+        "draws": {
+          "n": 278,
+          "mean": 4.376618706493926,
+          "p95": 8.544999992847435,
+          "p99": 10.599000060558343,
+          "maximum": 19.100000023841858,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": {
+          "n": 116,
+          "mean": 4.326724136697835,
+          "p95": 6.5,
+          "p99": 8.749999976158136,
+          "maximum": 14.200000047683716,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 2,
+          "mean": 3.2499999403953552,
+          "p95": 3.8349999725818633,
+          "p99": 3.8869999754428863,
+          "maximum": 3.899999976158142,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 2,
+          "mean": 4.639461405087786,
+          "p95": 9.31946139435895,
+          "p99": 9.735461393405275,
+          "maximum": 9.839461393166857,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 2,
+          "mean": 12.050000011920929,
+          "p95": 12.635000044107437,
+          "p99": 12.68700004696846,
+          "maximum": 12.700000047683716,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 0,
+          "missesDuringPitch": 0,
+          "hitRate": null,
+          "residentMax": 0,
+          "buildDuringPitch": null
+        },
+        "poseReuse": [
+          {
+            "index": 1,
+            "samples": 57,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 3,
+            "samples": 59,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          }
+        ],
+        "results": {
+          "3B": 2
+        }
+      }
+    }
+  },
+  "hits-c1-pc": {
+    "count": 4,
+    "errors": [],
+    "groups": {
+      "all": {
+        "n": 4,
+        "frames": {
+          "n": 634,
+          "mean": 17.95394321766562,
+          "p95": 33.30000000000018,
+          "p99": 33.399999999999636,
+          "maximum": 50,
+          "over33_3": 35,
+          "over50": 0
+        },
+        "draws": {
+          "n": 463,
+          "mean": 5.50950324380887,
+          "p95": 8.289999961853026,
+          "p99": 10.890000047683714,
+          "maximum": 20.299999952316284,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": {
+          "n": 300,
+          "mean": 4.106333332459132,
+          "p95": 5.404999977350236,
+          "p99": 7.31100007057189,
+          "maximum": 9.299999952316284,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 4,
+          "mean": 5.4000000059604645,
+          "p95": 8.089999955892562,
+          "p99": 8.25799995303154,
+          "maximum": 8.299999952316284,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 4,
+          "mean": 2.639461315680819,
+          "p95": 9.459461254884078,
+          "p99": 10.803461231995895,
+          "maximum": 11.139461226273852,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 4,
+          "mean": 13.724999994039536,
+          "p95": 17.73999997973442,
+          "p99": 18.267999976873398,
+          "maximum": 18.399999976158142,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 0,
+          "missesDuringPitch": 0,
+          "hitRate": null,
+          "residentMax": 0,
+          "buildDuringPitch": null
+        },
+        "poseReuse": [
+          {
+            "index": 0,
+            "samples": 91,
+            "moving": 36,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 1,
+            "samples": 56,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 2,
+            "samples": 96,
+            "moving": 38,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 3,
+            "samples": 57,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          }
+        ],
+        "results": {
+          "3B": 4
+        }
+      },
+      "supported": {
+        "n": 2,
+        "frames": {
+          "n": 309,
+          "mean": 18.44563106796117,
+          "p95": 33.30000000000109,
+          "p99": 33.399999999999636,
+          "maximum": 49.899999999999636,
+          "over33_3": 24,
+          "over50": 0
+        },
+        "draws": {
+          "n": 187,
+          "mean": 7.122994658143763,
+          "p95": 8.600000023841858,
+          "p99": 13.417999966144512,
+          "maximum": 20.299999952316284,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": {
+          "n": 187,
+          "mean": 4.174331550929636,
+          "p95": 5.469999992847441,
+          "p99": 7.28200001716612,
+          "maximum": 8.399999976158142,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 2,
+          "mean": 7.599999964237213,
+          "p95": 8.229999953508377,
+          "p99": 8.285999952554702,
+          "maximum": 8.299999952316284,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 2,
+          "mean": -0.11053859491221374,
+          "p95": -0.06553858418337768,
+          "p99": -0.06153858322970336,
+          "maximum": -0.060538582991284784,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 2,
+          "mean": 12.300000011920929,
+          "p95": 13.830000001192094,
+          "p99": 13.966000000238418,
+          "maximum": 14,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 0,
+          "missesDuringPitch": 0,
+          "hitRate": null,
+          "residentMax": 0,
+          "buildDuringPitch": null
+        },
+        "poseReuse": [
+          {
+            "index": 0,
+            "samples": 91,
+            "moving": 36,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 2,
+            "samples": 96,
+            "moving": 38,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "3B": 2
+        }
+      },
+      "fallback": {
+        "n": 2,
+        "frames": {
+          "n": 325,
+          "mean": 17.486461538461544,
+          "p95": 16.799999999999272,
+          "p99": 33.399999999999636,
+          "maximum": 50,
+          "over33_3": 11,
+          "over50": 0
+        },
+        "draws": {
+          "n": 276,
+          "mean": 4.416304350763127,
+          "p95": 7.799999952316284,
+          "p99": 8.800000011920929,
+          "maximum": 17.399999976158142,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": {
+          "n": 113,
+          "mean": 3.9938053072026345,
+          "p95": 5.1400000333786,
+          "p99": 7.132000074386591,
+          "maximum": 9.299999952316284,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 2,
+          "mean": 3.200000047683716,
+          "p95": 3.2900000691413878,
+          "p99": 3.2980000710487367,
+          "maximum": 3.3000000715255737,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 2,
+          "mean": 5.389461226273852,
+          "p95": 10.56446122627385,
+          "p99": 11.024461226273852,
+          "maximum": 11.139461226273852,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 2,
+          "mean": 15.149999976158142,
+          "p95": 18.074999976158143,
+          "p99": 18.33499997615814,
+          "maximum": 18.399999976158142,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 0,
+          "missesDuringPitch": 0,
+          "hitRate": null,
+          "residentMax": 0,
+          "buildDuringPitch": null
+        },
+        "poseReuse": [
+          {
+            "index": 1,
+            "samples": 56,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 3,
+            "samples": 57,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          }
+        ],
+        "results": {
+          "3B": 2
+        }
+      }
+    }
+  },
+  "hits-cache-mobile": {
+    "count": 4,
+    "errors": [],
+    "groups": {
+      "all": {
+        "n": 4,
+        "frames": {
+          "n": 670,
+          "mean": 16.939850746268657,
+          "p95": 16.799999999999272,
+          "p99": 33.29999999999956,
+          "maximum": 49.900000000000546,
+          "over33_3": 7,
+          "over50": 0
+        },
+        "draws": {
+          "n": 504,
+          "mean": 5.458928572280066,
+          "p95": 8.884999990463253,
+          "p99": 14.954999999999956,
+          "maximum": 34.200000047683716,
+          "over33_3": 1,
+          "over50": 0
+        },
+        "actor": {
+          "n": 340,
+          "mean": 4.40382353067398,
+          "p95": 6.305000066757203,
+          "p99": 11.092999995946903,
+          "maximum": 28.90000009536743,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 4,
+          "mean": 4.949999958276749,
+          "p95": 7.429999935626983,
+          "p99": 7.645999929904937,
+          "maximum": 7.699999928474426,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 4,
+          "mean": 0.9144613812459284,
+          "p95": 4.189461315680817,
+          "p99": 4.789461301375703,
+          "maximum": 4.939461297799426,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 4,
+          "mean": 11.974999994039536,
+          "p95": 12.83499999642372,
+          "p99": 12.966999999284743,
+          "maximum": 13,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 342,
+          "missesDuringPitch": 0,
+          "hitRate": 1.0,
+          "residentMax": 4320000,
+          "buildDuringPitch": null,
+          "allBuildHistory": {
+            "n": 6,
+            "mean": 3.399999996026357,
+            "p95": 3.7250000536441803,
+            "p99": 3.785000067949295,
+            "maximum": 3.8000000715255737,
+            "over33_3": 0,
+            "over50": 0
+          }
+        },
+        "poseReuse": [
+          {
+            "index": 0,
+            "samples": 106,
+            "moving": 44,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 1,
+            "samples": 64,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 2,
+            "samples": 107,
+            "moving": 44,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 3,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "3B": 4
+        }
+      },
+      "supported": {
+        "n": 2,
+        "frames": {
+          "n": 333,
+          "mean": 17.06636636636637,
+          "p95": 16.799999999999272,
+          "p99": 33.3680000000001,
+          "maximum": 49.900000000000546,
+          "over33_3": 6,
+          "over50": 0
+        },
+        "draws": {
+          "n": 213,
+          "mean": 7.036619723123004,
+          "p95": 9.8,
+          "p99": 15.17600004196167,
+          "maximum": 34.200000047683716,
+          "over33_3": 1,
+          "over50": 0
+        },
+        "actor": {
+          "n": 213,
+          "mean": 4.529577469042209,
+          "p95": 6.399999976158142,
+          "p99": 11.444000015258784,
+          "maximum": 28.90000009536743,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 2,
+          "mean": 6.799999952316284,
+          "p95": 7.609999930858612,
+          "p99": 7.681999928951264,
+          "maximum": 7.699999928474426,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 2,
+          "mean": 2.1394613454831415,
+          "p95": 4.659461302567797,
+          "p99": 4.8834612987531,
+          "maximum": 4.939461297799426,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 2,
+          "mean": 11.699999988079071,
+          "p95": 11.879999977350234,
+          "p99": 11.89599997639656,
+          "maximum": 11.899999976158142,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 213,
+          "missesDuringPitch": 0,
+          "hitRate": 1.0,
+          "residentMax": 4320000,
+          "buildDuringPitch": null,
+          "allBuildHistory": {
+            "n": 5,
+            "mean": 3.439999985694885,
+            "p95": 3.740000057220459,
+            "p99": 3.7880000686645507,
+            "maximum": 3.8000000715255737,
+            "over33_3": 0,
+            "over50": 0
+          }
+        },
+        "poseReuse": [
+          {
+            "index": 0,
+            "samples": 106,
+            "moving": 44,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 2,
+            "samples": 107,
+            "moving": 44,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          }
+        ],
+        "results": {
+          "3B": 2
+        }
+      },
+      "fallback": {
+        "n": 2,
+        "frames": {
+          "n": 337,
+          "mean": 16.814836795252226,
+          "p95": 16.700000000000728,
+          "p99": 16.80000000000109,
+          "maximum": 33.399999999999636,
+          "over33_3": 1,
+          "over50": 0
+        },
+        "draws": {
+          "n": 291,
+          "mean": 4.304123709291937,
+          "p95": 7.75,
+          "p99": 12.770000040531174,
+          "maximum": 24.299999952316284,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": {
+          "n": 127,
+          "mean": 4.192913382072148,
+          "p95": 6.099999988079071,
+          "p99": 9.427999987602222,
+          "maximum": 18.100000023841858,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 2,
+          "mean": 3.099999964237213,
+          "p95": 3.369999974966049,
+          "p99": 3.3939999759197237,
+          "maximum": 3.399999976158142,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 2,
+          "mean": -0.3105385829912848,
+          "p95": -0.0855385829912848,
+          "p99": -0.06553858299128479,
+          "maximum": -0.060538582991284784,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 2,
+          "mean": 12.25,
+          "p95": 12.925,
+          "p99": 12.985,
+          "maximum": 13,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 129,
+          "missesDuringPitch": 0,
+          "hitRate": 1.0,
+          "residentMax": 4320000,
+          "buildDuringPitch": null,
+          "allBuildHistory": {
+            "n": 6,
+            "mean": 3.399999996026357,
+            "p95": 3.7250000536441803,
+            "p99": 3.785000067949295,
+            "maximum": 3.8000000715255737,
+            "over33_3": 0,
+            "over50": 0
+          }
+        },
+        "poseReuse": [
+          {
+            "index": 1,
+            "samples": 64,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 3,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "3B": 2
+        }
+      }
+    }
+  },
+  "hits-cache-pc": {
+    "count": 4,
+    "errors": [],
+    "groups": {
+      "all": {
+        "n": 4,
+        "frames": {
+          "n": 672,
+          "mean": 16.98839285714286,
+          "p95": 16.799999999999272,
+          "p99": 33.300000000000445,
+          "maximum": 33.400000000001455,
+          "over33_3": 8,
+          "over50": 0
+        },
+        "draws": {
+          "n": 501,
+          "mean": 5.669061878008281,
+          "p95": 8.799999952316284,
+          "p99": 15.100000023841858,
+          "maximum": 24.90000009536743,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": {
+          "n": 339,
+          "mean": 4.431268437422131,
+          "p95": 6.100000023841858,
+          "p99": 7.961999990940094,
+          "maximum": 18.5,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 4,
+          "mean": 5.200000017881393,
+          "p95": 7.930000036954879,
+          "p99": 8.146000045537948,
+          "maximum": 8.200000047683716,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 4,
+          "mean": -0.28553866643778747,
+          "p95": 0.1944613585961632,
+          "p99": 0.2304613671792321,
+          "maximum": 0.2394613693249994,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 4,
+          "mean": 13.900000005960464,
+          "p95": 19.69499999284744,
+          "p99": 20.738999998569486,
+          "maximum": 21,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 341,
+          "missesDuringPitch": 0,
+          "hitRate": 1.0,
+          "residentMax": 4665600,
+          "buildDuringPitch": null,
+          "allBuildHistory": {
+            "n": 6,
+            "mean": 4.450000027815501,
+            "p95": 5.650000065565109,
+            "p99": 5.850000089406968,
+            "maximum": 5.900000095367432,
+            "over33_3": 0,
+            "over50": 0
+          }
+        },
+        "poseReuse": [
+          {
+            "index": 0,
+            "samples": 107,
+            "moving": 44,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 1,
+            "samples": 60,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 2,
+            "samples": 108,
+            "moving": 44,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 3,
+            "samples": 64,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "3B": 4
+        }
+      },
+      "supported": {
+        "n": 2,
+        "frames": {
+          "n": 336,
+          "mean": 17.01309523809524,
+          "p95": 16.800000000000182,
+          "p99": 33.29999999999986,
+          "maximum": 33.400000000000546,
+          "over33_3": 4,
+          "over50": 0
+        },
+        "draws": {
+          "n": 215,
+          "mean": 6.929767447294191,
+          "p95": 8.850000047683707,
+          "p99": 16.56199996232984,
+          "maximum": 20.59999990463257,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": {
+          "n": 215,
+          "mean": 4.343720934557361,
+          "p95": 5.830000078678129,
+          "p99": 7.985999996662138,
+          "maximum": 16.299999952316284,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 2,
+          "mean": 7.300000011920929,
+          "p95": 8.110000044107437,
+          "p99": 8.18200004696846,
+          "maximum": 8.200000047683716,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 2,
+          "mean": -0.2605386306750006,
+          "p95": 0.18946136932499935,
+          "p99": 0.2294613693249994,
+          "maximum": 0.2394613693249994,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 2,
+          "mean": 11.800000011920929,
+          "p95": 12.24999995827675,
+          "p99": 12.289999953508378,
+          "maximum": 12.299999952316284,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 215,
+          "missesDuringPitch": 0,
+          "hitRate": 1.0,
+          "residentMax": 4665600,
+          "buildDuringPitch": null,
+          "allBuildHistory": {
+            "n": 5,
+            "mean": 4.500000047683716,
+            "p95": 5.700000071525573,
+            "p99": 5.86000009059906,
+            "maximum": 5.900000095367432,
+            "over33_3": 0,
+            "over50": 0
+          }
+        },
+        "poseReuse": [
+          {
+            "index": 0,
+            "samples": 107,
+            "moving": 44,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 2,
+            "samples": 108,
+            "moving": 44,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          }
+        ],
+        "results": {
+          "3B": 2
+        }
+      },
+      "fallback": {
+        "n": 2,
+        "frames": {
+          "n": 336,
+          "mean": 16.96369047619048,
+          "p95": 16.799999999999272,
+          "p99": 33.30000000000045,
+          "maximum": 33.400000000001455,
+          "over33_3": 4,
+          "over50": 0
+        },
+        "draws": {
+          "n": 286,
+          "mean": 4.7213286703283135,
+          "p95": 8.774999976158142,
+          "p99": 11.119999992847424,
+          "maximum": 24.90000009536743,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": {
+          "n": 124,
+          "mean": 4.5830645109376595,
+          "p95": 6.285000067949294,
+          "p99": 7.6539999449253076,
+          "maximum": 18.5,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 2,
+          "mean": 3.100000023841858,
+          "p95": 3.19000004529953,
+          "p99": 3.198000047206879,
+          "maximum": 3.200000047683716,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 2,
+          "mean": -0.31053870220057433,
+          "p95": -0.08553870220057436,
+          "p99": -0.06553870220057434,
+          "maximum": -0.060538702200574335,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 2,
+          "mean": 16.0,
+          "p95": 20.5,
+          "p99": 20.9,
+          "maximum": 21,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 126,
+          "missesDuringPitch": 0,
+          "hitRate": 1.0,
+          "residentMax": 4665600,
+          "buildDuringPitch": null,
+          "allBuildHistory": {
+            "n": 6,
+            "mean": 4.450000027815501,
+            "p95": 5.650000065565109,
+            "p99": 5.850000089406968,
+            "maximum": 5.900000095367432,
+            "over33_3": 0,
+            "over50": 0
+          }
+        },
+        "poseReuse": [
+          {
+            "index": 1,
+            "samples": 60,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 3,
+            "samples": 64,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "3B": 2
+        }
+      }
+    }
+  },
+  "latest-smoke-mobile": {
+    "count": 10,
+    "errors": [],
+    "groups": {
+      "all": {
+        "n": 10,
+        "frames": {
+          "n": 1621,
+          "mean": 16.82023442319556,
+          "p95": 16.799999999995634,
+          "p99": 16.80000000000291,
+          "maximum": 33.399999999999636,
+          "over33_3": 5,
+          "over50": 0
+        },
+        "draws": {
+          "n": 1258,
+          "mean": 5.130922100502281,
+          "p95": 8.0,
+          "p99": 11.399999976158142,
+          "maximum": 23.899999976158142,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": {
+          "n": 833,
+          "mean": 4.0801920736251045,
+          "p95": 5.5,
+          "p99": 7.535999927520742,
+          "maximum": 14.100000023841858,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 10,
+          "mean": 6.459999990463257,
+          "p95": 15.799999999999983,
+          "p99": 21.560000000000002,
+          "maximum": 23.0,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 10,
+          "mean": 0.21946132879384095,
+          "p95": 2.5644613454831378,
+          "p99": 3.824461345483142,
+          "maximum": 4.1394613454831415,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 10,
+          "mean": 11.379999959468842,
+          "p95": 12.559999936819075,
+          "p99": 12.99199991106987,
+          "maximum": 13.099999904632568,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 838,
+          "missesDuringPitch": 0,
+          "hitRate": 1.0,
+          "residentMax": 4320000,
+          "buildDuringPitch": null,
+          "allBuildHistory": {
+            "n": 12,
+            "mean": 3.5083333452542624,
+            "p95": 4.514999949932098,
+            "p99": 4.822999970912933,
+            "maximum": 4.899999976158142,
+            "over33_3": 0,
+            "over50": 0
+          }
+        },
+        "poseReuse": [
+          {
+            "index": 0,
+            "samples": 105,
+            "moving": 40,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 1,
+            "samples": 64,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 2,
+            "samples": 111,
+            "moving": 45,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 3,
+            "samples": 65,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 4,
+            "samples": 97,
+            "moving": 40,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 5,
+            "samples": 50,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 6,
+            "samples": 107,
+            "moving": 44,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 7,
+            "samples": 64,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 8,
+            "samples": 105,
+            "moving": 41,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 9,
+            "samples": 65,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "HR": 6,
+          "foul": 2,
+          "whiff": 2
+        }
+      },
+      "supported": {
+        "n": 5,
+        "frames": {
+          "n": 805,
+          "mean": 16.935031055900627,
+          "p95": 16.799999999999272,
+          "p99": 33.29999999999927,
+          "maximum": 33.399999999999636,
+          "over33_3": 5,
+          "over50": 0
+        },
+        "draws": {
+          "n": 535,
+          "mean": 6.429345797601147,
+          "p95": 9.160000038146963,
+          "p99": 13.030000007152541,
+          "maximum": 22.799999952316284,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": {
+          "n": 525,
+          "mean": 4.167238093784877,
+          "p95": 5.879999995231624,
+          "p99": 8.0,
+          "maximum": 14.100000023841858,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 5,
+          "mean": 9.920000004768372,
+          "p95": 19.799999999999997,
+          "p99": 22.36,
+          "maximum": 23.0,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 5,
+          "mean": 0.8394613454831414,
+          "p95": 3.439461345483141,
+          "p99": 3.9994613454831414,
+          "maximum": 4.1394613454831415,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 5,
+          "mean": 11.479999947547913,
+          "p95": 12.759999918937682,
+          "p99": 13.031999907493592,
+          "maximum": 13.099999904632568,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 525,
+          "missesDuringPitch": 0,
+          "hitRate": 1.0,
+          "residentMax": 4320000,
+          "buildDuringPitch": null,
+          "allBuildHistory": {
+            "n": 11,
+            "mean": 3.44545456496152,
+            "p95": 4.25,
+            "p99": 4.769999980926514,
+            "maximum": 4.899999976158142,
+            "over33_3": 0,
+            "over50": 0
+          }
+        },
+        "poseReuse": [
+          {
+            "index": 0,
+            "samples": 105,
+            "moving": 40,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 2,
+            "samples": 111,
+            "moving": 45,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 4,
+            "samples": 97,
+            "moving": 40,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 6,
+            "samples": 107,
+            "moving": 44,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 8,
+            "samples": 105,
+            "moving": 41,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "HR": 3,
+          "foul": 1,
+          "whiff": 1
+        }
+      },
+      "fallback": {
+        "n": 5,
+        "frames": {
+          "n": 816,
+          "mean": 16.706985294117647,
+          "p95": 16.700000000004366,
+          "p99": 16.80000000000291,
+          "maximum": 33.29999999999927,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "draws": {
+          "n": 723,
+          "mean": 4.17012448231709,
+          "p95": 6.899999976158142,
+          "p99": 9.36800002098082,
+          "maximum": 23.899999976158142,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": {
+          "n": 308,
+          "mean": 3.9318181756254913,
+          "p95": 4.700000047683716,
+          "p99": 6.285999957323075,
+          "maximum": 7.399999976158142,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 5,
+          "mean": 2.999999976158142,
+          "p95": 3.3799999713897706,
+          "p99": 3.3959999752044676,
+          "maximum": 3.399999976158142,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 5,
+          "mean": -0.4005386878954596,
+          "p95": -0.08053868312708802,
+          "p99": -0.06453869838587707,
+          "maximum": -0.060538702200574335,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 5,
+          "mean": 11.27999997138977,
+          "p95": 11.859999966621398,
+          "p99": 11.891999974250794,
+          "maximum": 11.899999976158142,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 313,
+          "missesDuringPitch": 0,
+          "hitRate": 1.0,
+          "residentMax": 4320000,
+          "buildDuringPitch": null,
+          "allBuildHistory": {
+            "n": 12,
+            "mean": 3.5083333452542624,
+            "p95": 4.514999949932098,
+            "p99": 4.822999970912933,
+            "maximum": 4.899999976158142,
+            "over33_3": 0,
+            "over50": 0
+          }
+        },
+        "poseReuse": [
+          {
+            "index": 1,
+            "samples": 64,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 3,
+            "samples": 65,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 5,
+            "samples": 50,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 7,
+            "samples": 64,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 9,
+            "samples": 65,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "HR": 3,
+          "foul": 1,
+          "whiff": 1
+        }
+      }
+    }
+  },
+  "latest-smoke-pc": {
+    "count": 10,
+    "errors": [],
+    "groups": {
+      "all": {
+        "n": 10,
+        "frames": {
+          "n": 1544,
+          "mean": 17.810103626943008,
+          "p95": 33.29999999999927,
+          "p99": 33.399999999999636,
+          "maximum": 50,
+          "over33_3": 56,
+          "over50": 0
+        },
+        "draws": {
+          "n": 1172,
+          "mean": 5.940614333433503,
+          "p95": 10.145000034570698,
+          "p99": 14.229000020027158,
+          "maximum": 20.700000047683716,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": {
+          "n": 778,
+          "mean": 4.580462724813152,
+          "p95": 6.600000023841858,
+          "p99": 8.746000058650974,
+          "maximum": 16.399999976158142,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 10,
+          "mean": 5.619999980926513,
+          "p95": 8.009999990463257,
+          "p99": 8.081999921798706,
+          "maximum": 8.099999904632568,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 10,
+          "mean": 4.729461319257098,
+          "p95": 25.08446135621196,
+          "p99": 31.528461347628912,
+          "maximum": 33.13946134548314,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 10,
+          "mean": 13.849999988079071,
+          "p95": 19.270000034570685,
+          "p99": 21.934000025987626,
+          "maximum": 22.600000023841858,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 783,
+          "missesDuringPitch": 0,
+          "hitRate": 1.0,
+          "residentMax": 4665600,
+          "buildDuringPitch": null,
+          "allBuildHistory": {
+            "n": 12,
+            "mean": 4.808333347241084,
+            "p95": 7.669999957084654,
+            "p99": 8.813999915122988,
+            "maximum": 9.099999904632568,
+            "over33_3": 0,
+            "over50": 0
+          }
+        },
+        "poseReuse": [
+          {
+            "index": 0,
+            "samples": 98,
+            "moving": 34,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 1,
+            "samples": 48,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 2,
+            "samples": 106,
+            "moving": 44,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 3,
+            "samples": 62,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 4,
+            "samples": 96,
+            "moving": 39,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 5,
+            "samples": 48,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 6,
+            "samples": 94,
+            "moving": 31,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 7,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 8,
+            "samples": 100,
+            "moving": 37,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 9,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "HR": 6,
+          "foul": 2,
+          "whiff": 2
+        }
+      },
+      "supported": {
+        "n": 5,
+        "frames": {
+          "n": 776,
+          "mean": 17.696907216494843,
+          "p95": 33.29999999999927,
+          "p99": 33.400000000001455,
+          "maximum": 50,
+          "over33_3": 23,
+          "over50": 0
+        },
+        "draws": {
+          "n": 502,
+          "mean": 7.045019917041657,
+          "p95": 10.195000046491622,
+          "p99": 13.684999929666533,
+          "maximum": 20.700000047683716,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": {
+          "n": 494,
+          "mean": 4.474291497396554,
+          "p95": 6.399999976158142,
+          "p99": 7.621000020503995,
+          "maximum": 13.600000023841858,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 5,
+          "mean": 7.079999995231629,
+          "p95": 7.979999923706055,
+          "p99": 8.075999908447265,
+          "maximum": 8.099999904632568,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 5,
+          "mean": 2.619461316872912,
+          "p95": 12.099461359788254,
+          "p99": 14.61146136741765,
+          "maximum": 15.239461369325,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 5,
+          "mean": 13.259999966621399,
+          "p95": 14.679999947547913,
+          "p99": 14.77599995136261,
+          "maximum": 14.799999952316284,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 494,
+          "missesDuringPitch": 0,
+          "hitRate": 1.0,
+          "residentMax": 4665600,
+          "buildDuringPitch": null,
+          "allBuildHistory": {
+            "n": 11,
+            "mean": 4.890909108248624,
+            "p95": 7.799999952316284,
+            "p99": 8.839999914169312,
+            "maximum": 9.099999904632568,
+            "over33_3": 0,
+            "over50": 0
+          }
+        },
+        "poseReuse": [
+          {
+            "index": 0,
+            "samples": 98,
+            "moving": 34,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 2,
+            "samples": 106,
+            "moving": 44,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 4,
+            "samples": 96,
+            "moving": 39,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 6,
+            "samples": 94,
+            "moving": 31,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 8,
+            "samples": 100,
+            "moving": 37,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "HR": 3,
+          "foul": 1,
+          "whiff": 1
+        }
+      },
+      "fallback": {
+        "n": 5,
+        "frames": {
+          "n": 768,
+          "mean": 17.92447916666667,
+          "p95": 33.29999999999927,
+          "p99": 33.399999999999636,
+          "maximum": 50,
+          "over33_3": 33,
+          "over50": 0
+        },
+        "draws": {
+          "n": 670,
+          "mean": 5.113134328998736,
+          "p95": 9.900000095367432,
+          "p99": 14.231000018119806,
+          "maximum": 20.299999952316284,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": {
+          "n": 284,
+          "mean": 4.765140845742025,
+          "p95": 6.88500009179115,
+          "p99": 11.961000087261253,
+          "maximum": 16.399999976158142,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 5,
+          "mean": 4.159999966621399,
+          "p95": 7.240000057220458,
+          "p99": 7.768000087738037,
+          "maximum": 7.900000095367432,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 5,
+          "mean": 6.839461321641283,
+          "p95": 26.839461321641277,
+          "p99": 31.87946134071477,
+          "maximum": 33.13946134548314,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 5,
+          "mean": 14.440000009536742,
+          "p95": 21.120000028610228,
+          "p99": 22.30400002479553,
+          "maximum": 22.600000023841858,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 289,
+          "missesDuringPitch": 0,
+          "hitRate": 1.0,
+          "residentMax": 4665600,
+          "buildDuringPitch": null,
+          "allBuildHistory": {
+            "n": 12,
+            "mean": 4.808333347241084,
+            "p95": 7.669999957084654,
+            "p99": 8.813999915122988,
+            "maximum": 9.099999904632568,
+            "over33_3": 0,
+            "over50": 0
+          }
+        },
+        "poseReuse": [
+          {
+            "index": 1,
+            "samples": 48,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 3,
+            "samples": 62,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 5,
+            "samples": 48,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 7,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 9,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "HR": 3,
+          "foul": 1,
+          "whiff": 1
+        }
+      }
+    }
+  },
+  "legacy-now-mobile": {
+    "count": 10,
+    "errors": [],
+    "groups": {
+      "all": {
+        "n": 10,
+        "frames": {
+          "n": 1634,
+          "mean": 16.747552019583843,
+          "p95": 16.700000000004366,
+          "p99": 16.80000000000231,
+          "maximum": 33.400000000001455,
+          "over33_3": 3,
+          "over50": 0
+        },
+        "draws": {
+          "n": 1458,
+          "mean": 2.798628258852311,
+          "p95": 3.899999976158142,
+          "p99": 6.129000030756016,
+          "maximum": 10.900000095367432,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": null,
+        "input": {
+          "n": 10,
+          "mean": 5.570000028610229,
+          "p95": 6.510000056028366,
+          "p99": 6.5820000302791595,
+          "maximum": 6.600000023841858,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 10,
+          "mean": 0.6694612930310541,
+          "p95": 4.649461252499887,
+          "p99": 7.601461269666035,
+          "maximum": 8.339461273957568,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 10,
+          "mean": 17.639999985694885,
+          "p95": 25.019999986886972,
+          "p99": 27.32399997830391,
+          "maximum": 27.899999976158142,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 0,
+          "missesDuringPitch": 0,
+          "hitRate": null,
+          "residentMax": 0,
+          "buildDuringPitch": null
+        },
+        "poseReuse": [
+          {
+            "index": 0,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 1,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 2,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 3,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 4,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 5,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 6,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 7,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 8,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 9,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "HR": 6,
+          "foul": 2,
+          "whiff": 2
+        }
+      },
+      "supported": {
+        "n": 5,
+        "frames": {
+          "n": 815,
+          "mean": 16.7680981595092,
+          "p95": 16.700000000000728,
+          "p99": 16.80000000000109,
+          "maximum": 33.400000000001455,
+          "over33_3": 1,
+          "over50": 0
+        },
+        "draws": {
+          "n": 726,
+          "mean": 2.8816804417893906,
+          "p95": 4.300000071525574,
+          "p99": 7.699999988079071,
+          "maximum": 10.900000095367432,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": null,
+        "input": {
+          "n": 5,
+          "mean": 5.2200000286102295,
+          "p95": 6.020000052452088,
+          "p99": 6.16400004863739,
+          "maximum": 6.200000047683716,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 5,
+          "mean": 1.5594613025677972,
+          "p95": 6.67946128349431,
+          "p99": 8.007461275864916,
+          "maximum": 8.339461273957568,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 5,
+          "mean": 17.4599999666214,
+          "p95": 25.97999997138977,
+          "p99": 27.515999975204465,
+          "maximum": 27.899999976158142,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 0,
+          "missesDuringPitch": 0,
+          "hitRate": null,
+          "residentMax": 0,
+          "buildDuringPitch": null
+        },
+        "poseReuse": [
+          {
+            "index": 0,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 2,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 4,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 6,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 8,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "HR": 3,
+          "foul": 1,
+          "whiff": 1
+        }
+      },
+      "fallback": {
+        "n": 5,
+        "frames": {
+          "n": 819,
+          "mean": 16.727106227106223,
+          "p95": 16.700000000004366,
+          "p99": 16.80000000000291,
+          "maximum": 33.400000000001455,
+          "over33_3": 2,
+          "over50": 0
+        },
+        "draws": {
+          "n": 732,
+          "mean": 2.7162568315130766,
+          "p95": 3.700000047683716,
+          "p99": 5.400000058412552,
+          "maximum": 10.899999976158142,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": null,
+        "input": {
+          "n": 5,
+          "mean": 5.92000002861023,
+          "p95": 6.560000038146972,
+          "p99": 6.59200002670288,
+          "maximum": 6.600000023841858,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 5,
+          "mean": -0.22053871650568907,
+          "p95": 0.09946124057896666,
+          "p99": 0.13146122913487487,
+          "maximum": 0.13946122627385193,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 5,
+          "mean": 17.82000000476837,
+          "p95": 21.1,
+          "p99": 21.42,
+          "maximum": 21.5,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 0,
+          "missesDuringPitch": 0,
+          "hitRate": null,
+          "residentMax": 0,
+          "buildDuringPitch": null
+        },
+        "poseReuse": [
+          {
+            "index": 1,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 3,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 5,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 7,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 9,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "HR": 3,
+          "foul": 1,
+          "whiff": 1
+        }
+      }
+    }
+  },
+  "legacy-now-pc": {
+    "count": 10,
+    "errors": [],
+    "groups": {
+      "all": {
+        "n": 10,
+        "frames": {
+          "n": 1614,
+          "mean": 16.872490706319702,
+          "p95": 16.799999999999272,
+          "p99": 33.29999999999927,
+          "maximum": 33.400000000001455,
+          "over33_3": 10,
+          "over50": 0
+        },
+        "draws": {
+          "n": 1447,
+          "mean": 2.8753973739099403,
+          "p95": 4.0,
+          "p99": 4.954000043869015,
+          "maximum": 7.899999976158142,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": null,
+        "input": {
+          "n": 10,
+          "mean": 6.4300000190734865,
+          "p95": 9.019999939203261,
+          "p99": 9.163999930620193,
+          "maximum": 9.199999928474426,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 10,
+          "mean": -0.26053870220057435,
+          "p95": 0.039461321641283575,
+          "p99": 0.039461321641283575,
+          "maximum": 0.039461321641283575,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 10,
+          "mean": 12.240000021457671,
+          "p95": 15.63500000834465,
+          "p99": 16.246999982595444,
+          "maximum": 16.399999976158142,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 0,
+          "missesDuringPitch": 0,
+          "hitRate": null,
+          "residentMax": 0,
+          "buildDuringPitch": null
+        },
+        "poseReuse": [
+          {
+            "index": 0,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 1,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 2,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 3,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 4,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 5,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 6,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 7,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 8,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 9,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "HR": 6,
+          "foul": 2,
+          "whiff": 2
+        }
+      },
+      "supported": {
+        "n": 5,
+        "frames": {
+          "n": 806,
+          "mean": 16.872704714640204,
+          "p95": 16.799999999999272,
+          "p99": 33.29999999999927,
+          "maximum": 33.399999999999636,
+          "over33_3": 5,
+          "over50": 0
+        },
+        "draws": {
+          "n": 722,
+          "mean": 2.934626039210449,
+          "p95": 4.200000047683716,
+          "p99": 5.0,
+          "maximum": 7.899999976158142,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": null,
+        "input": {
+          "n": 5,
+          "mean": 6.940000009536743,
+          "p95": 9.119999933242799,
+          "p99": 9.1839999294281,
+          "maximum": 9.199999928474426,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 5,
+          "mean": -0.2805387069689459,
+          "p95": -0.000538687895459633,
+          "p99": 0.03146131973393493,
+          "maximum": 0.039461321641283575,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 5,
+          "mean": 12.900000023841859,
+          "p95": 16.059999990463258,
+          "p99": 16.331999979019166,
+          "maximum": 16.399999976158142,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 0,
+          "missesDuringPitch": 0,
+          "hitRate": null,
+          "residentMax": 0,
+          "buildDuringPitch": null
+        },
+        "poseReuse": [
+          {
+            "index": 0,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 2,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 4,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 6,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 8,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "HR": 3,
+          "foul": 1,
+          "whiff": 1
+        }
+      },
+      "fallback": {
+        "n": 5,
+        "frames": {
+          "n": 808,
+          "mean": 16.87227722772277,
+          "p95": 16.799999999999272,
+          "p99": 33.299999999995634,
+          "maximum": 33.400000000001455,
+          "over33_3": 5,
+          "over50": 0
+        },
+        "draws": {
+          "n": 725,
+          "mean": 2.81641379274171,
+          "p95": 3.8000000715255737,
+          "p99": 4.7519999408721905,
+          "maximum": 5.599999904632568,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": null,
+        "input": {
+          "n": 5,
+          "mean": 5.92000002861023,
+          "p95": 6.940000009536743,
+          "p99": 6.9880000019073485,
+          "maximum": 7.0,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 5,
+          "mean": -0.24053869743220274,
+          "p95": 0.01946131687291197,
+          "p99": 0.03546132068760925,
+          "maximum": 0.039461321641283575,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 5,
+          "mean": 11.580000019073486,
+          "p95": 11.960000014305114,
+          "p99": 11.992000002861023,
+          "maximum": 12,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 0,
+          "missesDuringPitch": 0,
+          "hitRate": null,
+          "residentMax": 0,
+          "buildDuringPitch": null
+        },
+        "poseReuse": [
+          {
+            "index": 1,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 3,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 5,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 7,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 9,
+            "samples": 0,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "HR": 3,
+          "foul": 1,
+          "whiff": 1
+        }
+      }
+    }
+  },
+  "stadium-cache-mobile": {
+    "count": 50,
+    "errors": [],
+    "groups": {
+      "all": {
+        "n": 50,
+        "frames": {
+          "n": 7993,
+          "mean": 16.999662204428887,
+          "p95": 16.799999999999272,
+          "p99": 33.30000000000291,
+          "maximum": 66.70000000000437,
+          "over33_3": 112,
+          "over50": 3
+        },
+        "draws": {
+          "n": 6230,
+          "mean": 5.377817014247227,
+          "p95": 8.899999976158142,
+          "p99": 12.3710000038147,
+          "maximum": 32.700000047683716,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": {
+          "n": 4091,
+          "mean": 4.493204594882302,
+          "p95": 6.649999976158142,
+          "p99": 9.399999976158142,
+          "maximum": 22.59999990463257,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 50,
+          "mean": 4.67,
+          "p95": 7.484999984502791,
+          "p99": 9.452999988794327,
+          "maximum": 9.600000023841858,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 50,
+          "mean": 2.655461315914872,
+          "p95": 17.6794612894515,
+          "p99": 26.122461273477015,
+          "maximum": 27.739461250108434,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 50,
+          "mean": 13.803999998569488,
+          "p95": 23.06000005602836,
+          "p99": 28.131000012159333,
+          "maximum": 32.10000002384186,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 4116,
+          "missesDuringPitch": 0,
+          "hitRate": 1.0,
+          "residentMax": 4320000,
+          "buildDuringPitch": null,
+          "allBuildHistory": {
+            "n": 52,
+            "mean": 3.496153840651879,
+            "p95": 4.144999980926514,
+            "p99": 5.4289999878406565,
+            "maximum": 6.5,
+            "over33_3": 0,
+            "over50": 0
+          }
+        },
+        "poseReuse": [
+          {
+            "index": 0,
+            "samples": 97,
+            "moving": 42,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 1,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 2,
+            "samples": 108,
+            "moving": 44,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 3,
+            "samples": 64,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 4,
+            "samples": 97,
+            "moving": 41,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 5,
+            "samples": 50,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 6,
+            "samples": 106,
+            "moving": 43,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 7,
+            "samples": 65,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 8,
+            "samples": 107,
+            "moving": 43,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 9,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 10,
+            "samples": 102,
+            "moving": 44,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 11,
+            "samples": 62,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 12,
+            "samples": 93,
+            "moving": 37,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 13,
+            "samples": 49,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 14,
+            "samples": 101,
+            "moving": 39,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 15,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 16,
+            "samples": 103,
+            "moving": 39,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 17,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 18,
+            "samples": 107,
+            "moving": 42,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 19,
+            "samples": 64,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 20,
+            "samples": 95,
+            "moving": 41,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 21,
+            "samples": 53,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 22,
+            "samples": 110,
+            "moving": 44,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 23,
+            "samples": 62,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 24,
+            "samples": 106,
+            "moving": 42,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 25,
+            "samples": 62,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 26,
+            "samples": 108,
+            "moving": 42,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 27,
+            "samples": 62,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 28,
+            "samples": 96,
+            "moving": 41,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 29,
+            "samples": 51,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 30,
+            "samples": 102,
+            "moving": 38,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 31,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 32,
+            "samples": 109,
+            "moving": 45,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 33,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 34,
+            "samples": 111,
+            "moving": 45,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 35,
+            "samples": 61,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 36,
+            "samples": 95,
+            "moving": 39,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 37,
+            "samples": 52,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 38,
+            "samples": 106,
+            "moving": 40,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 39,
+            "samples": 65,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 40,
+            "samples": 104,
+            "moving": 40,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 41,
+            "samples": 64,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 42,
+            "samples": 107,
+            "moving": 42,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 43,
+            "samples": 65,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 44,
+            "samples": 95,
+            "moving": 39,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 45,
+            "samples": 52,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 46,
+            "samples": 108,
+            "moving": 43,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 47,
+            "samples": 65,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 48,
+            "samples": 107,
+            "moving": 42,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 49,
+            "samples": 65,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "HR": 26,
+          "foul": 12,
+          "whiff": 12
+        }
+      },
+      "supported": {
+        "n": 25,
+        "frames": {
+          "n": 3968,
+          "mean": 17.107056451612912,
+          "p95": 16.80000000000291,
+          "p99": 33.39999999999418,
+          "maximum": 66.70000000000437,
+          "over33_3": 72,
+          "over50": 1
+        },
+        "draws": {
+          "n": 2635,
+          "mean": 6.801176470054394,
+          "p95": 9.800000071525574,
+          "p99": 14.497999999523119,
+          "maximum": 29.200000047683716,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": {
+          "n": 2580,
+          "mean": 4.545852711542632,
+          "p95": 6.800000071525574,
+          "p99": 9.621000028848652,
+          "maximum": 22.59999990463257,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 25,
+          "mean": 6.663999991416931,
+          "p95": 8.99999995231628,
+          "p99": 9.52800000667572,
+          "maximum": 9.600000023841858,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 25,
+          "mean": 1.7554613159148722,
+          "p95": 12.719461245340062,
+          "p99": 16.76746130447339,
+          "maximum": 18.039461321641284,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 25,
+          "mean": 13.007999992370605,
+          "p95": 21.220000004768366,
+          "p99": 22.20800007820129,
+          "maximum": 22.40000009536743,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 2580,
+          "missesDuringPitch": 0,
+          "hitRate": 1.0,
+          "residentMax": 4320000,
+          "buildDuringPitch": null,
+          "allBuildHistory": {
+            "n": 51,
+            "mean": 3.498039210543913,
+            "p95": 4.149999976158142,
+            "p99": 5.449999988079071,
+            "maximum": 6.5,
+            "over33_3": 0,
+            "over50": 0
+          }
+        },
+        "poseReuse": [
+          {
+            "index": 0,
+            "samples": 97,
+            "moving": 42,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 2,
+            "samples": 108,
+            "moving": 44,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 4,
+            "samples": 97,
+            "moving": 41,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 6,
+            "samples": 106,
+            "moving": 43,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 8,
+            "samples": 107,
+            "moving": 43,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 10,
+            "samples": 102,
+            "moving": 44,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 12,
+            "samples": 93,
+            "moving": 37,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 14,
+            "samples": 101,
+            "moving": 39,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 16,
+            "samples": 103,
+            "moving": 39,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 18,
+            "samples": 107,
+            "moving": 42,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 20,
+            "samples": 95,
+            "moving": 41,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 22,
+            "samples": 110,
+            "moving": 44,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 24,
+            "samples": 106,
+            "moving": 42,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 26,
+            "samples": 108,
+            "moving": 42,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 28,
+            "samples": 96,
+            "moving": 41,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 30,
+            "samples": 102,
+            "moving": 38,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 32,
+            "samples": 109,
+            "moving": 45,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 34,
+            "samples": 111,
+            "moving": 45,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 36,
+            "samples": 95,
+            "moving": 39,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 38,
+            "samples": 106,
+            "moving": 40,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 40,
+            "samples": 104,
+            "moving": 40,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 42,
+            "samples": 107,
+            "moving": 42,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 44,
+            "samples": 95,
+            "moving": 39,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 46,
+            "samples": 108,
+            "moving": 43,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 48,
+            "samples": 107,
+            "moving": 42,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "HR": 13,
+          "foul": 6,
+          "whiff": 6
+        }
+      },
+      "fallback": {
+        "n": 25,
+        "frames": {
+          "n": 4025,
+          "mean": 16.893788819875795,
+          "p95": 16.79999999998836,
+          "p99": 33.2999999999984,
+          "maximum": 66.60000000000582,
+          "over33_3": 40,
+          "over50": 2
+        },
+        "draws": {
+          "n": 3595,
+          "mean": 4.334547983356576,
+          "p95": 8.0,
+          "p99": 10.112000019550312,
+          "maximum": 32.700000047683716,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": {
+          "n": 1511,
+          "mean": 4.40330906808968,
+          "p95": 6.5,
+          "p99": 8.389999973773966,
+          "maximum": 22.199999928474426,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 25,
+          "mean": 2.6760000085830686,
+          "p95": 3.2799999475479122,
+          "p99": 4.211999988555906,
+          "maximum": 4.5,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 25,
+          "mean": 3.5554613159148722,
+          "p95": 22.99946128826121,
+          "p99": 26.947461261554267,
+          "maximum": 27.739461250108434,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 25,
+          "mean": 14.600000004768372,
+          "p95": 23.92000000476837,
+          "p99": 30.156000018119798,
+          "maximum": 32.10000002384186,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 1536,
+          "missesDuringPitch": 0,
+          "hitRate": 1.0,
+          "residentMax": 4320000,
+          "buildDuringPitch": null,
+          "allBuildHistory": {
+            "n": 52,
+            "mean": 3.496153840651879,
+            "p95": 4.144999980926514,
+            "p99": 5.4289999878406565,
+            "maximum": 6.5,
+            "over33_3": 0,
+            "over50": 0
+          }
+        },
+        "poseReuse": [
+          {
+            "index": 1,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 3,
+            "samples": 64,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 5,
+            "samples": 50,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 7,
+            "samples": 65,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 9,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 11,
+            "samples": 62,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 13,
+            "samples": 49,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 15,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 17,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 19,
+            "samples": 64,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 21,
+            "samples": 53,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 23,
+            "samples": 62,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 25,
+            "samples": 62,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 27,
+            "samples": 62,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 29,
+            "samples": 51,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 31,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 33,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 35,
+            "samples": 61,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 37,
+            "samples": 52,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 39,
+            "samples": 65,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 41,
+            "samples": 64,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 43,
+            "samples": 65,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 45,
+            "samples": 52,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 47,
+            "samples": 65,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 49,
+            "samples": 65,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "HR": 13,
+          "foul": 6,
+          "whiff": 6
+        }
+      }
+    }
+  },
+  "stadium-cache-pc": {
+    "count": 50,
+    "errors": [],
+    "groups": {
+      "all": {
+        "n": 50,
+        "frames": {
+          "n": 7948,
+          "mean": 17.011952692501254,
+          "p95": 16.799999999999272,
+          "p99": 33.30000000000291,
+          "maximum": 50,
+          "over33_3": 113,
+          "over50": 0
+        },
+        "draws": {
+          "n": 6205,
+          "mean": 5.068734891063066,
+          "p95": 7.699999928474426,
+          "p99": 10.40000009059906,
+          "maximum": 39,
+          "over33_3": 1,
+          "over50": 0
+        },
+        "actor": {
+          "n": 4067,
+          "mean": 4.05470863134878,
+          "p95": 5.399999976158142,
+          "p99": 7.100000023841858,
+          "maximum": 26.299999952316284,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 50,
+          "mean": 4.7579999971389775,
+          "p95": 7.554999947547913,
+          "p99": 8.207999927997587,
+          "maximum": 8.599999904632568,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 50,
+          "mean": 0.7354613254517608,
+          "p95": 5.424461377662366,
+          "p99": 12.892461381961164,
+          "maximum": 17.939461417008715,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 50,
+          "mean": 11.462000005245208,
+          "p95": 14.960000008344641,
+          "p99": 20.610000023841856,
+          "maximum": 21.100000023841858,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 4080,
+          "missesDuringPitch": 12,
+          "hitRate": 0.9970674486803519,
+          "residentMax": 4665600,
+          "buildDuringPitch": {
+            "n": 12,
+            "mean": 3.9249999821186066,
+            "p95": 5.550000023841857,
+            "p99": 5.9900000238418585,
+            "maximum": 6.100000023841858,
+            "over33_3": 0,
+            "over50": 0
+          },
+          "allBuildHistory": {
+            "n": 52,
+            "mean": 3.80000000504347,
+            "p95": 4.715000063180921,
+            "p99": 5.997999999523163,
+            "maximum": 6.100000023841858,
+            "over33_3": 0,
+            "over50": 0
+          }
+        },
+        "poseReuse": [
+          {
+            "index": 0,
+            "samples": 102,
+            "moving": 38,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 1,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 2,
+            "samples": 109,
+            "moving": 44,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 3,
+            "samples": 65,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 4,
+            "samples": 96,
+            "moving": 41,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 5,
+            "samples": 50,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 6,
+            "samples": 99,
+            "moving": 34,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 7,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 8,
+            "samples": 100,
+            "moving": 36,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 9,
+            "samples": 62,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 10,
+            "samples": 108,
+            "moving": 44,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 11,
+            "samples": 64,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 12,
+            "samples": 96,
+            "moving": 41,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 13,
+            "samples": 50,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 14,
+            "samples": 102,
+            "moving": 38,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 15,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 16,
+            "samples": 102,
+            "moving": 38,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 17,
+            "samples": 65,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 18,
+            "samples": 110,
+            "moving": 44,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 19,
+            "samples": 64,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 20,
+            "samples": 97,
+            "moving": 41,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 21,
+            "samples": 51,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 22,
+            "samples": 101,
+            "moving": 37,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 23,
+            "samples": 65,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 24,
+            "samples": 103,
+            "moving": 38,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 25,
+            "samples": 65,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 26,
+            "samples": 109,
+            "moving": 45,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 27,
+            "samples": 65,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 28,
+            "samples": 97,
+            "moving": 41,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 29,
+            "samples": 49,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 30,
+            "samples": 102,
+            "moving": 36,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 31,
+            "samples": 64,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 32,
+            "samples": 100,
+            "moving": 37,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 33,
+            "samples": 65,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 34,
+            "samples": 111,
+            "moving": 45,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 35,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 36,
+            "samples": 97,
+            "moving": 41,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 37,
+            "samples": 50,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 38,
+            "samples": 102,
+            "moving": 37,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 39,
+            "samples": 62,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 40,
+            "samples": 102,
+            "moving": 38,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 41,
+            "samples": 64,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 42,
+            "samples": 111,
+            "moving": 45,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 43,
+            "samples": 64,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 44,
+            "samples": 97,
+            "moving": 41,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 45,
+            "samples": 48,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 46,
+            "samples": 102,
+            "moving": 38,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 47,
+            "samples": 61,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 48,
+            "samples": 104,
+            "moving": 38,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 49,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "HR": 26,
+          "foul": 12,
+          "whiff": 12
+        }
+      },
+      "supported": {
+        "n": 25,
+        "frames": {
+          "n": 3938,
+          "mean": 17.173819197562203,
+          "p95": 16.80000000000291,
+          "p99": 33.39999999999418,
+          "maximum": 50,
+          "over33_3": 80,
+          "over50": 0
+        },
+        "draws": {
+          "n": 2615,
+          "mean": 6.183747610672026,
+          "p95": 8.0,
+          "p99": 10.958000006675759,
+          "maximum": 27.59999990463257,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "actor": {
+          "n": 2559,
+          "mean": 4.046463463212326,
+          "p95": 5.299999952316284,
+          "p99": 6.741999938488014,
+          "maximum": 20.40000009536743,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 25,
+          "mean": 6.431999998092651,
+          "p95": 7.579999923706055,
+          "p99": 7.751999940872192,
+          "maximum": 7.799999952316284,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 25,
+          "mean": 0.9194613168688375,
+          "p95": 6.859461350251502,
+          "p99": 15.467461399842557,
+          "maximum": 17.939461417008715,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 25,
+          "mean": 11.647999992370606,
+          "p95": 15.759999990463248,
+          "p99": 19.972000012397757,
+          "maximum": 21.100000023841858,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 2555,
+          "missesDuringPitch": 4,
+          "hitRate": 0.9984368894099257,
+          "residentMax": 4665600,
+          "buildDuringPitch": {
+            "n": 4,
+            "mean": 3.524999976158142,
+            "p95": 3.7000000298023226,
+            "p99": 3.700000044107437,
+            "maximum": 3.700000047683716,
+            "over33_3": 0,
+            "over50": 0
+          },
+          "allBuildHistory": {
+            "n": 51,
+            "mean": 3.801960788521112,
+            "p95": 4.750000059604645,
+            "p99": 6.0,
+            "maximum": 6.100000023841858,
+            "over33_3": 0,
+            "over50": 0
+          }
+        },
+        "poseReuse": [
+          {
+            "index": 0,
+            "samples": 102,
+            "moving": 38,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 2,
+            "samples": 109,
+            "moving": 44,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 4,
+            "samples": 96,
+            "moving": 41,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 6,
+            "samples": 99,
+            "moving": 34,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 8,
+            "samples": 100,
+            "moving": 36,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 10,
+            "samples": 108,
+            "moving": 44,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 12,
+            "samples": 96,
+            "moving": 41,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 14,
+            "samples": 102,
+            "moving": 38,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 16,
+            "samples": 102,
+            "moving": 38,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 18,
+            "samples": 110,
+            "moving": 44,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 20,
+            "samples": 97,
+            "moving": 41,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 22,
+            "samples": 101,
+            "moving": 37,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 24,
+            "samples": 103,
+            "moving": 38,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 26,
+            "samples": 109,
+            "moving": 45,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 28,
+            "samples": 97,
+            "moving": 41,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 30,
+            "samples": 102,
+            "moving": 36,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 32,
+            "samples": 100,
+            "moving": 37,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 34,
+            "samples": 111,
+            "moving": 45,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 36,
+            "samples": 97,
+            "moving": 41,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 38,
+            "samples": 102,
+            "moving": 37,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 40,
+            "samples": 102,
+            "moving": 38,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 42,
+            "samples": 111,
+            "moving": 45,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 44,
+            "samples": 97,
+            "moving": 41,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 46,
+            "samples": 102,
+            "moving": 38,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 48,
+            "samples": 104,
+            "moving": 38,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "HR": 13,
+          "foul": 6,
+          "whiff": 6
+        }
+      },
+      "fallback": {
+        "n": 25,
+        "frames": {
+          "n": 4010,
+          "mean": 16.852992518703246,
+          "p95": 16.79999999998836,
+          "p99": 33.29099999998913,
+          "maximum": 50,
+          "over33_3": 33,
+          "over50": 0
+        },
+        "draws": {
+          "n": 3590,
+          "mean": 4.256545960205843,
+          "p95": 7.399999976158142,
+          "p99": 10.211000050306334,
+          "maximum": 39,
+          "over33_3": 1,
+          "over50": 0
+        },
+        "actor": {
+          "n": 1508,
+          "mean": 4.0687002661373635,
+          "p95": 5.564999938011156,
+          "p99": 7.785999948978437,
+          "maximum": 26.299999952316284,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "input": {
+          "n": 25,
+          "mean": 3.0839999961853026,
+          "p95": 4.400000023841855,
+          "p99": 7.639999933242789,
+          "maximum": 8.599999904632568,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "delivery": {
+          "n": 25,
+          "mean": 0.5514613340346841,
+          "p95": 3.8794614026963234,
+          "p99": 5.9914613626419975,
+          "maximum": 6.6394613454758655,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "boot": {
+          "n": 25,
+          "mean": 11.276000018119811,
+          "p95": 12.92000000476837,
+          "p99": 18.3960000181198,
+          "maximum": 20.100000023841858,
+          "over33_3": 0,
+          "over50": 0
+        },
+        "notReady": 0,
+        "cache": {
+          "hits": 1525,
+          "missesDuringPitch": 8,
+          "hitRate": 0.994781474233529,
+          "residentMax": 4665600,
+          "buildDuringPitch": {
+            "n": 8,
+            "mean": 4.124999985098839,
+            "p95": 5.750000023841857,
+            "p99": 6.030000023841858,
+            "maximum": 6.100000023841858,
+            "over33_3": 0,
+            "over50": 0
+          },
+          "allBuildHistory": {
+            "n": 52,
+            "mean": 3.80000000504347,
+            "p95": 4.715000063180921,
+            "p99": 5.997999999523163,
+            "maximum": 6.100000023841858,
+            "over33_3": 0,
+            "over50": 0
+          }
+        },
+        "poseReuse": [
+          {
+            "index": 1,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 3,
+            "samples": 65,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 5,
+            "samples": 50,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 7,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 9,
+            "samples": 62,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 11,
+            "samples": 64,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 13,
+            "samples": 50,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 15,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 17,
+            "samples": 65,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 19,
+            "samples": 64,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 21,
+            "samples": 51,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 23,
+            "samples": 65,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 25,
+            "samples": 65,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 27,
+            "samples": 65,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 29,
+            "samples": 49,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 31,
+            "samples": 64,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 33,
+            "samples": 65,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 35,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 37,
+            "samples": 50,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 39,
+            "samples": 62,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 41,
+            "samples": 64,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 43,
+            "samples": 64,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 45,
+            "samples": 48,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          },
+          {
+            "index": 47,
+            "samples": 61,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 1
+          },
+          {
+            "index": 49,
+            "samples": 63,
+            "moving": 0,
+            "repeatedMoving": 0,
+            "repeatedAll": 0
+          }
+        ],
+        "results": {
+          "HR": 13,
+          "foul": 6,
+          "whiff": 6
+        }
+      }
+    }
+  },
+  "paired-mobile": [
+    {
+      "index": 0,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.6605386068331427,
+        -0.6605386068331427
+      ]
+    },
+    {
+      "index": 1,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.2605386306750006,
+        -0.4605386783587164
+      ]
+    },
+    {
+      "index": 2,
+      "samePitch": true,
+      "inputDelivery": [
+        6.73946125011571,
+        0.039461321641283575
+      ]
+    },
+    {
+      "index": 3,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.3605386545168585,
+        -0.8605386545168585
+      ]
+    },
+    {
+      "index": 4,
+      "samePitch": true,
+      "inputDelivery": [
+        25.13946134548314,
+        18.039461321641284
+      ]
+    },
+    {
+      "index": 5,
+      "samePitch": true,
+      "inputDelivery": [
+        20.13946134548314,
+        -0.3605386545168585
+      ]
+    },
+    {
+      "index": 6,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.4605386783587164,
+        -0.6605387260424322
+      ]
+    },
+    {
+      "index": 7,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.36053877372614807,
+        -0.8605386545168585
+      ]
+    },
+    {
+      "index": 8,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.1605386068331427,
+        -0.060538582991284784
+      ]
+    },
+    {
+      "index": 9,
+      "samePitch": true,
+      "inputDelivery": [
+        0.13946122627385193,
+        -0.1605386068331427
+      ]
+    },
+    {
+      "index": 10,
+      "samePitch": true,
+      "inputDelivery": [
+        7.039461321641284,
+        -0.8605386545168585
+      ]
+    },
+    {
+      "index": 11,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.2605386306750006,
+        -0.6605387260424322
+      ]
+    },
+    {
+      "index": 12,
+      "samePitch": true,
+      "inputDelivery": [
+        32.13946134548314,
+        -0.4605386783587164
+      ]
+    },
+    {
+      "index": 13,
+      "samePitch": true,
+      "inputDelivery": [
+        13.939461297799426,
+        24.439461297799426
+      ]
+    },
+    {
+      "index": 14,
+      "samePitch": true,
+      "inputDelivery": [
+        0.039461321641283575,
+        4.73946125011571
+      ]
+    },
+    {
+      "index": 15,
+      "samePitch": true,
+      "inputDelivery": [
+        3.5394613216412836,
+        -0.2605386306750006
+      ]
+    },
+    {
+      "index": 16,
+      "samePitch": true,
+      "inputDelivery": [
+        12.739461369325,
+        0.039461321641283575
+      ]
+    },
+    {
+      "index": 17,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.5605387022005743,
+        -0.3605386545168585
+      ]
+    },
+    {
+      "index": 18,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.060538582991284784,
+        -0.8605386545168585
+      ]
+    },
+    {
+      "index": 19,
+      "samePitch": true,
+      "inputDelivery": [
+        0.039461321641283575,
+        -0.5605387022005743
+      ]
+    },
+    {
+      "index": 20,
+      "samePitch": true,
+      "inputDelivery": [
+        6.139461226266576,
+        12.739461250108434
+      ]
+    },
+    {
+      "index": 21,
+      "samePitch": true,
+      "inputDelivery": [
+        30.93946129779215,
+        27.739461250108434
+      ]
+    },
+    {
+      "index": 22,
+      "samePitch": true,
+      "inputDelivery": [
+        0.13946134547586553,
+        -0.6605387260497082
+      ]
+    },
+    {
+      "index": 23,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.2605387498915661,
+        0.13946134547586553
+      ]
+    },
+    {
+      "index": 24,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.6605387260497082,
+        -0.6605386068404187
+      ]
+    },
+    {
+      "index": 25,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.4605386783659924,
+        -0.7605387498915661
+      ]
+    },
+    {
+      "index": 26,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.4605386783659924,
+        0.13946134547586553
+      ]
+    },
+    {
+      "index": 27,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.6605386068404187,
+        0.13946122626657598
+      ]
+    },
+    {
+      "index": 28,
+      "samePitch": true,
+      "inputDelivery": [
+        32.33946127395029,
+        0.03946132163400762
+      ]
+    },
+    {
+      "index": 29,
+      "samePitch": true,
+      "inputDelivery": [
+        13.039461321634008,
+        3.6394613454758655
+      ]
+    },
+    {
+      "index": 30,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.860538773733424,
+        0.03946132163400762
+      ]
+    },
+    {
+      "index": 31,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.5605387022078503,
+        10.93946129779215
+      ]
+    },
+    {
+      "index": 32,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.4605386783659924,
+        0.03946132163400762
+      ]
+    },
+    {
+      "index": 33,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.7605386306822766,
+        -0.360538773733424
+      ]
+    },
+    {
+      "index": 34,
+      "samePitch": true,
+      "inputDelivery": [
+        1.139461226266576,
+        -0.1605387260497082
+      ]
+    },
+    {
+      "index": 35,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.7605386306822766,
+        -0.6605387260497082
+      ]
+    },
+    {
+      "index": 36,
+      "samePitch": true,
+      "inputDelivery": [
+        13.239461369317723,
+        2.9394612977921497
+      ]
+    },
+    {
+      "index": 37,
+      "samePitch": true,
+      "inputDelivery": [
+        13.139461345475866,
+        13.139461345475866
+      ]
+    },
+    {
+      "index": 38,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.7605387498915661,
+        -0.2605387498915661
+      ]
+    },
+    {
+      "index": 39,
+      "samePitch": true,
+      "inputDelivery": [
+        0.03946132163400762,
+        -0.6605386068404187
+      ]
+    },
+    {
+      "index": 40,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.36053865452413447,
+        -0.4605386783659924
+      ]
+    },
+    {
+      "index": 41,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.6605386068404187,
+        -0.36053865452413447
+      ]
+    },
+    {
+      "index": 42,
+      "samePitch": true,
+      "inputDelivery": [
+        8.339461273950292,
+        -0.6605386068404187
+      ]
+    },
+    {
+      "index": 43,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.4605386783659924,
+        -0.06053870220785029
+      ]
+    },
+    {
+      "index": 44,
+      "samePitch": true,
+      "inputDelivery": [
+        20.139461345475866,
+        12.639461226266576
+      ]
+    },
+    {
+      "index": 45,
+      "samePitch": true,
+      "inputDelivery": [
+        17.239461369317723,
+        17.239461250108434
+      ]
+    },
+    {
+      "index": 46,
+      "samePitch": true,
+      "inputDelivery": [
+        0.03946132163400762,
+        -0.36053865452413447
+      ]
+    },
+    {
+      "index": 47,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.06053858299856074,
+        -0.26053863068227656
+      ]
+    },
+    {
+      "index": 48,
+      "samePitch": true,
+      "inputDelivery": [
+        0.03946132163400762,
+        -0.7605387498915661
+      ]
+    },
+    {
+      "index": 49,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.2605387498915661,
+        -0.8605386545241345
+      ]
+    }
+  ],
+  "paired-pc": [
+    {
+      "index": 0,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.2605386306750006,
+        -0.060538702200574335
+      ]
+    },
+    {
+      "index": 1,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.3605386545168585,
+        0.13946134548314149
+      ]
+    },
+    {
+      "index": 2,
+      "samePitch": true,
+      "inputDelivery": [
+        8.239461369325,
+        0.13946134548314149
+      ]
+    },
+    {
+      "index": 3,
+      "samePitch": true,
+      "inputDelivery": [
+        0.13946134548314149,
+        0.039461321641283575
+      ]
+    },
+    {
+      "index": 4,
+      "samePitch": true,
+      "inputDelivery": [
+        12.23946125011571,
+        17.939461417008715
+      ]
+    },
+    {
+      "index": 5,
+      "samePitch": true,
+      "inputDelivery": [
+        34.439461297799426,
+        -0.4605386783587164
+      ]
+    },
+    {
+      "index": 6,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.6605387260424322,
+        -0.1605386068331427
+      ]
+    },
+    {
+      "index": 7,
+      "samePitch": true,
+      "inputDelivery": [
+        0.039461321641283575,
+        -0.1605386068331427
+      ]
+    },
+    {
+      "index": 8,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.6605386068331427,
+        -0.5605387022005743
+      ]
+    },
+    {
+      "index": 9,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.16053872604243224,
+        -0.6605387260424322
+      ]
+    },
+    {
+      "index": 10,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.16053872604243224,
+        -0.3605386545168585
+      ]
+    },
+    {
+      "index": 11,
+      "samePitch": true,
+      "inputDelivery": [
+        0.13946134548314149,
+        0.13946134548314149
+      ]
+    },
+    {
+      "index": 12,
+      "samePitch": true,
+      "inputDelivery": [
+        24.939461297799426,
+        7.6394613454831415
+      ]
+    },
+    {
+      "index": 13,
+      "samePitch": true,
+      "inputDelivery": [
+        13.839461273957568,
+        0.13946122627385193
+      ]
+    },
+    {
+      "index": 14,
+      "samePitch": true,
+      "inputDelivery": [
+        2.8394612739575678,
+        -0.26053874988429016
+      ]
+    },
+    {
+      "index": 15,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.6605387260424322,
+        -0.2605386306750006
+      ]
+    },
+    {
+      "index": 16,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.7605387498842902,
+        -0.7605387498842902
+      ]
+    },
+    {
+      "index": 17,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.16053872604243224,
+        -0.5605387022005743
+      ]
+    },
+    {
+      "index": 18,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.16053872604243224,
+        -0.1605386068331427
+      ]
+    },
+    {
+      "index": 19,
+      "samePitch": true,
+      "inputDelivery": [
+        0.6394613454831415,
+        3.0394613216412836
+      ]
+    },
+    {
+      "index": 20,
+      "samePitch": true,
+      "inputDelivery": [
+        23.23946125011571,
+        3.7394613693249994
+      ]
+    },
+    {
+      "index": 21,
+      "samePitch": true,
+      "inputDelivery": [
+        18.539461321634008,
+        -0.2605387498915661
+      ]
+    },
+    {
+      "index": 22,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.1605387260497082,
+        -0.6605387260497082
+      ]
+    },
+    {
+      "index": 23,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.16053860684041865,
+        3.6394613454758655
+      ]
+    },
+    {
+      "index": 24,
+      "samePitch": true,
+      "inputDelivery": [
+        5.339461273950292,
+        -0.1605387260497082
+      ]
+    },
+    {
+      "index": 25,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.2605387498915661,
+        -0.4605386783659924
+      ]
+    },
+    {
+      "index": 26,
+      "samePitch": true,
+      "inputDelivery": [
+        7.93946129779215,
+        -0.7605386306822766
+      ]
+    },
+    {
+      "index": 27,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.2605387498915661,
+        0.13946134547586553
+      ]
+    },
+    {
+      "index": 28,
+      "samePitch": true,
+      "inputDelivery": [
+        28.93946129779215,
+        -0.5605387022078503
+      ]
+    },
+    {
+      "index": 29,
+      "samePitch": true,
+      "inputDelivery": [
+        8.539461321634008,
+        3.9394614170014393
+      ]
+    },
+    {
+      "index": 30,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.5605387022078503,
+        -0.4605386783659924
+      ]
+    },
+    {
+      "index": 31,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.5605387022078503,
+        -0.8605386545241345
+      ]
+    },
+    {
+      "index": 32,
+      "samePitch": true,
+      "inputDelivery": [
+        3.8394613931595813,
+        -0.4605386783659924
+      ]
+    },
+    {
+      "index": 33,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.36053865452413447,
+        -0.26053863068227656
+      ]
+    },
+    {
+      "index": 34,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.1605387260497082,
+        0.13946122626657598
+      ]
+    },
+    {
+      "index": 35,
+      "samePitch": true,
+      "inputDelivery": [
+        8.039461321634008,
+        0.23946136931772344
+      ]
+    },
+    {
+      "index": 36,
+      "samePitch": true,
+      "inputDelivery": [
+        26.039461321634008,
+        0.03946132163400762
+      ]
+    },
+    {
+      "index": 37,
+      "samePitch": true,
+      "inputDelivery": [
+        40.73946136931772,
+        6.6394613454758655
+      ]
+    },
+    {
+      "index": 38,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.6605387260497082,
+        -0.6605387260497082
+      ]
+    },
+    {
+      "index": 39,
+      "samePitch": true,
+      "inputDelivery": [
+        4.039461321634008,
+        -0.1605387260497082
+      ]
+    },
+    {
+      "index": 40,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.7605386306822766,
+        -0.4605386783659924
+      ]
+    },
+    {
+      "index": 41,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.7605387498915661,
+        -0.36053865452413447
+      ]
+    },
+    {
+      "index": 42,
+      "samePitch": true,
+      "inputDelivery": [
+        0.13946134547586553,
+        -0.06053870220785029
+      ]
+    },
+    {
+      "index": 43,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.6605387260497082,
+        -0.5605385829985607
+      ]
+    },
+    {
+      "index": 44,
+      "samePitch": true,
+      "inputDelivery": [
+        15.039461321634008,
+        0.4394612977921497
+      ]
+    },
+    {
+      "index": 45,
+      "samePitch": true,
+      "inputDelivery": [
+        28.639461345475866,
+        -0.7605386306822766
+      ]
+    },
+    {
+      "index": 46,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.06053870220785029,
+        -0.06053870220785029
+      ]
+    },
+    {
+      "index": 47,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.4605386783659924,
+        1.7394613693177234
+      ]
+    },
+    {
+      "index": 48,
+      "samePitch": true,
+      "inputDelivery": [
+        -0.4605386783659924,
+        -0.4605386783659924
+      ]
+    },
+    {
+      "index": 49,
+      "samePitch": true,
+      "inputDelivery": [
+        2.7394613693177234,
+        -0.2605387498915661
+      ]
+    }
+  ]
+}
