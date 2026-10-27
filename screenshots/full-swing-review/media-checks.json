@@ -1,0 +1,42 @@
+[
+  {
+    "mode": "normal",
+    "width": 1280,
+    "height": 720,
+    "r_frame_rate": "50/1",
+    "duration": "2.600000",
+    "nb_frames": "130"
+  },
+  {
+    "mode": "slow",
+    "width": 1280,
+    "height": 720,
+    "r_frame_rate": "50/1",
+    "duration": "7.800000",
+    "nb_frames": "390"
+  },
+  {
+    "mode": "overlay",
+    "width": 1280,
+    "height": 720,
+    "r_frame_rate": "50/1",
+    "duration": "7.800000",
+    "nb_frames": "390"
+  },
+  {
+    "mode": "comparison",
+    "width": 960,
+    "height": 520,
+    "r_frame_rate": "50/1",
+    "duration": "2.600000",
+    "nb_frames": "130"
+  },
+  {
+    "mode": "mobile",
+    "width": 390,
+    "height": 844,
+    "r_frame_rate": "25/1",
+    "duration": "2.600000",
+    "nb_frames": "65"
+  }
+]

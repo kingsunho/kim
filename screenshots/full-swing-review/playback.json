@@ -1,0 +1,37 @@
+[
+  {
+    "mode": "normal",
+    "duration": 2.6,
+    "time": 2.6,
+    "decoded": 130,
+    "ended": true
+  },
+  {
+    "mode": "slow",
+    "duration": 7.8,
+    "time": 7.8,
+    "decoded": 390,
+    "ended": true
+  },
+  {
+    "mode": "overlay",
+    "duration": 7.8,
+    "time": 7.8,
+    "decoded": 390,
+    "ended": true
+  },
+  {
+    "mode": "comparison",
+    "duration": 2.6,
+    "time": 2.6,
+    "decoded": 130,
+    "ended": true
+  },
+  {
+    "mode": "mobile",
+    "duration": 2.6,
+    "time": 2.6,
+    "decoded": 65,
+    "ended": true
+  }
+]

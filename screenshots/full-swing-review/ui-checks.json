@@ -1,0 +1,20 @@
+{
+  "checks": [
+    {
+      "mode": "normal",
+      "overlay": false,
+      "status": "1750ms · FINISH"
+    },
+    {
+      "mode": "slow",
+      "overlay": false,
+      "status": "1750ms · FINISH"
+    },
+    {
+      "mode": "normal",
+      "overlay": true,
+      "status": "1750ms · FINISH"
+    }
+  ],
+  "errors": []
+}

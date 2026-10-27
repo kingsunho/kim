@@ -1,0 +1,8 @@
+{
+  "method": "Deterministic 40ms samples of approved renderer at 390x844, encoded at25fps; not real-time video capture or physical handset. Real RAF performance measured separately in mobile-playback.json.",
+  "frames": 65,
+  "firstMs": 0,
+  "lastMs": 1750,
+  "contactMs": 1120,
+  "contactFrame": 34
+}
