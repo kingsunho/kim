@@ -1,0 +1,26 @@
+{
+  "source": "same actual runtime GLB; not separately generated portrait art",
+  "images": [
+    {
+      "file": "kwak-front.png",
+      "modelSha256": "7f1dc5f69f40016ceddb4d44a952400325336a6b9993758298b38b57cc384382",
+      "identity": "kbo:68220",
+      "appearanceVersion": "kwak-sd3d-art-v1",
+      "preset": "portraitFront"
+    },
+    {
+      "file": "kwak-quarter.png",
+      "modelSha256": "7f1dc5f69f40016ceddb4d44a952400325336a6b9993758298b38b57cc384382",
+      "identity": "kbo:68220",
+      "appearanceVersion": "kwak-sd3d-art-v1",
+      "preset": "portrait"
+    },
+    {
+      "file": "kwak-face.png",
+      "modelSha256": "7f1dc5f69f40016ceddb4d44a952400325336a6b9993758298b38b57cc384382",
+      "identity": "kbo:68220",
+      "appearanceVersion": "kwak-sd3d-art-v1",
+      "preset": "face"
+    }
+  ]
+}

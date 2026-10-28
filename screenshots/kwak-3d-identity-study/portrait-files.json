@@ -1,0 +1,38 @@
+{
+  "kwak-quarter.png": {
+    "size": [
+      420,
+      420
+    ],
+    "mode": "RGBA",
+    "alphaRange": [
+      0,
+      255
+    ],
+    "bytes": 103771
+  },
+  "kwak-front.png": {
+    "size": [
+      420,
+      420
+    ],
+    "mode": "RGBA",
+    "alphaRange": [
+      0,
+      255
+    ],
+    "bytes": 107662
+  },
+  "kwak-face.png": {
+    "size": [
+      420,
+      420
+    ],
+    "mode": "RGBA",
+    "alphaRange": [
+      0,
+      255
+    ],
+    "bytes": 98692
+  }
+}
