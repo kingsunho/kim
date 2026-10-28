@@ -1,0 +1,62 @@
+{
+  "assets/kwak-v1.glb": {
+    "bytes": 3086304,
+    "sha256": "38e640bdb9559077bb33560c8c7e68adc6592d327e3ddf7804c2712eeb2b32d2"
+  },
+  "assets/kwak-source.blend": {
+    "bytes": 7774568,
+    "sha256": "9bc45155cc5370e2ef9dfac74372ae829f7146952079faa19d2f82972d742405"
+  },
+  "assets/rig-contract.json": {
+    "bytes": 8236,
+    "sha256": "9a14865c532f3d22c99f625de01c51faf262473b0138161728bcddb14d663d56"
+  },
+  "identity.json": {
+    "bytes": 2528,
+    "sha256": "3de7f2ba40d41ce59f5c71494cc86aeabc0a9bf8934d72f460110e8e563260d7"
+  },
+  "scenes.js": {
+    "bytes": 1602,
+    "sha256": "f8bc4f44bab5273c6ff435613365c41ebaa8c7e8458162d5ad73fcf302380f07"
+  },
+  "assets/portraits/kwak-quarter.png": {
+    "bytes": 108708,
+    "sha256": "04343c3f217602c5b8539df17a02d1c20e2c405a3128f1aa826e32df7edde8e5"
+  },
+  "assets/portraits/kwak-front.png": {
+    "bytes": 112360,
+    "sha256": "418908e32a82cfcdbd50a2cc54671d553de6f965a05518cec6b8b1bb793ce256"
+  },
+  "assets/portraits/kwak-face.png": {
+    "bytes": 99876,
+    "sha256": "2a21fbe99af9e469ba67eadc23fcb768582a99e08e09bc7cf03704c69356a2e2"
+  },
+  "assets/portraits/provenance.json": {
+    "bytes": 823,
+    "sha256": "b3e2daea997cf1f7b1f2562cfa46692adf29131f0b79e38d5ad3b792fd83405d"
+  },
+  "assets/qa/unmerged.glb": {
+    "bytes": 2698464,
+    "sha256": "12e2d75612ef8eb5f3dd6cb7e94b5c84d0530700166001e92ab0f7fd2cdb8fc1"
+  },
+  "assets/qa/unmerged-audit.json": {
+    "bytes": 25813,
+    "sha256": "cd95860ef0dc925ce387d0d78032289181e40572ec3903b589294cc55a41e3ec"
+  },
+  "assets/textures/jersey-weave-color.png": {
+    "bytes": 71681,
+    "sha256": "0b1e35cafbb1d70470839931378b810d93472b7c21bb94b58d738a153feb7b79"
+  },
+  "assets/textures/jersey-relief-normal.png": {
+    "bytes": 122133,
+    "sha256": "b788375b6c10d25bf9d862733358f6e49629614a2fe44fce12c78b75ffac32c1"
+  },
+  "refine_face_upper.py": {
+    "bytes": 18111,
+    "sha256": "203fdbacddaa5d873a6db1e4dba22aba1f149d3a0b8fe383a3899a848e7370bc"
+  },
+  "inspect_upper_glb.py": {
+    "bytes": 2834,
+    "sha256": "74ecd7426d1c2f9db45b1bb8d55c5877efc37af193bd2f4a24b48aa9c85ea43b"
+  }
+}

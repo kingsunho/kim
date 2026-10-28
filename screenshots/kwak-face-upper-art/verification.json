@@ -1,0 +1,161 @@
+{
+  "baseCommit": "a0210a4d9f9b7543f7aeac865c448abac0d15658",
+  "protectedMeshAttributesByteIdentical": {
+    "Arms_undersleeves__navy": true,
+    "Belt": true,
+    "Belt buckle": true,
+    "Common_body_continuous": true,
+    "Hand_sculpted.L": true,
+    "Hand_sculpted.R": true,
+    "Kit_footwear__navy": true,
+    "Kit_footwear__navy_light": true,
+    "Kit_footwear__sole": true,
+    "Kit_footwear__stitch": true,
+    "Kit_pants_continuous_groin": true
+  },
+  "protectedFiles": {
+    "index.html": {
+      "unchanged": true,
+      "sha256": "7fd97c5e3289351f8d811034eaf58393572a588ad28c1f94f84df101e5182392"
+    },
+    "package.json": {
+      "unchanged": true,
+      "sha256": "1b870a04bfd82f58189a6b2fecd1b25bc5dc41ffba59d194e7a8086d56232c32"
+    },
+    "visual/player3d-study/viewer.js": {
+      "unchanged": true,
+      "sha256": "4632493c704e45d2b6a66d8a2b00eb20784f07adeb4d6780da6fce2c6e9b56eb"
+    },
+    "FOLLOWUP-ABS-REPLAY-2026-10-28.md": {
+      "unchanged": true,
+      "sha256": "3e77ddcdaddacd6f6a4bba3be03c5f20f98e470db4b5549665e02b702178acb7"
+    },
+    "visual/player3d-study/assets/rig-contract.json": {
+      "unchanged": true,
+      "sha256": "9a14865c532f3d22c99f625de01c51faf262473b0138161728bcddb14d663d56"
+    }
+  },
+  "actualGLBMaterials": [
+    {
+      "name": "navy",
+      "baseColorTexture": null,
+      "normalTexture": null,
+      "roughnessFactor": 0.75
+    },
+    {
+      "name": "metal",
+      "baseColorTexture": null,
+      "normalTexture": null,
+      "roughnessFactor": 0.75
+    },
+    {
+      "name": "skin",
+      "baseColorTexture": null,
+      "normalTexture": null,
+      "roughnessFactor": 0.75
+    },
+    {
+      "name": "mouth",
+      "baseColorTexture": null,
+      "normalTexture": null,
+      "roughnessFactor": 0.75
+    },
+    {
+      "name": "hair",
+      "baseColorTexture": null,
+      "normalTexture": null,
+      "roughnessFactor": 0.75
+    },
+    {
+      "name": "stitch",
+      "baseColorTexture": null,
+      "normalTexture": null,
+      "roughnessFactor": 0.75
+    },
+    {
+      "name": "red",
+      "baseColorTexture": null,
+      "normalTexture": null,
+      "roughnessFactor": 0.75
+    },
+    {
+      "name": "navy_light",
+      "baseColorTexture": null,
+      "normalTexture": null,
+      "roughnessFactor": 0.75
+    },
+    {
+      "name": "sole",
+      "baseColorTexture": null,
+      "normalTexture": null,
+      "roughnessFactor": 0.75
+    },
+    {
+      "name": "jersey",
+      "baseColorTexture": {
+        "index": 1
+      },
+      "normalTexture": {
+        "index": 0,
+        "scale": 0.550000011920929
+      },
+      "roughnessFactor": 0.8799999952316284
+    },
+    {
+      "name": "pants",
+      "baseColorTexture": null,
+      "normalTexture": null,
+      "roughnessFactor": 0.75
+    },
+    {
+      "name": "jersey_facing",
+      "baseColorTexture": null,
+      "normalTexture": null,
+      "roughnessFactor": 0.8799999952316284
+    },
+    {
+      "name": "cloth_seam",
+      "baseColorTexture": null,
+      "normalTexture": null,
+      "roughnessFactor": 0.75
+    },
+    {
+      "name": "eye_dark",
+      "baseColorTexture": null,
+      "normalTexture": null,
+      "roughnessFactor": 0.75
+    },
+    {
+      "name": "eye_white",
+      "baseColorTexture": null,
+      "normalTexture": null,
+      "roughnessFactor": 0.75
+    },
+    {
+      "name": "skin_inner",
+      "baseColorTexture": null,
+      "normalTexture": null,
+      "roughnessFactor": 0.75
+    }
+  ],
+  "actualGLBEmbeddedImages": [
+    {
+      "bufferView": 109,
+      "mimeType": "image/png",
+      "name": "jersey-relief-normal"
+    },
+    {
+      "bufferView": 110,
+      "mimeType": "image/png",
+      "name": "jersey-weave-color"
+    }
+  ],
+  "boneCount": [
+    42
+  ],
+  "animations": [],
+  "noNewGameLogic": true,
+  "iPhoneSafari": "not tested",
+  "originalCameraPresetsUnchanged": true,
+  "allViewerIncludingLightsUnchanged": true
+}

@@ -1,0 +1,63 @@
+{
+  "map": true,
+  "normalMap": true,
+  "normalScale": [
+    0.550000011920929,
+    -0.550000011920929
+  ],
+  "roughness": 0.8799999952316284,
+  "model": {
+    "preset": "shoulder",
+    "identity": "kbo:68220",
+    "appearanceVersion": "kwak-sd3d-upper-v3",
+    "modelSha256": "38e640bdb9559077bb33560c8c7e68adc6592d327e3ddf7804c2712eeb2b32d2",
+    "meshes": 33,
+    "skinned": 33,
+    "bones": 42,
+    "triangles": 92072,
+    "meshObjectIds": [
+      "209181da-0069-4510-b5f1-73868f3deef5",
+      "0683a5bc-706b-4a98-9f7e-41576939c575",
+      "2d9936ae-9284-43fb-bd3d-d5b7d8bc8a02",
+      "54f2ff12-c4ab-4ac0-a9e1-ca825f5adce1",
+      "ca49d385-4fce-4d72-ae04-b2f3758fcd48",
+      "fc1b6214-2b17-41f7-b3ea-39e235052b54",
+      "d3042678-71cd-4898-82ca-fb7a6ae1eb26",
+      "88b500ac-de36-4445-b7e6-ab425903ff8c",
+      "a09c9406-00ff-40eb-99ef-fcb3363a2948",
+      "902dbda6-551c-4bf9-af04-c19ab046eebf",
+      "8455eecc-7e88-4a71-b4c9-2fe2d829c72f",
+      "416bd42c-af8e-4b49-a8eb-857c4410b7ca",
+      "bff4ee02-5592-421b-aacb-10b888cad2d1",
+      "5dbd4e1c-e5b9-42ff-9ac9-b4330330e240",
+      "a738ffb9-383b-4a6b-b7f9-5f75517d2266",
+      "b4525ab0-961f-465d-89c8-1a08c1ded77e",
+      "fbd2fb73-0709-4e54-aa80-666ab818339a",
+      "6bc55646-f3ea-4ccf-968e-64539424f309",
+      "542f5d3f-12f4-4beb-aaf4-076278117fa0",
+      "61771558-7404-4682-9a3d-8c733c9663ce",
+      "cf7c0d68-ba93-4c7a-944b-feaa4bf4df48",
+      "b9c76820-b942-48aa-b159-3763e0253821",
+      "ca35b5c6-feae-4d32-b394-d30cd87fec58",
+      "0e573aa6-e86e-4440-b714-f0110d3b133d",
+      "2e164eb7-f9c0-4f01-88bb-223227c4f9bb",
+      "c068640d-672c-4745-8b9d-e7d7cea2d9ed",
+      "2168ea28-b0fa-4c92-8d1a-857953f6668e",
+      "afdf5dbf-87dd-48c6-acb9-eb1e1c9c2d94",
+      "54eb2179-8469-4e0e-9d5f-9dde0f8ab30e",
+      "6f047712-bae6-42b2-94fc-46e43e34760c",
+      "79536803-cbb1-4cd6-850e-600fdb3e0d33",
+      "9e735f09-f228-4464-9f8e-418bfa2d49a0",
+      "0904bf35-94fe-442b-9e7c-20f9c133558f"
+    ],
+    "renderer": {
+      "frame": 4,
+      "calls": 28,
+      "triangles": 87570,
+      "points": 0,
+      "lines": 0
+    },
+    "animations": 0,
+    "stage": "art review 1-3 only"
+  }
+}

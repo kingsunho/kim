@@ -1,0 +1,310 @@
+{
+  "objects": [
+    {
+      "name": "Common_body_continuous",
+      "vertices": 2549,
+      "triangles": 5094,
+      "materials": [
+        "skin"
+      ]
+    },
+    {
+      "name": "Arms_undersleeves__navy",
+      "vertices": 1200,
+      "triangles": 2392,
+      "materials": [
+        "navy"
+      ]
+    },
+    {
+      "name": "Kit_jersey_weighted",
+      "vertices": 3891,
+      "triangles": 7778,
+      "materials": [
+        "jersey"
+      ]
+    },
+    {
+      "name": "Kit_trim__navy",
+      "vertices": 1686,
+      "triangles": 3312,
+      "materials": [
+        "navy"
+      ]
+    },
+    {
+      "name": "Kit_pants_continuous_groin",
+      "vertices": 4384,
+      "triangles": 8764,
+      "materials": [
+        "pants"
+      ]
+    },
+    {
+      "name": "Belt",
+      "vertices": 96,
+      "triangles": 188,
+      "materials": [
+        "navy"
+      ]
+    },
+    {
+      "name": "Belt buckle",
+      "vertices": 96,
+      "triangles": 188,
+      "materials": [
+        "metal"
+      ]
+    },
+    {
+      "name": "Hand_sculpted.L",
+      "vertices": 1693,
+      "triangles": 3382,
+      "materials": [
+        "skin"
+      ]
+    },
+    {
+      "name": "Kit_footwear__sole",
+      "vertices": 960,
+      "triangles": 1720,
+      "materials": [
+        "sole"
+      ]
+    },
+    {
+      "name": "Kit_footwear__navy",
+      "vertices": 960,
+      "triangles": 1856,
+      "materials": [
+        "navy"
+      ]
+    },
+    {
+      "name": "Kit_footwear__stitch",
+      "vertices": 456,
+      "triangles": 864,
+      "materials": [
+        "stitch"
+      ]
+    },
+    {
+      "name": "Kit_footwear__navy_light",
+      "vertices": 8,
+      "triangles": 4,
+      "materials": [
+        "navy_light"
+      ]
+    },
+    {
+      "name": "Hand_sculpted.R",
+      "vertices": 1694,
+      "triangles": 3384,
+      "materials": [
+        "skin"
+      ]
+    },
+    {
+      "name": "Hair_sculpt_Kwak_nape",
+      "vertices": 5200,
+      "triangles": 10396,
+      "materials": [
+        "hair"
+      ]
+    },
+    {
+      "name": "Kit_cap_shell__navy",
+      "vertices": 1626,
+      "triangles": 3244,
+      "materials": [
+        "navy"
+      ]
+    },
+    {
+      "name": "Visor red edge",
+      "vertices": 654,
+      "triangles": 1296,
+      "materials": [
+        "red"
+      ]
+    },
+    {
+      "name": "Kit_cap_details__navy_light",
+      "vertices": 1224,
+      "triangles": 2376,
+      "materials": [
+        "navy_light"
+      ]
+    },
+    {
+      "name": "Kit chest wordmark",
+      "vertices": 575,
+      "triangles": 573,
+      "materials": [
+        "red"
+      ]
+    },
+    {
+      "name": "Player front number",
+      "vertices": 21,
+      "triangles": 19,
+      "materials": [
+        "navy"
+      ]
+    },
+    {
+      "name": "Player back number",
+      "vertices": 21,
+      "triangles": 19,
+      "materials": [
+        "navy"
+      ]
+    },
+    {
+      "name": "Player back name",
+      "vertices": 165,
+      "triangles": 157,
+      "materials": [
+        "navy"
+      ]
+    },
+    {
+      "name": "Kit cap letter",
+      "vertices": 58,
+      "triangles": 58,
+      "materials": [
+        "red"
+      ]
+    },
+    {
+      "name": "Jersey placket",
+      "vertices": 150,
+      "triangles": 288,
+      "materials": [
+        "stitch"
+      ]
+    },
+    {
+      "name": "Kit_fasteners__sole",
+      "vertices": 120,
+      "triangles": 220,
+      "materials": [
+        "sole"
+      ]
+    },
+    {
+      "name": "Face_sculpt_Kwak_v3",
+      "vertices": 10752,
+      "triangles": 21500,
+      "materials": [
+        "skin"
+      ]
+    },
+    {
+      "name": "Upper_features__eye_white",
+      "vertices": 760,
+      "triangles": 1312,
+      "materials": [
+        "eye_white"
+      ]
+    },
+    {
+      "name": "Upper_features__eye_dark",
+      "vertices": 98,
+      "triangles": 96,
+      "materials": [
+        "eye_dark"
+      ]
+    },
+    {
+      "name": "Upper_features__hair",
+      "vertices": 1616,
+      "triangles": 3132,
+      "materials": [
+        "hair"
+      ]
+    },
+    {
+      "name": "Upper_features__skin_inner",
+      "vertices": 1552,
+      "triangles": 3072,
+      "materials": [
+        "skin_inner"
+      ]
+    },
+    {
+      "name": "Upper_features__skin",
+      "vertices": 1680,
+      "triangles": 3328,
+      "materials": [
+        "skin"
+      ]
+    },
+    {
+      "name": "Face_mouth_crease",
+      "vertices": 776,
+      "triangles": 1536,
+      "materials": [
+        "mouth"
+      ]
+    },
+    {
+      "name": "Upper_collar_facing",
+      "vertices": 14,
+      "triangles": 12,
+      "materials": [
+        "jersey_facing"
+      ]
+    },
+    {
+      "name": "Upper_features__cloth_seam",
+      "vertices": 272,
+      "triangles": 512,
+      "materials": [
+        "cloth_seam"
+      ]
+    }
+  ],
+  "bones": 42,
+  "unweighted": 0,
+  "maxWeightError": 4.470348358154297e-08,
+  "maxInfluences": 4,
+  "protectedGeometryHashes": {
+    "Common_body_continuous": "e0719924d4d0254daf7fa55f3117e6a77a9e5fe0e6d11cba50007c7cd1fef631",
+    "Arms_undersleeves__navy": "2d0097425016a2fffc7cfaa217af252cd8ccc800500c800f044870555a3a9452",
+    "Kit_pants_continuous_groin": "a1010f17f4361f6b49de6e477ed5388ebd4a198e7722931018e055ee375e1280",
+    "Belt": "9ef1685ff7dc7a832936faa28e3d5aa16da111ecdf802236d14e87d1d9d84ba3",
+    "Belt buckle": "8ae558561fa17348a8ccb7f5d08c5ad751bef8752a9f88868dcfe32b4ec90216",
+    "Hand_sculpted.L": "fc646b433e783b3f0b0115f55efd6aa7c1c76353aa3fe3913bcfc7b73820185c",
+    "Kit_footwear__sole": "03532884d0986e8c35e8ab391e089a2149419bde9538c2040da8d771a5ac70d5",
+    "Kit_footwear__navy": "c6d61e55d551d3a555a0c07600f26b8cc92c2009efe7e9fbccec60a63df3f15d",
+    "Kit_footwear__stitch": "96142b035bf1e1e9d9f12b842b8391f948d667785f4d6a5f2868596d5eaa3d64",
+    "Kit_footwear__navy_light": "d8afc11c144cae91186ca062bab33cc1e0f68a3c8f87d0ef2e08f43da657fb13",
+    "Hand_sculpted.R": "68f73169b296562a2a93d6c02746045006623e366d58e4c7dd3ace44beef6890"
+  },
+  "boneRestUnchanged": true,
+  "textures": [
+    {
+      "file": "jersey-weave-color.png",
+      "bytes": 71681,
+      "dimensions": [
+        512,
+        512
+      ],
+      "sha256": "0b1e35cafbb1d70470839931378b810d93472b7c21bb94b58d738a153feb7b79"
+    },
+    {
+      "file": "jersey-relief-normal.png",
+      "bytes": 122133,
+      "dimensions": [
+        512,
+        512
+      ],
+      "sha256": "b788375b6c10d25bf9d862733358f6e49629614a2fe44fce12c78b75ffac32c1"
+    }
+  ],
+  "vertexCount": 47007,
+  "triangleCount": 92072,
+  "modelSha256": "38e640bdb9559077bb33560c8c7e68adc6592d327e3ddf7804c2712eeb2b32d2",
+  "modelBytes": 3086304
+}
