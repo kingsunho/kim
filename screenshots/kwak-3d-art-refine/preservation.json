@@ -1,0 +1,29 @@
+{
+  "index.html": {
+    "sha256": "7fd97c5e3289351f8d811034eaf58393572a588ad28c1f94f84df101e5182392",
+    "unchanged": true
+  },
+  "package.json": {
+    "sha256": "1b870a04bfd82f58189a6b2fecd1b25bc5dc41ffba59d194e7a8086d56232c32",
+    "unchanged": true
+  },
+  "cameraAndLightingPrefixUnchanged": true,
+  "trackedFilesChanged": [
+    "visual/player3d-study/assets/asset-manifest.json",
+    "visual/player3d-study/assets/kwak-source.blend",
+    "visual/player3d-study/assets/kwak-v1.glb",
+    "visual/player3d-study/assets/model-audit.json",
+    "visual/player3d-study/assets/portraits/kwak-face.png",
+    "visual/player3d-study/assets/portraits/kwak-front.png",
+    "visual/player3d-study/assets/portraits/kwak-quarter.png",
+    "visual/player3d-study/assets/portraits/provenance.json",
+    "visual/player3d-study/assets/rig-contract.json",
+    "visual/player3d-study/build_model.py",
+    "visual/player3d-study/identity.json",
+    "visual/player3d-study/scenes.js",
+    "visual/player3d-study/viewer.js"
+  ],
+  "gameAndApprovedBattingPathsChanged": false,
+  "base": "425901599adc3066dd78d3059efca7288ec5e268",
+  "iPhoneSafari": "not tested"
+}

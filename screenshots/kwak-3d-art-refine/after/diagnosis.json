@@ -1,0 +1,249 @@
+{
+  "mesh": [
+    {
+      "name": "Common_body_continuous",
+      "boundaryEdges": 0,
+      "nonManifoldEdges": 0,
+      "signedVolume": 0.055748024290081716,
+      "vertices": 2549,
+      "smoothFaces": 4355,
+      "faces": 4355
+    },
+    {
+      "name": "Arms_undersleeves__navy",
+      "boundaryEdges": 0,
+      "nonManifoldEdges": 0,
+      "signedVolume": 0.010299773231791738,
+      "vertices": 1200,
+      "smoothFaces": 1156,
+      "faces": 1156
+    },
+    {
+      "name": "Kit_jersey_weighted",
+      "boundaryEdges": 0,
+      "nonManifoldEdges": 0,
+      "signedVolume": 0.048436088819456186,
+      "vertices": 3891,
+      "smoothFaces": 7746,
+      "faces": 7746
+    },
+    {
+      "name": "Kit_pants_continuous_groin",
+      "boundaryEdges": 0,
+      "nonManifoldEdges": 0,
+      "signedVolume": 0.04358999702289715,
+      "vertices": 4384,
+      "smoothFaces": 8750,
+      "faces": 8750
+    }
+  ],
+  "shoulderCoverage": [
+    {
+      "side": "front",
+      "hitRays": 1142,
+      "skinFirstRays": 2,
+      "positions": [
+        {
+          "x": -0.09,
+          "z": 1.26,
+          "position": [
+            -0.09000000357627869,
+            -0.027404963970184326,
+            1.2599999904632568
+          ]
+        },
+        {
+          "x": 0.09,
+          "z": 1.26,
+          "position": [
+            0.09000000357627869,
+            -0.02610766887664795,
+            1.2599999904632568
+          ]
+        }
+      ]
+    },
+    {
+      "side": "back",
+      "hitRays": 1142,
+      "skinFirstRays": 2,
+      "positions": [
+        {
+          "x": -0.09,
+          "z": 1.26,
+          "position": [
+            -0.09000000357627869,
+            0.02658146619796753,
+            1.2599999904632568
+          ]
+        },
+        {
+          "x": 0.09,
+          "z": 1.26,
+          "position": [
+            0.09000000357627869,
+            0.02729243040084839,
+            1.2599999904632568
+          ]
+        }
+      ]
+    }
+  ],
+  "topTriangles": [
+    {
+      "name": "Face_sculpt_Kwak_v1",
+      "triangles": 23020,
+      "vertices": 11512
+    },
+    {
+      "name": "Hair_sculpt_Kwak_nape",
+      "triangles": 10396,
+      "vertices": 5200
+    },
+    {
+      "name": "Kit_pants_continuous_groin",
+      "triangles": 8764,
+      "vertices": 4384
+    },
+    {
+      "name": "Kit_jersey_weighted",
+      "triangles": 7778,
+      "vertices": 3891
+    },
+    {
+      "name": "Common_body_continuous",
+      "triangles": 5094,
+      "vertices": 2549
+    },
+    {
+      "name": "Hand_sculpted.R",
+      "triangles": 3384,
+      "vertices": 1694
+    },
+    {
+      "name": "Hand_sculpted.L",
+      "triangles": 3382,
+      "vertices": 1693
+    },
+    {
+      "name": "Kit_trim__navy",
+      "triangles": 3312,
+      "vertices": 1686
+    },
+    {
+      "name": "Kit_cap_shell__navy",
+      "triangles": 3244,
+      "vertices": 1626
+    },
+    {
+      "name": "Arms_undersleeves__navy",
+      "triangles": 2392,
+      "vertices": 1200
+    },
+    {
+      "name": "Kit_cap_details__navy_light",
+      "triangles": 2376,
+      "vertices": 1224
+    },
+    {
+      "name": "Kit_footwear__navy",
+      "triangles": 1856,
+      "vertices": 960
+    },
+    {
+      "name": "Face_details__hair",
+      "triangles": 1728,
+      "vertices": 888
+    },
+    {
+      "name": "Kit_footwear__sole",
+      "triangles": 1720,
+      "vertices": 960
+    },
+    {
+      "name": "Face_details__skin_inner",
+      "triangles": 1440,
+      "vertices": 744
+    },
+    {
+      "name": "Visor red edge",
+      "triangles": 1296,
+      "vertices": 654
+    },
+    {
+      "name": "Face_ears__skin",
+      "triangles": 960,
+      "vertices": 484
+    },
+    {
+      "name": "Kit_footwear__stitch",
+      "triangles": 864,
+      "vertices": 456
+    },
+    {
+      "name": "Face_details__eye_white",
+      "triangles": 704,
+      "vertices": 444
+    },
+    {
+      "name": "Kit chest wordmark",
+      "triangles": 573,
+      "vertices": 575
+    },
+    {
+      "name": "Neutral mouth",
+      "triangles": 432,
+      "vertices": 222
+    },
+    {
+      "name": "Jersey placket",
+      "triangles": 288,
+      "vertices": 150
+    },
+    {
+      "name": "Kit_fasteners__sole",
+      "triangles": 220,
+      "vertices": 120
+    },
+    {
+      "name": "Belt",
+      "triangles": 188,
+      "vertices": 96
+    },
+    {
+      "name": "Belt buckle",
+      "triangles": 188,
+      "vertices": 96
+    },
+    {
+      "name": "Player back name",
+      "triangles": 157,
+      "vertices": 165
+    },
+    {
+      "name": "Face_details__eye_dark",
+      "triangles": 64,
+      "vertices": 66
+    },
+    {
+      "name": "Kit cap letter",
+      "triangles": 58,
+      "vertices": 58
+    },
+    {
+      "name": "Player front number",
+      "triangles": 19,
+      "vertices": 21
+    },
+    {
+      "name": "Player back number",
+      "triangles": 19,
+      "vertices": 21
+    },
+    {
+      "name": "Kit_footwear__navy_light",
+      "triangles": 4,
+      "vertices": 8
+    }
+  ]
+}

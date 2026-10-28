@@ -1,0 +1,19 @@
+{
+  "sha256": "c0c293aa8f190bfa3623c0900b1cba29f0dc15b2e48f1d3c124dfbc28c641bf4",
+  "bytes": 2715252,
+  "meshes": 31,
+  "skins": 1,
+  "boneCounts": [
+    42
+  ],
+  "exportedVertexCount": 46885,
+  "exportedTriangles": 85920,
+  "materials": 14,
+  "images": 0,
+  "animations": 0,
+  "maxWeightSumError": 1.4156103134155273e-07,
+  "maxInfluences": 4,
+  "unweighted": 0,
+  "missingSkinAttributes": [],
+  "note": "Actual GLB binary inspection, no deformation/large-joint test in stage1-3."
+}

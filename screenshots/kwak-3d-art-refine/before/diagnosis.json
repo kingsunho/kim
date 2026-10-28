@@ -1,0 +1,839 @@
+{
+  "mesh": [
+    {
+      "name": "Common_body_continuous",
+      "boundaryEdges": 0,
+      "nonManifoldEdges": 0,
+      "signedVolume": 0.06584539929042765,
+      "vertices": 2722,
+      "smoothFaces": 4685,
+      "faces": 4685
+    },
+    {
+      "name": "Undersleeve.L",
+      "boundaryEdges": 0,
+      "nonManifoldEdges": 0,
+      "signedVolume": 0.0054412613793891115,
+      "vertices": 312,
+      "smoothFaces": 290,
+      "faces": 290
+    },
+    {
+      "name": "Undersleeve.R",
+      "boundaryEdges": 0,
+      "nonManifoldEdges": 0,
+      "signedVolume": 0.005442080497862263,
+      "vertices": 312,
+      "smoothFaces": 290,
+      "faces": 290
+    },
+    {
+      "name": "Kit_jersey_weighted",
+      "boundaryEdges": 0,
+      "nonManifoldEdges": 0,
+      "signedVolume": 0.04731433011798149,
+      "vertices": 3782,
+      "smoothFaces": 7539,
+      "faces": 7539
+    },
+    {
+      "name": "Kit_pants_continuous_groin",
+      "boundaryEdges": 0,
+      "nonManifoldEdges": 0,
+      "signedVolume": 0.04360009487490636,
+      "vertices": 4384,
+      "smoothFaces": 8756,
+      "faces": 8756
+    }
+  ],
+  "shoulderCoverage": [
+    {
+      "side": "front",
+      "hitRays": 1140,
+      "skinFirstRays": 25,
+      "positions": [
+        {
+          "x": -0.34,
+          "z": 1.21,
+          "position": [
+            -0.3400000035762787,
+            -0.009223401546478271,
+            1.2100000381469727
+          ]
+        },
+        {
+          "x": -0.33,
+          "z": 1.21,
+          "position": [
+            -0.33000001311302185,
+            -0.03686201572418213,
+            1.2100000381469727
+          ]
+        },
+        {
+          "x": -0.33,
+          "z": 1.22,
+          "position": [
+            -0.33000001311302185,
+            -0.023534119129180908,
+            1.2200000286102295
+          ]
+        },
+        {
+          "x": -0.32,
+          "z": 1.21,
+          "position": [
+            -0.3199999928474426,
+            -0.049845337867736816,
+            1.2100000381469727
+          ]
+        },
+        {
+          "x": -0.32,
+          "z": 1.22,
+          "position": [
+            -0.3199999928474426,
+            -0.04423302412033081,
+            1.2200000286102295
+          ]
+        },
+        {
+          "x": -0.31,
+          "z": 1.21,
+          "position": [
+            -0.3100000023841858,
+            -0.058845460414886475,
+            1.2100000381469727
+          ]
+        },
+        {
+          "x": -0.31,
+          "z": 1.22,
+          "position": [
+            -0.3100000023841858,
+            -0.051663756370544434,
+            1.2200000286102295
+          ]
+        },
+        {
+          "x": -0.12,
+          "z": 1.25,
+          "position": [
+            -0.11999999731779099,
+            -0.029522180557250977,
+            1.25
+          ]
+        },
+        {
+          "x": -0.11,
+          "z": 1.25,
+          "position": [
+            -0.10999999940395355,
+            -0.04125732183456421,
+            1.25
+          ]
+        },
+        {
+          "x": -0.1,
+          "z": 1.25,
+          "position": [
+            -0.10000000149011612,
+            -0.04995673894882202,
+            1.25
+          ]
+        },
+        {
+          "x": -0.1,
+          "z": 1.26,
+          "position": [
+            -0.10000000149011612,
+            -0.027412235736846924,
+            1.2599999904632568
+          ]
+        },
+        {
+          "x": -0.09,
+          "z": 1.25,
+          "position": [
+            -0.09000000357627869,
+            -0.05614209175109863,
+            1.25
+          ]
+        },
+        {
+          "x": -0.09,
+          "z": 1.26,
+          "position": [
+            -0.09000000357627869,
+            -0.03999394178390503,
+            1.2599999904632568
+          ]
+        },
+        {
+          "x": 0.09,
+          "z": 1.25,
+          "position": [
+            0.09000000357627869,
+            -0.05618107318878174,
+            1.25
+          ]
+        },
+        {
+          "x": 0.09,
+          "z": 1.26,
+          "position": [
+            0.09000000357627869,
+            -0.03926271200180054,
+            1.2599999904632568
+          ]
+        },
+        {
+          "x": 0.1,
+          "z": 1.25,
+          "position": [
+            0.10000000149011612,
+            -0.04937779903411865,
+            1.25
+          ]
+        },
+        {
+          "x": 0.1,
+          "z": 1.26,
+          "position": [
+            0.10000000149011612,
+            -0.02609264850616455,
+            1.2599999904632568
+          ]
+        },
+        {
+          "x": 0.11,
+          "z": 1.25,
+          "position": [
+            0.10999999940395355,
+            -0.040721893310546875,
+            1.25
+          ]
+        },
+        {
+          "x": 0.31,
+          "z": 1.21,
+          "position": [
+            0.3100000023841858,
+            -0.05874454975128174,
+            1.2100000381469727
+          ]
+        },
+        {
+          "x": 0.31,
+          "z": 1.22,
+          "position": [
+            0.3100000023841858,
+            -0.051382482051849365,
+            1.2200000286102295
+          ]
+        },
+        {
+          "x": 0.32,
+          "z": 1.21,
+          "position": [
+            0.3199999928474426,
+            -0.050296664237976074,
+            1.2100000381469727
+          ]
+        },
+        {
+          "x": 0.32,
+          "z": 1.22,
+          "position": [
+            0.3199999928474426,
+            -0.04358780384063721,
+            1.2200000286102295
+          ]
+        },
+        {
+          "x": 0.33,
+          "z": 1.21,
+          "position": [
+            0.33000001311302185,
+            -0.03692924976348877,
+            1.2100000381469727
+          ]
+        },
+        {
+          "x": 0.33,
+          "z": 1.22,
+          "position": [
+            0.33000001311302185,
+            -0.024969160556793213,
+            1.2200000286102295
+          ]
+        },
+        {
+          "x": 0.34,
+          "z": 1.21,
+          "position": [
+            0.3400000035762787,
+            -0.009197354316711426,
+            1.2100000381469727
+          ]
+        }
+      ]
+    },
+    {
+      "side": "back",
+      "hitRays": 1140,
+      "skinFirstRays": 18,
+      "positions": [
+        {
+          "x": -0.34,
+          "z": 1.21,
+          "position": [
+            -0.3400000035762787,
+            0.007883906364440918,
+            1.2100000381469727
+          ]
+        },
+        {
+          "x": -0.33,
+          "z": 1.21,
+          "position": [
+            -0.33000001311302185,
+            0.03542137145996094,
+            1.2100000381469727
+          ]
+        },
+        {
+          "x": -0.33,
+          "z": 1.22,
+          "position": [
+            -0.33000001311302185,
+            0.021757006645202637,
+            1.2200000286102295
+          ]
+        },
+        {
+          "x": -0.32,
+          "z": 1.22,
+          "position": [
+            -0.3199999928474426,
+            0.034399449825286865,
+            1.2200000286102295
+          ]
+        },
+        {
+          "x": -0.11,
+          "z": 1.25,
+          "position": [
+            -0.10999999940395355,
+            0.04070979356765747,
+            1.25
+          ]
+        },
+        {
+          "x": -0.1,
+          "z": 1.25,
+          "position": [
+            -0.10000000149011612,
+            0.04932606220245361,
+            1.25
+          ]
+        },
+        {
+          "x": -0.1,
+          "z": 1.26,
+          "position": [
+            -0.10000000149011612,
+            0.02655947208404541,
+            1.2599999904632568
+          ]
+        },
+        {
+          "x": -0.09,
+          "z": 1.25,
+          "position": [
+            -0.09000000357627869,
+            0.055740416049957275,
+            1.25
+          ]
+        },
+        {
+          "x": -0.09,
+          "z": 1.26,
+          "position": [
+            -0.09000000357627869,
+            0.03915888071060181,
+            1.2599999904632568
+          ]
+        },
+        {
+          "x": 0.09,
+          "z": 1.25,
+          "position": [
+            0.09000000357627869,
+            0.05594748258590698,
+            1.25
+          ]
+        },
+        {
+          "x": 0.09,
+          "z": 1.26,
+          "position": [
+            0.09000000357627869,
+            0.03990757465362549,
+            1.2599999904632568
+          ]
+        },
+        {
+          "x": 0.1,
+          "z": 1.25,
+          "position": [
+            0.10000000149011612,
+            0.05013704299926758,
+            1.25
+          ]
+        },
+        {
+          "x": 0.1,
+          "z": 1.26,
+          "position": [
+            0.10000000149011612,
+            0.027058303356170654,
+            1.2599999904632568
+          ]
+        },
+        {
+          "x": 0.11,
+          "z": 1.25,
+          "position": [
+            0.10999999940395355,
+            0.04148221015930176,
+            1.25
+          ]
+        },
+        {
+          "x": 0.32,
+          "z": 1.22,
+          "position": [
+            0.3199999928474426,
+            0.035899817943573,
+            1.2200000286102295
+          ]
+        },
+        {
+          "x": 0.33,
+          "z": 1.21,
+          "position": [
+            0.33000001311302185,
+            0.03420156240463257,
+            1.2100000381469727
+          ]
+        },
+        {
+          "x": 0.33,
+          "z": 1.22,
+          "position": [
+            0.33000001311302185,
+            0.023093998432159424,
+            1.2200000286102295
+          ]
+        },
+        {
+          "x": 0.34,
+          "z": 1.21,
+          "position": [
+            0.3400000035762787,
+            0.008316874504089355,
+            1.2100000381469727
+          ]
+        }
+      ]
+    }
+  ],
+  "topTriangles": [
+    {
+      "name": "Face_sculpt_Kwak_v1",
+      "triangles": 23406,
+      "vertices": 11705
+    },
+    {
+      "name": "Hair_sculpt_Kwak_nape",
+      "triangles": 9452,
+      "vertices": 4728
+    },
+    {
+      "name": "Kit_pants_continuous_groin",
+      "triangles": 8764,
+      "vertices": 4384
+    },
+    {
+      "name": "Kit_jersey_weighted",
+      "triangles": 7560,
+      "vertices": 3782
+    },
+    {
+      "name": "Common_body_continuous",
+      "triangles": 5440,
+      "vertices": 2722
+    },
+    {
+      "name": "Kit chest wordmark",
+      "triangles": 4757,
+      "vertices": 3871
+    },
+    {
+      "name": "Upper lid.L",
+      "triangles": 3072,
+      "vertices": 1544
+    },
+    {
+      "name": "Lower lid.L",
+      "triangles": 3072,
+      "vertices": 1544
+    },
+    {
+      "name": "Upper lid.R",
+      "triangles": 3072,
+      "vertices": 1544
+    },
+    {
+      "name": "Lower lid.R",
+      "triangles": 3072,
+      "vertices": 1544
+    },
+    {
+      "name": "Hand_sculpted.L",
+      "triangles": 2622,
+      "vertices": 1317
+    },
+    {
+      "name": "Hand_sculpted.R",
+      "triangles": 2622,
+      "vertices": 1317
+    },
+    {
+      "name": "Visor red edge",
+      "triangles": 2418,
+      "vertices": 1217
+    },
+    {
+      "name": "Neutral mouth",
+      "triangles": 2304,
+      "vertices": 1160
+    },
+    {
+      "name": "Cap seam 0",
+      "triangles": 2112,
+      "vertices": 1064
+    },
+    {
+      "name": "Cap seam 1.0471975511965976",
+      "triangles": 2112,
+      "vertices": 1064
+    },
+    {
+      "name": "Cap seam 2.0943951023931953",
+      "triangles": 2112,
+      "vertices": 1064
+    },
+    {
+      "name": "Cap seam 3.141592653589793",
+      "triangles": 2112,
+      "vertices": 1064
+    },
+    {
+      "name": "Cap seam 4.1887902047863905",
+      "triangles": 2112,
+      "vertices": 1064
+    },
+    {
+      "name": "Cap seam 5.235987755982989",
+      "triangles": 2112,
+      "vertices": 1064
+    },
+    {
+      "name": "Kit_cap_crown",
+      "triangles": 1916,
+      "vertices": 960
+    },
+    {
+      "name": "Flat brow.L",
+      "triangles": 1536,
+      "vertices": 776
+    },
+    {
+      "name": "Flat brow.R",
+      "triangles": 1536,
+      "vertices": 776
+    },
+    {
+      "name": "Kit_curved_visor",
+      "triangles": 1328,
+      "vertices": 666
+    },
+    {
+      "name": "Kit cap letter",
+      "triangles": 1272,
+      "vertices": 848
+    },
+    {
+      "name": "Player back name",
+      "triangles": 1090,
+      "vertices": 844
+    },
+    {
+      "name": "Pants piping.L",
+      "triangles": 960,
+      "vertices": 488
+    },
+    {
+      "name": "Pants piping.R",
+      "triangles": 960,
+      "vertices": 488
+    },
+    {
+      "name": "Collar navy trim",
+      "triangles": 768,
+      "vertices": 392
+    },
+    {
+      "name": "Jersey placket",
+      "triangles": 768,
+      "vertices": 392
+    },
+    {
+      "name": "Undersleeve.L",
+      "triangles": 620,
+      "vertices": 312
+    },
+    {
+      "name": "Undersleeve.R",
+      "triangles": 620,
+      "vertices": 312
+    },
+    {
+      "name": "Ear.L",
+      "triangles": 480,
+      "vertices": 242
+    },
+    {
+      "name": "Ear.R",
+      "triangles": 480,
+      "vertices": 242
+    },
+    {
+      "name": "Cleat upper.L",
+      "triangles": 476,
+      "vertices": 240
+    },
+    {
+      "name": "Cleat upper.R",
+      "triangles": 476,
+      "vertices": 240
+    },
+    {
+      "name": "Shoe toe seam.L",
+      "triangles": 384,
+      "vertices": 200
+    },
+    {
+      "name": "Shoe toe seam.R",
+      "triangles": 384,
+      "vertices": 200
+    },
+    {
+      "name": "Ear fold.L",
+      "triangles": 384,
+      "vertices": 200
+    },
+    {
+      "name": "Ear fold.R",
+      "triangles": 384,
+      "vertices": 200
+    },
+    {
+      "name": "Eye white.L",
+      "triangles": 320,
+      "vertices": 189
+    },
+    {
+      "name": "Eye white.R",
+      "triangles": 320,
+      "vertices": 189
+    },
+    {
+      "name": "Cleat sole.L",
+      "triangles": 284,
+      "vertices": 144
+    },
+    {
+      "name": "Cleat sole.R",
+      "triangles": 284,
+      "vertices": 144
+    },
+    {
+      "name": "Player front number",
+      "triangles": 248,
+      "vertices": 168
+    },
+    {
+      "name": "Player back number",
+      "triangles": 248,
+      "vertices": 168
+    },
+    {
+      "name": "Shoe lace.L0",
+      "triangles": 192,
+      "vertices": 104
+    },
+    {
+      "name": "Shoe lace.L1",
+      "triangles": 192,
+      "vertices": 104
+    },
+    {
+      "name": "Shoe lace.L2",
+      "triangles": 192,
+      "vertices": 104
+    },
+    {
+      "name": "Shoe lace.L3",
+      "triangles": 192,
+      "vertices": 104
+    },
+    {
+      "name": "Shoe lace.R0",
+      "triangles": 192,
+      "vertices": 104
+    },
+    {
+      "name": "Shoe lace.R1",
+      "triangles": 192,
+      "vertices": 104
+    },
+    {
+      "name": "Shoe lace.R2",
+      "triangles": 192,
+      "vertices": 104
+    },
+    {
+      "name": "Shoe lace.R3",
+      "triangles": 192,
+      "vertices": 104
+    },
+    {
+      "name": "Belt",
+      "triangles": 188,
+      "vertices": 96
+    },
+    {
+      "name": "Belt buckle",
+      "triangles": 188,
+      "vertices": 96
+    },
+    {
+      "name": "Cleat stud L-1-0.13",
+      "triangles": 44,
+      "vertices": 24
+    },
+    {
+      "name": "Cleat stud L-10",
+      "triangles": 44,
+      "vertices": 24
+    },
+    {
+      "name": "Cleat stud L-10.065",
+      "triangles": 44,
+      "vertices": 24
+    },
+    {
+      "name": "Cleat stud L1-0.13",
+      "triangles": 44,
+      "vertices": 24
+    },
+    {
+      "name": "Cleat stud L10",
+      "triangles": 44,
+      "vertices": 24
+    },
+    {
+      "name": "Cleat stud L10.065",
+      "triangles": 44,
+      "vertices": 24
+    },
+    {
+      "name": "Cleat stud R-1-0.13",
+      "triangles": 44,
+      "vertices": 24
+    },
+    {
+      "name": "Cleat stud R-10",
+      "triangles": 44,
+      "vertices": 24
+    },
+    {
+      "name": "Cleat stud R-10.065",
+      "triangles": 44,
+      "vertices": 24
+    },
+    {
+      "name": "Cleat stud R1-0.13",
+      "triangles": 44,
+      "vertices": 24
+    },
+    {
+      "name": "Cleat stud R10",
+      "triangles": 44,
+      "vertices": 24
+    },
+    {
+      "name": "Cleat stud R10.065",
+      "triangles": 44,
+      "vertices": 24
+    },
+    {
+      "name": "Jersey button 0.88",
+      "triangles": 44,
+      "vertices": 24
+    },
+    {
+      "name": "Jersey button 0.96",
+      "triangles": 44,
+      "vertices": 24
+    },
+    {
+      "name": "Jersey button 1.035",
+      "triangles": 44,
+      "vertices": 24
+    },
+    {
+      "name": "Jersey button 1.11",
+      "triangles": 44,
+      "vertices": 24
+    },
+    {
+      "name": "Jersey button 1.185",
+      "triangles": 44,
+      "vertices": 24
+    },
+    {
+      "name": "iris.L",
+      "triangles": 32,
+      "vertices": 33
+    },
+    {
+      "name": "catch.L",
+      "triangles": 32,
+      "vertices": 33
+    },
+    {
+      "name": "iris.R",
+      "triangles": 32,
+      "vertices": 33
+    },
+    {
+      "name": "catch.R",
+      "triangles": 32,
+      "vertices": 33
+    }
+  ]
+}

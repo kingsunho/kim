@@ -1,0 +1,46 @@
+{
+  "assets/kwak-v1.glb": {
+    "bytes": 2715252,
+    "sha256": "c0c293aa8f190bfa3623c0900b1cba29f0dc15b2e48f1d3c124dfbc28c641bf4"
+  },
+  "assets/kwak-source.blend": {
+    "bytes": 7258212,
+    "sha256": "2f2dfb3590c0a2b003167b1f255f0e1f9c62b8ae5b7ff8167b540e040c5d9560"
+  },
+  "assets/rig-contract.json": {
+    "bytes": 8236,
+    "sha256": "9a14865c532f3d22c99f625de01c51faf262473b0138161728bcddb14d663d56"
+  },
+  "identity.json": {
+    "bytes": 2349,
+    "sha256": "16e1f38a79781328603ba944a7ce8d8dd66754a2a3bb191cdba79306afdc3192"
+  },
+  "scenes.js": {
+    "bytes": 1177,
+    "sha256": "a746d982ab9dd47e2166ae04767be805dc66d458dd258eb3de570f1b4fc6db42"
+  },
+  "assets/portraits/kwak-quarter.png": {
+    "bytes": 103183,
+    "sha256": "c40eeb42149a8b22706bbdc98814fa9acfb064611d394a3f4b472909ec1ced7d"
+  },
+  "assets/portraits/kwak-front.png": {
+    "bytes": 106210,
+    "sha256": "6979fddee068632b62999a83fecc7036e1915779c0190332e145564a04315a1d"
+  },
+  "assets/portraits/kwak-face.png": {
+    "bytes": 95914,
+    "sha256": "e67ce551b976a199924ed922315b004a3d9a9e1088d49af01fa108fd0fa52e51"
+  },
+  "assets/portraits/provenance.json": {
+    "bytes": 817,
+    "sha256": "df967b3be77c16524415ae7d5deb917cd3a8b1d6a93e503b11737b3f1e66a7a9"
+  },
+  "assets/qa/unmerged.glb": {
+    "bytes": 2698464,
+    "sha256": "12e2d75612ef8eb5f3dd6cb7e94b5c84d0530700166001e92ab0f7fd2cdb8fc1"
+  },
+  "assets/qa/unmerged-audit.json": {
+    "bytes": 25813,
+    "sha256": "cd95860ef0dc925ce387d0d78032289181e40572ec3903b589294cc55a41e3ec"
+  }
+}

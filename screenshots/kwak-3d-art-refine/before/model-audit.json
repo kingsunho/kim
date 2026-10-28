@@ -1,0 +1,1330 @@
+{
+  "objects": [
+    {
+      "name": "Common_body_continuous",
+      "vertices": 2722,
+      "polygons": 4685,
+      "materials": [
+        "skin"
+      ],
+      "rigidBone": null,
+      "weighted": true
+    },
+    {
+      "name": "Undersleeve.L",
+      "vertices": 312,
+      "polygons": 290,
+      "materials": [
+        "navy"
+      ],
+      "rigidBone": null,
+      "weighted": true
+    },
+    {
+      "name": "Undersleeve.R",
+      "vertices": 312,
+      "polygons": 290,
+      "materials": [
+        "navy"
+      ],
+      "rigidBone": null,
+      "weighted": true
+    },
+    {
+      "name": "Kit_jersey_weighted",
+      "vertices": 3782,
+      "polygons": 7539,
+      "materials": [
+        "jersey"
+      ],
+      "rigidBone": null,
+      "weighted": true
+    },
+    {
+      "name": "Kit_pants_continuous_groin",
+      "vertices": 4384,
+      "polygons": 8756,
+      "materials": [
+        "pants"
+      ],
+      "rigidBone": null,
+      "weighted": true
+    },
+    {
+      "name": "Belt",
+      "vertices": 96,
+      "polygons": 50,
+      "materials": [
+        "navy"
+      ],
+      "rigidBone": null,
+      "weighted": true
+    },
+    {
+      "name": "Belt buckle",
+      "vertices": 96,
+      "polygons": 98,
+      "materials": [
+        "metal"
+      ],
+      "rigidBone": "pelvis",
+      "weighted": true
+    },
+    {
+      "name": "Pants piping.L",
+      "vertices": 488,
+      "polygons": 480,
+      "materials": [
+        "navy"
+      ],
+      "rigidBone": null,
+      "weighted": true
+    },
+    {
+      "name": "Hand_sculpted.L",
+      "vertices": 1317,
+      "polygons": 2619,
+      "materials": [
+        "skin"
+      ],
+      "rigidBone": null,
+      "weighted": true
+    },
+    {
+      "name": "Cleat sole.L",
+      "vertices": 144,
+      "polygons": 98,
+      "materials": [
+        "sole"
+      ],
+      "rigidBone": "foot.L",
+      "weighted": true
+    },
+    {
+      "name": "Cleat upper.L",
+      "vertices": 240,
+      "polygons": 194,
+      "materials": [
+        "navy"
+      ],
+      "rigidBone": "foot.L",
+      "weighted": true
+    },
+    {
+      "name": "Shoe toe seam.L",
+      "vertices": 200,
+      "polygons": 192,
+      "materials": [
+        "stitch"
+      ],
+      "rigidBone": "foot.L",
+      "weighted": true
+    },
+    {
+      "name": "Shoe lace.L0",
+      "vertices": 104,
+      "polygons": 96,
+      "materials": [
+        "sole"
+      ],
+      "rigidBone": "foot.L",
+      "weighted": true
+    },
+    {
+      "name": "Shoe lace.L1",
+      "vertices": 104,
+      "polygons": 96,
+      "materials": [
+        "sole"
+      ],
+      "rigidBone": "foot.L",
+      "weighted": true
+    },
+    {
+      "name": "Shoe lace.L2",
+      "vertices": 104,
+      "polygons": 96,
+      "materials": [
+        "sole"
+      ],
+      "rigidBone": "foot.L",
+      "weighted": true
+    },
+    {
+      "name": "Shoe lace.L3",
+      "vertices": 104,
+      "polygons": 96,
+      "materials": [
+        "sole"
+      ],
+      "rigidBone": "foot.L",
+      "weighted": true
+    },
+    {
+      "name": "Cleat stud L-1-0.13",
+      "vertices": 24,
+      "polygons": 14,
+      "materials": [
+        "navy"
+      ],
+      "rigidBone": "foot.L",
+      "weighted": true
+    },
+    {
+      "name": "Cleat stud L-10",
+      "vertices": 24,
+      "polygons": 14,
+      "materials": [
+        "navy"
+      ],
+      "rigidBone": "foot.L",
+      "weighted": true
+    },
+    {
+      "name": "Cleat stud L-10.065",
+      "vertices": 24,
+      "polygons": 14,
+      "materials": [
+        "navy"
+      ],
+      "rigidBone": "foot.L",
+      "weighted": true
+    },
+    {
+      "name": "Cleat stud L1-0.13",
+      "vertices": 24,
+      "polygons": 14,
+      "materials": [
+        "navy"
+      ],
+      "rigidBone": "foot.L",
+      "weighted": true
+    },
+    {
+      "name": "Cleat stud L10",
+      "vertices": 24,
+      "polygons": 14,
+      "materials": [
+        "navy"
+      ],
+      "rigidBone": "foot.L",
+      "weighted": true
+    },
+    {
+      "name": "Cleat stud L10.065",
+      "vertices": 24,
+      "polygons": 14,
+      "materials": [
+        "navy"
+      ],
+      "rigidBone": "foot.L",
+      "weighted": true
+    },
+    {
+      "name": "Pants piping.R",
+      "vertices": 488,
+      "polygons": 480,
+      "materials": [
+        "navy"
+      ],
+      "rigidBone": null,
+      "weighted": true
+    },
+    {
+      "name": "Hand_sculpted.R",
+      "vertices": 1317,
+      "polygons": 2619,
+      "materials": [
+        "skin"
+      ],
+      "rigidBone": null,
+      "weighted": true
+    },
+    {
+      "name": "Cleat sole.R",
+      "vertices": 144,
+      "polygons": 98,
+      "materials": [
+        "sole"
+      ],
+      "rigidBone": "foot.R",
+      "weighted": true
+    },
+    {
+      "name": "Cleat upper.R",
+      "vertices": 240,
+      "polygons": 194,
+      "materials": [
+        "navy"
+      ],
+      "rigidBone": "foot.R",
+      "weighted": true
+    },
+    {
+      "name": "Shoe toe seam.R",
+      "vertices": 200,
+      "polygons": 192,
+      "materials": [
+        "stitch"
+      ],
+      "rigidBone": "foot.R",
+      "weighted": true
+    },
+    {
+      "name": "Shoe lace.R0",
+      "vertices": 104,
+      "polygons": 96,
+      "materials": [
+        "sole"
+      ],
+      "rigidBone": "foot.R",
+      "weighted": true
+    },
+    {
+      "name": "Shoe lace.R1",
+      "vertices": 104,
+      "polygons": 96,
+      "materials": [
+        "sole"
+      ],
+      "rigidBone": "foot.R",
+      "weighted": true
+    },
+    {
+      "name": "Shoe lace.R2",
+      "vertices": 104,
+      "polygons": 96,
+      "materials": [
+        "sole"
+      ],
+      "rigidBone": "foot.R",
+      "weighted": true
+    },
+    {
+      "name": "Shoe lace.R3",
+      "vertices": 104,
+      "polygons": 96,
+      "materials": [
+        "sole"
+      ],
+      "rigidBone": "foot.R",
+      "weighted": true
+    },
+    {
+      "name": "Cleat stud R-1-0.13",
+      "vertices": 24,
+      "polygons": 14,
+      "materials": [
+        "navy"
+      ],
+      "rigidBone": "foot.R",
+      "weighted": true
+    },
+    {
+      "name": "Cleat stud R-10",
+      "vertices": 24,
+      "polygons": 14,
+      "materials": [
+        "navy"
+      ],
+      "rigidBone": "foot.R",
+      "weighted": true
+    },
+    {
+      "name": "Cleat stud R-10.065",
+      "vertices": 24,
+      "polygons": 14,
+      "materials": [
+        "navy"
+      ],
+      "rigidBone": "foot.R",
+      "weighted": true
+    },
+    {
+      "name": "Cleat stud R1-0.13",
+      "vertices": 24,
+      "polygons": 14,
+      "materials": [
+        "navy"
+      ],
+      "rigidBone": "foot.R",
+      "weighted": true
+    },
+    {
+      "name": "Cleat stud R10",
+      "vertices": 24,
+      "polygons": 14,
+      "materials": [
+        "navy"
+      ],
+      "rigidBone": "foot.R",
+      "weighted": true
+    },
+    {
+      "name": "Cleat stud R10.065",
+      "vertices": 24,
+      "polygons": 14,
+      "materials": [
+        "navy"
+      ],
+      "rigidBone": "foot.R",
+      "weighted": true
+    },
+    {
+      "name": "Face_sculpt_Kwak_v1",
+      "vertices": 11705,
+      "polygons": 23406,
+      "materials": [
+        "skin"
+      ],
+      "rigidBone": "head",
+      "weighted": true
+    },
+    {
+      "name": "Ear.L",
+      "vertices": 242,
+      "polygons": 240,
+      "materials": [
+        "skin"
+      ],
+      "rigidBone": "head",
+      "weighted": true
+    },
+    {
+      "name": "Ear fold.L",
+      "vertices": 200,
+      "polygons": 192,
+      "materials": [
+        "skin_inner"
+      ],
+      "rigidBone": "head",
+      "weighted": true
+    },
+    {
+      "name": "Ear.R",
+      "vertices": 242,
+      "polygons": 240,
+      "materials": [
+        "skin"
+      ],
+      "rigidBone": "head",
+      "weighted": true
+    },
+    {
+      "name": "Ear fold.R",
+      "vertices": 200,
+      "polygons": 192,
+      "materials": [
+        "skin_inner"
+      ],
+      "rigidBone": "head",
+      "weighted": true
+    },
+    {
+      "name": "Eye white.L",
+      "vertices": 189,
+      "polygons": 160,
+      "materials": [
+        "eye_white"
+      ],
+      "rigidBone": "head",
+      "weighted": true
+    },
+    {
+      "name": "iris.L",
+      "vertices": 33,
+      "polygons": 32,
+      "materials": [
+        "eye_dark"
+      ],
+      "rigidBone": "eye.L",
+      "weighted": true
+    },
+    {
+      "name": "catch.L",
+      "vertices": 33,
+      "polygons": 32,
+      "materials": [
+        "eye_white"
+      ],
+      "rigidBone": "eye.L",
+      "weighted": true
+    },
+    {
+      "name": "Upper lid.L",
+      "vertices": 1544,
+      "polygons": 1536,
+      "materials": [
+        "hair"
+      ],
+      "rigidBone": "head",
+      "weighted": true
+    },
+    {
+      "name": "Lower lid.L",
+      "vertices": 1544,
+      "polygons": 1536,
+      "materials": [
+        "skin_inner"
+      ],
+      "rigidBone": "head",
+      "weighted": true
+    },
+    {
+      "name": "Flat brow.L",
+      "vertices": 776,
+      "polygons": 768,
+      "materials": [
+        "hair"
+      ],
+      "rigidBone": "head",
+      "weighted": true
+    },
+    {
+      "name": "Eye white.R",
+      "vertices": 189,
+      "polygons": 160,
+      "materials": [
+        "eye_white"
+      ],
+      "rigidBone": "head",
+      "weighted": true
+    },
+    {
+      "name": "iris.R",
+      "vertices": 33,
+      "polygons": 32,
+      "materials": [
+        "eye_dark"
+      ],
+      "rigidBone": "eye.R",
+      "weighted": true
+    },
+    {
+      "name": "catch.R",
+      "vertices": 33,
+      "polygons": 32,
+      "materials": [
+        "eye_white"
+      ],
+      "rigidBone": "eye.R",
+      "weighted": true
+    },
+    {
+      "name": "Upper lid.R",
+      "vertices": 1544,
+      "polygons": 1536,
+      "materials": [
+        "hair"
+      ],
+      "rigidBone": "head",
+      "weighted": true
+    },
+    {
+      "name": "Lower lid.R",
+      "vertices": 1544,
+      "polygons": 1536,
+      "materials": [
+        "skin_inner"
+      ],
+      "rigidBone": "head",
+      "weighted": true
+    },
+    {
+      "name": "Flat brow.R",
+      "vertices": 776,
+      "polygons": 768,
+      "materials": [
+        "hair"
+      ],
+      "rigidBone": "head",
+      "weighted": true
+    },
+    {
+      "name": "Neutral mouth",
+      "vertices": 1160,
+      "polygons": 1152,
+      "materials": [
+        "mouth"
+      ],
+      "rigidBone": "head",
+      "weighted": true
+    },
+    {
+      "name": "Hair_sculpt_Kwak_nape",
+      "vertices": 4728,
+      "polygons": 9290,
+      "materials": [
+        "hair"
+      ],
+      "rigidBone": "head",
+      "weighted": true
+    },
+    {
+      "name": "Kit_cap_crown",
+      "vertices": 960,
+      "polygons": 898,
+      "materials": [
+        "navy"
+      ],
+      "rigidBone": "head",
+      "weighted": true
+    },
+    {
+      "name": "Kit_curved_visor",
+      "vertices": 666,
+      "polygons": 664,
+      "materials": [
+        "navy"
+      ],
+      "rigidBone": "head",
+      "weighted": true
+    },
+    {
+      "name": "Visor red edge",
+      "vertices": 1217,
+      "polygons": 2418,
+      "materials": [
+        "red"
+      ],
+      "rigidBone": "head",
+      "weighted": true
+    },
+    {
+      "name": "Cap seam 0",
+      "vertices": 1064,
+      "polygons": 1056,
+      "materials": [
+        "navy_light"
+      ],
+      "rigidBone": "head",
+      "weighted": true
+    },
+    {
+      "name": "Cap seam 1.0471975511965976",
+      "vertices": 1064,
+      "polygons": 1056,
+      "materials": [
+        "navy_light"
+      ],
+      "rigidBone": "head",
+      "weighted": true
+    },
+    {
+      "name": "Cap seam 2.0943951023931953",
+      "vertices": 1064,
+      "polygons": 1056,
+      "materials": [
+        "navy_light"
+      ],
+      "rigidBone": "head",
+      "weighted": true
+    },
+    {
+      "name": "Cap seam 3.141592653589793",
+      "vertices": 1064,
+      "polygons": 1056,
+      "materials": [
+        "navy_light"
+      ],
+      "rigidBone": "head",
+      "weighted": true
+    },
+    {
+      "name": "Cap seam 4.1887902047863905",
+      "vertices": 1064,
+      "polygons": 1056,
+      "materials": [
+        "navy_light"
+      ],
+      "rigidBone": "head",
+      "weighted": true
+    },
+    {
+      "name": "Cap seam 5.235987755982989",
+      "vertices": 1064,
+      "polygons": 1056,
+      "materials": [
+        "navy_light"
+      ],
+      "rigidBone": "head",
+      "weighted": true
+    },
+    {
+      "name": "Kit chest wordmark",
+      "vertices": 3871,
+      "polygons": 4757,
+      "materials": [
+        "red"
+      ],
+      "rigidBone": null,
+      "weighted": true
+    },
+    {
+      "name": "Player front number",
+      "vertices": 168,
+      "polygons": 143,
+      "materials": [
+        "navy"
+      ],
+      "rigidBone": null,
+      "weighted": true
+    },
+    {
+      "name": "Player back number",
+      "vertices": 168,
+      "polygons": 143,
+      "materials": [
+        "navy"
+      ],
+      "rigidBone": null,
+      "weighted": true
+    },
+    {
+      "name": "Player back name",
+      "vertices": 844,
+      "polygons": 1090,
+      "materials": [
+        "navy"
+      ],
+      "rigidBone": null,
+      "weighted": true
+    },
+    {
+      "name": "Kit cap letter",
+      "vertices": 848,
+      "polygons": 742,
+      "materials": [
+        "red"
+      ],
+      "rigidBone": "head",
+      "weighted": true
+    },
+    {
+      "name": "Collar navy trim",
+      "vertices": 392,
+      "polygons": 384,
+      "materials": [
+        "navy"
+      ],
+      "rigidBone": null,
+      "weighted": true
+    },
+    {
+      "name": "Jersey placket",
+      "vertices": 392,
+      "polygons": 384,
+      "materials": [
+        "sole"
+      ],
+      "rigidBone": null,
+      "weighted": true
+    },
+    {
+      "name": "Jersey button 0.88",
+      "vertices": 24,
+      "polygons": 14,
+      "materials": [
+        "sole"
+      ],
+      "rigidBone": null,
+      "weighted": true
+    },
+    {
+      "name": "Jersey button 0.96",
+      "vertices": 24,
+      "polygons": 14,
+      "materials": [
+        "sole"
+      ],
+      "rigidBone": null,
+      "weighted": true
+    },
+    {
+      "name": "Jersey button 1.035",
+      "vertices": 24,
+      "polygons": 14,
+      "materials": [
+        "sole"
+      ],
+      "rigidBone": null,
+      "weighted": true
+    },
+    {
+      "name": "Jersey button 1.11",
+      "vertices": 24,
+      "polygons": 14,
+      "materials": [
+        "sole"
+      ],
+      "rigidBone": null,
+      "weighted": true
+    },
+    {
+      "name": "Jersey button 1.185",
+      "vertices": 24,
+      "polygons": 14,
+      "materials": [
+        "sole"
+      ],
+      "rigidBone": null,
+      "weighted": true
+    }
+  ],
+  "bones": 42,
+  "unweighted": 0,
+  "maxWeightError": 2.220446049250313e-16,
+  "maxInfluences": 4,
+  "vertexCount": 60347,
+  "triangleCount": 115615,
+  "boneContract": {
+    "root": {
+      "head": [
+        0,
+        0,
+        0
+      ],
+      "tail": [
+        0,
+        0,
+        0.12
+      ],
+      "parent": null
+    },
+    "pelvis": {
+      "head": [
+        0,
+        0,
+        0.72
+      ],
+      "tail": [
+        0,
+        0,
+        0.84
+      ],
+      "parent": "root"
+    },
+    "spine": {
+      "head": [
+        0,
+        0,
+        0.84
+      ],
+      "tail": [
+        0,
+        0,
+        1.01
+      ],
+      "parent": "pelvis"
+    },
+    "chest": {
+      "head": [
+        0,
+        0,
+        1.01
+      ],
+      "tail": [
+        0,
+        0,
+        1.2
+      ],
+      "parent": "spine"
+    },
+    "neck": {
+      "head": [
+        0,
+        0,
+        1.2
+      ],
+      "tail": [
+        0,
+        0,
+        1.31
+      ],
+      "parent": "chest"
+    },
+    "head": {
+      "head": [
+        0,
+        0,
+        1.31
+      ],
+      "tail": [
+        0,
+        0,
+        1.78
+      ],
+      "parent": "neck"
+    },
+    "eye.L": {
+      "head": [
+        0.09,
+        -0.14,
+        1.565
+      ],
+      "tail": [
+        0.09,
+        -0.2,
+        1.565
+      ],
+      "parent": "head"
+    },
+    "eye.R": {
+      "head": [
+        -0.09,
+        -0.14,
+        1.565
+      ],
+      "tail": [
+        -0.09,
+        -0.2,
+        1.565
+      ],
+      "parent": "head"
+    },
+    "clavicle.L": {
+      "head": [
+        0,
+        0,
+        1.18
+      ],
+      "tail": [
+        0.265,
+        0,
+        1.21
+      ],
+      "parent": "chest"
+    },
+    "upper_arm.L": {
+      "head": [
+        0.265,
+        0,
+        1.21
+      ],
+      "tail": [
+        0.345,
+        -0.015,
+        0.967
+      ],
+      "parent": "clavicle.L"
+    },
+    "forearm.L": {
+      "head": [
+        0.345,
+        -0.015,
+        0.967
+      ],
+      "tail": [
+        0.38,
+        -0.045,
+        0.708
+      ],
+      "parent": "upper_arm.L"
+    },
+    "hand.L": {
+      "head": [
+        0.38,
+        -0.045,
+        0.708
+      ],
+      "tail": [
+        0.385,
+        -0.048,
+        0.618
+      ],
+      "parent": "forearm.L"
+    },
+    "thigh.L": {
+      "head": [
+        0.115,
+        0,
+        0.73
+      ],
+      "tail": [
+        0.17,
+        -0.045,
+        0.425
+      ],
+      "parent": "pelvis"
+    },
+    "shin.L": {
+      "head": [
+        0.17,
+        -0.045,
+        0.425
+      ],
+      "tail": [
+        0.185,
+        0,
+        0.125
+      ],
+      "parent": "thigh.L"
+    },
+    "foot.L": {
+      "head": [
+        0.185,
+        0,
+        0.125
+      ],
+      "tail": [
+        0.185,
+        -0.18,
+        0.065
+      ],
+      "parent": "shin.L"
+    },
+    "finger0.1.L": {
+      "head": [
+        0.346,
+        -0.045,
+        0.6378
+      ],
+      "tail": [
+        0.346,
+        -0.057,
+        0.5958
+      ],
+      "parent": "hand.L"
+    },
+    "finger0.2.L": {
+      "head": [
+        0.346,
+        -0.057,
+        0.5958
+      ],
+      "tail": [
+        0.35,
+        -0.051,
+        0.5656000000000001
+      ],
+      "parent": "finger0.1.L"
+    },
+    "finger1.1.L": {
+      "head": [
+        0.373,
+        -0.045,
+        0.6418
+      ],
+      "tail": [
+        0.373,
+        -0.057,
+        0.5998
+      ],
+      "parent": "hand.L"
+    },
+    "finger1.2.L": {
+      "head": [
+        0.373,
+        -0.057,
+        0.5998
+      ],
+      "tail": [
+        0.377,
+        -0.051,
+        0.5636000000000001
+      ],
+      "parent": "finger1.1.L"
+    },
+    "finger2.1.L": {
+      "head": [
+        0.39999999999999997,
+        -0.045,
+        0.6402
+      ],
+      "tail": [
+        0.39999999999999997,
+        -0.057,
+        0.5982
+      ],
+      "parent": "hand.L"
+    },
+    "finger2.2.L": {
+      "head": [
+        0.39999999999999997,
+        -0.057,
+        0.5982
+      ],
+      "tail": [
+        0.40399999999999997,
+        -0.051,
+        0.5644
+      ],
+      "parent": "finger2.1.L"
+    },
+    "finger3.1.L": {
+      "head": [
+        0.427,
+        -0.045,
+        0.6362
+      ],
+      "tail": [
+        0.427,
+        -0.057,
+        0.5942
+      ],
+      "parent": "hand.L"
+    },
+    "finger3.2.L": {
+      "head": [
+        0.427,
+        -0.057,
+        0.5942
+      ],
+      "tail": [
+        0.431,
+        -0.051,
+        0.5664
+      ],
+      "parent": "finger3.1.L"
+    },
+    "thumb.1.L": {
+      "head": [
+        0.343,
+        -0.046,
+        0.68
+      ],
+      "tail": [
+        0.323,
+        -0.07,
+        0.652
+      ],
+      "parent": "hand.L"
+    },
+    "thumb.2.L": {
+      "head": [
+        0.323,
+        -0.07,
+        0.652
+      ],
+      "tail": [
+        0.323,
+        -0.068,
+        0.622
+      ],
+      "parent": "thumb.1.L"
+    },
+    "clavicle.R": {
+      "head": [
+        0,
+        0,
+        1.18
+      ],
+      "tail": [
+        -0.265,
+        0,
+        1.21
+      ],
+      "parent": "chest"
+    },
+    "upper_arm.R": {
+      "head": [
+        -0.265,
+        0,
+        1.21
+      ],
+      "tail": [
+        -0.345,
+        -0.015,
+        0.967
+      ],
+      "parent": "clavicle.R"
+    },
+    "forearm.R": {
+      "head": [
+        -0.345,
+        -0.015,
+        0.967
+      ],
+      "tail": [
+        -0.38,
+        -0.045,
+        0.708
+      ],
+      "parent": "upper_arm.R"
+    },
+    "hand.R": {
+      "head": [
+        -0.38,
+        -0.045,
+        0.708
+      ],
+      "tail": [
+        -0.385,
+        -0.048,
+        0.618
+      ],
+      "parent": "forearm.R"
+    },
+    "thigh.R": {
+      "head": [
+        -0.115,
+        0,
+        0.73
+      ],
+      "tail": [
+        -0.17,
+        -0.045,
+        0.425
+      ],
+      "parent": "pelvis"
+    },
+    "shin.R": {
+      "head": [
+        -0.17,
+        -0.045,
+        0.425
+      ],
+      "tail": [
+        -0.185,
+        0,
+        0.125
+      ],
+      "parent": "thigh.R"
+    },
+    "foot.R": {
+      "head": [
+        -0.185,
+        0,
+        0.125
+      ],
+      "tail": [
+        -0.185,
+        -0.18,
+        0.065
+      ],
+      "parent": "shin.R"
+    },
+    "finger0.1.R": {
+      "head": [
+        -0.346,
+        -0.045,
+        0.6378
+      ],
+      "tail": [
+        -0.346,
+        -0.057,
+        0.5958
+      ],
+      "parent": "hand.R"
+    },
+    "finger0.2.R": {
+      "head": [
+        -0.346,
+        -0.057,
+        0.5958
+      ],
+      "tail": [
+        -0.35,
+        -0.051,
+        0.5656000000000001
+      ],
+      "parent": "finger0.1.R"
+    },
+    "finger1.1.R": {
+      "head": [
+        -0.373,
+        -0.045,
+        0.6418
+      ],
+      "tail": [
+        -0.373,
+        -0.057,
+        0.5998
+      ],
+      "parent": "hand.R"
+    },
+    "finger1.2.R": {
+      "head": [
+        -0.373,
+        -0.057,
+        0.5998
+      ],
+      "tail": [
+        -0.377,
+        -0.051,
+        0.5636000000000001
+      ],
+      "parent": "finger1.1.R"
+    },
+    "finger2.1.R": {
+      "head": [
+        -0.39999999999999997,
+        -0.045,
+        0.6402
+      ],
+      "tail": [
+        -0.39999999999999997,
+        -0.057,
+        0.5982
+      ],
+      "parent": "hand.R"
+    },
+    "finger2.2.R": {
+      "head": [
+        -0.39999999999999997,
+        -0.057,
+        0.5982
+      ],
+      "tail": [
+        -0.40399999999999997,
+        -0.051,
+        0.5644
+      ],
+      "parent": "finger2.1.R"
+    },
+    "finger3.1.R": {
+      "head": [
+        -0.427,
+        -0.045,
+        0.6362
+      ],
+      "tail": [
+        -0.427,
+        -0.057,
+        0.5942
+      ],
+      "parent": "hand.R"
+    },
+    "finger3.2.R": {
+      "head": [
+        -0.427,
+        -0.057,
+        0.5942
+      ],
+      "tail": [
+        -0.431,
+        -0.051,
+        0.5664
+      ],
+      "parent": "finger3.1.R"
+    },
+    "thumb.1.R": {
+      "head": [
+        -0.343,
+        -0.046,
+        0.68
+      ],
+      "tail": [
+        -0.323,
+        -0.07,
+        0.652
+      ],
+      "parent": "hand.R"
+    },
+    "thumb.2.R": {
+      "head": [
+        -0.323,
+        -0.07,
+        0.652
+      ],
+      "tail": [
+        -0.323,
+        -0.068,
+        0.622
+      ],
+      "parent": "thumb.1.R"
+    }
+  },
+  "modelSha256": "7f1dc5f69f40016ceddb4d44a952400325336a6b9993758298b38b57cc384382",
+  "modelBytes": 3657176
+}

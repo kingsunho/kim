@@ -1,0 +1,104 @@
+{
+  "0": [
+    {
+      "side": "front",
+      "hitRays": 1142,
+      "skinFirstRays": 2,
+      "outerShoulderSkinFirst": 0,
+      "positions": [
+        [
+          -0.09,
+          1.26
+        ],
+        [
+          0.09,
+          1.26
+        ]
+      ]
+    },
+    {
+      "side": "back",
+      "hitRays": 1142,
+      "skinFirstRays": 2,
+      "outerShoulderSkinFirst": 0,
+      "positions": [
+        [
+          -0.09,
+          1.26
+        ],
+        [
+          0.09,
+          1.26
+        ]
+      ]
+    }
+  ],
+  "-10": [
+    {
+      "side": "front",
+      "hitRays": 1128,
+      "skinFirstRays": 2,
+      "outerShoulderSkinFirst": 0,
+      "positions": [
+        [
+          -0.09,
+          1.26
+        ],
+        [
+          0.09,
+          1.26
+        ]
+      ]
+    },
+    {
+      "side": "back",
+      "hitRays": 1128,
+      "skinFirstRays": 2,
+      "outerShoulderSkinFirst": 0,
+      "positions": [
+        [
+          -0.09,
+          1.26
+        ],
+        [
+          0.09,
+          1.26
+        ]
+      ]
+    }
+  ],
+  "10": [
+    {
+      "side": "front",
+      "hitRays": 1144,
+      "skinFirstRays": 2,
+      "outerShoulderSkinFirst": 0,
+      "positions": [
+        [
+          -0.09,
+          1.26
+        ],
+        [
+          0.09,
+          1.26
+        ]
+      ]
+    },
+    {
+      "side": "back",
+      "hitRays": 1144,
+      "skinFirstRays": 2,
+      "outerShoulderSkinFirst": 0,
+      "positions": [
+        [
+          -0.09,
+          1.26
+        ],
+        [
+          0.09,
+          1.26
+        ]
+      ]
+    }
+  ]
+}
