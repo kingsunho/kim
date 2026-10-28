@@ -1,0 +1,74 @@
+{
+  "index.html": {
+    "unchanged": true,
+    "sha256": "7fd97c5e3289351f8d811034eaf58393572a588ad28c1f94f84df101e5182392"
+  },
+  "package.json": {
+    "unchanged": true,
+    "sha256": "1b870a04bfd82f58189a6b2fecd1b25bc5dc41ffba59d194e7a8086d56232c32"
+  },
+  "visual/pipeline-study/layers.js": {
+    "unchanged": true,
+    "sha256": "70345c83bea337f64312cae8891f230a145495904bbe3cab6108b122116754b1"
+  },
+  "visual/pipeline-study/index.html": {
+    "unchanged": true,
+    "sha256": "a7de73316e4f47b68b2cbca08b7d308efcfbfd22372c6207e6d4e1ff67242f60"
+  },
+  "visual/kwak-study/actor.js": {
+    "unchanged": true,
+    "sha256": "4d5f5f7c585d6017d3c40009be5619cf330d755c31fb039b2cd286487e7b0761"
+  },
+  "visual/batting/structure.js": {
+    "unchanged": true,
+    "sha256": "3bec85065b0613e187ba01833c3263985f6867675b17b80d9fe69fdf3786bb40"
+  },
+  "visual/batting/adapter.js": {
+    "unchanged": true,
+    "sha256": "742a5a1c63837f92430108ed50679da6c86633a8dc719b6a01db6523996fbcbe"
+  },
+  "visual/batting/approved/triangle.js": {
+    "unchanged": true,
+    "sha256": "db3ff1bd509e60ec877f3eaa04d9d5d5ca031830f89d4228b9a07f0da274ad49"
+  },
+  "visual/batting/approved/ready.js": {
+    "unchanged": true,
+    "sha256": "9bed07ac2b73629d189d2c53ef313577d0c82b6c4c5b01ef2ebbd97ccfebc80f"
+  },
+  "visual/batting/approved/renderer.js": {
+    "unchanged": true,
+    "sha256": "6ecf1c37c7c33d9d3386ed33049f82a029ff012d8f5f044b24dc3660a29bc2e9"
+  },
+  "visual/batting/approved/follow.js": {
+    "unchanged": true,
+    "sha256": "7cab3d4c41af85fe429e82760d17af1c103c221997c9d7b2c95087ea0723166f"
+  },
+  "visual/batting/approved/contact.js": {
+    "unchanged": true,
+    "sha256": "3fd1c6e1f095e22ed27a470f6f39d1e537b37bb5fa7d39ec74b8bdcdf8e8cd59"
+  },
+  "visual/batting/approved/plant.js": {
+    "unchanged": true,
+    "sha256": "f1d677bc95678a71d4853d9239a7bf40cf933397f347d2b48127d54699517ee6"
+  },
+  "visual/batting/approved/extension.js": {
+    "unchanged": true,
+    "sha256": "80f5dbf19b749dbc091a9b61498b3d9e975d1c6068d82b33b92269802b3a046d"
+  },
+  "visual/pipeline-study/assets/side.png": {
+    "unchanged": true,
+    "sha256": "f03714d7a1b06bf26ad8f703f093e17bd86d08dd11b0658718f0de2cd71f85be"
+  },
+  "visual/pipeline-study/assets/quarter.png": {
+    "unchanged": true,
+    "sha256": "2402452d265af85480ec602987cde20fc07a90caf2e1568578b652df778c4e65"
+  },
+  "visual/pipeline-study/assets/atlas.json": {
+    "unchanged": true,
+    "sha256": "e298b4b8c01be986099e2450eb1185ec33ac6b16c753ec045a6cef3bf1fe3360"
+  },
+  "visual/pipeline-study/assets/front.png": {
+    "unchanged": true,
+    "sha256": "e2e1a1213a317f8261668fddaa67cfa59484e0f559ac8cfd5255e80b2bcb5f14"
+  }
+}

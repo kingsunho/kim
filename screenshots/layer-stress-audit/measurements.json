@@ -1,0 +1,195 @@
+{
+  "note": "Host Chromium, viewport390x844 DPR2. Synthetic stress poses, no gameplay/physics/background. All copies share ONE Kwak asset set. Not distinct-player memory validation, not iPhone Safari.",
+  "runs": [
+    {
+      "count": 1,
+      "jsFrameCPU": {
+        "n": 180,
+        "mean": 0.26555555554934673,
+        "p50": 0.2000000011175871,
+        "p95": 0.40000000037252903,
+        "p99": 1.1000000014901161,
+        "max": 1.400000000372529,
+        "over33": 0,
+        "over50": 0
+      },
+      "rafInterval": {
+        "n": 179,
+        "mean": 16.75921787709493,
+        "p50": 16.699999999999818,
+        "p95": 16.700000000000273,
+        "p99": 16.800000000000182,
+        "max": 33.30000000000001,
+        "over33": 1,
+        "over50": 0
+      }
+    },
+    {
+      "count": 9,
+      "jsFrameCPU": {
+        "n": 180,
+        "mean": 1.0683333333788647,
+        "p50": 0.900000000372529,
+        "p95": 1.700000001117587,
+        "p99": 6.399999998509884,
+        "max": 10.5,
+        "over33": 0,
+        "over50": 0
+      },
+      "rafInterval": {
+        "n": 179,
+        "mean": 16.758659217877096,
+        "p50": 16.699999999999818,
+        "p95": 16.700000000000728,
+        "p99": 16.800000000000182,
+        "max": 33.30000000000018,
+        "over33": 1,
+        "over50": 0
+      }
+    },
+    {
+      "count": 18,
+      "jsFrameCPU": {
+        "n": 180,
+        "mean": 1.5355555556093654,
+        "p50": 1.5,
+        "p95": 2.599999999627471,
+        "p99": 5.199999999254942,
+        "max": 5.200000001117587,
+        "over33": 0,
+        "over50": 0
+      },
+      "rafInterval": {
+        "n": 179,
+        "mean": 16.759217877094976,
+        "p50": 16.699999999999818,
+        "p95": 16.800000000000182,
+        "p99": 16.80000000000109,
+        "max": 33.30000000000018,
+        "over33": 1,
+        "over50": 0
+      }
+    }
+  ],
+  "rotation": {
+    "thresholds": [
+      19,
+      64
+    ],
+    "within": [
+      {
+        "a": 18.7,
+        "b": 18.9,
+        "views": [
+          "front",
+          "front"
+        ],
+        "changedPixels": 839,
+        "unionPixels": 72914,
+        "changedRatio": 0.011506706530981705,
+        "premultipliedAbsSum": 112526.99607843485,
+        "bounds": [
+          {
+            "left": 102.57286414193034,
+            "right": 356.8659590858896,
+            "top": 9.28125,
+            "bottom": 587.296875
+          },
+          {
+            "left": 102.66442575892276,
+            "right": 356.7864822885829,
+            "top": 9.28125,
+            "bottom": 587.296875
+          }
+        ]
+      },
+      {
+        "a": 63.7,
+        "b": 63.9,
+        "views": [
+          "quarter",
+          "quarter"
+        ],
+        "changedPixels": 2540,
+        "unionPixels": 61389,
+        "changedRatio": 0.04137549072309371,
+        "premultipliedAbsSum": 229480.55686275783,
+        "bounds": [
+          {
+            "left": 149.38564485048886,
+            "right": 323.515625,
+            "top": 12.84375,
+            "bottom": 583.2890625
+          },
+          {
+            "left": 149.63043962008857,
+            "right": 323.515625,
+            "top": 12.84375,
+            "bottom": 583.2890625
+          }
+        ]
+      }
+    ],
+    "across": [
+      {
+        "a": 18.9,
+        "b": 19.1,
+        "views": [
+          "front",
+          "quarter"
+        ],
+        "changedPixels": 43078,
+        "unionPixels": 75500,
+        "changedRatio": 0.570569536423841,
+        "premultipliedAbsSum": 11922522.450977454,
+        "bounds": [
+          {
+            "left": 102.66442575892276,
+            "right": 356.7864822885829,
+            "top": 9.28125,
+            "bottom": 587.296875
+          },
+          {
+            "left": 109.49166097620517,
+            "right": 351.1344018632193,
+            "top": 12.84375,
+            "bottom": 583.2890625
+          }
+        ]
+      },
+      {
+        "a": 63.9,
+        "b": 64.1,
+        "views": [
+          "quarter",
+          "side"
+        ],
+        "changedPixels": 33416,
+        "unionPixels": 62228,
+        "changedRatio": 0.5369929935077458,
+        "premultipliedAbsSum": 9730225.501959108,
+        "bounds": [
+          {
+            "left": 149.63043962008857,
+            "right": 323.515625,
+            "top": 12.84375,
+            "bottom": 583.2890625
+          },
+          {
+            "left": 148.6622527204862,
+            "right": 327.078125,
+            "top": 12.84375,
+            "bottom": 583.2890625
+          }
+        ]
+      }
+    ],
+    "note": "Offline readback for diagnostic only; no renderer per-frame readback. Nearest-view selection added by test harness, not crossfade."
+  },
+  "disposal": {
+    "tileBytesBefore": 8272088,
+    "disposedDrawRejected": true,
+    "note": "Reference/disposal behavior checked. Actual RSS/VRAM release not measured."
+  },
+  "errors": []
+}

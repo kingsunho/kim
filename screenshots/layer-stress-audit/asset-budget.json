@@ -1,0 +1,53 @@
+{
+  "kind": "estimated-not-distinct-player-measurement",
+  "fullPerGroup": {
+    "head": 980968,
+    "cap": 570560,
+    "hands": 656744,
+    "kit": 6063816
+  },
+  "fieldPerGroup": {
+    "head": 45056,
+    "cap": 68196,
+    "hands": 115584,
+    "kit": 863616
+  },
+  "oneFullPlayerBytes": 8272088,
+  "scenarios": [
+    {
+      "players": 9,
+      "teams": 1,
+      "allUniqueFullTilesBytes": 74448792,
+      "sharedTeamKitCapDistinctHeadHandsBytes": 21373784,
+      "sharedTeamKitCapFourSkinPalettesBytes": 18090064,
+      "sharedThreeBuildsFourSkinPalettesBytes": 30217696,
+      "proposedFieldLODPlusOneHeroBytes": 10071740,
+      "assumptions": "All 3 directional views. LOD scenario assumes new repacked assets, one retained high-res hero set, head max64 and other field parts max96. Not implemented/render-quality validated; RGBA logical bytes only."
+    },
+    {
+      "players": 18,
+      "teams": 2,
+      "allUniqueFullTilesBytes": 148897584,
+      "sharedTeamKitCapDistinctHeadHandsBytes": 42747568,
+      "sharedTeamKitCapFourSkinPalettesBytes": 33553152,
+      "sharedThreeBuildsFourSkinPalettesBytes": 57808416,
+      "proposedFieldLODPlusOneHeroBytes": 11409056,
+      "assumptions": "All 3 directional views. LOD scenario assumes new repacked assets, one retained high-res hero set, head max64 and other field parts max96. Not implemented/render-quality validated; RGBA logical bytes only."
+    },
+    {
+      "players": 36,
+      "teams": 4,
+      "allUniqueFullTilesBytes": 297795168,
+      "sharedTeamKitCapDistinctHeadHandsBytes": 85495136,
+      "sharedTeamKitCapFourSkinPalettesBytes": 64479328,
+      "sharedThreeBuildsFourSkinPalettesBytes": 112989856,
+      "proposedFieldLODPlusOneHeroBytes": 14083688,
+      "assumptions": "All 3 directional views. LOD scenario assumes new repacked assets, one retained high-res hero set, head max64 and other field parts max96. Not implemented/render-quality validated; RGBA logical bytes only."
+    }
+  ],
+  "cacheProposal": {
+    "softDecodedBudgetMiB": 32,
+    "hardDecodedBudgetMiB": 48,
+    "policy": "Pin visible parts; share by body/kit/cap/skin; LRU only unpinned; first downgrade field LOD when budget would overflow, never evict visible head mid-frame. Decode queue max2; preload before cut; release obsolete scene leases; keep current+adjacent views only if approved. Budget excludes GPU/decoder/framebuffer."
+  }
+}

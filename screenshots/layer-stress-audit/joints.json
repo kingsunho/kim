@@ -1,0 +1,404 @@
+{
+  "validation": [
+    {
+      "id": "overhead",
+      "native": true,
+      "samples": [
+        {
+          "t": 0,
+          "maxBoneError": 0,
+          "headTop": -13,
+          "handY": [
+            201,
+            201
+          ],
+          "handsAboveCap": false,
+          "ankleY": [
+            279,
+            279
+          ],
+          "hipWidth": 34,
+          "shoulderWidth": 68,
+          "native": true
+        },
+        {
+          "t": 0.5,
+          "maxBoneError": 1.4210854715202004e-14,
+          "headTop": -13,
+          "handY": [
+            105.84897565074915,
+            105.84897565074915
+          ],
+          "handsAboveCap": false,
+          "ankleY": [
+            279,
+            279
+          ],
+          "hipWidth": 34,
+          "shoulderWidth": 68,
+          "native": true
+        },
+        {
+          "t": 1,
+          "maxBoneError": 7.105427357601002e-15,
+          "headTop": -13,
+          "handY": [
+            24.376153397702154,
+            24.376153397702154
+          ],
+          "handsAboveCap": false,
+          "ankleY": [
+            279,
+            279
+          ],
+          "hipWidth": 34,
+          "shoulderWidth": 68,
+          "native": true
+        }
+      ]
+    },
+    {
+      "id": "cocked",
+      "native": false,
+      "samples": [
+        {
+          "t": 0,
+          "maxBoneError": 0,
+          "headTop": -13,
+          "handY": [
+            201,
+            201
+          ],
+          "handsAboveCap": false,
+          "ankleY": [
+            279,
+            279
+          ],
+          "hipWidth": 34,
+          "shoulderWidth": 68,
+          "native": false
+        },
+        {
+          "t": 0.5,
+          "maxBoneError": 1.4210854715202004e-14,
+          "headTop": -13,
+          "handY": [
+            201,
+            166.5050176631699
+          ],
+          "handsAboveCap": false,
+          "ankleY": [
+            279,
+            279
+          ],
+          "hipWidth": 34,
+          "shoulderWidth": 68,
+          "native": false
+        },
+        {
+          "t": 1,
+          "maxBoneError": 7.105427357601002e-15,
+          "headTop": -13,
+          "handY": [
+            201,
+            145.79974410685875
+          ],
+          "handsAboveCap": false,
+          "ankleY": [
+            279,
+            279
+          ],
+          "hipWidth": 34,
+          "shoulderWidth": 68,
+          "native": false
+        }
+      ]
+    },
+    {
+      "id": "cross",
+      "native": true,
+      "samples": [
+        {
+          "t": 0,
+          "maxBoneError": 0,
+          "headTop": -13,
+          "handY": [
+            201,
+            201
+          ],
+          "handsAboveCap": false,
+          "ankleY": [
+            279,
+            279
+          ],
+          "hipWidth": 34,
+          "shoulderWidth": 68,
+          "native": true
+        },
+        {
+          "t": 0.5,
+          "maxBoneError": 7.105427357601002e-15,
+          "headTop": -13,
+          "handY": [
+            186.3810647616764,
+            186.3810647616764
+          ],
+          "handsAboveCap": false,
+          "ankleY": [
+            279,
+            279
+          ],
+          "hipWidth": 34,
+          "shoulderWidth": 68,
+          "native": true
+        },
+        {
+          "t": 1,
+          "maxBoneError": 7.105427357601002e-15,
+          "headTop": -13,
+          "handY": [
+            140.55466341513747,
+            140.55466341513747
+          ],
+          "handsAboveCap": false,
+          "ankleY": [
+            279,
+            279
+          ],
+          "hipWidth": 34,
+          "shoulderWidth": 68,
+          "native": true
+        }
+      ]
+    },
+    {
+      "id": "twist",
+      "native": false,
+      "samples": [
+        {
+          "t": 0,
+          "maxBoneError": 0,
+          "headTop": -13,
+          "handY": [
+            201,
+            201
+          ],
+          "handsAboveCap": false,
+          "ankleY": [
+            279,
+            279
+          ],
+          "hipWidth": 34,
+          "shoulderWidth": 68,
+          "native": false
+        },
+        {
+          "t": 0.5,
+          "maxBoneError": 7.105427357601002e-15,
+          "headTop": -13,
+          "handY": [
+            201,
+            201
+          ],
+          "handsAboveCap": false,
+          "ankleY": [
+            279,
+            279
+          ],
+          "hipWidth": 34,
+          "shoulderWidth": 68,
+          "native": false
+        },
+        {
+          "t": 1,
+          "maxBoneError": 0,
+          "headTop": -13,
+          "handY": [
+            201,
+            201
+          ],
+          "handsAboveCap": false,
+          "ankleY": [
+            279,
+            279
+          ],
+          "hipWidth": 34,
+          "shoulderWidth": 68,
+          "native": false
+        }
+      ]
+    },
+    {
+      "id": "knee",
+      "native": true,
+      "samples": [
+        {
+          "t": 0,
+          "maxBoneError": 0,
+          "headTop": -13,
+          "handY": [
+            201,
+            201
+          ],
+          "handsAboveCap": false,
+          "ankleY": [
+            279,
+            279
+          ],
+          "hipWidth": 34,
+          "shoulderWidth": 68,
+          "native": true
+        },
+        {
+          "t": 0.5,
+          "maxBoneError": 2.1316282072803006e-14,
+          "headTop": -13,
+          "handY": [
+            201,
+            201
+          ],
+          "handsAboveCap": false,
+          "ankleY": [
+            258.53071167398974,
+            279
+          ],
+          "hipWidth": 34,
+          "shoulderWidth": 68,
+          "native": true
+        },
+        {
+          "t": 1,
+          "maxBoneError": 2.1316282072803006e-14,
+          "headTop": -13,
+          "handY": [
+            201,
+            201
+          ],
+          "handsAboveCap": false,
+          "ankleY": [
+            213.5028913516186,
+            279
+          ],
+          "hipWidth": 34,
+          "shoulderWidth": 68,
+          "native": true
+        }
+      ]
+    },
+    {
+      "id": "bow",
+      "native": false,
+      "samples": [
+        {
+          "t": 0,
+          "maxBoneError": 0,
+          "headTop": -13,
+          "handY": [
+            201,
+            201
+          ],
+          "handsAboveCap": false,
+          "ankleY": [
+            279,
+            279
+          ],
+          "hipWidth": 34,
+          "shoulderWidth": 68,
+          "native": false
+        },
+        {
+          "t": 0.5,
+          "maxBoneError": 1.4210854715202004e-14,
+          "headTop": 4.952595892885213,
+          "handY": [
+            202.0884572681199,
+            202.0884572681199
+          ],
+          "handsAboveCap": false,
+          "ankleY": [
+            279,
+            279
+          ],
+          "hipWidth": 34,
+          "shoulderWidth": 68,
+          "native": false
+        },
+        {
+          "t": 1,
+          "maxBoneError": 7.105427357601002e-15,
+          "headTop": 53.999999999999986,
+          "handY": [
+            198.06217782649108,
+            198.06217782649108
+          ],
+          "handsAboveCap": false,
+          "ankleY": [
+            279,
+            279
+          ],
+          "hipWidth": 34,
+          "shoulderWidth": 68,
+          "native": false
+        }
+      ]
+    },
+    {
+      "id": "stride",
+      "native": false,
+      "samples": [
+        {
+          "t": 0,
+          "maxBoneError": 1.4210854715202004e-14,
+          "headTop": -13,
+          "handY": [
+            201,
+            201
+          ],
+          "handsAboveCap": false,
+          "ankleY": [
+            279,
+            279
+          ],
+          "hipWidth": 34,
+          "shoulderWidth": 68,
+          "native": false
+        },
+        {
+          "t": 0.5,
+          "maxBoneError": 1.4210854715202004e-14,
+          "headTop": -2,
+          "handY": [
+            212,
+            212
+          ],
+          "handsAboveCap": false,
+          "ankleY": [
+            279,
+            279
+          ],
+          "hipWidth": 34,
+          "shoulderWidth": 68,
+          "native": false
+        },
+        {
+          "t": 1,
+          "maxBoneError": 1.4210854715202004e-14,
+          "headTop": 9,
+          "handY": [
+            223,
+            223
+          ],
+          "handsAboveCap": false,
+          "ankleY": [
+            279,
+            279
+          ],
+          "hipWidth": 34,
+          "shoulderWidth": 68,
+          "native": false
+        }
+      ]
+    }
+  ],
+  "errors": []
+}
