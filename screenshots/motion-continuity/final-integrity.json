@@ -1,0 +1,40 @@
+{
+  "baseline": "a525d7ad8afaa2a55d85cbcd29f4ed6146e399da",
+  "service": "25205ece2dbbeda02c5ee81e728a4a575f7bf744",
+  "serviceVersion": "v5.175.3",
+  "files": [
+    {
+      "file": "visual/batting/approved/ready.js",
+      "unchanged": true,
+      "sha256": "9bed07ac2b73629d189d2c53ef313577d0c82b6c4c5b01ef2ebbd97ccfebc80f"
+    },
+    {
+      "file": "visual/batting/approved/plant.js",
+      "unchanged": true,
+      "sha256": "f1d677bc95678a71d4853d9239a7bf40cf933397f347d2b48127d54699517ee6"
+    },
+    {
+      "file": "visual/batting/approved/contact.js",
+      "unchanged": true,
+      "sha256": "3fd1c6e1f095e22ed27a470f6f39d1e537b37bb5fa7d39ec74b8bdcdf8e8cd59"
+    },
+    {
+      "file": "visual/batting/approved/extension.js",
+      "unchanged": true,
+      "sha256": "80f5dbf19b749dbc091a9b61498b3d9e975d1c6068d82b33b92269802b3a046d"
+    },
+    {
+      "file": "visual/batting/approved/follow.js",
+      "unchanged": true,
+      "sha256": "7cab3d4c41af85fe429e82760d17af1c103c221997c9d7b2c95087ea0723166f"
+    },
+    {
+      "file": "visual/batting/structure.js",
+      "unchanged": true,
+      "sha256": "3bec85065b0613e187ba01833c3263985f6867675b17b80d9fe69fdf3786bb40"
+    }
+  ],
+  "coreFunctions": "regression/isolation.json",
+  "C1": "regression/geometry.json",
+  "deploy": false
+}

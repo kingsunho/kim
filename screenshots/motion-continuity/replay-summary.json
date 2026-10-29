@@ -1,0 +1,90 @@
+[
+  {
+    "case": "abs-LL",
+    "errors": [],
+    "replayAdapter": {
+      "approvedFrames": 0,
+      "legacyFrames": 201
+    },
+    "actualInputOffsetMs": null,
+    "flightMs": null,
+    "sourceContactMinusArrivalMs": null
+  },
+  {
+    "case": "abs-RR",
+    "errors": [],
+    "replayAdapter": {
+      "approvedFrames": 0,
+      "legacyFrames": 181
+    },
+    "actualInputOffsetMs": null,
+    "flightMs": null,
+    "sourceContactMinusArrivalMs": null
+  },
+  {
+    "case": "k-LL",
+    "errors": [],
+    "replayAdapter": {
+      "approvedFrames": 0,
+      "legacyFrames": 239
+    },
+    "actualInputOffsetMs": null,
+    "flightMs": null,
+    "sourceContactMinusArrivalMs": null
+  },
+  {
+    "case": "k-LR",
+    "errors": [],
+    "replayAdapter": {
+      "approvedFrames": 0,
+      "legacyFrames": 235
+    },
+    "actualInputOffsetMs": null,
+    "flightMs": null,
+    "sourceContactMinusArrivalMs": null
+  },
+  {
+    "case": "k-RL",
+    "errors": [],
+    "replayAdapter": {
+      "approvedFrames": 212,
+      "legacyFrames": 0
+    },
+    "actualInputOffsetMs": null,
+    "flightMs": null,
+    "sourceContactMinusArrivalMs": null
+  },
+  {
+    "case": "k-RR",
+    "errors": [],
+    "replayAdapter": {
+      "approvedFrames": 208,
+      "legacyFrames": 0
+    },
+    "actualInputOffsetMs": null,
+    "flightMs": null,
+    "sourceContactMinusArrivalMs": null
+  },
+  {
+    "case": "k-early",
+    "errors": [],
+    "replayAdapter": {
+      "approvedFrames": 215,
+      "legacyFrames": 0
+    },
+    "actualInputOffsetMs": 837.7999999970198,
+    "flightMs": 1077.362260919212,
+    "sourceContactMinusArrivalMs": -139.5622609221923
+  },
+  {
+    "case": "k-late",
+    "errors": [],
+    "replayAdapter": {
+      "approvedFrames": 208,
+      "legacyFrames": 0
+    },
+    "actualInputOffsetMs": 1053.2000000029802,
+    "flightMs": 1077.362260919212,
+    "sourceContactMinusArrivalMs": 75.83773908376816
+  }
+]

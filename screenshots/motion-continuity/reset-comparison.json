@@ -1,0 +1,14 @@
+{
+  "before": {
+    "gripSD": 30.188633570039727,
+    "shoulderRadians": 2.8990411091661517,
+    "fromClock": 1743.199999988079,
+    "toClock": 5.284846315827429
+  },
+  "after": {
+    "gripSD": 0.0,
+    "shoulderRadians": 0,
+    "fromClock": 1750,
+    "toClock": 5.883130798804664
+  }
+}
