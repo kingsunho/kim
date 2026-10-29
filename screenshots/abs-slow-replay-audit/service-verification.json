@@ -1,0 +1,10 @@
+{
+  "liveURL": "https://kingsunho.github.io/kim/",
+  "version": "5.175.3",
+  "encryptedIndexSHA256": "058673fa28bf4aa3cc85a36a14c02c94058e1d25eef14c9f5253fbbf75d93bf2",
+  "sameAsPreviouslyVerified51753": true,
+  "sourceSHA256": "7c4dd6010823fdb9921bf4665111ed9221f2901f55104236c3a026052f65801d",
+  "claudeCommit": "a525d7ad8afaa2a55d85cbcd29f4ed6146e399da",
+  "pagesCommit": "25205ece2dbbeda02c5ee81e728a4a575f7bf744",
+  "sourceMatchedClaudeAfterLocalDecrypt": true
+}

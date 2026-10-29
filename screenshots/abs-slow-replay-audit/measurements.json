@@ -1,0 +1,337 @@
+{
+  "cases": [
+    {
+      "case": "k-RR",
+      "version": "5.175.3",
+      "bats": "R",
+      "pitLeft": false,
+      "samePitchCoreParameters": true,
+      "pitchCoreSHA256": "bd01d80de47b5dfcc7b7b9b13e25bb45a66e44fc0d4c0525415b0fe07c20137a",
+      "replayKind": "K",
+      "replayCallsLegacy": 398,
+      "approvedDuringReplayDraw": 0,
+      "approvedAfterSwingInput": 20,
+      "release": {
+        "kind": "K",
+        "k": 0.18273809523809523,
+        "pose": "rel",
+        "hand": {
+          "x": 270.3684510285266,
+          "y": 546.4978821049784
+        },
+        "expectedBallAnchor": {
+          "x": 273.2715507656872,
+          "y": 534.8001409112087
+        },
+        "actualReplayRelease": {
+          "x": 238.524,
+          "y": 638.516
+        },
+        "anchorGapPx": 109.38177046811784,
+        "handGapPx": 97.37249653906544,
+        "note": "CSS px at first rel pose; anchor from same legacy sdFrontPose/sdFrontPoint including appearance map"
+      },
+      "cameraChecks": [
+        {
+          "cam": "c",
+          "sg": 1,
+          "normalizedScreenU": -0.332088149795911,
+          "normalizedScreenW": 1.152720831049542,
+          "approvedEnabled": true
+        },
+        {
+          "cam": "p",
+          "sg": -1,
+          "normalizedScreenU": 0.332088149795911,
+          "normalizedScreenW": 1.152720831049542,
+          "approvedEnabled": false
+        }
+      ],
+      "replayBatterFlipMatchesDeclaredHand": true,
+      "errors": []
+    },
+    {
+      "case": "k-LR",
+      "version": "5.175.3",
+      "bats": "L",
+      "pitLeft": false,
+      "samePitchCoreParameters": true,
+      "pitchCoreSHA256": "bd01d80de47b5dfcc7b7b9b13e25bb45a66e44fc0d4c0525415b0fe07c20137a",
+      "replayKind": "K",
+      "replayCallsLegacy": 394,
+      "approvedDuringReplayDraw": 0,
+      "approvedAfterSwingInput": 0,
+      "release": {
+        "kind": "K",
+        "k": 0.18161904761762843,
+        "pose": "rel",
+        "hand": {
+          "x": 270.3684510285266,
+          "y": 546.4978821049784
+        },
+        "expectedBallAnchor": {
+          "x": 273.2715507656872,
+          "y": 534.8001409112087
+        },
+        "actualReplayRelease": {
+          "x": 238.524,
+          "y": 638.516
+        },
+        "anchorGapPx": 109.38177046811784,
+        "handGapPx": 97.37249653906544,
+        "note": "CSS px at first rel pose; anchor from same legacy sdFrontPose/sdFrontPoint including appearance map"
+      },
+      "cameraChecks": [
+        {
+          "cam": "c",
+          "sg": 1,
+          "normalizedScreenU": -0.332088149795911,
+          "normalizedScreenW": 1.152720831049542,
+          "approvedEnabled": false
+        },
+        {
+          "cam": "p",
+          "sg": -1,
+          "normalizedScreenU": 0.332088149795911,
+          "normalizedScreenW": 1.152720831049542,
+          "approvedEnabled": false
+        }
+      ],
+      "replayBatterFlipMatchesDeclaredHand": true,
+      "errors": []
+    },
+    {
+      "case": "k-RL",
+      "version": "5.175.3",
+      "bats": "R",
+      "pitLeft": true,
+      "samePitchCoreParameters": true,
+      "pitchCoreSHA256": "b5c44d77e8980f5403242026c0ef4e7d1f3b4d7cdb49c03478064befdb9b29b1",
+      "replayKind": "K",
+      "replayCallsLegacy": 398,
+      "approvedDuringReplayDraw": 0,
+      "approvedAfterSwingInput": 19,
+      "release": {
+        "kind": "K",
+        "k": 0.1816428571442763,
+        "pose": "rel",
+        "hand": {
+          "x": 119.63154897147339,
+          "y": 546.4978821049784
+        },
+        "expectedBallAnchor": {
+          "x": 116.72844923431282,
+          "y": 534.8001409112087
+        },
+        "actualReplayRelease": {
+          "x": 151.476,
+          "y": 638.516
+        },
+        "anchorGapPx": 109.38177046811784,
+        "handGapPx": 97.37249653906544,
+        "note": "CSS px at first rel pose; anchor from same legacy sdFrontPose/sdFrontPoint including appearance map"
+      },
+      "cameraChecks": [
+        {
+          "cam": "c",
+          "sg": 1,
+          "normalizedScreenU": -0.332088149795911,
+          "normalizedScreenW": 1.152720831049542,
+          "approvedEnabled": true
+        },
+        {
+          "cam": "p",
+          "sg": -1,
+          "normalizedScreenU": 0.332088149795911,
+          "normalizedScreenW": 1.152720831049542,
+          "approvedEnabled": false
+        }
+      ],
+      "replayBatterFlipMatchesDeclaredHand": true,
+      "errors": []
+    },
+    {
+      "case": "k-LL",
+      "version": "5.175.3",
+      "bats": "L",
+      "pitLeft": true,
+      "samePitchCoreParameters": true,
+      "pitchCoreSHA256": "b5c44d77e8980f5403242026c0ef4e7d1f3b4d7cdb49c03478064befdb9b29b1",
+      "replayKind": "K",
+      "replayCallsLegacy": 392,
+      "approvedDuringReplayDraw": 0,
+      "approvedAfterSwingInput": 0,
+      "release": {
+        "kind": "K",
+        "k": 0.18249999999929037,
+        "pose": "rel",
+        "hand": {
+          "x": 119.63154897147339,
+          "y": 546.4978821049784
+        },
+        "expectedBallAnchor": {
+          "x": 116.72844923431282,
+          "y": 534.8001409112087
+        },
+        "actualReplayRelease": {
+          "x": 151.476,
+          "y": 638.516
+        },
+        "anchorGapPx": 109.38177046811784,
+        "handGapPx": 97.37249653906544,
+        "note": "CSS px at first rel pose; anchor from same legacy sdFrontPose/sdFrontPoint including appearance map"
+      },
+      "cameraChecks": [
+        {
+          "cam": "c",
+          "sg": 1,
+          "normalizedScreenU": -0.332088149795911,
+          "normalizedScreenW": 1.152720831049542,
+          "approvedEnabled": false
+        },
+        {
+          "cam": "p",
+          "sg": -1,
+          "normalizedScreenU": 0.332088149795911,
+          "normalizedScreenW": 1.152720831049542,
+          "approvedEnabled": false
+        }
+      ],
+      "replayBatterFlipMatchesDeclaredHand": true,
+      "errors": []
+    },
+    {
+      "case": "abs-RR",
+      "version": "5.175.3",
+      "bats": "R",
+      "pitLeft": false,
+      "samePitchCoreParameters": true,
+      "pitchCoreSHA256": "bd01d80de47b5dfcc7b7b9b13e25bb45a66e44fc0d4c0525415b0fe07c20137a",
+      "replayKind": "ABS",
+      "replayCallsLegacy": 406,
+      "approvedDuringReplayDraw": 0,
+      "approvedAfterSwingInput": 0,
+      "release": {
+        "kind": "ABS",
+        "k": 0.12250000000175305,
+        "pose": "rel",
+        "hand": {
+          "x": 270.3684510285266,
+          "y": 546.4978821049784
+        },
+        "expectedBallAnchor": {
+          "x": 273.2715507656872,
+          "y": 534.8001409112087
+        },
+        "actualReplayRelease": {
+          "x": 238.524,
+          "y": 638.516
+        },
+        "anchorGapPx": 109.38177046811784,
+        "handGapPx": 97.37249653906544,
+        "note": "CSS px at first rel pose; anchor from same legacy sdFrontPose/sdFrontPoint including appearance map"
+      },
+      "cameraChecks": [
+        {
+          "cam": "c",
+          "sg": 1,
+          "normalizedScreenU": -0.332088149795911,
+          "normalizedScreenW": 1.152720831049542,
+          "approvedEnabled": true
+        },
+        {
+          "cam": "p",
+          "sg": -1,
+          "normalizedScreenU": 0.332088149795911,
+          "normalizedScreenW": 1.152720831049542,
+          "approvedEnabled": false
+        }
+      ],
+      "replayBatterFlipMatchesDeclaredHand": true,
+      "errors": []
+    },
+    {
+      "case": "abs-LL",
+      "version": "5.175.3",
+      "bats": "L",
+      "pitLeft": true,
+      "samePitchCoreParameters": true,
+      "pitchCoreSHA256": "b5c44d77e8980f5403242026c0ef4e7d1f3b4d7cdb49c03478064befdb9b29b1",
+      "replayKind": "ABS",
+      "replayCallsLegacy": 408,
+      "approvedDuringReplayDraw": 0,
+      "approvedAfterSwingInput": 0,
+      "release": {
+        "kind": "ABS",
+        "k": 0.12252941176207621,
+        "pose": "rel",
+        "hand": {
+          "x": 119.63154897147339,
+          "y": 546.4978821049784
+        },
+        "expectedBallAnchor": {
+          "x": 116.72844923431282,
+          "y": 534.8001409112087
+        },
+        "actualReplayRelease": {
+          "x": 151.476,
+          "y": 638.516
+        },
+        "anchorGapPx": 109.38177046811784,
+        "handGapPx": 97.37249653906544,
+        "note": "CSS px at first rel pose; anchor from same legacy sdFrontPose/sdFrontPoint including appearance map"
+      },
+      "cameraChecks": [
+        {
+          "cam": "c",
+          "sg": 1,
+          "normalizedScreenU": -0.332088149795911,
+          "normalizedScreenW": 1.152720831049542,
+          "approvedEnabled": false
+        },
+        {
+          "cam": "p",
+          "sg": -1,
+          "normalizedScreenU": 0.332088149795911,
+          "normalizedScreenW": 1.152720831049542,
+          "approvedEnabled": false
+        }
+      ],
+      "replayBatterFlipMatchesDeclaredHand": true,
+      "errors": []
+    }
+  ],
+  "timing": {
+    "kind": "source-formula analysis, not FPS or collision measurement",
+    "kReplay": {
+      "beatMs": 4200,
+      "ballStartMs": 1050.0,
+      "ballArriveMs": 3150.0,
+      "legacySwingMidpointMs": 2844.5454545454545,
+      "midpointBeforeBallArrivalMs": 305.45454545454555,
+      "pitchPoseSwitchMs": [
+        756.0,
+        1344.0
+      ],
+      "note": "sdBatterContact uses legacy swT=.5 as nominal contact reference. This is a whiff; not asserting an actual bat/ball collision."
+    },
+    "absReplay": {
+      "firstBeatMs": 3400,
+      "ballStartMs": 612.0,
+      "ballArriveMs": 2720.0,
+      "pitchPoseSwitchMs": [
+        408.0,
+        816.0
+      ],
+      "batterSwT": 0,
+      "note": "Watching a called pitch is intentional, not a missing swing."
+    },
+    "liveHuman": {
+      "inputContactDelayMs": 100,
+      "approvedSourceContactMs": 1120,
+      "legacyClockMidpointMs": 220,
+      "nominalLegacyMinusJudgmentMs": 120,
+      "note": "Nominal phase mismatch in fallback. No claim that every ball visually collides at swT=.5. Judgment remains unchanged."
+    }
+  }
+}

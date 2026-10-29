@@ -1,0 +1,66 @@
+{
+  "base": "a525d7ad8afaa2a55d85cbcd29f4ed6146e399da",
+  "checkedFiles": {
+    "index.html": {
+      "sha256": "7c4dd6010823fdb9921bf4665111ed9221f2901f55104236c3a026052f65801d",
+      "sameAsClaudeBase": true
+    },
+    "package.json": {
+      "sha256": "1b870a04bfd82f58189a6b2fecd1b25bc5dc41ffba59d194e7a8086d56232c32",
+      "sameAsClaudeBase": true
+    },
+    "visual/batting/adapter.js": {
+      "sha256": "742a5a1c63837f92430108ed50679da6c86633a8dc719b6a01db6523996fbcbe",
+      "sameAsClaudeBase": true
+    },
+    "visual/batting/approved/contact.js": {
+      "sha256": "3fd1c6e1f095e22ed27a470f6f39d1e537b37bb5fa7d39ec74b8bdcdf8e8cd59",
+      "sameAsClaudeBase": true
+    },
+    "visual/batting/approved/extension.js": {
+      "sha256": "80f5dbf19b749dbc091a9b61498b3d9e975d1c6068d82b33b92269802b3a046d",
+      "sameAsClaudeBase": true
+    },
+    "visual/batting/approved/follow.js": {
+      "sha256": "7cab3d4c41af85fe429e82760d17af1c103c221997c9d7b2c95087ea0723166f",
+      "sameAsClaudeBase": true
+    },
+    "visual/batting/approved/plant.js": {
+      "sha256": "f1d677bc95678a71d4853d9239a7bf40cf933397f347d2b48127d54699517ee6",
+      "sameAsClaudeBase": true
+    },
+    "visual/batting/approved/ready.js": {
+      "sha256": "9bed07ac2b73629d189d2c53ef313577d0c82b6c4c5b01ef2ebbd97ccfebc80f",
+      "sameAsClaudeBase": true
+    },
+    "visual/batting/approved/renderer.js": {
+      "sha256": "6ecf1c37c7c33d9d3386ed33049f82a029ff012d8f5f044b24dc3660a29bc2e9",
+      "sameAsClaudeBase": true
+    },
+    "visual/batting/approved/triangle.js": {
+      "sha256": "db3ff1bd509e60ec877f3eaa04d9d5d5ca031830f89d4228b9a07f0da274ad49",
+      "sameAsClaudeBase": true
+    },
+    "visual/batting/build.cjs": {
+      "sha256": "51aed0e643e637a264934f666c3f31ca63477a262eda5c885bcf58567dc69f97",
+      "sameAsClaudeBase": true
+    },
+    "visual/batting/clock.cjs": {
+      "sha256": "de5e5967df3c3444fdae14c4d27a4940ac7112421d51c8119e8765db7c8f44ab",
+      "sameAsClaudeBase": true
+    },
+    "visual/batting/optimize.cjs": {
+      "sha256": "3b337809945cae06dd3ef2e3f75e81d0e461c00cd0d9def7b4283b25dc192bc1",
+      "sameAsClaudeBase": true
+    },
+    "visual/batting/structure.js": {
+      "sha256": "3bec85065b0613e187ba01833c3263985f6867675b17b80d9fe69fdf3786bb40",
+      "sameAsClaudeBase": true
+    }
+  },
+  "gameSourceAndApprovedModulesUnchanged": true,
+  "noProductionStorageAccess": true,
+  "gameEngineFunctionsNotReplacedByFixture": true,
+  "fixtureObservationWrappersOnly": true,
+  "changesScope": "gpt-review/abs-slow-replay-audit only"
+}

@@ -1,0 +1,109 @@
+{
+  "bcPlay": {
+    "occurrences": 1,
+    "followingDeclarationChunksIdentical": true,
+    "lineNumbers": [
+      60335
+    ]
+  },
+  "bcKReplay": {
+    "occurrences": 1,
+    "followingDeclarationChunksIdentical": true,
+    "lineNumbers": [
+      61110
+    ]
+  },
+  "bcAbsReplay": {
+    "occurrences": 1,
+    "followingDeclarationChunksIdentical": true,
+    "lineNumbers": [
+      61138
+    ]
+  },
+  "acpAbsShow": {
+    "occurrences": 1,
+    "followingDeclarationChunksIdentical": true,
+    "lineNumbers": [
+      70791
+    ]
+  },
+  "acpPA": {
+    "occurrences": 1,
+    "followingDeclarationChunksIdentical": false,
+    "lineNumbers": [
+      70018
+    ]
+  },
+  "mvPaint": {
+    "occurrences": 1,
+    "followingDeclarationChunksIdentical": true,
+    "lineNumbers": [
+      67491
+    ]
+  },
+  "mvPaintRev": {
+    "occurrences": 1,
+    "followingDeclarationChunksIdentical": true,
+    "lineNumbers": [
+      67641
+    ]
+  },
+  "sdSwingClock": {
+    "occurrences": 1,
+    "followingDeclarationChunksIdentical": true,
+    "lineNumbers": [
+      71949
+    ]
+  },
+  "mvSwing": {
+    "occurrences": 1,
+    "followingDeclarationChunksIdentical": true,
+    "lineNumbers": [
+      71956
+    ]
+  },
+  "sdPitchPose": {
+    "occurrences": 1,
+    "followingDeclarationChunksIdentical": true,
+    "lineNumbers": [
+      65027
+    ]
+  },
+  "sdFrontPoint": {
+    "occurrences": 2,
+    "followingDeclarationChunksIdentical": true,
+    "lineNumbers": [
+      64585,
+      66637
+    ]
+  },
+  "acpGeo": {
+    "occurrences": 1,
+    "followingDeclarationChunksIdentical": true,
+    "lineNumbers": [
+      69471
+    ]
+  },
+  "acpBallScr": {
+    "occurrences": 1,
+    "followingDeclarationChunksIdentical": true,
+    "lineNumbers": [
+      69560
+    ]
+  },
+  "apPitchAt": {
+    "occurrences": 1,
+    "followingDeclarationChunksIdentical": true,
+    "lineNumbers": [
+      68336
+    ]
+  },
+  "mvSD": {
+    "occurrences": 2,
+    "followingDeclarationChunksIdentical": true,
+    "lineNumbers": [
+      63951,
+      66023
+    ]
+  }
+}

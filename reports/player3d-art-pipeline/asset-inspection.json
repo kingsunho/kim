@@ -1,0 +1,631 @@
+{
+  "blenderVersion": "4.3.2",
+  "background": true,
+  "sourceSHA256": "9bc45155cc5370e2ef9dfac74372ae829f7146952079faa19d2f82972d742405",
+  "bones": 42,
+  "identityKey": "kbo:68220",
+  "appearanceVersion": "kwak-sd3d-upper-v3",
+  "actions": 0,
+  "meshCount": 33,
+  "materials": 16,
+  "shapeKeyObjects": [],
+  "objects": [
+    {
+      "name": "Common_body_continuous",
+      "vertices": 2549,
+      "triangles": 5094,
+      "uvLayers": [],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "pelvis",
+        "spine",
+        "chest",
+        "neck",
+        "head",
+        "clavicle.L",
+        "upper_arm.L",
+        "forearm.L",
+        "hand.L",
+        "thigh.L",
+        "shin.L",
+        "foot.L",
+        "clavicle.R",
+        "upper_arm.R",
+        "forearm.R",
+        "hand.R",
+        "thigh.R",
+        "shin.R",
+        "foot.R"
+      ]
+    },
+    {
+      "name": "Arms_undersleeves__navy",
+      "vertices": 1200,
+      "triangles": 2392,
+      "uvLayers": [],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "upper_arm.L",
+        "forearm.L",
+        "upper_arm.R",
+        "forearm.R"
+      ]
+    },
+    {
+      "name": "Kit_jersey_weighted",
+      "vertices": 3891,
+      "triangles": 7778,
+      "uvLayers": [
+        "ClothUV"
+      ],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "pelvis",
+        "spine",
+        "chest",
+        "clavicle.L",
+        "clavicle.R",
+        "upper_arm.L",
+        "upper_arm.R"
+      ]
+    },
+    {
+      "name": "Kit_trim__navy",
+      "vertices": 1686,
+      "triangles": 3312,
+      "uvLayers": [
+        "UVMap"
+      ],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "clavicle.L",
+        "upper_arm.L",
+        "clavicle.R",
+        "upper_arm.R",
+        "pelvis",
+        "thigh.L",
+        "shin.L",
+        "thigh.R",
+        "shin.R",
+        "chest",
+        "neck"
+      ]
+    },
+    {
+      "name": "Kit_pants_continuous_groin",
+      "vertices": 4384,
+      "triangles": 8764,
+      "uvLayers": [],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "pelvis",
+        "thigh.L",
+        "thigh.R",
+        "shin.L",
+        "shin.R"
+      ]
+    },
+    {
+      "name": "Belt",
+      "vertices": 96,
+      "triangles": 188,
+      "uvLayers": [],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "pelvis",
+        "spine"
+      ]
+    },
+    {
+      "name": "Belt buckle",
+      "vertices": 96,
+      "triangles": 188,
+      "uvLayers": [
+        "UVMap"
+      ],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "pelvis"
+      ]
+    },
+    {
+      "name": "Hand_sculpted.L",
+      "vertices": 1693,
+      "triangles": 3382,
+      "uvLayers": [],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "forearm.L",
+        "hand.L",
+        "finger0.1.L",
+        "finger0.2.L",
+        "finger1.1.L",
+        "finger1.2.L",
+        "finger2.1.L",
+        "finger2.2.L",
+        "finger3.1.L",
+        "finger3.2.L",
+        "thumb.1.L",
+        "thumb.2.L"
+      ]
+    },
+    {
+      "name": "Kit_footwear__sole",
+      "vertices": 960,
+      "triangles": 1720,
+      "uvLayers": [
+        "UVMap"
+      ],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "foot.L",
+        "foot.R"
+      ]
+    },
+    {
+      "name": "Kit_footwear__navy",
+      "vertices": 960,
+      "triangles": 1856,
+      "uvLayers": [],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "foot.L",
+        "foot.R"
+      ]
+    },
+    {
+      "name": "Kit_footwear__stitch",
+      "vertices": 456,
+      "triangles": 864,
+      "uvLayers": [
+        "UVMap"
+      ],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "foot.L",
+        "foot.R"
+      ]
+    },
+    {
+      "name": "Kit_footwear__navy_light",
+      "vertices": 8,
+      "triangles": 4,
+      "uvLayers": [],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "foot.L",
+        "foot.R"
+      ]
+    },
+    {
+      "name": "Hand_sculpted.R",
+      "vertices": 1694,
+      "triangles": 3384,
+      "uvLayers": [],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "forearm.R",
+        "hand.R",
+        "finger0.1.R",
+        "finger0.2.R",
+        "finger1.1.R",
+        "finger1.2.R",
+        "finger2.1.R",
+        "finger2.2.R",
+        "finger3.1.R",
+        "finger3.2.R",
+        "thumb.1.R",
+        "thumb.2.R"
+      ]
+    },
+    {
+      "name": "Hair_sculpt_Kwak_nape",
+      "vertices": 5200,
+      "triangles": 10396,
+      "uvLayers": [],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "head"
+      ]
+    },
+    {
+      "name": "Kit_cap_shell__navy",
+      "vertices": 1626,
+      "triangles": 3244,
+      "uvLayers": [],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "head"
+      ]
+    },
+    {
+      "name": "Visor red edge",
+      "vertices": 654,
+      "triangles": 1296,
+      "uvLayers": [
+        "UVMap"
+      ],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "head"
+      ]
+    },
+    {
+      "name": "Kit_cap_details__navy_light",
+      "vertices": 1224,
+      "triangles": 2376,
+      "uvLayers": [
+        "UVMap"
+      ],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "head"
+      ]
+    },
+    {
+      "name": "Kit chest wordmark",
+      "vertices": 575,
+      "triangles": 573,
+      "uvLayers": [
+        "UVMap"
+      ],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "pelvis",
+        "spine",
+        "chest"
+      ]
+    },
+    {
+      "name": "Player front number",
+      "vertices": 21,
+      "triangles": 19,
+      "uvLayers": [
+        "UVMap"
+      ],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "pelvis",
+        "spine",
+        "chest"
+      ]
+    },
+    {
+      "name": "Player back number",
+      "vertices": 21,
+      "triangles": 19,
+      "uvLayers": [
+        "UVMap"
+      ],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "pelvis",
+        "spine",
+        "chest"
+      ]
+    },
+    {
+      "name": "Player back name",
+      "vertices": 165,
+      "triangles": 157,
+      "uvLayers": [
+        "UVMap"
+      ],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "pelvis",
+        "spine",
+        "chest"
+      ]
+    },
+    {
+      "name": "Kit cap letter",
+      "vertices": 58,
+      "triangles": 58,
+      "uvLayers": [
+        "UVMap"
+      ],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "head"
+      ]
+    },
+    {
+      "name": "Jersey placket",
+      "vertices": 150,
+      "triangles": 288,
+      "uvLayers": [
+        "UVMap"
+      ],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "pelvis",
+        "spine",
+        "chest"
+      ]
+    },
+    {
+      "name": "Kit_fasteners__sole",
+      "vertices": 120,
+      "triangles": 220,
+      "uvLayers": [],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "pelvis",
+        "spine",
+        "chest"
+      ]
+    },
+    {
+      "name": "Face_sculpt_Kwak_v3",
+      "vertices": 10752,
+      "triangles": 21500,
+      "uvLayers": [],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "head"
+      ]
+    },
+    {
+      "name": "Upper_features__eye_white",
+      "vertices": 760,
+      "triangles": 1312,
+      "uvLayers": [],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "head",
+        "eye.L",
+        "eye.R"
+      ]
+    },
+    {
+      "name": "Upper_features__eye_dark",
+      "vertices": 98,
+      "triangles": 96,
+      "uvLayers": [],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "eye.L",
+        "eye.R"
+      ]
+    },
+    {
+      "name": "Upper_features__hair",
+      "vertices": 1616,
+      "triangles": 3132,
+      "uvLayers": [],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "head"
+      ]
+    },
+    {
+      "name": "Upper_features__skin_inner",
+      "vertices": 1552,
+      "triangles": 3072,
+      "uvLayers": [],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "head"
+      ]
+    },
+    {
+      "name": "Upper_features__skin",
+      "vertices": 1680,
+      "triangles": 3328,
+      "uvLayers": [],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "head"
+      ]
+    },
+    {
+      "name": "Face_mouth_crease",
+      "vertices": 776,
+      "triangles": 1536,
+      "uvLayers": [],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "head"
+      ]
+    },
+    {
+      "name": "Upper_collar_facing",
+      "vertices": 14,
+      "triangles": 12,
+      "uvLayers": [],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "pelvis",
+        "spine",
+        "chest",
+        "clavicle.L",
+        "clavicle.R",
+        "upper_arm.L",
+        "upper_arm.R"
+      ]
+    },
+    {
+      "name": "Upper_features__cloth_seam",
+      "vertices": 272,
+      "triangles": 512,
+      "uvLayers": [],
+      "modifiers": [
+        {
+          "type": "ARMATURE",
+          "armature": "PlayerRig"
+        }
+      ],
+      "vertexGroups": [
+        "pelvis",
+        "spine",
+        "chest",
+        "clavicle.L",
+        "clavicle.R",
+        "upper_arm.L",
+        "upper_arm.R"
+      ]
+    }
+  ],
+  "sourceUnchangedAfterInspection": true
+}

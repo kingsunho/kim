@@ -1,0 +1,92 @@
+{
+  "k-RL": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 390,
+        "height": 844,
+        "r_frame_rate": "25/1"
+      }
+    ],
+    "format": {
+      "duration": "7.840000"
+    }
+  },
+  "k-RR": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 390,
+        "height": 844,
+        "r_frame_rate": "25/1"
+      }
+    ],
+    "format": {
+      "duration": "8.480000"
+    }
+  },
+  "abs-RR": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 390,
+        "height": 844,
+        "r_frame_rate": "25/1"
+      }
+    ],
+    "format": {
+      "duration": "8.840000"
+    }
+  },
+  "k-LL": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 390,
+        "height": 844,
+        "r_frame_rate": "25/1"
+      }
+    ],
+    "format": {
+      "duration": "7.480000"
+    }
+  },
+  "abs-LL": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 390,
+        "height": 844,
+        "r_frame_rate": "25/1"
+      }
+    ],
+    "format": {
+      "duration": "8.640000"
+    }
+  },
+  "k-LR": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 390,
+        "height": 844,
+        "r_frame_rate": "25/1"
+      }
+    ],
+    "format": {
+      "duration": "7.520000"
+    }
+  }
+}
