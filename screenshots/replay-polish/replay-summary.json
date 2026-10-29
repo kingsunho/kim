@@ -1,0 +1,50 @@
+[
+  {
+    "case": "abs-LL",
+    "errors": [],
+    "replayAdapter": {
+      "approvedFrames": 0,
+      "legacyFrames": 203
+    }
+  },
+  {
+    "case": "abs-RR",
+    "errors": [],
+    "replayAdapter": {
+      "approvedFrames": 0,
+      "legacyFrames": 194
+    }
+  },
+  {
+    "case": "k-LL",
+    "errors": [],
+    "replayAdapter": {
+      "approvedFrames": 0,
+      "legacyFrames": 245
+    }
+  },
+  {
+    "case": "k-LR",
+    "errors": [],
+    "replayAdapter": {
+      "approvedFrames": 0,
+      "legacyFrames": 245
+    }
+  },
+  {
+    "case": "k-RL",
+    "errors": [],
+    "replayAdapter": {
+      "approvedFrames": 239,
+      "legacyFrames": 0
+    }
+  },
+  {
+    "case": "k-RR",
+    "errors": [],
+    "replayAdapter": {
+      "approvedFrames": 238,
+      "legacyFrames": 0
+    }
+  }
+]

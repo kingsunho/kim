@@ -1,0 +1,17 @@
+{
+  "actual_four_next_pitch_flows": true,
+  "six_replay_conditions": true,
+  "approved_pose_hashes": true,
+  "nine_course_support": true,
+  "left_fallback": true,
+  "hit_HR_field_transition": true,
+  "save_load": true,
+  "single_result_application": true,
+  "core_functions_unchanged": true,
+  "syntax_and_load": true,
+  "notValidated": [
+    "real iPhone Safari",
+    "stable 60 fps in supported live batting",
+    "final visual motion approval"
+  ]
+}
