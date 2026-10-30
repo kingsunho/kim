@@ -1,0 +1,77 @@
+{
+  "baseline": "37573d1a152358ec7d630c9d89055cc425eb03f7",
+  "claude": "a525d7a",
+  "serviceVersion": "v5.175.3",
+  "experimentAdopted": false,
+  "reason": "No consistent real-play RAF/input/paint improvement; stop bounded optimisation.",
+  "approvedRuntimeSnapshotIdentical": true,
+  "snapshotSHA256": "6d785375ac7c2586f1828e70b2527135970b9f6a4d090729bcc51b2b4ccd5d01",
+  "readabilityDefault": "baseline (comparison proposal disabled)",
+  "files": [
+    {
+      "file": "visual/batting/optimize.cjs",
+      "sameAs37573d1": true,
+      "sha256": "3b337809945cae06dd3ef2e3f75e81d0e461c00cd0d9def7b4283b25dc192bc1"
+    },
+    {
+      "file": "visual/batting/build.cjs",
+      "sameAs37573d1": true,
+      "sha256": "cf8e4a197532731d9122a42898b6bfe0f3f9d6fb02c83a18d19473980b508e06"
+    },
+    {
+      "file": "visual/batting/adapter.js",
+      "sameAs37573d1": true,
+      "sha256": "1c4aff43ec36a8b69a69e390aa96f878b151566bccea1c5ffff41ad2a6909088"
+    },
+    {
+      "file": "visual/batting/recovery.js",
+      "sameAs37573d1": true,
+      "sha256": "a3829ac87d63ba09b55ee57e08c6b2d33f4fc7704d912b97bc0d07b5d57129bc"
+    },
+    {
+      "file": "visual/batting/recovery-pose.js",
+      "sameAs37573d1": true,
+      "sha256": "5d73d08b6fd5937e32dc959861a20144c4bbfe385c7d01713fe958e76327de68"
+    },
+    {
+      "file": "visual/batting/structure.js",
+      "sameAs37573d1": true,
+      "sha256": "3bec85065b0613e187ba01833c3263985f6867675b17b80d9fe69fdf3786bb40"
+    },
+    {
+      "file": "visual/batting/approved/triangle.js",
+      "sameAs37573d1": true,
+      "sha256": "db3ff1bd509e60ec877f3eaa04d9d5d5ca031830f89d4228b9a07f0da274ad49"
+    },
+    {
+      "file": "visual/batting/approved/ready.js",
+      "sameAs37573d1": true,
+      "sha256": "9bed07ac2b73629d189d2c53ef313577d0c82b6c4c5b01ef2ebbd97ccfebc80f"
+    },
+    {
+      "file": "visual/batting/approved/renderer.js",
+      "sameAs37573d1": true,
+      "sha256": "6ecf1c37c7c33d9d3386ed33049f82a029ff012d8f5f044b24dc3660a29bc2e9"
+    },
+    {
+      "file": "visual/batting/approved/follow.js",
+      "sameAs37573d1": true,
+      "sha256": "7cab3d4c41af85fe429e82760d17af1c103c221997c9d7b2c95087ea0723166f"
+    },
+    {
+      "file": "visual/batting/approved/contact.js",
+      "sameAs37573d1": true,
+      "sha256": "3fd1c6e1f095e22ed27a470f6f39d1e537b37bb5fa7d39ec74b8bdcdf8e8cd59"
+    },
+    {
+      "file": "visual/batting/approved/plant.js",
+      "sameAs37573d1": true,
+      "sha256": "f1d677bc95678a71d4853d9239a7bf40cf933397f347d2b48127d54699517ee6"
+    },
+    {
+      "file": "visual/batting/approved/extension.js",
+      "sameAs37573d1": true,
+      "sha256": "80f5dbf19b749dbc091a9b61498b3d9e975d1c6068d82b33b92269802b3a046d"
+    }
+  ]
+}
