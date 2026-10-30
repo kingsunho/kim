@@ -1,0 +1,35 @@
+{
+  "before": {
+    "actor": {
+      "at": 3405.100000023842,
+      "time": 0,
+      "cost": 0.7000000178813934,
+      "phase": "READY",
+      "ball": {
+        "x": 236.62825371512136,
+        "y": 137.56646329962075,
+        "depth": 0.3952049440103986
+      },
+      "pixel": null
+    },
+    "pit": "p_dsn_p0"
+  },
+  "after": {
+    "first": {
+      "at": 4098,
+      "time": 0,
+      "cost": 1.2999999821186066,
+      "phase": "READY",
+      "ball": {
+        "x": 236.62825371512136,
+        "y": 137.56646329962075,
+        "depth": 0.3952049440103986
+      },
+      "pixel": null
+    },
+    "pit": "p_dsn_p0",
+    "scheduled": 300
+  },
+  "passed": true,
+  "note": "Two actual same-pitcher pitches. Pose980=pose0 endpoints checked independently in audit.json; this test verifies the controller starts a second throw."
+}

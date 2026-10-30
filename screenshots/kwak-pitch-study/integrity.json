@@ -1,0 +1,95 @@
+{
+  "base": "70315a7",
+  "claude": "a525d7a",
+  "service": "v5.175.3",
+  "gameAndApprovedFiles": [
+    {
+      "file": "index.html",
+      "unchanged": true,
+      "sha256": "bf92c4b4185d5c4b0af8f5fd17dae489b7e9bf05afda7a1150f671ea05d9f314"
+    },
+    {
+      "file": "visual/batting/recovery.js",
+      "unchanged": true,
+      "sha256": "a3829ac87d63ba09b55ee57e08c6b2d33f4fc7704d912b97bc0d07b5d57129bc"
+    },
+    {
+      "file": "visual/batting/build.cjs",
+      "unchanged": true,
+      "sha256": "cf8e4a197532731d9122a42898b6bfe0f3f9d6fb02c83a18d19473980b508e06"
+    },
+    {
+      "file": "visual/batting/optimize.cjs",
+      "unchanged": true,
+      "sha256": "3b337809945cae06dd3ef2e3f75e81d0e461c00cd0d9def7b4283b25dc192bc1"
+    },
+    {
+      "file": "visual/batting/clock.cjs",
+      "unchanged": true,
+      "sha256": "de5e5967df3c3444fdae14c4d27a4940ac7112421d51c8119e8765db7c8f44ab"
+    },
+    {
+      "file": "visual/batting/structure.js",
+      "unchanged": true,
+      "sha256": "3bec85065b0613e187ba01833c3263985f6867675b17b80d9fe69fdf3786bb40"
+    },
+    {
+      "file": "visual/batting/replay.js",
+      "unchanged": true,
+      "sha256": "8d894e20030d8a456523e5caa403b6f72bcbc7946fc6853c9b7cbe3dfaf7b737"
+    },
+    {
+      "file": "visual/batting/recovery-pose.js",
+      "unchanged": true,
+      "sha256": "5d73d08b6fd5937e32dc959861a20144c4bbfe385c7d01713fe958e76327de68"
+    },
+    {
+      "file": "visual/batting/adapter.js",
+      "unchanged": true,
+      "sha256": "1c4aff43ec36a8b69a69e390aa96f878b151566bccea1c5ffff41ad2a6909088"
+    },
+    {
+      "file": "visual/batting/approved/triangle.js",
+      "unchanged": true,
+      "sha256": "db3ff1bd509e60ec877f3eaa04d9d5d5ca031830f89d4228b9a07f0da274ad49"
+    },
+    {
+      "file": "visual/batting/approved/ready.js",
+      "unchanged": true,
+      "sha256": "9bed07ac2b73629d189d2c53ef313577d0c82b6c4c5b01ef2ebbd97ccfebc80f"
+    },
+    {
+      "file": "visual/batting/approved/renderer.js",
+      "unchanged": true,
+      "sha256": "6ecf1c37c7c33d9d3386ed33049f82a029ff012d8f5f044b24dc3660a29bc2e9"
+    },
+    {
+      "file": "visual/batting/approved/follow.js",
+      "unchanged": true,
+      "sha256": "7cab3d4c41af85fe429e82760d17af1c103c221997c9d7b2c95087ea0723166f"
+    },
+    {
+      "file": "visual/batting/approved/contact.js",
+      "unchanged": true,
+      "sha256": "3fd1c6e1f095e22ed27a470f6f39d1e537b37bb5fa7d39ec74b8bdcdf8e8cd59"
+    },
+    {
+      "file": "visual/batting/approved/plant.js",
+      "unchanged": true,
+      "sha256": "f1d677bc95678a71d4853d9239a7bf40cf933397f347d2b48127d54699517ee6"
+    },
+    {
+      "file": "visual/batting/approved/extension.js",
+      "unchanged": true,
+      "sha256": "80f5dbf19b749dbc091a9b61498b3d9e975d1c6068d82b33b92269802b3a046d"
+    }
+  ],
+  "prototypeHashes": {
+    "visual/kwak-pitch-study/rig.js": "3a0180cfdaa04c387a807408d6a3ec4caab97f63927df139a641748343c5d895",
+    "visual/kwak-pitch-study/index.html": "8c72675b94a7ddcd630beb3cfd8a1b12946d471df5873a6b67d0d57d386438f5",
+    "visual/kwak-pitch-study/fixture.js": "dd125104058e694bd9ab034035eb61a73281ce32ca1024b1ce5aa8c6aba04359"
+  },
+  "gameIntegration": false,
+  "merged": false,
+  "deployed": false
+}
